@@ -26,6 +26,14 @@ import invariant from 'invariant';
  */
 import { stringifyObject } from '../../util';
 
+const defaultReducerCallback = ( state ) => {
+	return { ...state };
+};
+
+const defaultArgsToParams = () => {
+	return {};
+};
+
 /**
  * Creates a store object implementing the necessary infrastructure for a
  * single fetch action.
@@ -79,24 +87,22 @@ import { stringifyObject } from '../../util';
 export const createFetchStore = ( {
 	baseName,
 	controlCallback,
-	reducerCallback,
-	argsToParams,
+	reducerCallback = defaultReducerCallback,
+	argsToParams = defaultArgsToParams,
 } ) => {
 	invariant( baseName, 'baseName is required.' );
-	invariant( 'function' === typeof controlCallback, 'controlCallback is required.' );
+	invariant( 'function' === typeof controlCallback, 'controlCallback is required and must be a function.' );
+	invariant( 'function' === typeof reducerCallback, 'reducerCallback must be a function.' );
+	invariant( 'function' === typeof argsToParams, 'argsToParams must be a function.' );
 
-	if ( 'function' !== typeof reducerCallback ) {
-		reducerCallback = ( state ) => {
-			return { ...state };
-		};
-	}
-
-	let requiresParams = true;
-	if ( 'function' !== typeof argsToParams ) {
+	// If argsToParams without any arguments does not result in an error, we
+	// know params is okay to be empty.
+	let requiresParams;
+	try {
+		argsToParams();
 		requiresParams = false;
-		argsToParams = () => {
-			return {};
-		};
+	} catch ( error ) {
+		requiresParams = true;
 	}
 
 	const pascalCaseBaseName = baseName.charAt( 0 ).toUpperCase() + baseName.slice( 1 );
