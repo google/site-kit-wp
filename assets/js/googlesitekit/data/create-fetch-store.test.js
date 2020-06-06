@@ -20,11 +20,11 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
 import { createRegistry } from '@wordpress/data';
 
 /**
@@ -59,8 +59,8 @@ const STORE_PARAMS = {
 		};
 	},
 	argsToParams: ( objParam, aParam ) => {
-		invariant( 'object' === typeof objParam, 'objParam is required.' );
-		invariant( 'undefined' !== typeof aParam, 'aParam is required.' );
+		invariant( isPlainObject( objParam ), 'objParam is required.' );
+		invariant( aParam !== undefined, 'aParam is required.' );
 		return {
 			objParam,
 			aParam,
@@ -69,7 +69,6 @@ const STORE_PARAMS = {
 };
 
 describe( 'createFetchStore store', () => {
-	let apiFetchSpy;
 	let dispatch;
 	let registry;
 	let select;
@@ -88,8 +87,6 @@ describe( 'createFetchStore store', () => {
 		dispatch = registry.dispatch( STORE_NAME );
 		store = registry.stores[ STORE_NAME ].store;
 		select = registry.select( STORE_NAME );
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -98,7 +95,6 @@ describe( 'createFetchStore store', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -106,7 +102,6 @@ describe( 'createFetchStore store', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
 				controlCallback: async () => true,
-				reducerCallback: ( state ) => state,
 			} );
 
 			expect( Object.keys( fetchStoreDefinition.actions ) ).toEqual( [
@@ -135,7 +130,6 @@ describe( 'createFetchStore store', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
 					controlCallback: async () => true,
-					reducerCallback: ( state ) => state,
 					argsToParams: ( requiredParam ) => {
 						invariant( requiredParam, 'requiredParam is required.' );
 						return {
@@ -164,7 +158,6 @@ describe( 'createFetchStore store', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
 					controlCallback: async () => true,
-					reducerCallback: ( state ) => state,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
@@ -183,7 +176,6 @@ describe( 'createFetchStore store', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
 					controlCallback: async () => true,
-					reducerCallback: ( state ) => state,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
@@ -282,7 +274,6 @@ describe( 'createFetchStore store', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
 					controlCallback: async () => true,
-					reducerCallback: ( state ) => state,
 					argsToParams: ( requiredParam ) => {
 						invariant( requiredParam, 'requiredParam is required.' );
 						return {
@@ -317,7 +308,6 @@ describe( 'createFetchStore store', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
 				controlCallback: async () => true,
-				reducerCallback: ( state ) => state,
 			} );
 
 			expect( Object.keys( fetchStoreDefinition.selectors ) ).toEqual( [

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies
@@ -113,9 +114,9 @@ export const createFetchStore = ( {
 	const constantBaseName = camelCaseToConstantCase( baseName );
 
 	const FETCH = `FETCH_${ constantBaseName }`;
-	const START_FETCH = `START_FETCH_${ constantBaseName }`;
-	const FINISH_FETCH = `FINISH_FETCH_${ constantBaseName }`;
-	const CATCH_FETCH = `CATCH_FETCH_${ constantBaseName }`;
+	const START_FETCH = `START_${ FETCH }`;
+	const FINISH_FETCH = `FINISH_${ FETCH }`;
+	const CATCH_FETCH = `CATCH_${ FETCH }`;
 	const RECEIVE = `RECEIVE_${ constantBaseName }`;
 
 	const fetchCreator = `fetch${ pascalCaseBaseName }`;
@@ -123,7 +124,7 @@ export const createFetchStore = ( {
 	const isFetching = `isFetching${ pascalCaseBaseName }`;
 
 	const actions = {
-		[ fetchCreator ]: function*( ...args ) { // eslint-disable-line object-shorthand
+		*[ fetchCreator ]( ...args ) {
 			let response, error, params;
 
 			try {
@@ -165,10 +166,10 @@ export const createFetchStore = ( {
 			return { response, error };
 		},
 
-		[ receiveCreator ]: function( response, params ) { // eslint-disable-line object-shorthand
-			invariant( 'undefined' !== typeof response, 'response is required.' );
+		[ receiveCreator ]( response, params ) {
+			invariant( response !== undefined, 'response is required.' );
 			if ( requiresParams ) {
-				invariant( 'object' === typeof params, 'params is required.' );
+				invariant( isPlainObject( params ), 'params is required.' );
 			} else {
 				params = {};
 			}
@@ -235,7 +236,7 @@ export const createFetchStore = ( {
 
 	const selectors = {
 		[ isFetching ]: ( state, ...args ) => {
-			if ( 'undefined' === typeof state[ isFetching ] ) {
+			if ( state[ isFetching ] === undefined ) {
 				return false;
 			}
 
