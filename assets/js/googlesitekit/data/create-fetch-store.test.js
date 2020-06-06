@@ -243,6 +243,7 @@ describe( 'createFetchStore store', () => {
 						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/
 					)
 					.mockResponseOnce(
+						// Just return any value here.
 						JSON.stringify( { someValue: 42 } ),
 						{ status: 200 }
 					);

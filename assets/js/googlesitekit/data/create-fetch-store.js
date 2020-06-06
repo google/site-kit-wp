@@ -47,7 +47,7 @@ const defaultArgsToParams = () => {
  * * action creators to fetch and to receive the data
  * * control to issue the API request
  * * reducer to set API request flag and receive the response
- * * selector to check whether the API request is in progress via flag
+ * * selector to check whether the API request is in progress via a flag
  *
  * The names of the pieces are based on the baseName provided.
  * For example, if baseName is 'saveSettings':
@@ -78,7 +78,7 @@ const defaultArgsToParams = () => {
  *                                          control. The function receives a params object based on argsToParams,
  *                                          i.e. the respective values passed to the action.
  * @param {Function} [args.reducerCallback] Optional. Callback function to modify state based on the API response.
- *                                          Will be used inside the reducer. The  function receives the store's state
+ *                                          Will be used inside the reducer. The function receives the store's state
  *                                          object as first parameter, the API response as second parameter, and the
  *                                          params object for the request (see above) as third parameter. If not
  *                                          provided, the default will return the unmodified state.
@@ -129,7 +129,9 @@ export const createFetchStore = ( {
 
 	const actions = {
 		*[ fetchCreator ]( ...args ) {
-			let response, error, params;
+			let response;
+			let error;
+			let params;
 
 			try {
 				params = argsToParams( ...args );
