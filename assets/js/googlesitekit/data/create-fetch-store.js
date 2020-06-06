@@ -24,6 +24,10 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import {
+	camelCaseToPascalCase,
+	camelCaseToConstantCase,
+} from './transform-case';
 import { stringifyObject } from '../../util';
 
 const defaultReducerCallback = ( state ) => {
@@ -105,8 +109,8 @@ export const createFetchStore = ( {
 		requiresParams = true;
 	}
 
-	const pascalCaseBaseName = baseName.charAt( 0 ).toUpperCase() + baseName.slice( 1 );
-	const constantBaseName = baseName.replace( /([a-z0-9]{1})([A-Z]{1})/g, '$1_$2' ).toUpperCase();
+	const pascalCaseBaseName = camelCaseToPascalCase( baseName );
+	const constantBaseName = camelCaseToConstantCase( baseName );
 
 	const FETCH = `FETCH_${ constantBaseName }`;
 	const START_FETCH = `START_FETCH_${ constantBaseName }`;

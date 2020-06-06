@@ -27,6 +27,10 @@ import { isEqual } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import {
+	camelCaseToPascalCase,
+	camelCaseToConstantCase,
+} from './transform-case';
 import { createFetchStore } from './create-fetch-store';
 
 const { createRegistrySelector } = Data;
@@ -264,8 +268,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	// Define individual actions, selectors and related for sub-settings.
 	settingSlugs.forEach( ( slug ) => {
-		const pascalCaseSlug = slug.charAt( 0 ).toUpperCase() + slug.slice( 1 );
-		const constantSlug = slug.replace( /([a-z0-9]{1})([A-Z]{1})/g, '$1_$2' ).toUpperCase();
+		const pascalCaseSlug = camelCaseToPascalCase( slug );
+		const constantSlug = camelCaseToConstantCase( slug );
 
 		/**
 		 * Sets the setting indicated by the action name to the given value.
