@@ -123,6 +123,10 @@ export const createFetchStore = ( {
 	const receiveCreator = `receive${ pascalCaseBaseName }`;
 	const isFetching = `isFetching${ pascalCaseBaseName }`;
 
+	const INITIAL_STATE = {
+		[ isFetching ]: {},
+	};
+
 	const actions = {
 		*[ fetchCreator ]( ...args ) {
 			let response, error, params;
@@ -194,7 +198,7 @@ export const createFetchStore = ( {
 				return {
 					...state,
 					[ isFetching ]: {
-						...( state[ isFetching ] || {} ),
+						...state[ isFetching ],
 						[ stringifyObject( params ) ]: true,
 					},
 				};
@@ -210,7 +214,7 @@ export const createFetchStore = ( {
 				return {
 					...state,
 					[ isFetching ]: {
-						...( state[ isFetching ] || {} ),
+						...state[ isFetching ],
 						[ stringifyObject( params ) ]: false,
 					},
 				};
@@ -222,7 +226,7 @@ export const createFetchStore = ( {
 					...state,
 					error,
 					[ isFetching ]: {
-						...( state[ isFetching ] || {} ),
+						...state[ isFetching ],
 						[ stringifyObject( params ) ]: false,
 					},
 				};
@@ -254,6 +258,7 @@ export const createFetchStore = ( {
 	};
 
 	return {
+		INITIAL_STATE,
 		actions,
 		controls,
 		reducer,
