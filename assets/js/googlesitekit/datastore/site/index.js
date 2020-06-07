@@ -21,6 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import connection from './connection';
+import html from './html';
 import info from './info';
 import reset from './reset';
 import { STORE_NAME } from './constants';
@@ -31,6 +32,7 @@ export { STORE_NAME };
 const store = Data.combineStores(
 	Data.commonStore,
 	connection,
+	html,
 	info,
 	reset,
 	notifications,
