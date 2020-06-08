@@ -19,19 +19,27 @@
 /**
  * Internal dependencies
  */
-import parseDate from './parseDate';
+import parseDimensionStringToDate from './parseDimensionStringToDate';
 
 describe( 'convertDateStringToDateObject', () => {
 	it( 'converts a date string formatted as YYYYMMDD', () => {
 		const dateToConvert = '20200608';
-		const convertedDate = parseDate( dateToConvert );
+		const convertedDate = parseDimensionStringToDate( dateToConvert );
 		expect( convertedDate.getFullYear() ).toBe( 2020 );
 		expect( convertedDate.getMonth() ).toBe( 5 ); // Months are zero-indexed.
 		expect( convertedDate.getDate() ).toBe( 8 );
 	} );
+
 	it( 'returns false when passed an incorrect date', () => {
 		const dateToConvert = 'notadate';
-		const convertedDate = parseDate( dateToConvert );
+		const convertedDate = parseDimensionStringToDate( dateToConvert );
 		expect( convertedDate ).toBe( false );
+	} );
+
+	it( 'returns false when a non-string type is passed', () => {
+		expect( parseDimensionStringToDate( 12345 ) ).toBe( false );
+		expect( parseDimensionStringToDate( [ 1, 2, 3, 4, 5 ] ) ).toBe( false );
+		expect( parseDimensionStringToDate( { test: 'Data' } ) ).toBe( false );
+		expect( parseDimensionStringToDate( true ) ).toBe( false );
 	} );
 } );

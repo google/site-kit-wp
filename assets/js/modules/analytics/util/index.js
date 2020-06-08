@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import calculateOverviewData from './calculateOverviewData';
-import parseDate from './parseDate';
+import parseDimensionStringToDate from './parseDimensionStringToDate';
 
 export { calculateOverviewData };
 
@@ -81,7 +81,7 @@ function reduceAnalyticsRowsData( rows, selectedStats ) {
 		if ( row.metrics ) {
 			const { values } = row.metrics[ 0 ];
 			const dateString = row.dimensions[ 0 ];
-			const date = parseDate( dateString );
+			const date = parseDimensionStringToDate( dateString );
 			dataMap.push( [
 				date,
 				values[ selectedStats ],
@@ -196,7 +196,7 @@ export const extractAnalyticsDashboardSparklineData = ( reports ) => {
 	each( data, ( row ) => {
 		const { values } = row.metrics[ 0 ];
 		const dateString = row.dimensions[ 0 ];
-		const date = parseDate( dateString );
+		const date = parseDimensionStringToDate( dateString );
 		dataMap.push( [
 			date,
 			values[ 0 ],
