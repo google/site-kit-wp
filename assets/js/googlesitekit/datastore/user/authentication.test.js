@@ -66,14 +66,7 @@ describe( 'core/user authentication', () => {
 	describe( 'actions', () => {
 		describe( 'fetchGetAuthentication', () => {
 			it( 'does not require any params', () => {
-				// Create a mock to avoid triggering a network request error.
-				// The return value is irrelevant to the test.
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( {} ),
-						{ status: 200 }
-					);
+				muteConsole( 'error' ); // Ignore the API fetch failure here.
 				expect( () => {
 					registry.dispatch( STORE_NAME ).fetchGetAuthentication();
 				} ).not.toThrow();

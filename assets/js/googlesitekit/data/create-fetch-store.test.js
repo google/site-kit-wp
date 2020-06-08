@@ -114,12 +114,15 @@ describe( 'createFetchStore store', () => {
 			it( 'validates parameters based on argsToParams', () => {
 				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
 
+				muteConsole( 'error' );
 				dispatch.fetchGetSomeData();
 				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'objParam is required.' );
 
+				muteConsole( 'error' );
 				dispatch.fetchGetSomeData( 123 );
 				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'objParam is required.' );
 
+				muteConsole( 'error' );
 				dispatch.fetchGetSomeData( {} );
 				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'aParam is required.' );
 
@@ -143,6 +146,7 @@ describe( 'createFetchStore store', () => {
 				// Catch invariant to get exactly the error we expect.
 				let error;
 				try {
+					muteConsole( 'error' );
 					invariant( false, 'requiredParam is required.' );
 				} catch ( err ) {
 					error = err;

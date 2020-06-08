@@ -337,6 +337,7 @@ describe( 'core/modules modules', () => {
 
 		describe( 'fetchGetModules', () => {
 			it( 'does not require any params', () => {
+				muteConsole( 'error' ); // Ignore the API fetch failure here.
 				expect( () => {
 					registry.dispatch( STORE_NAME ).fetchGetModules();
 				} ).not.toThrow();

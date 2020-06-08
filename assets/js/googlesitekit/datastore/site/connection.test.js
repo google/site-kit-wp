@@ -63,6 +63,7 @@ describe( 'core/site connection', () => {
 
 	describe( 'actions', () => {
 		describe( 'fetchGetConnection', () => {
+			muteConsole( 'error' ); // Ignore the API fetch failure here.
 			it( 'does not require any params', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).fetchGetConnection();

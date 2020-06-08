@@ -180,6 +180,7 @@ describe( 'createNotificationsStore store', () => {
 
 		describe( 'fetchGetNotifications', () => {
 			it( 'does not require any params', () => {
+				muteConsole( 'error' ); // Ignore the API fetch failure here.
 				expect( () => {
 					dispatch.fetchGetNotifications();
 				} ).not.toThrow();
@@ -269,7 +270,7 @@ describe( 'createNotificationsStore store', () => {
 				muteConsole( 'error' );
 				select.getNotifications();
 				await subscribeUntil( registry,
-					() => select.isFetchingGetNotifications() === false,
+					() => select.hasFinishedResolution( 'getNotifications' ),
 				);
 
 				const notifications = select.getNotifications();
