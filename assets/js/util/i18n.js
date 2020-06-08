@@ -30,7 +30,7 @@ import { setLocaleData } from '@wordpress/i18n';
  * Loads the translations for the google-site-kit text domain.
  */
 export function loadTranslations() {
-	setLocaleData( global.googlesitekit.locale, 'google-site-kit' );
+	setLocaleData( global._googlesitekitLegacyData.locale, 'google-site-kit' );
 }
 
 /**
