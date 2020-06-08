@@ -64,7 +64,6 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setSettings( {} );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			registry.stores[ STORE_NAME ].store.dispatch( { type: 'START_FETCH_ACCOUNTS_PROPERTIES_PROFILES' } );
 		};
