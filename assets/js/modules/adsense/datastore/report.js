@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies
@@ -45,7 +46,7 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
-		invariant( 'object' === typeof options, 'options must be an object.' );
+		invariant( isPlainObject( options ), 'options must be an object.' );
 		return { options };
 	},
 } );

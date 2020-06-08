@@ -20,7 +20,8 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isEqual } from 'lodash';
+import isPlainObject from 'lodash/isPlainObject';
+import isEqual from 'lodash/isEqual';
 
 /**
  * Internal dependencies
@@ -114,7 +115,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			};
 		},
 		argsToParams: ( values ) => {
-			invariant( 'object' === typeof values, 'values is required.' );
+			invariant( isPlainObject( values ), 'values is required.' );
 			return {
 				values,
 			};
@@ -134,7 +135,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		setSettings( values ) {
-			invariant( 'object' === typeof values, 'values is required.' );
+			invariant( isPlainObject( values ), 'values is required.' );
 
 			return {
 				payload: { values },
@@ -165,7 +166,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Response and error, if any.
 		 */
 		*saveSettings() {
-			const registry = yield Data.commonStore.actions.getRegistry();
+			const registry = yield Data.commonActions.getRegistry();
 			const values = registry.select( STORE_NAME ).getSettings();
 
 			return yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
@@ -208,7 +209,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const resolvers = {
 		*getSettings() {
-			const registry = yield Data.commonStore.actions.getRegistry();
+			const registry = yield Data.commonActions.getRegistry();
 			const existingSettings = registry.select( STORE_NAME ).getSettings();
 			// If settings are already present, don't fetch them.
 			if ( ! existingSettings ) {
@@ -262,7 +263,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			if ( 'object' !== typeof state.isFetchingSaveSettings ) {
 				return false;
 			}
-			return Object.values( state.isFetchingSaveSettings ).some( ( value ) => value );
+			return Object.values( state.isFetchingSaveSettings ).some( Boolean );
 		},
 	};
 

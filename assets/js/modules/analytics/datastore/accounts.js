@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * WordPress dependencies
@@ -55,7 +56,7 @@ const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( data ) => {
-		invariant( 'object' === typeof data, 'data must be an object.' );
+		invariant( isPlainObject( data ), 'data must be an object.' );
 		return { data };
 	},
 } );
@@ -73,7 +74,7 @@ const fetchCreateAccountStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( data ) => {
-		invariant( 'object' === typeof data, 'data must be an object.' );
+		invariant( isPlainObject( data ), 'data must be an object.' );
 		return { data };
 	},
 } );
@@ -219,12 +220,12 @@ const baseResolvers = {
 
 				dispatch( STORE_NAME ).receiveGetAccounts( response.accounts );
 
-				if ( response.properties.length && response.properties[ 0 ] && response.properties[ 0 ].accountId ) {
+				if ( response.properties?.[ 0 ]?.accountId ) {
 					const accountID = response.properties[ 0 ].accountId;
 					dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 				}
 
-				if ( response.profiles.length && response.profiles[ 0 ] && response.profiles[ 0 ].webPropertyId ) {
+				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
 					const propertyID = response.profiles[ 0 ].webPropertyId;
 					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { propertyID } );
 				}

@@ -80,7 +80,7 @@ describe( 'core/site connection', () => {
 
 			it( 'receives and sets connection ', async () => {
 				const connection = { coolSite: true };
-				await registry.dispatch( STORE_NAME ).receiveGetConnection( connection, {} );
+				await registry.dispatch( STORE_NAME ).receiveGetConnection( connection );
 
 				const state = store.getState();
 

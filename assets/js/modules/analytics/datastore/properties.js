@@ -61,9 +61,9 @@ const fetchCreatePropertyStore = createFetchStore( {
 		return {
 			...state,
 			properties: {
-				...state.properties || {},
+				...state.properties,
 				[ accountID ]: [
-					...( state.properties || {} )[ accountID ] || [],
+					...( state.properties[ accountID ] || [] ),
 					property,
 				],
 			},
@@ -270,7 +270,7 @@ const baseResolvers = {
 
 				dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 
-				if ( response.profiles.length && response.profiles[ 0 ] && response.profiles[ 0 ].webPropertyId ) {
+				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
 					const propertyID = response.profiles[ 0 ].webPropertyId;
 					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { propertyID } );
 				}

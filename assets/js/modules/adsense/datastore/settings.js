@@ -370,7 +370,7 @@ const baseSelectors = {
 		if ( 'object' !== typeof state.isFetchingSaveUseSnippet ) {
 			return false;
 		}
-		return Object.values( state.isFetchingSaveUseSnippet ).some( ( value ) => value );
+		return Object.values( state.isFetchingSaveUseSnippet ).some( Boolean );
 	},
 
 	/**
