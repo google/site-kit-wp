@@ -54,14 +54,10 @@ describe( 'modules/pagespeed-insights report', () => {
 				const strategy = 'desktop';
 				const url = 'http://example.com/';
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.pagespeedDesktop ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					{ body: fixtures.pagespeedDesktop, status: 200 },
+				);
 
 				const { response } = await registry.dispatch( STORE_NAME ).fetchReport( url, strategy );
 
@@ -73,23 +69,24 @@ describe( 'modules/pagespeed-insights report', () => {
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.pagespeedDesktop ),
-						{ status: 200 }
-					);
-
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					{ body: fixtures.pagespeedDesktop, status: 200 },
+				);
 				const strategy = 'mobile';
 				const url = 'http://example.com/';
 
 				const initialReport = registry.select( STORE_NAME ).getReport( url, strategy );
 
 				// Ensure the proper parameters were passed.
-				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
-					{ url, strategy }
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					{
+						query: {
+							url,
+							strategy,
+						},
+					}
 				);
 
 				expect( initialReport ).toEqual( undefined );
@@ -99,7 +96,7 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				const report = registry.select( STORE_NAME ).getReport( url, strategy );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.pagespeedDesktop );
 			} );
 
@@ -117,7 +114,7 @@ describe( 'modules/pagespeed-insights report', () => {
 					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.pagespeedMobile );
 			} );
 
@@ -127,14 +124,10 @@ describe( 'modules/pagespeed-insights report', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					{ body: response, status: 500 },
+				);
 
 				const strategy = 'mobile';
 				const url = 'http://example.com/';
@@ -145,7 +138,7 @@ describe( 'modules/pagespeed-insights report', () => {
 					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const report = registry.select( STORE_NAME ).getReport( url, strategy );
 				expect( report ).toEqual( undefined );
