@@ -78,9 +78,9 @@ describe( 'UseSnippetSwitch', () => {
 		fireEvent.click( container.querySelector( '.mdc-switch' ) );
 
 		const newUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
-		await act( () => subscribeUntil( registry, () => registry
-			.select( STORE_NAME ).hasFinishedResolution( 'getSettings' ) )
-		);
+		await act( () => subscribeUntil( registry,
+			() => registry.select( STORE_NAME ).hasFinishedResolution( 'getSettings' )
+		) );
 		expect( newUseSnippet ).toBe( true );
 
 		// Ensure API call is issued.
