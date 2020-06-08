@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import calculateOverviewData from './calculateOverviewData';
+import convertDateStringToDateObject from './convertDateStringToDateObject';
 
 export { calculateOverviewData };
 
@@ -80,10 +81,7 @@ function reduceAnalyticsRowsData( rows, selectedStats ) {
 		if ( row.metrics ) {
 			const { values } = row.metrics[ 0 ];
 			const dateString = row.dimensions[ 0 ];
-			const year = dateString.slice( 0, 4 );
-			const monthIndex = Number( dateString.slice( 4, 6 ) ) - 1;
-			const day = dateString.slice( 6, 8 );
-			const date = new Date( year, monthIndex.toString(), day );
+			const date = convertDateStringToDateObject( dateString );
 			dataMap.push( [
 				date,
 				values[ selectedStats ],
@@ -198,11 +196,7 @@ export const extractAnalyticsDashboardSparklineData = ( reports ) => {
 	each( data, ( row ) => {
 		const { values } = row.metrics[ 0 ];
 		const dateString = row.dimensions[ 0 ];
-		const dateWithDashes =
-			dateString.slice( 0, 4 ) + '-' +
-			dateString.slice( 4, 6 ) + '-' +
-			dateString.slice( 6, 8 );
-		const date = new Date( dateWithDashes );
+		const date = convertDateStringToDateObject( dateString );
 		dataMap.push( [
 			date,
 			values[ 0 ],
