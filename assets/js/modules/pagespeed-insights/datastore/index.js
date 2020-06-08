@@ -25,14 +25,9 @@ import { STORE_NAME } from './constants';
 
 export { STORE_NAME };
 
-const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
+const store = Modules.createModuleStore( 'pagespeed-insights', {
 	storeName: STORE_NAME,
 } );
-
-const store = Data.combineStores(
-	Data.commonStore,
-	baseModuleStore,
-);
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );

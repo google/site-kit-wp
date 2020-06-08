@@ -76,6 +76,7 @@ export const createModuleStore = ( slug, {
 		: {};
 
 	const combinedStore = Data.combineStores(
+		Data.commonStore,
 		notificationsStore,
 		settingsStore,
 	);
