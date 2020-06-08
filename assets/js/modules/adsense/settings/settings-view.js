@@ -83,26 +83,26 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<p className="googlesitekit-settings-module__meta-item-type">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Publisher ID', 'google-site-kit' ) }
-					</p>
-					<h5 className="googlesitekit-settings-module__meta-item-data">
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ accountID } />
-					</h5>
+					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
-					<p className="googlesitekit-settings-module__meta-item-type">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Account Status', 'google-site-kit' ) }
-					</p>
-					<h5 className="googlesitekit-settings-module__meta-item-data">
-						{ accountStatusLabel }
 					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ accountStatusLabel }
+					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
-					<p className="googlesitekit-settings-module__meta-item-type">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Site Status', 'google-site-kit' ) }
-					</p>
-					<h5 className="googlesitekit-settings-module__meta-item-data">
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
 						<Link
 							href={ siteStatusURL }
 							className="googlesitekit-settings-module__cta-button"
@@ -111,18 +111,18 @@ export default function SettingsView() {
 						>
 							{ __( 'Check your site status', 'google-site-kit' ) }
 						</Link>
-					</h5>
+					</p>
 				</div>
 			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<p className="googlesitekit-settings-module__meta-item-type">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'AdSense Code', 'google-site-kit' ) }
-					</p>
-					<h5 className="googlesitekit-settings-module__meta-item-data">
-						{ useSnippetLabel }
 					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ useSnippetLabel }
+					</p>
 				</div>
 			</div>
 		</div>
