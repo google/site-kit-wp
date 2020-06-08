@@ -74,7 +74,6 @@ describe( 'modules/adsense settings', () => {
 						/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
 						{ body: JSON.stringify( true ), status: 200 }
 					);
-					muteConsole( 'error' );
 					// Ensure initial settings from server are present.
 					registry.dispatch( STORE_NAME ).receiveSettings( { useSnippet: false } );
 
@@ -106,7 +105,7 @@ describe( 'modules/adsense settings', () => {
 		describe( 'fetchSaveUseSnippet', () => {
 			it( 'requires the useSnippet param', () => {
 				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
-
+				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).fetchSaveUseSnippet();
 				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'useSnippet is required.' );
 

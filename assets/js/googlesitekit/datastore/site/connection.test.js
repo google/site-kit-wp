@@ -54,7 +54,10 @@ describe( 'core/site connection', () => {
 		describe( 'fetchConnection', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
-					fetchMock.getOnce( '*', { body: {}, status: 200 } );
+					fetchMock.getOnce(
+						/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+						{ body: responseConnected, status: 200 }
+					);
 					registry.dispatch( STORE_NAME ).fetchConnection();
 				} ).not.toThrow();
 			} );
@@ -195,9 +198,10 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
-				fetchMock.get( '*', { status: 200 } );
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: responseConnected, status: 200 }
+				);
 				const isConnected = registry.select( STORE_NAME ).isConnected();
 
 				expect( isConnected ).toEqual( undefined );
@@ -253,9 +257,10 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
-				fetchMock.get( '*', { status: 200 } );
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: {}, status: 200 }
+				);
 				const isResettable = registry.select( STORE_NAME ).isResettable();
 
 				expect( isResettable ).toEqual( undefined );
@@ -311,9 +316,10 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
-				fetchMock.get( '*', { status: 200 } );
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: {}, status: 200 }
+				);
 				const isSetupCompleted = registry.select( STORE_NAME ).isSetupCompleted();
 
 				expect( isSetupCompleted ).toEqual( undefined );

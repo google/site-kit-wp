@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * WordPress dependencies
  */
 import { createRegistry } from '@wordpress/data';
@@ -129,8 +124,12 @@ describe( 'createSettingsStore store', () => {
 
 		describe( 'saveSettings', () => {
 			it( 'does not require any params', () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{ body: {}, status: 200 }
+				);
 				expect( async () => {
-					fetchMock.getOnce(
+					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 						{ body: { setting1: 'serverside' }, status: 200 }
 					);
@@ -452,15 +451,9 @@ describe( 'createSettingsStore store', () => {
 				const response = { type, identifier, datapoint };
 
 				fetchMock.postOnce(
-					( url ) => (
-						url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
-					),
+					`path:/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
 					{ body: response, status: 200 }
-				);
-				fetchMock.postOnce(
-					( url ) => (
-						! url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
-					),
+				).catch(
 					{
 						body: {
 							code: 'incorrect_api_endpoint',

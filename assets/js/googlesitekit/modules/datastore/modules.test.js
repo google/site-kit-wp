@@ -500,55 +500,54 @@ describe( 'core/modules modules', () => {
 				);
 
 				const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
-
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isActiveLoaded ).toEqual( true );
 			} );
 
-			// it( 'returns false if a module is not active', async () => {
-			// 	// Optimize in our fixtures is not active.
-			// 	const slug = 'optimize';
-			// 	const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
-			// 	// The modules will be undefined whilst loading, so this will return `undefined`.
-			// 	expect( isActive ).toEqual( undefined );
+			it( 'returns false if a module is not active', async () => {
+				// Optimize in our fixtures is not active.
+				const slug = 'optimize';
+				const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isActive ).toEqual( undefined );
 
-			// 	// Wait for loading to complete.
-			// 	await subscribeUntil( registry, () => registry
-			// 		.select( STORE_NAME )
-			// 		.hasFinishedResolution( 'getModules' )
-			// 	);
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
 
-			// 	const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
+				const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
 
-			// 	expect( fetchMock ).toHaveFetchedTimes( 1 );
-			// 	expect( isActiveLoaded ).toEqual( false );
-			// } );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isActiveLoaded ).toEqual( false );
+			} );
 
-			// it( 'returns null if a module does not exist', async () => {
-			// 	const slug = 'not-a-real-module';
-			// 	const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
-			// 	// The modules will be undefined whilst loading, so this will return `undefined`.
-			// 	expect( isActive ).toEqual( undefined );
+			it( 'returns null if a module does not exist', async () => {
+				const slug = 'not-a-real-module';
+				const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isActive ).toEqual( undefined );
 
-			// 	// Wait for loading to complete.
-			// 	await subscribeUntil( registry, () => registry
-			// 		.select( STORE_NAME )
-			// 		.hasFinishedResolution( 'getModules' )
-			// 	);
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
 
-			// 	const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
+				const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
 
-			// 	expect( fetchMock ).toHaveFetchedTimes( 1 );
-			// 	expect( isActiveLoaded ).toEqual( null );
-			// } );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isActiveLoaded ).toEqual( null );
+			} );
 
-			// it( 'returns undefined if modules is not yet available', async () => {
-			// 	// This triggers a network request, so ignore the error.
-			// 	muteConsole( 'error' );
-			// 	const isActive = registry.select( STORE_NAME ).isModuleActive( 'analytics' );
+			it( 'returns undefined if modules is not yet available', async () => {
+				// This triggers a network request, so ignore the error.
+				muteConsole( 'error' );
+				const isActive = registry.select( STORE_NAME ).isModuleActive( 'analytics' );
 
-			// 	expect( isActive ).toEqual( undefined );
-			// } );
+				expect( isActive ).toEqual( undefined );
+			} );
 		} );
 	} );
 } );

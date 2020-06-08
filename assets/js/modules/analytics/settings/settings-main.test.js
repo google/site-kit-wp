@@ -36,10 +36,6 @@ describe( 'SettingsMain', () => {
 		anonymizeIP: true,
 	};
 
-	afterEach( () => {
-
-	} );
-
 	it( 'rolls back settings if settings have changed and is not editing', async () => {
 		fetchMock.get(
 			/accounts-properties-profiles/,

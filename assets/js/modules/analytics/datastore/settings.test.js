@@ -156,6 +156,7 @@ describe( 'modules/analytics settings', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					( url, opts ) => {
 						const { data } = JSON.parse( opts.body );
+						// Return the same settings passed to the API.
 						return { body: data, status: 200 };
 					}
 				);
@@ -230,6 +231,7 @@ describe( 'modules/analytics settings', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					( url, opts ) => {
 						const { data } = JSON.parse( opts.body );
+						// Return the same settings passed to the API.
 						return { body: data, status: 200 };
 					}
 				);
@@ -250,7 +252,6 @@ describe( 'modules/analytics settings', () => {
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( fetchMock ).not.toHaveFetchedTimes( 0 );
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					{ body: { data: validSettings } },

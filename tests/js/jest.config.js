@@ -16,9 +16,6 @@ module.exports = {
 		'html',
 		'text-summary',
 	],
-	globals: {
-		fetchMock: '',
-	},
 	rootDir: '../../',
 	transform: {
 		'^.+\\.[jt]sx?$': '<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',

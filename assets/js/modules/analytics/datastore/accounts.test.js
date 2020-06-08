@@ -30,7 +30,6 @@ import {
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
-import fetchMock from 'fetch-mock';
 
 describe( 'modules/analytics accounts', () => {
 	let registry;
