@@ -326,9 +326,13 @@ export const selectors = {
 	 *                   Returns `undefined` if not resolved yet.
 	 */
 	getExistingTag( state ) {
-		const { existingTag } = state;
+		// Use Data.select('core/site').getHTMLforURL( url ) to get HTML
 
-		return existingTag;
+		// Use getExistingTagURLs() and tagMatchers (from this modules utils)
+
+		// Internally, use something like extractExistingTag( html, tagMatchers ) to check for existing tags and return them if found.
+
+		// The getExistingTag() selector should continue to add the query params {tagverify: 1, timestamp: Date.now()} to the URLs it uses, as in the existing approach
 	},
 
 	/**
