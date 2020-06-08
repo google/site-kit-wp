@@ -22,7 +22,7 @@
  * @param {string} dateString String representing the date in the format of YYYYMMDD
  * @return {Date} Objet representing the date passed.
  */
-const convertDateStringToDateObject = ( dateString ) => {
+const parseDate = ( dateString ) => {
 	if ( dateString.match( /[0-9]{8}/ ) ) {
 		const year = dateString.slice( 0, 4 );
 		const monthIndex = Number( dateString.slice( 4, 6 ) ) - 1;
@@ -32,4 +32,4 @@ const convertDateStringToDateObject = ( dateString ) => {
 	return false;
 };
 
-export default convertDateStringToDateObject;
+export default parseDate;

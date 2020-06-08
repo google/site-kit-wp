@@ -19,19 +19,19 @@
 /**
  * Internal dependencies
  */
-import convertDateStringToDateObject from './convertDateStringToDateObject';
+import parseDate from './parseDate';
 
 describe( 'convertDateStringToDateObject', () => {
 	it( 'converts a date string formatted as YYYYMMDD', () => {
 		const dateToConvert = '20200608';
-		const convertedDate = convertDateStringToDateObject( dateToConvert );
+		const convertedDate = parseDate( dateToConvert );
 		expect( convertedDate.getFullYear() ).toBe( 2020 );
 		expect( convertedDate.getMonth() ).toBe( 5 ); // Months are zero-indexed.
 		expect( convertedDate.getDate() ).toBe( 8 );
 	} );
 	it( 'returns false when passed an incorrect date', () => {
 		const dateToConvert = 'notadate';
-		const convertedDate = convertDateStringToDateObject( dateToConvert );
+		const convertedDate = parseDate( dateToConvert );
 		expect( convertedDate ).toBe( false );
 	} );
 } );
