@@ -38,12 +38,15 @@ const fetchGetPropertiesProfilesStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state ) => {
+	reducerCallback: ( state, response, { accountID } ) => {
 		// Actual properties, profiles are set by resolver with custom logic,
 		// hence here we just set a flag.
 		return {
 			...state,
-			isAwaitingPropertiesProfilesCompletion: true,
+			isAwaitingPropertiesProfilesCompletion: {
+				...state.isAwaitingPropertiesProfilesCompletion,
+				[ accountID ]: true,
+			},
 		};
 	},
 	argsToParams: ( accountID ) => {
@@ -83,7 +86,7 @@ const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 
 const BASE_INITIAL_STATE = {
 	properties: {},
-	isAwaitingPropertiesProfilesCompletion: false,
+	isAwaitingPropertiesProfilesCompletion: {},
 	matchedProperty: undefined,
 };
 
@@ -182,9 +185,11 @@ const baseActions = {
 		};
 	},
 
-	receivePropertiesProfilesCompletion() {
+	receivePropertiesProfilesCompletion( accountID ) {
+		invariant( accountID, 'accountID is required.' );
+
 		return {
-			payload: {},
+			payload: { accountID },
 			type: RECEIVE_PROPERTIES_PROFILES_COMPLETION,
 		};
 	},
@@ -240,9 +245,14 @@ const baseReducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_PROPERTIES_PROFILES_COMPLETION: {
+			const { accountID } = payload;
+
 			return {
 				...state,
-				isAwaitingPropertiesProfilesCompletion: false,
+				isAwaitingPropertiesProfilesCompletion: {
+					...state.isAwaitingPropertiesProfilesCompletion,
+					[ accountID ]: false,
+				},
 			};
 		}
 
@@ -262,7 +272,7 @@ const baseResolvers = {
 		let properties = registry.select( STORE_NAME ).getProperties( accountID );
 
 		// Only fetch properties if there are none in the store for the given account.
-		if ( ! properties ) {
+		if ( properties === undefined ) {
 			const { response, error } = yield fetchGetPropertiesProfilesStore.actions.fetchGetPropertiesProfiles( accountID );
 
 			if ( response ) {
@@ -279,7 +289,7 @@ const baseResolvers = {
 					dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
 				}
 
-				dispatch( STORE_NAME ).receivePropertiesProfilesCompletion();
+				dispatch( STORE_NAME ).receivePropertiesProfilesCompletion( accountID );
 
 				( { properties } = response );
 			}
@@ -373,7 +383,7 @@ const baseSelectors = {
 	 */
 	isDoingGetProperties: createRegistrySelector( ( select ) => ( state, accountID ) => {
 		// Check if dispatch calls right after fetching are still awaiting.
-		if ( state.isAwaitingPropertiesProfilesCompletion ) {
+		if ( accountID && state.isAwaitingPropertiesProfilesCompletion[ accountID ] ) {
 			return true;
 		}
 

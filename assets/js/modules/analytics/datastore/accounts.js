@@ -208,7 +208,7 @@ const baseResolvers = {
 		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 
 		// Only fetch accounts if there are none in the store.
-		if ( ! existingAccounts ) {
+		if ( existingAccounts === undefined ) {
 			yield tagActions.waitForExistingTag();
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
 			const { response } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
