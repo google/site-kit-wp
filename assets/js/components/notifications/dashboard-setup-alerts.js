@@ -49,7 +49,7 @@ class DashboardSetupAlerts extends Component {
 			},
 		};
 
-		const { canManageOptions } = global.googlesitekit.permissions;
+		const { canManageOptions } = global._googlesitekitLegacyData.permissions;
 
 		switch ( notification ) {
 			case 'authentication_success':
@@ -80,7 +80,7 @@ class DashboardSetupAlerts extends Component {
 							title={ sprintf( __( 'Congrats on completing the setup for %s!', 'google-site-kit' ), winData.setupTitle ) }
 							description={ winData.description }
 							handleDismiss={ () => {} }
-							winImage={ global.googlesitekit.admin.assetsRoot + 'images/rocket.png' }
+							winImage={ global._googlesitekitLegacyData.admin.assetsRoot + 'images/rocket.png' }
 							dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 							format="large"
 							type="win-success"

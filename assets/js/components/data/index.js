@@ -271,9 +271,9 @@ const dataAPI = {
 
 		lazilySetupLocalCache();
 
-		Object.keys( global.googlesitekit.admin.datacache ).forEach( ( key ) => {
+		Object.keys( global._googlesitekitLegacyData.admin.datacache ).forEach( ( key ) => {
 			if ( 0 === key.indexOf( groupPrefix + '::' ) || key === groupPrefix ) {
-				delete global.googlesitekit.admin.datacache[ key ];
+				delete global._googlesitekitLegacyData.admin.datacache[ key ];
 			}
 		} );
 

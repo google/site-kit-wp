@@ -146,7 +146,7 @@ class PostSearcher extends Component {
 	}
 
 	render() {
-		const { modules } = global.googlesitekit;
+		const { modules } = global._googlesitekitLegacyData;
 
 		// Set column width full if Analytics active, half otherwise.
 		const classNameForColumn = modules.analytics && modules.analytics.active

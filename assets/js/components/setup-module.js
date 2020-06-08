@@ -97,7 +97,7 @@ class SetupModule extends Component {
 
 		let blockedByParentModule = false;
 
-		const { modules } = global.googlesitekit;
+		const { modules } = global._googlesitekitLegacyData;
 
 		// Check if required module is active.
 		if ( modules[ slug ].required.length ) {

@@ -34,7 +34,7 @@ import Link from '../link';
 
 class DashboardSplashService extends Component {
 	render() {
-		const imagePath = global.googlesitekit.admin.assetsRoot + 'images/';
+		const imagePath = global._googlesitekitLegacyData.admin.assetsRoot + 'images/';
 		const { image, title, content, link, linkText, opposite } = this.props;
 
 		return (

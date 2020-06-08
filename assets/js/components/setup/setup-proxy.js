@@ -44,9 +44,9 @@ class SetupUsingProxy extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { proxySetupURL, siteURL } = global.googlesitekit.admin;
-		const { isSiteKitConnected, isResettable, errorMessage } = global.googlesitekit.setup;
-		const { canSetup } = global.googlesitekit.permissions;
+		const { proxySetupURL, siteURL } = global._googlesitekitLegacyData.admin;
+		const { isSiteKitConnected, isResettable, errorMessage } = global._googlesitekitLegacyData.setup;
+		const { canSetup } = global._googlesitekitLegacyData.permissions;
 
 		this.state = {
 			canSetup,

@@ -32,8 +32,8 @@ import NotificationCounter from '../notifications/notification-counter';
 export class ActivationApp extends Component {
 	render() {
 		const { proxySetupURL, splashURL } = global._googlesitekitBaseData;
-		const { canViewDashboard } = global.googlesitekit.permissions;
-		const { dashboardPermalink } = global.googlesitekit;
+		const { canViewDashboard } = global._googlesitekitLegacyData.permissions;
+		const { dashboardPermalink } = global._googlesitekitLegacyData;
 
 		let buttonURL = proxySetupURL || splashURL;
 		let buttonLabel = __( 'Start setup', 'google-site-kit' );

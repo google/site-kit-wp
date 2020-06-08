@@ -149,7 +149,7 @@ class SettingsModule extends Component {
 	// Find modules that depend on a module.
 	getDependentModules() {
 		const { slug } = this.props;
-		const { modules } = global.googlesitekit;
+		const { modules } = global._googlesitekitLegacyData;
 		const dependants = {};
 
 		if ( modules[ slug ].dependants ) {
