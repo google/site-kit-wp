@@ -32,6 +32,7 @@ import { createRegistry } from '@wordpress/data';
 import API from 'googlesitekit-api';
 import {
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../tests/js/utils';
@@ -180,7 +181,7 @@ describe( 'createNotificationsStore store', () => {
 
 		describe( 'fetchGetNotifications', () => {
 			it( 'does not require any params', () => {
-				muteConsole( 'error' ); // Ignore the API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( () => {
 					dispatch.fetchGetNotifications();
 				} ).not.toThrow();
@@ -248,7 +249,7 @@ describe( 'createNotificationsStore store', () => {
 				// the selector has run in this test. This ensures `undefined` is not
 				// returned when server notifications haven't loaded yet, but client
 				// notifications have been dispatched.
-				muteConsole( 'error' ); // Ignore the API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toEqual( [ notification ] );
 			} );
 
