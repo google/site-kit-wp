@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import DefaultModuleSettings from '../components/default-module-settings';
 
 const { createRegistrySelector } = Data;
 
@@ -40,6 +41,7 @@ const FETCH_MODULES = 'FETCH_MODULES';
 const FINISH_FETCH_MODULES = 'FINISH_FETCH_MODULES';
 const CATCH_FETCH_MODULES = 'CATCH_FETCH_MODULES';
 const RECEIVE_MODULES = 'RECEIVE_MODULES';
+const REGISTER_MODULE = 'REGISTER_MODULE';
 
 export const INITIAL_STATE = {
 	modules: undefined,
@@ -188,6 +190,38 @@ export const actions = {
 			type: RECEIVE_MODULES,
 		};
 	},
+
+	/**
+	 * @param {string}          slug                         Module slug.
+	 * @param {Object}          settings                     Module settings.
+	 * @param {string}          [settings.name]              Optional. Module name. Default is the slug.
+	 * @param {string}          [settings.description]       Optional. Module description. Default empty string.
+	 * @param {string}          [settings.icon]              Optional. Module icon. Default empty string.
+	 * @param {number}          [settings.order]             Optional. Numeric indicator for module order. Default 10.
+	 * @param {string}          [settings.homepage]          Optional. Module homepage URL. Default empty string.
+	 * @param {boolean}         [settings.internal]          Optional. Whether the module is considered internal. Default false.
+	 * @param {React.Component} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
+	 * @return {Object} Redux-style action.
+	 */
+	registerModule( slug, settings = {} ) {
+		invariant( slug, 'module slug is required' );
+
+		const mergedModuleSettings = {
+			name: slug,
+			description: null,
+			icon: null,
+			order: 10,
+			homepage: null,
+			internal: false,
+			settingsComponent: DefaultModuleSettings,
+			...settings,
+		};
+
+		return {
+			payload: { slug, settings: mergedModuleSettings },
+			type: REGISTER_MODULE,
+		};
+	},
 };
 
 export const controls = {
@@ -268,6 +302,18 @@ export const reducer = ( state, { type, payload } ) => {
 				...state,
 				error: payload.error,
 				isFetchingModules: false,
+			};
+		}
+
+		case REGISTER_MODULE: {
+			const { modules: existingModules } = state;
+			const { slug, settings } = payload;
+			return {
+				...state,
+				modules: {
+					...existingModules,
+					[ slug ]: settings,
+				},
 			};
 		}
 
