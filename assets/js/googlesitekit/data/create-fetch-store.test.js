@@ -35,7 +35,7 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../tests/js/utils';
 import { createFetchStore } from './create-fetch-store';
 
 const STORE_NAME = 'test/some-data';
