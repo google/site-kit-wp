@@ -168,7 +168,10 @@ describe( 'createNotificationsStore store', () => {
 		describe( 'fetchNotifications', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
-					fetchMock.get( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, { body: {}, status: 200 } );
+					fetchMock.get(
+						/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+						{ body: [], status: 200 }
+					);
 					dispatch.fetchNotifications();
 				} ).not.toThrow();
 			} );
@@ -226,7 +229,7 @@ describe( 'createNotificationsStore store', () => {
 				const notification = { id: 'added_notification' };
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
-					{ body: {}, status: 200 }
+					{ body: [], status: 200 }
 				);
 				dispatch.addNotification( notification );
 

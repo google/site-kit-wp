@@ -120,7 +120,7 @@ describe( 'modules/analytics accounts', () => {
 
 		describe( 'resetAccounts', () => {
 			it( 'sets accounts and related values back to their initial values', async () => {
-				fetchMock.get( { query: { tagverify: '1' } }, { body: {}, status: 200 } );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 				registry.dispatch( STORE_NAME ).setSettings( {
 					accountID: '12345',
 					propertyID: 'UA-12345-1',

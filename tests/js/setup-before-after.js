@@ -1,7 +1,9 @@
 import fetchMockJest from 'fetch-mock-jest';
 
-// Set Jest global fetchMock so we don't have to import fetchMock in every test.
-fetchMock = fetchMockJest;
+// Set fetchMock global so we don't have to import fetchMock in every test.
+// This global is instantiated in tests/js/setup-globals.js.
+// It is re-set here since fetch-mock-jest must be imported during Jest's `setupFilesAfterEnv` or later.
+global.fetchMock = fetchMockJest;
 
 beforeEach( () => {
 	global.console.error.mockClear();
