@@ -107,7 +107,7 @@ storiesOf( 'Search Console Module/Settings', module )
 		filterSearchConsoleSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 		};
 
 		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
@@ -116,7 +116,7 @@ storiesOf( 'Search Console Module/Settings', module )
 		filterSearchConsoleSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				propertyID: 'http://example.com/',
 			} );
 		};

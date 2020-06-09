@@ -28,66 +28,38 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { isValidAccountID } from '../util';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 // Actions
-const FETCH_ALERTS = 'FETCH_ALERTS';
-const START_FETCH_ALERTS = 'START_FETCH_ALERTS';
-const FINISH_FETCH_ALERTS = 'FINISH_FETCH_ALERTS';
-const CATCH_FETCH_ALERTS = 'CATCH_FETCH_ALERTS';
-
-const RECEIVE_ALERTS = 'RECEIVE_ALERTS';
 const RESET_ALERTS = 'RESET_ALERTS';
 
-export const INITIAL_STATE = {
-	isFetchingAlerts: {},
+const fetchGetAlertsStore = createFetchStore( {
+	baseName: 'getAlerts',
+	controlCallback: ( { accountID } ) => {
+		return API.get( 'modules', 'adsense', 'alerts', { accountID }, {
+			useCache: false,
+		} );
+	},
+	reducerCallback: ( state, alerts, { accountID } ) => {
+		return {
+			...state,
+			alerts: {
+				...state.alerts,
+				[ accountID ]: [ ...alerts ],
+			},
+		};
+	},
+	argsToParams: ( accountID ) => {
+		invariant( accountID, 'accountID is required.' );
+		return { accountID };
+	},
+} );
+
+const BASE_INITIAL_STATE = {
 	alerts: {},
 };
 
-export const actions = {
-	*fetchAlerts( accountID ) {
-		invariant( accountID, 'accountID is required.' );
-
-		let response, error;
-
-		yield {
-			payload: { accountID },
-			type: START_FETCH_ALERTS,
-		};
-
-		try {
-			response = yield {
-				payload: { accountID },
-				type: FETCH_ALERTS,
-			};
-
-			yield actions.receiveAlerts( response, { accountID } );
-
-			yield {
-				payload: { accountID },
-				type: FINISH_FETCH_ALERTS,
-			};
-		} catch ( err ) {
-			error = err;
-
-			yield {
-				payload: { error, accountID },
-				type: CATCH_FETCH_ALERTS,
-			};
-		}
-
-		return { response, error };
-	},
-
-	receiveAlerts( alerts, { accountID } ) {
-		invariant( Array.isArray( alerts ), 'alerts must be an array.' );
-		invariant( accountID, 'accountID is required.' );
-
-		return {
-			payload: { accountID, alerts },
-			type: RECEIVE_ALERTS,
-		};
-	},
-
+const baseActions = {
 	*resetAlerts() {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 
@@ -101,65 +73,8 @@ export const actions = {
 	},
 };
 
-export const controls = {
-	[ FETCH_ALERTS ]: ( { payload: { accountID } } ) => {
-		return API.get( 'modules', 'adsense', 'alerts', { accountID }, {
-			useCache: false,
-		} );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
+const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
-		case START_FETCH_ALERTS: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isFetchingAlerts: {
-					...state.isFetchingAlerts,
-					[ accountID ]: true,
-				},
-			};
-		}
-
-		case RECEIVE_ALERTS: {
-			const { accountID, alerts } = payload;
-
-			return {
-				...state,
-				alerts: {
-					...state.alerts,
-					[ accountID ]: [ ...alerts ],
-				},
-			};
-		}
-
-		case FINISH_FETCH_ALERTS: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isFetchingAlerts: {
-					...state.isFetchingAlerts,
-					[ accountID ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_ALERTS: {
-			const { accountID, error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingAlerts: {
-					...state.isFetchingAlerts,
-					[ accountID ]: false,
-				},
-			};
-		}
-
 		case RESET_ALERTS: {
 			const {
 				accountStatus,
@@ -186,7 +101,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
+const baseResolvers = {
 	*getAlerts( accountID ) {
 		if ( undefined === accountID || ! isValidAccountID( accountID ) ) {
 			return;
@@ -201,11 +116,11 @@ export const resolvers = {
 			return;
 		}
 
-		yield actions.fetchAlerts( accountID );
+		yield fetchGetAlertsStore.actions.fetchGetAlerts( accountID );
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets all Google AdSense alerts for this account.
 	 *
@@ -226,11 +141,22 @@ export const selectors = {
 	},
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetAlertsStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

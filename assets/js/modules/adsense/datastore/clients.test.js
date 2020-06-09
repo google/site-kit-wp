@@ -38,7 +38,6 @@ import * as fixtures from './__fixtures__';
 describe( 'modules/adsense clients', () => {
 	let apiFetchSpy;
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -46,7 +45,6 @@ describe( 'modules/adsense clients', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
@@ -98,7 +96,7 @@ describe( 'modules/adsense clients', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID } );
 
 				const clients = registry.select( STORE_NAME ).getClients( accountID );
 
@@ -130,9 +128,7 @@ describe( 'modules/adsense clients', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getClients( fakeAccountID );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingClients[ fakeAccountID ] === false,
+					() => registry.select( STORE_NAME ).isFetchingGetClients( fakeAccountID ) === false,
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
