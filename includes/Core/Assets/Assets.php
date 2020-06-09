@@ -97,37 +97,48 @@ final class Assets {
 		add_action( 'admin_enqueue_scripts', $register_callback );
 		add_action( 'wp_enqueue_scripts', $register_callback );
 
+		// All other asset-related general logic should only be active when the
+		// current user can actually use Site Kit (which only is so if they can
+		// authenticate).
 		add_action(
-			'admin_enqueue_scripts',
+			'wp_loaded',
 			function() {
 				if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
 					return;
 				}
-				$this->enqueue_minimal_admin_script();
+
+				$this->add_amp_dev_mode_attributes( $assets );
+
+				add_action(
+					'admin_enqueue_scripts',
+					function() {
+						$this->enqueue_minimal_admin_script();
+					}
+				);
+
+				$scripts_print_callback = function() {
+					$scripts = wp_scripts();
+					$this->run_before_print_callbacks( $scripts, $scripts->queue );
+				};
+				add_action( 'wp_print_scripts', $scripts_print_callback );
+				add_action( 'admin_print_scripts', $scripts_print_callback );
+
+				$styles_print_callback = function() {
+					$styles = wp_styles();
+					$this->run_before_print_callbacks( $styles, $styles->queue );
+				};
+				add_action( 'wp_print_styles', $styles_print_callback );
+				add_action( 'admin_print_styles', $styles_print_callback );
+
+				add_filter(
+					'script_loader_tag',
+					function( $tag, $handle ) {
+						return $this->add_async_defer_attribute( $tag, $handle );
+					},
+					10,
+					2
+				);
 			}
-		);
-
-		$scripts_print_callback = function() {
-			$scripts = wp_scripts();
-			$this->run_before_print_callbacks( $scripts, $scripts->queue );
-		};
-		add_action( 'wp_print_scripts', $scripts_print_callback );
-		add_action( 'admin_print_scripts', $scripts_print_callback );
-
-		$styles_print_callback = function() {
-			$styles = wp_styles();
-			$this->run_before_print_callbacks( $styles, $styles->queue );
-		};
-		add_action( 'wp_print_styles', $styles_print_callback );
-		add_action( 'admin_print_styles', $styles_print_callback );
-
-		add_filter(
-			'script_loader_tag',
-			function( $tag, $handle ) {
-				return $this->add_async_defer_attribute( $tag, $handle );
-			},
-			10,
-			2
 		);
 	}
 
@@ -277,8 +288,6 @@ final class Assets {
 		foreach ( $assets as $asset ) {
 			$asset->register();
 		}
-
-		$this->add_amp_dev_mode_attributes( $assets );
 	}
 
 	/**
