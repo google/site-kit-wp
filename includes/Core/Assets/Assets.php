@@ -107,7 +107,7 @@ final class Assets {
 					return;
 				}
 
-				$this->add_amp_dev_mode_attributes( $assets );
+				$this->add_amp_dev_mode_attributes( $this->get_assets() );
 
 				add_action(
 					'admin_enqueue_scripts',
