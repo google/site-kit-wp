@@ -1,12 +1,30 @@
 /**
+ * Admin tracking opt in/out e2e tests.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * WordPress dependencies
  */
-import { activatePlugin, deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
-import { resetSiteKit, setSearchConsoleProperty } from '../utils';
+import { resetSiteKit, setSearchConsoleProperty, deactivateUtilityPlugins } from '../utils';
 
 async function toggleOptIn() {
 	await Promise.all( [
@@ -25,7 +43,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		await page.waitForSelector( '.mdc-tab-bar button.mdc-tab' );
 		await expect( page ).toMatchElement( 'button.mdc-tab', { text: 'Admin Settings' } );
 
-		await page.waitFor( 80 ); // I am not sure what but we need this delay before clicking on the button.
+		await page.waitFor( 250 ); // Delay the next steps.
 
 		// Click on Admin Settings Tab.
 		await Promise.all( [
@@ -36,8 +54,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 	afterEach( async () => {
 		await resetSiteKit();
-		await deactivatePlugin( 'e2e-tests-proxy-auth-plugin' );
-		await deactivatePlugin( 'e2e-tests-site-verification-plugin' );
+		await deactivateUtilityPlugins();
 	} );
 
 	it( 'should be opted-out by default', async () => {

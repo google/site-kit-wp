@@ -20,19 +20,6 @@
  * WordPress dependencies
  */
 import { deactivatePlugin, activatePlugin } from '@wordpress/e2e-test-utils';
-/**
- * Activation helpers are only necessary pre-1.0 release.
- * WordPress populates the `data-slug` attribute from the
- * `slug` returned by the wp.org plugin API. For plugins
- * that are not available on the .org repo, the slug will be
- * generated from the plugin's name.
- *
- * For this reason, we fallback to the title-based slug if the
- * expected "official" slug is not found.
- *
- * Once the plugin is publicly available, these helpers can be removed
- * and consuming code can use `google-site-kit` variations in their places.
- */
 
 describe( 'Plugin Activation Notice', () => {
 	describe( 'When Javascript is enabled', () => {
