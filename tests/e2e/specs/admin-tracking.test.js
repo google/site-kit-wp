@@ -24,7 +24,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { resetSiteKit, setSearchConsoleProperty, deactivateUtilityPlugins } from '../utils';
+import { resetSiteKit, setSearchConsoleProperty, deactivateUtilityPlugins, pageWait } from '../utils';
 
 async function toggleOptIn() {
 	await Promise.all( [
@@ -43,7 +43,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		await page.waitForSelector( '.mdc-tab-bar button.mdc-tab' );
 		await expect( page ).toMatchElement( 'button.mdc-tab', { text: 'Admin Settings' } );
 
-		await page.waitFor( 250 ); // Delay the next steps.
+		await pageWait(); // Delay the next steps.
 
 		// Click on Admin Settings Tab.
 		await Promise.all( [
