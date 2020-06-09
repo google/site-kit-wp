@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
+import { createTestRegistry, unsubscribeFromAll, muteFetch } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user disconnect', () => {
@@ -27,14 +27,7 @@ describe( 'core/user disconnect', () => {
 	const coreUserDataDisconnectEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/disconnect/;
 
 	beforeEach( () => {
-		// Create a mock to avoid triggering a network request error.
-		// The return value is irrelevant to the test.
-		fetch
-			.doMockOnceIf( coreUserDataDisconnectEndpointRegExp )
-			.mockResponseOnce(
-				JSON.stringify( {} ),
-				{ status: 200 }
-			);
+		muteFetch( coreUserDataDisconnectEndpointRegExp );
 		registry = createTestRegistry();
 	} );
 
