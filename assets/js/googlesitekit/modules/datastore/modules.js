@@ -31,7 +31,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
-// Controls
+// Actions.
 const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
 
 const fetchGetModulesStore = createFetchStore( {
