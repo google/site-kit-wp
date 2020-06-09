@@ -87,6 +87,17 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 };
 
 /**
+ * Mutes a fetch request to the given URL once.
+ *
+ * @since n.e.x.t
+ *
+ * @param {RegExp} urlMatcher Regular expression for matching the request URL.
+ */
+export const muteFetch = ( urlMatcher ) => {
+	fetch.doMockOnceIf( urlMatcher, JSON.stringify( {} ), { status: 200 } );
+};
+
+/**
  * Register all Site Kit stores on a registry.
  *
  * Use this to register every available Site Kit store on a registry.
