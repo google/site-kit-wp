@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -109,6 +110,12 @@ describe( 'core/modules modules', () => {
 						JSON.stringify( responseWithOptimizeEnabled ),
 						{ status: 200 }
 					);
+				fetch
+					.doMockOnceIf( /^\/google-site-kit\/v1\/core\/user\/data\/authentication/ )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 
 				registry.dispatch( STORE_NAME ).activateModule( slug );
 
@@ -126,10 +133,15 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
+				// Ensure the request to re-fetch authentication has a timestamp parameter.
+				expect(
+					getQueryArg( fetch.mock.calls[ 3 ][ 0 ], 'timestamp' )
+				).not.toBe( undefined );
+
 				// Optimize should be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
 
-				expect( fetch ).toHaveBeenCalledTimes( 3 );
+				expect( fetch ).toHaveBeenCalledTimes( 4 );
 				expect( isActiveAfter ).toEqual( true );
 			} );
 
@@ -171,6 +183,12 @@ describe( 'core/modules modules', () => {
 						JSON.stringify( response ),
 						{ status: 500 }
 					);
+				fetch
+					.doMockOnceIf( /^\/google-site-kit\/v1\/core\/user\/data\/authentication/ )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 
 				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).activateModule( slug );
@@ -194,7 +212,7 @@ describe( 'core/modules modules', () => {
 
 				// The third request to update the modules shouldn't be called, because the
 				// activation request failed.
-				expect( fetch ).toHaveBeenCalledTimes( 2 );
+				expect( fetch ).toHaveBeenCalledTimes( 3 );
 				expect( isActiveAfter ).toEqual( false );
 			} );
 		} );
@@ -248,6 +266,12 @@ describe( 'core/modules modules', () => {
 						JSON.stringify( responseWithAnalyticsDisabled ),
 						{ status: 200 }
 					);
+				fetch
+					.doMockOnceIf( /^\/google-site-kit\/v1\/core\/user\/data\/authentication/ )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 
 				registry.dispatch( STORE_NAME ).deactivateModule( slug );
 
@@ -265,10 +289,15 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
+				// Ensure the request to re-fetch authentication has a timestamp parameter.
+				expect(
+					getQueryArg( fetch.mock.calls[ 3 ][ 0 ], 'timestamp' )
+				).not.toBe( undefined );
+
 				// Analytics should no longer be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
 
-				expect( fetch ).toHaveBeenCalledTimes( 3 );
+				expect( fetch ).toHaveBeenCalledTimes( 4 );
 				expect( isActiveAfter ).toEqual( false );
 			} );
 
@@ -310,6 +339,12 @@ describe( 'core/modules modules', () => {
 						JSON.stringify( response ),
 						{ status: 500 }
 					);
+				fetch
+					.doMockOnceIf( /^\/google-site-kit\/v1\/core\/user\/data\/authentication/ )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 
 				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).deactivateModule( slug );
@@ -333,7 +368,7 @@ describe( 'core/modules modules', () => {
 
 				// The third request to update the modules shouldn't be called, because the
 				// deactivation request failed.
-				expect( fetch ).toHaveBeenCalledTimes( 2 );
+				expect( fetch ).toHaveBeenCalledTimes( 3 );
 				expect( isActiveAfter ).toEqual( true );
 			} );
 		} );
