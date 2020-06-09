@@ -26,7 +26,6 @@ describe( 'setting up the Analytics module with no existing account and no exist
 							'code=valid-test-code',
 							'e2e-site-verification=1',
 							'scope=TEST_ALL_SCOPES',
-							'e2e-proxy-auth=false',
 						].join( '&' ) ),
 					},
 				} );

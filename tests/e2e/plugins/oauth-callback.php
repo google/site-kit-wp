@@ -12,6 +12,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Plugin;
@@ -28,6 +29,7 @@ add_action(
 
 		$context      = Plugin::instance()->context();
 		$user_options = new User_Options( $context );
+		$auth         = new Authentication( $context );
 
 		if ( filter_input( INPUT_GET, 'googlesitekit_connect', FILTER_VALIDATE_BOOLEAN ) ) {
 			// Allow this case to be handled by default implementation.
@@ -47,7 +49,7 @@ add_action(
 		$redirect_url        = $user_options->get( OAuth_Client::OPTION_REDIRECT_URL );
 		$success_redirect    = $redirect_url ?: $context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
 		$plugins_to_activate = array(
-			sprintf( '%s/%s-auth.php', __DIR__, empty( $_GET['e2e-proxy-auth'] ) ? 'proxy' : 'gcp' ),
+			sprintf( '%s/%s-auth.php', __DIR__, $auth->credentials()->using_proxy() ? 'proxy' : 'gcp' ),
 		);
 
 		if ( ! empty( $_GET['e2e-site-verification'] ) ) {
