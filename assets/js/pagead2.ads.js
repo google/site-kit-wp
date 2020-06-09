@@ -10,8 +10,8 @@
  * be dispatched.
  */
 
-if ( global.googlesitekit === undefined ) {
-	global.googlesitekit = {};
+if ( global._googlesitekitLegacyData === undefined ) {
+	global._googlesitekitLegacyData = {};
 }
 
 global._googlesitekitLegacyData.canAdsRun = true;

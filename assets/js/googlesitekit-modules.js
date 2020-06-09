@@ -23,15 +23,15 @@
  */
 import Modules from './googlesitekit/modules';
 
-if ( typeof global._googlesitekitLegacyData === 'undefined' ) {
-	global._googlesitekitLegacyData = {};
+if ( typeof global._googlesitekit === 'undefined' ) {
+	global._googlesitekit = {};
 }
 
-if ( typeof global._googlesitekitLegacyData.modules === 'undefined' ) {
-	global._googlesitekitLegacyData.modules = Modules;
-} else { // TODO: Remove this once the old _googlesitekitLegacyData.modules has been phased out.
-	global._googlesitekitLegacyData.modules = {
-		...global._googlesitekitLegacyData.modules,
+if ( typeof global._googlesitekit.modules === 'undefined' ) {
+	global._googlesitekit.modules = Modules;
+} else {
+	global._googlesitekit.modules = {
+		...global._googlesitekit.modules,
 		...Modules,
 	};
 }
