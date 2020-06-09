@@ -28,9 +28,10 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/site connection', () => {
@@ -63,9 +64,9 @@ describe( 'core/site connection', () => {
 
 	describe( 'actions', () => {
 		describe( 'fetchGetConnection', () => {
-			muteConsole( 'error' ); // Ignore the API fetch failure here.
 			it( 'does not require any params', () => {
 				expect( () => {
+					muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 					registry.dispatch( STORE_NAME ).fetchGetConnection();
 				} ).not.toThrow();
 			} );
