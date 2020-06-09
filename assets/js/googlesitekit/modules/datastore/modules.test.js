@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -130,6 +131,11 @@ describe( 'core/modules modules', () => {
 						active: true,
 					}
 				);
+
+				// Ensure the request to re-fetch authentication has a timestamp parameter.
+				expect(
+					getQueryArg( fetch.mock.calls[ 3 ][ 0 ], 'timestamp' )
+				).not.toBe( undefined );
 
 				// Optimize should be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
@@ -280,6 +286,11 @@ describe( 'core/modules modules', () => {
 						active: false,
 					}
 				);
+
+				// Ensure the request to re-fetch authentication has a timestamp parameter.
+				expect(
+					getQueryArg( fetch.mock.calls[ 3 ][ 0 ], 'timestamp' )
+				).not.toBe( undefined );
 
 				// Analytics should no longer be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );

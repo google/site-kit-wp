@@ -211,7 +211,7 @@ export const controls = {
 		return API.get( 'core', 'modules', 'list', null, { useCache: false } );
 	},
 	[ REFETCH_AUTHENICATION ]: () => {
-		return API.get( 'core', 'user', 'authentication', null, { useCache: false, timestamp: Date.now() } );
+		return API.get( 'core', 'user', 'authentication', { timestamp: Date.now() }, { useCache: false } );
 	},
 };
 
