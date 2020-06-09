@@ -23,15 +23,15 @@
  */
 import Modules from './googlesitekit/modules';
 
-if ( typeof global._googlesitekit === 'undefined' ) {
-	global._googlesitekit = {};
+if ( typeof global.googlesitekit === 'undefined' ) {
+	global.googlesitekit = {};
 }
 
-if ( typeof global._googlesitekit.modules === 'undefined' ) {
-	global._googlesitekit.modules = Modules;
+if ( typeof global.googlesitekit.modules === 'undefined' ) {
+	global.googlesitekit.modules = Modules;
 } else {
-	global._googlesitekit.modules = {
-		...global._googlesitekit.modules,
+	global.googlesitekit.modules = {
+		...global.googlesitekit.modules,
 		...Modules,
 	};
 }

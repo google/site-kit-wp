@@ -21,12 +21,12 @@
  */
 import Widgets from './googlesitekit/widgets';
 
-if ( typeof global._googlesitekit === 'undefined' ) {
-	global._googlesitekit = {};
+if ( typeof global.googlesitekit === 'undefined' ) {
+	global.googlesitekit = {};
 }
 
-if ( global._googlesitekit.widgets === undefined ) {
-	global._googlesitekit.widgets = Widgets;
+if ( global.googlesitekit.widgets === undefined ) {
+	global.googlesitekit.widgets = Widgets;
 }
 
 // This is only exported for Jest and is not used in production.
