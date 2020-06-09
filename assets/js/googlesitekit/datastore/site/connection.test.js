@@ -223,8 +223,7 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 				const isConnected = select.isConnected();
 
 				expect( isConnected ).toEqual( undefined );
@@ -288,8 +287,7 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 				const isResettable = select.isResettable();
 
 				expect( isResettable ).toEqual( undefined );
@@ -353,8 +351,7 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 				const isSetupCompleted = select.isSetupCompleted();
 
 				expect( isSetupCompleted ).toEqual( undefined );

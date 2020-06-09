@@ -109,7 +109,7 @@ describe( 'createNotificationsStore store', () => {
 			it( 'does not fail when there are no notifications', () => {
 				dispatch.removeNotification( 'not_a_real_id' );
 
-				muteConsole( 'error' ); //Ignore the API fetch error here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toEqual( undefined );
 			} );
 
@@ -119,7 +119,7 @@ describe( 'createNotificationsStore store', () => {
 
 				dispatch.removeNotification( 'not_a_real_id' );
 
-				muteConsole( 'error' ); //Ignore the API fetch error here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toEqual( [ notification ] );
 			} );
 
@@ -143,7 +143,7 @@ describe( 'createNotificationsStore store', () => {
 				const state = store.getState();
 
 				expect( state.clientNotifications ).toMatchObject( {} );
-				muteConsole( 'error' ); // Mute API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toMatchObject( {} );
 			} );
 
