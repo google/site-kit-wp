@@ -130,6 +130,7 @@ $width-desktop: 960;
 $width-xlarge: 1280;
 
 // Custom Media Breakpoints
+$bp-mobileOnly: $width-tablet - 1 + px;
 $bp-tablet: $width-tablet + px;
 $bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
 $bp-desktop: $width-desktop + px;

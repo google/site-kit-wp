@@ -57,8 +57,16 @@ export const getDataTableFromData = ( data, headers, options ) => {
 				cell = cell.replace( /\(none\)/gi, 'direct' );
 			}
 
+			const hiddenOnMobile = options && options.hideColumns && options.hideColumns.mobile.includes( i );
+
 			cells.push(
-				<td key={ 'cell-' + i } className="googlesitekit-table__body-item">
+				<td
+					key={ 'cell-' + i }
+					className={ classnames(
+						'googlesitekit-table__body-item',
+						{ 'hidden-on-mobile': hiddenOnMobile }
+					) }
+				>
 					{ row[ 0 ] === cell && link
 						? <div className="googlesitekit-table__body-item-content">
 							<Link
@@ -95,6 +103,9 @@ export const getDataTableFromData = ( data, headers, options ) => {
 	} );
 
 	const columns = data && data[ 0 ] && data[ 0 ].length ? data[ 0 ].length : 1;
+	const mobileColumns = ( options.hideColumns && options.hideColumns.mobile && options.hideColumns.mobile.length > 0 )
+		? columns - options.hideColumns.mobile.length
+		: columns;
 
 	return (
 		<div className={ classnames(
@@ -103,7 +114,8 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		) }>
 			<table className={ classnames(
 				'googlesitekit-table__wrapper',
-				`googlesitekit-table__wrapper--${ columns }-col`
+				`googlesitekit-table__wrapper--${ columns }-col`,
+				{ [ `googlesitekit-table__wrapper--mobile-${ mobileColumns }-col` ]: ( mobileColumns !== columns ) }
 			) }>
 				<thead className="googlesitekit-table__head">
 					<tr
@@ -111,18 +123,22 @@ export const getDataTableFromData = ( data, headers, options ) => {
 						style={ ( options && options.hideHeader ) ? { display: 'none' } : {} }
 						className="googlesitekit-table__head-row"
 					>
-						{ headers.map( ( header, i ) => (
-							<th
-								key={ `gksc_data_row_header-${ i }` }
-								className={ classnames(
-									'googlesitekit-table__head-item',
-									{ 'googlesitekit-table__head-item--primary': header.primary }
-								) }
-								data-tooltip={ header.tooltip }
-							>
-								{ header.title }
-							</th>
-						) ) }
+						{ headers.map( ( header, i ) => {
+							const hiddenOnMobile = options && options.hideColumns && options.hideColumns.mobile.includes( i );
+							return (
+								<th
+									key={ `gksc_data_row_header-${ i }` }
+									className={ classnames(
+										'googlesitekit-table__head-item',
+										{ 'googlesitekit-table__head-item--primary': header.primary },
+										{ 'hidden-on-mobile': hiddenOnMobile },
+									) }
+									data-tooltip={ header.tooltip }
+								>
+									{ header.title }
+								</th>
+							);
+						} ) }
 					</tr>
 				</thead>
 				<tbody className="googlesitekit-table__body">
