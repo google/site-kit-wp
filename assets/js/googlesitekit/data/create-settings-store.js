@@ -260,9 +260,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			// holds information based on specific values but we only need
 			// generic information here, we need to check whether ANY such
 			// request is in progress.
-			if ( 'object' !== typeof state.isFetchingSaveSettings ) {
-				return false;
-			}
 			return Object.values( state.isFetchingSaveSettings ).some( Boolean );
 		},
 	};

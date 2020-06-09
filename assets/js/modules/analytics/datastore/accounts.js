@@ -314,10 +314,7 @@ const baseSelectors = {
 		// holds information based on specific values but we only need
 		// generic information here, we need to check whether ANY such
 		// request is in progress.
-		if ( 'object' !== typeof state.isFetchingGetAccountsPropertiesProfiles ) {
-			return false;
-		}
-		return Object.values( state.isFetchingGetAccountsPropertiesProfiles ).some( ( value ) => value );
+		return Object.values( state.isFetchingGetAccountsPropertiesProfiles ).some( Boolean );
 	},
 
 	/**
@@ -333,10 +330,7 @@ const baseSelectors = {
 		// holds information based on specific values but we only need
 		// generic information here, we need to check whether ANY such
 		// request is in progress.
-		if ( 'object' !== typeof state.isFetchingCreateAccount ) {
-			return false;
-		}
-		return Object.values( state.isFetchingCreateAccount ).some( ( value ) => value );
+		return Object.values( state.isFetchingCreateAccount ).some( Boolean );
 	},
 
 	/**
