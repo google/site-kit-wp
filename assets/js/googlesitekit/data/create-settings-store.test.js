@@ -86,6 +86,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'setSettings', () => {
 			it( 'requires the values param', () => {
 				expect( () => {
+					muteConsole( 'error' );
 					dispatch.setSettings();
 				} ).toThrow( 'values is required.' );
 			} );
@@ -178,6 +179,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'requires the values param', () => {
 				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
 
+				muteConsole( 'error' );
 				dispatch.fetchSaveSettings();
 				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'values is required.' );
 
