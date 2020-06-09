@@ -7,6 +7,7 @@
  * @param {string} toRange The new date range to select.
  */
 export async function switchDateRange( fromRange, toRange ) {
+	await page.waitFor( 250 );
 	await Promise.all( [
 		expect( page ).toClick( '.mdc-select__selected-text', { text: new RegExp( fromRange, 'i' ) } ),
 		page.waitForSelector( '.mdc-select.mdc-select--focused' ),

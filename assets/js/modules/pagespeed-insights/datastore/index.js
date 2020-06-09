@@ -31,7 +31,6 @@ const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
 } );
 
 const store = Data.combineStores(
-	Data.commonStore,
 	baseModuleStore,
 	report,
 );
