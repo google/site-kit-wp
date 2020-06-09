@@ -34,6 +34,7 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
+	muteFetch,
 } from '../../../../tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
 
@@ -103,7 +104,7 @@ describe( 'createSettingsStore store', () => {
 
 		describe( 'fetchGetSettings', () => {
 			it( 'does not require any params', () => {
-				muteConsole( 'error' ); // Ignore the API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/settings/ );
 				expect( () => {
 					dispatch.fetchGetSettings();
 				} ).not.toThrow();
@@ -318,7 +319,7 @@ describe( 'createSettingsStore store', () => {
 
 				// If settings are set on the client, they must be available even
 				// if settings have not been loaded from the server yet.
-				muteConsole( 'error' ); // Ignore the API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/settings/ );
 				expect( select.getSettings() ).toEqual( values );
 			} );
 
