@@ -28,9 +28,10 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
 
@@ -171,6 +172,7 @@ describe( 'core/modules modules', () => {
 						{ status: 500 }
 					);
 
+				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).activateModule( slug );
 
 				// Wait until this activation action has completed.
@@ -309,6 +311,7 @@ describe( 'core/modules modules', () => {
 						{ status: 500 }
 					);
 
+				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).deactivateModule( slug );
 
 				// Wait until this deactivation action has completed.
@@ -337,7 +340,7 @@ describe( 'core/modules modules', () => {
 
 		describe( 'fetchGetModules', () => {
 			it( 'does not require any params', () => {
-				muteConsole( 'error' ); // Ignore the API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
 				expect( () => {
 					registry.dispatch( STORE_NAME ).fetchGetModules();
 				} ).not.toThrow();
@@ -489,8 +492,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
+				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
+
 				const module = registry.select( STORE_NAME ).getModule( 'analytics' );
 
 				expect( module ).toEqual( undefined );
@@ -593,8 +596,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
+				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
+
 				const isActive = registry.select( STORE_NAME ).isModuleActive( 'analytics' );
 
 				expect( isActive ).toEqual( undefined );
