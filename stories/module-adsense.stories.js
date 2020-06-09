@@ -164,7 +164,7 @@ storiesOf( 'AdSense Module', module )
 		);
 	} )
 	.add( 'Estimate Earnings', () => {
-		global.googlesitekit = adSenseData;
+		global._googlesitekitLegacyData = adSenseData;
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -193,7 +193,7 @@ storiesOf( 'AdSense Module', module )
 		},
 	} )
 	.add( 'Performance', () => {
-		global.googlesitekit = adSenseData;
+		global._googlesitekitLegacyData = adSenseData;
 
 		// Load the datacache with data.
 		setTimeout( () => {

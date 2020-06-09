@@ -58,7 +58,7 @@ class TagmanagerSetup extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { ampEnabled, ampMode } = global.googlesitekit.admin;
+		const { ampEnabled, ampMode } = global._googlesitekitLegacyData.admin;
 		const { settings } = getModulesData().tagmanager;
 		const ampUsageContext = ampMode === 'primary' ? USAGE_CONTEXT_AMP : [ USAGE_CONTEXT_WEB, USAGE_CONTEXT_AMP ];
 

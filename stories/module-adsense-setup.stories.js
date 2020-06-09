@@ -38,7 +38,7 @@ import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
 import { WithTestRegistry } from '../tests/js/utils';
 
 function filterAdSenseSetup() {
-	global.googlesitekit.setup.moduleToSetup = 'adsense';
+	global._googlesitekitLegacyData.setup.moduleToSetup = 'adsense';
 
 	removeAllFilters( 'googlesitekit.ModuleSetup-adsense' );
 	addFilter(

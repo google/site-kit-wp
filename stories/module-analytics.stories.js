@@ -172,7 +172,7 @@ storiesOf( 'Analytics Module', module )
 		);
 	} )
 	.add( 'Audience Overview Chart', () => {
-		global.googlesitekit = analyticsData;
+		global._googlesitekitLegacyData = analyticsData;
 
 		const selectedStats = [
 			0,
@@ -223,7 +223,7 @@ storiesOf( 'Analytics Module', module )
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
 	.add( 'Top Acquisition Pie Chart', () => {
-		global.googlesitekit = analyticsData;
+		global._googlesitekitLegacyData = analyticsData;
 
 		// Load the datacache with data.
 		setTimeout( () => {

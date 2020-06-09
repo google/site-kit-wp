@@ -93,7 +93,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			directTotalUsers,
 		} = this.state;
 
-		const { permaLink } = global.googlesitekit;
+		const { permaLink } = global._googlesitekitLegacyData;
 
 		const href = getSiteKitAdminURL( 'googlesitekit-module-analytics', {} );
 		const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
@@ -235,7 +235,7 @@ export default withData(
 			datapoint: 'report',
 			data: {
 				...overviewReportDataDefaults,
-				url: global.googlesitekit.permaLink,
+				url: global._googlesitekitLegacyData.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -254,7 +254,7 @@ export default withData(
 			datapoint: 'report',
 			data: {
 				...userReportDataDefaults,
-				url: global.googlesitekit.permaLink,
+				url: global._googlesitekitLegacyData.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -274,7 +274,7 @@ export default withData(
 			datapoint: 'report',
 			data: {
 				...siteAnalyticsReportDataDefaults,
-				url: global.googlesitekit.permaLink,
+				url: global._googlesitekitLegacyData.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -292,7 +292,7 @@ export default withData(
 			identifier: 'analytics',
 			datapoint: 'goals',
 			data: {
-				url: global.googlesitekit.permaLink,
+				url: global._googlesitekitLegacyData.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'hour' ),

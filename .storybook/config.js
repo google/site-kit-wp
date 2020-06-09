@@ -77,12 +77,12 @@ wp.i18n.sprintf = sprintf || {};
 global.wp = global.wp || wp;
 global.React = React;
 global.lodash = lodash;
-global.googlesitekit = global.googlesitekit || googlesitekit;
-global.googlesitekit.setup = global.googlesitekit.setup || googlesitekit.setup;
-global.googlesitekit.admin = global.googlesitekit.admin || googlesitekit.admin;
-global.googlesitekit.modules = global.googlesitekit.modules || googlesitekit.modules;
-global.googlesitekit.admin.assetsRoot = './assets/';
-global.googlesitekit.isStorybook = true;
+global._googlesitekitLegacyData = global._googlesitekitLegacyData || googlesitekit;
+global._googlesitekitLegacyData.setup = global._googlesitekitLegacyData.setup || googlesitekit.setup;
+global._googlesitekitLegacyData.admin = global._googlesitekitLegacyData.admin || googlesitekit.admin;
+global._googlesitekitLegacyData.modules = global._googlesitekitLegacyData.modules || googlesitekit.modules;
+global._googlesitekitLegacyData.admin.assetsRoot = './assets/';
+global._googlesitekitLegacyData.isStorybook = true;
 global._googlesitekitBaseData = {
 	homeURL: 'http://example.com/',
 	referenceSiteURL: 'http://example.com/',

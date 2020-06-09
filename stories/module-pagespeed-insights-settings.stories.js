@@ -44,7 +44,7 @@ function filterPageSpeedInsightsSettings() {
 }
 
 const completeModuleData = {
-	...global.googlesitekit.modules[ 'pagespeed-insights' ],
+	...global._googlesitekitLegacyData.modules[ 'pagespeed-insights' ],
 	active: true,
 	setupComplete: true,
 };
@@ -52,7 +52,7 @@ const completeModuleData = {
 function Settings( props ) {
 	const {
 		callback,
-		module = global.googlesitekit.modules[ 'pagespeed-insights' ],
+		module = global._googlesitekitLegacyData.modules[ 'pagespeed-insights' ],
 		isEditing = false,
 		isOpen = true,
 		isSaving = false,

@@ -48,7 +48,7 @@ function filterAnalyticsSettings() {
 }
 
 const completeModuleData = {
-	...global.googlesitekit.modules.analytics,
+	...global._googlesitekitLegacyData.modules.analytics,
 	active: true,
 	setupComplete: true,
 };
@@ -56,7 +56,7 @@ const completeModuleData = {
 function Settings( props ) {
 	const {
 		callback,
-		module = global.googlesitekit.modules.analytics,
+		module = global._googlesitekitLegacyData.modules.analytics,
 		isEditing = false,
 		isOpen = true,
 		isSaving = false,

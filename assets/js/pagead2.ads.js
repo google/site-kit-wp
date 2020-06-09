@@ -14,11 +14,11 @@ if ( global.googlesitekit === undefined ) {
 	global.googlesitekit = {};
 }
 
-global.googlesitekit.canAdsRun = true;
+global._googlesitekitLegacyData.canAdsRun = true;
 
 // Ensure that this flag does not get wiped at a later stage during pageload.
 document.addEventListener( 'DOMContentLoaded', function() {
-	global.googlesitekit.canAdsRun = true;
+	global._googlesitekitLegacyData.canAdsRun = true;
 } );
 
 // If registry and AdSense datastore are loaded, use that instead of the global.
