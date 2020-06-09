@@ -22,11 +22,5 @@ document.addEventListener( 'DOMContentLoaded', function() {
 } );
 
 // If registry and AdSense datastore are loaded, use that instead of the global.
-if (
-	global.googlesitekit.data &&
-	global.googlesitekit.data.dispatch &&
-	global.googlesitekit.data.stores &&
-	global.googlesitekit.data.stores[ 'modules/adsense' ]
-) {
-	global.googlesitekit.data.dispatch( 'modules/adsense' ).receiveIsAdBlockerActive( false );
-}
+// eslint-disable-next-line no-unused-expressions
+global.googlesitekit?.data?.dispatch?.( 'modules/adsense' )?.receiveIsAdBlockerActive( false );
