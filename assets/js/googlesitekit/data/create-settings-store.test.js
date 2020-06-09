@@ -34,6 +34,7 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
+	muteFetch,
 } from '../../../../tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
 
@@ -85,6 +86,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'setSettings', () => {
 			it( 'requires the values param', () => {
 				expect( () => {
+					muteConsole( 'error' );
 					dispatch.setSettings();
 				} ).toThrow( 'values is required.' );
 			} );
@@ -101,19 +103,20 @@ describe( 'createSettingsStore store', () => {
 			} );
 		} );
 
-		describe( 'fetchSettings', () => {
+		describe( 'fetchGetSettings', () => {
 			it( 'does not require any params', () => {
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/settings/ );
 				expect( () => {
-					dispatch.fetchSettings();
+					dispatch.fetchGetSettings();
 				} ).not.toThrow();
 			} );
 		} );
 
-		describe( 'receiveSettings', () => {
-			it( 'requires the values param', () => {
+		describe( 'receiveGetSettings', () => {
+			it( 'requires the response param', () => {
 				expect( () => {
-					dispatch.receiveSettings();
-				} ).toThrow( 'values is required.' );
+					dispatch.receiveGetSettings();
+				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'receives and sets values', () => {
@@ -121,7 +124,7 @@ describe( 'createSettingsStore store', () => {
 				const clientValues = { setting1: 'clientside' };
 
 				dispatch.setSettings( clientValues );
-				dispatch.receiveSettings( serverValues );
+				dispatch.receiveGetSettings( serverValues, {} );
 
 				// Client values take precedence if they were already modified before receiving from the server.
 				expect( store.getState().settings ).toMatchObject( { ...serverValues, ...clientValues } );
@@ -155,6 +158,9 @@ describe( 'createSettingsStore store', () => {
 						{ status: 200 }
 					);
 
+				// Set initial settings so that they are considered loaded.
+				dispatch.receiveGetSettings( response, {} );
+
 				// The server is the authority. So because this won't be part of the response
 				// (see above), it will be disregarded.
 				dispatch.setSettings( { isSkyBlue: 'no' } );
@@ -173,6 +179,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'requires the values param', () => {
 				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
 
+				muteConsole( 'error' );
 				dispatch.fetchSaveSettings();
 				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'values is required.' );
 
@@ -195,10 +202,10 @@ describe( 'createSettingsStore store', () => {
 		} );
 
 		describe( 'receiveSaveSettings', () => {
-			it( 'requires the values param', () => {
+			it( 'requires the response param', () => {
 				expect( () => {
 					dispatch.receiveSaveSettings();
-				} ).toThrow( 'values is required.' );
+				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'receives and sets values', () => {
@@ -206,7 +213,7 @@ describe( 'createSettingsStore store', () => {
 				const clientValues = { setting1: 'clientside', setting3: 'clientside' };
 
 				dispatch.setSettings( clientValues );
-				dispatch.receiveSaveSettings( serverValues );
+				dispatch.receiveSaveSettings( serverValues, { values: {} } );
 
 				// Client values are ignored here, server values replace them.
 				expect( store.getState().settings ).toMatchObject( { ...serverValues } );
@@ -251,7 +258,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'rollbackSettings', () => {
 			it( 'returns settings back to their saved values', () => {
 				const savedSettings = { isSkyBlue: 'yes' };
-				dispatch.receiveSaveSettings( savedSettings );
+				dispatch.receiveSaveSettings( savedSettings, { values: {} } );
 
 				expect( select.getIsSkyBlue() ).toBe( 'yes' );
 
@@ -299,7 +306,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'does not make a network request if settings are already set', async () => {
 				const value = 'serverside';
 
-				dispatch.receiveSettings( { isSkyBlue: value } );
+				dispatch.receiveGetSettings( { isSkyBlue: value }, {} );
 
 				expect( select.getIsSkyBlue() ).toEqual( value );
 
@@ -314,7 +321,7 @@ describe( 'createSettingsStore store', () => {
 
 				// If settings are set on the client, they must be available even
 				// if settings have not been loaded from the server yet.
-				muteConsole( 'error' ); // Ignore the API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/settings/ );
 				expect( select.getSettings() ).toEqual( values );
 			} );
 
@@ -338,7 +345,7 @@ describe( 'createSettingsStore store', () => {
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
-					() => store.getState().isFetchingSettings === false,
+					() => select.isFetchingGetSettings() === false,
 				);
 
 				const settings = select.getSettings();
@@ -440,7 +447,7 @@ describe( 'createSettingsStore store', () => {
 	} );
 
 	describe( 'controls', () => {
-		describe( 'FETCH_SETTINGS', () => {
+		describe( 'FETCH_GET_SETTINGS', () => {
 			it( 'requests from the correct API endpoint', async () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
@@ -463,7 +470,10 @@ describe( 'createSettingsStore store', () => {
 						};
 					} );
 
-				const result = await storeDefinition.controls.FETCH_SETTINGS();
+				const result = await storeDefinition.controls.FETCH_GET_SETTINGS( {
+					type: 'FETCH_GET_SETTINGS',
+					payload: { params: {} },
+				} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.
@@ -496,7 +506,7 @@ describe( 'createSettingsStore store', () => {
 
 				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS( {
 					type: 'FETCH_SAVE_SETTINGS',
-					payload: { values: {} },
+					payload: { params: { values: {} } },
 				} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API

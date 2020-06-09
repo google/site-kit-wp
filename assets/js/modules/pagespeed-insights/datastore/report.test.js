@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: report tests.
+ * modules/pagespeed-insights data store: report tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,15 +17,10 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { STORE_NAME } from './index';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -34,8 +29,7 @@ import {
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
-describe( 'modules/adsense report', () => {
-	let apiFetchSpy;
+describe( 'modules/pagespeed-insights report', () => {
 	let registry;
 
 	beforeAll( () => {
@@ -44,8 +38,6 @@ describe( 'modules/adsense report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -54,11 +46,28 @@ describe( 'modules/adsense report', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
+		describe( 'fetchGetReport', () => {
+			it( 'fetches and returns a report as response', async () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
 
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+					)
+					.mockResponseOnce(
+						JSON.stringify( fixtures.pagespeedDesktop ),
+						{ status: 200 }
+					);
+
+				const { response } = await registry.dispatch( STORE_NAME ).fetchGetReport( url, strategy );
+
+				expect( response ).toEqual( fixtures.pagespeedDesktop );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -66,46 +75,50 @@ describe( 'modules/adsense report', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetch
 					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/
+						/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 					)
 					.mockResponseOnce(
-						JSON.stringify( fixtures.report ),
+						JSON.stringify( fixtures.pagespeedDesktop ),
 						{ status: 200 }
 					);
 
-				const initialReport = registry.select( STORE_NAME ).getReport( {} );
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+
+				const initialReport = registry.select( STORE_NAME ).getReport( url, strategy );
+
+				// Ensure the proper parameters were passed.
+				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+					{ url, strategy }
+				);
 
 				expect( initialReport ).toEqual( undefined );
 				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getReport( {} ) !== undefined
-					),
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
-				const report = registry.select( STORE_NAME ).getReport( {} );
+				const report = registry.select( STORE_NAME ).getReport( url, strategy );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( report ).toEqual( fixtures.report );
+				expect( report ).toEqual( fixtures.pagespeedDesktop );
 			} );
 
 			it( 'does not make a network request if report for given options is already present', async () => {
-				const options = {
-					dateRange: 'last-90-days',
-				};
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.report, { options } );
+				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy } );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry.select( STORE_NAME ).getReport( url, strategy );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getReport', [ options ] )
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
 				expect( fetch ).not.toHaveBeenCalled();
-				expect( report ).toEqual( fixtures.report );
+				expect( report ).toEqual( fixtures.pagespeedMobile );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -116,27 +129,25 @@ describe( 'modules/adsense report', () => {
 				};
 				fetch
 					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/
+						/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 					)
 					.mockResponse(
 						JSON.stringify( response ),
 						{ status: 500 }
 					);
 
-				const options = {
-					dateRange: 'last-90-days',
-					dimensions: [ 'DATE' ],
-				};
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
 
 				muteConsole( 'error' );
-				registry.select( STORE_NAME ).getReport( options );
+				registry.select( STORE_NAME ).getReport( url, strategy );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isFetchingGetReport( options ) === false,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry.select( STORE_NAME ).getReport( url, strategy );
 				expect( report ).toEqual( undefined );
 			} );
 		} );

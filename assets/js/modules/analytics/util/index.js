@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import calculateOverviewData from './calculateOverviewData';
+import parseDimensionStringToDate from './parseDimensionStringToDate';
 
 export { calculateOverviewData };
 
@@ -80,11 +81,7 @@ function reduceAnalyticsRowsData( rows, selectedStats ) {
 		if ( row.metrics ) {
 			const { values } = row.metrics[ 0 ];
 			const dateString = row.dimensions[ 0 ];
-			const dateWithDashes =
-				dateString.slice( 0, 4 ) + '-' +
-				dateString.slice( 4, 6 ) + '-' +
-				dateString.slice( 6, 8 );
-			const date = new Date( dateWithDashes );
+			const date = parseDimensionStringToDate( dateString );
 			dataMap.push( [
 				date,
 				values[ selectedStats ],
@@ -151,7 +148,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
 			{ type: 'number', label: dataLabels[ selectedStats ] },
-			{ type: 'number', label: __( 'Previous month', 'google-site-kit' ) },
+			{ type: 'number', label: __( 'Previous period', 'google-site-kit' ) },
 		],
 	];
 
@@ -199,11 +196,7 @@ export const extractAnalyticsDashboardSparklineData = ( reports ) => {
 	each( data, ( row ) => {
 		const { values } = row.metrics[ 0 ];
 		const dateString = row.dimensions[ 0 ];
-		const dateWithDashes =
-			dateString.slice( 0, 4 ) + '-' +
-			dateString.slice( 4, 6 ) + '-' +
-			dateString.slice( 6, 8 );
-		const date = new Date( dateWithDashes );
+		const date = parseDimensionStringToDate( dateString );
 		dataMap.push( [
 			date,
 			values[ 0 ],
