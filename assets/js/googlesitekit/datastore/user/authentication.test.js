@@ -28,6 +28,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -66,7 +67,7 @@ describe( 'core/user authentication', () => {
 	describe( 'actions', () => {
 		describe( 'fetchGetAuthentication', () => {
 			it( 'does not require any params', () => {
-				muteConsole( 'error' ); // Ignore the API fetch failure here.
+				muteFetch( coreUserDataEndpointRegExp );
 				expect( () => {
 					registry.dispatch( STORE_NAME ).fetchGetAuthentication();
 				} ).not.toThrow();
