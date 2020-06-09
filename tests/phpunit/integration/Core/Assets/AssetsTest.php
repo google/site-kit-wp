@@ -29,13 +29,12 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_register() {
+		global $wp_filter;
+
 		$actions_to_test = array(
 			'admin_enqueue_scripts',
 			'wp_enqueue_scripts',
-			'admin_print_scripts',
-			'wp_print_scripts',
-			'admin_print_styles',
-			'wp_print_styles',
+			'wp_loaded',
 		);
 		foreach ( $actions_to_test as $hook ) {
 			remove_all_actions( $hook );
@@ -45,7 +44,42 @@ class AssetsTest extends TestCase {
 		$assets->register();
 
 		foreach ( $actions_to_test as $hook ) {
-			$this->assertTrue( has_action( $hook ) );
+			$this->assertTrue( has_action( $hook ), "Failed asserting that action was added to {$hook}." );
+		}
+
+		// The actions and filters below only get registered on 'wp_loaded'.
+		$wp_loaded_actions = array(
+			'admin_print_scripts',
+			'wp_print_scripts',
+			'admin_print_styles',
+			'wp_print_styles',
+		);
+		$wp_loaded_filters = array(
+			'script_loader_tag',
+			'style_loader_tag',
+		);
+		foreach ( $wp_loaded_actions as $hook ) {
+			remove_all_actions( $hook );
+		}
+		foreach ( $wp_loaded_filters as $hook ) {
+			remove_all_filters( $hook );
+		}
+
+		// Without a user that can authenticate with Site Kit, no hooks should be added.
+		$original_filters = $wp_filter;
+		do_action( 'wp_loaded' );
+		$this->assertSame( $original_filters, $wp_filter, 'Failed asserting that no actions or filters were added on wp_loaded.' );
+
+		// For a user that can authenticate, ensure the hooks are added.
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$original_filters = $GLOBALS['wp_filter'];
+		do_action( 'wp_loaded' );
+		foreach ( $wp_loaded_actions as $hook ) {
+			$this->assertTrue( has_action( $hook ), "Failed asserting that action was added to {$hook}." );
+		}
+		foreach ( $wp_loaded_filters as $hook ) {
+			$this->assertTrue( has_filter( $hook ), "Failed asserting that filter was added to {$hook}." );
 		}
 	}
 
@@ -97,6 +131,10 @@ class AssetsTest extends TestCase {
 
 		remove_all_actions( 'wp_print_scripts' );
 		$assets->register();
+
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		do_action( 'wp_loaded' );
 
 		// Enqueue script that has 'googlesitekit-commons' as dependency.
 		$assets->enqueue_asset( 'googlesitekit-dashboard' );
