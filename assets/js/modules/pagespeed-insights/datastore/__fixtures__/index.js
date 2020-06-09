@@ -1,5 +1,5 @@
 /**
- * core/site data store: notifications.
+ * PageSpeed Insights Datastore Fixtures.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,24 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { actions, selectors } from './index';
+export { default as pagespeedDesktop } from './pagespeed--desktop.json';
+export { default as pagespeedMobile } from './pagespeed--mobile.json';
 
-describe( 'core/site notifications', () => {
-	it( 'has appropriate notification actions', () => {
-		const actionsToExpect = [
-			'addNotification',
-			'removeNotification',
-		];
-		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
-	} );
-
-	it( 'has appropriate notification selectors', () => {
-		const selectorsToExpect = [
-			'getNotifications',
-		];
-		expect( Object.keys( selectors ) ).toEqual( expect.arrayContaining( selectorsToExpect ) );
-	} );
-} );

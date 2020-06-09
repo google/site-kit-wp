@@ -520,7 +520,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-ads-detect',
 				array(
-					'src' => $base_url . 'js/ads.js',
+					'src' => $base_url . 'js/pagead2.ads.js',
 				)
 			),
 			new Script(

@@ -79,20 +79,28 @@ export const createModuleStore = ( slug, {
 		requiresSetup,
 	} );
 
-	const settingsStore = ( 'undefined' !== typeof settingSlugs )
-		? createSettingsStore( 'modules', slug, 'settings', {
+	let combinedStore = {};
+	if ( 'undefined' !== typeof settingSlugs ) {
+		const settingsStore = createSettingsStore( 'modules', slug, 'settings', {
 			storeName,
 			settingSlugs,
-			adminPage,
-			requiresSetup,
-		} )
-		: {};
+		} );
 
-	const combinedStore = Data.combineStores(
-		notificationsStore,
-		settingsStore,
-		infoStore,
-	);
+		// to prevent duplication errors during combining stores, we don't need to combine
+		// Data.commontStore here since settingsStore already uses commonActions and commonControls
+		// from the Data.commonStore.
+		combinedStore = Data.combineStores(
+			notificationsStore,
+			settingsStore,
+			infoStore,
+		);
+	} else {
+		combinedStore = Data.combineStores(
+			Data.commonStore,
+			notificationsStore,
+			infoStore,
+		);
+	}
 
 	combinedStore.STORE_NAME = storeName;
 

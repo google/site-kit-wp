@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: report.
+ * modules/pagespeed-insights data store: report.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,7 +20,11 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+
+/**
+ * WordPress dependencies
+ */
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -28,26 +32,29 @@ import isPlainObject from 'lodash/isPlainObject';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { options } ) => {
-		return API.get( 'modules', 'adsense', 'earnings', options );
+	controlCallback: ( { strategy, url } ) => {
+		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', { strategy, url } );
 	},
-	reducerCallback: ( state, report, { options } ) => {
+	reducerCallback: ( state, report, { strategy, url } ) => {
 		return {
 			...state,
 			reports: {
 				...state.reports,
-				[ stringifyObject( options ) ]: report,
+				[ `${ strategy }::${ url }` ]: { ...report },
 			},
 		};
 	},
-	argsToParams: ( options ) => {
-		invariant( isPlainObject( options ), 'options must be an object.' );
-		return { options };
+	argsToParams: ( url, strategy ) => {
+		invariant( isURL( url ), 'a valid url is required to fetch a report.' );
+		invariant( typeof strategy === 'string', 'a valid strategy is required to fetch a report.' );
+		return {
+			strategy,
+			url,
+		};
 	},
 } );
 
@@ -56,42 +63,38 @@ const BASE_INITIAL_STATE = {
 };
 
 const baseResolvers = {
-	*getReport( options = {} ) {
-		const registry = yield Data.commonActions.getRegistry();
-		const existingReport = registry.select( STORE_NAME ).getReport( options );
+	*getReport( url, strategy ) {
+		if ( ! url || ! strategy ) {
+			return;
+		}
 
-		// If there are already alerts loaded in state, consider it fulfilled
-		// and don't make an API request.
+		const registry = yield Data.commonActions.getRegistry();
+		const existingReport = registry.select( STORE_NAME ).getReport( url, strategy );
+
+		// If there is already a report loaded in state, consider it fulfilled and don't make an API request.
 		if ( existingReport ) {
 			return;
 		}
 
-		yield fetchGetReportStore.actions.fetchGetReport( options );
+		yield fetchGetReportStore.actions.fetchGetReport( url, strategy );
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets a Google AdSense report for the given options.
+	 * Gets a PageSpeed Insights report for the given strategy and URL.
 	 *
-	 * The report generated will include the following metrics:
-	 * * 'EARNINGS'
-	 * * 'PAGE_VIEWS_RPM'
-	 * * 'IMPRESSIONS'
+	 * @since n.e.x.t
 	 *
-	 * @since 1.9.0
-	 *
-	 * @param {Object}         state              Data store's state.
-	 * @param {Object}         options            Optional. Options for generating the report.
-	 * @param {string}         options.dateRange  Date range slug. Default 'last-28-days'.
-	 * @param {Array.<string>} options.dimensions Dimensions to use.
-	 * @param {number}         options.limit      Maximum number of rows to include.
-	 * @return {(Array.<Object>|undefined)} An AdSense report; `undefined` if not loaded.
+	 * @param {Object} state    Data store's state.
+	 * @param {string} url      URL used for generating the report.
+	 * @param {string} strategy Strategy used for generating the report.
+	 * @return {(Object|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
-	getReport( state, options = {} ) {
+	getReport( state, url, strategy ) {
 		const { reports } = state;
 
-		return reports[ stringifyObject( options ) ];
+		return reports[ `${ strategy }::${ url }` ];
 	},
 };
 

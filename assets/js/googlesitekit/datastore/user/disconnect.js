@@ -17,122 +17,39 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
+import { createFetchStore } from '../../data/create-fetch-store';
 
-// Actions
-const START_FETCH_DISCONNECT = 'START_FETCH_DISCONNECT';
-const FETCH_DISCONNECT = 'FETCH_DISCONNECT';
-const FINISH_FETCH_DISCONNECT = 'FINISH_FETCH_DISCONNECT';
-const CATCH_FETCH_DISCONNECT = 'CATCH_FETCH_DISCONNECT';
-const RECEIVE_DISCONNECT = 'RECEIVE_DISCONNECT';
+const { createRegistrySelector } = Data;
 
-export const INITIAL_STATE = {
-	isFetchingDisconnect: false,
+const fetchDisconnectStore = createFetchStore( {
+	baseName: 'disconnect',
+	controlCallback: () => {
+		return API.set( 'core', 'user', 'disconnect' );
+	},
+	reducerCallback: ( state, disconnected ) => {
+		return {
+			...state,
+			disconnected,
+		};
+	},
+} );
+
+const BASE_INITIAL_STATE = {
 	disconnected: undefined,
 };
 
-export const actions = {
+const baseActions = {
 	*disconnect() {
-		let response, error;
-		yield {
-			payload: {},
-			type: START_FETCH_DISCONNECT,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_DISCONNECT,
-			};
-
-			yield actions.receiveDisconnected( response );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_DISCONNECT,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_DISCONNECT,
-			};
-		}
-		return { response, error };
-	},
-
-	/**
-	 * Stores the disconnection info received from the REST API.
-	 *
-	 * @since 1.9.0
-	 * @private
-	 *
-	 * @param {Object} disconnected Disconnection response from the API.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveDisconnected( disconnected ) {
-		invariant( disconnected !== undefined, 'disconnect is required.' );
-
-		return {
-			payload: { disconnected },
-			type: RECEIVE_DISCONNECT,
-		};
+		yield fetchDisconnectStore.actions.fetchDisconnect();
 	},
 };
 
-export const controls = {
-	[ FETCH_DISCONNECT ]: () => {
-		return API.set( 'core', 'user', 'disconnect' );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case START_FETCH_DISCONNECT: {
-			return {
-				...state,
-				isFetchingDisconnect: true,
-			};
-		}
-
-		case RECEIVE_DISCONNECT: {
-			const { disconnected } = payload;
-
-			return {
-				...state,
-				disconnected,
-			};
-		}
-
-		case FINISH_FETCH_DISCONNECT: {
-			return {
-				...state,
-				isFetchingDisconnect: false,
-			};
-		}
-
-		case CATCH_FETCH_DISCONNECT: {
-			return {
-				...state,
-				error: payload.error,
-				isFetchingDisconnect: false,
-			};
-		}
-		default: {
-			return { ...state };
-		}
-	}
-};
-
-export const resolvers = {};
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Returns whether a disconnect is occuring.
 	 *
@@ -141,17 +58,25 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} Is a disconnect ocurring or not.
 	 */
-	isDoingDisconnect( state ) {
-		const { isFetchingDisconnect } = state;
-		return isFetchingDisconnect;
-	},
+	isDoingDisconnect: createRegistrySelector( ( select ) => () => {
+		return select( STORE_NAME ).isFetchingDisconnect();
+	} ),
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchDisconnectStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;
