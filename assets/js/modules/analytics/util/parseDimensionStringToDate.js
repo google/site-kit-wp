@@ -1,5 +1,5 @@
 /**
- * convertDateStringToDateObject utility.
+ * parseDimensionStringToDate utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,7 +17,10 @@
  */
 
 /**
- * Converts a string date into an Date object and accounts for differences in timezones.
+ * Converts a dimnension string date into a Date object accounting for differences in timezones.
+ *
+ * @since n.e.x.t
+ * @private
  *
  * @param {string} dateString String representing the date in the format of YYYYMMDD
  * @return {(Date|boolean)} Object representing the date passed, or false if parsing fails or a non-string is passed.

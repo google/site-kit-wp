@@ -1,5 +1,5 @@
 /**
- * convertDateStringToDateObject utility tests
+ * parseDimensionStringToDate utility tests
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -21,8 +21,8 @@
  */
 import parseDimensionStringToDate from './parseDimensionStringToDate';
 
-describe( 'convertDateStringToDateObject', () => {
-	it( 'converts a date string formatted as YYYYMMDD', () => {
+describe( 'parseDimensionStringToDate', () => {
+	it( 'converts a dimension string formatted as YYYYMMDD', () => {
 		const dateToConvert = '20200608';
 		const convertedDate = parseDimensionStringToDate( dateToConvert );
 		expect( convertedDate.getFullYear() ).toBe( 2020 );
@@ -30,7 +30,7 @@ describe( 'convertDateStringToDateObject', () => {
 		expect( convertedDate.getDate() ).toBe( 8 );
 	} );
 
-	it( 'returns false when passed an incorrect date', () => {
+	it( 'returns false when passed a string that is not a date', () => {
 		const dateToConvert = 'notadate';
 		const convertedDate = parseDimensionStringToDate( dateToConvert );
 		expect( convertedDate ).toBe( false );
