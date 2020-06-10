@@ -43,6 +43,13 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
+	/**
+	 * Submits all changes currently present in the client, persisting them on the server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Empty object on success, object with `error` property on failure.
+	 */
 	*submitChanges() {
 		yield {
 			payload: {},

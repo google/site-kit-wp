@@ -36,6 +36,6 @@ export function isValidOptimizeID( optimizeID ) {
  * @param {string|number} ampExperimentJSON ampExperimentJSON to test.
  * @return {boolean} True if the given ampExperimentJSON is valid, false otherwise.
  */
-export function isValidAmpExperimentJSON( ampExperimentJSON ) {
+export function isValidAMPExperimentJSON( ampExperimentJSON ) {
 	return typeof ampExperimentJSON === 'string';
 }

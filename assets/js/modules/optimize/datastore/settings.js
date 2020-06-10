@@ -24,7 +24,7 @@ import Data from 'googlesitekit-data';
 import dataAPI, { TYPE_MODULES } from '../../../components/data';
 import {
 	isValidOptimizeID,
-	isValidAmpExperimentJSON,
+	isValidAMPExperimentJSON,
 } from '../util';
 import { STORE_NAME } from './constants';
 
@@ -40,6 +40,13 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
+	/**
+	 * Submits all changes currently present in the client, persisting them on the server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Empty object on success, object with `error` property on failure.
+	 */
 	*submitChanges() {
 		yield {
 			payload: {},
@@ -122,7 +129,7 @@ export const selectors = {
 		}
 		// Require an ampExperimentJSON to be present.
 		const ampExperimentJSON = getAMPExperimentJSON();
-		if ( '' !== ampExperimentJSON && ! isValidAmpExperimentJSON( ampExperimentJSON ) ) {
+		if ( '' !== ampExperimentJSON && ! isValidAMPExperimentJSON( ampExperimentJSON ) ) {
 			return false;
 		}
 		// Require optimize ID to be either empty (if impossible to determine)
