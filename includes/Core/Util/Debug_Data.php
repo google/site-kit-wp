@@ -289,8 +289,8 @@ class Debug_Data {
 		$value           = array();
 
 		foreach ( $required_scopes as $scope ) {
-			$granted         = in_array( $scope, $granted_scopes, true );
-			$value[ $scope ] = $granted ? '✅' : '⭕';
+			$satisfied       = Scopes::is_satisfied_by( $scope, $granted_scopes );
+			$value[ $scope ] = $satisfied ? '✅' : '⭕';
 		}
 
 		return array(

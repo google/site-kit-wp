@@ -28,124 +28,13 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { getExistingTag } from '../../../util/tag';
 import { STORE_NAME } from './constants';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const { commonActions, createRegistrySelector } = Data;
 
-// Actions
-const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
-const START_FETCH_EXISTING_TAG = 'START_FETCH_EXISTING_TAG';
-const FINISH_FETCH_EXISTING_TAG = 'FINISH_FETCH_EXISTING_TAG';
-const CATCH_FETCH_EXISTING_TAG = 'CATCH_FETCH_EXISTING_TAG';
-
-const FETCH_TAG_PERMISSION = 'FETCH_TAG_PERMISSION';
-const START_FETCH_TAG_PERMISSION = 'START_FETCH_TAG_PERMISSION';
-const FINISH_FETCH_TAG_PERMISSION = 'FINISH_FETCH_TAG_PERMISSION';
-const CATCH_FETCH_TAG_PERMISSION = 'CATCH_FETCH_TAG_PERMISSION';
-
-const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
-const RECEIVE_TAG_PERMISSION = 'RECEIVE_TAG_PERMISSION';
-
-export const INITIAL_STATE = {
-	existingTag: undefined,
-	isFetchingExistingTag: false,
-	isFetchingTagPermission: {},
-	tagPermissions: {},
-};
-
-export const actions = {
-	*fetchExistingTag() {
-		let response, error;
-
-		yield {
-			payload: {},
-			type: START_FETCH_EXISTING_TAG,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_EXISTING_TAG,
-			};
-
-			yield actions.receiveExistingTag( response !== undefined ? response : null );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_EXISTING_TAG,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_EXISTING_TAG,
-			};
-		}
-
-		return { response, error };
-	},
-
-	*fetchTagPermission( clientID ) {
-		invariant( clientID, 'clientID is required.' );
-
-		let response, error;
-
-		yield {
-			payload: { clientID },
-			type: START_FETCH_TAG_PERMISSION,
-		};
-
-		try {
-			response = yield {
-				payload: { clientID },
-				type: FETCH_TAG_PERMISSION,
-			};
-
-			yield actions.receiveTagPermission( {
-				clientID,
-				...response,
-			} );
-
-			yield {
-				payload: { clientID },
-				type: FINISH_FETCH_TAG_PERMISSION,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: {
-					clientID,
-					error,
-				},
-				type: CATCH_FETCH_TAG_PERMISSION,
-			};
-		}
-
-		return { response, error };
-	},
-
-	receiveExistingTag( existingTag ) {
-		invariant( existingTag !== undefined, 'existingTag is required.' );
-
-		return {
-			payload: { existingTag },
-			type: RECEIVE_EXISTING_TAG,
-		};
-	},
-
-	receiveTagPermission( { clientID, accountID, permission } ) {
-		invariant( clientID, 'clientID is required.' );
-		invariant( accountID, 'accountID is required.' );
-		invariant( permission !== undefined, 'permission cannot be undefined.' );
-
-		return {
-			payload: { clientID, accountID, permission },
-			type: RECEIVE_TAG_PERMISSION,
-		};
-	},
-};
-
-export const controls = {
-	[ FETCH_EXISTING_TAG ]: () => {
+const fetchGetExistingTagStore = createFetchStore( {
+	baseName: 'getExistingTag',
+	controlCallback: () => {
 		// TODO: Replace this with data from `core/site` selectors and
 		// an implementation contained inside the store
 		// once https://github.com/google/site-kit-wp/issues/1000 is
@@ -154,104 +43,42 @@ export const controls = {
 		// currently quite nested and difficult to straightforwardly test.
 		return getExistingTag( 'adsense' );
 	},
-	[ FETCH_TAG_PERMISSION ]: ( { payload: { clientID } } ) => {
+	reducerCallback: ( state, existingTag ) => {
+		return {
+			...state,
+			existingTag: existingTag || null,
+		};
+	},
+} );
+
+const fetchGetTagPermissionStore = createFetchStore( {
+	baseName: 'getTagPermission',
+	controlCallback: ( { clientID } ) => {
 		return API.get( 'modules', 'adsense', 'tag-permission', { clientID }, {
 			useCache: false,
 		} );
 	},
+	reducerCallback: ( state, { accountID, permission }, { clientID } ) => {
+		return {
+			...state,
+			tagPermissions: {
+				...state.tagPermissions || {},
+				[ clientID ]: { accountID, permission },
+			},
+		};
+	},
+	argsToParams: ( clientID ) => {
+		invariant( clientID, 'clientID is required.' );
+		return { clientID };
+	},
+} );
+
+const BASE_INITIAL_STATE = {
+	existingTag: undefined,
+	tagPermissions: {},
 };
 
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case START_FETCH_EXISTING_TAG: {
-			return {
-				...state,
-				isFetchingExistingTag: true,
-			};
-		}
-
-		case RECEIVE_EXISTING_TAG: {
-			const { existingTag } = payload;
-
-			return {
-				...state,
-				existingTag,
-			};
-		}
-
-		case FINISH_FETCH_EXISTING_TAG: {
-			return {
-				...state,
-				isFetchingExistingTag: false,
-			};
-		}
-
-		case CATCH_FETCH_EXISTING_TAG: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingExistingTag: false,
-			};
-		}
-
-		case START_FETCH_TAG_PERMISSION: {
-			const { clientID } = payload;
-
-			return {
-				...state,
-				isFetchingTagPermission: {
-					...state.isFetchingTagPermission,
-					[ clientID ]: true,
-				},
-			};
-		}
-
-		case RECEIVE_TAG_PERMISSION: {
-			const { clientID, accountID, permission } = payload;
-
-			return {
-				...state,
-				tagPermissions: {
-					...state.tagPermissions || {},
-					[ clientID ]: { accountID, permission },
-				},
-			};
-		}
-
-		case FINISH_FETCH_TAG_PERMISSION: {
-			const { clientID } = payload;
-
-			return {
-				...state,
-				isFetchingTagPermission: {
-					...state.isFetchingTagPermission,
-					[ clientID ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_TAG_PERMISSION: {
-			const { clientID, error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingTagPermission: {
-					...state.isFetchingTagPermission,
-					[ clientID ]: false,
-				},
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-};
-
-export const resolvers = {
+const baseResolvers = {
 	*getExistingTag() {
 		const registry = yield commonActions.getRegistry();
 		const existingTag = registry.select( STORE_NAME ).getExistingTag();
@@ -259,7 +86,7 @@ export const resolvers = {
 			return;
 		}
 
-		yield actions.fetchExistingTag();
+		yield fetchGetExistingTagStore.actions.fetchGetExistingTag();
 	},
 
 	*getTagPermission( clientID ) {
@@ -273,11 +100,11 @@ export const resolvers = {
 			return;
 		}
 
-		yield actions.fetchTagPermission( clientID );
+		yield fetchGetTagPermissionStore.actions.fetchGetTagPermission( clientID );
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Check to see if an existing tag is available on the site.
 	 *
@@ -371,11 +198,21 @@ export const selectors = {
 	},
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetExistingTagStore,
+	fetchGetTagPermissionStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

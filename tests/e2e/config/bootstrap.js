@@ -25,6 +25,7 @@ import {
 	toHaveAdSenseTag,
 	toHaveValidAMPForUser,
 	toHaveValidAMPForVisitor,
+	toHaveValue,
 } from '../matchers';
 
 /**
@@ -64,6 +65,7 @@ expect.extend( {
 	toHaveAdSenseTag,
 	toHaveValidAMPForUser,
 	toHaveValidAMPForVisitor,
+	toHaveValue,
 } );
 
 /**

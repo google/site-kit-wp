@@ -87,6 +87,8 @@ class DashboardSetupAlerts extends Component {
 							learnMoreLabel={ winData.learnMore.label }
 							learnMoreDescription={ winData.learnMore.description }
 							learnMoreURL={ winData.learnMore.url }
+							anchorLink={ 'pagespeed-insights' === slug ? '#googlesitekit-pagespeed-header' : '' }
+							anchorLinkLabel={ 'pagespeed-insights' === slug ? __( 'Jump to the bottom of the dashboard to see how fast your home page is.', 'google-site-kit' ) : '' }
 						>
 							<ModulesList />
 						</Notification>

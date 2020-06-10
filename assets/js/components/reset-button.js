@@ -106,6 +106,7 @@ export default class ResetButton extends Component {
 						subtitle={ __( 'Resetting this site will remove access to all services. After disconnecting, you will need to re-authorize your access to restore service.', 'google-site-kit' ) }
 						confirmButton={ __( 'Reset', 'google-site-kit' ) }
 						provides={ [] }
+						danger
 					/>
 				</Modal>
 			</Fragment>
