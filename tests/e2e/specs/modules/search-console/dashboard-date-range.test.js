@@ -115,8 +115,6 @@ describe( 'date range filtering on dashboard views', () => {
 
 		mockBatchResponse = last28Days;
 
-		await page.waitFor( 250 ); // Delay the next steps.
-
 		await Promise.all( [
 			page.waitForNavigation(),
 			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
