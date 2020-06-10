@@ -19,73 +19,91 @@
 /**
  * External dependencies
  */
-import gulp from 'gulp';
-import requireDir from 'require-dir';
-import runSequence from 'run-sequence';
-import livereload from 'gulp-livereload';
-import del from 'del';
+const gulp = require( 'gulp' );
+const livereload = require( 'gulp-livereload' );
+const del = require( 'del' );
 
-requireDir( './gulp-tasks' );
+/**
+ * Gulp tasks
+ */
+const browserSync = require( './browsersync' );
+const copy = require( './copy' );
+const imagemin = require( './imagemin' );
+const svgmin = require( './svgmin' );
+const svgstore = require( './svgstore' );
+const webpack = require( './webpack' );
+const zip = require( './zip' );
+
+/**
+ * Export loaded gulp tasks
+ */
+exports['browser-sync'] = browserSync;
+exports.copy = copy;
+exports.imagemin = imagemin;
+exports.svgmin = svgmin;
+exports.svgstore = svgstore;
+exports.webpack = webpack;
+exports.zip = zip;
+
+/**
+ * Shared tasks
+ */
+const svg = gulp.series(
+	svgstore,
+	svgmin,
+);
+
+const build = gulp.series(
+	webpack,
+	svg,
+	imagemin,
+);
+
+function cleanRelease( cb ) {
+	del.sync( './release/**' );
+	cb();
+}
 
 /**
  * Gulp task to run all SVG processes in a sequential order.
  */
-gulp.task( 'build', () => {
-	runSequence(
-		'webpack',
-		'svg',
-		'imagemin'
-	);
-} );
+exports.build = build;
 
 /**
  * Gulp task to watch for file changes and run the associated processes.
  */
-gulp.task( 'watch', () => {
+exports.watch = function() {
 	livereload.listen( { basePath: 'dist' } );
 	gulp.watch( './assets/sass/**/*.scss', [ 'build' ] );
 	gulp.watch( './assets/svg/**/*.svg', [ 'build' ] );
 	gulp.watch( './assets/js/*.js', [ 'build' ] );
 	gulp.watch( './assets/js/modules/**/*.js', [ 'build' ] );
-} );
+};
 
 /**
  * Gulp task to livereload file changes in browser.
  */
-gulp.task( 'local', () => {
-	runSequence(
-		'build',
-		'browser-sync'
-	);
-} );
+exports.local = gulp.series(
+	build,
+	browserSync,
+);
 
 /**
  * Gulp task to minify and combine svg's.
  */
-gulp.task( 'svg', () => {
-	runSequence(
-		'svgstore',
-		'svgmin'
-	);
-} );
+exports.svg = svg;
 
 /**
  * Gulp task to delete the temporary release directory.
  */
-gulp.task( 'clean-release', () => {
-	del.sync( './release/**' );
-} );
+exports['clean-release'] = cleanRelease;
 
 /**
  * Gulp task to run the default release processes in a sequential order.
  */
-gulp.task( 'release', ( cb ) => {
-	runSequence(
-		'clean-release',
-		'copy',
-		'zip',
-		'clean-release',
-		cb
-	);
-} );
-
+exports.release = gulp.series(
+	cleanRelease,
+	copy,
+	zip,
+	cleanRelease,
+);

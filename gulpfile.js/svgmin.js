@@ -1,26 +1,26 @@
 /**
  * External dependencies
  */
-import gulp from 'gulp';
-import svgmin from 'gulp-svgmin';
-import pump from 'pump';
+const { src, dest } = require( 'gulp' );
+const svgmin = require( 'gulp-svgmin' );
+const pump = require( 'pump' );
 
 const config = {
 	input: './assets/svg/**/*.svg',
 	output: './dist/assets/svg',
 };
 
-gulp.task( 'svgmin', ( cb ) => {
+module.exports = function( cb ) {
 	pump(
 		[
-			gulp.src( config.input ),
+			src( config.input ),
 			svgmin( {
 				plugins: [ {
 					removeViewBox: false,
 				} ],
 			} ),
-			gulp.dest( config.output ),
+			dest( config.output ),
 		],
 		cb
 	);
-} );
+};
