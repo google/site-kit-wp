@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { CATEGORY_FAST, CATEGORY_AVERAGE, CATEGORY_SLOW } from '../components/constants';
 
 /**
  * Retrieve the score category slug based on the given score.
@@ -28,16 +29,16 @@ import { __ } from '@wordpress/i18n';
  *
  * @return {string} Either 'fast', 'average', or 'slow'.
  */
-function getScoreCategory( score ) {
+export function getScoreCategory( score ) {
 	if ( 0.9 <= score ) {
-		return 'fast';
+		return CATEGORY_FAST;
 	}
 
 	if ( 0.5 <= score ) {
-		return 'average';
+		return CATEGORY_AVERAGE;
 	}
 
-	return 'slow';
+	return CATEGORY_SLOW;
 }
 
 /**
