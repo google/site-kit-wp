@@ -49,7 +49,7 @@ export class GoogleSitekitAdminbar extends Component {
 		this.handleMoreDetailsLink = this.handleMoreDetailsLink.bind( this );
 	}
 
-	handleMoreDetailsLink() {
+	async handleMoreDetailsLink() {
 		const {
 			permaLink,
 			postID,
@@ -66,7 +66,7 @@ export class GoogleSitekitAdminbar extends Component {
 			}
 		);
 
-		trackEvent( 'admin_bar', 'post_details_click' );
+		await trackEvent( 'admin_bar', 'post_details_click' );
 		document.location = href;
 	}
 

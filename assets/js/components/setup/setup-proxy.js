@@ -117,6 +117,12 @@ class SetupUsingProxy extends Component {
 			startSetupText = __( 'Start setup', 'google-site-kit' );
 		}
 
+		const onButtonClick = async ( event ) => {
+			event.preventDefault();
+			await trackEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
+			global.location.assign( proxySetupURL );
+		};
+
 		return (
 			<Fragment>
 				<Header />
@@ -170,9 +176,7 @@ class SetupUsingProxy extends Component {
 																		<Button
 																			className="googlesitekit-start-setup"
 																			href={ proxySetupURL }
-																			onClick={ () => {
-																				trackEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
-																			} }
+																			onClick={ onButtonClick }
 																			disabled={ ! complete }
 																		>
 																			{ startSetupText }

@@ -51,40 +51,39 @@ class OptIn extends Component {
 		this.handleOptIn = this.handleOptIn.bind( this );
 	}
 
-	handleOptIn( e ) {
+	async handleOptIn( e ) {
 		const checked = !! e.target.checked;
 		const trackingUserOptInKey = getMetaKeyForUserOption( 'googlesitekit_tracking_optin' );
 
 		toggleTracking( checked );
 
 		if ( checked ) {
-			trackEvent( 'tracking_plugin', this.props.optinAction );
+			await trackEvent( 'tracking_plugin', this.props.optinAction );
 		}
 
-		apiFetch( {
-			path: '/wp/v2/users/me',
-			method: 'POST',
-			data: {
-				meta: {
-					[ trackingUserOptInKey ]: checked,
-				},
-			},
-		} )
-			.then( () => {
-				this.setState( {
-					optIn: checked,
-					error: false,
-				} );
-			} )
-			.catch( ( err ) => {
-				this.setState( {
-					optIn: ! checked,
-					error: {
-						errorCode: err.code,
-						errorMsg: err.message,
+		try {
+			await apiFetch( {
+				path: '/wp/v2/users/me',
+				method: 'POST',
+				data: {
+					meta: {
+						[ trackingUserOptInKey ]: checked,
 					},
-				} );
+				},
 			} );
+			this.setState( {
+				optIn: checked,
+				error: false,
+			} );
+		} catch ( err ) {
+			this.setState( {
+				optIn: ! checked,
+				error: {
+					errorCode: err.code,
+					errorMsg: err.message,
+				},
+			} );
+		}
 	}
 
 	render() {
