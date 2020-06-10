@@ -478,23 +478,25 @@ export const validateOptimizeID = ( stringToValidate ) => {
 /**
  * Activate or Deactivate a Module.
  *
- * @param {Object}  restApiClient Rest API client from data module, this needed so we don't need to import data module in helper.
- * @param {string}  moduleSlug    Module slug to activate or deactivate.
- * @param {boolean} status        True if module should be activated, false if it should be deactivated.
+ * @param {Object}   restApiClient   Rest API client from data module, this needed so we don't need to import data module in helper.
+ * @param {string}   moduleSlug      Module slug to activate or deactivate.
+ * @param {boolean}  status          True if module should be activated, false if it should be deactivated.
+ * @param {Function} _trackEvent     trackEvent function; can be replaced for testing.
+ * @param {Function} _getModulesData getModulesData function; can be replaced for testing.
  * @return {Promise} A promise for activating/deactivating a module.
  */
-export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, status ) => {
+export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, status, _trackEvent = trackEvent, _getModulesData = getModulesData ) => {
 	const responseData = await restApiClient.setModuleActive( moduleSlug, status );
-	const modulesData = getModulesData();
+	const modulesData = _getModulesData();
 
 	// We should really be using state management. This is terrible.
 	if ( modulesData[ moduleSlug ] ) {
-		modulesData[ moduleSlug ].active = responseData.active;
+		modulesData[ moduleSlug ].active = status;
 	}
 
-	await trackEvent(
+	await _trackEvent(
 		`${ moduleSlug }_setup`,
-		! responseData.active ? 'module_deactivate' : 'module_activate',
+		! status ? 'module_deactivate' : 'module_activate',
 		moduleSlug,
 	);
 

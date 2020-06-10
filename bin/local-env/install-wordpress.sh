@@ -103,6 +103,10 @@ if [ "$CURRENT_URL" != "http://localhost:$HOST_PORT" ]; then
 	wp option update siteurl "http://localhost:$HOST_PORT" --quiet
 fi
 
+# Install the AMP plugin
+status_message "Installing the AMP plugin..."
+wp plugin install amp --force --quiet
+
 # Install a dummy favicon to avoid 404 errors.
 status_message "Installing a dummy favicon..."
 container touch /var/www/html/favicon.ico
