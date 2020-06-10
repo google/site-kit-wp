@@ -75,16 +75,18 @@ export const actions = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {string}          slug               Widget's slug.
-	 * @param {Object}          settings           Widget's settings.
-	 * @param {React.Component} settings.component React component used to display the contents of this widget.
-	 * @param {number}          settings.priority  Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
-	 * @param {string}          settings.width     Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @param {string}      slug                Widget's slug.
+	 * @param {Object}      settings            Widget's settings.
+	 * @param {WPComponent} settings.component  React component used to display the contents of this widget.
+	 * @param {number}      settings.priority   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string}      settings.useWrapper Optional. Set to `false` to opt-out of the `WidgetWrapper` component surrounding your Widget.
+	 * @param {string}      settings.width      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
 	 * @return {Object} Redux-style action.
 	 */
 	*registerWidget( slug, {
 		component,
 		priority = 10,
+		useWrapper = true,
 		width = WIDGET_WIDTHS.QUARTER,
 	} = {} ) {
 		invariant( component, 'component is required to register a widget.' );
@@ -112,7 +114,7 @@ export const actions = {
 		}
 
 		yield {
-			payload: { slug, settings: { priority, width } },
+			payload: { slug, settings: { priority, useWrapper, width } },
 			type: REGISTER_WIDGET,
 		};
 

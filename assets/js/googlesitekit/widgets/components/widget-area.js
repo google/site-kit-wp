@@ -27,7 +27,7 @@ import { string } from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore';
-import WidgetRenderer from './widget-renderer';
+import Widget from './widget';
 
 const { useSelect } = Data;
 
@@ -67,7 +67,7 @@ const WidgetArea = ( { area } ) => {
 				<div className="mdc-layout-grid__inner">
 					{ widgets.map( ( widget ) => {
 						return (
-							<WidgetRenderer key={ widget.slug } slug={ widget.slug } />
+							<Widget key={ widget.slug } slug={ widget.slug } />
 						);
 					} ) }
 				</div>

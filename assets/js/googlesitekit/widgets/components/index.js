@@ -16,16 +16,10 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Widget from './widget';
-
 export { default as WidgetArea } from './widget-area';
 export { default as WidgetContext } from './widget-context';
-export { default as WidgetRenderer } from './widget-renderer';
-export { Widget };
+export { default as Widget } from './widget';
 
 export default {
-	components: { Widget },
+	components: {},
 };

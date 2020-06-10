@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Widget should output children directly if useWrapper is false 1`] = `
+<div>
+  Test
+</div>
+`;
+
+exports[`Widget should wrap children in a WidgetWrapper component if useWrapper is true 1`] = `
+<div
+  class="WidgetWrapper WidgetWrapper--PageViews"
+>
+  <div>
+    Test
+  </div>
+</div>
+`;

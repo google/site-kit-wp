@@ -13,6 +13,7 @@ Object {
   "component": [Function],
   "priority": 10,
   "slug": "TestWidget",
+  "useWrapper": true,
   "width": "quarter",
 }
 `;
