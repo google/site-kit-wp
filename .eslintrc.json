@@ -25,6 +25,7 @@
         "requireReturn": false
       }
     ],
+    "jest/no-identical-title": "off",
     "@wordpress/i18n-text-domain": [
       "error",
       {
