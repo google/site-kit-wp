@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: settings.
+ * modules/optimize data store: settings.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -23,13 +23,10 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import dataAPI, { TYPE_MODULES } from '../../../components/data';
 import {
-	isValidAccountID,
-	isValidInternalWebPropertyID,
-	isValidPropertySelection,
-	isValidProfileSelection,
-	isValidPropertyID,
+	isValidOptimizeID,
+	isValidAMPExperimentJSON,
 } from '../util';
-import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
+import { STORE_NAME } from './constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -46,7 +43,7 @@ export const actions = {
 	/**
 	 * Submits all changes currently present in the client, persisting them on the server.
 	 *
-	 * @since 1.9.0
+	 * @since n.e.x.t
 	 *
 	 * @return {Object} Empty object on success, object with `error` property on failure.
 	 */
@@ -72,32 +69,6 @@ export const actions = {
 
 export const controls = {
 	[ SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => async () => {
-		let propertyID = registry.select( STORE_NAME ).getPropertyID();
-
-		if ( propertyID === PROPERTY_CREATE ) {
-			const accountID = registry.select( STORE_NAME ).getAccountID();
-
-			const { response: property, error } = await registry.dispatch( STORE_NAME ).createProperty( accountID );
-
-			if ( error ) {
-				return { error };
-			}
-			propertyID = property.id;
-			await registry.dispatch( STORE_NAME ).setPropertyID( property.id );
-			await registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
-		}
-
-		const profileID = registry.select( STORE_NAME ).getProfileID();
-
-		if ( profileID === PROFILE_CREATE ) {
-			const { response: profile, error } = await registry.dispatch( STORE_NAME ).createProfile( propertyID );
-
-			if ( error ) {
-				return { error };
-			}
-			await registry.dispatch( STORE_NAME ).setProfileID( profile.id );
-		}
-
 		// This action shouldn't be called if settings haven't changed,
 		// but this prevents errors in tests.
 		if ( registry.select( STORE_NAME ).haveSettingsChanged() ) {
@@ -108,9 +79,9 @@ export const controls = {
 			}
 		}
 
-		await API.invalidateCache( 'modules', 'analytics' );
+		await API.invalidateCache( 'modules', 'optimize' );
 		// TODO: Remove once legacy dataAPI is no longer used.
-		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'analytics' );
+		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'optimize' );
 
 		return {};
 	} ),
@@ -144,11 +115,8 @@ export const selectors = {
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => () => {
 		const {
-			getAccountID,
-			getInternalWebPropertyID,
-			getProfileID,
-			getPropertyID,
-			hasExistingTagPermission,
+			getOptimizeID,
+			getAMPExperimentJSON,
 			haveSettingsChanged,
 			isDoingSubmitChanges,
 		} = select( STORE_NAME );
@@ -159,21 +127,15 @@ export const selectors = {
 		if ( ! haveSettingsChanged() ) {
 			return false;
 		}
-		if ( ! isValidAccountID( getAccountID() ) ) {
+		// Require an ampExperimentJSON to be present.
+		const ampExperimentJSON = getAMPExperimentJSON();
+		if ( '' !== ampExperimentJSON && ! isValidAMPExperimentJSON( ampExperimentJSON ) ) {
 			return false;
 		}
-		if ( ! isValidPropertySelection( getPropertyID() ) ) {
-			return false;
-		}
-		if ( ! isValidProfileSelection( getProfileID() ) ) {
-			return false;
-		}
-		// If the property ID is valid (non-create) the internal ID must be valid as well.
-		if ( isValidPropertyID( getPropertyID() ) && ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) ) {
-			return false;
-		}
-		// Do existing tag check last.
-		if ( hasExistingTagPermission() === false ) {
+		// Require optimize ID to be either empty (if impossible to determine)
+		// or valid.
+		const optimizeID = getOptimizeID();
+		if ( '' !== optimizeID && ! isValidOptimizeID( optimizeID ) ) {
 			return false;
 		}
 
@@ -183,7 +145,7 @@ export const selectors = {
 	/**
 	 * Checks whether changes are currently being submitted.
 	 *
-	 * @since 1.8.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if submitting, `false` if not.
@@ -201,4 +163,3 @@ export default {
 	resolvers,
 	selectors,
 };
-
