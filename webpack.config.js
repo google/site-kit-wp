@@ -31,6 +31,11 @@ const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 
+/**
+ * WordPress dependencies
+ */
+const DependencyExtractionWebpackPlugin = require( '@wordpress/dependency-extraction-webpack-plugin' );
+
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
@@ -141,6 +146,27 @@ const webpackConfig = ( mode ) => {
 					failOnError: true,
 					allowAsyncCycles: false,
 					cwd: process.cwd(),
+				} ),
+				new DependencyExtractionWebpackPlugin( {
+					injectPolyfill: false,
+					useDefaults: false,
+					combineAssets: true,
+					requestToExternal: ( request ) => {
+						if ( request.startsWith( './assets/js/googlesitekit-' ) ) {
+							const handle = request.substring( './assets/js/'.length ).replace( '.js', '' );
+							if ( siteKitExternals[ handle ] ) {
+								return siteKitExternals[ handle ];
+							}
+						}
+					},
+					requestToHandle: ( request ) => {
+						if ( request.startsWith( './assets/js/googlesitekit-' ) ) {
+							const handle = request.substring( './assets/js/'.length ).replace( '.js', '' );
+							if ( siteKitExternals[ handle ] ) {
+								return handle;
+							}
+						}
+					},
 				} ),
 			],
 			optimization: {
