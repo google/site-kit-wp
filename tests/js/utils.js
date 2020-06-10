@@ -87,6 +87,23 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 };
 
 /**
+ * Mutes a fetch request to the given URL once.
+ *
+ * Useful for mocking the given URL for the purpose of preventing a fetch error
+ * where the response itself is not significant but the request should not fail.
+ * Sometimes a different response may be required to match the expected type,
+ * but for anything else, a full mock should be used.
+ *
+ * @since n.e.x.t
+ *
+ * @param {RegExp} urlMatcher Regular expression for matching the request URL.
+ * @param {*}      [response] Optional. Response to return.
+ */
+export const muteFetch = ( urlMatcher, response = {} ) => {
+	fetch.doMockOnceIf( urlMatcher, JSON.stringify( response ), { status: 200 } );
+};
+
+/**
  * Register all Site Kit stores on a registry.
  *
  * Use this to register every available Site Kit store on a registry.

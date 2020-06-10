@@ -146,6 +146,8 @@ class Notification extends Component {
 			module,
 			moduleName,
 			pageIndex,
+			anchorLink,
+			anchorLinkLabel,
 		} = this.props;
 
 		if ( getCache( `notification::dismissed::${ id }` ) ) {
@@ -218,6 +220,13 @@ class Notification extends Component {
 					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
 						{ title }
 					</h3>
+				}
+				{ anchorLink && anchorLinkLabel &&
+					<p className="googlesitekit-publisher-win__link">
+						<Link href={ anchorLink }>
+							{ anchorLinkLabel }
+						</Link>
+					</p>
 				}
 				{ description &&
 					<div className="googlesitekit-publisher-win__desc">
@@ -389,6 +398,8 @@ Notification.propTypes = {
 	showOnce: PropTypes.bool,
 	onCTAClick: PropTypes.func,
 	onDismiss: PropTypes.func,
+	anchorLink: PropTypes.string,
+	anchorLinkLabel: PropTypes.string,
 };
 
 Notification.defaultProps = {

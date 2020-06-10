@@ -87,7 +87,7 @@ describe( 'modules/adsense settings', () => {
 						);
 
 					// Ensure initial settings from server are present.
-					registry.dispatch( STORE_NAME ).receiveSettings( { useSnippet: false } );
+					registry.dispatch( STORE_NAME ).receiveGetSettings( { useSnippet: false } );
 
 					registry.dispatch( STORE_NAME ).setUseSnippet( true );
 					await registry.dispatch( STORE_NAME ).saveUseSnippet();
@@ -158,7 +158,7 @@ describe( 'modules/adsense settings', () => {
 
 			it( 'receives useSnippet and integrates into settings store', () => {
 				// Simulate having loaded settings (useSnippet as false).
-				registry.dispatch( STORE_NAME ).receiveSettings( {
+				registry.dispatch( STORE_NAME ).receiveGetSettings( {
 					useSnippet: false,
 					accountStatus: 'test-status',
 				} );
@@ -352,7 +352,7 @@ describe( 'modules/adsense settings', () => {
 
 				// Despite receiving settings, the value should not be updated
 				// as it was already set.
-				registry.dispatch( STORE_NAME ).receiveSettings( { accountStatus: 'another-status' } );
+				registry.dispatch( STORE_NAME ).receiveGetSettings( { accountStatus: 'another-status' } );
 				expect( registry.select( STORE_NAME ).getOriginalAccountStatus() ).toEqual( value );
 			} );
 		} );
