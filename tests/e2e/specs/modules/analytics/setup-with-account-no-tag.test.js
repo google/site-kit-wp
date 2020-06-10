@@ -19,17 +19,15 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, deactivatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
 import {
-	activateAMPWithMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setSearchConsoleProperty,
-	setupAnalytics,
 	wpApiFetch,
 	useRequestInterception,
 	pageWait,
@@ -207,22 +205,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: '' } );
 			await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: '' } );
 			await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: '' } );
-		} );
-	} );
-
-	describe( 'Homepage AMP', () => {
-		beforeEach( async () => {
-			await activateAMPWithMode( 'primary' );
-			await setupAnalytics();
-		} );
-		afterEach( async () => {
-			await deactivatePlugin( 'amp' );
-		} );
-		it( 'validates for logged-in users', async () => {
-			await expect( '/' ).toHaveValidAMPForUser();
-		} );
-		it( 'validates for non-logged-in users', async () => {
-			await expect( '/' ).toHaveValidAMPForVisitor();
 		} );
 	} );
 } );
