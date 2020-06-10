@@ -141,5 +141,9 @@
 @import "components/settings/googlesitekit-settings-module-header";
 @import "components/settings/googlesitekit-settings-notice";
 
+// Widget Styles
+@import "widgets/widget-area";
+@import "widgets/widget-context";
+
 // Utilities
 @import "utilities/margin";

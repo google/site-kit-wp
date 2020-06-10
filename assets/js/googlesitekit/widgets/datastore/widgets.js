@@ -242,6 +242,30 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Returns a single widget, by slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state  Data store's state.
+	 * @param {string} slug   Widget slug.
+	 * @return {Object|undefined} A widget object, if one exists.
+	 */
+	getWidget: createRegistrySelector( ( select ) => ( state, slug ) => {
+		invariant( slug, 'slug is required to get a widget.' );
+
+		const { widgets } = state;
+
+		const registryKey = select( STORE_NAME ).getWidgetRegistryKey();
+
+		const widget = widgets[ slug ];
+		if ( widget && WidgetComponents[ registryKey ] ) {
+			widget.component = WidgetComponents[ registryKey ][ widget.slug ];
+		}
+
+		return widget;
+	} ),
+
+	/**
 	 * Returns the registry key being used for this registry's widgets.
 	 *
 	 * We key each registry with an Integer, so we don't share registered widgets
