@@ -40,7 +40,7 @@ describe( 'modules/analytics profiles', () => {
 	describe( 'selectors', () => {
 		describe( 'hasProvisioningScope', () => {
 			it( 'returns undefined if granted scopes not loaded yet', async () => {
-				registry.dispatch( CORE_USER ).receiveAuthentication( {
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
 					authenticated: true,
 					requiredScopes: [],
 					grantedScopes: undefined,
@@ -50,7 +50,7 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'returns false if scope has not been granted', async () => {
-				registry.dispatch( CORE_USER ).receiveAuthentication( {
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
 					authenticated: true,
 					requiredScopes: [],
 					grantedScopes: [],
@@ -60,7 +60,7 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'returns true if scope has been granted', async () => {
-				registry.dispatch( CORE_USER ).receiveAuthentication( {
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
 					authenticated: true,
 					requiredScopes: [],
 					grantedScopes: [ 'some-scope', PROVISIONING_SCOPE ],
@@ -72,7 +72,7 @@ describe( 'modules/analytics profiles', () => {
 
 		describe( 'hasEditScope', () => {
 			it( 'returns undefined if granted scopes not loaded yet', async () => {
-				registry.dispatch( CORE_USER ).receiveAuthentication( {
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
 					authenticated: true,
 					requiredScopes: [],
 					grantedScopes: undefined,
@@ -82,7 +82,7 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'returns false if scope has not been granted', async () => {
-				registry.dispatch( CORE_USER ).receiveAuthentication( {
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
 					authenticated: true,
 					requiredScopes: [],
 					grantedScopes: [],
@@ -92,7 +92,7 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'returns true if scope has been granted', async () => {
-				registry.dispatch( CORE_USER ).receiveAuthentication( {
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
 					authenticated: true,
 					requiredScopes: [],
 					grantedScopes: [ 'some-scope', EDIT_SCOPE ],
