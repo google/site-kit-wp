@@ -31,7 +31,6 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics profiles', () => {
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -39,9 +38,8 @@ describe( 'modules/analytics profiles', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
 		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( STORE_NAME ).receiveSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -182,7 +180,7 @@ describe( 'modules/analytics profiles', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.profiles, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.profiles, { propertyID } );
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
 
@@ -212,9 +210,7 @@ describe( 'modules/analytics profiles', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getProfiles( testPropertyID );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingProfiles[ testPropertyID ] === false
+					() => registry.select( STORE_NAME ).isDoingGetProfiles( testPropertyID ) === false
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );

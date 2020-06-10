@@ -27,6 +27,7 @@ import { createRegistry } from '@wordpress/data';
 import API from 'googlesitekit-api';
 import {
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../tests/js/utils';
@@ -99,7 +100,7 @@ describe( 'createNotificationsStore store', () => {
 			it( 'does not fail when there are no notifications', () => {
 				dispatch.removeNotification( 'not_a_real_id' );
 
-				muteConsole( 'error' ); //Ignore the API fetch error here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toEqual( undefined );
 			} );
 
@@ -109,7 +110,7 @@ describe( 'createNotificationsStore store', () => {
 
 				dispatch.removeNotification( 'not_a_real_id' );
 
-				muteConsole( 'error' ); //Ignore the API fetch error here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toEqual( [ notification ] );
 			} );
 
@@ -133,7 +134,7 @@ describe( 'createNotificationsStore store', () => {
 				const state = store.getState();
 
 				expect( state.clientNotifications ).toMatchObject( {} );
-				muteConsole( 'error' ); // Mute API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toMatchObject( {} );
 			} );
 
@@ -165,28 +166,29 @@ describe( 'createNotificationsStore store', () => {
 			} );
 		} );
 
-		describe( 'fetchNotifications', () => {
+		describe( 'fetchGetNotifications', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
 					fetchMock.get(
 						/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
 						{ body: [], status: 200 }
 					);
-					dispatch.fetchNotifications();
+
+					dispatch.fetchGetNotifications();
 				} ).not.toThrow();
 			} );
 		} );
 
-		describe( 'receiveNotifications', () => {
-			it( 'requires the notifications param', () => {
+		describe( 'receiveGetNotifications', () => {
+			it( 'requires the response param', () => {
 				expect( () => {
-					dispatch.receiveNotifications();
-				} ).toThrow( 'notifications is required.' );
+					dispatch.receiveGetNotifications();
+				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'receives and sets notifications', () => {
 				const notifications = [ { id: 'test_notification' } ];
-				dispatch.receiveNotifications( notifications );
+				dispatch.receiveGetNotifications( notifications, {} );
 
 				const state = store.getState();
 
@@ -238,7 +240,7 @@ describe( 'createNotificationsStore store', () => {
 				// the selector has run in this test. This ensures `undefined` is not
 				// returned when server notifications haven't loaded yet, but client
 				// notifications have been dispatched.
-				muteConsole( 'error' ); // Ignore the API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toEqual( [ notification ] );
 			} );
 
@@ -256,9 +258,7 @@ describe( 'createNotificationsStore store', () => {
 				muteConsole( 'error' );
 				select.getNotifications();
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingNotifications === false,
+					() => select.hasFinishedResolution( 'getNotifications' ),
 				);
 
 				const notifications = select.getNotifications();
@@ -270,7 +270,7 @@ describe( 'createNotificationsStore store', () => {
 	} );
 
 	describe( 'controls', () => {
-		describe( 'FETCH_NOTIFICATIONS', () => {
+		describe( 'FETCH_GET_NOTIFICATIONS', () => {
 			it( 'requests from the correct API endpoint', async () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
@@ -289,7 +289,10 @@ describe( 'createNotificationsStore store', () => {
 					}
 				);
 
-				const result = await storeDefinition.controls.FETCH_NOTIFICATIONS();
+				const result = await storeDefinition.controls.FETCH_GET_NOTIFICATIONS( {
+					payload: { params: {} },
+					type: 'FETCH_GET_NOTIFICATIONS',
+				} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.

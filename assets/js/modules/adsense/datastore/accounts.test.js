@@ -31,7 +31,6 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense accounts', () => {
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -39,7 +38,6 @@ describe( 'modules/adsense accounts', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
 	} );
 
 	afterAll( () => {
@@ -78,7 +76,7 @@ describe( 'modules/adsense accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts are already present', async () => {
-				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 
@@ -105,9 +103,7 @@ describe( 'modules/adsense accounts', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingAccounts === false,
+					() => registry.select( STORE_NAME ).isFetchingGetAccounts() === false,
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );

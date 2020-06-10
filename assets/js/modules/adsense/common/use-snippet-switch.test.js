@@ -38,7 +38,7 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 
 const getSetupRegistry = ( useSnippetValue ) => {
 	return ( registry ) => {
-		registry.dispatch( STORE_NAME ).receiveSettings( {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			useSnippet: useSnippetValue,
 		} );
 	};

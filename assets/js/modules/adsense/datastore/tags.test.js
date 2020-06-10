@@ -31,7 +31,6 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense tags', () => {
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -39,7 +38,6 @@ describe( 'modules/adsense tags', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
 	} );
 
 	afterAll( () => {
@@ -131,9 +129,7 @@ describe( 'modules/adsense tags', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getTagPermission( clientID );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingTagPermission[ clientID ] === false,
+					() => registry.select( STORE_NAME ).isFetchingGetTagPermission( clientID ) === false,
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -145,7 +141,7 @@ describe( 'modules/adsense tags', () => {
 
 		describe( 'hasExistingTag', () => {
 			it( 'returns true if an existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-12345678' );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-12345678' );
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
@@ -158,7 +154,7 @@ describe( 'modules/adsense tags', () => {
 			} );
 
 			it( 'returns false if no existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
@@ -212,11 +208,10 @@ describe( 'modules/adsense tags', () => {
 			it( "returns true if this user has permission to access this client's tag", async () => {
 				const { accountID, permission, clientID } = fixtures.tagPermissionAccess;
 
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID,
-					clientID,
 					permission,
-				} );
+				}, { clientID } );
 
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( clientID );
 
@@ -234,11 +229,10 @@ describe( 'modules/adsense tags', () => {
 			it( 'returns false if no existing tag exists', async () => {
 				const { accountID, permission, clientID } = fixtures.tagPermissionNoAccess;
 
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID,
-					clientID,
 					permission,
-				} );
+				}, { clientID } );
 
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( clientID );
 
@@ -264,12 +258,11 @@ describe( 'modules/adsense tags', () => {
 
 		describe( 'hasExistingTagPermission', () => {
 			it( 'returns true if an existing tag exists and the user has permission for it', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-12345678' );
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-12345678' );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID: 'pub-12345678',
-					clientID: 'ca-pub-12345678',
 					permission: true,
-				} );
+				}, { clientID: 'ca-pub-12345678' } );
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
@@ -282,12 +275,11 @@ describe( 'modules/adsense tags', () => {
 			} );
 
 			it( 'returns false if an existing tag exists and the user does not have permission for it', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-12345678' );
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-12345678' );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID: 'pub-12345678',
-					clientID: 'ca-pub-12345678',
 					permission: false,
-				} );
+				}, { clientID: 'ca-pub-12345678' } );
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
@@ -300,7 +292,7 @@ describe( 'modules/adsense tags', () => {
 			} );
 
 			it( 'returns null if no existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 

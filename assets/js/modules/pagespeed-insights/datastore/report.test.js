@@ -49,7 +49,7 @@ describe( 'modules/pagespeed-insights report', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'fetchReport', () => {
+		describe( 'fetchGetReport', () => {
 			it( 'fetches and returns a report as response', async () => {
 				const strategy = 'desktop';
 				const url = 'http://example.com/';
@@ -59,7 +59,7 @@ describe( 'modules/pagespeed-insights report', () => {
 					{ body: fixtures.pagespeedDesktop, status: 200 },
 				);
 
-				const { response } = await registry.dispatch( STORE_NAME ).fetchReport( url, strategy );
+				const { response } = await registry.dispatch( STORE_NAME ).fetchGetReport( url, strategy );
 
 				expect( response ).toEqual( fixtures.pagespeedDesktop );
 			} );
@@ -106,7 +106,7 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveReport( fixtures.pagespeedMobile, { url, strategy } );
+				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy } );
 
 				const report = registry.select( STORE_NAME ).getReport( url, strategy );
 

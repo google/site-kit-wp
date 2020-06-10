@@ -28,66 +28,38 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { isValidAccountID } from '../util';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 // Actions
-const FETCH_CLIENTS = 'FETCH_CLIENTS';
-const START_FETCH_CLIENTS = 'START_FETCH_CLIENTS';
-const FINISH_FETCH_CLIENTS = 'FINISH_FETCH_CLIENTS';
-const CATCH_FETCH_CLIENTS = 'CATCH_FETCH_CLIENTS';
-
-const RECEIVE_CLIENTS = 'RECEIVE_CLIENTS';
 const RESET_CLIENTS = 'RESET_CLIENTS';
 
-export const INITIAL_STATE = {
-	isFetchingClients: {},
+const fetchGetClientsStore = createFetchStore( {
+	baseName: 'getClients',
+	controlCallback: ( { accountID } ) => {
+		return API.get( 'modules', 'adsense', 'clients', { accountID }, {
+			useCache: false,
+		} );
+	},
+	reducerCallback: ( state, clients, { accountID } ) => {
+		return {
+			...state,
+			clients: {
+				...state.clients,
+				[ accountID ]: [ ...clients ],
+			},
+		};
+	},
+	argsToParams: ( accountID ) => {
+		invariant( accountID, 'accountID is required.' );
+		return { accountID };
+	},
+} );
+
+const BASE_INITIAL_STATE = {
 	clients: {},
 };
 
-export const actions = {
-	*fetchClients( accountID ) {
-		invariant( accountID, 'accountID is required.' );
-
-		let response, error;
-
-		yield {
-			payload: { accountID },
-			type: START_FETCH_CLIENTS,
-		};
-
-		try {
-			response = yield {
-				payload: { accountID },
-				type: FETCH_CLIENTS,
-			};
-
-			yield actions.receiveClients( response, { accountID } );
-
-			yield {
-				payload: { accountID },
-				type: FINISH_FETCH_CLIENTS,
-			};
-		} catch ( err ) {
-			error = err;
-
-			yield {
-				payload: { error, accountID },
-				type: CATCH_FETCH_CLIENTS,
-			};
-		}
-
-		return { response, error };
-	},
-
-	receiveClients( clients, { accountID } ) {
-		invariant( Array.isArray( clients ), 'clients must be an array.' );
-		invariant( accountID, 'accountID is required.' );
-
-		return {
-			payload: { accountID, clients },
-			type: RECEIVE_CLIENTS,
-		};
-	},
-
+const baseActions = {
 	*resetClients() {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 
@@ -101,65 +73,8 @@ export const actions = {
 	},
 };
 
-export const controls = {
-	[ FETCH_CLIENTS ]: ( { payload: { accountID } } ) => {
-		return API.get( 'modules', 'adsense', 'clients', { accountID }, {
-			useCache: false,
-		} );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
+const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
-		case FETCH_CLIENTS: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isFetchingClients: {
-					...state.isFetchingClients,
-					[ accountID ]: true,
-				},
-			};
-		}
-
-		case RECEIVE_CLIENTS: {
-			const { accountID, clients } = payload;
-
-			return {
-				...state,
-				clients: {
-					...state.clients,
-					[ accountID ]: [ ...clients ],
-				},
-			};
-		}
-
-		case FINISH_FETCH_CLIENTS: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isFetchingClients: {
-					...state.isFetchingClients,
-					[ accountID ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_CLIENTS: {
-			const { accountID, error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingClients: {
-					...state.isFetchingClients,
-					[ accountID ]: false,
-				},
-			};
-		}
-
 		case RESET_CLIENTS: {
 			const {
 				clientID,
@@ -188,7 +103,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
+const baseResolvers = {
 	*getClients( accountID ) {
 		if ( undefined === accountID || ! isValidAccountID( accountID ) ) {
 			return;
@@ -203,11 +118,11 @@ export const resolvers = {
 			return;
 		}
 
-		yield actions.fetchClients( accountID );
+		yield fetchGetClientsStore.actions.fetchGetClients( accountID );
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets all Google AdSense clients this account can access.
 	 *
@@ -228,11 +143,22 @@ export const selectors = {
 	},
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetClientsStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;
