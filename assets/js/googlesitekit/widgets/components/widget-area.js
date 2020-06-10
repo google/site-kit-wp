@@ -46,9 +46,9 @@ const WidgetArea = ( { area } ) => {
 					'mdc-layout-grid__cell--span-4-phone',
 				) }>
 					{ /*
-							Disabled legitimately, because these icons don't have appropriate
-							alt-text and should only be used decoratively.
-						*/ }
+						Disabled legitimately, because these icons don't have appropriate
+						alt-text and should only be used decoratively.
+					*/ }
 					{ /* eslint-disable-next-line jsx-a11y/alt-text */ }
 					<img src={ widgetArea.icon } />
 					{ widgetArea.title &&
