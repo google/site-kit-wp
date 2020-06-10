@@ -139,16 +139,18 @@ final class Plugin {
 				$transients   = new Core\Storage\Transients( $this->context );
 				$user_options = new Core\Storage\User_Options( $this->context, get_current_user_id() );
 
-				$assets = new Core\Assets\Assets( $this->context );
-				$assets->register();
-
 				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients );
 				$authentication->register();
+
+				$permissions = new Core\Permissions\Permissions( $this->context, $authentication );
+				$permissions->register();
 
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication );
 				$modules->register();
 
-				( new Core\Permissions\Permissions( $this->context, $authentication ) )->register();
+				$assets = new Core\Assets\Assets( $this->context );
+				$assets->register();
+
 				( new Core\Util\Tracking( $this->context, $user_options ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
 				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
