@@ -37,7 +37,6 @@ import * as fixtures from './__fixtures__';
 describe( 'modules/adsense report', () => {
 	let apiFetchSpy;
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -45,7 +44,6 @@ describe( 'modules/adsense report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
@@ -97,7 +95,7 @@ describe( 'modules/adsense report', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveReport( fixtures.report, { options } );
+				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.report, { options } );
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 
@@ -133,10 +131,7 @@ describe( 'modules/adsense report', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getReport( options );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					// This hash must remain stable, so hard-coding it here ensures it is the case.
-					() => store.getState().isFetchingReport[ '029df8a6f771dcfe67c270ef5f3fa62a' ] === false,
+					() => registry.select( STORE_NAME ).isFetchingGetReport( options ) === false,
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );

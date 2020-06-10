@@ -27,31 +27,68 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import DefaultModuleSettings from '../components/DefaultModuleSettings';
+import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
-// Actions
-const START_FETCH_SET_MODULE_ACTIVATION = 'START_FETCH_SET_MODULE_ACTIVATION';
-const FETCH_SET_MODULE_ACTIVATION = 'FETCH_SET_MODULE_ACTIVATION';
-const FINISH_FETCH_SET_MODULE_ACTIVATION = 'FINISH_FETCH_SET_MODULE_ACTIVATION';
-const CATCH_FETCH_SET_MODULE_ACTIVATION = 'CATCH_FETCH_SET_MODULE_ACTIVATION';
-const START_FETCH_MODULES = 'START_FETCH_MODULES';
-const FETCH_MODULES = 'FETCH_MODULES';
-const FINISH_FETCH_MODULES = 'FINISH_FETCH_MODULES';
-const CATCH_FETCH_MODULES = 'CATCH_FETCH_MODULES';
-const RECEIVE_MODULES = 'RECEIVE_MODULES';
-const REGISTER_MODULE = 'REGISTER_MODULE';
+// Actions.
+const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
 
-export const INITIAL_STATE = {
+const fetchGetModulesStore = createFetchStore( {
+	baseName: 'getModules',
+	controlCallback: () => {
+		return API.get( 'core', 'modules', 'list', null, {
+			useCache: false,
+		} );
+	},
+	reducerCallback: ( state, modules ) => {
+		return {
+			...state,
+			isAwaitingModulesRefresh: false,
+			modules: modules.reduce( ( acc, module ) => {
+				return { ...acc, [ module.slug ]: module };
+			}, {} ),
+		};
+	},
+} );
+
+const fetchSetModuleActivationStore = createFetchStore( {
+	baseName: 'setModuleActivation',
+	controlCallback: ( { slug, active } ) => {
+		return API.set( 'core', 'modules', 'activation', {
+			slug,
+			active,
+		} );
+	},
+	reducerCallback: ( state ) => {
+		// Updated module activation state is handled by re-fetching module
+		// data instead, so this reducer just sets the below flag.
+		return {
+			...state,
+			isAwaitingModulesRefresh: true,
+		};
+	},
+	argsToParams: ( slug, active ) => {
+		invariant( slug, 'slug is required.' );
+		invariant( active !== undefined, 'active is required.' );
+		return {
+			slug,
+			active,
+		};
+	},
+} );
+
+const BASE_INITIAL_STATE = {
 	modules: undefined,
-	isFetchingSetModuleActivation: {},
-	isFetchingModules: false,
+	// This value is to indicate that modules data needs to be refreshed after
+	// a module activation update, since the activation is technically complete
+	// before this data has been refreshed.
+	isAwaitingModulesRefresh: false,
 };
 
-export const actions = {
+const baseActions = {
 	/**
-	 * Activate a module on the server.
+	 * Activates a module on the server.
 	 *
 	 * Activate a module (based on the slug provided).
 	 *
@@ -61,12 +98,18 @@ export const actions = {
 	 * @return {Object}      Object with {response, error}
 	 */
 	*activateModule( slug ) {
-		const { response, error } = yield actions.setModuleActivation( slug, true );
+		const { response, error } = yield baseActions.setModuleActivation( slug, true );
+
+		yield {
+			payload: {},
+			type: REFETCH_AUTHENICATION,
+		};
+
 		return { response, error };
 	},
 
 	/**
-	 * Dectivate a module on the server.
+	 * Dectivates a module on the server.
 	 *
 	 * Dectivate a module (based on the slug provided).
 	 *
@@ -76,12 +119,18 @@ export const actions = {
 	 * @return {Object}      Object with {response, error}
 	 */
 	*deactivateModule( slug ) {
-		const { response, error } = yield actions.setModuleActivation( slug, false );
+		const { response, error } = yield baseActions.setModuleActivation( slug, false );
+
+		yield {
+			payload: {},
+			type: REFETCH_AUTHENICATION,
+		};
+
 		return { response, error };
 	},
 
 	/**
-	 * (De)activate a module on the server.
+	 * (De)activates a module on the server.
 	 *
 	 * POSTs to the `core/modules/activation` endpoint to set the `active` status
 	 * supplied for the give `slug`.
@@ -97,247 +146,37 @@ export const actions = {
 		invariant( slug, 'slug is required.' );
 		invariant( active !== undefined, 'active is required.' );
 
-		let response, error;
-
-		const params = { active, slug };
-
-		yield {
-			payload: { params },
-			type: START_FETCH_SET_MODULE_ACTIVATION,
-		};
-
-		try {
-			response = yield {
-				payload: { params },
-				type: FETCH_SET_MODULE_ACTIVATION,
-			};
-
-			if ( response.success === true ) {
-				// Fetch (or re-fetch) all modules, with their updated status.
-				yield actions.fetchModules();
-			}
-
-			yield {
-				payload: { params },
-				type: FINISH_FETCH_SET_MODULE_ACTIVATION,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { params, error },
-				type: CATCH_FETCH_SET_MODULE_ACTIVATION,
-			};
+		const { response, error } = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation( slug, active );
+		if ( response?.success === true ) {
+			// Fetch (or re-fetch) all modules, with their updated status.
+			yield fetchGetModulesStore.actions.fetchGetModules();
 		}
 
 		return { response, error };
 	},
+};
 
-	/**
-	 * Dispatches an action that creates an HTTP request.
-	 *
-	 * Requests the `core/modules/list` endpoint.
-	 *
-	 * @since 1.8.0
-	 * @private
-	 *
-	 * @return {Object} Object with {response, error}
-	 */
-	*fetchModules() {
-		let response, error;
-
-		yield {
-			payload: {},
-			type: START_FETCH_MODULES,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_MODULES,
-			};
-
-			yield actions.receiveModules( response );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_MODULES,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_MODULES,
-			};
-		}
-
-		return { response, error };
-	},
-
-	/**
-	 * Stores modules received from the REST API.
-	 *
-	 * @since 1.5.0
-	 * @private
-	 *
-	 * @param {Array} modules Modules from the API.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveModules( modules ) {
-		invariant( modules, 'modules is required.' );
-
-		return {
-			payload: { modules },
-			type: RECEIVE_MODULES,
-		};
-	},
-
-	/**
-	 * @param {string}          slug                         Module slug.
-	 * @param {Object}          settings                     Module settings.
-	 * @param {string}          [settings.name]              Optional. Module name. Default is the slug.
-	 * @param {string}          [settings.description]       Optional. Module description. Default empty string.
-	 * @param {string}          [settings.icon]              Optional. Module icon. Default empty string.
-	 * @param {number}          [settings.order]             Optional. Numeric indicator for module order. Default 10.
-	 * @param {string}          [settings.homepage]          Optional. Module homepage URL. Default empty string.
-	 * @param {boolean}         [settings.internal]          Optional. Whether the module is considered internal. Default false.
-	 * @param {React.Component} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
-	 * @return {Object} Redux-style action.
-	 */
-	registerModule( slug, settings = {} ) {
-		invariant( slug, 'module slug is required' );
-
-		const mergedModuleSettings = {
-			name: slug,
-			description: null,
-			icon: null,
-			order: 10,
-			homepage: null,
-			internal: false,
-			settingsComponent: DefaultModuleSettings,
-			...settings,
-		};
-
-		return {
-			payload: { slug, settings: mergedModuleSettings },
-			type: REGISTER_MODULE,
-		};
+export const baseControls = {
+	[ REFETCH_AUTHENICATION ]: () => {
+		return API.get( 'core', 'user', 'authentication', { timestamp: Date.now() }, { useCache: false } );
 	},
 };
 
-export const controls = {
-	[ FETCH_SET_MODULE_ACTIVATION ]: ( { payload: { params } } ) => {
-		return API.set( 'core', 'modules', 'activation', params );
-	},
-	[ FETCH_MODULES ]: () => {
-		return API.get( 'core', 'modules', 'list', null, { useCache: false } );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case START_FETCH_SET_MODULE_ACTIVATION: {
-			const { slug } = payload.params;
-
-			return {
-				...state,
-				isFetchingSetModuleActivation: {
-					...state.isFetchingSetModuleActivation,
-					[ slug ]: true,
-				},
-			};
-		}
-
-		case FINISH_FETCH_SET_MODULE_ACTIVATION: {
-			const { slug } = payload.params;
-
-			return {
-				...state,
-				isFetchingSetModuleActivation: {
-					...state.isFetchingSetModuleActivation,
-					[ slug ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_SET_MODULE_ACTIVATION: {
-			const { slug } = payload.params;
-
-			return {
-				...state,
-				error: payload.error,
-				isFetchingSetModuleActivation: {
-					...state.isFetchingSetModuleActivation,
-					[ slug ]: false,
-				},
-			};
-		}
-
-		case START_FETCH_MODULES: {
-			return {
-				...state,
-				isFetchingModules: true,
-			};
-		}
-
-		case RECEIVE_MODULES: {
-			const { modules } = payload;
-
-			return {
-				...state,
-				modules: modules.reduce( ( acc, module ) => {
-					return { ...acc, [ module.slug ]: module };
-				}, {} ),
-			};
-		}
-
-		case FINISH_FETCH_MODULES: {
-			return {
-				...state,
-				isFetchingModules: false,
-			};
-		}
-
-		case CATCH_FETCH_MODULES: {
-			return {
-				...state,
-				error: payload.error,
-				isFetchingModules: false,
-			};
-		}
-
-		case REGISTER_MODULE: {
-			const { modules: existingModules } = state;
-			const { slug, settings } = payload;
-			return {
-				...state,
-				modules: {
-					...existingModules,
-					[ slug ]: settings,
-				},
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-};
-
-export const resolvers = {
+const baseResolvers = {
 	*getModules() {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const existingModules = registry.select( STORE_NAME ).getModules();
 
 		if ( ! existingModules ) {
-			yield actions.fetchModules();
+			yield fetchGetModulesStore.actions.fetchGetModules();
 		}
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
-	 * Get the list of modules registered for use with Site Kit.
+	 * Gets the list of modules registered for use with Site Kit.
 	 *
 	 * A module is a section of Site Kit that relates to a particular service,
 	 * like Google Analytics or Google PageSpeed modules. They can provide
@@ -374,7 +213,7 @@ export const selectors = {
 	},
 
 	/**
-	 * Get a specific module by slug.
+	 * Gets a specific module by slug.
 	 *
 	 * Returns a specific module by its slug.
 	 * Returns `undefined` if state is still loading or if said module doesn't exist.
@@ -404,7 +243,7 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Check a module's activation status.
+	 * Checks a module's activation status.
 	 *
 	 * Returns `true` if the module exists and is active.
 	 * Returns `false` if the module exists but is not active.
@@ -434,7 +273,7 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Check if a module's status is changing.
+	 * Checks if a module's status is changing.
 	 *
 	 * Returns `true` if the module exists and is changing its `active` flag.
 	 * Returns `false` if the module exists but is not changing its `active` flag.
@@ -446,16 +285,45 @@ export const selectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(boolean|undefined)} Activation change status; `undefined` if state is still loading or if no module with that slug exists.
 	 */
-	isSettingModuleActivation: ( state, slug ) => {
-		return state.isFetchingSetModuleActivation[ slug ];
-	},
+	isSettingModuleActivation: createRegistrySelector( ( select ) => ( state, slug ) => {
+		// Return undefined if modules not loaded or invalid slug.
+		if ( ! select( STORE_NAME ).getModule( slug ) ) {
+			return undefined;
+		}
+
+		// Check if the module is being activated.
+		if ( select( STORE_NAME ).isFetchingSetModuleActivation( slug, true ) ) {
+			return true;
+		}
+
+		// Check if the module is being deactivated.
+		if ( select( STORE_NAME ).isFetchingSetModuleActivation( slug, false ) ) {
+			return true;
+		}
+
+		// Check if modules data still needs to be refreshed after activation
+		// update.
+		return state.isAwaitingModulesRefresh;
+	} ),
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetModulesStore,
+	fetchSetModuleActivationStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		controls: baseControls,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;
