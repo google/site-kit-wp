@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies
@@ -28,130 +29,33 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-// Actions
-const FETCH_REPORT = 'FETCH_REPORT';
-const START_FETCH_REPORT = 'START_FETCH_REPORT';
-const FINISH_FETCH_REPORT = 'FINISH_FETCH_REPORT';
-const CATCH_FETCH_REPORT = 'CATCH_FETCH_REPORT';
+const fetchGetReportStore = createFetchStore( {
+	baseName: 'getReport',
+	controlCallback: ( { options } ) => {
+		return API.get( 'modules', 'adsense', 'earnings', options );
+	},
+	reducerCallback: ( state, report, { options } ) => {
+		return {
+			...state,
+			reports: {
+				...state.reports,
+				[ stringifyObject( options ) ]: report,
+			},
+		};
+	},
+	argsToParams: ( options ) => {
+		invariant( isPlainObject( options ), 'options must be an object.' );
+		return { options };
+	},
+} );
 
-const RECEIVE_REPORT = 'RECEIVE_REPORT';
-
-export const INITIAL_STATE = {
-	isFetchingReport: {},
+const BASE_INITIAL_STATE = {
 	reports: {},
 };
 
-export const actions = {
-	*fetchReport( options ) {
-		invariant( 'object' === typeof options, 'options must be an object.' );
-
-		let response, error;
-
-		yield {
-			payload: { options },
-			type: START_FETCH_REPORT,
-		};
-
-		try {
-			response = yield {
-				payload: { options },
-				type: FETCH_REPORT,
-			};
-
-			yield actions.receiveReport( response, { options } );
-
-			yield {
-				payload: { options },
-				type: FINISH_FETCH_REPORT,
-			};
-		} catch ( err ) {
-			error = err;
-
-			yield {
-				payload: { error, options },
-				type: CATCH_FETCH_REPORT,
-			};
-		}
-
-		return { response, error };
-	},
-
-	receiveReport( report, { options } ) {
-		invariant( 'object' === typeof report, 'report must be an array.' );
-		invariant( 'object' === typeof options, 'options must be an object.' );
-
-		return {
-			payload: { options, report },
-			type: RECEIVE_REPORT,
-		};
-	},
-};
-
-export const controls = {
-	[ FETCH_REPORT ]: ( { payload: { options } } ) => {
-		return API.get( 'modules', 'adsense', 'earnings', options );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case FETCH_REPORT: {
-			const { options } = payload;
-
-			return {
-				...state,
-				isFetchingReport: {
-					...state.isFetchingReport,
-					[ stringifyObject( options ) ]: true,
-				},
-			};
-		}
-
-		case RECEIVE_REPORT: {
-			const { options, report } = payload;
-
-			return {
-				...state,
-				reports: {
-					...state.reports,
-					[ stringifyObject( options ) ]: report,
-				},
-			};
-		}
-
-		case FINISH_FETCH_REPORT: {
-			const { options } = payload;
-
-			return {
-				...state,
-				isFetchingReport: {
-					...state.isFetchingReport,
-					[ stringifyObject( options ) ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_REPORT: {
-			const { options, error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingReport: {
-					...state.isFetchingReport,
-					[ stringifyObject( options ) ]: false,
-				},
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-};
-
-export const resolvers = {
+const baseResolvers = {
 	*getReport( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
 		const existingReport = registry.select( STORE_NAME ).getReport( options );
@@ -162,11 +66,11 @@ export const resolvers = {
 			return;
 		}
 
-		yield actions.fetchReport( options );
+		yield fetchGetReportStore.actions.fetchGetReport( options );
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets a Google AdSense report for the given options.
 	 *
@@ -191,11 +95,20 @@ export const selectors = {
 	},
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetReportStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

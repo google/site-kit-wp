@@ -37,7 +37,6 @@ import * as fixtures from './__fixtures__';
 describe( 'modules/analytics tags', () => {
 	let apiFetchSpy;
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -45,7 +44,6 @@ describe( 'modules/analytics tags', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
@@ -159,9 +157,7 @@ describe( 'modules/analytics tags', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getTagPermission( propertyID );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingTagPermission[ propertyID ] === false,
+					() => registry.select( STORE_NAME ).isFetchingGetTagPermission( propertyID ) === false,
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
@@ -173,7 +169,7 @@ describe( 'modules/analytics tags', () => {
 
 		describe( 'hasExistingTag', () => {
 			it( 'returns true if an existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( 'UA-12345678-1' );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'UA-12345678-1' );
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
@@ -186,7 +182,7 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns false if no existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
@@ -243,11 +239,10 @@ describe( 'modules/analytics tags', () => {
 			it( "returns true if this user has permission to access this property's tag", async () => {
 				const { accountID, permission, propertyID } = fixtures.getTagPermissionsAccess;
 
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID,
-					propertyID,
 					permission,
-				} );
+				}, { propertyID } );
 
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( propertyID );
 
@@ -264,11 +259,10 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns false if no existing tag exists', async () => {
 				const { accountID, permission, propertyID } = fixtures.getTagPermissionsNoAccess;
 
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID,
-					propertyID,
 					permission,
-				} );
+				}, { propertyID } );
 
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( propertyID );
 
@@ -299,12 +293,11 @@ describe( 'modules/analytics tags', () => {
 
 		describe( 'hasExistingTagPermission', () => {
 			it( 'returns true if an existing tag exists and the user has permission for it', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( 'UA-12345678-1' );
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'UA-12345678-1' );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID: '12345678',
-					propertyID: 'UA-12345678-1',
 					permission: true,
-				} );
+				}, { propertyID: 'UA-12345678-1' } );
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
@@ -317,12 +310,11 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns false if an existing tag exists and the user does not have permission for it', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( 'UA-12345678-1' );
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'UA-12345678-1' );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID: '12345678',
-					propertyID: 'UA-12345678-1',
 					permission: false,
-				} );
+				}, { propertyID: 'UA-12345678-1' } );
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
@@ -335,7 +327,7 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns null if no existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 

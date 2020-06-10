@@ -37,7 +37,6 @@ import * as fixtures from './__fixtures__';
 describe( 'modules/analytics properties', () => {
 	let apiFetchSpy;
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -45,10 +44,10 @@ describe( 'modules/analytics properties', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
+
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( STORE_NAME ).receiveSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -192,7 +191,7 @@ describe( 'modules/analytics properties', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
 
 				const properties = registry.select( STORE_NAME ).getProperties( testAccountID );
 
@@ -230,9 +229,7 @@ describe( 'modules/analytics properties', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingPropertiesProfiles[ fakeAccountID ] === false,
+					() => registry.select( STORE_NAME ).isDoingGetProperties( fakeAccountID ) === false,
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
@@ -247,7 +244,7 @@ describe( 'modules/analytics properties', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const accountID = testAccountID;
 
-				registry.dispatch( STORE_NAME ).receiveProperties( properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 
 				const findProperty = properties[ 1 ];
 				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
@@ -259,7 +256,7 @@ describe( 'modules/analytics properties', () => {
 				const { properties } = fixtures.propertiesProfiles;
 				const accountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 
-				registry.dispatch( STORE_NAME ).receiveProperties( [], { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
 
 				const findProperty = properties[ 1 ];
 				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
