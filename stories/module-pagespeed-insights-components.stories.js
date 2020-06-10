@@ -35,8 +35,8 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 	.add( 'Dashboard widget', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
-			dispatch( STORE_NAME ).receiveReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
 			dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
 		};
 		return (
