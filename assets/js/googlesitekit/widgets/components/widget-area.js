@@ -52,10 +52,10 @@ const WidgetArea = ( { area } ) => {
 					{ /* eslint-disable-next-line jsx-a11y/alt-text */ }
 					<img src={ widgetArea.icon } />
 					{ widgetArea.title &&
-					<h3 className="
-									googlesitekit-heading-3
-									googlesitekit-widget-area-header__title
-								">
+					<h3 className={ classnames(
+						'googlesitekit-heading-3',
+						'googlesitekit-widget-area-header__title'
+					) }>
 						{ widgetArea.title }
 					</h3> }
 					{ widgetArea.subtitle &&
