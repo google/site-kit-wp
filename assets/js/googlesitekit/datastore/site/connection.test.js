@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -36,7 +31,6 @@ import { STORE_NAME } from './constants';
 
 describe( 'core/site connection', () => {
 	const responseConnected = { connected: true, resettable: true, setupCompleted: true };
-	let apiFetchSpy;
 	let registry;
 	let select;
 	let store;
@@ -49,8 +43,6 @@ describe( 'core/site connection', () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
 		select = registry.select( STORE_NAME );
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -59,7 +51,6 @@ describe( 'core/site connection', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -93,14 +84,10 @@ describe( 'core/site connection', () => {
 	describe( 'selectors', () => {
 		describe( 'getConnection', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
-					)
-					.mockResponseOnce(
-						JSON.stringify( responseConnected ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: responseConnected, status: 200 }
+				);
 
 				const initialConnection = select.getConnection();
 				// The connection info will be its initial value while the connection
@@ -114,11 +101,12 @@ describe( 'core/site connection', () => {
 
 				const connection = select.getConnection();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( connection ).toEqual( responseConnected );
 
 				const connectionSelect = select.getConnection();
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
 				expect( connectionSelect ).toEqual( connection );
 			} );
 
@@ -132,7 +120,7 @@ describe( 'core/site connection', () => {
 					.hasFinishedResolution( 'getConnection' )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 				expect( connection ).toEqual( responseConnected );
 			} );
 
@@ -142,14 +130,10 @@ describe( 'core/site connection', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				select.getConnection();
@@ -161,21 +145,17 @@ describe( 'core/site connection', () => {
 
 				const connection = select.getConnection();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( connection ).toEqual( undefined );
 			} );
 		} );
 
 		describe( 'isConnected', () => {
 			it( 'uses a resolver get all connection info', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
-					)
-					.mockResponseOnce(
-						JSON.stringify( responseConnected ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: responseConnected, status: 200 }
+				);
 
 				const initialIsConnected = select.isConnected();
 				// The connection info will be its initial value while the connection
@@ -189,7 +169,7 @@ describe( 'core/site connection', () => {
 
 				const isConnected = select.isConnected();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isConnected ).toEqual( responseConnected.connected );
 			} );
 
@@ -199,14 +179,10 @@ describe( 'core/site connection', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				select.isConnected();
@@ -218,7 +194,7 @@ describe( 'core/site connection', () => {
 
 				const isConnected = select.isConnected();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isConnected ).toEqual( undefined );
 			} );
 
@@ -232,14 +208,10 @@ describe( 'core/site connection', () => {
 
 		describe( 'isResettable', () => {
 			it( 'uses a resolver get all connection info', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
-					)
-					.mockResponseOnce(
-						JSON.stringify( responseConnected ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: responseConnected, status: 200 }
+				);
 
 				const initialIsResettable = select.isResettable();
 				// The connection info will be its initial value while the connection
@@ -253,7 +225,7 @@ describe( 'core/site connection', () => {
 
 				const isResettable = select.isResettable();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isResettable ).toEqual( responseConnected.resettable );
 			} );
 
@@ -263,14 +235,10 @@ describe( 'core/site connection', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				select.isResettable();
@@ -282,7 +250,7 @@ describe( 'core/site connection', () => {
 
 				const isResettable = select.isResettable();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isResettable ).toEqual( undefined );
 			} );
 
@@ -296,14 +264,10 @@ describe( 'core/site connection', () => {
 
 		describe( 'isSetupCompleted', () => {
 			it( 'uses a resolver get all connection info', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
-					)
-					.mockResponseOnce(
-						JSON.stringify( responseConnected ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: responseConnected, status: 200 }
+				);
 
 				const initialIsSetupCompleted = select.isSetupCompleted();
 				// The connection info will be its initial value while the connection
@@ -317,7 +281,7 @@ describe( 'core/site connection', () => {
 
 				const isSetupCompleted = select.isSetupCompleted();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isSetupCompleted ).toEqual( responseConnected.setupCompleted );
 			} );
 
@@ -327,14 +291,10 @@ describe( 'core/site connection', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				select.isSetupCompleted();
@@ -346,7 +306,7 @@ describe( 'core/site connection', () => {
 
 				const isSetupCompleted = select.isSetupCompleted();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isSetupCompleted ).toEqual( undefined );
 			} );
 

@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -29,12 +24,12 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
+	muteConsole,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 
 describe( 'modules/optimize settings', () => {
-	let apiFetchSpy;
 	let registry;
 
 	const validSettings = {
@@ -53,7 +48,6 @@ describe( 'modules/optimize settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -62,7 +56,6 @@ describe( 'modules/optimize settings', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -70,34 +63,32 @@ describe( 'modules/optimize settings', () => {
 			it( 'dispatches saveSettings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( validSettings ),
-						{ status: 200 }
-					);
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
+					{ body: validSettings, status: 200 }
+				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( fetch ).toHaveBeenCalled();
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
+					{
+						body: {
+							data: validSettings,
+						},
+					}
+				);
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
 			} );
 
 			it( 'handles an error if set while saving settings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( wpError ),
-						{ status: 500 }
-					);
-
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
+					{ body: wpError, status: 500 }
+				);
+				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).getSettings() ).toEqual( validSettings );
@@ -107,14 +98,10 @@ describe( 'modules/optimize settings', () => {
 			it( 'invalidates Optimize API cache on success', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( validSettings ),
-						{ status: 200 }
-					);
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
+					{ body: validSettings, status: 200 }
+				);
 
 				const cacheKey = createCacheKey( 'modules', 'optimize', 'arbitrary-datapoint' );
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
