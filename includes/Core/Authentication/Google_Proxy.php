@@ -100,14 +100,12 @@ class Google_Proxy {
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */
 	public function get_user_fields() {
-		$current_user = wp_get_current_user();
-
-		$user_roles = $current_user && $current_user->exists() && ! empty( $current_user->roles ) ? $current_user->roles : array();
+		$user_roles = wp_get_current_user()->roles;
 		// If multisite, also consider network administrators.
 		if ( is_multisite() && current_user_can( 'manage_network' ) ) {
 			$user_roles[] = 'network_administrator';
 		}
-		$user_roles = array_values( array_unique( $user_roles ) );
+		$user_roles = array_unique( $user_roles );
 
 		return array(
 			'user_roles' => implode( ',', $user_roles ),
