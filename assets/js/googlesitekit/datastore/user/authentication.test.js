@@ -23,11 +23,11 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
-import fetchMock from 'fetch-mock';
 
 describe( 'core/user authentication', () => {
 	const coreUserDataExpectedResponse = {
@@ -58,12 +58,7 @@ describe( 'core/user authentication', () => {
 	describe( 'actions', () => {
 		describe( 'fetchGetAuthentication', () => {
 			it( 'does not require any params', () => {
-				// Create a mock to avoid triggering a network request error.
-				// The return value is irrelevant to the test.
-				fetchMock.getOnce(
-					coreUserDataEndpointRegExp,
-					{ body: {}, status: 200 }
-				);
+				muteFetch( coreUserDataEndpointRegExp );
 				expect( () => {
 					registry.dispatch( STORE_NAME ).fetchGetAuthentication();
 				} ).not.toThrow();
@@ -194,13 +189,7 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
-				// Create a mock to avoid triggering a network request error.
-				// The return value is irrelevant to the test.
-				fetchMock.getOnce(
-					coreUserDataEndpointRegExp,
-					{ body: {}, status: 200 }
-				);
-
+				muteFetch( coreUserDataEndpointRegExp );
 				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
 				expect( isAuthenticated ).toEqual( undefined );
 			} );
@@ -255,13 +244,7 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
-				// Create a mock to avoid triggering a network request error.
-				// The return value is irrelevant to the test.
-				fetchMock.getOnce(
-					coreUserDataEndpointRegExp,
-					{ body: {}, status: 200 }
-				);
-
+				muteFetch( coreUserDataEndpointRegExp );
 				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
 				expect( grantedScopes ).toEqual( undefined );
 			} );
@@ -315,13 +298,7 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
-				// Create a mock to avoid triggering a network request error.
-				// The return value is irrelevant to the test.
-				fetchMock.getOnce(
-					coreUserDataEndpointRegExp,
-					{ body: {}, status: 200 }
-				);
-
+				muteFetch( coreUserDataEndpointRegExp );
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
 				expect( requiredScopes ).toEqual( undefined );
 			} );
@@ -376,14 +353,8 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
-				// Create a mock to avoid triggering a network request error.
-				// The return value is irrelevant to the test.
-				fetchMock.getOnce(
-					coreUserDataEndpointRegExp,
-					{ body: {}, status: 200 }
-				);
+				muteFetch( coreUserDataEndpointRegExp );
 				const unsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();
-
 				expect( unsatisfiedScopes ).toEqual( undefined );
 			} );
 		} );

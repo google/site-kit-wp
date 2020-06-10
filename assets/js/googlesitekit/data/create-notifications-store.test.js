@@ -168,12 +168,8 @@ describe( 'createNotificationsStore store', () => {
 
 		describe( 'fetchGetNotifications', () => {
 			it( 'does not require any params', () => {
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( () => {
-					fetchMock.get(
-						/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
-						{ body: [], status: 200 }
-					);
-
 					dispatch.fetchGetNotifications();
 				} ).not.toThrow();
 			} );

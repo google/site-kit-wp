@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -56,10 +57,7 @@ describe( 'core/site connection', () => {
 		describe( 'fetchGetConnection', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
-					fetchMock.getOnce(
-						/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-						{ body: responseConnected, status: 200 }
-					);
+					muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 					registry.dispatch( STORE_NAME ).fetchGetConnection();
 				} ).not.toThrow();
 			} );
@@ -201,10 +199,7 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: responseConnected, status: 200 }
-				);
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 				const isConnected = select.isConnected();
 
 				expect( isConnected ).toEqual( undefined );
@@ -260,10 +255,7 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: {}, status: 200 }
-				);
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 				const isResettable = select.isResettable();
 
 				expect( isResettable ).toEqual( undefined );
@@ -319,10 +311,7 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: {}, status: 200 }
-				);
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 				const isSetupCompleted = select.isSetupCompleted();
 
 				expect( isSetupCompleted ).toEqual( undefined );

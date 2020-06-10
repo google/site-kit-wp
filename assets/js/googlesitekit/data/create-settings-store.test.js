@@ -27,6 +27,7 @@ import { createRegistry } from '@wordpress/data';
 import API from 'googlesitekit-api';
 import {
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../tests/js/utils';
@@ -96,7 +97,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'fetchGetSettings', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
-					fetchMock.get( /^\/google-site-kit\/v1\/core\/site\/data\/settings/, { body: {}, status: 200 } );
+					muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/settings/ );
 					dispatch.fetchGetSettings();
 				} ).not.toThrow();
 			} );
@@ -305,10 +306,7 @@ describe( 'createSettingsStore store', () => {
 
 				// If settings are set on the client, they must be available even
 				// if settings have not been loaded from the server yet.
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
-					{ body: {}, status: 200 }
-				);
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/settings/ );
 				expect( select.getSettings() ).toEqual( values );
 			} );
 

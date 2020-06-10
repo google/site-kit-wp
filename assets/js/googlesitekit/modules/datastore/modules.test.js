@@ -34,7 +34,6 @@ import {
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
-import fetchMock from 'fetch-mock';
 
 describe( 'core/modules modules', () => {
 	const fixturesKeyValue = FIXTURES.reduce( ( acc, module ) => {
@@ -191,7 +190,7 @@ describe( 'core/modules modules', () => {
 				// Optimize should be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
 
-				// The third request to update the modules shouldn't be called, because the
+				// The fourth request to update the modules shouldn't be called, because the
 				// activation request failed.
 				expect( fetchMock ).toHaveBeenCalledTimes( 3 );
 				expect( isActiveAfter ).toEqual( false );
@@ -326,7 +325,7 @@ describe( 'core/modules modules', () => {
 				// Analytics should still be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
 
-				// The third request to update the modules shouldn't be called, because the
+				// The fourth request to update the modules shouldn't be called, because the
 				// deactivation request failed.
 				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( isActiveAfter ).toEqual( true );
@@ -336,10 +335,7 @@ describe( 'core/modules modules', () => {
 		describe( 'fetchGetModules', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
-					fetchMock.getOnce(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-						{ body: FIXTURES, status: 200 }
-					);
+					muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
 					registry.dispatch( STORE_NAME ).fetchGetModules();
 				} ).not.toThrow();
 			} );
@@ -478,12 +474,7 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
 				// This triggers a network request, so ignore the error.
-				// muteConsole( 'error' );
 				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
 
 				const module = registry.select( STORE_NAME ).getModule( 'analytics' );
@@ -579,7 +570,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {
-				fetchMock.getOnce( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, { body: [], status: 200 } );
+				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
+
 				const isActive = registry.select( STORE_NAME ).isModuleActive( 'analytics' );
 
 				expect( isActive ).toEqual( undefined );

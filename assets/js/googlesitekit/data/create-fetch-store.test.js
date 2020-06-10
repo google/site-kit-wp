@@ -37,7 +37,6 @@ import {
 	unsubscribeFromAll,
 } from '../../../../tests/js/utils';
 import { createFetchStore } from './create-fetch-store';
-import fetchMock from 'fetch-mock';
 
 const STORE_NAME = 'test/some-data';
 const STORE_PARAMS = {
