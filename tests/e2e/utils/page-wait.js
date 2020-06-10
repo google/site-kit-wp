@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-const E2E_PAGE_WAIT = 250;
-export { E2E_PAGE_WAIT };
+export const E2E_PAGE_WAIT = 250;
 
 /**
  * Set the page to wait for the passed time. Defaults to 250 milliseconds.

@@ -32,6 +32,7 @@ import {
 	setupAnalytics,
 	wpApiFetch,
 	useRequestInterception,
+	pageWait,
 } from '../../../utils';
 
 async function proceedToSetUpAnalytics() {
@@ -129,7 +130,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property z/i } );
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile z/i } );
 
-			await page.waitFor( 500 );
+			await pageWait( 500 );
 			await expect( page ).toClick( 'button', { text: /configure analytics/i } );
 
 			await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
