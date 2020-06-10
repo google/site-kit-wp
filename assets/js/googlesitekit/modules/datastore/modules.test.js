@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -33,6 +34,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
+import fetchMock from 'fetch-mock';
 
 describe( 'core/modules modules', () => {
 	const fixturesKeyValue = FIXTURES.reduce( ( acc, module ) => {
@@ -91,6 +93,10 @@ describe( 'core/modules modules', () => {
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: responseWithOptimizeEnabled, status: 200 }
 				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					{ body: {}, status: 200 }
+				);
 
 				registry.dispatch( STORE_NAME ).activateModule( slug );
 
@@ -113,10 +119,15 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
+				// Ensure the request to re-fetch authentication has a timestamp parameter.
+				expect(
+					getQueryArg( fetchMock.calls()[ 3 ][ 0 ], 'timestamp' )
+				).not.toBe( undefined );
+
 				// Optimize should be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
 
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 4 );
 				expect( isActiveAfter ).toEqual( true );
 			} );
 
@@ -145,9 +156,14 @@ describe( 'core/modules modules', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
+
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{ body: response, status: 500 }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					{ body: {}, status: 200 }
 				);
 
 				muteConsole( 'error' );
@@ -177,7 +193,7 @@ describe( 'core/modules modules', () => {
 
 				// The third request to update the modules shouldn't be called, because the
 				// activation request failed.
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveBeenCalledTimes( 3 );
 				expect( isActiveAfter ).toEqual( false );
 			} );
 		} );
@@ -212,7 +228,7 @@ describe( 'core/modules modules', () => {
 
 				expect( isActiveBefore ).toEqual( true );
 
-				fetchMock.post(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{ body: { success: true }, status: 200 }
 				);
@@ -220,6 +236,11 @@ describe( 'core/modules modules', () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: responseWithAnalyticsDisabled, status: 200 }
+				);
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					{ body: {}, status: 200 }
 				);
 
 				await registry.dispatch( STORE_NAME ).deactivateModule( slug );
@@ -237,10 +258,16 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
+				// Ensure the request to re-fetch authentication has a timestamp parameter.
+				expect(
+					getQueryArg( fetchMock.calls()[ 3 ][ 0 ], 'timestamp' )
+				).not.toBe( undefined );
+
 				// Analytics should no longer be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
+
 				expect( isActiveAfter ).toEqual( false );
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 4 );
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
@@ -269,10 +296,17 @@ describe( 'core/modules modules', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
+
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{ body: response, status: 500 }
 				);
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					{ body: {}, status: 200 }
+				);
+
 				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).deactivateModule( slug );
 
@@ -294,7 +328,7 @@ describe( 'core/modules modules', () => {
 
 				// The third request to update the modules shouldn't be called, because the
 				// deactivation request failed.
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( isActiveAfter ).toEqual( true );
 			} );
 		} );
