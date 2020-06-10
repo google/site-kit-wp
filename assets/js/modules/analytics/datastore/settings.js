@@ -46,7 +46,7 @@ export const actions = {
 	/**
 	 * Submits all changes currently present in the client, persisting them on the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return {Object} Empty object on success, object with `error` property on failure.
 	 */
