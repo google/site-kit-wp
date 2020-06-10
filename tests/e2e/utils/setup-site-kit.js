@@ -1,5 +1,5 @@
 /**
- * core/site data store: notifications.
+ * setupSiteKit utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,23 +17,20 @@
  */
 
 /**
- * Internal dependencies
+ * WordPress dependencies
  */
-import { actions, selectors } from './index';
+import { activatePlugin } from '@wordpress/e2e-test-utils';
 
-describe( 'core/site notifications', () => {
-	it( 'has appropriate notification actions', () => {
-		const actionsToExpect = [
-			'addNotification',
-			'removeNotification',
-		];
-		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
-	} );
+/**
+ * Internal depedencies
+ */
+import {
+	setSiteVerification,
+	setSearchConsoleProperty,
+} from '.';
 
-	it( 'has appropriate notification selectors', () => {
-		const selectorsToExpect = [
-			'getNotifications',
-		];
-		expect( Object.keys( selectors ) ).toEqual( expect.arrayContaining( selectorsToExpect ) );
-	} );
-} );
+export const setupSiteKit = async ( { verified, property } = {} ) => {
+	await activatePlugin( 'e2e-tests-auth-plugin' );
+	await setSiteVerification( verified );
+	await setSearchConsoleProperty( property );
+};

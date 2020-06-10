@@ -9,19 +9,28 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-add_action(
-	'init',
-	function () {
-		if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
-			return;
-		}
+use Google\Site_Kit\Core\Assets\Script;
 
-		wp_enqueue_script(
+add_filter(
+	'googlesitekit_assets',
+	function ( $assets ) {
+		$assets[] = new Script(
 			'googlesitekit-e2e-utilities',
-			plugins_url( 'dist/assets/js/e2e-utilities.js', GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
-			array( 'googlesitekit-apifetch-data' ),
-			md5_file( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . 'dist/assets/js/e2e-utilities.js' ),
-			true
+			array(
+				'src'          => plugins_url( 'dist/assets/js/e2e-utilities.js', GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
+				'dependencies' => array( 'googlesitekit-apifetch-data' ),
+				'version'      => md5_file( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . 'dist/assets/js/e2e-utilities.js' ),
+			)
 		);
+
+		return $assets;
+	}
+);
+// Enqueue E2E Utilities globally `wp_print_scripts` is called on admin and front.
+// If asset is not registered enqueuing is a no-op.
+add_action(
+	'wp_print_scripts',
+	function () {
+		wp_enqueue_script( 'googlesitekit-e2e-utilities' );
 	}
 );
