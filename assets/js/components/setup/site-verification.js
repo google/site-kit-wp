@@ -77,7 +77,7 @@ class SiteVerification extends Component {
 
 				// Our current siteURL has been verified. Proceed to next step.
 				if ( verified ) {
-					trackEvent( 'verification_setup', 'verification_check_true' );
+					await trackEvent( 'verification_setup', 'verification_check_true' );
 
 					const response = await this.insertSiteVerification( identifier );
 
@@ -86,7 +86,7 @@ class SiteVerification extends Component {
 						return true;
 					}
 				} else {
-					trackEvent( 'verification_setup', 'verification_check_false' );
+					await trackEvent( 'verification_setup', 'verification_check_false' );
 				}
 
 				this.setState( {
