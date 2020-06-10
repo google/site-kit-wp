@@ -95,9 +95,10 @@ describe( 'trackEvent', () => {
 		expect( pushArgs.length ).toEqual( 1 );
 		expect( Object.prototype.toString.apply( pushArgs[ 0 ] ) ).toEqual( '[object Arguments]' );
 		expect( pushArgs[ 0 ].length ).toEqual( 3 );
-		expect( pushArgs[ 0 ][ 0 ] ).toEqual( 'event' );
-		expect( pushArgs[ 0 ][ 1 ] ).toEqual( 'name' );
-		expect( pushArgs[ 0 ][ 2 ] ).toEqual( expect.objectContaining( {
+		const [ event, eventName, eventData ] = pushArgs[ 0 ];
+		expect( event ).toEqual( 'event' );
+		expect( eventName ).toEqual( 'name' );
+		expect( eventData ).toEqual( expect.objectContaining( {
 			send_to: config.trackingID,
 			event_category: 'category',
 			event_label: 'label',

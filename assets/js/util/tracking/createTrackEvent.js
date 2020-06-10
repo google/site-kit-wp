@@ -37,17 +37,17 @@ export default function createTrackEvent( config, dataLayerTarget ) {
 			return Promise.resolve();
 		}
 
-		return new Promise( ( resolve ) => {
-			const eventData = {
-				send_to: trackingID,
-				event_category: eventCategory,
-				event_label: eventLabel,
-				event_value: eventValue,
-				dimension1: referenceSiteURL,
-				dimension2: isFirstAdmin ? 'true' : 'false',
-				dimension3: userIDHash,
-			};
+		const eventData = {
+			send_to: trackingID,
+			event_category: eventCategory,
+			event_label: eventLabel,
+			event_value: eventValue,
+			dimension1: referenceSiteURL,
+			dimension2: isFirstAdmin ? 'true' : 'false',
+			dimension3: userIDHash,
+		};
 
+		return new Promise( ( resolve ) => {
 			let resolved = false;
 			const resolveOnce = ( eventSent ) => {
 				if ( resolved ) {
