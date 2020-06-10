@@ -25,11 +25,12 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
+	deactivateUtilityPlugins,
+	pageWait,
 	setSiteVerification,
 	setSearchConsoleProperty,
 	switchDateRange,
 	useRequestInterception,
-	deactivateUtilityPlugins,
 } from '../../../utils';
 import * as dashboardRequests from './fixtures/dashboard';
 import * as dashboardDetailsRequests from './fixtures/dashboard-details';
@@ -90,7 +91,7 @@ describe( 'date range filtering on dashboard views', () => {
 		// Switching back will not trigger a data request as it has been cached.
 		await switchDateRange( 'last 14 days', 'last 28 days' );
 		// Need to wait for short time for UI to update, however no selectors/requests to listen for.
-		await page.waitFor( 250 );
+		await pageWait();
 		expect( await getTotalImpressions() ).toBe( TOTAL_IMPRESSIONS_28_DAYS );
 
 		mockBatchResponse = last7DaysNoData;
@@ -135,7 +136,7 @@ describe( 'date range filtering on dashboard views', () => {
 		// Switching back will not trigger a data request as it has been cached.
 		await switchDateRange( 'last 14 days', 'last 28 days' );
 		// Need to wait for short time for UI to update, however no selectors/requests to listen for.
-		await page.waitFor( 250 );
+		await pageWait();
 		expect( await getTotalImpressions() ).toBe( TOTAL_IMPRESSIONS_28_DAYS );
 	} );
 
@@ -160,7 +161,7 @@ describe( 'date range filtering on dashboard views', () => {
 		// Switching back will not trigger a data request as it has been cached.
 		await switchDateRange( 'last 14 days', 'last 28 days' );
 		// Need to wait for short time for UI to update, however no selectors/requests to listen for.
-		await page.waitFor( 250 );
+		await pageWait();
 		expect( await getTotalImpressions() ).toBe( TOTAL_IMPRESSIONS_28_DAYS );
 	} );
 } );
