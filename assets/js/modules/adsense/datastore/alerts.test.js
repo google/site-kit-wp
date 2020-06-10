@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -35,7 +30,6 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense alerts', () => {
-	let apiFetchSpy;
 	let registry;
 
 	beforeAll( () => {
@@ -44,8 +38,6 @@ describe( 'modules/adsense alerts', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -54,7 +46,6 @@ describe( 'modules/adsense alerts', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -64,14 +55,10 @@ describe( 'modules/adsense alerts', () => {
 	describe( 'selectors', () => {
 		describe( 'getAlerts', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/alerts/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.alerts ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/alerts/,
+					{ body: fixtures.alerts, status: 200 }
+				);
 
 				const accountID = fixtures.accounts[ 0 ].id;
 
@@ -86,7 +73,7 @@ describe( 'modules/adsense alerts', () => {
 
 				const alerts = registry.select( STORE_NAME ).getAlerts( accountID );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( alerts ).toEqual( fixtures.alerts );
 			} );
 
@@ -104,7 +91,7 @@ describe( 'modules/adsense alerts', () => {
 					.hasFinishedResolution( 'getAlerts', [ accountID ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 				expect( alerts ).toEqual( fixtures.alerts );
 			} );
 
@@ -114,14 +101,10 @@ describe( 'modules/adsense alerts', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/alerts/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/alerts/,
+					{ body: response, status: 500 }
+				);
 
 				const fakeAccountID = 'pub-777888999';
 				muteConsole( 'error' );
@@ -130,7 +113,7 @@ describe( 'modules/adsense alerts', () => {
 					() => registry.select( STORE_NAME ).isFetchingGetAlerts( fakeAccountID ) === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const alerts = registry.select( STORE_NAME ).getAlerts( fakeAccountID );
 				expect( alerts ).toEqual( undefined );

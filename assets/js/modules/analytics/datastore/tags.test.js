@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -35,7 +30,6 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics tags', () => {
-	let apiFetchSpy;
 	let registry;
 
 	beforeAll( () => {
@@ -44,8 +38,6 @@ describe( 'modules/analytics tags', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -54,7 +46,6 @@ describe( 'modules/analytics tags', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -64,14 +55,10 @@ describe( 'modules/analytics tags', () => {
 	describe( 'selectors', () => {
 		describe( 'getTagPermission', () => {
 			it( 'returns true if a user has access to this tag', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.getTagPermissionsAccess ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
+					{ body: fixtures.getTagPermissionsAccess, status: 200 }
+				);
 
 				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
 				const accountID = fixtures.getTagPermissionsAccess.accountID;
@@ -80,9 +67,10 @@ describe( 'modules/analytics tags', () => {
 				const initialSelect = registry.select( STORE_NAME ).getTagPermission( propertyID );
 
 				// Ensure the proper parameters were sent.
-				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
 					{
-						propertyID,
+						query: { propertyID },
 					}
 				);
 
@@ -96,7 +84,7 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID );
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( permissionForTag ).toEqual( {
 					accountID,
@@ -105,14 +93,10 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns false if a user cannot access the requested tag', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.getTagPermissionsNoAccess ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
+					{ body: fixtures.getTagPermissionsNoAccess, status: 200 }
+				);
 
 				const propertyID = fixtures.getTagPermissionsNoAccess.propertyID;
 				const accountID = fixtures.getTagPermissionsNoAccess.accountID;
@@ -129,7 +113,7 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID );
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( permissionForTag ).toEqual( {
 					accountID,
@@ -143,14 +127,10 @@ describe( 'modules/analytics tags', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
+					{ body: response, status: 500 }
+				);
 
 				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
 
@@ -160,7 +140,7 @@ describe( 'modules/analytics tags', () => {
 					() => registry.select( STORE_NAME ).isFetchingGetTagPermission( propertyID ) === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID );
 				expect( permissionForTag ).toEqual( undefined );
@@ -193,10 +173,12 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				expect( hasExistingTag ).toEqual( false );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
+				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
+
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				expect( hasExistingTag ).toEqual( undefined );
@@ -206,20 +188,16 @@ describe( 'modules/analytics tags', () => {
 					.hasFinishedResolution( 'getExistingTag' )
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 		} );
 
 		describe( 'hasTagPermission', () => {
 			it( 'makes a request via the getTagPermission selector if no tag has been loaded ', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.getTagPermissionsAccess ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
+					{ body: fixtures.getTagPermissionsAccess, status: 200 }
+				);
 
 				const { propertyID } = fixtures.getTagPermissionsAccess;
 
@@ -233,7 +211,7 @@ describe( 'modules/analytics tags', () => {
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( propertyID );
 
 				expect( hasPermission ).toEqual( true );
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
 			it( "returns true if this user has permission to access this property's tag", async () => {
@@ -253,7 +231,7 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( true );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns false if no existing tag exists', async () => {
@@ -273,20 +251,16 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( false );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.getTagPermissionsAccess ),
-						{ status: 200 }
-					);
-				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.getTagPermissionsNoAccess.propertyID );
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
+					{ body: fixtures.getTagPermissionsAccess, status: 200 }
+				);
 
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.getTagPermissionsNoAccess.propertyID );
 				expect( hasPermission ).toEqual( undefined );
 			} );
 		} );
@@ -337,7 +311,7 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( null );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 		} );
 	} );
