@@ -10,6 +10,7 @@
     "at-rule-no-unknown": null,
     "declaration-property-unit-whitelist": null,
     "function-url-quotes": "always",
+    "selector-id-pattern": null,
     "selector-class-pattern": null,
     "sh-waqar/declaration-use-variable": [["/color/", { "ignoreValues": ["/^rgba/", "transparent"] }]],
     "order/properties-alphabetical-order": true,

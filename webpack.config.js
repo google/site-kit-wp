@@ -85,7 +85,7 @@ const resolve = {
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
-const webpackConfig = ( mode ) => {
+const webpackConfig = () => {
 	return [
 		// Build the settings js..
 		{
@@ -190,17 +190,14 @@ const webpackConfig = ( mode ) => {
 						test: /\.scss$/,
 						use: [
 							MiniCssExtractPlugin.loader,
-							{
-								loader: 'css-loader',
-								options: {
-									minimize: ( 'production' === mode ),
-								},
-							},
+							'css-loader',
 							'postcss-loader',
 							{
 								loader: 'sass-loader',
 								options: {
-									includePaths: [ 'node_modules' ],
+									sassOptions: {
+										includePaths: [ 'node_modules' ],
+									},
 								},
 							},
 						],
@@ -260,7 +257,7 @@ module.exports = {
 
 module.exports.default = ( ...args ) => {
 	const { includeTests, mode } = args[ 1 ];
-	const config = webpackConfig( mode );
+	const config = webpackConfig();
 
 	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.
