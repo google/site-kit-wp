@@ -1,5 +1,5 @@
 /**
- * Optimize module initialization.
+ * Optimize utility functions.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,7 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import './datastore';
+export * from './validation';

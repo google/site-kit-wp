@@ -20,6 +20,7 @@ import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../.
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
 import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
 import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
+import modulesOptimizeStore, { STORE_NAME as modulesOptimizeStoreName } from '../../assets/js/modules/optimize/datastore';
 
 /**
  * Create a registry with all available stores.
@@ -124,6 +125,7 @@ export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
 	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
 	registry.registerStore( modulesSearchConsoleStoreName, modulesSearchConsoleStore );
+	registry.registerStore( modulesOptimizeStoreName, modulesOptimizeStore );
 };
 
 const unsubscribes = [];
