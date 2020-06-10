@@ -101,7 +101,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * @param {*}      [response] Optional. Response to return.
  */
 export const muteFetch = ( urlMatcher, response = {} ) => {
-	fetch.doMockOnceIf( urlMatcher, JSON.stringify( response ), { status: 200 } );
+	fetchMock.once( urlMatcher, { body: response, status: 200 } );
 };
 
 /**

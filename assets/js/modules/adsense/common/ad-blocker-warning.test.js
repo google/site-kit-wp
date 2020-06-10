@@ -23,12 +23,14 @@ import AdBlockerWarning from './ad-blocker-warning';
 import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../datastore/constants';
 
-const setupAdBlockerRegistry = async ( registry ) => {
-	await registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
+const setupAdBlockerRegistry = ( registry ) => {
+	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+	registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
 };
 
-const setupNoAdBlockerRegistry = async ( registry ) => {
-	await registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+const setupNoAdBlockerRegistry = ( registry ) => {
+	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+	registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 };
 
 describe( 'AdBlockerWarning', () => {

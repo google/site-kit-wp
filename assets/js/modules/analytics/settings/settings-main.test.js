@@ -37,8 +37,10 @@ describe( 'SettingsMain', () => {
 	};
 
 	it( 'rolls back settings if settings have changed and is not editing', async () => {
-		fetch.doMockIf( /accounts-properties-profiles/ )
-			.mockResponse( JSON.stringify( fixtures.accountsPropertiesProfiles ) );
+		fetchMock.get(
+			/accounts-properties-profiles/,
+			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
+		);
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {} );
@@ -63,8 +65,10 @@ describe( 'SettingsMain', () => {
 	} );
 
 	it( 'does not roll back settings if settings have changed and is editing', async () => {
-		fetch.doMockIf( /accounts-properties-profiles/ )
-			.mockResponse( JSON.stringify( fixtures.accountsPropertiesProfiles ) );
+		fetchMock.get(
+			/accounts-properties-profiles/,
+			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
+		);
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {} );
