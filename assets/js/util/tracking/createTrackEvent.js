@@ -23,7 +23,7 @@ export default function createTrackEvent( config, dataLayerTarget ) {
 	 * @param {string} eventValue The event category. Optional.
 	 * @return {Promise} Promise that always resolves.
 	 */
-	return function trackEvent( eventCategory, eventName, eventLabel = '', eventValue = '' ) {
+	return async function trackEvent( eventCategory, eventName, eventLabel = '', eventValue = '' ) {
 		const {
 			isFirstAdmin,
 			referenceSiteURL,
@@ -34,7 +34,7 @@ export default function createTrackEvent( config, dataLayerTarget ) {
 
 		if ( ! trackingEnabled ) {
 			// Resolve immediately if tracking is disabled.
-			return Promise.resolve();
+			return;
 		}
 
 		const eventData = {
