@@ -1,5 +1,5 @@
 /**
- * Optimize module initialization.
+ * Optimize module entrypoint.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,4 +19,4 @@
 /**
  * Internal dependencies
  */
-import './datastore';
+import './modules/optimize';
