@@ -48,32 +48,21 @@ export default function createTrackEvent( config, dataLayerTarget ) {
 		};
 
 		return new Promise( ( resolve ) => {
-			let resolved = false;
-			const resolveOnce = ( eventSent ) => {
-				if ( resolved ) {
-					return;
-				}
-				resolved = true;
-				if ( ! eventSent ) {
-					global.console.warn( `Tracking event "${ eventName }" (category "${ eventCategory }") took too long to fire.` );
-				}
-				resolve();
-			};
-
 			// This timeout ensures a tracking event does not block the user
 			// event if it is not sent (in time).
 			// If this fails, it shouldn't reject the promise since event
 			// tracking should not result in user-facing errors. It will just
 			// trigger a console warning.
 			const failTimeout = setTimeout( () => {
-				resolveOnce( false );
+				global.console.warn( `Tracking event "${ eventName }" (category "${ eventCategory }") took too long to fire.` );
+				resolve();
 			}, 1000 );
 
 			dataLayerPush( 'event', eventName, {
 				...eventData,
 				event_callback: () => {
 					clearTimeout( failTimeout );
-					resolveOnce( true );
+					resolve();
 				},
 			} );
 		} );
