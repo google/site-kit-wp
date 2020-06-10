@@ -28,11 +28,13 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import DefaultModuleSettings from '../components/DefaultModuleSettings';
 
 const { createRegistrySelector } = Data;
 
 // Actions.
 const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
+const REGISTER_MODULE = 'REGISTER_MODULE';
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
@@ -154,12 +156,63 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	/**
+	 * @param {string}          slug                         Module slug.
+	 * @param {Object}          settings                     Module settings.
+	 * @param {string}          [settings.name]              Optional. Module name. Default is the slug.
+	 * @param {string}          [settings.description]       Optional. Module description. Default empty string.
+	 * @param {string}          [settings.icon]              Optional. Module icon. Default empty string.
+	 * @param {number}          [settings.order]             Optional. Numeric indicator for module order. Default 10.
+	 * @param {string}          [settings.homepage]          Optional. Module homepage URL. Default empty string.
+	 * @param {boolean}         [settings.internal]          Optional. Whether the module is considered internal. Default false.
+	 * @param {React.Component} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
+	 * @return {Object} Redux-style action.
+	 */
+	registerModule( slug, settings = {} ) {
+		invariant( slug, 'module slug is required' );
+
+		const mergedModuleSettings = {
+			name: slug,
+			description: null,
+			icon: null,
+			order: 10,
+			homepage: null,
+			internal: false,
+			settingsComponent: DefaultModuleSettings,
+			...settings,
+		};
+
+		return {
+			payload: { slug, settings: mergedModuleSettings },
+			type: REGISTER_MODULE,
+		};
+	},
 };
 
 export const baseControls = {
 	[ REFETCH_AUTHENICATION ]: () => {
 		return API.get( 'core', 'user', 'authentication', { timestamp: Date.now() }, { useCache: false } );
 	},
+};
+
+const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case REGISTER_MODULE: {
+			const { modules: existingModules } = state;
+			const { slug, settings } = payload;
+			return {
+				...state,
+				modules: {
+					...existingModules,
+					[ slug ]: settings,
+				},
+			};
+		}
+		default: {
+			return { ...state };
+		}
+	}
 };
 
 const baseResolvers = {
@@ -314,6 +367,7 @@ const store = Data.combineStores(
 		INITIAL_STATE: BASE_INITIAL_STATE,
 		actions: baseActions,
 		controls: baseControls,
+		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
