@@ -20,83 +20,47 @@
  * External dependencies
  */
 const gulp = require( 'gulp' );
-const livereload = require( 'gulp-livereload' );
+const imagemin = require( 'gulp-imagemin' );
+const pump = require( 'pump' );
 const del = require( 'del' );
 
 /**
  * Gulp tasks
  */
-const browserSync = require( './browsersync' );
 const copy = require( './copy' );
-const imagemin = require( './imagemin' );
 const svgmin = require( './svgmin' );
 const svgstore = require( './svgstore' );
-const webpack = require( './webpack' );
 const zip = require( './zip' );
-
-/**
- * Export loaded gulp tasks
- */
-exports['browser-sync'] = browserSync;
-exports.copy = copy;
-exports.imagemin = imagemin;
-exports.svgmin = svgmin;
-exports.svgstore = svgstore;
-exports.webpack = webpack;
-exports.zip = zip;
 
 /**
  * Shared tasks
  */
-const svg = gulp.series(
-	svgstore,
-	svgmin,
-);
-
-const build = gulp.series(
-	webpack,
-	svg,
-	imagemin,
-);
-
 function cleanRelease( cb ) {
 	del.sync( './release/**' );
 	cb();
 }
 
 /**
- * Gulp task to run all SVG processes in a sequential order.
+ * Gulp task to minify images.
  */
-exports.build = build;
-
-/**
- * Gulp task to watch for file changes and run the associated processes.
- */
-exports.watch = function() {
-	livereload.listen( { basePath: 'dist' } );
-	gulp.watch( './assets/sass/**/*.scss', [ 'build' ] );
-	gulp.watch( './assets/svg/**/*.svg', [ 'build' ] );
-	gulp.watch( './assets/js/*.js', [ 'build' ] );
-	gulp.watch( './assets/js/modules/**/*.js', [ 'build' ] );
+exports.imagemin = function( cb ) {
+	pump(
+		[
+			gulp.src( './assets/images/*' ),
+			imagemin(),
+			gulp.dest( './dist/assets/images' ),
+		],
+		cb
+	);
 };
-
-/**
- * Gulp task to livereload file changes in browser.
- */
-exports.local = gulp.series(
-	build,
-	browserSync,
-);
 
 /**
  * Gulp task to minify and combine svg's.
  */
-exports.svg = svg;
-
-/**
- * Gulp task to delete the temporary release directory.
- */
-exports['clean-release'] = cleanRelease;
+exports.svg = gulp.series(
+	svgstore,
+	svgmin,
+);
 
 /**
  * Gulp task to run the default release processes in a sequential order.
