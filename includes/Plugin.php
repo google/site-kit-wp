@@ -131,16 +131,16 @@ final class Plugin {
 		add_action( 'wp_head', $display_site_kit_meta );
 		add_action( 'login_head', $display_site_kit_meta );
 
-		$options    = new Core\Storage\Options( $this->context );
-		$transients = new Core\Storage\Transients( $this->context );
-		$assets     = new Core\Assets\Assets( $this->context );
-		$assets->register();
-
 		// Initiate the plugin on 'init' for relying on current user being set.
 		add_action(
 			'init',
-			function() use ( $options, $transients, $assets ) {
+			function() {
+				$options      = new Core\Storage\Options( $this->context );
+				$transients   = new Core\Storage\Transients( $this->context );
 				$user_options = new Core\Storage\User_Options( $this->context, get_current_user_id() );
+
+				$assets = new Core\Assets\Assets( $this->context );
+				$assets->register();
 
 				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients );
 				$authentication->register();
@@ -158,6 +158,7 @@ final class Plugin {
 				( new Core\Notifications\Notifications( $this->context, $options, $authentication ) )->register();
 				( new Core\Util\Debug_Data( $this->context, $options, $user_options, $authentication, $modules ) )->register();
 				( new Core\Admin\Standalone( $this->context ) )->register();
+				( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 
@@ -190,7 +191,6 @@ final class Plugin {
 			}
 		);
 
-		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
 		( new Core\Util\Reset( $this->context ) )->register();
 		( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 	}
