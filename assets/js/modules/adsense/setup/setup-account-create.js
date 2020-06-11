@@ -48,9 +48,9 @@ export default function SetupAccountCreate() {
 
 	const signUpURL = getCreateAccountURL( { siteURL } );
 
-	const createAccountHandler = useCallback( ( event ) => {
+	const createAccountHandler = useCallback( async ( event ) => {
 		event.preventDefault();
-		trackEvent( 'adsense_setup', 'create_adsense_account' );
+		await trackEvent( 'adsense_setup', 'create_adsense_account' );
 		global.open( signUpURL, '_blank' );
 	}, [ signUpURL ] );
 

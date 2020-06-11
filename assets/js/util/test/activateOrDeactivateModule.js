@@ -27,17 +27,14 @@ const valuesToTest = [
 ];
 
 const restApiClient = {
-	setModuleActive( slug, status ) {
-		return {
-			then() {
-				return status;
-			},
-		};
+	async setModuleActive( slug, status ) {
+		return status;
 	},
 };
 
 describe( 'activateOrDeactivateModule', () => {
-	it.each( valuesToTest )( 'should turn status for module %s to %p', ( module, status, expected ) => {
-		expect( activateOrDeactivateModule( restApiClient, module, status ) ).toStrictEqual( expected );
+	it.each( valuesToTest )( 'should turn status for module %s to %p', async ( module, status, expected ) => {
+		const response = await activateOrDeactivateModule( restApiClient, module, status );
+		expect( response ).toStrictEqual( expected );
 	} );
 } );

@@ -74,21 +74,21 @@ class DashboardSplashApp extends Component {
 		this.gotoConnectURL = this.gotoConnectURL.bind( this );
 	}
 
-	openAuthenticationSetupWizard() {
-		trackEvent( 'plugin_setup', 'setup_sitekit' );
+	async openAuthenticationSetupWizard() {
+		await trackEvent( 'plugin_setup', 'setup_sitekit' );
 
 		this.setState( {
 			showAuthenticationSetupWizard: true,
 		} );
 	}
 
-	gotoConnectURL() {
+	async gotoConnectURL() {
 		this.setState( {
 			showAuthenticationInstructionsWizard: false,
 			showAuthenticationSetupWizard: false,
 		} );
 
-		trackEvent( 'plugin_setup', 'connect_account' );
+		await trackEvent( 'plugin_setup', 'connect_account' );
 
 		document.location = this.state.connectURL;
 	}

@@ -200,14 +200,10 @@ describe( 'createFetchStore store', () => {
 
 			it( 'makes a network request based on controlCallback', async () => {
 				const expectedResponse = 'response-value';
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/
-					)
-					.mockResponseOnce(
-						JSON.stringify( expectedResponse ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+					{ body: JSON.stringify( expectedResponse ), status: 200 }
+				);
 
 				const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
 
@@ -224,14 +220,10 @@ describe( 'createFetchStore store', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/
-					)
-					.mockResponseOnce(
-						JSON.stringify( errorResponse ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+					{ body: errorResponse, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
@@ -242,15 +234,10 @@ describe( 'createFetchStore store', () => {
 			} );
 
 			it( 'sets flag for request being in progress', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/
-					)
-					.mockResponseOnce(
-						// Just return any value here.
-						JSON.stringify( { someValue: 42 } ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+					{ body: { someValue: 42 }, status: 200 }
+				);
 
 				const requestArgs = [ {}, 'aValue' ];
 
