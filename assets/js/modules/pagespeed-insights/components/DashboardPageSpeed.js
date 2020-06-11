@@ -20,7 +20,8 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -40,6 +41,7 @@ import {
 	DATA_SRC_LAB,
 	FORM_DASH_WIDGET,
 } from '../datastore/constants';
+import { sanitizeHTML } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
@@ -75,6 +77,12 @@ export default function DashboardPageSpeed() {
 	}
 
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
+	const footerLinkHTML = sprintf(
+		/* translators: 1: link attributes, 2: translated service name */
+		__( 'Learn more details at <a %1$s>%2$s</a>', 'google-site-kit' ),
+		`href="${ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url } ) }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank"`,
+		_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' )
+	);
 
 	return (
 		<div>
@@ -113,6 +121,17 @@ export default function DashboardPageSpeed() {
 				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } /> }
 				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } /> }
 			</main>
+			<footer>
+				<p
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						footerLinkHTML,
+						{
+							ALLOWED_TAGS: [ 'a' ],
+							ALLOWED_ATTR: [ 'href', 'class', 'target' ],
+						}
+					) }
+				/>
+			</footer>
 		</div>
 	);
 }
