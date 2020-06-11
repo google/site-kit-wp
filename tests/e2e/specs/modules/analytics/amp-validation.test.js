@@ -31,7 +31,7 @@ import {
 	resetSiteKit,
 } from '../../../utils';
 
-describe( 'AMP homepage validates with analytics enabled', () => {
+describe( 'AMP homepage validates with Analytics enabled', () => {
 	beforeEach( async () => {
 		await setupSiteKit();
 		await activateAMPWithMode( 'primary' );
