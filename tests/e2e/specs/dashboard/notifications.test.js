@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, visitAdminPage, deactivatePlugin } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -19,11 +19,15 @@ const goToSiteKitDashboard = async () => {
 
 describe( 'core site notifications', () => {
 	// The proxy test cannot currently be done and needs to be skipped TODO tests need to to be fixed to handle proxy tests.
-	describe.skip( 'when using proxy', () => {
+	describe( 'when using proxy', () => {
 		beforeAll( async () => {
-			await activatePlugin( 'e2e-tests-auth-plugin' );
+			await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 			await setSiteVerification();
 			await setSearchConsoleProperty();
+		} );
+
+		afterAll( async () => {
+			await deactivatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		} );
 
 		it( 'displays core site notifications on the main dashboard', async () => {
@@ -75,11 +79,14 @@ describe( 'core site notifications', () => {
 	} );
 	describe( 'when not using proxy', () => {
 		beforeAll( async () => {
-			await activatePlugin( 'e2e-tests-auth-plugin' );
+			await activatePlugin( 'e2e-tests-gcp-auth-plugin' );
 			await setSiteVerification();
 			await setSearchConsoleProperty();
 		} );
 
+		afterAll( async () => {
+			await deactivatePlugin( 'e2e-tests-gcp-auth-plugin' );
+		} );
 		it( 'does not display core site notifications on the main dashboard', async () => {
 			// Add the test notification (by default there are none).
 			await wpApiFetch( {
