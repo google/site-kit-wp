@@ -30,13 +30,43 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ReportMetric from './ReportMetric';
+import Link from '../../../components/link';
+import { sanitizeHTML } from '../../../util';
 
 export default function FieldReportMetrics( { data } ) {
+	const learnMoreLink = (
+		<Link
+			href="https://web.dev/user-centric-performance-metrics/#in-the-field"
+			external
+			inherit
+			dangerouslySetInnerHTML={ sanitizeHTML(
+				__( 'Learn more<span class="screen-reader-text"> about field data.</span>', 'google-site-kit' ),
+				{
+					ALLOWED_TAGS: [ 'span' ],
+					ALLOWED_ATTR: [ 'class' ],
+				}
+			) }
+		/>
+	);
+	if ( ! data?.loadingExperience?.metrics ) {
+		return (
+			<div>
+				<h3>
+					{ __( 'Field data unavailable', 'google-site-kit' ) }
+				</h3>
+				<p>
+					{ __( 'Field data is useful for capturing true, real-world user experience. However, the Chrome User Experience Report does not have sufficient real-world speed data for this page.', 'google-site-kit' ) }
+				</p>
+				{ learnMoreLink }
+			</div>
+		);
+	}
+
 	const {
 		FIRST_INPUT_DELAY_MS: firstInputDelay,
 		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
 		CUMULATIVE_LAYOUT_SHIFT_SCORE: cumulativeLayoutShift,
-	} = data?.loadingExperience?.metrics || {};
+	} = data.loadingExperience.metrics;
 
 	// Convert milliseconds to seconds with 1 fraction digit.
 	const lcpSeconds = ( Math.round( largestContentfulPaint.percentile / 100 ) / 10 ).toFixed( 1 );
@@ -45,6 +75,11 @@ export default function FieldReportMetrics( { data } ) {
 
 	return (
 		<div>
+			<p>
+				{ __( 'Field data is useful for capturing true, real-world user experience - but has a more limited set of metrics.', 'google-site-kit' ) }
+				{ ' ' }
+				{ learnMoreLink }
+			</p>
 			<ReportMetric
 				title={ __( 'First Input Delay', 'google-site-kit' ) }
 				description={ __( 'Helps measure your user’s first impression of your site’s interactivity and responsiveness.', 'google-site-kit' ) }
