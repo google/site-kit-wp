@@ -31,6 +31,8 @@ import { __ } from '@wordpress/i18n';
  */
 import ReportMetric from './ReportMetric';
 import { getScoreCategory } from '../dashboard/util';
+import Link from '../../../components/link';
+import { sanitizeHTML } from '../../../util';
 
 export default function LabReportMetrics( { data } ) {
 	const totalBlockingTime = data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
@@ -39,6 +41,22 @@ export default function LabReportMetrics( { data } ) {
 
 	return (
 		<div>
+			<p>
+				{ __( 'Lab data is useful for debugging performance issues, as it is collected in a controlled environment.', 'google-site-kit' ) }
+				{ ' ' }
+				<Link
+					href="https://web.dev/user-centric-performance-metrics/#in-the-lab"
+					external
+					inherit
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						__( 'Learn more<span class="screen-reader-text"> about lab data.</span>', 'google-site-kit' ),
+						{
+							ALLOWED_TAGS: [ 'span' ],
+							ALLOWED_ATTR: [ 'class' ],
+						}
+					) }
+				/>
+			</p>
 			<ReportMetric
 				title={ __( 'Total Blocking Time', 'google-site-kit' ) }
 				description={ __( 'Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms.', 'google-site-kit' ) }
