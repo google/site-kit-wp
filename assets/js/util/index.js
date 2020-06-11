@@ -507,15 +507,15 @@ export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, sta
  * Helper to toggle confirm changes button disable/enable
  * depending on the module changed settings.
  *
- * @param {string} moduleSlug      The module slug being edited.
- * @param {Object} settingsMapping The mapping between form settings names and saved settings.
- * @param {Object} settingsState   The changed settings component state to compare with.
- * @param {Object} skipDOM         Skip DOm checks/modifications, used for testing.
- * @param {Object}  _googlesitekit _googlesitekitLegacyData global; can be replaced for testing.
+ * @param {string} moduleSlug                The module slug being edited.
+ * @param {Object} settingsMapping           The mapping between form settings names and saved settings.
+ * @param {Object} settingsState             The changed settings component state to compare with.
+ * @param {Object} skipDOM                   Skip DOm checks/modifications, used for testing.
+ * @param {Object}  _googlesitekitLegacyData _googlesitekitLegacyData global; can be replaced for testing.
  * @return {(void|boolean)} True if a module has been toggled.
  */
-export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = global._googlesitekitLegacyData ) => {
-	const { settings, setupComplete } = getModulesData( _googlesitekit )[ moduleSlug ];
+export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
+	const { settings, setupComplete } = getModulesData( _googlesitekitLegacyData )[ moduleSlug ];
 	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
 
 	if ( ! setupComplete || ! confirm ) {

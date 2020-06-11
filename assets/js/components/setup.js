@@ -50,7 +50,7 @@ class Setup extends Component {
 			isSiteKitConnected,
 			isVerified,
 			needReauthenticate,
-		} = global._googlesitekitLegacyData.setup; /*eslint camelcase: 0*/
+		} = global._googlesitekitLegacyData.setup;
 
 		const { canSetup } = global._googlesitekitLegacyData.permissions;
 

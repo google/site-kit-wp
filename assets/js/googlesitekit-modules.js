@@ -29,11 +29,6 @@ if ( typeof global.googlesitekit === 'undefined' ) {
 
 if ( typeof global.googlesitekit.modules === 'undefined' ) {
 	global.googlesitekit.modules = Modules;
-} else {
-	global.googlesitekit.modules = {
-		...global.googlesitekit.modules,
-		...Modules,
-	};
 }
 
 export default Modules;

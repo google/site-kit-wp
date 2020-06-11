@@ -45,7 +45,7 @@ class DashboardSplashApp extends Component {
 			isAuthenticated,
 			isVerified,
 			hasSearchConsoleProperty,
-		} = global._googlesitekitLegacyData.setup; /*eslint camelcase: 0*/
+		} = global._googlesitekitLegacyData.setup;
 
 		const {
 			canAuthenticate,
@@ -97,7 +97,7 @@ class DashboardSplashApp extends Component {
 		// Set webpackPublicPath on-the-fly.
 		if ( global._googlesitekitLegacyData && global._googlesitekitLegacyData.publicPath ) {
 			// eslint-disable-next-line no-undef
-			__webpack_public_path__ = global._googlesitekitLegacyData.publicPath;
+			__webpack_public_path__ = global._googlesitekitLegacyData.publicPath; /*eslint camelcase: 0*/
 		}
 
 		const { proxySetupURL } = global._googlesitekitLegacyData.admin;

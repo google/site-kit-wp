@@ -45,9 +45,6 @@ import '../vendor/johnpbloch/wordpress-core/wp-admin/css/forms.css';
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 import { bootstrapFetchMocks } from './fetch-mocks';
 
-// Default Data.
-const googlesitekit = dashboardData;
-
 // Setup.
 const wp = {};
 wp.element = wp.element || {};
@@ -77,10 +74,7 @@ wp.i18n.sprintf = sprintf || {};
 global.wp = global.wp || wp;
 global.React = React;
 global.lodash = lodash;
-global._googlesitekitLegacyData = global._googlesitekitLegacyData || googlesitekit;
-global._googlesitekitLegacyData.setup = global._googlesitekitLegacyData.setup || googlesitekit.setup;
-global._googlesitekitLegacyData.admin = global._googlesitekitLegacyData.admin || googlesitekit.admin;
-global._googlesitekitLegacyData.modules = global._googlesitekitLegacyData.modules || googlesitekit.modules;
+global._googlesitekitLegacyData = dashboardData;
 global._googlesitekitLegacyData.admin.assetsRoot = './assets/';
 global._googlesitekitLegacyData.isStorybook = true;
 global._googlesitekitBaseData = {

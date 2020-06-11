@@ -40,6 +40,7 @@ import {
 	getReAuthURL,
 	moduleIcon,
 	showErrorNotification,
+	getModulesData,
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../../components/link';
@@ -149,7 +150,7 @@ class SettingsModule extends Component {
 	// Find modules that depend on a module.
 	getDependentModules() {
 		const { slug } = this.props;
-		const { modules } = global._googlesitekitLegacyData;
+		const modules = getModulesData();
 		const dependants = {};
 
 		if ( modules[ slug ].dependants ) {
