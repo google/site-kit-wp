@@ -353,11 +353,11 @@ export const extractForSparkline = ( rowData, column ) => {
  *
  * @since 1.7.0
  *
- * @param {Object}  _googlesitekit Optional. _googlesitekitLegacyData global; can be replaced for testing.
+ * @param {Object}  __googlesitekitLegacyData Optional. _googlesitekitLegacyData global; can be replaced for testing.
  * @return {Object} Object with module data, with each module keyed by its slug.
  */
-export const getModulesData = ( _googlesitekit = global._googlesitekitLegacyData ) => {
-	const modulesObj = _googlesitekit.modules;
+export const getModulesData = ( __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
+	const modulesObj = __googlesitekitLegacyData.modules;
 	if ( ! modulesObj ) {
 		return {};
 	}
@@ -380,20 +380,20 @@ export const getModulesData = ( _googlesitekit = global._googlesitekitLegacyData
 /**
  * Get the URL needed to initiate a reAuth flow.
  *
- * @param {string}  slug   The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
- * @param {boolean} status The module activation status.
- * @param {Object}  _googlesitekit _googlesitekitLegacyData global; can be replaced for testing.
+ * @param {string}  slug                     The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
+ * @param {boolean} status                   The module activation status.
+ * @param {Object}  __googlesitekitLegacyData _googlesitekitLegacyData global; can be replaced for testing.
  * @return {string} Authentication URL
  */
-export const getReAuthURL = ( slug, status, _googlesitekit = global._googlesitekitLegacyData ) => {
+export const getReAuthURL = ( slug, status, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
 	const {
 		connectURL,
 		adminRoot,
-	} = _googlesitekit.admin;
+	} = __googlesitekitLegacyData.admin;
 
-	const { needReauthenticate } = _googlesitekit.setup;
+	const { needReauthenticate } = __googlesitekitLegacyData.setup;
 
-	const { screenID } = getModulesData( _googlesitekit )[ slug ];
+	const { screenID } = getModulesData( __googlesitekitLegacyData )[ slug ];
 
 	// Special case handling for PageSpeed Insights.
 	// TODO: Refactor this out.
