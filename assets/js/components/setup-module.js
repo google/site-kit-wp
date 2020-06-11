@@ -96,6 +96,7 @@ class SetupModule extends Component {
 		} = this.props;
 
 		let blockedByParentModule = false;
+		let parentModule;
 
 		const { modules } = global.googlesitekit;
 
@@ -106,6 +107,7 @@ class SetupModule extends Component {
 			requiredModules.forEach( ( requiredModule ) => {
 				if ( ! modules[ requiredModule ].setupComplete ) {
 					blockedByParentModule = true;
+					parentModule = modules[ requiredModule ].name;
 				}
 			} );
 		}
@@ -154,8 +156,9 @@ class SetupModule extends Component {
 										name
 									)
 									: sprintf(
-										/* translators: %s: module name */
-										__( 'Set up Analytics to gain access to %s', 'google-site-kit' ),
+										/* translators: 1: required module name 2: module name */
+										__( 'Set up %1$s to gain access to %2$s', 'google-site-kit' ),
+										parentModule,
 										name
 									)
 							}
