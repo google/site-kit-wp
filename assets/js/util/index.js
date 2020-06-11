@@ -511,11 +511,11 @@ export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, sta
  * @param {Object} settingsMapping           The mapping between form settings names and saved settings.
  * @param {Object} settingsState             The changed settings component state to compare with.
  * @param {Object} skipDOM                   Skip DOm checks/modifications, used for testing.
- * @param {Object}  _googlesitekitLegacyData _googlesitekitLegacyData global; can be replaced for testing.
+ * @param {Object} __googlesitekitLegacyData _googlesitekitLegacyData global; can be replaced for testing.
  * @return {(void|boolean)} True if a module has been toggled.
  */
-export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
-	const { settings, setupComplete } = getModulesData( _googlesitekitLegacyData )[ moduleSlug ];
+export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
+	const { settings, setupComplete } = getModulesData( __googlesitekitLegacyData )[ moduleSlug ];
 	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
 
 	if ( ! setupComplete || ! confirm ) {
