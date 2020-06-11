@@ -240,14 +240,18 @@ class OptimizeSetup extends Component {
 	renderAMPSnippet() {
 		const {
 			analyticsUseSnippet,
-			ampExperimentJSON,
 			ampExperimentJSONValidated,
 		} = this.state;
+		let { ampExperimentJSON } = this.state;
 
 		const { ampEnabled } = global.googlesitekit.admin;
 
 		if ( ! analyticsUseSnippet || ! ampEnabled ) {
 			return null;
+		}
+
+		if ( typeof ampExperimentJSON !== 'string' ) {
+			ampExperimentJSON = JSON.stringify( ampExperimentJSON );
 		}
 
 		return (
