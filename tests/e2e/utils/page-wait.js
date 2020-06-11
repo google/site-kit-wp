@@ -1,5 +1,5 @@
 /**
- * setupSiteKit utility.
+ * Utlity to have the page wait for a given length.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,24 +16,18 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { activatePlugin } from '@wordpress/e2e-test-utils';
+export const E2E_PAGE_WAIT = 250;
 
 /**
- * Internal depedencies
+ * Set the page to wait for the passed time. Defaults to 250 milliseconds.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} [delay] Optional. The amount of milliseconds to wait.
  */
-import {
-	setSiteVerification,
-	setSearchConsoleProperty,
-} from '.';
-
-export const setupSiteKit = async ( { verified, property, auth = 'proxy' } = {} ) => {
-	if ( auth !== 'proxy' && auth !== 'gcp' ) {
-		throw new Error( 'Auth type must be either proxy or gcp' );
+export const pageWait = async ( delay = E2E_PAGE_WAIT ) => {
+	if ( typeof delay !== 'number' ) {
+		throw new Error( 'pageWait requires a number to be passed.' );
 	}
-	await activatePlugin( `e2e-tests-${ auth }-auth-plugin` );
-	await setSiteVerification( verified );
-	await setSearchConsoleProperty( property );
+	await page.waitFor( delay );
 };
