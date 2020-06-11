@@ -75,7 +75,7 @@ export const resolvers = {
 		}
 
 		// Global is set by ads.js entry point script.
-		const canAdsRun = global.googlesitekit && global.googlesitekit.canAdsRun;
+		const canAdsRun = global._googlesitekitLegacyData && global._googlesitekitLegacyData.canAdsRun;
 
 		yield actions.receiveIsAdBlockerActive( ! canAdsRun );
 	},

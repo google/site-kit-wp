@@ -30,7 +30,7 @@ import ErrorNotification from '../components/notifications/error-notification';
 
 class Header extends Component {
 	render() {
-		const { isAuthenticated } = global.googlesitekit.setup;
+		const { isAuthenticated } = global._googlesitekitLegacyData.setup;
 
 		return (
 			<Fragment>

@@ -55,7 +55,7 @@ if ( ! modulesData[ slug ].setupComplete ) {
 	const {
 		reAuth,
 		currentScreen,
-	} = global.googlesitekit.admin;
+	} = global._googlesitekitLegacyData.admin;
 	const id = currentScreen ? currentScreen.id : null;
 	if ( ! reAuth && 'site-kit_page_googlesitekit-module-analytics' === id ) {
 		// Setup incomplete: redirect to the setup flow.

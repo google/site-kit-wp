@@ -30,7 +30,7 @@ import { setLocaleData } from '@wordpress/i18n';
  * Loads the translations for the google-site-kit text domain.
  */
 export function loadTranslations() {
-	setLocaleData( global.googlesitekit.locale, 'google-site-kit' );
+	setLocaleData( global._googlesitekitLegacyData.locale, 'google-site-kit' );
 }
 
 /**
@@ -59,7 +59,7 @@ export const numberFormat = ( number, options = {} ) => {
  *                  E.g. `en-US` or `de-DE`
  */
 export const getLocale = ( _global = global ) => {
-	const siteKitLocale = get( _global, [ 'googlesitekit', 'locale', '', 'lang' ] );
+	const siteKitLocale = get( _global, [ '_googlesitekitLegacyData', 'locale', '', 'lang' ] );
 	if ( siteKitLocale ) {
 		const matches = siteKitLocale.match( /^(\w{2})?(_)?(\w{2})/ );
 		if ( matches && matches[ 0 ] ) {

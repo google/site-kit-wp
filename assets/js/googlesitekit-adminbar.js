@@ -55,7 +55,7 @@ export class GoogleSitekitAdminbar extends Component {
 			postID,
 			postType,
 			pageTitle,
-		} = global.googlesitekit;
+		} = global._googlesitekitLegacyData;
 		const href = getSiteKitAdminURL(
 			'googlesitekit-dashboard',
 			{
@@ -74,7 +74,7 @@ export class GoogleSitekitAdminbar extends Component {
 		const {
 			pageTitle,
 			permaLink,
-		} = global.googlesitekit;
+		} = global._googlesitekitLegacyData;
 
 		return (
 			<Fragment>

@@ -53,7 +53,7 @@ describe( 'setCache/getCache/deleteCache', () => {
 
 		expect( result ).toBeUndefined();
 
-		global.googlesitekit.admin.datacache = {};
+		global._googlesitekitLegacyData.admin.datacache = {};
 
 		global.sessionStorage = nativeSessionStorage;
 		global.localStorage = nativeLocalStorage;
@@ -79,7 +79,7 @@ describe( 'setCache/getCache/deleteCache', () => {
 
 			expect( result ).toBeUndefined();
 
-			global.googlesitekit.admin.datacache = {};
+			global._googlesitekitLegacyData.admin.datacache = {};
 			global.sessionStorage.clear();
 
 			global.localStorage = nativeLocalStorage;
@@ -106,7 +106,7 @@ describe( 'setCache/getCache/deleteCache', () => {
 
 			expect( result ).toBeUndefined();
 
-			global.googlesitekit.admin.datacache = {};
+			global._googlesitekitLegacyData.admin.datacache = {};
 			global.localStorage.clear();
 
 			global.sessionStorage = nativeSessionStorage;
