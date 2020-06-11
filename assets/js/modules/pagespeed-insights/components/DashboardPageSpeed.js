@@ -72,7 +72,7 @@ export default function DashboardPageSpeed() {
 		}
 	}, [ reportMobile, reportDesktop ] );
 
-	if ( dataSrc === undefined ) {
+	if ( ! reportMobile || ! reportDesktop || ! dataSrc ) {
 		return <ProgressBar />;
 	}
 
