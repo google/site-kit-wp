@@ -17,13 +17,11 @@ import { createAddToFilter } from '../assets/js/util/helpers';
 import Layout from '../assets/js/components/layout/layout';
 import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/dashboard/dashboard-widget-acquisition-piechart';
 import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/dashboard/dashboard-alltraffic-widget-top-acquisition-sources-table';
-import PageSpeedInsightsDashboardWidgetHomepageSpeed from '../assets/js/modules/pagespeed-insights/dashboard/dashboard-widget-homepage-speed';
 import DashboardSearchFunnelInner from '../assets/js/modules/search-console/dashboard/dashboard-widget-search-funnel-inner';
 import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/dashboard/dashboard-widget-top-level';
 import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/dashboard/dashboard-widget-top-level';
 import PostSearcher from '../assets/js/components/post-searcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
-import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 
 storiesOf( 'Dashboard', module )
 	.add( 'Module Header', () => (
@@ -68,31 +66,6 @@ storiesOf( 'Dashboard', module )
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
-	.add( 'PageSpeed Insights', () => {
-		global.googlesitekit = dashboardData;
-
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Dashboard'
-			);
-		}, 250 );
-		return (
-			<Layout className="googlesitekit-pagespeed-report">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<PageSpeedInsightsDashboardWidgetHomepageSpeed />
-					</div>
-				</div>
-			</Layout>
-		);
-	}, {
-		options: {
-			readySelector: '.googlesitekit-pagespeed-report__score-gauge',
-			delay: 1000, // Wait for table overlay to animate.
-		},
-	} )
 	.add( 'Post Searcher', () => (
 		<PostSearcher />
 	) )

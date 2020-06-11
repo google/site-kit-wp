@@ -57,21 +57,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'dashboard--pagespeed-insights',
-		kind: 'Dashboard',
-		name: 'PageSpeed Insights',
-		story: 'PageSpeed Insights',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-pagespeed-report__score-gauge',
-				delay: 1000,
-			},
-		},
-	},
-	{
 		id: 'dashboard--post-searcher',
 		kind: 'Dashboard',
 		name: 'Post Searcher',
