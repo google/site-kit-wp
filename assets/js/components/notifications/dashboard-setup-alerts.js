@@ -69,7 +69,7 @@ class DashboardSetupAlerts extends Component {
 					winData.setupTitle = modulesData[ slug ].name;
 					winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
 
-					winData = applyFilters( ` global.googlesitekit.SetupWinNotification-${ slug }`, winData );
+					winData = applyFilters( `googlesitekit.SetupWinNotification-${ slug }`, winData );
 				}
 
 				return (
