@@ -39,6 +39,10 @@ export default function LabReportMetrics( { data } ) {
 	const largestContentfulPaint = data?.lighthouseResult?.audits?.[ 'largest-contentful-paint' ];
 	const cumulativeLayoutShift = data?.lighthouseResult?.audits?.[ 'cumulative-layout-shift' ];
 
+	if ( ! totalBlockingTime || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
+		return null;
+	}
+
 	return (
 		<div>
 			<p>

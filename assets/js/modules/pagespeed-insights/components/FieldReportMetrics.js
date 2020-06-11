@@ -48,7 +48,14 @@ export default function FieldReportMetrics( { data } ) {
 			) }
 		/>
 	);
-	if ( ! data?.loadingExperience?.metrics ) {
+
+	const {
+		FIRST_INPUT_DELAY_MS: firstInputDelay,
+		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
+		CUMULATIVE_LAYOUT_SHIFT_SCORE: cumulativeLayoutShift,
+	} = data?.loadingExperience?.metrics || {};
+
+	if ( ! firstInputDelay || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
 		return (
 			<div>
 				<h3>
@@ -61,12 +68,6 @@ export default function FieldReportMetrics( { data } ) {
 			</div>
 		);
 	}
-
-	const {
-		FIRST_INPUT_DELAY_MS: firstInputDelay,
-		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
-		CUMULATIVE_LAYOUT_SHIFT_SCORE: cumulativeLayoutShift,
-	} = data.loadingExperience.metrics;
 
 	// Convert milliseconds to seconds with 1 fraction digit.
 	const lcpSeconds = ( Math.round( largestContentfulPaint.percentile / 100 ) / 10 ).toFixed( 1 );
