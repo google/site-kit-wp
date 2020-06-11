@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
+import { createTestRegistry, unsubscribeFromAll, muteFetch } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user disconnect', () => {
@@ -29,12 +29,7 @@ describe( 'core/user disconnect', () => {
 	beforeEach( () => {
 		// Create a mock to avoid triggering a network request error.
 		// The return value is irrelevant to the test.
-		fetch
-			.doMockOnceIf( coreUserDataDisconnectEndpointRegExp )
-			.mockResponseOnce(
-				JSON.stringify( {} ),
-				{ status: 200 }
-			);
+		muteFetch( coreUserDataDisconnectEndpointRegExp );
 		registry = createTestRegistry();
 	} );
 
@@ -51,10 +46,10 @@ describe( 'core/user disconnect', () => {
 	} );
 
 	describe( 'receiveDisconnect', () => {
-		it( 'requires the disconnect param', () => {
+		it( 'requires the response param', () => {
 			expect( () => {
-				registry.dispatch( STORE_NAME ).receiveDisconnected();
-			} ).toThrow( 'disconnect is required.' );
+				registry.dispatch( STORE_NAME ).receiveDisconnect();
+			} ).toThrow( 'response is required.' );
 		} );
 	} );
 } );

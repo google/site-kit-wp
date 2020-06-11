@@ -55,3 +55,6 @@ global._googlesitekitAPIFetchData = global._googlesitekitAPIFetchData || {};
 global._googlesitekitAPIFetchData.rootURL = 'http://sitekit.test/';
 global._googlesitekitAPIFetchData.nonceMiddleware = '6af976d56d';
 global._googlesitekitAPIFetchData.nonceEndpoint = 'http://sitekit.test/wp-admin/admin-ajax.php?action=rest-nonce';
+
+// Instantiate global to which we'll assign to the value imported from fetch-mock-jest during Jest's setupFilesAfterEnv execution.
+global.fetchMock = undefined;

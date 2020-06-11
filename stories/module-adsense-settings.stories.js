@@ -152,7 +152,7 @@ storiesOf( 'AdSense Module/Settings', module )
 		filterAdSenseSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 		};
 
 		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
@@ -162,8 +162,8 @@ storiesOf( 'AdSense Module/Settings', module )
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
-			dispatch( STORE_NAME ).receiveExistingTag( null );
-			dispatch( STORE_NAME ).receiveSettings( {
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				...completeSettings,
 				accountStatus: ACCOUNT_STATUS_PENDING,
 				accountSetupComplete: false,
@@ -177,8 +177,8 @@ storiesOf( 'AdSense Module/Settings', module )
 		filterAdSenseSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( null );
-			dispatch( STORE_NAME ).receiveSettings( completeSettings );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 		};
 
 		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
@@ -187,8 +187,8 @@ storiesOf( 'AdSense Module/Settings', module )
 		filterAdSenseSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( null );
-			dispatch( STORE_NAME ).receiveSettings( completeSettings );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
@@ -197,8 +197,8 @@ storiesOf( 'AdSense Module/Settings', module )
 		filterAdSenseSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( completeSettings.clientID );
-			dispatch( STORE_NAME ).receiveSettings( completeSettings );
+			dispatch( STORE_NAME ).receiveGetExistingTag( completeSettings.clientID );
+			dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
@@ -207,8 +207,8 @@ storiesOf( 'AdSense Module/Settings', module )
 		filterAdSenseSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-12345678' );
-			dispatch( STORE_NAME ).receiveSettings( completeSettings );
+			dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-12345678' );
+			dispatch( STORE_NAME ).receiveGetSettings( completeSettings );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;

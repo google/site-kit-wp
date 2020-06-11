@@ -1,12 +1,36 @@
 /**
+ * AdSense module setup tests.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * WordPress dependencies
  */
-import { createURL, activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import {
+	createURL,
+	deactivatePlugin,
+	activatePlugin,
+	visitAdminPage,
+} from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
 import {
+	activateAMPWithMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAuthToken,
@@ -96,7 +120,7 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	beforeEach( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSearchConsoleProperty();
 
 		await setClientConfig();
@@ -253,5 +277,72 @@ describe( 'setting up the AdSense module', () => {
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__action', { text: /Create AdSense Account/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
+	} );
+
+	describe( 'AMP is setup', () => {
+		beforeEach( async () => {
+			await activateAMPWithMode( 'primary' );
+		} );
+		afterEach( async () => {
+			await deactivatePlugin( 'amp' );
+		} );
+		it( 'has valid AMP for logged-in users', async () => {
+			datapointHandlers.accounts = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						ADSENSE_ACCOUNT,
+					] ),
+				} );
+			};
+
+			datapointHandlers.clients = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						{
+							arcOptIn: false,
+							id: `ca-${ ADSENSE_ACCOUNT.id }`,
+							kind: 'adsense#adClient',
+							productCode: 'AFC',
+							supportsReporting: true,
+						},
+					] ),
+				} );
+			};
+
+			await proceedToAdsenseSetup();
+			await expect( '/' ).toHaveValidAMPForUser();
+		} );
+
+		it( 'has valid AMP for non-logged in users', async () => {
+			await activateAMPWithMode( 'primary' );
+			datapointHandlers.accounts = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						ADSENSE_ACCOUNT,
+					] ),
+				} );
+			};
+
+			datapointHandlers.clients = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						{
+							arcOptIn: false,
+							id: `ca-${ ADSENSE_ACCOUNT.id }`,
+							kind: 'adsense#adClient',
+							productCode: 'AFC',
+							supportsReporting: true,
+						},
+					] ),
+				} );
+			};
+
+			await proceedToAdsenseSetup();
+			await expect( '/' ).toHaveValidAMPForVisitor();
+		} );
 	} );
 } );

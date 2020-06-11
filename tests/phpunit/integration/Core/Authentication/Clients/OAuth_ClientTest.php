@@ -430,16 +430,21 @@ class OAuth_ClientTest extends TestCase {
 	public function test_get_proxy_setup_url() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		// If no site ID, pass site registration args.
 		$client = new OAuth_Client( $context );
 		$url    = $client->get_proxy_setup_url();
 		$this->assertContains( 'name=', $url );
 		$this->assertContains( 'url=', $url );
-		$this->assertContains( 'admin_root=', $url );
 		$this->assertContains( 'scope=', $url );
 		$this->assertContains( 'nonce=', $url );
-		$this->assertContains( 'return_uri=', $url );
+		$this->assertContains( 'redirect_uri=', $url );
 		$this->assertContains( 'action_uri=', $url );
+		$this->assertContains( 'return_uri=', $url );
+		$this->assertContains( 'analytics_redirect_uri=', $url );
+		$this->assertContains( 'user_roles=', $url );
 		$this->assertContains( 'application_name=', $url );
 		$this->assertNotContains( 'site_id=', $url );
 
@@ -451,12 +456,14 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'code=temp-code', $url );
 		$this->assertContains( 'scope=', $url );
 		$this->assertContains( 'nonce=', $url );
+		$this->assertContains( 'user_roles=', $url );
 		$this->assertContains( 'application_name=', $url );
 		$this->assertNotContains( '&name=', $url );
 		$this->assertNotContains( 'url=', $url );
-		$this->assertNotContains( 'admin_root=', $url );
-		$this->assertNotContains( 'return_uri=', $url );
+		$this->assertNotContains( 'redirect_uri=', $url );
 		$this->assertNotContains( 'action_uri=', $url );
+		$this->assertNotContains( 'return_uri=', $url );
+		$this->assertNotContains( 'analytics_redirect_uri=', $url );
 	}
 
 	public function test_get_proxy_permissions_url() {

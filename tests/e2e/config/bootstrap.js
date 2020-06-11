@@ -23,6 +23,8 @@ import {
 } from '../utils';
 import {
 	toHaveAdSenseTag,
+	toHaveValidAMPForUser,
+	toHaveValidAMPForVisitor,
 	toHaveValue,
 } from '../matchers';
 
@@ -61,6 +63,8 @@ setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 500 } );
 // Add custom matchers specific to Site Kit.
 expect.extend( {
 	toHaveAdSenseTag,
+	toHaveValidAMPForUser,
+	toHaveValidAMPForVisitor,
 	toHaveValue,
 } );
 

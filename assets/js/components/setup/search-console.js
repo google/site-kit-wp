@@ -128,7 +128,7 @@ class SearchConsole extends Component {
 		await data.set( TYPE_MODULES, 'search-console', 'site', { siteURL } );
 
 		if ( isNew ) {
-			trackEvent( 'search_console_setup', 'add_new_sc_property' );
+			await trackEvent( 'search_console_setup', 'add_new_sc_property' );
 		}
 
 		this.setState( {

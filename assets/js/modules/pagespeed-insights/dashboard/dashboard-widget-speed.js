@@ -35,7 +35,7 @@ class DashboardSpeed extends Component {
 
 		return (
 			<Fragment>
-				<div className="
+				<div id="googlesitekit-pagespeed-header" className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
 				">

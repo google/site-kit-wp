@@ -17,13 +17,8 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
 import { createRegistry } from '@wordpress/data';
 
 /**
@@ -32,6 +27,7 @@ import { createRegistry } from '@wordpress/data';
 import API from 'googlesitekit-api';
 import {
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../tests/js/utils';
@@ -40,7 +36,6 @@ import { createNotificationsStore } from './create-notifications-store';
 const STORE_ARGS = [ 'core', 'site', 'notifications' ];
 
 describe( 'createNotificationsStore store', () => {
-	let apiFetchSpy;
 	let dispatch;
 	let registry;
 	let select;
@@ -59,8 +54,6 @@ describe( 'createNotificationsStore store', () => {
 		dispatch = registry.dispatch( storeDefinition.STORE_NAME );
 		store = registry.stores[ storeDefinition.STORE_NAME ].store;
 		select = registry.select( storeDefinition.STORE_NAME );
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -69,7 +62,6 @@ describe( 'createNotificationsStore store', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'name', () => {
@@ -108,7 +100,7 @@ describe( 'createNotificationsStore store', () => {
 			it( 'does not fail when there are no notifications', () => {
 				dispatch.removeNotification( 'not_a_real_id' );
 
-				muteConsole( 'error' ); //Ignore the API fetch error here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toEqual( undefined );
 			} );
 
@@ -118,7 +110,7 @@ describe( 'createNotificationsStore store', () => {
 
 				dispatch.removeNotification( 'not_a_real_id' );
 
-				muteConsole( 'error' ); //Ignore the API fetch error here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toEqual( [ notification ] );
 			} );
 
@@ -142,20 +134,16 @@ describe( 'createNotificationsStore store', () => {
 				const state = store.getState();
 
 				expect( state.clientNotifications ).toMatchObject( {} );
-				muteConsole( 'error' ); // Mute API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toMatchObject( {} );
 			} );
 
 			it( 'does not remove server notifications and emits a warning if they are sent to removeNotification', async () => {
 				const serverNotifications = [ { id: 'server_notification' } ];
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/notifications/
-					)
-					.mockResponseOnce(
-						JSON.stringify( serverNotifications ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					{ body: serverNotifications, status: 200 }
+				);
 
 				const clientNotification = { id: 'client_notification' };
 
@@ -178,24 +166,25 @@ describe( 'createNotificationsStore store', () => {
 			} );
 		} );
 
-		describe( 'fetchNotifications', () => {
+		describe( 'fetchGetNotifications', () => {
 			it( 'does not require any params', () => {
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( () => {
-					dispatch.fetchNotifications();
+					dispatch.fetchGetNotifications();
 				} ).not.toThrow();
 			} );
 		} );
 
-		describe( 'receiveNotifications', () => {
-			it( 'requires the notifications param', () => {
+		describe( 'receiveGetNotifications', () => {
+			it( 'requires the response param', () => {
 				expect( () => {
-					dispatch.receiveNotifications();
-				} ).toThrow( 'notifications is required.' );
+					dispatch.receiveGetNotifications();
+				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'receives and sets notifications', () => {
 				const notifications = [ { id: 'test_notification' } ];
-				dispatch.receiveNotifications( notifications );
+				dispatch.receiveGetNotifications( notifications, {} );
 
 				const state = store.getState();
 
@@ -210,14 +199,10 @@ describe( 'createNotificationsStore store', () => {
 		describe( 'getNotifications', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const response = [ { id: 'test_notification' } ];
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/notifications/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					{ body: response, status: 200 }
+				);
 
 				const initialNotifications = select.getNotifications();
 				// Notifications will be their initial value while being fetched.
@@ -230,16 +215,20 @@ describe( 'createNotificationsStore store', () => {
 
 				const notifications = select.getNotifications();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( notifications ).toEqual( response );
 
 				const notificationsSelect = select.getNotifications();
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( notificationsSelect ).toEqual( notifications );
 			} );
 
 			it( 'returns client notifications even if server notifications have not loaded', () => {
 				const notification = { id: 'added_notification' };
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					{ body: [], status: 200 }
+				);
 				dispatch.addNotification( notification );
 
 				// Return client notifications even if the server notifications have not
@@ -247,7 +236,7 @@ describe( 'createNotificationsStore store', () => {
 				// the selector has run in this test. This ensures `undefined` is not
 				// returned when server notifications haven't loaded yet, but client
 				// notifications have been dispatched.
-				muteConsole( 'error' ); // Ignore the API fetch failure here.
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/notifications/, [] );
 				expect( select.getNotifications() ).toEqual( [ notification ] );
 			} );
 
@@ -257,56 +246,49 @@ describe( 'createNotificationsStore store', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/notifications/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				select.getNotifications();
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingNotifications === false,
+					() => select.hasFinishedResolution( 'getNotifications' ),
 				);
 
 				const notifications = select.getNotifications();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( notifications ).toEqual( undefined );
 			} );
 		} );
 	} );
 
 	describe( 'controls', () => {
-		describe( 'FETCH_NOTIFICATIONS', () => {
+		describe( 'FETCH_GET_NOTIFICATIONS', () => {
 			it( 'requests from the correct API endpoint', async () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
 
-				fetch
-					.mockResponseOnce( async ( req ) => {
-						if ( req.url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` ) ) {
-							return {
-								body: JSON.stringify( response ),
-								init: { status: 200 },
-							};
-						}
-						return {
-							body: JSON.stringify( {
-								code: 'incorrect_api_endpoint',
-								message: 'Incorrect API endpoint',
-								data: { status: 400 },
-							} ),
-							init: { status: 400 },
-						};
-					} );
+				fetchMock.getOnce(
+					`path:/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
+					{ body: response, status: 200 }
+				).catch(
+					{
+						body: {
+							code: 'incorrect_api_endpoint',
+							message: 'Incorrect API endpoint',
+							data: { status: 400 },
+						},
+						init: { status: 400 },
+					}
+				);
 
-				const result = await storeDefinition.controls.FETCH_NOTIFICATIONS();
+				const result = await storeDefinition.controls.FETCH_GET_NOTIFICATIONS( {
+					payload: { params: {} },
+					type: 'FETCH_GET_NOTIFICATIONS',
+				} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.

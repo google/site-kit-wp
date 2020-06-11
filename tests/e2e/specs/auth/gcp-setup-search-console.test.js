@@ -11,9 +11,9 @@ import {
 	resetSiteKit,
 	useRequestInterception,
 	wpApiFetch,
-} from '../utils';
+} from '../../utils';
 
-describe( 'Site Kit set up flow for the first time with site verification', () => {
+describe( 'Site Kit set up flow for the first time with search console setup', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
@@ -38,6 +38,12 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
+
+		// Simulate that the user is already verified.
+		await wpApiFetch( {
+			path: 'google-site-kit/v1/e2e/verify-site',
+			method: 'post',
+		} );
 	} );
 
 	afterEach( async () => {
@@ -45,24 +51,16 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await resetSiteKit();
 	} );
 
-	afterAll( async () => {
-		await page.setRequestInterception( false );
-	} );
-
-	it( 'prompts for confirmation if user is not verified for the site', async () => {
+	it( 'inserts property to search console when site does not exist', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
 		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
-		await expect( page ).toMatchElement( '.googlesitekit-wizard-step__title', { text: /Verify URL/i } );
-
-		await page.waitForSelector( '.googlesitekit-wizard-step__inputs [name="siteProperty"]' );
-
-		await expect( page ).toClick( '.googlesitekit-wizard-step__action button', { text: /Continue/i } );
+		await page.waitForSelector( '.googlesitekit-setup-module__title' );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Search Console/i } );
 
 		await page.waitForSelector( '.googlesitekit-wizard-step__action button' );
-
 		await expect( page ).toClick( '.googlesitekit-wizard-step__action button', { text: /Go to Dashboard/i } );
 
 		await page.waitForNavigation();
@@ -71,17 +69,14 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Site Kit!/i } );
 	} );
 
-	it( 'does not prompt for verification if the user is already verified for the site', async () => {
-		// Simulate that the user is already verified.
-		await wpApiFetch( {
-			path: 'google-site-kit/v1/e2e/verify-site',
-			method: 'post',
-		} );
-
+	it( 'saves search console property when site exists', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
 		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
+
+		await page.waitForSelector( '.googlesitekit-setup-module__title' );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Search Console/i } );
 
 		await page.waitForSelector( '.googlesitekit-wizard-step__action button' );
 		await expect( page ).toClick( '.googlesitekit-wizard-step__action button', { text: /Go to Dashboard/i } );
