@@ -17,139 +17,45 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
-// Actions
-const START_FETCH_AUTHENTICATION = 'START_FETCH_AUTHENTICATION';
-const FETCH_AUTHENTICATION = 'FETCH_AUTHENTICATION';
-const FINISH_FETCH_AUTHENTICATION = 'FINISH_FETCH_AUTHENTICATION';
-const CATCH_FETCH_AUTHENTICATION = 'CATCH_FETCH_AUTHENTICATION';
-const RECEIVE_AUTHENTICATION = 'RECEIVE_AUTHENTICATION';
-
-export const INITIAL_STATE = {
-	authentication: undefined,
-	isFetchingAuthentication: false,
-};
-
-export const actions = {
-	*fetchAuthentication() {
-		let response, error;
-
-		yield {
-			payload: {},
-			type: START_FETCH_AUTHENTICATION,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_AUTHENTICATION,
-			};
-
-			yield actions.receiveAuthentication( response );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_AUTHENTICATION,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_AUTHENTICATION,
-			};
-		}
-
-		return { response, error };
+const fetchGetAuthenticationStore = createFetchStore( {
+	baseName: 'getAuthentication',
+	controlCallback: () => {
+		return API.get( 'core', 'user', 'authentication', undefined, {
+			useCache: false,
+		} );
 	},
-	/**
-	 * Stores connection info received from the REST API.
-	 *
-	 * @since 1.9.0
-	 * @private
-	 *
-	 * @param {Object} authentication Authentication info from the API.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveAuthentication( authentication ) {
-		invariant( authentication, 'authentication is required.' );
-
+	reducerCallback: ( state, authentication ) => {
 		return {
-			payload: { authentication },
-			type: RECEIVE_AUTHENTICATION,
+			...state,
+			authentication,
 		};
 	},
+} );
 
+const BASE_INITIAL_STATE = {
+	authentication: undefined,
 };
 
-export const controls = {
-	[ FETCH_AUTHENTICATION ]: () => {
-		return API.get( 'core', 'user', 'authentication' );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case START_FETCH_AUTHENTICATION: {
-			return {
-				...state,
-				isFetchingAuthentication: true,
-			};
-		}
-
-		case RECEIVE_AUTHENTICATION: {
-			const { authentication } = payload;
-
-			return {
-				...state,
-				authentication,
-			};
-		}
-
-		case FINISH_FETCH_AUTHENTICATION: {
-			return {
-				...state,
-				isFetchingAuthentication: false,
-			};
-		}
-
-		case CATCH_FETCH_AUTHENTICATION: {
-			return {
-				...state,
-				error: payload.error,
-				isFetchingAuthentication: false,
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-};
-
-export const resolvers = {
+const baseResolvers = {
 	*getAuthentication() {
 		const { select } = yield Data.commonActions.getRegistry();
 
 		if ( ! select( STORE_NAME ).getAuthentication() ) {
-			yield actions.fetchAuthentication();
+			yield fetchGetAuthenticationStore.actions.fetchGetAuthentication();
 		}
 	},
 };
 
-export const selectors = {
-
+const baseSelectors = {
 	/**
 	 * Gets the authentication info for this user.
 	 *
@@ -174,6 +80,7 @@ export const selectors = {
 		const { authentication } = state;
 		return authentication;
 	},
+
 	/**
 	 * Gets the Site Kit authentication status for this user.
 	 *
@@ -221,13 +128,38 @@ export const selectors = {
 		const { requiredScopes } = select( STORE_NAME ).getAuthentication() || {};
 		return requiredScopes;
 	} ),
+
+	/**
+	 * Gets the unsatisfied scopes for the user.
+	 *
+	 * Returns an array of unsatisfied scopes (required but not granted)
+	 * or undefined if authentication info is not available/loaded.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} Array of scopes
+	 */
+	getUnsatisfiedScopes: createRegistrySelector( ( select ) => () => {
+		const { unsatisfiedScopes } = select( STORE_NAME ).getAuthentication() || {};
+		return unsatisfiedScopes;
+	} ),
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetAuthenticationStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

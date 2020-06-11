@@ -11,12 +11,16 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import modulesStore, { STORE_NAME as modulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
-import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
-import userStore, { STORE_NAME as userStoreName } from '../../assets/js/googlesitekit/datastore/user';
+import coreSiteStore, { STORE_NAME as coreSiteStoreName } from '../../assets/js/googlesitekit/datastore/site';
+import coreUserStore, { STORE_NAME as coreUserStoreName } from '../../assets/js/googlesitekit/datastore/user';
+import coreFormsStore, { STORE_NAME as coreFormsStoreName } from '../../assets/js/googlesitekit/datastore/forms';
+import coreModulesStore, { STORE_NAME as coreModulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
+import coreWidgetsStore, { STORE_NAME as coreWidgetsStoreName } from '../../assets/js/googlesitekit/widgets/datastore';
+import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../../assets/js/modules/adsense/datastore';
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
 import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
 import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
+import modulesOptimizeStore, { STORE_NAME as modulesOptimizeStoreName } from '../../assets/js/modules/optimize/datastore';
 
 /**
  * Create a registry with all available stores.
@@ -28,6 +32,7 @@ import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName 
 export const createTestRegistry = () => {
 	const registry = createRegistry();
 
+	// Register all available stores on the registry.
 	registerAllStoresOn( registry );
 
 	return registry;
@@ -45,6 +50,14 @@ export const createTestRegistry = () => {
  * @return {WPElement} Wrapped components.
  */
 export function WithTestRegistry( { children, callback, registry = createTestRegistry() } = {} ) {
+	// Populate most basic data which should not affect any tests.
+	registry.dispatch( coreUserStoreName ).receiveUserInfo( {
+		id: 1,
+		name: 'Wapuu WordPress',
+		email: 'wapuu.wordpress@gmail.com',
+		picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+	} );
+
 	if ( callback ) {
 		callback( registry );
 	}
@@ -75,6 +88,23 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 };
 
 /**
+ * Mutes a fetch request to the given URL once.
+ *
+ * Useful for mocking the given URL for the purpose of preventing a fetch error
+ * where the response itself is not significant but the request should not fail.
+ * Sometimes a different response may be required to match the expected type,
+ * but for anything else, a full mock should be used.
+ *
+ * @since n.e.x.t
+ *
+ * @param {RegExp} urlMatcher Regular expression for matching the request URL.
+ * @param {*}      [response] Optional. Response to return.
+ */
+export const muteFetch = ( urlMatcher, response = {} ) => {
+	fetchMock.once( urlMatcher, { body: response, status: 200 } );
+};
+
+/**
  * Register all Site Kit stores on a registry.
  *
  * Use this to register every available Site Kit store on a registry.
@@ -86,12 +116,16 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * @param {wp.data.registry} registry Registry to register each store on.
  */
 export const registerAllStoresOn = ( registry ) => {
-	registry.registerStore( modulesStoreName, modulesStore );
-	registry.registerStore( siteStoreName, siteStore );
-	registry.registerStore( userStoreName, userStore );
+	registry.registerStore( coreSiteStoreName, coreSiteStore );
+	registry.registerStore( coreUserStoreName, coreUserStore );
+	registry.registerStore( coreFormsStoreName, coreFormsStore );
+	registry.registerStore( coreModulesStoreName, coreModulesStore );
+	registry.registerStore( coreWidgetsStoreName, coreWidgetsStore );
+	registry.registerStore( modulesAdSenseStoreName, modulesAdSenseStore );
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
 	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
 	registry.registerStore( modulesSearchConsoleStoreName, modulesSearchConsoleStore );
+	registry.registerStore( modulesOptimizeStoreName, modulesOptimizeStore );
 };
 
 const unsubscribes = [];

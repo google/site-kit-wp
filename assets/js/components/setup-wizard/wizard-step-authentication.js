@@ -69,8 +69,8 @@ class WizardStepAuthentication extends Component {
 							}
 							<p>
 								<Button
-									onClick={ () => {
-										trackEvent( 'plugin_setup', 'signin_with_google' );
+									onClick={ async () => {
+										await trackEvent( 'plugin_setup', 'signin_with_google' );
 										document.location = connectURL;
 									} }
 								>

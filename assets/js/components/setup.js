@@ -275,8 +275,8 @@ class Setup extends Component {
 															</p>
 															<Button
 																href="#"
-																onClick={ () => {
-																	trackEvent( 'plugin_setup', 'signin_with_google' );
+																onClick={ async () => {
+																	await trackEvent( 'plugin_setup', 'signin_with_google' );
 																	document.location = connectURL;
 																} }
 															>{ __( 'Sign in with Google', 'google-site-kit' ) }</Button>

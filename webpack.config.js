@@ -41,6 +41,7 @@ const siteKitExternals = {
 	'googlesitekit-api': [ 'googlesitekit', 'api' ],
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
+	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
 };
 
 const externals = { ...siteKitExternals };
@@ -94,10 +95,14 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-data': './assets/js/googlesitekit-data.js',
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
 				'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
+				'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
+				'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
+				'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
+				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
 				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
 				'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
 				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
-				'googlesitekit-modules': './assets/js/googlesitekit-modules.js', // TODO: Add external following 1162.
+				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
@@ -109,7 +114,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-admin': './assets/js/googlesitekit-admin.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
 				// Needed to test if a browser extension blocks this by naming convention.
-				ads: './assets/js/ads.js',
+				'pagead2.ads': './assets/js/pagead2.ads.js',
 			},
 			externals,
 			output: {

@@ -19,10 +19,12 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Exception\RedirectException;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use WPDieException;
@@ -31,6 +33,7 @@ use WPDieException;
  * @group Authentication
  */
 class AuthenticationTest extends TestCase {
+	use Fake_Site_Connection_Trait;
 
 	public function test_register() {
 		remove_all_actions( 'init' );
@@ -126,6 +129,7 @@ class AuthenticationTest extends TestCase {
 				'requiredScopes',
 				'showModuleSetupWizard',
 				'isResettable',
+				'unsatisfiedScopes',
 			),
 			array_keys( $data )
 		);
@@ -361,6 +365,83 @@ class AuthenticationTest extends TestCase {
 			),
 			$params
 		);
+	}
+
+	public function test_googlesitekit_connect() {
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+		remove_all_actions( 'init' );
+		$this->fake_proxy_site_connection();
+		$auth->register();
+
+		// Does nothing if query parameter is not set, and not is_admin.
+		$this->assertTrue( empty( $_GET['googlesitekit_connect'] ) );
+		$this->assertFalse( is_admin() );
+		do_action( 'init' );
+
+		$_GET['googlesitekit_connect'] = 1;
+		// Does nothing if not is_admin.
+		$this->assertFalse( is_admin() );
+		do_action( 'init' );
+
+		set_current_screen( 'dashboard' );
+		$this->assertTrue( is_admin() );
+
+		// Requires 'connect' nonce.
+		try {
+			do_action( 'init' );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( WPDieException $e ) {
+			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+		}
+
+		$_GET['nonce'] = wp_create_nonce( 'connect' );
+
+		// Requires authenticate permissions.
+		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
+		try {
+			do_action( 'init' );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( WPDieException $e ) {
+			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
+		}
+
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor_id );
+		$_GET['nonce'] = wp_create_nonce( 'connect' );
+		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
+		try {
+			do_action( 'init' );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( WPDieException $e ) {
+			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
+		}
+
+		// Administrators can authenticate.
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$_GET['nonce'] = wp_create_nonce( 'connect' );
+		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
+		try {
+			do_action( 'init' );
+			$this->fail( 'Expected redirection to connect URL' );
+		} catch ( RedirectException $e ) {
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $e->get_location() );
+		}
+
+		// Additional scopes can be requested via the additional_scopes query parameter.
+		$extra_scopes              = array( 'http://example.com/test/scope/a', 'http://example.com/test/scope/b' );
+		$_GET['additional_scopes'] = $extra_scopes;
+		try {
+			do_action( 'init' );
+			$this->fail( 'Expected redirection to connect URL' );
+		} catch ( RedirectException $e ) {
+			$redirect_url = $e->get_location();
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $redirect_url );
+			parse_str( wp_parse_url( $redirect_url, PHP_URL_QUERY ), $query_args );
+			$requested_scopes = explode( ' ', $query_args['scope'] );
+			$this->assertContains( $extra_scopes[0], $requested_scopes );
+			$this->assertContains( $extra_scopes[1], $requested_scopes );
+		}
 	}
 
 	protected function get_user_option_keys() {

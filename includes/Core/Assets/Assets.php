@@ -344,6 +344,10 @@ final class Assets {
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
 			'googlesitekit-base',
+			'googlesitekit-data',
+			'googlesitekit-datastore-forms',
+			'googlesitekit-datastore-site',
+			'googlesitekit-datastore-user',
 		);
 
 		// Register plugin scripts.
@@ -482,6 +486,15 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-datastore-forms',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-forms.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-modules',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules.js',
@@ -492,11 +505,20 @@ final class Assets {
 					),
 				)
 			),
+			new Script(
+				'googlesitekit-widgets',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-widgets.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+					),
+				)
+			),
 			// End JSR Assets.
 			new Script(
 				'googlesitekit-ads-detect',
 				array(
-					'src' => $base_url . 'js/ads.js',
+					'src' => $base_url . 'js/pagead2.ads.js',
 				)
 			),
 			new Script(

@@ -41,7 +41,7 @@ const setupRegistry = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).setAccountID( accountId );
 	dispatch( STORE_NAME ).setPropertyID( webPropertyId );
 	dispatch( STORE_NAME ).setProfileID( id );
-	dispatch( STORE_NAME ).receiveProfiles( fixtures.propertiesProfiles.profiles, { propertyID: webPropertyId } );
+	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { propertyID: webPropertyId } );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
@@ -53,14 +53,14 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).setAccountID( existingTag.accountID );
 	dispatch( STORE_NAME ).setPropertyID( existingTag.propertyID );
 	dispatch( STORE_NAME ).setProfileID( id );
-	dispatch( STORE_NAME ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles, { propertyID: existingTag.propertyID } );
-	dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
+	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { propertyID: existingTag.propertyID } );
+	dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
 	const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId;
 	dispatch( STORE_NAME ).setSettings( {} );
-	dispatch( STORE_NAME ).receiveProfiles( [], { propertyID } );
+	dispatch( STORE_NAME ).receiveGetProfiles( [], { propertyID } );
 };
 
 describe( 'ProfileSelect', () => {
@@ -123,7 +123,7 @@ describe( 'ProfileSelect', () => {
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ 0 ].textContent ).toMatch( /set up a new profile/i );
+		expect( listItems[ 0 ].textContent ).toMatch( /set up a new view/i );
 	} );
 
 	it( 'should update profileID in the store when a new item is selected', async () => {
@@ -133,7 +133,7 @@ describe( 'ProfileSelect', () => {
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getByText( /set up a new profile/i ) );
+		fireEvent.click( getByText( /set up a new view/i ) );
 
 		const newProfileID = registry.select( STORE_NAME ).getProfileID();
 		expect( originalProfileID ).not.toEqual( newProfileID );

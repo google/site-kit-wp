@@ -31,18 +31,19 @@ import {
 } from '../../../../material-components';
 import { timeZonesByCountryCode } from '../../util/countries-timezones';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../../datastore/constants';
+import { FORM_ACCOUNT_CREATE } from '../../datastore/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 
 const { useSelect, useDispatch } = Data;
 
 export default function TimezoneSelect() {
-	const countryCode = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'countryCode' ) );
-	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'timezone' ) );
+	const countryCode = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'countryCode' ) );
+	const value = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'timezone' ) );
 
-	const { setForm } = useDispatch( STORE_NAME );
+	const { setValues } = useDispatch( CORE_FORMS );
 	const onEnhancedChange = useCallback( ( i, item ) => {
-		setForm( FORM_ACCOUNT_CREATE, { timezone: item.dataset.value } );
-	}, [ setForm ] );
+		setValues( FORM_ACCOUNT_CREATE, { timezone: item.dataset.value } );
+	}, [ setValues ] );
 
 	return (
 		<Select

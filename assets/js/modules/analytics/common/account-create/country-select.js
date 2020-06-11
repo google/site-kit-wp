@@ -31,22 +31,23 @@ import {
 } from '../../../../material-components';
 import { allCountries, countriesByCode } from '../../util/countries-timezones';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../../datastore/constants';
+import { FORM_ACCOUNT_CREATE } from '../../datastore/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function CountrySelect() {
-	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'countryCode' ) );
+	const value = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'countryCode' ) );
 
-	const { setForm } = useDispatch( STORE_NAME );
+	const { setValues } = useDispatch( CORE_FORMS );
 	const onEnhancedChange = useCallback( ( i, item ) => {
 		const newCountryCode = item.dataset.value;
 		if ( newCountryCode !== value && countriesByCode[ newCountryCode ] ) {
-			setForm( FORM_ACCOUNT_CREATE, {
+			setValues( FORM_ACCOUNT_CREATE, {
 				countryCode: newCountryCode,
 				timezone: countriesByCode[ newCountryCode ].defaultTimeZoneId,
 			} );
 		}
-	}, [ setForm ] );
+	}, [ setValues ] );
 
 	return (
 		<Select

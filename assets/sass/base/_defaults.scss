@@ -125,6 +125,7 @@
 		color: $c-success;
 		font-size: 10px;
 		font-weight: $fw-primary-medium;
+		text-transform: uppercase;
 	}
 
 	.googlesitekit-nodata {
@@ -175,5 +176,12 @@
 	.screen-reader-only {
 
 		@include screen-reader-only;
+	}
+
+	.hidden-on-mobile {
+
+		@media (max-width: $bp-mobileOnly ) {
+			display: none;
+		}
 	}
 }

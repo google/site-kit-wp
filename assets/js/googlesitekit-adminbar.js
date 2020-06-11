@@ -26,8 +26,7 @@ import './modules';
 /**
  * WordPress dependencies
  */
-import { doAction } from '@wordpress/hooks';
-import { Component, render } from '@wordpress/element';
+import { Component, render, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,7 +40,7 @@ import {
 } from './util';
 import Link from './components/link';
 import AdminbarModules from './components/adminbar/adminbar-modules';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 
 export class GoogleSitekitAdminbar extends Component {
 	constructor( props ) {
@@ -50,7 +49,7 @@ export class GoogleSitekitAdminbar extends Component {
 		this.handleMoreDetailsLink = this.handleMoreDetailsLink.bind( this );
 	}
 
-	handleMoreDetailsLink() {
+	async handleMoreDetailsLink() {
 		const {
 			permaLink,
 			postID,
@@ -67,7 +66,7 @@ export class GoogleSitekitAdminbar extends Component {
 			}
 		);
 
-		trackEvent( 'admin_bar', 'post_details_click' );
+		await trackEvent( 'admin_bar', 'post_details_click' );
 		document.location = href;
 	}
 
@@ -78,7 +77,7 @@ export class GoogleSitekitAdminbar extends Component {
 		} = global.googlesitekit;
 
 		return (
-			<ErrorHandler>
+			<Fragment>
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 						<div className="
@@ -126,7 +125,7 @@ export class GoogleSitekitAdminbar extends Component {
 				>
 					{ __( 'More details', 'google-site-kit' ) }
 				</Link>
-			</ErrorHandler>
+			</Fragment>
 		);
 	}
 }
@@ -138,11 +137,6 @@ export function init() {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitAdminbar />, renderTarget );
-
-		/**
-		 * Action triggered when the dashboard App is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Adminbar' );
+		render( <Root dataAPIContext="Adminbar"><GoogleSitekitAdminbar /></Root>, renderTarget );
 	}
 }
