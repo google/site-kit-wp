@@ -770,7 +770,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'learn_more'  => __( 'https://marketingplatform.google.com/about/tag-manager/', 'google-site-kit' ),
 			'group'       => __( 'Marketing Platform', 'google-site-kit' ),
 			'tags'        => array( 'marketing' ),
-			'depends_on'  => array( 'analytics' ),
 		);
 	}
 
