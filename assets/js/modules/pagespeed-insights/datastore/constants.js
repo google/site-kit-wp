@@ -19,7 +19,7 @@
 export const STORE_NAME = 'modules/pagespeed-insights';
 
 // Form ID for PageSpeed widget.
-export const FORM_DASH_WIDGET = 'pagespeedWidget';
+export const FORM_DASH_WIDGET = 'pagespeedDashboardWidget';
 // Report strategies.
 export const STRATEGY_MOBILE = 'mobile';
 export const STRATEGY_DESKTOP = 'desktop';
