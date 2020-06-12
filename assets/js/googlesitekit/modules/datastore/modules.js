@@ -29,12 +29,22 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
-import { sortObjectMapByPriority } from '../../../util';
+import { sortObjectMapByKey } from '../../../util';
 
-const { createRegistrySelector } = Data;
+const { commonActions, createRegistrySelector } = Data;
+
+/**
+ * Store our module components by registry, then by module `slug`. We do this because
+ * we can't store React components in our data store.
+ *
+ * @private
+ * @since n.e.x.t
+ */
+export const ModuleComponents = {};
 
 // Actions.
 const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
+const SET_MODULE_COMPONENT_KEY = 'SET_MODULE_COMPONENT_KEY';
 const REGISTER_MODULE = 'REGISTER_MODULE';
 
 const fetchGetModulesStore = createFetchStore( {
@@ -87,6 +97,7 @@ const BASE_INITIAL_STATE = {
 	// a module activation update, since the activation is technically complete
 	// before this data has been refreshed.
 	isAwaitingModulesRefresh: false,
+	registryKey: undefined,
 };
 
 const baseActions = {
@@ -170,17 +181,37 @@ const baseActions = {
 	 * @param {React.Component} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
 	 * @return {Object} Redux-style action.
 	 */
-	registerModule( slug, settings = {} ) {
+	*registerModule( slug, { settingsComponent = DefaultModuleSettings, ...settings } = {} ) {
 		invariant( slug, 'module slug is required' );
 
+		const registry = yield commonActions.getRegistry();
+		let registryKey = yield registry.select( STORE_NAME ).getModuleRegistryKey();
+		if ( registryKey === undefined ) {
+			registryKey = Object.keys( ModuleComponents ).length + 1;
+			yield {
+				payload: { registryKey },
+				type: SET_MODULE_COMPONENT_KEY,
+			};
+		}
+
+		// We do this assignment in the action rather than the reducer because we can't send a
+		// payload that includes a React component to the reducer; we'll get an error about
+		// payloads needing to be plain objects.
+		if ( ModuleComponents[ registryKey ] === undefined ) {
+			ModuleComponents[ registryKey ] = {};
+		}
+		if ( ModuleComponents[ registryKey ][ slug ] === undefined ) {
+			ModuleComponents[ registryKey ][ slug ] = settingsComponent;
+		}
+
 		const mergedModuleSettings = {
+			slug,
 			name: slug,
 			description: null,
 			icon: null,
 			order: 10,
 			homepage: null,
 			internal: false,
-			settingsComponent: DefaultModuleSettings,
 			...settings,
 		};
 
@@ -208,6 +239,13 @@ const baseReducer = ( state, { type, payload } ) => {
 					...existingModules,
 					[ slug ]: settings,
 				},
+			};
+		}
+		case SET_MODULE_COMPONENT_KEY: {
+			const { registryKey } = payload;
+			return {
+				...state,
+				registryKey,
 			};
 		}
 		default: {
@@ -260,12 +298,44 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Modules available on the site.
 	 */
-	getModules( state ) {
+	getModules: createRegistrySelector( ( select ) => ( state ) => {
 		const { modules } = state;
+		const registryKey = select( STORE_NAME ).getModuleRegistryKey();
 		if ( undefined !== modules ) {
-			return sortObjectMapByPriority( modules, 'order' );
+			return sortObjectMapByKey( modules, 'order' ).map( ( module ) => {
+				const moduleWithComponent = { ...module };
+				if ( ModuleComponents[ registryKey ] ) {
+					// If there is a settingsComponent that was passed use it, otherwise set to the default.
+					if ( ModuleComponents[ registryKey ][ module.slug ] ) {
+						moduleWithComponent.settingsComponent = ModuleComponents[ registryKey ][ module.slug ];
+					} else {
+						moduleWithComponent.settingsComponent = DefaultModuleSettings;
+					}
+				}
+
+				return moduleWithComponent;
+			} );
 		}
 		return modules;
+	} ),
+
+	/**
+	 * Returns the registry key being used for this registry's modules.
+	 *
+	 * We key each registry with an Integer, so we don't share registered widgets
+	 * between registries. This allows us to access the appropriate registry global
+	 * from inside selectors.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(number|undefined)} The registry for the modules store.
+	 */
+	getModuleRegistryKey( state ) {
+		const { registryKey } = state;
+
+		return registryKey;
 	},
 
 	/**
