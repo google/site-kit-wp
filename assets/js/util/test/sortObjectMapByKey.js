@@ -41,7 +41,7 @@ describe( 'sortObjectMapByKey', () => {
 
 		expect( sortObjectMapByKey( sortMe, 'order' ) ).toStrictEqual( expectedResults );
 	} );
-	it( 'returns an array with the same order or items if sort key is omitted or is not on the object', () => {
+	it( 'returns an array with the same order if sort key is omitted or is not on the object', () => {
 		const expectedResults = [
 			{ name: 'First', order: 1 },
 			{ name: 'Fifth', order: 10 },
