@@ -34,7 +34,7 @@ describe( 'getLocale', () => {
 	it.each( siteKitLocales )( 'Site Kit locale %s returns as %s', ( value, expected ) => {
 		expect( getLocale(
 			{
-				googlesitekit: {
+				_googlesitekitLegacyData: {
 					locale: {
 						'': {
 							lang: value,

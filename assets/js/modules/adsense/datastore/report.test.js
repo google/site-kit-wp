@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -35,7 +30,6 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense report', () => {
-	let apiFetchSpy;
 	let registry;
 
 	beforeAll( () => {
@@ -44,8 +38,6 @@ describe( 'modules/adsense report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -54,7 +46,6 @@ describe( 'modules/adsense report', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -64,14 +55,10 @@ describe( 'modules/adsense report', () => {
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.report ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
+					{ body: fixtures.report, status: 200 }
+				);
 
 				const initialReport = registry.select( STORE_NAME ).getReport( {} );
 
@@ -84,7 +71,7 @@ describe( 'modules/adsense report', () => {
 
 				const report = registry.select( STORE_NAME ).getReport( {} );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
 			} );
 
@@ -104,7 +91,7 @@ describe( 'modules/adsense report', () => {
 					.hasFinishedResolution( 'getReport', [ options ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.report );
 			} );
 
@@ -114,14 +101,10 @@ describe( 'modules/adsense report', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
+					{ body: response, status: 500 }
+				);
 
 				const options = {
 					dateRange: 'last-90-days',
@@ -134,7 +117,7 @@ describe( 'modules/adsense report', () => {
 					() => registry.select( STORE_NAME ).isFetchingGetReport( options ) === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 				expect( report ).toEqual( undefined );

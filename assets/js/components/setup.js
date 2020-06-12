@@ -42,7 +42,7 @@ class Setup extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { connectURL } = global.googlesitekit.admin;
+		const { connectURL } = global._googlesitekitLegacyData.admin;
 
 		const {
 			isAuthenticated,
@@ -50,9 +50,9 @@ class Setup extends Component {
 			isSiteKitConnected,
 			isVerified,
 			needReauthenticate,
-		} = global.googlesitekit.setup; /*eslint camelcase: 0*/
+		} = global._googlesitekitLegacyData.setup;
 
-		const { canSetup } = global.googlesitekit.permissions;
+		const { canSetup } = global._googlesitekitLegacyData.permissions;
 
 		this.state = {
 			canSetup,
@@ -275,8 +275,8 @@ class Setup extends Component {
 															</p>
 															<Button
 																href="#"
-																onClick={ () => {
-																	trackEvent( 'plugin_setup', 'signin_with_google' );
+																onClick={ async () => {
+																	await trackEvent( 'plugin_setup', 'signin_with_google' );
 																	document.location = connectURL;
 																} }
 															>{ __( 'Sign in with Google', 'google-site-kit' ) }</Button>

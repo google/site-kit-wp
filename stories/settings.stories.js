@@ -46,13 +46,13 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'Connected Services', () => {
-		global.googlesitekit = settingsData;
-		global.googlesitekit.setupComplete = true;
-		global.googlesitekit.modules.analytics.setupComplete = true;
-		global.googlesitekit.modules[ 'search-console' ].setupComplete = true;
-		global.googlesitekit.modules.adsense.setupComplete = true;
-		global.googlesitekit.modules.adsense.active = true;
-		global.googlesitekit.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
+		global._googlesitekitLegacyData = settingsData;
+		global._googlesitekitLegacyData.setupComplete = true;
+		global._googlesitekitLegacyData.modules.analytics.setupComplete = true;
+		global._googlesitekitLegacyData.modules[ 'search-console' ].setupComplete = true;
+		global._googlesitekitLegacyData.modules.adsense.setupComplete = true;
+		global._googlesitekitLegacyData.modules.adsense.active = true;
+		global._googlesitekitLegacyData.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
 
 		return (
 			<div className="mdc-layout-grid__inner">
@@ -65,18 +65,18 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'Connect More Services', () => {
-		global.googlesitekit = settingsData;
-		global.googlesitekit.canAdsRun = true;
-		global.googlesitekit.modules.analytics.setupComplete = false;
+		global._googlesitekitLegacyData = settingsData;
+		global._googlesitekitLegacyData.canAdsRun = true;
+		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
 		return (
 			<SettingsModules activeTab={ 1 } />
 		);
 	} )
 	.add( 'Admin Settings', () => {
-		global.googlesitekit = settingsData;
-		global.googlesitekit.modules.analytics.setupComplete = false;
-		global.googlesitekit.admin.clientID = '123456789-xxx1234ffghrrro6hofusq2b8.apps..com';
-		global.googlesitekit.admin.clientSecret = '••••••••••••••••••••••••••••';
+		global._googlesitekitLegacyData = settingsData;
+		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
+		global._googlesitekitLegacyData.admin.clientID = '123456789-xxx1234ffghrrro6hofusq2b8.apps..com';
+		global._googlesitekitLegacyData.admin.clientSecret = '••••••••••••••••••••••••••••';
 
 		return (
 			<div className="mdc-layout-grid">

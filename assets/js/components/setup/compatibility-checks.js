@@ -69,7 +69,7 @@ const checks = [
 
 export default class CompatibilityChecks extends Component {
 	constructor( props ) {
-		const { isSiteKitConnected } = global.googlesitekit.setup;
+		const { isSiteKitConnected } = global._googlesitekitLegacyData.setup;
 		super( props );
 		this.state = {
 			complete: isSiteKitConnected,
