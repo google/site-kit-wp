@@ -24,6 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
+import Layout from '../assets/js/components/layout/layout';
 import DashboardPageSpeed from '../assets/js/modules/pagespeed-insights/components/DashboardPageSpeed';
 import { STORE_NAME } from '../assets/js/modules/pagespeed-insights/datastore';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
@@ -41,7 +42,9 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeed />
+				<Layout>
+					<DashboardPageSpeed />
+				</Layout>
 			</WithTestRegistry>
 		);
 	} )
