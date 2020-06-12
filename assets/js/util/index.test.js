@@ -23,7 +23,7 @@ import { getModulesData, activateOrDeactivateModule } from './index';
 
 describe( 'getModulesData', () => {
 	it( 'returns only properties that are module data', () => {
-		const _googlesitekit = {
+		const __googlesitekitLegacyData = {
 			modules: {
 				module1: {
 					slug: 'module1',
@@ -40,14 +40,14 @@ describe( 'getModulesData', () => {
 				anAPIFunction: () => true,
 			},
 		};
-		expect( getModulesData( _googlesitekit ) ).toEqual( {
-			module1: _googlesitekit.modules.module1,
-			anotherModule: _googlesitekit.modules.anotherModule,
+		expect( getModulesData( __googlesitekitLegacyData ) ).toEqual( {
+			module1: __googlesitekitLegacyData.modules.module1,
+			anotherModule: __googlesitekitLegacyData.modules.anotherModule,
 		} );
 	} );
 
 	it( 'passes through module data to directly modify module objects', () => {
-		const _googlesitekit = {
+		const __googlesitekitLegacyData = {
 			modules: {
 				module1: {
 					slug: 'module1',
@@ -64,9 +64,9 @@ describe( 'getModulesData', () => {
 				anAPIFunction: () => true,
 			},
 		};
-		const modulesData = getModulesData( _googlesitekit );
+		const modulesData = getModulesData( __googlesitekitLegacyData );
 		modulesData.module1.active = true;
-		expect( _googlesitekit.modules.module1.active ).toEqual( true );
+		expect( __googlesitekitLegacyData.modules.module1.active ).toEqual( true );
 	} );
 } );
 

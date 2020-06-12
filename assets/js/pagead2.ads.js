@@ -10,23 +10,17 @@
  * be dispatched.
  */
 
-if ( global.googlesitekit === undefined ) {
-	global.googlesitekit = {};
+if ( global._googlesitekitLegacyData === undefined ) {
+	global._googlesitekitLegacyData = {};
 }
 
-global.googlesitekit.canAdsRun = true;
+global._googlesitekitLegacyData.canAdsRun = true;
 
 // Ensure that this flag does not get wiped at a later stage during pageload.
 document.addEventListener( 'DOMContentLoaded', function() {
-	global.googlesitekit.canAdsRun = true;
+	global._googlesitekitLegacyData.canAdsRun = true;
 } );
 
 // If registry and AdSense datastore are loaded, use that instead of the global.
-if (
-	global.googlesitekit.data &&
-	global.googlesitekit.data.dispatch &&
-	global.googlesitekit.data.stores &&
-	global.googlesitekit.data.stores[ 'modules/adsense' ]
-) {
-	global.googlesitekit.data.dispatch( 'modules/adsense' ).receiveIsAdBlockerActive( false );
-}
+// eslint-disable-next-line no-unused-expressions
+global.googlesitekit?.data?.dispatch?.( 'modules/adsense' )?.receiveIsAdBlockerActive( false );

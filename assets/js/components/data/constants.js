@@ -1,7 +1,5 @@
 /**
- * Modules API.
- *
- * Provides API functions to manage modules.
+ * Data API: Constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -18,17 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Modules from './googlesitekit/modules';
-
-if ( typeof global.googlesitekit === 'undefined' ) {
-	global.googlesitekit = {};
-}
-
-if ( typeof global.googlesitekit.modules === 'undefined' ) {
-	global.googlesitekit.modules = Modules;
-}
-
-export default Modules;
+export const TYPE_CORE = 'core';
+export const TYPE_MODULES = 'modules';

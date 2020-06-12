@@ -26,7 +26,8 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import dataAPI, { TYPE_MODULES } from '../../../components/data';
+import { TYPE_MODULES } from '../../../components/data/constants';
+import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
 	isValidAccountID,
 	isValidClientID,
@@ -191,7 +192,7 @@ const baseControls = {
 
 		await API.invalidateCache( 'modules', 'adsense' );
 		// TODO: Remove once legacy dataAPI is no longer used.
-		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'adsense' );
+		invalidateCacheGroup( TYPE_MODULES, 'adsense' );
 
 		return {};
 	} ),
