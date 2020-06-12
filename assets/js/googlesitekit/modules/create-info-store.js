@@ -66,7 +66,7 @@ export const createInfoStore = ( slug, {
 		 * @param {(Object|undefined)} queryArgs Query arguments to add to admin URL.
 		 * @return {(string|undefined)} The admin screen URL.
 		 */
-		getAdminScreenURL: createRegistrySelector( ( select ) => ( queryArgs ) => {
+		getAdminScreenURL: createRegistrySelector( ( select ) => ( state, queryArgs ) => {
 			return select( CORE_SITE ).getAdminURL( adminPage, queryArgs );
 		} ),
 
@@ -78,7 +78,7 @@ export const createInfoStore = ( slug, {
 		 * @param {boolean} reAuth The module activation status. Default is true.
 		 * @return {(string|undefined)} The admin reauthentication URL.
 		 */
-		getAdminReauthURL: createRegistrySelector( ( select ) => ( reAuth = true ) => {
+		getAdminReauthURL: createRegistrySelector( ( select ) => ( state, reAuth = true ) => {
 			const { needsReauthentication } = select( CORE_USER ).getAuthentication() || {};
 
 			const noSetupQueryArgs = ! requiresSetup ? {
