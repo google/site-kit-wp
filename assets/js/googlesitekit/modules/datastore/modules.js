@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
+import { sortObjectMapByPriority } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -261,7 +262,9 @@ const baseSelectors = {
 	 */
 	getModules( state ) {
 		const { modules } = state;
-
+		if ( undefined !== modules ) {
+			return sortObjectMapByPriority( modules, 'order' );
+		}
 		return modules;
 	},
 
