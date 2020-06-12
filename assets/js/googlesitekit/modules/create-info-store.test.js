@@ -66,4 +66,30 @@ describe( 'createInfoStore store', () => {
 			expect( storeDefinition.STORE_NAME ).toEqual( `modules/${ MODULE_SLUG }` );
 		} );
 	} );
+
+	describe( 'selectors', () => {
+		describe( 'getAdminScreenURL', () => {
+			it( 'returns the adminSreenURL if no queryArgs argument is supplied', () => {
+				const adminSreenURL = registry.select( storeDefinition.STORE_NAME ).getAdminScreenURL( undefined );
+				expect( adminSreenURL ).toEqual( 'http://something.test/wp-admin' );
+			} );
+		} );
+
+		describe( 'getAdminReauthURL', () => {
+			// it( 'returns the getAdminReauthURL if storeName is not supplied', () => {
+			// 	const adminSreenURL = registry.select( STORE_NAME ).getAdminScreenURL( undefined );
+			// 	expect( adminSreenURL ).toEqual( 'http://something.test/wp-admin' );
+			// } );
+
+			// it( 'returns the getAdminReauthURL if no adminPage is not supplied', () => {
+			// 	const adminSreenURL = registry.select( STORE_NAME ).getAdminScreenURL( undefined );
+			// 	expect( adminSreenURL ).toEqual( 'http://something.test/wp-admin' );
+			// } );
+
+			// it( 'returns the getAdminReauthURL if no requiresSetup is not supplied', () => {
+			// 	const adminSreenURL = registry.select( STORE_NAME ).getAdminScreenURL( undefined );
+			// 	expect( adminSreenURL ).toEqual( 'http://something.test/wp-admin' );
+			// } );
+		} );
+	} );
 } );
