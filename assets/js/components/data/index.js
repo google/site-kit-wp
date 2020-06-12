@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * External dependencies
  */
@@ -30,16 +31,16 @@ import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction }
 /**
  * Internal dependencies
  */
-import { getStorage } from '../../util/storage';
 import { getCurrentDateRangeSlug } from '../../util/date-range';
 import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
 import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
-import { getCacheKey, getCache, lazilySetupLocalCache, setCache } from './cache';
+import { getCacheKey, getCache, setCache } from './cache';
+import { TYPE_CORE, TYPE_MODULES } from './constants';
+import { invalidateCacheGroup } from './invalidate-cache-group';
 
-export const TYPE_CORE = 'core';
-export const TYPE_MODULES = 'modules';
+export { TYPE_CORE, TYPE_MODULES };
 
 /**
  * Gets a copy of the given data request object with the data.dateRange populated via filter, if not set.
@@ -259,30 +260,7 @@ const dataAPI = {
 		}
 	},
 
-	/**
-	 * Invalidates all caches associated with a specific cache group.
-	 *
-	 * @param {string} type       The data to access. One of 'core' or 'modules'.
-	 * @param {string} identifier The data identifier, for example a module slug.
-	 * @param {string} datapoint  The datapoint.
-	 */
-	invalidateCacheGroup( type, identifier, datapoint ) {
-		const groupPrefix = getCacheKey( type, identifier, datapoint );
-
-		lazilySetupLocalCache();
-
-		Object.keys( global._googlesitekitLegacyData.admin.datacache ).forEach( ( key ) => {
-			if ( 0 === key.indexOf( groupPrefix + '::' ) || key === groupPrefix ) {
-				delete global._googlesitekitLegacyData.admin.datacache[ key ];
-			}
-		} );
-
-		Object.keys( getStorage() ).forEach( ( key ) => {
-			if ( 0 === key.indexOf( `googlesitekit_${ groupPrefix }::` ) || key === `googlesitekit_${ groupPrefix }` ) {
-				getStorage().removeItem( key );
-			}
-		} );
-	},
+	invalidateCacheGroup,
 
 	/**
 	 * Collects the initial module data request.
