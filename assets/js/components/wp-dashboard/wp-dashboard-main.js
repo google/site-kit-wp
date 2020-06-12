@@ -33,7 +33,7 @@ class WPDashboardMain extends Component {
 		return (
 			<div className="googlesitekit-wp-dashboard">
 				<div className="googlesitekit-wp-dashboard__cta">
-					<Link className="googlesitekit-wp-dashboard__cta-link" href={ global.googlesitekit.dashboardPermalink }>
+					<Link className="googlesitekit-wp-dashboard__cta-link" href={ global._googlesitekitLegacyData.dashboardPermalink }>
 						{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
 					</Link>
 				</div>

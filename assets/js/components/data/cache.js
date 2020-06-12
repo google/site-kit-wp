@@ -30,14 +30,14 @@ import { stringifyObject } from '../../util/stringify';
  * Ensures that the local datacache object is properly set up.
  */
 export const lazilySetupLocalCache = () => {
-	global.googlesitekit.admin = global.googlesitekit.admin || {};
+	global._googlesitekitLegacyData.admin = global._googlesitekitLegacyData.admin || {};
 
-	if ( 'string' === typeof global.googlesitekit.admin.datacache ) {
-		global.googlesitekit.admin.datacache = JSON.parse( global.googlesitekit.admin.datacache );
+	if ( 'string' === typeof global._googlesitekitLegacyData.admin.datacache ) {
+		global._googlesitekitLegacyData.admin.datacache = JSON.parse( global._googlesitekitLegacyData.admin.datacache );
 	}
 
-	if ( 'object' !== typeof global.googlesitekit.admin.datacache ) {
-		global.googlesitekit.admin.datacache = {};
+	if ( 'object' !== typeof global._googlesitekitLegacyData.admin.datacache ) {
+		global._googlesitekitLegacyData.admin.datacache = {};
 	}
 };
 
@@ -59,7 +59,7 @@ export const setCache = ( key, data ) => {
 
 	lazilySetupLocalCache();
 
-	global.googlesitekit.admin.datacache[ key ] = cloneDeep( data );
+	global._googlesitekitLegacyData.admin.datacache[ key ] = cloneDeep( data );
 
 	const toStore = {
 		value: data,
@@ -78,15 +78,15 @@ export const setCache = ( key, data ) => {
  */
 export const getCache = ( key, maxAge ) => {
 	// Skip if js caching is disabled.
-	if ( global.googlesitekit.admin.nojscache ) {
+	if ( global._googlesitekitLegacyData.admin.nojscache ) {
 		return undefined;
 	}
 
 	lazilySetupLocalCache();
 
 	// Check variable cache first.
-	if ( 'undefined' !== typeof global.googlesitekit.admin.datacache[ key ] ) {
-		return global.googlesitekit.admin.datacache[ key ];
+	if ( 'undefined' !== typeof global._googlesitekitLegacyData.admin.datacache[ key ] ) {
+		return global._googlesitekitLegacyData.admin.datacache[ key ];
 	}
 
 	// Check persistent cache.
@@ -95,9 +95,9 @@ export const getCache = ( key, maxAge ) => {
 		// Only return value if no maximum age given or if cache age is less than the maximum.
 		if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
 			// Set variable cache.
-			global.googlesitekit.admin.datacache[ key ] = cloneDeep( cache.value );
+			global._googlesitekitLegacyData.admin.datacache[ key ] = cloneDeep( cache.value );
 
-			return cloneDeep( global.googlesitekit.admin.datacache[ key ] );
+			return cloneDeep( global._googlesitekitLegacyData.admin.datacache[ key ] );
 		}
 	}
 
@@ -112,7 +112,7 @@ export const getCache = ( key, maxAge ) => {
 export const deleteCache = ( key ) => {
 	lazilySetupLocalCache();
 
-	delete global.googlesitekit.admin.datacache[ key ];
+	delete global._googlesitekitLegacyData.admin.datacache[ key ];
 
 	getStorage().removeItem( 'googlesitekit_' + key );
 };

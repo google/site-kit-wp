@@ -65,7 +65,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 
 		const source = {
 			name: _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
-			link: sprintf( 'https://developers.google.com/speed/pagespeed/insights/?url=%s', global.googlesitekit.permaLink || global.googlesitekit.admin.siteURL ),
+			link: sprintf( 'https://developers.google.com/speed/pagespeed/insights/?url=%s', global._googlesitekitLegacyData.permaLink || global._googlesitekitLegacyData.admin.siteURL ),
 		};
 
 		if ( error ) {

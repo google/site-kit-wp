@@ -77,13 +77,13 @@ function filterAdSenseSettingsSetupIncomplete() {
 }
 
 const incompleteModuleData = {
-	...global.googlesitekit.modules.adsense,
+	...global._googlesitekitLegacyData.modules.adsense,
 	active: true,
 	setupComplete: false,
 };
 
 const completeModuleData = {
-	...global.googlesitekit.modules.adsense,
+	...global._googlesitekitLegacyData.modules.adsense,
 	active: true,
 	setupComplete: true,
 };
@@ -101,7 +101,7 @@ const completeSettings = {
 function Settings( props ) {
 	const {
 		callback,
-		module = global.googlesitekit.modules.adsense,
+		module = global._googlesitekitLegacyData.modules.adsense,
 		isEditing = false,
 		isOpen = true,
 		isSaving = false,

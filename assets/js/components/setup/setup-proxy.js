@@ -44,9 +44,9 @@ class SetupUsingProxy extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { proxySetupURL, siteURL } = global.googlesitekit.admin;
-		const { isSiteKitConnected, isResettable, errorMessage } = global.googlesitekit.setup;
-		const { canSetup } = global.googlesitekit.permissions;
+		const { proxySetupURL, siteURL } = global._googlesitekitLegacyData.admin;
+		const { isSiteKitConnected, isResettable, errorMessage } = global._googlesitekitLegacyData.setup;
+		const { canSetup } = global._googlesitekitLegacyData.permissions;
 
 		this.state = {
 			canSetup,
@@ -117,6 +117,12 @@ class SetupUsingProxy extends Component {
 			startSetupText = __( 'Start setup', 'google-site-kit' );
 		}
 
+		const onButtonClick = async ( event ) => {
+			event.preventDefault();
+			await trackEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
+			global.location.assign( proxySetupURL );
+		};
+
 		return (
 			<Fragment>
 				<Header />
@@ -170,9 +176,7 @@ class SetupUsingProxy extends Component {
 																		<Button
 																			className="googlesitekit-start-setup"
 																			href={ proxySetupURL }
-																			onClick={ () => {
-																				trackEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
-																			} }
+																			onClick={ onButtonClick }
 																			disabled={ ! complete }
 																		>
 																			{ startSetupText }

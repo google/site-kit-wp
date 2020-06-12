@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -33,13 +28,13 @@ import {
 import {
 	createTestRegistry,
 	subscribeUntil,
+	muteConsole,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 
 describe( 'modules/adsense settings', () => {
-	let apiFetchSpy;
 	let registry;
 
 	const validSettings = {
@@ -61,7 +56,6 @@ describe( 'modules/adsense settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -70,22 +64,16 @@ describe( 'modules/adsense settings', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
 		describe( 'saveUseSnippet', () => {
 			it( 'does not require any params', () => {
 				expect( async () => {
-					fetch
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/
-						)
-						.mockResponseOnce(
-							JSON.stringify( true ),
-							{ status: 200 }
-						);
-
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
+						{ body: JSON.stringify( true ), status: 200 }
+					);
 					// Ensure initial settings from server are present.
 					registry.dispatch( STORE_NAME ).receiveGetSettings( { useSnippet: false } );
 
@@ -95,14 +83,10 @@ describe( 'modules/adsense settings', () => {
 			} );
 
 			it( 'updates useSnippet setting from server', async () => {
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/
-					)
-					.mockResponse(
-						JSON.stringify( true ),
-						{ status: 200 }
-					);
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
+					{ body: JSON.stringify( true ), status: 200 }
+				);
 
 				// Update setting and ensure this flags a settings change.
 				registry.dispatch( STORE_NAME ).setUseSnippet( true );
@@ -110,7 +94,7 @@ describe( 'modules/adsense settings', () => {
 
 				await registry.dispatch( STORE_NAME ).saveUseSnippet();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				// Ensure settings now no longer need to be updated because
 				// server-side and client-side settings now match.
@@ -121,7 +105,7 @@ describe( 'modules/adsense settings', () => {
 		describe( 'fetchSaveUseSnippet', () => {
 			it( 'requires the useSnippet param', () => {
 				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
-
+				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).fetchSaveUseSnippet();
 				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'useSnippet is required.' );
 
@@ -129,14 +113,10 @@ describe( 'modules/adsense settings', () => {
 			} );
 
 			it( 'sets isDoingSaveUseSnippet', () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/
-					)
-					.mockResponseOnce(
-						JSON.stringify( true ),
-						{ status: 200 }
-					);
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
+					{ body: JSON.stringify( true ), status: 200 }
+				);
 
 				registry.dispatch( STORE_NAME ).fetchSaveUseSnippet( true );
 				expect( registry.select( STORE_NAME ).isDoingSaveUseSnippet() ).toEqual( true );
@@ -186,35 +166,33 @@ describe( 'modules/adsense settings', () => {
 		describe( 'submitChanges', () => {
 			it( 'dispatches saveSettings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( validSettings ),
-						{ status: 200 }
-					);
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					{ body: validSettings, status: 200 }
+				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( fetch ).toHaveBeenCalled();
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					{
+						body: {
+							data: validSettings,
+						},
+					}
+				);
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
 			} );
 
 			it( 'handles an error if set while saving settings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( wpError ),
-						{ status: 500 }
-					);
-
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					{ body: wpError, status: 500 }
+				);
+				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).getSettings() ).toEqual( validSettings );
@@ -224,14 +202,10 @@ describe( 'modules/adsense settings', () => {
 			it( 'invalidates AdSense API cache on success', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( validSettings ),
-						{ status: 200 }
-					);
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					{ body: validSettings, status: 200 }
+				);
 
 				const cacheKey = createCacheKey( 'modules', 'adsense', 'arbitrary-datapoint' );
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
@@ -311,14 +285,10 @@ describe( 'modules/adsense settings', () => {
 		describe( 'getOriginalAccountStatus', () => {
 			it( 'uses a resolver to make a network request via getSettings', async () => {
 				const response = { accountStatus: 'some-status' };
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					{ body: response, status: 200 }
+				);
 
 				const initialOriginalAccountStatus = registry.select( STORE_NAME ).getOriginalAccountStatus();
 				// Settings will be their initial value while being fetched.
@@ -328,7 +298,7 @@ describe( 'modules/adsense settings', () => {
 
 				const originalAccountStatus = registry.select( STORE_NAME ).getOriginalAccountStatus();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( originalAccountStatus ).toEqual( response.accountStatus );
 			} );
 
@@ -340,7 +310,7 @@ describe( 'modules/adsense settings', () => {
 
 				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'getOriginalAccountStatus' ) );
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'does not override original account status when receiving settings again', async () => {

@@ -11,7 +11,7 @@ import { numberFormat } from '../';
  * @return {Object} Site Kit configuration object.
  */
 const setupGoogleSiteKit = ( langCode ) => {
-	return global.googlesitekit = {
+	return global._googlesitekitLegacyData = {
 		locale: { '': { lang: langCode } },
 	};
 };
@@ -76,7 +76,7 @@ describe( 'numberFormat', () => {
 	} );
 
 	afterEach( () => {
-		global.googlesitekit = null;
+		global._googlesitekitLegacyData = null;
 	} );
 
 	const siteKitLocales = [

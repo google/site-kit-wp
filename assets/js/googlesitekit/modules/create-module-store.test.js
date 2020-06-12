@@ -23,7 +23,6 @@
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
 import { createRegistry } from '@wordpress/data';
 
 /**
@@ -39,7 +38,6 @@ const SETTING_SLUG = 'testSetting';
 const MODULE_SLUG = 'base';
 
 describe( 'createModuleStore store', () => {
-	let apiFetchSpy;
 	let registry;
 	let storeDefinition;
 
@@ -55,8 +53,6 @@ describe( 'createModuleStore store', () => {
 			registry,
 		} );
 		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -65,7 +61,6 @@ describe( 'createModuleStore store', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'name', () => {

@@ -37,6 +37,7 @@ import {
 	getReAuthURL,
 	showErrorNotification,
 	moduleIcon,
+	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
@@ -97,7 +98,7 @@ class SetupModule extends Component {
 
 		let blockedByParentModule = false;
 
-		const { modules } = global.googlesitekit;
+		const modules = getModulesData();
 
 		// Check if required module is active.
 		if ( modules[ slug ].required.length ) {

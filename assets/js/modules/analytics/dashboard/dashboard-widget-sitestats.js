@@ -44,7 +44,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 	setOptions() {
 		const { series, vAxes } = this.props;
 
-		const pageTitle = '' === global.googlesitekit.pageTitle ? '' : __( 'Users Traffic Summary', 'google-site-kit' );
+		const pageTitle = '' === global._googlesitekitLegacyData.pageTitle ? '' : __( 'Users Traffic Summary', 'google-site-kit' );
 
 		const options = {
 			chart: {
