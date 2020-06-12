@@ -18,7 +18,6 @@ use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 /**
  * Class handling plugin activation.
  *
- * @since 1.0.0
  * @since n.e.x.t Renamed from Activation.
  * @access private
  * @ignore
@@ -66,11 +65,7 @@ final class Activation_Notice {
 	) {
 		$this->context         = $context;
 		$this->activation_flag = $activation_flag;
-
-		if ( ! $assets ) {
-			$assets = new Assets( $this->context );
-		}
-		$this->assets = $assets;
+		$this->assets          = $assets ?: new Assets( $this->context );
 	}
 
 	/**

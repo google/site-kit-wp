@@ -53,11 +53,7 @@ final class Activation_Flag {
 		Options $options = null
 	) {
 		$this->context = $context;
-
-		if ( ! $options ) {
-			$options = new Options( $this->context );
-		}
-		$this->options = $options;
+		$this->options = $options ?: new Options( $this->context );
 	}
 
 	/**
