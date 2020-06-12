@@ -45,8 +45,8 @@ import { sanitizeHTML } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
-	// TODO: remove legacy global fallback.
-	const permalink = global._googlesitekitLegacyData?.permaLink || global.googlesitekit?.permaLink;
+	// TODO: replace global with selector.
+	const permalink = global._googlesitekitLegacyData.permaLink;
 	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const url = permalink || referenceURL;
 	const reportMobile = useSelect( ( select ) => select( STORE_NAME ).getReport( url, STRATEGY_MOBILE ) );
