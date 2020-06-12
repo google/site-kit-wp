@@ -91,6 +91,7 @@ describe( 'DashboardPageSpeed', () => {
 		fireEvent.click( labDataTabLink );
 
 		expect( labDataTabLink ).toHaveClass( activeClass );
+		expect( getByText( /In the Field/i ) ).not.toHaveClass( activeClass );
 	} );
 
 	it( 'has tabs for toggling the tested device', () => {
@@ -102,6 +103,7 @@ describe( 'DashboardPageSpeed', () => {
 		fireEvent.click( desktopToggle );
 
 		expect( desktopToggle ).toHaveClass( activeClass );
+		expect( getByText( /mobile/i ) ).not.toHaveClass( activeClass );
 	} );
 
 	it( 'displays a "Field data unavailable" message when field data is not available', () => {
