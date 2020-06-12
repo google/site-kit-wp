@@ -30,7 +30,7 @@ export const refreshAuthentication = async () => {
 			requiredScopes,
 			grantedScopes,
 			unsatisfiedScopes = [],
-		} = await data.get( TYPE_CORE, 'user', 'authentication', { timestamp: Date.now() } );
+		} = await data.get( TYPE_CORE, 'user', 'authentication' );
 
 		// We should really be using state management. This is terrible.
 		// Hang in there... we're getting to it ;)

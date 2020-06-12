@@ -108,6 +108,11 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 	// to the `usingCache()` behaviour when caching is manually disabled on a
 	// per-request basis.
 	const useCacheForRequest = method === 'GET' && ( useCache !== undefined ? useCache : usingCache() );
+
+	if ( false === useCacheForRequest ) {
+		// Add timestamp parameter to ensure that only the first request is preloaded.
+		queryParams = { ...queryParams, timestamp: Date.now() };
+	}
 	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
 
 	if ( useCacheForRequest ) {
