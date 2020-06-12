@@ -85,7 +85,7 @@ export default function DashboardPageSpeed() {
 	);
 
 	return (
-		<div>
+		<div className="googlesitekit-pagespeed-widget">
 			<header>
 				<div className="googlesitekit-pagespeed-data-src-tabs">
 					{ /* Temporarily use danger as an "active" state */ }
