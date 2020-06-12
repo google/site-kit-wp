@@ -55,8 +55,8 @@ class SettingsModules extends Component {
 
 	componentDidMount() {
 		const modulesData = getModulesData();
-		if ( global.googlesitekit.editmodule && modulesData[ global.googlesitekit.editmodule ].active ) {
-			this.handleButtonAction( `${ global.googlesitekit.editmodule }-module`, 'edit' );
+		if ( global._googlesitekitLegacyData.editmodule && modulesData[ global._googlesitekitLegacyData.editmodule ].active ) {
+			this.handleButtonAction( `${ global._googlesitekitLegacyData.editmodule }-module`, 'edit' );
 		}
 	}
 
@@ -287,7 +287,7 @@ class SettingsModules extends Component {
 							title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
 							description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
 							format="small"
-							smallImage={ `${ global.googlesitekit.admin.assetsRoot }images/thumbs-up.png` }
+							smallImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/thumbs-up.png` }
 							type="win-success"
 						/>
 					</div>

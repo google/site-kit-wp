@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name: E2E Tests Auth Plugin
+ * Plugin Name: E2E Tests GCP Auth Plugin
  * Plugin URI:  https://github.com/google/site-kit-wp
  * Description: Utility plugin for bypassing set up and authentication during E2E tests.
  * Author:      Google
  * Author URI:  https://opensource.google.com
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */

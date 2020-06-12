@@ -365,7 +365,7 @@ final class Assets {
 			new Script_Data(
 				'googlesitekit-commons',
 				array(
-					'global'        => 'googlesitekit',
+					'global'        => '_googlesitekitLegacyData',
 					'data_callback' => function () {
 						return $this->get_inline_data();
 					},

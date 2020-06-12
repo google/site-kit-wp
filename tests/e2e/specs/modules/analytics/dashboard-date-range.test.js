@@ -7,6 +7,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
+	pageWait,
 	setSiteVerification,
 	setSearchConsoleProperty,
 	setupAnalytics,
@@ -25,7 +26,7 @@ async function getTotalSessions() {
 
 describe( 'date range filtering on dashboard views', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
 		await setupAnalytics();
@@ -66,7 +67,7 @@ describe( 'date range filtering on dashboard views', () => {
 		// Switching back will not trigger a data request as it has been cached.
 		await switchDateRange( 'last 14 days', 'last 28 days' );
 		// Need to wait for short time for UI to update, however no selectors/requests to listen for.
-		await page.waitFor( 250 );
+		await pageWait();
 		expect( await getTotalSessions() ).toBe( TOTAL_SESSIONS_28_DAYS );
 	} );
 } );

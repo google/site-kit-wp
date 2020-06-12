@@ -122,7 +122,7 @@ export default withData(
 			datapoint: 'report',
 			data: {
 				...trafficSourcesReportDataDefaults,
-				url: global.googlesitekit.permaLink,
+				url: global._googlesitekitLegacyData.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
