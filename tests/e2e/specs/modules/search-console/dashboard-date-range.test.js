@@ -1,4 +1,22 @@
 /**
+ * Dashboard date range e2e tests.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * WordPress dependencies
  */
 import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
@@ -7,6 +25,8 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
+	deactivateUtilityPlugins,
+	pageWait,
 	setSiteVerification,
 	setSearchConsoleProperty,
 	switchDateRange,
@@ -26,7 +46,7 @@ async function getTotalImpressions() {
 
 describe( 'date range filtering on dashboard views', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
 
@@ -45,6 +65,10 @@ describe( 'date range filtering on dashboard views', () => {
 
 	afterEach( async () => {
 		mockBatchResponse = [];
+	} );
+
+	afterAll( async () => {
+		await deactivateUtilityPlugins();
 	} );
 
 	it( 'loads new data when the date range is changed on the Site Kit dashboard', async () => {
@@ -67,7 +91,7 @@ describe( 'date range filtering on dashboard views', () => {
 		// Switching back will not trigger a data request as it has been cached.
 		await switchDateRange( 'last 14 days', 'last 28 days' );
 		// Need to wait for short time for UI to update, however no selectors/requests to listen for.
-		await page.waitFor( 250 );
+		await pageWait();
 		expect( await getTotalImpressions() ).toBe( TOTAL_IMPRESSIONS_28_DAYS );
 
 		mockBatchResponse = last7DaysNoData;
@@ -91,6 +115,7 @@ describe( 'date range filtering on dashboard views', () => {
 		await expect( postSearcher ).toClick( '.autocomplete__option', { text: /hello world/i } );
 
 		mockBatchResponse = last28Days;
+
 		await Promise.all( [
 			page.waitForNavigation(),
 			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
@@ -111,7 +136,7 @@ describe( 'date range filtering on dashboard views', () => {
 		// Switching back will not trigger a data request as it has been cached.
 		await switchDateRange( 'last 14 days', 'last 28 days' );
 		// Need to wait for short time for UI to update, however no selectors/requests to listen for.
-		await page.waitFor( 250 );
+		await pageWait();
 		expect( await getTotalImpressions() ).toBe( TOTAL_IMPRESSIONS_28_DAYS );
 	} );
 
@@ -124,6 +149,7 @@ describe( 'date range filtering on dashboard views', () => {
 		const TOTAL_IMPRESSIONS_28_DAYS = await getTotalImpressions();
 
 		mockBatchResponse = last14Days;
+
 		await Promise.all( [
 			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),
@@ -135,7 +161,7 @@ describe( 'date range filtering on dashboard views', () => {
 		// Switching back will not trigger a data request as it has been cached.
 		await switchDateRange( 'last 14 days', 'last 28 days' );
 		// Need to wait for short time for UI to update, however no selectors/requests to listen for.
-		await page.waitFor( 250 );
+		await pageWait();
 		expect( await getTotalImpressions() ).toBe( TOTAL_IMPRESSIONS_28_DAYS );
 	} );
 } );

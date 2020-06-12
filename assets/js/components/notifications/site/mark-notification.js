@@ -18,7 +18,7 @@ export async function markNotification( id, state ) {
 	// to not show a marked notification again.
 	data.invalidateCacheGroup( TYPE_CORE, 'site', 'notifications' );
 
-	trackEvent( 'site_notifications', state, id );
+	await trackEvent( 'site_notifications', state, id );
 
 	return await data.set( TYPE_CORE, 'site', 'mark-notification', {
 		notificationID: id,

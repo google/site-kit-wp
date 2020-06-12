@@ -49,8 +49,8 @@ export default function SetupSiteAdded( { finishSetup } ) {
 
 		const success = await completeSiteSetup();
 		if ( success ) {
+			await trackEvent( 'adsense_setup', 'complete_adsense_setup' );
 			finishSetup();
-			trackEvent( 'adsense_setup', 'complete_adsense_setup' );
 		}
 	}, [ isDoingSubmitChanges, finishSetup ] );
 

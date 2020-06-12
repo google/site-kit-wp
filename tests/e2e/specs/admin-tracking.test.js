@@ -1,12 +1,30 @@
 /**
+ * Admin tracking opt in/out e2e tests.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * WordPress dependencies
  */
-import { activatePlugin, deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
-import { resetSiteKit, setSearchConsoleProperty } from '../utils';
+import { resetSiteKit, setSearchConsoleProperty, deactivateUtilityPlugins, pageWait } from '../utils';
 
 async function toggleOptIn() {
 	await Promise.all( [
@@ -16,16 +34,16 @@ async function toggleOptIn() {
 }
 
 describe( 'management of tracking opt-in/out via settings page', () => {
-	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
-		await activatePlugin( 'e2e-tests-site-verification-plugin' );
-	} );
-
 	beforeEach( async () => {
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
+		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await setSearchConsoleProperty();
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-		await page.waitForSelector( '.mdc-tab-bar' );
+		await page.waitForSelector( '.mdc-tab-bar button.mdc-tab' );
+		await expect( page ).toMatchElement( 'button.mdc-tab', { text: 'Admin Settings' } );
+
+		await pageWait(); // Delay the next steps.
 
 		// Click on Admin Settings Tab.
 		await Promise.all( [
@@ -36,11 +54,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 	afterEach( async () => {
 		await resetSiteKit();
-	} );
-
-	afterAll( async () => {
-		await deactivatePlugin( 'e2e-tests-auth-plugin' );
-		await deactivatePlugin( 'e2e-tests-site-verification-plugin' );
+		await deactivateUtilityPlugins();
 	} );
 
 	it( 'should be opted-out by default', async () => {
@@ -82,7 +96,6 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 		// Uncheck the checkbox.
 		await toggleOptIn();
-
 		await page.waitForSelector( '.mdc-checkbox:not(.mdc-checkbox--selected) #googlesitekit-opt-in' );
 
 		// Ensure unchecked checkbox exists.

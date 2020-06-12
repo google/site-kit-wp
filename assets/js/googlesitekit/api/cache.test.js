@@ -34,12 +34,12 @@ import {
 
 let previousCacheValue;
 const disableCache = () => {
-	previousCacheValue = global.googlesitekit.admin.nojscache;
-	global.googlesitekit.admin.nojscache = true;
+	previousCacheValue = global._googlesitekitLegacyData.admin.nojscache;
+	global._googlesitekitLegacyData.admin.nojscache = true;
 };
 
 const restoreCache = () => {
-	global.googlesitekit.admin.nojscache = previousCacheValue;
+	global._googlesitekitLegacyData.admin.nojscache = previousCacheValue;
 };
 
 const DISABLE_CACHE = 'Cache disabled';

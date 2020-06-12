@@ -53,7 +53,7 @@ describe( 'setting up the Analytics module with no existing account and with an 
 	} );
 
 	beforeEach( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-analytics-existing-tag' );
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
 

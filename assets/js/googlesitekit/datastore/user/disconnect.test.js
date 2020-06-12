@@ -27,6 +27,8 @@ describe( 'core/user disconnect', () => {
 	const coreUserDataDisconnectEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/disconnect/;
 
 	beforeEach( () => {
+		// Create a mock to avoid triggering a network request error.
+		// The return value is irrelevant to the test.
 		muteFetch( coreUserDataDisconnectEndpointRegExp );
 		registry = createTestRegistry();
 	} );

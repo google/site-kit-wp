@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -35,7 +30,6 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense tags', () => {
-	let apiFetchSpy;
 	let registry;
 
 	beforeAll( () => {
@@ -44,8 +38,6 @@ describe( 'modules/adsense tags', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -54,7 +46,6 @@ describe( 'modules/adsense tags', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -64,14 +55,10 @@ describe( 'modules/adsense tags', () => {
 	describe( 'selectors', () => {
 		describe( 'getTagPermission', () => {
 			it( 'returns true if a user has access to this tag', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.tagPermissionAccess ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/,
+					{ body: fixtures.tagPermissionAccess, status: 200 }
+				);
 
 				const clientID = fixtures.tagPermissionAccess.clientID;
 				const accountID = fixtures.tagPermissionAccess.accountID;
@@ -89,7 +76,7 @@ describe( 'modules/adsense tags', () => {
 				);
 
 				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( clientID );
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( permissionForTag ).toEqual( {
 					accountID,
@@ -98,14 +85,10 @@ describe( 'modules/adsense tags', () => {
 			} );
 
 			it( 'returns false if a user cannot access the requested tag', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.tagPermissionNoAccess ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/,
+					{ body: fixtures.tagPermissionNoAccess, status: 200 }
+				);
 
 				const clientID = fixtures.tagPermissionNoAccess.clientID;
 				const accountID = fixtures.tagPermissionNoAccess.accountID;
@@ -122,7 +105,7 @@ describe( 'modules/adsense tags', () => {
 				);
 
 				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( clientID );
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( permissionForTag ).toEqual( {
 					accountID,
@@ -136,14 +119,10 @@ describe( 'modules/adsense tags', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/,
+					{ body: response, status: 500 }
+				);
 
 				const clientID = fixtures.tagPermissionAccess.clientID;
 
@@ -153,7 +132,7 @@ describe( 'modules/adsense tags', () => {
 					() => registry.select( STORE_NAME ).isFetchingGetTagPermission( clientID ) === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( clientID );
 				expect( permissionForTag ).toEqual( undefined );
@@ -186,10 +165,11 @@ describe( 'modules/adsense tags', () => {
 				);
 
 				expect( hasExistingTag ).toEqual( false );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
+				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				expect( hasExistingTag ).toEqual( undefined );
@@ -198,21 +178,16 @@ describe( 'modules/adsense tags', () => {
 					.select( STORE_NAME )
 					.hasFinishedResolution( 'getExistingTag' )
 				);
-
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 		} );
 
 		describe( 'hasTagPermission', () => {
 			it( 'makes a request via the getTagPermission selector if no tag has been loaded ', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.tagPermissionAccess ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/,
+					{ body: fixtures.tagPermissionAccess, status: 200 }
+				);
 
 				const { clientID } = fixtures.tagPermissionAccess;
 
@@ -227,7 +202,7 @@ describe( 'modules/adsense tags', () => {
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( clientID );
 
 				expect( hasPermission ).toEqual( true );
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
 			it( "returns true if this user has permission to access this client's tag", async () => {
@@ -248,7 +223,7 @@ describe( 'modules/adsense tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( true );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns false if no existing tag exists', async () => {
@@ -269,11 +244,12 @@ describe( 'modules/adsense tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( false );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
 				muteConsole( 'error' );
+				fetchMock.get( /^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/, { status: 200 } );
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.tagPermissionNoAccess.clientID );
 
 				expect( hasPermission ).toEqual( undefined );
@@ -326,7 +302,7 @@ describe( 'modules/adsense tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( null );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 		} );
 	} );

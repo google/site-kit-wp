@@ -49,13 +49,13 @@ export class GoogleSitekitAdminbar extends Component {
 		this.handleMoreDetailsLink = this.handleMoreDetailsLink.bind( this );
 	}
 
-	handleMoreDetailsLink() {
+	async handleMoreDetailsLink() {
 		const {
 			permaLink,
 			postID,
 			postType,
 			pageTitle,
-		} = global.googlesitekit;
+		} = global._googlesitekitLegacyData;
 		const href = getSiteKitAdminURL(
 			'googlesitekit-dashboard',
 			{
@@ -66,7 +66,7 @@ export class GoogleSitekitAdminbar extends Component {
 			}
 		);
 
-		trackEvent( 'admin_bar', 'post_details_click' );
+		await trackEvent( 'admin_bar', 'post_details_click' );
 		document.location = href;
 	}
 
@@ -74,7 +74,7 @@ export class GoogleSitekitAdminbar extends Component {
 		const {
 			pageTitle,
 			permaLink,
-		} = global.googlesitekit;
+		} = global._googlesitekitLegacyData;
 
 		return (
 			<Fragment>

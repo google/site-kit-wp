@@ -37,6 +37,7 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	getSiteKitAdminURL,
+	getModulesData,
 } from '../util';
 import data, { TYPE_CORE } from './data';
 import Button from './button';
@@ -146,7 +147,7 @@ class PostSearcher extends Component {
 	}
 
 	render() {
-		const { modules } = global.googlesitekit;
+		const modules = getModulesData();
 
 		// Set column width full if Analytics active, half otherwise.
 		const classNameForColumn = modules.analytics && modules.analytics.active

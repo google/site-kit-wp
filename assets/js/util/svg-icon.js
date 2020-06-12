@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const SvgIcon = ( { id, className, height, width } ) => {
-	const svgPath = `${ global.googlesitekit.admin.assetsRoot }svg/svg.svg`;
+	const svgPath = `${ global._googlesitekitLegacyData.admin.assetsRoot }svg/svg.svg`;
 	return (
 		<svg
 			className={ classnames(

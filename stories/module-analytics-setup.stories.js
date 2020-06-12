@@ -40,7 +40,7 @@ import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/us
 import { WithTestRegistry } from '../tests/js/utils';
 
 function filterAnalyticsSetup() {
-	global.googlesitekit.setup.moduleToSetup = 'analytics';
+	global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
 
 	removeAllFilters( 'googlesitekit.ModuleSetup-analytics' );
 	addFilter(

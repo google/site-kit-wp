@@ -109,6 +109,6 @@ class AssetsTest extends TestCase {
 
 		// Ensure that before_print callback for 'googlesitekit-commons' was run (its localized script should be there).
 		$localized_script = wp_scripts()->get_data( 'googlesitekit-commons', 'data' );
-		$this->assertContains( 'var googlesitekit = ', $localized_script );
+		$this->assertContains( 'var _googlesitekitLegacyData = ', $localized_script );
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Optimize module initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,47 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { addFilter } from '@wordpress/hooks';
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import OptimizeSetup from '../../modules/optimize/setup';
-import { fillFilterWithComponent, getModulesData } from '../../util';
-
-const slug = 'optimize';
-const modulesData = getModulesData();
-if ( modulesData.optimize.active ) {
-	/**
-	 * Add components to the settings page.
-	 */
-	addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-		'googlesitekit.OptimizeModuleSettingsDetails',
-		fillFilterWithComponent( OptimizeSetup, {
-			onSettingsPage: true,
-		} ) );
-
-	/**
-	 * Add component to the setup wizard
-	 */
-	addFilter( `googlesitekit.ModuleSetup-${ slug }`,
-		'googlesitekit.OptimizeModuleSetupWizard',
-		fillFilterWithComponent( OptimizeSetup, {
-			onSettingsPage: false,
-		} ) );
-
-	/**
-	 * Add data to the congrats setup Win Notification for display.
-	 */
-	addFilter( `googlesitekit.SetupWinNotification-${ slug }`,
-		'googlesitekit.OptimizeSetupWinNotification', ( winData ) => {
-			winData.description = __( 'To set up experiments and see the results, go to ', 'google-site-kit' );
-			winData.learnMore.label = 'Optimize';
-			winData.learnMore.url = 'https://optimize.withgoogle.com/';
-			return winData;
-		} );
-}
-
+import './datastore';
