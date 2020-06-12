@@ -79,7 +79,7 @@ export default function DashboardPageSpeed() {
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
 	const footerLinkHTML = sprintf(
 		/* translators: 1: link attributes, 2: translated service name */
-		__( 'Learn more details at <a %1$s>%2$s</a>', 'google-site-kit' ),
+		__( 'View details at <a %1$s>%2$s</a>', 'google-site-kit' ),
 		`href="${ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url } ) }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank"`,
 		_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' )
 	);
