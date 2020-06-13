@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,38 +27,32 @@ import { __ } from '@wordpress/i18n';
  */
 import Layout from '../../../components/layout/layout';
 import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
-import DashboardSpeedInner from './dashboard-widget-speed-inner';
+import DashboardPageSpeed from '../components/DashboardPageSpeed';
 
-class DashboardSpeed extends Component {
-	render() {
-		const description = global._googlesitekitLegacyData.permaLink ? __( 'How fast this page is.', 'google-site-kit' ) : __( 'How fast your home page is.', 'google-site-kit' );
+function DashboardSpeed() {
+	const description = global.googlesitekit.permaLink ? __( 'How fast this page is.', 'google-site-kit' ) : __( 'How fast your home page is.', 'google-site-kit' );
 
-		return (
-			<Fragment>
-				<div id="googlesitekit-pagespeed-header" className="
+	return (
+		<Fragment>
+			<div id="googlesitekit-pagespeed-header" className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
 				">
-					<DashboardModuleHeader
-						title={ __( 'Speed', 'google-site-kit' ) }
-						description={ description }
-					/>
-				</div>
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
-					<Layout className="googlesitekit-pagespeed-report">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								<DashboardSpeedInner />
-							</div>
-						</div>
-					</Layout>
-				</div>
-			</Fragment>
-		);
-	}
+				<DashboardModuleHeader
+					title={ __( 'Speed', 'google-site-kit' ) }
+					description={ description }
+				/>
+			</div>
+			<div className="
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--span-12
+			">
+				<Layout className="googlesitekit-pagespeed-report">
+					<DashboardPageSpeed />
+				</Layout>
+			</div>
+		</Fragment>
+	);
 }
 
 export default DashboardSpeed;
