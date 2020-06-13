@@ -28,7 +28,7 @@ final class Activation_Notice {
 	/**
 	 * Plugin context.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 * @var Context
 	 */
 	private $context;
@@ -44,7 +44,7 @@ final class Activation_Notice {
 	/**
 	 * Assets API instance.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 * @var Assets
 	 */
 	protected $assets;
@@ -52,7 +52,7 @@ final class Activation_Notice {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 *
 	 * @param Context         $context         Plugin context.
 	 * @param Activation_Flag $activation_flag Activation flag instance.
@@ -71,7 +71,7 @@ final class Activation_Notice {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		add_filter(
@@ -106,7 +106,7 @@ final class Activation_Notice {
 	/**
 	 * Gets the admin notice indicating that the plugin has just been activated.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 *
 	 * @return Notice Admin notice instance.
 	 */
