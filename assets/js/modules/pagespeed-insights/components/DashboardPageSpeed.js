@@ -17,18 +17,24 @@
  */
 
 /**
+ * External dependencies
+ */
+import Tab from '@material/react-tab';
+import TabBar from '@material/react-tab-bar';
+
+/**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import DeviceSizeTabBar from '../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../components/progress-bar';
-import Link from '../../../components/link';
+import Layout from '../../../components/layout/layout';
 import LabReportMetrics from './LabReportMetrics';
 import FieldReportMetrics from './FieldReportMetrics';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
@@ -41,7 +47,7 @@ import {
 	DATA_SRC_LAB,
 	FORM_DASH_WIDGET,
 } from '../datastore/constants';
-import { sanitizeHTML } from '../../../util';
+
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
@@ -60,6 +66,10 @@ export default function DashboardPageSpeed() {
 	const setDataSrcField = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_FIELD } ), [] );
 	const setDataSrcLab = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_LAB } ), [] );
 
+	const [ activeTab, setActiveTab ] = useState( 'in_the_lab' ); //eslint-disable-line
+
+	const [ activeDeviceSize, setActiveDeviceSize ] = useState( 'mobile' ); //eslint-disable-line
+
 	// Set the default data source based on report data.
 	useEffect( () => {
 		if ( ! reportMobile || ! reportDesktop ) {
@@ -77,61 +87,80 @@ export default function DashboardPageSpeed() {
 	}
 
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
-	const footerLinkHTML = sprintf(
-		/* translators: 1: link attributes, 2: translated service name */
-		__( 'View details at <a %1$s>%2$s</a>', 'google-site-kit' ),
-		`href="${ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url } ) }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank"`,
-		_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' )
-	);
+
+	const updateActiveDeviceSize = ( deviceIndex ) => {
+		console.log( 'updateActiveDevice', deviceIndex ); //eslint-disable-line
+		setActiveDeviceSize( deviceIndex === 1 ? 'desktop' : 'mobile' );
+		if ( deviceIndex === 1 ) {
+			setStrategyDesktop();
+		} else {
+			setStrategyMobile();
+		}
+	};
+
+	const updateActiveTab = ( tabIndex ) => {
+		console.log( 'tabIndex', tabIndex ); //eslint-disable-line
+		setActiveTab( tabIndex === 1 ? 'in_the_field' : 'in_the_lab' );
+	};
+
+	console.log( reportMobile ); //eslint-disable-line
 
 	return (
-		<div className="googlesitekit-pagespeed-widget">
-			<header>
-				<div className="googlesitekit-pagespeed-data-src-tabs">
-					{ /* Temporarily use danger as an "active" state */ }
-					<Link
-						danger={ dataSrc === DATA_SRC_FIELD }
-						onClick={ setDataSrcField }
-					>
-						{ __( 'In the Field', 'google-site-kit' ) }
-					</Link>
-					<Link
-						danger={ dataSrc === DATA_SRC_LAB }
-						onClick={ setDataSrcLab }
-					>
-						{ __( 'In the Lab', 'google-site-kit' ) }
-					</Link>
-				</div>
-				<div className="googlesitekit-pagespeed-strategy-button-group">
-					<Link
-						danger={ strategy === STRATEGY_MOBILE }
-						onClick={ setStrategyMobile }
-					>
-						mobile
-					</Link>
-					<Link
-						danger={ strategy === STRATEGY_DESKTOP }
-						onClick={ setStrategyDesktop }
-					>
-						desktop
-					</Link>
-				</div>
-			</header>
-			<main>
-				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } /> }
-				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } /> }
-			</main>
-			<footer>
-				<p
-					dangerouslySetInnerHTML={ sanitizeHTML(
-						footerLinkHTML,
-						{
-							ALLOWED_TAGS: [ 'a' ],
-							ALLOWED_ATTR: [ 'href', 'class', 'target' ],
-						}
-					) }
-				/>
-			</footer>
-		</div>
+		<Fragment>
+			<Layout
+				className="googlesitekit-pagespeed-widget"
+			>
+				<header>
+					<div className="googlesitekit-pagespeed-data-src-tabs">
+						{ /* Temporarily use danger as an "active" state */ }
+						<TabBar
+							activeIndex={ activeTab === 'in_the_field' ? 1 : 0 }
+							handleActiveIndexUpdate={ updateActiveTab }
+						>
+							<Tab>
+								<span className="mdc-tab__text-label">{ __( 'In the Lab', 'google-site-kit' ) }</span>
+							</Tab>
+							<Tab>
+								<span className="mdc-tab__text-label">{ __( 'In the Field', 'google-site-kit' ) }</span>
+							</Tab>
+						</TabBar>
+						{ /* <Link
+							danger={ dataSrc === DATA_SRC_FIELD }
+							onClick={ setDataSrcField }
+						>
+							{ __( 'In the Field', 'google-site-kit' ) }
+						</Link>
+						<Link
+							danger={ dataSrc === DATA_SRC_LAB }
+							onClick={ setDataSrcLab }
+						>
+							{ __( 'In the Lab', 'google-site-kit' ) }
+						</Link> */ }
+					</div>
+					<DeviceSizeTabBar
+						activeIndex={ activeDeviceSize === 'desktop' ? 1 : 0 }
+						handleDeviceSizeUpdate={ updateActiveDeviceSize }
+					/>
+					{ /* <div className="googlesitekit-pagespeed-strategy-button-group">
+						<Link
+							danger={ strategy === STRATEGY_MOBILE }
+							onClick={ setStrategyMobile }
+						>
+							mobile
+						</Link>
+						<Link
+							danger={ strategy === STRATEGY_DESKTOP }
+							onClick={ setStrategyDesktop }
+						>
+							desktop
+						</Link>
+					</div> */ }
+				</header>
+				<main>
+					{ activeTab === 'in_the_lab' && <LabReportMetrics data={ reportData } /> }
+					{ activeTab === 'in_the_field' && <FieldReportMetrics data={ reportData } /> }
+				</main>
+			</Layout>
+		</Fragment>
 	);
 }

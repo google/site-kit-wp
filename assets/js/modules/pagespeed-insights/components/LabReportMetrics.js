@@ -44,41 +44,75 @@ export default function LabReportMetrics( { data } ) {
 	}
 
 	return (
-		<div>
-			<p>
-				{ __( 'Lab data is useful for debugging performance issues, as it is collected in a controlled environment.', 'google-site-kit' ) }
-				{ ' ' }
-				<Link
-					href="https://web.dev/user-centric-performance-metrics/#in-the-lab"
-					external
-					inherit
-					dangerouslySetInnerHTML={ sanitizeHTML(
-						__( 'Learn more<span class="screen-reader-text"> about lab data.</span>', 'google-site-kit' ),
-						{
-							ALLOWED_TAGS: [ 'span' ],
-							ALLOWED_ATTR: [ 'class' ],
-						}
-					) }
-				/>
-			</p>
-			<ReportMetric
-				title={ __( 'Total Blocking Time', 'google-site-kit' ) }
-				description={ __( 'Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms.', 'google-site-kit' ) }
-				displayValue={ totalBlockingTime.displayValue }
-				category={ getScoreCategory( totalBlockingTime.score ) }
-			/>
-			<ReportMetric
-				title={ __( 'Largest Contentful Paint', 'google-site-kit' ) }
-				description={ __( 'Marks the time at which the largest text or image is painted.', 'google-site-kit' ) }
-				displayValue={ largestContentfulPaint.displayValue }
-				category={ getScoreCategory( largestContentfulPaint.score ) }
-			/>
-			<ReportMetric
-				title={ __( 'Cumulative Layout Shift', 'google-site-kit' ) }
-				description={ __( 'Measures the movement of visible elements within the viewport.', 'google-site-kit' ) }
-				displayValue={ cumulativeLayoutShift.displayValue }
-				category={ getScoreCategory( cumulativeLayoutShift.score ) }
-			/>
+		<div className="googlesitekit-layout googlesitekit-pagespeed-insights-web-vitals-metrics">
+			<div>
+				<p>
+					{ __( 'Lab data is useful for debugging performance issues, as it is collected in a controlled environment.', 'google-site-kit' ) }
+					{ ' ' }
+					<Link
+						href="https://web.dev/user-centric-performance-metrics/#in-the-lab"
+						external
+						inherit
+						dangerouslySetInnerHTML={ sanitizeHTML(
+							__( 'Learn more<span class="screen-reader-text"> about lab data.</span>', 'google-site-kit' ),
+							{
+								ALLOWED_TAGS: [ 'span' ],
+								ALLOWED_ATTR: [ 'class' ],
+							}
+						) }
+					/>
+				</p>
+			</div>
+			<table>
+				<thead>
+					<tr>
+						<th>
+							{ __( 'Metric Name', 'google-site-kit' ) }
+						</th>
+						<th>
+							{ __( 'Metric Value', 'google-site-kit' ) }
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ReportMetric
+						title={ __( 'Total Blocking Time', 'google-site-kit' ) }
+						description={ __( 'Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms.', 'google-site-kit' ) }
+						displayValue={ totalBlockingTime.displayValue }
+						category={ getScoreCategory( totalBlockingTime.score ) }
+					/>
+					<ReportMetric
+						title={ __( 'Largest Contentful Paint', 'google-site-kit' ) }
+						description={ __( 'Marks the time at which the largest text or image is painted.', 'google-site-kit' ) }
+						displayValue={ largestContentfulPaint.displayValue }
+						category={ getScoreCategory( largestContentfulPaint.score ) }
+					/>
+					<ReportMetric
+						title={ __( 'Cumulative Layout Shift', 'google-site-kit' ) }
+						description={ __( 'Measures the movement of visible elements within the viewport.', 'google-site-kit' ) }
+						displayValue={ cumulativeLayoutShift.displayValue }
+						category={ getScoreCategory( cumulativeLayoutShift.score ) }
+					/>
+				</tbody>
+			</table>
+			<div>
+				<p>
+					{ __( 'View details at', 'google-site-kit' ) }
+					{ ' ' }
+					<Link
+						href="https://developers.google.com/speed/pagespeed/insights/"
+						external
+						inherit
+						dangerouslySetInnerHTML={ sanitizeHTML(
+							__( 'PageSpeed Insights<span class="screen-reader-text"> PageSpeed Insights.</span>', 'google-site-kit' ),
+							{
+								ALLOWED_TAGS: [ 'span' ],
+								ALLOWED_ATTR: [ 'class' ],
+							}
+						) }
+					/>
+				</p>
+			</div>
 		</div>
 	);
 }

@@ -41,17 +41,17 @@ export default function ReportMetric( {
 	category = category.toLowerCase();
 
 	return (
-		<div>
-			<div>
+		<tr>
+			<td>
 				<div className="googlesitekit-pagespeed-report-metric__title">
 					{ title }
 				</div>
 				<div className="googlesitekit-pagespeed-report-metric__description">
 					{ description }
 				</div>
-			</div>
+			</td>
 
-			<div className={ `googlesitekit-pagespeed-report-metric--${ category }` }>
+			<td className={ `googlesitekit-pagespeed-report-metric--${ category }` }>
 				<div className="googlesitekit-pagespeed-report-metric__value">
 					{ displayValue }
 				</div>
@@ -60,8 +60,8 @@ export default function ReportMetric( {
 					{ category === CATEGORY_AVERAGE && _x( 'Needs improvement', 'Performance rating', 'google-site-kit' ) }
 					{ category === CATEGORY_SLOW && _x( 'Poor', 'Performance rating', 'google-site-kit' ) }
 				</div>
-			</div>
-		</div>
+			</td>
+		</tr>
 	);
 }
 

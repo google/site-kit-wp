@@ -183,7 +183,7 @@ class AnalyticsDashboardWidget extends Component {
 								<Layout
 									header
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), dateRange ) }
+									title={ sprintf( __( 'Audience overview for the HELLO last %s', 'google-site-kit' ), dateRange ) }
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 									headerCtaLink="http://analytics.google.com"
 								>
