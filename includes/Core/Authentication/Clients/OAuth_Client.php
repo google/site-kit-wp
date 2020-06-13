@@ -834,6 +834,7 @@ final class OAuth_Client {
 		$query_params = array_merge( $query_params, $user_fields );
 
 		$query_params['application_name'] = rawurlencode( $this->get_application_name() );
+		$query_params['hl']               = get_user_locale();
 
 		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
 	}
