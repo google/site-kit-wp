@@ -20,50 +20,86 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import ReportMetric from './ReportMetric';
 import { getScoreCategory } from '../dashboard/util';
 import Link from '../../../components/link';
 import { sanitizeHTML } from '../../../util';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+
+const { useSelect } = Data;
 
 export default function LabReportMetrics( { data } ) {
+	const permalink = global._googlesitekitLegacyData.permaLink;
+	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const url = permalink || referenceURL;
+
 	const totalBlockingTime = data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
 	const largestContentfulPaint = data?.lighthouseResult?.audits?.[ 'largest-contentful-paint' ];
 	const cumulativeLayoutShift = data?.lighthouseResult?.audits?.[ 'cumulative-layout-shift' ];
+
+	const learnMoreLink = (
+		<Link
+			href="https://web.dev/user-centric-performance-metrics/#in-the-lab"
+			external
+			inherit
+			dangerouslySetInnerHTML={ sanitizeHTML(
+				__( 'Learn more<span class="screen-reader-text"> about lab data.</span>', 'google-site-kit' ),
+				{
+					ALLOWED_TAGS: [ 'span' ],
+					ALLOWED_ATTR: [ 'class' ],
+				}
+			) }
+		/>
+	);
 
 	if ( ! totalBlockingTime || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
 		return null;
 	}
 
+	const footerLinkHTML = (
+		<p
+			dangerouslySetInnerHTML={ sanitizeHTML(
+				sprintf(
+					/* translators: 1: link attributes, 2: translated service name */
+					__( 'View details at <a %1$s>%2$s</a>', 'google-site-kit' ),
+					`href="${ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url } ) }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank"`,
+					_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' )
+				),
+				{
+					ALLOWED_TAGS: [ 'a' ],
+					ALLOWED_ATTR: [ 'href', 'class', 'target' ],
+				}
+			) }
+		/>
+	);
+
 	return (
-		<div className="googlesitekit-layout googlesitekit-pagespeed-insights-web-vitals-metrics">
-			<div>
+		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
+			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row__first">
 				<p>
 					{ __( 'Lab data is useful for debugging performance issues, as it is collected in a controlled environment.', 'google-site-kit' ) }
 					{ ' ' }
-					<Link
-						href="https://web.dev/user-centric-performance-metrics/#in-the-lab"
-						external
-						inherit
-						dangerouslySetInnerHTML={ sanitizeHTML(
-							__( 'Learn more<span class="screen-reader-text"> about lab data.</span>', 'google-site-kit' ),
-							{
-								ALLOWED_TAGS: [ 'span' ],
-								ALLOWED_ATTR: [ 'class' ],
-							}
-						) }
-					/>
+					{ learnMoreLink }
 				</p>
 			</div>
-			<table>
+			<table
+				className={ classnames(
+					'googlesitekit-table',
+					'googlesitekit-table--with-list'
+				) }
+			>
 				<thead>
 					<tr>
 						<th>
@@ -95,23 +131,8 @@ export default function LabReportMetrics( { data } ) {
 					/>
 				</tbody>
 			</table>
-			<div>
-				<p>
-					{ __( 'View details at', 'google-site-kit' ) }
-					{ ' ' }
-					<Link
-						href="https://developers.google.com/speed/pagespeed/insights/"
-						external
-						inherit
-						dangerouslySetInnerHTML={ sanitizeHTML(
-							__( 'PageSpeed Insights<span class="screen-reader-text"> PageSpeed Insights.</span>', 'google-site-kit' ),
-							{
-								ALLOWED_TAGS: [ 'span' ],
-								ALLOWED_ATTR: [ 'class' ],
-							}
-						) }
-					/>
-				</p>
+			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row__last">
+				{ footerLinkHTML }
 			</div>
 		</div>
 	);

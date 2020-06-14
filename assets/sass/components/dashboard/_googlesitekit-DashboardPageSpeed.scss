@@ -15,3 +15,79 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+.googlesitekit-pagespeed-widget {
+	
+	.googlesitekit-pagespeed-widget-header {
+		
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		background: #fafafa;
+		box-shadow: inset 0px -1px 0px rgba(0, 0, 0, 0.1);
+
+		.googlesitekit-pagespeed-data-src-tabs {
+			
+			button.mdc-tab {
+
+				margin: 0px 10px;
+				font-size: 14px;
+				line-height: 20px;
+				/* identical to box height, or 143% */
+				letter-spacing: 0.25px;
+				text-transform: none;
+			}
+		}
+
+		.googlesitekit-pagespeed-widget-device-size-tab-bar-container {
+			
+			width: auto;
+			padding: 12px;
+
+		}
+	}
+
+	.googlesitekit-pagespeed-insights-web-vitals-metrics {
+
+		.googlesitekit-pagespeed-report-row {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 18px 24px;
+			
+			&.googlesitekit-pagespeed-report-row__first {
+				padding: 18px 24px 12px 27px;
+			}
+
+			&.googlesitekit-pagespeed-report-row__last {
+				padding: 12px 24px 18px 27px;
+			}
+
+			p {
+				color:#6e7275;
+				font-size: 14px;
+				line-height: 20px;
+				/* identical to box height, or 143% */
+				letter-spacing: 0.2px;
+			}
+
+			.googlesitekit-pagespeed-report-metric__title {
+				color: #000;
+				font-size: 16px;
+				line-height: 24px;
+				/* identical to box height, or 150% */
+				letter-spacing: 0.1px;
+			}
+
+		}
+
+		table {
+
+			width: 100%;
+
+			thead {
+				display: none;
+			}
+		}
+	}
+}

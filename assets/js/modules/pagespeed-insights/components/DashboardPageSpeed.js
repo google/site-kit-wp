@@ -103,16 +103,13 @@ export default function DashboardPageSpeed() {
 		setActiveTab( tabIndex === 1 ? 'in_the_field' : 'in_the_lab' );
 	};
 
-	console.log( reportMobile ); //eslint-disable-line
-
 	return (
 		<Fragment>
 			<Layout
 				className="googlesitekit-pagespeed-widget"
 			>
-				<header>
+				<header className="googlesitekit-pagespeed-widget-header">
 					<div className="googlesitekit-pagespeed-data-src-tabs">
-						{ /* Temporarily use danger as an "active" state */ }
 						<TabBar
 							activeIndex={ activeTab === 'in_the_field' ? 1 : 0 }
 							handleActiveIndexUpdate={ updateActiveTab }
@@ -124,42 +121,18 @@ export default function DashboardPageSpeed() {
 								<span className="mdc-tab__text-label">{ __( 'In the Field', 'google-site-kit' ) }</span>
 							</Tab>
 						</TabBar>
-						{ /* <Link
-							danger={ dataSrc === DATA_SRC_FIELD }
-							onClick={ setDataSrcField }
-						>
-							{ __( 'In the Field', 'google-site-kit' ) }
-						</Link>
-						<Link
-							danger={ dataSrc === DATA_SRC_LAB }
-							onClick={ setDataSrcLab }
-						>
-							{ __( 'In the Lab', 'google-site-kit' ) }
-						</Link> */ }
 					</div>
-					<DeviceSizeTabBar
-						activeIndex={ activeDeviceSize === 'desktop' ? 1 : 0 }
-						handleDeviceSizeUpdate={ updateActiveDeviceSize }
-					/>
-					{ /* <div className="googlesitekit-pagespeed-strategy-button-group">
-						<Link
-							danger={ strategy === STRATEGY_MOBILE }
-							onClick={ setStrategyMobile }
-						>
-							mobile
-						</Link>
-						<Link
-							danger={ strategy === STRATEGY_DESKTOP }
-							onClick={ setStrategyDesktop }
-						>
-							desktop
-						</Link>
-					</div> */ }
+					<div className="googlesitekit-pagespeed-widget-device-size-tab-bar-container">
+						<DeviceSizeTabBar
+							activeIndex={ activeDeviceSize === 'desktop' ? 1 : 0 }
+							handleDeviceSizeUpdate={ updateActiveDeviceSize }
+						/>
+					</div>
 				</header>
-				<main>
+				<section>
 					{ activeTab === 'in_the_lab' && <LabReportMetrics data={ reportData } /> }
 					{ activeTab === 'in_the_field' && <FieldReportMetrics data={ reportData } /> }
-				</main>
+				</section>
 			</Layout>
 		</Fragment>
 	);

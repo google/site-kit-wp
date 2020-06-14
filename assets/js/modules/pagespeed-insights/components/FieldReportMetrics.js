@@ -102,8 +102,8 @@ export default function FieldReportMetrics( { data } ) {
 	const cls = ( cumulativeLayoutShift.percentile / 100 ).toFixed( 2 );
 
 	return (
-		<div className="googlesitekit-layout googlesitekit-pagespeed-insights-web-vitals-metrics">
-			<div>
+		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
+			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row__first">
 				<p>
 					{ __( 'Field data is useful for capturing true, real-world user experience - but has a more limited set of metrics.', 'google-site-kit' ) }
 					{ ' ' }
@@ -147,7 +147,7 @@ export default function FieldReportMetrics( { data } ) {
 					/>
 				</tbody>
 			</table>
-			<div>
+			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row__last">
 				{ footerLinkHTML }
 			</div>
 		</div>

@@ -23,14 +23,6 @@ import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 import PropTypes from 'prop-types';
 
-// /**
-//  * WordPress dependencies
-//  */
-// import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
-// import { __ } from '@wordpress/i18n';
-
-// import React from 'react'
-
 const DeviceSizeTabBar = ( { activeIndex, deviceSizes, handleDeviceSizeUpdate } ) => {
 	if ( ! deviceSizes.length ) {
 		return null;

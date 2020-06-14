@@ -18,22 +18,50 @@
 
 .googlesitekit-device-size-tab-bar {
 
-	.mdc-tab {
+	border-radius: 8px;
+	overflow: hidden;
+	width: auto;
 
-		svg {
+	.mdc-tab-scroller__scroll-content {
 
-			path {
-				fill: #5f6368;
+		button.mdc-tab {
+
+			background: #fff;
+			box-shadow: 0px 1px 3px rgba(63, 63, 68, 0.15), 0px 0px 0px rgba(63, 63, 68, 0.05);
+			width: 56px;
+			height: 32px;
+	
+			&:first-child {
+				border-top-left-radius: 8px;
+				border-bottom-left-radius: 8px;
 			}
-		}
 
-		&.mdc-tab--active {
+			&:last-child {
+				border-top-right-radius: 8px;
+				border-bottom-right-radius: 8px;
+			}
 
 			svg {
-
+	
 				path {
-					fill: #fff;
+					fill: #5f6368;
 				}
+			}
+	
+			&.mdc-tab--active {
+	
+				background: #1a73e8;
+	
+				svg {
+	
+					path {
+						fill: #fff;
+					}
+				}
+			}
+
+			.mdc-tab-indicator {
+				display: none;
 			}
 		}
 	}
