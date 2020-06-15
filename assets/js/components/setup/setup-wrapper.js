@@ -51,7 +51,7 @@ class SetupWrapper extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { moduleToSetup } = global.googlesitekit.setup;
+		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
 		this.state = {
 			currentModule: moduleToSetup,
 		};
@@ -80,8 +80,8 @@ class SetupWrapper extends Component {
 			notification: 'authentication_success',
 		};
 
-		if ( global.googlesitekit.setup && global.googlesitekit.setup.moduleToSetup ) {
-			args.slug = global.googlesitekit.setup.moduleToSetup;
+		if ( global._googlesitekitLegacyData.setup && global._googlesitekitLegacyData.setup.moduleToSetup ) {
+			args.slug = global._googlesitekitLegacyData.setup.moduleToSetup;
 		}
 
 		const redirectURL = getSiteKitAdminURL(

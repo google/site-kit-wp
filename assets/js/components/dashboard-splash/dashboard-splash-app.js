@@ -38,21 +38,21 @@ class DashboardSplashApp extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { connectURL } = global.googlesitekit.admin;
+		const { connectURL } = global._googlesitekitLegacyData.admin;
 
 		const {
 			showModuleSetupWizard,
 			isAuthenticated,
 			isVerified,
 			hasSearchConsoleProperty,
-		} = global.googlesitekit.setup; /*eslint camelcase: 0*/
+		} = global._googlesitekitLegacyData.setup;
 
 		const {
 			canAuthenticate,
 			canSetup,
 			canViewDashboard,
 			canPublishPosts,
-		} = global.googlesitekit.permissions;
+		} = global._googlesitekitLegacyData.permissions;
 
 		this.state = {
 			showAuthenticationSetupWizard: canSetup && ( ! isAuthenticated || ! isVerified || ! hasSearchConsoleProperty ),
@@ -74,33 +74,33 @@ class DashboardSplashApp extends Component {
 		this.gotoConnectURL = this.gotoConnectURL.bind( this );
 	}
 
-	openAuthenticationSetupWizard() {
-		trackEvent( 'plugin_setup', 'setup_sitekit' );
+	async openAuthenticationSetupWizard() {
+		await trackEvent( 'plugin_setup', 'setup_sitekit' );
 
 		this.setState( {
 			showAuthenticationSetupWizard: true,
 		} );
 	}
 
-	gotoConnectURL() {
+	async gotoConnectURL() {
 		this.setState( {
 			showAuthenticationInstructionsWizard: false,
 			showAuthenticationSetupWizard: false,
 		} );
 
-		trackEvent( 'plugin_setup', 'connect_account' );
+		await trackEvent( 'plugin_setup', 'connect_account' );
 
 		document.location = this.state.connectURL;
 	}
 
 	render() {
 		// Set webpackPublicPath on-the-fly.
-		if ( global.googlesitekit && global.googlesitekit.publicPath ) {
-			// eslint-disable-next-line no-undef
-			__webpack_public_path__ = global.googlesitekit.publicPath;
+		if ( global._googlesitekitLegacyData && global._googlesitekitLegacyData.publicPath ) {
+			// eslint-disable-next-line no-undef, camelcase
+			__webpack_public_path__ = global._googlesitekitLegacyData.publicPath;
 		}
 
-		const { proxySetupURL } = global.googlesitekit.admin;
+		const { proxySetupURL } = global._googlesitekitLegacyData.admin;
 
 		// If `proxySetupURL` is set it means the proxy is in use. We should never
 		// show the GCP splash screen when the proxy is being used, so skip this

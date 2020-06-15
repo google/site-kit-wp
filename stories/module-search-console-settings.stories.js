@@ -48,7 +48,7 @@ function filterSearchConsoleSettings() {
 }
 
 const completeModuleData = {
-	...global.googlesitekit.modules[ 'search-console' ],
+	...global._googlesitekitLegacyData.modules[ 'search-console' ],
 	active: true,
 	setupComplete: true,
 };
@@ -56,7 +56,7 @@ const completeModuleData = {
 function Settings( props ) {
 	const {
 		callback,
-		module = global.googlesitekit.modules[ 'search-console' ],
+		module = global._googlesitekitLegacyData.modules[ 'search-console' ],
 		isEditing = false,
 		isOpen = true,
 		isSaving = false,

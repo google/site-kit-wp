@@ -36,6 +36,7 @@ import {
 	setSearchConsoleProperty,
 	setupAnalytics,
 	setAMPMode,
+	pageWait,
 } from '../../../utils';
 
 async function proceedToTagManagerSetup() {
@@ -65,7 +66,7 @@ describe( 'Tag Manager module setup', () => {
 	} );
 
 	beforeEach( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setSearchConsoleProperty();
@@ -116,7 +117,7 @@ describe( 'Tag Manager module setup', () => {
 		await expect( page ).toMatchElement( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new container/i } );
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container x/i } );
 
-		await page.waitFor( 1000 );
+		await pageWait( 1000 );
 		await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
@@ -161,7 +162,7 @@ describe( 'Tag Manager module setup', () => {
 		).toStrictEqual( false );
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container y/i } );
 
-		await page.waitFor( 1000 );
+		await pageWait( 1000 );
 		await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );

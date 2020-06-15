@@ -29,8 +29,11 @@ import {
 	setSearchConsoleProperty,
 } from '.';
 
-export const setupSiteKit = async ( { verified, property } = {} ) => {
-	await activatePlugin( 'e2e-tests-auth-plugin' );
+export const setupSiteKit = async ( { verified, property, auth = 'proxy' } = {} ) => {
+	if ( auth !== 'proxy' && auth !== 'gcp' ) {
+		throw new Error( 'Auth type must be either proxy or gcp' );
+	}
+	await activatePlugin( `e2e-tests-${ auth }-auth-plugin` );
 	await setSiteVerification( verified );
 	await setSearchConsoleProperty( property );
 };

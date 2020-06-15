@@ -7,6 +7,9 @@
     "browser": true,
     "es6": true
   },
+  "globals": {
+    "fetchMock": false
+  },
   "rules": {
     "no-restricted-globals": [
       "error",

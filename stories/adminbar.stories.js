@@ -19,7 +19,7 @@ import { createAddToFilter } from '../assets/js/util/helpers';
 
 storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {
-		global.googlesitekit = wpAdminBarData;
+		global._googlesitekitLegacyData = wpAdminBarData;
 		const addGoogleSitekitSearchConsoleAdminbarWidget = createAddToFilter( <GoogleSitekitSearchConsoleAdminbarWidget /> );
 		const addAnalyticsAdminbarWidget = createAddToFilter( <AnalyticsAdminbarWidget /> );
 
