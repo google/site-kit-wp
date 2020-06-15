@@ -736,10 +736,11 @@ final class Authentication {
 							$access_token = $oauth_client->get_access_token();
 
 							$data = array(
-								'authenticated'     => ! empty( $access_token ),
-								'requiredScopes'    => $oauth_client->get_required_scopes(),
-								'grantedScopes'     => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
-								'unsatisfiedScopes' => ! empty( $access_token ) ? $oauth_client->get_unsatisfied_scopes() : array(),
+								'authenticated'         => ! empty( $access_token ),
+								'requiredScopes'        => $oauth_client->get_required_scopes(),
+								'grantedScopes'         => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+								'unsatisfiedScopes'     => ! empty( $access_token ) ? $oauth_client->get_unsatisfied_scopes() : array(),
+								'needsReauthentication' => $oauth_client->needs_reauthentication(),
 							);
 
 							return new WP_REST_Response( $data );
