@@ -72,7 +72,7 @@ describe( 'modules/tagmanager accounts', () => {
 					internalContainerID: '8765',
 					useSnippet: true,
 				} );
-				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 
 				registry.dispatch( STORE_NAME ).resetAccounts();
 
@@ -89,7 +89,7 @@ describe( 'modules/tagmanager accounts', () => {
 			} );
 
 			it( 'invalidates the resolver for getAccounts', async () => {
-				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 				registry.select( STORE_NAME ).getAccounts();
 
 				await subscribeUntil(
@@ -126,7 +126,7 @@ describe( 'modules/tagmanager accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts are already present', async () => {
-				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 
@@ -140,7 +140,7 @@ describe( 'modules/tagmanager accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
-				registry.dispatch( STORE_NAME ).receiveAccounts( [] );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 

@@ -28,81 +28,39 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, ACCOUNT_CREATE } from './constants';
 import { isValidAccountSelection } from '../util/validation';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistrySelector } = Data;
 
 // Actions
-const FETCH_ACCOUNTS = 'FETCH_ACCOUNTS';
-const START_FETCH_ACCOUNTS = 'START_FETCH_ACCOUNTS';
-const FINISH_FETCH_ACCOUNTS = 'FINISH_FETCH_ACCOUNTS';
-const CATCH_FETCH_ACCOUNTS = 'CATCH_FETCH_ACCOUNTS';
-
-const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
-export const INITIAL_STATE = {
+const fetchGetAccountsStore = createFetchStore( {
+	baseName: 'getAccounts',
+	controlCallback: () => API.get( 'modules', 'tagmanager', 'accounts', null, {
+		useCache: false,
+	} ),
+	reducerCallback: ( state, accounts ) => {
+		return {
+			...state,
+			accounts: [ ...accounts ],
+		};
+	},
+} );
+
+export const BASE_INITIAL_STATE = {
 	accounts: undefined,
-	isFetchingAccounts: false,
 };
 
-export const actions = {
-	*fetchAccounts( data ) {
-		let response, error;
+export const baseActions = {
+	*resetAccounts() {
+		const { dispatch } = yield Data.commonActions.getRegistry();
 
 		yield {
-			payload: { data },
-			type: START_FETCH_ACCOUNTS,
+			payload: {},
+			type: RESET_ACCOUNTS,
 		};
 
-		try {
-			response = yield {
-				payload: { data },
-				type: FETCH_ACCOUNTS,
-			};
-
-			yield actions.receiveAccounts( response );
-
-			yield {
-				payload: { data },
-				type: FINISH_FETCH_ACCOUNTS,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: {
-					data,
-					error,
-				},
-				type: CATCH_FETCH_ACCOUNTS,
-			};
-		}
-
-		return { response, error };
-	},
-
-	/**
-	 * Creates an action for receiving accounts.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Array} accounts Accounts to receive.
-	 * @return {Object} action object.
-	 */
-	receiveAccounts( accounts ) {
-		invariant( Array.isArray( accounts ), 'accounts must be an array.' );
-
-		return {
-			payload: { accounts },
-			type: RECEIVE_ACCOUNTS,
-		};
-	},
-
-	*resetAccounts() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		yield { type: RESET_ACCOUNTS };
-
-		return registry.stores[ STORE_NAME ].getActions()
-			.invalidateResolutionForStoreSelector( 'getAccounts' );
+		dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
 	*selectAccount( accountID ) {
@@ -119,49 +77,8 @@ export const actions = {
 	},
 };
 
-export const controls = {
-	[ FETCH_ACCOUNTS ]: ( { payload } ) => {
-		return API.get( 'modules', 'tagmanager', 'accounts', payload.data, {
-			useCache: false,
-		} );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
+export const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
-		case START_FETCH_ACCOUNTS: {
-			return {
-				...state,
-				isFetchingAccounts: true,
-			};
-		}
-
-		case RECEIVE_ACCOUNTS: {
-			const { accounts } = payload;
-
-			return {
-				...state,
-				accounts: [ ...accounts ],
-			};
-		}
-
-		case FINISH_FETCH_ACCOUNTS: {
-			return {
-				...state,
-				isFetchingAccounts: false,
-			};
-		}
-
-		case CATCH_FETCH_ACCOUNTS: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingAccounts: false,
-			};
-		}
-
 		case RESET_ACCOUNTS: {
 			return {
 				...state,
@@ -183,19 +100,19 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
+export const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
 		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
 
 		// Only fetch accounts if there are none in the store.
 		if ( ! existingAccounts ) {
-			yield actions.fetchAccounts();
+			yield fetchGetAccountsStore.actions.fetchGetAccounts();
 		}
 	},
 };
 
-export const selectors = {
+export const baseSelectors = {
 	/**
 	 * Gets all Google Tag Manager accounts this user can access.
 	 *
@@ -247,16 +164,28 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} Whether accounts are currently being fetched or not.
 	 */
-	isDoingGetAccounts( state ) {
-		return !! state.isFetchingAccounts;
-	},
+	isDoingGetAccounts: createRegistrySelector( ( select ) => () => {
+		return select( STORE_NAME ).isFetchingGetAccounts();
+	} ),
 };
+const store = Data.combineStores(
+	fetchGetAccountsStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		selectors: baseSelectors,
+		resolvers: baseResolvers,
+		reducer: baseReducer,
+	}
+);
 
-export default {
+export const {
 	INITIAL_STATE,
 	actions,
 	controls,
 	reducer,
 	resolvers,
 	selectors,
-};
+} = store;
+
+export default store;
