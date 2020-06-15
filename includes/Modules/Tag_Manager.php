@@ -664,8 +664,9 @@ final class Tag_Manager extends Module
 					);
 
 					try {
-						$account_container     = $this->get_account_for_container( $data['tag'], $accounts );
-						$response['accountID'] = $account_container['account']['accountId'];
+						$account_container      = $this->get_account_for_container( $data['tag'], $accounts );
+						$response['accountID']  = $account_container['account']['accountId'];
+						$response['permission'] = true;
 
 						return $response;
 					} catch ( Exception $exception ) {
