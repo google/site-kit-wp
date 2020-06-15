@@ -28,253 +28,73 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { isValidAccountID, isValidUsageContext } from '../util/validation';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-// Actions
-const FETCH_CONTAINERS = 'FETCH_CONTAINERS';
-const START_FETCH_CONTAINERS = 'START_FETCH_CONTAINERS';
-const FINISH_FETCH_CONTAINERS = 'FINISH_FETCH_CONTAINERS';
-const CATCH_FETCH_CONTAINERS = 'CATCH_FETCH_CONTAINERS';
+const fetchGetContainersStore = createFetchStore( {
+	baseName: 'getContainers',
+	argsToParams( accountID ) {
+		invariant( isValidAccountID( accountID ), 'a valid accountID is required to fetch containers.' );
 
-const FETCH_CREATE_CONTAINER = 'FETCH_CREATE_CONTAINER';
-const START_FETCH_CREATE_CONTAINER = 'START_FETCH_CREATE_CONTAINER';
-const FINISH_FETCH_CREATE_CONTAINER = 'FINISH_FETCH_CREATE_CONTAINER';
-const CATCH_FETCH_CREATE_CONTAINER = 'CATCH_FETCH_CREATE_CONTAINER';
+		return { accountID };
+	},
+	controlCallback: ( { accountID } ) => {
+		return API.get( 'modules', 'tagmanager', 'containers', { accountID }, { useCache: false } );
+	},
+	reducerCallback( state, containers, { accountID } ) {
+		return {
+			...state,
+			containers: {
+				...state.containers,
+				[ accountID ]: [ ...containers ],
+			},
+		};
+	},
+} );
 
-const RECEIVE_CONTAINERS = 'RECEIVE_CONTAINERS';
-const RECEIVE_CREATE_CONTAINER = 'RECEIVE_CREATE_CONTAINER';
-
-export const INITIAL_STATE = {
-	containers: {},
-	isFetchingContainers: {},
-	isFetchingCreateContainer: {},
-};
-
-export const actions = {
-	/**
-	 * Creates a new container in the given account.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} accountID Account ID to create the container in.
-	 * @param {string} usageContext Container usage context for the new container.
-	 * @return {Object} An object with both `response` and `error` keys.
-	 */
-	*createContainer( accountID, usageContext ) {
+const fetchCreateContainerStore = createFetchStore( {
+	baseName: 'createContainer',
+	argsToParams( accountID, usageContext ) {
 		invariant( isValidAccountID( accountID ), 'a valid accountID is required to create a container.' );
 		invariant( isValidUsageContext( usageContext ), 'a valid usageContext is required to create a container.' );
-		let response, error;
 
-		yield {
-			payload: { accountID, usageContext },
-			type: START_FETCH_CREATE_CONTAINER,
-		};
-
-		try {
-			response = yield {
-				payload: { accountID, usageContext },
-				type: FETCH_CREATE_CONTAINER,
-			};
-
-			yield actions.receiveCreateContainer( response, { accountID, usageContext } );
-
-			yield {
-				payload: { accountID, usageContext },
-				type: FINISH_FETCH_CREATE_CONTAINER,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: {
-					error,
-					accountID,
-					usageContext,
-				},
-				type: CATCH_FETCH_CREATE_CONTAINER,
-			};
-		}
-		return { response, error };
+		return { accountID, usageContext };
 	},
-	*fetchContainers( accountID ) {
-		invariant( isValidAccountID( accountID ), 'a valid accountID is required to fetch containers.' );
-		let response, error;
-
-		yield {
-			payload: { accountID },
-			type: START_FETCH_CONTAINERS,
-		};
-
-		try {
-			response = yield {
-				payload: { accountID },
-				type: FETCH_CONTAINERS,
-			};
-
-			yield actions.receiveContainers( response, { accountID } );
-
-			yield {
-				payload: { accountID },
-				type: FINISH_FETCH_CONTAINERS,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: {
-					error,
-					accountID,
-				},
-				type: CATCH_FETCH_CONTAINERS,
-			};
-		}
-
-		return { response, error };
-	},
-	receiveContainers( containers, { accountID } ) {
-		invariant( Array.isArray( containers ), 'containers must be an array.' );
-		invariant( isValidAccountID( accountID ), 'a valid accountID is required.' );
-
-		return {
-			payload: { containers, accountID },
-			type: RECEIVE_CONTAINERS,
-		};
-	},
-	receiveCreateContainer( container, { accountID, usageContext } ) {
-		invariant( container, 'container is required.' );
-		invariant( isValidAccountID( accountID ), 'a valid accountID is required.' );
-		invariant( isValidUsageContext( usageContext ), 'a valid usageContext is required.' );
-
-		return {
-			payload: { container, accountID, usageContext },
-			type: RECEIVE_CREATE_CONTAINER,
-		};
-	},
-};
-
-export const controls = {
-	[ FETCH_CONTAINERS ]: ( { payload: { accountID } } ) => {
-		return API.get( 'modules', 'tagmanager', 'containers', { accountID } );
-	},
-	[ FETCH_CREATE_CONTAINER ]: ( { payload: { accountID, usageContext } } ) => {
+	controlCallback: ( { accountID, usageContext } ) => {
 		return API.set( 'modules', 'tagmanager', 'create-container', { accountID, usageContext } );
 	},
+	reducerCallback( state, container, { accountID } ) {
+		return {
+			...state,
+			containers: {
+				...state.containers,
+				[ accountID ]: [
+					...( state.containers[ accountID ] || [] ),
+					container,
+				],
+			},
+		};
+	},
+} );
+
+const BASE_INITIAL_STATE = {
+	containers: {},
 };
 
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case START_FETCH_CONTAINERS: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isFetchingContainers: {
-					...state.isFetchingContainers,
-					[ accountID ]: true,
-				},
-			};
-		}
-
-		case RECEIVE_CONTAINERS: {
-			const { containers, accountID } = payload;
-
-			return {
-				...state,
-				containers: {
-					...state.containers,
-					[ accountID ]: [ ...containers ],
-				},
-			};
-		}
-
-		case FINISH_FETCH_CONTAINERS: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isFetchingContainers: {
-					...state.isFetchingContainers,
-					[ accountID ]: true,
-				},
-			};
-		}
-
-		case CATCH_FETCH_CONTAINERS: {
-			const { error, accountID } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingContainers: {
-					...state.isFetchingContainers,
-					[ accountID ]: true,
-				},
-			};
-		}
-
-		case START_FETCH_CREATE_CONTAINER: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isFetchingCreateContainer: {
-					...state.isFetchingCreateContainer,
-					[ accountID ]: true,
-				},
-			};
-		}
-
-		case RECEIVE_CREATE_CONTAINER: {
-			const { container, accountID } = payload;
-
-			return {
-				...state,
-				containers: {
-					...state.containers,
-					[ accountID ]: ( state.containers[ accountID ] || [] ).concat( container ),
-				},
-			};
-		}
-
-		case FINISH_FETCH_CREATE_CONTAINER: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isFetchingCreateContainer: {
-					...state.isFetchingCreateContainer,
-					[ accountID ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_CREATE_CONTAINER: {
-			const { error, accountID } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingCreateContainer: {
-					...state.isFetchingCreateContainer,
-					[ accountID ]: false,
-				},
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
+const baseActions = {
+	createContainer: fetchCreateContainerStore.actions.fetchCreateContainer,
 };
 
-export const resolvers = {
+const baseResolvers = {
 	*getContainers( accountID ) {
 		const { select } = yield Data.commonActions.getRegistry();
 
 		if ( ! select( STORE_NAME ).getContainers( accountID ) ) {
-			yield actions.fetchContainers( accountID );
+			yield fetchGetContainersStore.actions.fetchGetContainers( accountID );
 		}
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets the containers for a given account.
 	 *
@@ -295,24 +115,36 @@ export const selectors = {
 		return containers;
 	},
 	/**
-	 * Checks if the request for creating a container is in progress.
+	 * Checks if any request for creating a container is in progress.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} accountID Account ID to get containers for.
-	 * @return {boolean} True if the request for create-container is in progress, otherwise false.
+	 * @return {boolean} True if a request for create-container is in progress, otherwise false.
 	 */
-	isDoingCreateContainer( state, accountID ) {
-		return !! state.isFetchingCreateContainer[ accountID ];
+	isDoingCreateContainer( state ) {
+		return Object.values( state.isFetchingCreateContainer ).some( Boolean );
 	},
 };
 
-export default {
+const store = Data.combineStores(
+	fetchGetContainersStore,
+	fetchCreateContainerStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		selectors: baseSelectors,
+		resolvers: baseResolvers,
+		actions: baseActions,
+	}
+);
+
+export const {
 	INITIAL_STATE,
 	actions,
 	controls,
 	reducer,
 	resolvers,
 	selectors,
-};
+} = store;
+
+export default store;

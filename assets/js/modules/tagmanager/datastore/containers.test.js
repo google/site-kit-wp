@@ -171,7 +171,7 @@ describe( 'modules/tagmanager containers', () => {
 				const { account, containers } = factories.buildAccountWithContainers();
 				const accountID = account.accountId;
 
-				registry.dispatch( STORE_NAME ).receiveContainers( containers, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
@@ -225,7 +225,7 @@ describe( 'modules/tagmanager containers', () => {
 					count: 3,
 				} );
 				const accountID = account.accountId;
-				registry.dispatch( STORE_NAME ).receiveContainers(
+				registry.dispatch( STORE_NAME ).receiveGetContainers(
 					[ ...webContainers, ...ampContainers ],
 					{ accountID }
 				);
