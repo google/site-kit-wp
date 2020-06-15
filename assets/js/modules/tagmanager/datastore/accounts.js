@@ -166,6 +166,7 @@ export const baseSelectors = {
 		return select( STORE_NAME ).isFetchingGetAccounts();
 	} ),
 };
+
 const store = Data.combineStores(
 	fetchGetAccountsStore,
 	{

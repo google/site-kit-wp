@@ -154,6 +154,7 @@ describe( 'modules/tagmanager versions', () => {
 				expect( getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( undefined );
 			} );
 		} );
+
 		describe( 'isDoingGetLiveContainerVersion', () => {
 			it( 'returns true while the live container version fetch is in progress', async () => {
 				const accountID = '100';
