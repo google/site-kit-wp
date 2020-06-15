@@ -15,7 +15,7 @@ import {
 
 describe( 'Plugin Reset', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-credentials-plugin' );
 		await setClientConfig();
 		await setAuthToken();
 		await setSiteVerification();
@@ -34,7 +34,7 @@ describe( 'Plugin Reset', () => {
 	} );
 
 	afterAll( async () => {
-		await deactivatePlugin( 'e2e-tests-gcp-credentials-plugin' );
+		await deactivatePlugin( 'e2e-tests-proxy-credentials-plugin' );
 	} );
 
 	it( 'displays a confirmation dialog when clicking the "Reset Site Kit" link', async () => {
@@ -61,7 +61,7 @@ describe( 'Plugin Reset', () => {
 			expect( page ).toClick( '.mdc-dialog--open .mdc-button', { text: 'Reset' } ),
 		] );
 
-		// Ensure we're on the first step.
-		await expect( page ).toMatchElement( '.googlesitekit-wizard-progress-step__number--inprogress', { text: '1' } );
+		// Ensure we're on the setup page
+		await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Start setup' } );
 	} );
 } );

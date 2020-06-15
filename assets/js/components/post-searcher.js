@@ -1,7 +1,7 @@
 /**
  * PostSearcher component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
  */
 import {
 	map,
-	find,
 	debounce,
 	trim,
 } from 'lodash';
@@ -38,6 +37,7 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	getSiteKitAdminURL,
+	getModulesData,
 } from '../util';
 import data, { TYPE_CORE } from './data';
 import Button from './button';
@@ -46,12 +46,14 @@ import Layout from './layout/layout';
 class PostSearcher extends Component {
 	constructor( props ) {
 		super( props );
-
+		this.noResultsMessage = __( 'No results found', 'google-site-kit' );
 		this.state = {
 			isSearching: false,
 			results: [],
 			error: false,
 			message: '',
+			canSubmit: false,
+			match: {},
 		};
 		this.postSearch = this.postSearch.bind( this );
 		this.onClick = this.onClick.bind( this );
@@ -75,7 +77,7 @@ class PostSearcher extends Component {
 					return result.post_title;
 				} ) );
 			} else {
-				populateResults( [ __( 'No results found', 'google-site-kit' ) ] );
+				populateResults( [ this.noResultsMessage ] );
 			}
 
 			this.setState( {
@@ -85,7 +87,7 @@ class PostSearcher extends Component {
 				message: '',
 			} );
 		} catch ( err ) {
-			populateResults( [ __( 'No results found', 'google-site-kit' ) ] );
+			populateResults( [ this.noResultsMessage ] );
 
 			this.setState( {
 				isSearching: false,
@@ -112,32 +114,40 @@ class PostSearcher extends Component {
 	}
 
 	onConfirm( selection ) {
-		this.setState( {
-			selection,
-		} );
+		const { results } = this.state;
+		// Check that the selection is "valid".
+		if ( Array.isArray( results ) && selection !== this.noResultsMessage ) {
+			const match = results.find( ( result ) => result.post_title === selection );
+			if ( selection && match ) {
+				this.setState( {
+					selection,
+					canSubmit: true,
+					match,
+				} );
+			}
+		} else {
+			this.setState( {
+				canSubmit: false,
+			} );
+		}
 	}
 
 	onClick() {
-		const { results, selection } = this.state;
-		const match = find(
-			results,
-			( result ) => {
-				return result.post_title === selection;
-			}
-		);
-
-		document.location = getSiteKitAdminURL(
-			'googlesitekit-dashboard',
-			{
-				id: match.id,
-				permaLink: match.permalink,
-				pageTitle: selection,
-			}
-		);
+		const { selection, match } = this.state;
+		if ( match && match.ID ) {
+			global.location.assign( getSiteKitAdminURL(
+				'googlesitekit-dashboard',
+				{
+					id: match.ID,
+					permaLink: match.permalink,
+					pageTitle: selection,
+				}
+			) );
+		}
 	}
 
 	render() {
-		const { modules } = global.googlesitekit;
+		const modules = getModulesData();
 
 		// Set column width full if Analytics active, half otherwise.
 		const classNameForColumn = modules.analytics && modules.analytics.active
@@ -156,7 +166,9 @@ class PostSearcher extends Component {
 						<div className="mdc-layout-grid__inner">
 							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 								<div className="googlesitekit-post-searcher">
-									<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">{ __( 'Title or URL', 'google-site-kit' ) }</label>
+									<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">
+										{ __( 'Title or URL', 'google-site-kit' ) }
+									</label>
 									<Autocomplete
 										id="autocomplete"
 										source={ debounce( this.postSearch, 200 ) }
@@ -168,6 +180,7 @@ class PostSearcher extends Component {
 										<Button
 											onClick={ this.onClick }
 											className="googlesitekit-post-searcher__button"
+											disabled={ ! this.state.canSubmit }
 										>
 											{ __( 'View Data', 'google-site-kit' ) }
 										</Button>

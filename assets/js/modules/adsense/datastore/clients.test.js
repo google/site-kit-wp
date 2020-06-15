@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -36,9 +31,7 @@ import { parseAccountID } from '../util';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense clients', () => {
-	let apiFetchSpy;
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -46,9 +39,6 @@ describe( 'modules/adsense clients', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -57,7 +47,6 @@ describe( 'modules/adsense clients', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -67,14 +56,10 @@ describe( 'modules/adsense clients', () => {
 	describe( 'selectors', () => {
 		describe( 'getClients', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/clients/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.clients ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/clients/,
+					{ body: fixtures.clients, status: 200 }
+				);
 
 				const accountID = parseAccountID( fixtures.clients[ 0 ].id );
 
@@ -89,7 +74,7 @@ describe( 'modules/adsense clients', () => {
 
 				const clients = registry.select( STORE_NAME ).getClients( accountID );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( clients ).toEqual( fixtures.clients );
 			} );
 
@@ -98,7 +83,7 @@ describe( 'modules/adsense clients', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetClients( fixtures.clients, { accountID } );
 
 				const clients = registry.select( STORE_NAME ).getClients( accountID );
 
@@ -107,7 +92,7 @@ describe( 'modules/adsense clients', () => {
 					.hasFinishedResolution( 'getClients', [ accountID ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 				expect( clients ).toEqual( fixtures.clients );
 			} );
 
@@ -117,25 +102,19 @@ describe( 'modules/adsense clients', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/clients/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/clients/,
+					{ body: response, status: 500 }
+				);
 
 				const fakeAccountID = 'pub-777888999';
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getClients( fakeAccountID );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingClients[ fakeAccountID ] === false,
+					() => registry.select( STORE_NAME ).isFetchingGetClients( fakeAccountID ) === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const clients = registry.select( STORE_NAME ).getClients( fakeAccountID );
 				expect( clients ).toEqual( undefined );

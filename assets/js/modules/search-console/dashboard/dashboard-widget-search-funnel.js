@@ -39,7 +39,7 @@ import DashboardSearchFunnelInner from './dashboard-widget-search-funnel-inner';
 class DashboardSearchFunnel extends Component {
 	render() {
 		const modulesData = getModulesData();
-		const { canManageOptions } = global.googlesitekit.permissions;
+		const { canManageOptions } = global._googlesitekitLegacyData.permissions;
 
 		// Users without manage options capability will not see Setup CTA.
 		const wrapperCols = ! modulesData.analytics.active && ! canManageOptions ? 6 : 12;

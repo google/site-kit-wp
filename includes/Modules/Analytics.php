@@ -266,7 +266,7 @@ final class Analytics extends Module
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_profile_id'  => array(
-				'label' => __( 'Analytics profile ID', 'google-site-kit' ),
+				'label' => __( 'Analytics view ID', 'google-site-kit' ),
 				'value' => $settings['profileID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['profileID'] ),
 			),
@@ -804,7 +804,7 @@ final class Analytics extends Module
 					$option = $this->get_settings()->get();
 
 					if ( empty( $option['profileID'] ) ) {
-						return new WP_Error( 'profile_id_not_set', __( 'Analytics profile ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+						return new WP_Error( 'profile_id_not_set', __( 'Analytics view ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
 					return $option['profileID'];
 				};

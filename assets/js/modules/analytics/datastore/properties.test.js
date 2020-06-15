@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -35,9 +30,7 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics properties', () => {
-	let apiFetchSpy;
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -45,10 +38,8 @@ describe( 'modules/analytics properties', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( STORE_NAME ).receiveSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -57,27 +48,24 @@ describe( 'modules/analytics properties', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
 		describe( 'createProperty', () => {
 			it( 'creates a property and adds it to the store ', async () => {
 				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/
-					)
-					.mockResponse(
-						JSON.stringify( fixtures.createProperty ),
-						{ status: 200 }
-					);
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					{ body: fixtures.createProperty, status: 200 }
+				);
 
 				registry.dispatch( STORE_NAME ).createProperty( accountID );
 				// Ensure the proper parameters were passed.
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
-					{ accountID }
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					{
+						body: { data: { accountID } },
+					}
 				);
 
 				await subscribeUntil( registry,
@@ -90,14 +78,10 @@ describe( 'modules/analytics properties', () => {
 
 			it( 'sets isDoingCreateProperty ', async () => {
 				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/
-					)
-					.mockResponse(
-						JSON.stringify( fixtures.createProperty ),
-						{ status: 200 }
-					);
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					{ body: fixtures.createProperty, status: 200 }
+				);
 
 				registry.dispatch( STORE_NAME ).createProperty( accountID );
 				expect( registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) ).toEqual( true );
@@ -110,15 +94,15 @@ describe( 'modules/analytics properties', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					{ body: response, status: 500 }
+				);
+				// Add additional mock to avoid unmatched request warning.
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: {}, status: 200 }
+				);
 
 				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).createProperty( accountID );
@@ -130,12 +114,10 @@ describe( 'modules/analytics properties', () => {
 				);
 
 				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
-
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/
-					)
-					.mockResponse( JSON.stringify( fixtures.propertiesProfiles ) );
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: fixtures.propertiesProfiles, status: 200 }
+				);
 
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				// No properties should have been added yet, as the property creation
@@ -148,14 +130,10 @@ describe( 'modules/analytics properties', () => {
 	describe( 'selectors', () => {
 		describe( 'getProperties', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.propertiesProfiles ),
-						{ status: 200 }
-					);
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: fixtures.propertiesProfiles, status: 200 }
+				);
 
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const propertyID = fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
@@ -163,8 +141,11 @@ describe( 'modules/analytics properties', () => {
 				const initialProperties = registry.select( STORE_NAME ).getProperties( accountID );
 
 				// Ensure the proper parameters were passed.
-				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
-					{ accountID }
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{
+						query: { accountID },
+					}
 				);
 
 				expect( initialProperties ).toEqual( undefined );
@@ -176,7 +157,7 @@ describe( 'modules/analytics properties', () => {
 
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				// Profiles should also have been received by this action.
 				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
@@ -192,7 +173,7 @@ describe( 'modules/analytics properties', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
 
 				const properties = registry.select( STORE_NAME ).getProperties( testAccountID );
 
@@ -203,9 +184,8 @@ describe( 'modules/analytics properties', () => {
 
 				// It _may_ make a request for profiles internally if not loaded,
 				// so we only care that it did not fetch properties here.
-				expect( fetch ).not.toHaveBeenCalledWith(
-					expect.stringContaining( '/google-site-kit/v1/modules/analytics/data/properties-profiles?' ),
-					expect.any( Object )
+				expect( fetchMock ).not.toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 				);
 				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( properties ).toHaveLength( 17 );
@@ -217,25 +197,19 @@ describe( 'modules/analytics properties', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: response, status: 500 }
+				);
 
 				const fakeAccountID = '777888999';
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingPropertiesProfiles[ fakeAccountID ] === false,
+					() => registry.select( STORE_NAME ).isDoingGetProperties( fakeAccountID ) === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const properties = registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				expect( properties ).toEqual( undefined );
@@ -247,7 +221,7 @@ describe( 'modules/analytics properties', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const accountID = testAccountID;
 
-				registry.dispatch( STORE_NAME ).receiveProperties( properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 
 				const findProperty = properties[ 1 ];
 				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
@@ -259,7 +233,7 @@ describe( 'modules/analytics properties', () => {
 				const { properties } = fixtures.propertiesProfiles;
 				const accountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 
-				registry.dispatch( STORE_NAME ).receiveProperties( [], { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
 
 				const findProperty = properties[ 1 ];
 				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );

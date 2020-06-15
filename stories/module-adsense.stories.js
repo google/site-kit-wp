@@ -46,8 +46,8 @@ storiesOf( 'AdSense Module', module )
 	.add( 'Account Select, none selected', () => {
 		const accounts = fixtures.accountsMultiple;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 		};
 
 		return (
@@ -63,8 +63,8 @@ storiesOf( 'AdSense Module', module )
 	.add( 'Account Select, selected', () => {
 		const accounts = fixtures.accountsMultiple;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveSettings( {
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: accounts[ 0 ].id,
 			} );
 		};
@@ -164,7 +164,7 @@ storiesOf( 'AdSense Module', module )
 		);
 	} )
 	.add( 'Estimate Earnings', () => {
-		global.googlesitekit = adSenseData;
+		global._googlesitekitLegacyData = adSenseData;
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -193,7 +193,7 @@ storiesOf( 'AdSense Module', module )
 		},
 	} )
 	.add( 'Performance', () => {
-		global.googlesitekit = adSenseData;
+		global._googlesitekitLegacyData = adSenseData;
 
 		// Load the datacache with data.
 		setTimeout( () => {

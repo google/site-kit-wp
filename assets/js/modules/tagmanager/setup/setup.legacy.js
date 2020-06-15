@@ -58,7 +58,7 @@ class TagmanagerSetup extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { ampEnabled, ampMode } = global.googlesitekit.admin;
+		const { ampEnabled, ampMode } = global._googlesitekitLegacyData.admin;
 		const { settings } = getModulesData().tagmanager;
 		const ampUsageContext = ampMode === 'primary' ? USAGE_CONTEXT_AMP : [ USAGE_CONTEXT_WEB, USAGE_CONTEXT_AMP ];
 
@@ -447,47 +447,47 @@ class TagmanagerSetup extends Component {
 			<Fragment>
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
-						<p className="googlesitekit-settings-module__meta-item-type">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __( 'Account', 'google-site-kit' ) }
-						</p>
-						<h5 className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ accountID } />
 						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting value={ accountID } />
+						</p>
 					</div>
 
 					{ ( ! ampEnabled || isSecondaryAMP ) && (
 						<div className="googlesitekit-settings-module__meta-item">
-							<p className="googlesitekit-settings-module__meta-item-type">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
 								{ isSecondaryAMP && __( 'Web Container ID', 'google-site-kit' ) }
 								{ ! ampEnabled && __( 'Container ID', 'google-site-kit' ) }
-							</p>
-							<h5 className="googlesitekit-settings-module__meta-item-data">
-								<DisplaySetting value={ settings.containerID } />
 							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								<DisplaySetting value={ settings.containerID } />
+							</p>
 						</div>
 					) }
 
 					{ ampEnabled && (
 						<div className="googlesitekit-settings-module__meta-item">
-							<p className="googlesitekit-settings-module__meta-item-type">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
 								{ isSecondaryAMP && __( 'AMP Container ID', 'google-site-kit' ) }
 								{ ! isSecondaryAMP && __( 'Container ID', 'google-site-kit' ) }
-							</p>
-							<h5 className="googlesitekit-settings-module__meta-item-data">
-								<DisplaySetting value={ settings.ampContainerID } />
 							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								<DisplaySetting value={ settings.ampContainerID } />
+							</p>
 						</div>
 					) }
 				</div>
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
-						<p className="googlesitekit-settings-module__meta-item-type">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __( 'Tag Manager Code Snippet', 'google-site-kit' ) }
-						</p>
-						<h5 className="googlesitekit-settings-module__meta-item-data">
+						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
 							{ useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
 							{ ! useSnippet && __( 'Snippet is not inserted', 'google-site-kit' ) }
-						</h5>
+						</p>
 						{ hasExistingTag &&
 							<p>{ __( 'Placing two tags at the same time is not recommended.', 'google-site-kit' ) }</p>
 						}

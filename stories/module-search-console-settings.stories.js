@@ -48,7 +48,7 @@ function filterSearchConsoleSettings() {
 }
 
 const completeModuleData = {
-	...global.googlesitekit.modules[ 'search-console' ],
+	...global._googlesitekitLegacyData.modules[ 'search-console' ],
 	active: true,
 	setupComplete: true,
 };
@@ -56,7 +56,7 @@ const completeModuleData = {
 function Settings( props ) {
 	const {
 		callback,
-		module = global.googlesitekit.modules[ 'search-console' ],
+		module = global._googlesitekitLegacyData.modules[ 'search-console' ],
 		isEditing = false,
 		isOpen = true,
 		isSaving = false,
@@ -107,7 +107,7 @@ storiesOf( 'Search Console Module/Settings', module )
 		filterSearchConsoleSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 		};
 
 		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
@@ -116,7 +116,7 @@ storiesOf( 'Search Console Module/Settings', module )
 		filterSearchConsoleSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				propertyID: 'http://example.com/',
 			} );
 		};

@@ -21,6 +21,7 @@ import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '
 import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
 import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
 import modulesTagManagerStore, { STORE_NAME as modulesTagManagerStoreName } from '../../assets/js/modules/tagmanager/datastore';
+import modulesOptimizeStore, { STORE_NAME as modulesOptimizeStoreName } from '../../assets/js/modules/optimize/datastore';
 
 /**
  * Create a registry with all available stores.
@@ -88,6 +89,23 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 };
 
 /**
+ * Mutes a fetch request to the given URL once.
+ *
+ * Useful for mocking the given URL for the purpose of preventing a fetch error
+ * where the response itself is not significant but the request should not fail.
+ * Sometimes a different response may be required to match the expected type,
+ * but for anything else, a full mock should be used.
+ *
+ * @since n.e.x.t
+ *
+ * @param {RegExp} urlMatcher Regular expression for matching the request URL.
+ * @param {*}      [response] Optional. Response to return.
+ */
+export const muteFetch = ( urlMatcher, response = {} ) => {
+	fetchMock.once( urlMatcher, { body: response, status: 200 } );
+};
+
+/**
  * Register all Site Kit stores on a registry.
  *
  * Use this to register every available Site Kit store on a registry.
@@ -109,6 +127,7 @@ export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
 	registry.registerStore( modulesSearchConsoleStoreName, modulesSearchConsoleStore );
 	registry.registerStore( modulesTagManagerStoreName, modulesTagManagerStore );
+	registry.registerStore( modulesOptimizeStoreName, modulesOptimizeStore );
 };
 
 const unsubscribes = [];

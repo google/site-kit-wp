@@ -34,7 +34,7 @@ import NotificationCounter from './components/notifications/notification-counter
 import './components/notifications';
 
 const GoogleSitekitDashboard = () => {
-	const { showModuleSetupWizard } = global.googlesitekit.setup;
+	const { showModuleSetupWizard } = global._googlesitekitLegacyData.setup;
 
 	if ( showModuleSetupWizard ) {
 		return <Setup />;
@@ -50,7 +50,7 @@ const GoogleSitekitDashboard = () => {
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	if ( global.googlesitekit.admin.resetSession ) {
+	if ( global._googlesitekitLegacyData.admin.resetSession ) {
 		clearWebStorage();
 	}
 

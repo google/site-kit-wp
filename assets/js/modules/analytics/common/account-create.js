@@ -106,7 +106,7 @@ export default function AccountCreate() {
 			}
 
 			setValues( FORM_ACCOUNT_CREATE, { autoSubmit: false } );
-			trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
+			await trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 			const { error } = await createAccount();
 
 			if ( ! error ) {

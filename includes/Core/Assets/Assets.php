@@ -97,12 +97,18 @@ final class Assets {
 		add_action( 'admin_enqueue_scripts', $register_callback );
 		add_action( 'wp_enqueue_scripts', $register_callback );
 
+		// All other asset-related general logic should only be active when the
+		// current user can actually use Site Kit (which only is so if they can
+		// authenticate).
+		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+			return;
+		}
+
+		$this->add_amp_dev_mode_attributes( $this->get_assets() );
+
 		add_action(
 			'admin_enqueue_scripts',
 			function() {
-				if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-					return;
-				}
 				$this->enqueue_minimal_admin_script();
 			}
 		);
@@ -277,8 +283,6 @@ final class Assets {
 		foreach ( $assets as $asset ) {
 			$asset->register();
 		}
-
-		$this->add_amp_dev_mode_attributes( $assets );
 	}
 
 	/**
@@ -361,7 +365,7 @@ final class Assets {
 			new Script_Data(
 				'googlesitekit-commons',
 				array(
-					'global'        => 'googlesitekit',
+					'global'        => '_googlesitekitLegacyData',
 					'data_callback' => function () {
 						return $this->get_inline_data();
 					},
@@ -518,7 +522,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-ads-detect',
 				array(
-					'src' => $base_url . 'js/ads.js',
+					'src' => $base_url . 'js/pagead2.ads.js',
 				)
 			),
 			new Script(

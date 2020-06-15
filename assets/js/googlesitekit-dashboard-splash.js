@@ -42,7 +42,7 @@ const GoogleSitekitDashboardSplash = () => {
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	if ( global.googlesitekit.admin.resetSession ) {
+	if ( global._googlesitekitLegacyData.admin.resetSession ) {
 		clearWebStorage();
 	}
 

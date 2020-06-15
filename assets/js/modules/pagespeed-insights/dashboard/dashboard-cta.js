@@ -22,7 +22,7 @@ const PageSpeedInsightsCTA = () => {
 		setupComplete,
 	} = getModulesData()[ 'pagespeed-insights' ];
 
-	const { canManageOptions } = global.googlesitekit.permissions;
+	const { canManageOptions } = global._googlesitekitLegacyData.permissions;
 
 	if ( ! canManageOptions && ! setupComplete ) {
 		return null;

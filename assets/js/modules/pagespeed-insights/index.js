@@ -17,16 +17,17 @@
  */
 
 /**
- * Internal dependencies
- */
-import './datastore';
-import { fillFilterWithComponent } from '../../util';
-import { SettingsMain as PageSpeedInsightsSettings } from './settings';
-
-/**
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import './datastore';
+import { getModulesData, fillFilterWithComponent, createAddToFilter } from '../../util';
+import { SettingsMain as PageSpeedInsightsSettings } from './settings';
+import DashboardSpeed from './dashboard/dashboard-widget-speed';
 
 /**
  * Add components to the settings page.
@@ -36,3 +37,25 @@ addFilter(
 	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
 	fillFilterWithComponent( PageSpeedInsightsSettings )
 );
+
+const {
+	active,
+	setupComplete,
+} = getModulesData()[ 'pagespeed-insights' ];
+
+if ( active && setupComplete ) {
+	// Add to main dashboard.
+	addFilter(
+		'googlesitekit.DashboardModule',
+		'googlesitekit.PageSpeedInsights',
+		createAddToFilter( <DashboardSpeed /> ),
+		45
+	);
+	// Add to dashboard-details view.
+	addFilter(
+		'googlesitekit.DashboardDetailsModule',
+		'googlesitekit.PageSpeedInsights',
+		createAddToFilter( <DashboardSpeed /> ),
+		45
+	);
+}

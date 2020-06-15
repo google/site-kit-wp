@@ -29,131 +29,13 @@ import Data from 'googlesitekit-data';
 import { getExistingTag } from '../../../util/tag';
 import { STORE_NAME } from './constants';
 import { isValidPropertyID } from '../util';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-const { commonActions, createRegistrySelector, createRegistryControl } = Data;
+const { createRegistrySelector, createRegistryControl } = Data;
 
-// Actions
-const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
-const START_FETCH_EXISTING_TAG = 'START_FETCH_EXISTING_TAG';
-const FINISH_FETCH_EXISTING_TAG = 'FINISH_FETCH_EXISTING_TAG';
-const CATCH_FETCH_EXISTING_TAG = 'CATCH_FETCH_EXISTING_TAG';
-
-const FETCH_TAG_PERMISSION = 'FETCH_TAG_PERMISSION';
-const START_FETCH_TAG_PERMISSION = 'START_FETCH_TAG_PERMISSION';
-const FINISH_FETCH_TAG_PERMISSION = 'FINISH_FETCH_TAG_PERMISSION';
-const CATCH_FETCH_TAG_PERMISSION = 'CATCH_FETCH_TAG_PERMISSION';
-
-const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
-const RECEIVE_TAG_PERMISSION = 'RECEIVE_TAG_PERMISSION';
-const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
-
-export const INITIAL_STATE = {
-	existingTag: undefined,
-	isFetchingExistingTag: false,
-	isFetchingTagPermission: {},
-	tagPermissions: {},
-};
-
-export const actions = {
-	*fetchExistingTag() {
-		let response, error;
-
-		yield {
-			payload: {},
-			type: START_FETCH_EXISTING_TAG,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_EXISTING_TAG,
-			};
-
-			yield actions.receiveExistingTag( response !== undefined ? response : null );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_EXISTING_TAG,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_EXISTING_TAG,
-			};
-		}
-
-		return { response, error };
-	},
-
-	*fetchTagPermission( propertyID ) {
-		invariant( propertyID, 'propertyID is required.' );
-		let response, error;
-
-		yield {
-			payload: { propertyID },
-			type: START_FETCH_TAG_PERMISSION,
-		};
-
-		try {
-			response = yield {
-				payload: { propertyID },
-				type: FETCH_TAG_PERMISSION,
-			};
-
-			yield actions.receiveTagPermission( {
-				propertyID,
-				...response,
-			} );
-
-			yield {
-				payload: { propertyID },
-				type: FINISH_FETCH_TAG_PERMISSION,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: {
-					propertyID,
-					error,
-				},
-				type: CATCH_FETCH_TAG_PERMISSION,
-			};
-		}
-
-		return { response, error };
-	},
-
-	receiveExistingTag( existingTag ) {
-		invariant( existingTag !== undefined, 'existingTag cannot be undefined.' );
-
-		return {
-			payload: { existingTag },
-			type: RECEIVE_EXISTING_TAG,
-		};
-	},
-
-	receiveTagPermission( { propertyID, accountID, permission } ) {
-		invariant( propertyID, 'propertyID is required.' );
-		invariant( accountID, 'accountID is required.' );
-		invariant( permission !== undefined, 'permission cannot be undefined.' );
-
-		return {
-			payload: { propertyID, accountID, permission },
-			type: RECEIVE_TAG_PERMISSION,
-		};
-	},
-
-	waitForExistingTag() {
-		return {
-			payload: {},
-			type: WAIT_FOR_EXISTING_TAG,
-		};
-	},
-};
-
-export const controls = {
-	[ FETCH_EXISTING_TAG ]: () => {
+const fetchGetExistingTagStore = createFetchStore( {
+	baseName: 'getExistingTag',
+	controlCallback: () => {
 		// TODO: Replace this with data from `core/site` selectors and
 		// an implementation contained inside the store
 		// once https://github.com/google/site-kit-wp/issues/1000 is
@@ -162,11 +44,54 @@ export const controls = {
 		// currently quite nested and difficult to straightforwardly test.
 		return getExistingTag( 'analytics' );
 	},
-	[ FETCH_TAG_PERMISSION ]: ( { payload: { propertyID } } ) => {
+	reducerCallback: ( state, existingTag ) => {
+		return {
+			...state,
+			existingTag: existingTag || null,
+		};
+	},
+} );
+
+const fetchGetTagPermissionStore = createFetchStore( {
+	baseName: 'getTagPermission',
+	controlCallback: ( { propertyID } ) => {
 		return API.get( 'modules', 'analytics', 'tag-permission', { propertyID }, {
 			useCache: false,
 		} );
 	},
+	reducerCallback: ( state, { accountID, permission }, { propertyID } ) => {
+		return {
+			...state,
+			tagPermissions: {
+				...state.tagPermissions || {},
+				[ propertyID ]: { accountID, permission },
+			},
+		};
+	},
+	argsToParams: ( propertyID ) => {
+		invariant( propertyID, 'propertyID is required.' );
+		return { propertyID };
+	},
+} );
+
+// Actions
+const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
+
+const BASE_INITIAL_STATE = {
+	existingTag: undefined,
+	tagPermissions: {},
+};
+
+const baseActions = {
+	waitForExistingTag() {
+		return {
+			payload: {},
+			type: WAIT_FOR_EXISTING_TAG,
+		};
+	},
+};
+
+const baseControls = {
 	[ WAIT_FOR_EXISTING_TAG ]: createRegistryControl( ( registry ) => () => {
 		const isExistingTagLoaded = () => registry.select( STORE_NAME ).getExistingTag() !== undefined;
 		if ( isExistingTagLoaded() ) {
@@ -184,104 +109,14 @@ export const controls = {
 	} ),
 };
 
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case START_FETCH_EXISTING_TAG: {
-			return {
-				...state,
-				isFetchingExistingTag: true,
-			};
-		}
-
-		case FINISH_FETCH_EXISTING_TAG: {
-			return {
-				...state,
-				isFetchingExistingTag: false,
-			};
-		}
-
-		case CATCH_FETCH_EXISTING_TAG: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingExistingTag: false,
-			};
-		}
-
-		case START_FETCH_TAG_PERMISSION: {
-			const { propertyID } = payload;
-
-			return {
-				...state,
-				isFetchingTagPermission: {
-					...state.isFetchingTagPermission,
-					[ propertyID ]: true,
-				},
-			};
-		}
-
-		case FINISH_FETCH_TAG_PERMISSION: {
-			const { propertyID } = payload;
-
-			return {
-				...state,
-				isFetchingTagPermission: {
-					...state.isFetchingTagPermission,
-					[ propertyID ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_TAG_PERMISSION: {
-			const { propertyID, error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingTagPermission: {
-					...state.isFetchingTagPermission,
-					[ propertyID ]: false,
-				},
-			};
-		}
-
-		case RECEIVE_EXISTING_TAG: {
-			const { existingTag } = payload;
-
-			return {
-				...state,
-				existingTag,
-			};
-		}
-
-		case RECEIVE_TAG_PERMISSION: {
-			const { propertyID, accountID, permission } = payload;
-
-			return {
-				...state,
-				tagPermissions: {
-					...state.tagPermissions || {},
-					[ propertyID ]: { accountID, permission },
-				},
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-};
-
-export const resolvers = {
+const baseResolvers = {
 	*getExistingTag() {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
 		if ( existingTag === undefined ) {
-			yield actions.fetchExistingTag();
+			yield fetchGetExistingTagStore.actions.fetchGetExistingTag();
 		}
 	},
 
@@ -290,18 +125,18 @@ export const resolvers = {
 			return;
 		}
 
-		const registry = yield commonActions.getRegistry();
+		const registry = yield Data.commonActions.getRegistry();
 
 		// If these permissions are already available, don't make a request.
 		if ( registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined ) {
 			return;
 		}
 
-		yield actions.fetchTagPermission( propertyID );
+		yield fetchGetTagPermissionStore.actions.fetchGetTagPermission( propertyID );
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Check to see if an existing tag is available on the site.
 	 *
@@ -394,11 +229,23 @@ export const selectors = {
 	},
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetExistingTagStore,
+	fetchGetTagPermissionStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		controls: baseControls,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;
