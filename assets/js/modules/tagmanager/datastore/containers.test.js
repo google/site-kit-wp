@@ -24,6 +24,7 @@ import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -50,7 +51,7 @@ describe( 'modules/tagmanager containers', () => {
 		registry = createTestRegistry();
 		// Preload default settings to prevent the resolver from making unexpected requests
 		// as this is covered in settings store tests.
-		registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 	} );
 
 	afterEach( () => {
@@ -66,19 +67,24 @@ describe( 'modules/tagmanager containers', () => {
 			it( 'creates a container and adds it to the store ', async () => {
 				const accountID = fixtures.createContainer.accountId; // Capitalization rule exception: `accountId`
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
-					)
-					.mockResponse(
-						JSON.stringify( fixtures.createContainer ),
-						{ status: 200 }
-					);
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+					{ body: fixtures.createContainer, status: 200 }
+				);
 
 				await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
 				// Ensure the proper parameters were passed.
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual(
-					{ accountID, usageContext }
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+					{
+						method: 'POST',
+						body: {
+							data: {
+								accountID,
+								usageContext,
+							},
+						},
+					}
 				);
 
 				const containers = registry.select( STORE_NAME ).getContainers( accountID );
@@ -88,15 +94,8 @@ describe( 'modules/tagmanager containers', () => {
 			it( 'sets isDoingCreateContainer ', async () => {
 				const accountID = fixtures.createContainer.accountId; // Capitalization rule exception: `accountId`
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
-					)
-					.mockResponse(
-						JSON.stringify( fixtures.createContainer ),
-						{ status: 200 }
-					);
 
+				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/ );
 				const promise = registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
 				expect( registry.select( STORE_NAME ).isDoingCreateContainer( accountID ) ).toEqual( true );
 
@@ -108,28 +107,26 @@ describe( 'modules/tagmanager containers', () => {
 			it( 'dispatches an error if the request fails ', async () => {
 				const accountID = fixtures.createContainer.accountId; // Capitalization rule exception: `accountId`
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
-				const response = {
+				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 
-				fetch
-					.doMockIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/ )
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+					{ body: errorResponse, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
 
 				await subscribeUntil( registry, () => registry.select( STORE_NAME ).getError() );
 
-				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
+				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( errorResponse );
 
 				// Ignore the request fired by the `getContainers` selector.
-				muteConsole( 'error' );
+				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
 				const containers = registry.select( STORE_NAME ).getContainers( accountID );
 				// No properties should have been added yet, as the container creation failed.
 				expect( containers ).toEqual( undefined );
@@ -143,21 +140,18 @@ describe( 'modules/tagmanager containers', () => {
 				const { account, containers } = factories.buildAccountWithContainers();
 				const accountID = account.accountId;
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/
-					)
-					.mockResponseOnce(
-						JSON.stringify( containers ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					{ body: containers, status: 200 }
+				);
 
 				const initialContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
 				// Ensure the proper parameters were sent.
-				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
 					{
-						accountID,
+						query: { accountID },
 					}
 				);
 
@@ -169,7 +163,7 @@ describe( 'modules/tagmanager containers', () => {
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( resolvedContainers ).toEqual( containers );
 			} );
 
@@ -185,26 +179,22 @@ describe( 'modules/tagmanager containers', () => {
 					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 				expect( resolvedContainers ).toEqual( containers );
 				expect( resolvedContainers ).toHaveLength( 1 );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
 				const accountID = '123';
-				const response = {
+				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					{ body: errorResponse, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getContainers( accountID );
@@ -213,11 +203,11 @@ describe( 'modules/tagmanager containers', () => {
 					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] )
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				const containers = registry.select( STORE_NAME ).getContainers( accountID );
 				expect( containers ).toEqual( undefined );
 				const error = registry.select( STORE_NAME ).getError();
-				expect( error ).toEqual( response );
+				expect( error ).toEqual( errorResponse );
 			} );
 
 			it( 'filters selected containers by the given usageContext if provided', () => {
@@ -240,16 +230,10 @@ describe( 'modules/tagmanager containers', () => {
 					{ accountID }
 				);
 
-				expect(
-					registry.select( STORE_NAME ).getContainers( accountID, CONTEXT_WEB )
-				).toEqual( webContainers );
-				expect(
-					registry.select( STORE_NAME ).getContainers( accountID, CONTEXT_AMP )
-				).toEqual( ampContainers );
-
-				expect(
-					registry.select( STORE_NAME ).getContainers( accountID )
-				).toEqual( [ ...webContainers, ...ampContainers ] );
+				const { getContainers } = registry.select( STORE_NAME );
+				expect( getContainers( accountID, CONTEXT_WEB ) ).toEqual( webContainers );
+				expect( getContainers( accountID, CONTEXT_AMP ) ).toEqual( ampContainers );
+				expect( getContainers( accountID ) ).toEqual( [ ...webContainers, ...ampContainers ] );
 			} );
 		} );
 	} );
