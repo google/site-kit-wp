@@ -162,7 +162,17 @@ class TagmanagerSetup extends Component {
 		if ( existingContainerID ) {
 			// Verify the user has access to existing tag if found.
 			try {
-				const { account, container } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingContainerID } );
+				const { account, container, permission } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingContainerID } );
+				if ( ! permission ) {
+					throw {
+						code: 'tag_manager_existing_tag_permission',
+						message: sprintf(
+							/* translators: %s: Container ID */
+							__( 'We’ve detected there’s already an existing Tag Manager tag on your site (%s), but your account doesn’t seem to have the necessary access to this container. You can either remove the existing tag and connect to a different account, or request access to this container from your team.', 'google-site-kit' ),
+							existingContainerID
+						),
+					};
+				}
 				const containers = getContainers( [ container ] ).byContext( USAGE_CONTEXT_WEB );
 				const containersAMP = getContainers( [ container ] ).byContext( USAGE_CONTEXT_AMP );
 
