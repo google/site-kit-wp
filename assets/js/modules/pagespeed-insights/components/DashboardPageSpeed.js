@@ -25,7 +25,7 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -66,10 +66,6 @@ export default function DashboardPageSpeed() {
 	const setDataSrcField = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_FIELD } ), [] );
 	const setDataSrcLab = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_LAB } ), [] );
 
-	const [ activeTab, setActiveTab ] = useState( 'in_the_lab' ); //eslint-disable-line
-
-	const [ activeDeviceSize, setActiveDeviceSize ] = useState( 'mobile' ); //eslint-disable-line
-
 	// Set the default data source based on report data.
 	useEffect( () => {
 		if ( ! reportMobile || ! reportDesktop ) {
@@ -88,19 +84,20 @@ export default function DashboardPageSpeed() {
 
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
 
+	const updateActiveTab = ( dataSrcIndex ) => {
+		if ( dataSrcIndex === 0 ) {
+			setDataSrcLab();
+		} else {
+			setDataSrcField();
+		}
+	};
+
 	const updateActiveDeviceSize = ( deviceIndex ) => {
-		console.log( 'updateActiveDevice', deviceIndex ); //eslint-disable-line
-		setActiveDeviceSize( deviceIndex === 1 ? 'desktop' : 'mobile' );
 		if ( deviceIndex === 1 ) {
 			setStrategyDesktop();
 		} else {
 			setStrategyMobile();
 		}
-	};
-
-	const updateActiveTab = ( tabIndex ) => {
-		console.log( 'tabIndex', tabIndex ); //eslint-disable-line
-		setActiveTab( tabIndex === 1 ? 'in_the_field' : 'in_the_lab' );
 	};
 
 	return (
@@ -111,7 +108,7 @@ export default function DashboardPageSpeed() {
 				<header className="googlesitekit-pagespeed-widget-header">
 					<div className="googlesitekit-pagespeed-data-src-tabs">
 						<TabBar
-							activeIndex={ activeTab === 'in_the_field' ? 1 : 0 }
+							activeIndex={ dataSrc === DATA_SRC_FIELD ? 1 : 0 }
 							handleActiveIndexUpdate={ updateActiveTab }
 						>
 							<Tab>
@@ -124,14 +121,14 @@ export default function DashboardPageSpeed() {
 					</div>
 					<div className="googlesitekit-pagespeed-widget-device-size-tab-bar-container">
 						<DeviceSizeTabBar
-							activeIndex={ activeDeviceSize === 'desktop' ? 1 : 0 }
+							activeIndex={ strategy === STRATEGY_DESKTOP ? 1 : 0 }
 							handleDeviceSizeUpdate={ updateActiveDeviceSize }
 						/>
 					</div>
 				</header>
 				<section>
-					{ activeTab === 'in_the_lab' && <LabReportMetrics data={ reportData } /> }
-					{ activeTab === 'in_the_field' && <FieldReportMetrics data={ reportData } /> }
+					{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } /> }
+					{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } /> }
 				</section>
 			</Layout>
 		</Fragment>
