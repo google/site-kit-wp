@@ -127,7 +127,8 @@ export const reducer = ( state, { type } ) => {
 			};
 		}
 
-		default: return state;
+		default:
+			return { ...state };
 	}
 };
 
