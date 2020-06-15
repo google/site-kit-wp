@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
@@ -135,21 +140,38 @@ describe( 'createInfoStore store', () => {
 
 				const { origin, pathname } = new URL( adminReauthURL );
 				expect( origin + pathname ).toEqual( 'http://example.com/wp-admin/admin.php' );
-				expect( adminReauthURL ).toMatchQueryParameters( { page: 'googlesitekit-dashboard', slug: 'test-slug', notification: 'authentication_success' } );
+				expect( adminReauthURL ).toMatchQueryParameters( {
+					page: 'googlesitekit-dashboard',
+					slug: MODULE_SLUG,
+					notification: 'authentication_success',
+				} );
 			} );
 
 			// Uses connect URL when needsReautentication is true.
 			it( 'adds connectURL to the adminReauthURL when needsReautentication is true', () => {
+				const connectURLBase = 'http://connect.com/wp-admin/admin.php';
+				const connectURLQueryParams = {
+					page: 'googlesitekit-splash',
+					googlesitekit_connect: '1',
+					nonce: '12345',
+				};
+				const connectURL = addQueryArgs( connectURLBase, connectURLQueryParams );
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL: 'http://example.com/wp-admin/' } );
 				registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: true } );
-				registry.dispatch( CORE_USER ).receiveConnectURL( 'http://connect.com/wp-admin/' );
+				registry.dispatch( CORE_USER ).receiveConnectURL( connectURL );
+
 				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG );
 				registry.registerStore( STORE_NAME, store );
 
 				const adminReauthURL = registry.select( STORE_NAME ).getAdminReauthURL();
 
 				const { origin, pathname } = new URL( adminReauthURL );
-				expect( origin + pathname ).toEqual( 'http://connect.com/wp-admin/' );
+				expect( origin + pathname ).toEqual( connectURLBase );
+				expect( adminReauthURL ).toMatchQueryParameters( {
+					...connectURLQueryParams,
+					redirect: `http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=${ MODULE_SLUG }&reAuth=true`,
+					status: 'true',
+				} );
 			} );
 		} );
 	} );
