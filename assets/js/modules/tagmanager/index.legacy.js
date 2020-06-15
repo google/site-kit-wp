@@ -28,22 +28,23 @@ import TagmanagerSetup from './setup/setup.legacy';
 import { fillFilterWithComponent, getModulesData } from '../../util';
 
 const slug = 'tagmanager';
+
 if ( getModulesData().tagmanager.active ) {
 	/**
 	 * Add components to the settings page.
 	 */
-	addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
+	addFilter(
+		`googlesitekit.ModuleSettingsDetails-${ slug }`,
 		'googlesitekit.TagmanagerModuleSettingsDetails',
-		fillFilterWithComponent( TagmanagerSetup, {
-			onSettingsPage: true,
-		} ) );
+		fillFilterWithComponent( TagmanagerSetup, { onSettingsPage: true } )
+	);
 
 	/**
 	 * Add component to the setup wizard
 	 */
-	addFilter( `googlesitekit.ModuleSetup-${ slug }`,
+	addFilter(
+		`googlesitekit.ModuleSetup-${ slug }`,
 		'googlesitekit.TagmanagerModuleSetupWizard',
-		fillFilterWithComponent( TagmanagerSetup, {
-			onSettingsPage: false,
-		} ) );
+		fillFilterWithComponent( TagmanagerSetup, { onSettingsPage: false } )
+	);
 }
