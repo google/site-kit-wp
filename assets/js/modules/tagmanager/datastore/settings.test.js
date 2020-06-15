@@ -28,6 +28,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	muteConsole,
+	muteFetch,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
@@ -40,7 +41,7 @@ describe( 'modules/tagmanager settings', () => {
 	// actions
 	let setSettings;
 	let submitChanges;
-	let receiveSettings;
+	let receiveGetSettings;
 	let receiveExistingTag;
 	let receiveTagPermission;
 
@@ -80,7 +81,7 @@ describe( 'modules/tagmanager settings', () => {
 			canSubmitChanges,
 		} = registry.select( STORE_NAME ) );
 		( {
-			receiveSettings,
+			receiveGetSettings,
 			receiveExistingTag,
 			receiveTagPermission,
 			setSettings,
@@ -109,7 +110,7 @@ describe( 'modules/tagmanager settings', () => {
 	describe( 'actions', () => {
 		beforeEach( () => {
 			// Receive empty settings to prevent unexpected fetch by resolver.
-			receiveSettings( {} );
+			receiveGetSettings( {} );
 		} );
 
 		describe( 'submitChanges', () => {
@@ -124,26 +125,29 @@ describe( 'modules/tagmanager settings', () => {
 						...fixtures.createContainer,
 					};
 
-					fetch
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
-						)
-						.mockResponseOnce(
-							JSON.stringify( createdContainer ),
-							{ status: 200 }
-						)
-						.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/ )
-						.mockResponseOnce( async ( req ) => {
-							const { data } = await req.json();
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						{ body: createdContainer, status: 200 }
+					);
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						( url, opts ) => {
+							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.
-							return JSON.stringify( data );
-						} )
-					;
+							return { body: data, status: 200 };
+						}
+					);
 
 					const result = await submitChanges();
-					expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
-						data: { accountID: '12345' },
-					} );
+
+					expect( fetchMock ).toHaveFetched(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						{
+							body: {
+								data: { accountID: '12345', usageContext: CONTEXT_WEB },
+							},
+						}
+					);
 
 					expect( result.error ).toBeFalsy();
 					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( createdContainer.publicId );
@@ -157,17 +161,21 @@ describe( 'modules/tagmanager settings', () => {
 						containerID: CONTAINER_CREATE,
 					} );
 
-					fetch
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
-						)
-						.mockResponseOnce( JSON.stringify( WPError ), { status: 500 } );
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						{ body: WPError, status: 500 }
+					);
 
 					muteConsole( 'error' );
 					await submitChanges();
 
-					expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
-						{ accountID: '12345' }
+					expect( fetchMock ).toHaveFetched(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						{
+							body: {
+								data: { accountID: '12345', usageContext: CONTEXT_WEB },
+							},
+						}
 					);
 
 					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( CONTAINER_CREATE );
@@ -177,53 +185,47 @@ describe( 'modules/tagmanager settings', () => {
 				it( 'dispatches saveSettings', async () => {
 					setSettings( validSettings );
 
-					fetch
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/
-						)
-						.mockResponseOnce(
-							JSON.stringify( validSettings ),
-							{ status: 200 }
-						);
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						{ body: validSettings, status: 200 }
+					);
 
 					await submitChanges();
 
-					expect( fetch ).toHaveBeenCalled();
-					expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
+					expect( fetchMock ).toHaveFetched(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						{
+							body: { data: validSettings },
+						}
+					);
+
 					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
 				} );
 
 				it( 'returns an error if saveSettings fails', async () => {
 					setSettings( validSettings );
 
-					fetch
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/
-						)
-						.mockResponseOnce(
-							JSON.stringify( WPError ),
-							{ status: 500 }
-						);
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						{ body: WPError, status: 500 }
+					);
 
 					muteConsole( 'error' );
 					const result = await submitChanges();
 
-					expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
+					expect( fetchMock ).toHaveFetched(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						{
+							body: { data: validSettings },
+						}
+					);
 					expect( result.error ).toEqual( WPError );
 				} );
 
 				it( 'invalidates module cache on success', async () => {
 					setSettings( validSettings );
 
-					fetch
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/
-						)
-						.mockResponseOnce(
-							JSON.stringify( validSettings ),
-							{ status: 200 }
-						);
-
+					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/ );
 					const cacheKey = createCacheKey( 'modules', 'tagmanager', 'arbitrary-datapoint' );
 					expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
 					expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
@@ -248,34 +250,30 @@ describe( 'modules/tagmanager settings', () => {
 					const createdWebContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } );
 					const createdAMPContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } );
 
-					const createContainerHandler = async ( req ) => {
-						const { data } = await req.json();
-						if ( CONTEXT_WEB === data.usageContext ) {
-							return JSON.stringify( createdWebContainer );
-						} else if ( CONTEXT_AMP === data.usageContext ) {
-							return JSON.stringify( createdAMPContainer );
+					fetchMock.postOnce(
+						{
+							url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							body: { data: { usageContext: CONTEXT_WEB } },
+						},
+						{ body: createdWebContainer, status: 200 },
+						{ matchPartialBody: true }
+					);
+					fetchMock.postOnce(
+						{
+							url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							body: { data: { usageContext: CONTEXT_AMP } },
+						},
+						{ body: createdAMPContainer, status: 200 },
+						{ matchPartialBody: true }
+					);
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						( url, opts ) => {
+							const { data } = JSON.parse( opts.body );
+							// Return the same settings passed to the API.
+							return { body: data, status: 200 };
 						}
-						return Promise.reject();
-					};
-
-					fetch
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
-							createContainerHandler
-						)
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
-							createContainerHandler
-						)
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
-							async ( req ) => {
-								const { data } = await req.json();
-								// Return the same settings passed to the API.
-								return JSON.stringify( data );
-							}
-						)
-					;
+					);
 
 					const { error } = await submitChanges();
 
@@ -292,23 +290,29 @@ describe( 'modules/tagmanager settings', () => {
 					} );
 					const createdAMPContainer = containerBuilder( { accountId: '12345', usageContext: [ CONTEXT_AMP ] } );
 
-					fetch
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
-						)
-						.mockResponseOnce( JSON.stringify( createdAMPContainer ), { status: 200 } )
-						.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/ )
-						.mockResponseOnce( async ( req ) => {
-							const { data } = await req.json();
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						{ body: createdAMPContainer, status: 200 }
+					);
+
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						( url, opts ) => {
+							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.
-							return JSON.stringify( data );
-						} )
-					;
+							return { body: data, status: 200 };
+						}
+					);
 
 					await submitChanges();
 
-					expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
-						{ accountID: '12345' }
+					expect( fetchMock ).toHaveFetched(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						{
+							body: {
+								data: { accountID: '12345', usageContext: CONTEXT_AMP },
+							},
+						}
 					);
 
 					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( createdAMPContainer.publicId );
@@ -328,34 +332,30 @@ describe( 'modules/tagmanager settings', () => {
 					const createdWebContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } );
 					const createdAMPContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } );
 
-					const createContainerHandler = async ( req ) => {
-						const { data } = await req.json();
-						if ( CONTEXT_WEB === data.usageContext ) {
-							return JSON.stringify( createdWebContainer );
-						} else if ( CONTEXT_AMP === data.usageContext ) {
-							return JSON.stringify( createdAMPContainer );
+					fetchMock.postOnce(
+						{
+							url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							body: { data: { usageContext: CONTEXT_WEB } },
+						},
+						{ body: createdWebContainer, status: 200 },
+						{ matchPartialBody: true }
+					);
+					fetchMock.postOnce(
+						{
+							url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							body: { data: { usageContext: CONTEXT_AMP } },
+						},
+						{ body: createdAMPContainer, status: 200 },
+						{ matchPartialBody: true }
+					);
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						( url, opts ) => {
+							const { data } = JSON.parse( opts.body );
+							// Return the same settings passed to the API.
+							return { body: data, status: 200 };
 						}
-						return Promise.reject();
-					};
-
-					fetch
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
-							createContainerHandler
-						)
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
-							createContainerHandler
-						)
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
-							async ( req ) => {
-								const { data } = await req.json();
-								// Return the same settings passed to the API.
-								return JSON.stringify( data );
-							}
-						)
-					;
+					);
 
 					const { error } = await submitChanges();
 
@@ -371,7 +371,7 @@ describe( 'modules/tagmanager settings', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'returns true while submitting changes', async () => {
 				const { haveSettingsChanged, isDoingSubmitChanges } = registry.select( STORE_NAME );
-				receiveSettings( validSettings );
+				receiveGetSettings( validSettings );
 
 				expect( haveSettingsChanged() ).toBe( false );
 				expect( isDoingSubmitChanges() ).toBe( false );
