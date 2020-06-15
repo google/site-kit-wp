@@ -30,7 +30,7 @@ import { getModulesData } from '../../../util';
 
 class AnalyticsAdminbarWidget extends Component {
 	render() {
-		if ( typeof global.googlesitekit.permaLink !== typeof undefined && '' === global.googlesitekit.permaLink ) {
+		if ( typeof global._googlesitekitLegacyData.permaLink !== typeof undefined && '' === global._googlesitekitLegacyData.permaLink ) {
 			return null;
 		}
 

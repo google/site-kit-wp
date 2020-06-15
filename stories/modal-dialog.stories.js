@@ -15,7 +15,7 @@ import Dialog from '../assets/js/components/dialog';
 
 storiesOf( 'Global', module )
 	.add( 'Modal Dialog', () => {
-		const { provides } = global.googlesitekit.modules.analytics;
+		const { provides } = global._googlesitekitLegacyData.modules.analytics;
 		return (
 			<Dialog
 				dialogActive

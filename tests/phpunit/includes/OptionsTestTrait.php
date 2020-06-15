@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Tests;
 
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\First_Admin;
-use Google\Site_Kit\Core\Util\Activation;
+use Google\Site_Kit\Core\Util\Activation_Flag;
 use Google\Site_Kit\Core\Util\Beta_Migration;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
@@ -28,8 +28,8 @@ trait OptionsTestTrait {
 			'googlesitekit_analytics_adsense_linked',
 			'googlesitekit_tracking_optin',
 			'googlesitekit_pagespeed_insights_settings',
-			Activation::OPTION_NEW_SITE_POSTS,
-			Activation::OPTION_SHOW_ACTIVATION_NOTICE,
+			Activation_Flag::OPTION_NEW_SITE_POSTS,
+			Activation_Flag::OPTION_SHOW_ACTIVATION_NOTICE,
 			AdSense\Settings::OPTION,
 			Analytics\Settings::OPTION,
 			Credentials::OPTION,

@@ -43,7 +43,7 @@ class GoogleSitekitModule extends Component {
 		super( props );
 
 		this.state = {
-			showModuleSetupWizard: global.googlesitekit.setup.showModuleSetupWizard,
+			showModuleSetupWizard: global._googlesitekitLegacyData.setup.showModuleSetupWizard,
 		};
 	}
 
@@ -52,7 +52,7 @@ class GoogleSitekitModule extends Component {
 			showModuleSetupWizard,
 		} = this.state;
 
-		const { currentAdminPage } = global.googlesitekit.admin;
+		const { currentAdminPage } = global._googlesitekitLegacyData.admin;
 
 		/**
 		 * Filters whether to show the Module setup wizard when showModuleSetupWizard is true.
@@ -63,9 +63,9 @@ class GoogleSitekitModule extends Component {
 
 		if ( showModuleSetupWizard && moduleHasSetupWizard ) {
 			// Set webpackPublicPath on-the-fly.
-			if ( global.googlesitekit && global.googlesitekit.publicPath ) {
+			if ( global._googlesitekitLegacyData && global._googlesitekitLegacyData.publicPath ) {
 				// eslint-disable-next-line no-undef
-				__webpack_public_path__ = global.googlesitekit.publicPath; /*eslint camelcase: 0*/
+				__webpack_public_path__ = global._googlesitekitLegacyData.publicPath; /*eslint camelcase: 0*/
 			}
 
 			const Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'./components/setup/setup-wrapper' ) );

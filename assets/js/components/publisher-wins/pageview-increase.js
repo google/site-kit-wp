@@ -56,7 +56,7 @@ const pageviewIncrease = ( data, id ) => {
 		description: __( 'Over the past 4 weeks', 'google-site-kit' ),
 		format: 'large',
 		logo: false,
-		winImage: `${ global.googlesitekit.admin.assetsRoot }images/sun-small.png`,
+		winImage: `${ global._googlesitekitLegacyData.admin.assetsRoot }images/sun-small.png`,
 		blockData: [
 			{
 				title: __( 'Total Page Views', 'google-site-kit' ),

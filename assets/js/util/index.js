@@ -208,7 +208,7 @@ export const numberFormat = ( number, options = {} ) => {
  *                  E.g. `en-US` or `de-DE`
  */
 export const getLocale = ( _global = global ) => {
-	const siteKitLocale = get( _global, [ 'googlesitekit', 'locale', '', 'lang' ] );
+	const siteKitLocale = get( _global, [ '_googlesitekitLegacyData', 'locale', '', 'lang' ] );
 	if ( siteKitLocale ) {
 		const matches = siteKitLocale.match( /^(\w{2})?(_)?(\w{2})/ );
 		if ( matches && matches[ 0 ] ) {
@@ -344,20 +344,20 @@ export const extractForSparkline = ( rowData, column ) => {
 /**
  * Gets data for all modules.
  *
- * Because googlesitekit.modules contains both module information (legacy) and
+ * Because _googlesitekitLegacyData.modules contains both module information (legacy) and
  * API functions (new), we should be using this function and never access
- * googlesitekit.modules directly to access module data.
+ * _googlesitekitLegacyData.modules directly to access module data.
  *
  * This function should be removed once this object is no longer used to store
  * legacy module data.
  *
  * @since 1.7.0
  *
- * @param {Object}  _googlesitekit Optional. googlesitekit global; can be replaced for testing.
+ * @param {Object}  __googlesitekitLegacyData Optional. _googlesitekitLegacyData global; can be replaced for testing.
  * @return {Object} Object with module data, with each module keyed by its slug.
  */
-export const getModulesData = ( _googlesitekit = global.googlesitekit ) => {
-	const modulesObj = _googlesitekit.modules;
+export const getModulesData = ( __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
+	const modulesObj = __googlesitekitLegacyData.modules;
 	if ( ! modulesObj ) {
 		return {};
 	}
@@ -380,20 +380,20 @@ export const getModulesData = ( _googlesitekit = global.googlesitekit ) => {
 /**
  * Get the URL needed to initiate a reAuth flow.
  *
- * @param {string}  slug   The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
- * @param {boolean} status The module activation status.
- * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
+ * @param {string}  slug                     The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
+ * @param {boolean} status                   The module activation status.
+ * @param {Object}  __googlesitekitLegacyData _googlesitekitLegacyData global; can be replaced for testing.
  * @return {string} Authentication URL
  */
-export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesitekit ) => {
+export const getReAuthURL = ( slug, status, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
 	const {
 		connectURL,
 		adminRoot,
-	} = _googlesitekit.admin;
+	} = __googlesitekitLegacyData.admin;
 
-	const { needReauthenticate } = _googlesitekit.setup;
+	const { needReauthenticate } = __googlesitekitLegacyData.setup;
 
-	const { screenID } = getModulesData( _googlesitekit )[ slug ];
+	const { screenID } = getModulesData( __googlesitekitLegacyData )[ slug ];
 
 	// Special case handling for PageSpeed Insights.
 	// TODO: Refactor this out.
@@ -439,7 +439,7 @@ export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesiteki
  * @return {string} Admin URL with appended query params.
  */
 export const getSiteKitAdminURL = ( page, args ) => {
-	const { adminRoot } = global.googlesitekit.admin;
+	const { adminRoot } = global._googlesitekitLegacyData.admin;
 
 	if ( ! page ) {
 		page = 'googlesitekit-dashboard';
@@ -507,15 +507,15 @@ export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, sta
  * Helper to toggle confirm changes button disable/enable
  * depending on the module changed settings.
  *
- * @param {string} moduleSlug      The module slug being edited.
- * @param {Object} settingsMapping The mapping between form settings names and saved settings.
- * @param {Object} settingsState   The changed settings component state to compare with.
- * @param {Object} skipDOM         Skip DOm checks/modifications, used for testing.
- * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
+ * @param {string} moduleSlug                The module slug being edited.
+ * @param {Object} settingsMapping           The mapping between form settings names and saved settings.
+ * @param {Object} settingsState             The changed settings component state to compare with.
+ * @param {Object} skipDOM                   Skip DOm checks/modifications, used for testing.
+ * @param {Object} __googlesitekitLegacyData _googlesitekitLegacyData global; can be replaced for testing.
  * @return {(void|boolean)} True if a module has been toggled.
  */
-export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = global.googlesitekit ) => {
-	const { settings, setupComplete } = getModulesData( _googlesitekit )[ moduleSlug ];
+export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
+	const { settings, setupComplete } = getModulesData( __googlesitekitLegacyData )[ moduleSlug ];
 	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
 
 	if ( ! setupComplete || ! confirm ) {
@@ -581,7 +581,7 @@ export const decodeHtmlEntity = ( str ) => {
  * @return {HTMLImageElement}             <img> tag with module icon.
  */
 export function moduleIcon( module, blockedByParentModule, width = '33', height = '33', useClass = '' ) {
-	if ( ! global.googlesitekit ) {
+	if ( ! global._googlesitekitLegacyData ) {
 		return;
 	}
 
@@ -591,7 +591,7 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 	if ( blockedByParentModule ) {
 		iconComponent = <SvgIcon id={ `${ module }-disabled` } width={ width } height={ height } className={ useClass } />;
 	} else if ( 'pagespeed-insights' === module ) {
-		iconComponent = <img src={ global.googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
+		iconComponent = <img src={ global._googlesitekitLegacyData.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
 	}
 
 	return iconComponent;

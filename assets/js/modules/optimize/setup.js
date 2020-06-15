@@ -244,7 +244,7 @@ class OptimizeSetup extends Component {
 		} = this.state;
 		let { ampExperimentJSON } = this.state;
 
-		const { ampEnabled } = global.googlesitekit.admin;
+		const { ampEnabled } = global._googlesitekitLegacyData.admin;
 
 		if ( ! analyticsUseSnippet || ! ampEnabled ) {
 			return null;
