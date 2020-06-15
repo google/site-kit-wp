@@ -33,6 +33,7 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/tagmanager containers', () => {
 	let registry;
+	let hasFinishedResolution;
 
 	const defaultSettings = {
 		accountID: '',
@@ -52,6 +53,7 @@ describe( 'modules/tagmanager containers', () => {
 		// Preload default settings to prevent the resolver from making unexpected requests
 		// as this is covered in settings store tests.
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		hasFinishedResolution = registry.select( STORE_NAME ).hasFinishedResolution;
 	} );
 
 	afterEach( () => {
@@ -157,9 +159,7 @@ describe( 'modules/tagmanager containers', () => {
 
 				expect( initialContainers ).toEqual( undefined );
 
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] )
-				);
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getContainers', [ accountID ] ) );
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
@@ -175,9 +175,7 @@ describe( 'modules/tagmanager containers', () => {
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] )
-				);
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getContainers', [ accountID ] ) );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( resolvedContainers ).toEqual( containers );
@@ -199,9 +197,7 @@ describe( 'modules/tagmanager containers', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getContainers( accountID );
 
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] )
-				);
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getContainers', [ accountID ] ) );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				const containers = registry.select( STORE_NAME ).getContainers( accountID );
