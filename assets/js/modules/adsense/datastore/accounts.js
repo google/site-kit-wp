@@ -17,73 +17,36 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 // Actions
-const FETCH_ACCOUNTS = 'FETCH_ACCOUNTS';
-const START_FETCH_ACCOUNTS = 'START_FETCH_ACCOUNTS';
-const FINISH_FETCH_ACCOUNTS = 'FINISH_FETCH_ACCOUNTS';
-const CATCH_FETCH_ACCOUNTS = 'CATCH_FETCH_ACCOUNTS';
-
-const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
-export const INITIAL_STATE = {
-	isFetchingAccounts: false,
+const fetchGetAccountsStore = createFetchStore( {
+	baseName: 'getAccounts',
+	controlCallback: () => {
+		return API.get( 'modules', 'adsense', 'accounts', undefined, {
+			useCache: false,
+		} );
+	},
+	reducerCallback: ( state, accounts ) => {
+		return {
+			...state,
+			accounts: [ ...accounts ],
+		};
+	},
+} );
+
+const BASE_INITIAL_STATE = {
 	accounts: undefined,
 };
 
-export const actions = {
-	*fetchAccounts() {
-		let response, error;
-
-		yield {
-			payload: {},
-			type: START_FETCH_ACCOUNTS,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_ACCOUNTS,
-			};
-
-			yield actions.receiveAccounts( response );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_ACCOUNTS,
-			};
-		} catch ( err ) {
-			error = err;
-
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_ACCOUNTS,
-			};
-		}
-
-		return { response, error };
-	},
-
-	receiveAccounts( accounts ) {
-		invariant( Array.isArray( accounts ), 'accounts must be an array.' );
-
-		return {
-			payload: { accounts },
-			type: RECEIVE_ACCOUNTS,
-		};
-	},
-
+const baseActions = {
 	*resetAccounts() {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 
@@ -97,49 +60,8 @@ export const actions = {
 	},
 };
 
-export const controls = {
-	[ FETCH_ACCOUNTS ]: () => {
-		return API.get( 'modules', 'adsense', 'accounts', undefined, {
-			useCache: false,
-		} );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
+const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
-		case START_FETCH_ACCOUNTS: {
-			return {
-				...state,
-				isFetchingAccounts: true,
-			};
-		}
-
-		case RECEIVE_ACCOUNTS: {
-			const { accounts } = payload;
-
-			return {
-				...state,
-				accounts: [ ...accounts ],
-			};
-		}
-
-		case FINISH_FETCH_ACCOUNTS: {
-			return {
-				...state,
-				isFetchingAccounts: false,
-			};
-		}
-
-		case CATCH_FETCH_ACCOUNTS: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingAccounts: false,
-			};
-		}
-
 		case RESET_ACCOUNTS: {
 			const {
 				accountID,
@@ -151,7 +73,7 @@ export const reducer = ( state, { type, payload } ) => {
 			} = state.savedSettings || {};
 			return {
 				...state,
-				accounts: INITIAL_STATE.accounts,
+				accounts: BASE_INITIAL_STATE.accounts,
 				settings: {
 					...( state.settings || {} ),
 					accountID,
@@ -170,7 +92,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
+const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
 		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
@@ -181,11 +103,11 @@ export const resolvers = {
 			return;
 		}
 
-		yield actions.fetchAccounts();
+		yield fetchGetAccountsStore.actions.fetchGetAccounts();
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Get all Google AdSense accounts this user has available.
 	 *
@@ -201,11 +123,22 @@ export const selectors = {
 	},
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetAccountsStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

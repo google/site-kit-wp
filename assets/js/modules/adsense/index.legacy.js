@@ -32,7 +32,7 @@ const slug = 'adsense';
 
 addFilter( 'googlesitekit.SetupModuleShowLink',
 	'googlesitekit.adsenseSetupModuleShowLink', ( showLink, moduleSlug ) => {
-		if ( 'adsense' === moduleSlug && ! global.googlesitekit.canAdsRun ) {
+		if ( 'adsense' === moduleSlug && ! global._googlesitekitLegacyData.canAdsRun ) {
 			return false;
 		}
 		return showLink;
@@ -59,7 +59,7 @@ if ( modulesData.adsense.active ) {
 		const {
 			reAuth,
 			currentScreen,
-		} = global.googlesitekit.admin;
+		} = global._googlesitekitLegacyData.admin;
 		const id = currentScreen ? currentScreen.id : null;
 
 		if ( ! reAuth && 'site-kit_page_googlesitekit-module-adsense' === id ) {

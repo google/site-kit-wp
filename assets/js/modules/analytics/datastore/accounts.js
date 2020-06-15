@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * WordPress dependencies
@@ -36,95 +37,73 @@ import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { actions as tagActions } from './tags';
-const { createRegistrySelector, createRegistryControl } = Data;
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistrySelector } = Data;
+
+const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
+	baseName: 'getAccountsPropertiesProfiles',
+	controlCallback: ( { data } ) => {
+		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', data, {
+			useCache: false,
+		} );
+	},
+	reducerCallback: ( state ) => {
+		// Actual accounts, properties, profiles are set by resolver with
+		// custom logic, hence here we just set a flag.
+		return {
+			...state,
+			isAwaitingAccountsPropertiesProfilesCompletion: true,
+		};
+	},
+	argsToParams: ( data ) => {
+		invariant( isPlainObject( data ), 'data must be an object.' );
+		return { data };
+	},
+} );
+
+const fetchCreateAccountStore = createFetchStore( {
+	baseName: 'createAccount',
+	controlCallback: ( { data } ) => {
+		return API.set( 'modules', 'analytics', 'create-account-ticket', data );
+	},
+	reducerCallback: ( state, accountTicket ) => {
+		const { id } = accountTicket;
+		return {
+			...state,
+			accountTicketID: id,
+		};
+	},
+	argsToParams: ( data ) => {
+		invariant( isPlainObject( data ), 'data must be an object.' );
+		return { data };
+	},
+} );
 
 // Actions
-const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
-const START_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'START_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
-const FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
-const CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
-const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
-const RECEIVE_CREATE_ACCOUNT = 'RECEIVE_CREATE_ACCOUNT';
-const START_FETCH_CREATE_ACCOUNT = 'START_FETCH_CREATE_ACCOUNT';
-const FINISH_FETCH_CREATE_ACCOUNT = 'FINISH_FETCH_CREATE_ACCOUNT';
-const CATCH_FETCH_CREATE_ACCOUNT = 'CATCH_FETCH_CREATE_ACCOUNT';
-
-const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
+const RECEIVE_GET_ACCOUNTS = 'RECEIVE_GET_ACCOUNTS';
+const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
-export const INITIAL_STATE = {
+const BASE_INITIAL_STATE = {
 	accounts: undefined,
-	isFetchingAccountsPropertiesProfiles: false,
-	isFetchingCreateAccount: false,
+	isAwaitingAccountsPropertiesProfilesCompletion: false,
 	accountTicketID: undefined,
 };
 
-export const actions = {
-	*fetchAccountsPropertiesProfiles( data ) {
-		let response, error;
-
-		yield {
-			payload: { data },
-			type: START_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
-		};
-
-		try {
-			response = yield {
-				payload: { data },
-				type: FETCH_ACCOUNTS_PROPERTIES_PROFILES,
-			};
-
-			const { dispatch } = yield Data.commonActions.getRegistry();
-			yield actions.receiveAccounts( response.accounts );
-
-			if ( response.properties.length && response.properties[ 0 ] && response.properties[ 0 ].accountId ) {
-				const accountID = response.properties[ 0 ].accountId;
-				dispatch( STORE_NAME ).receiveProperties( response.properties, { accountID } );
-			}
-
-			if ( response.profiles.length && response.profiles[ 0 ] && response.profiles[ 0 ].webPropertyId ) {
-				const propertyID = response.profiles[ 0 ].webPropertyId;
-				dispatch( STORE_NAME ).receiveProfiles( response.profiles, { propertyID } );
-			}
-
-			if ( response.matchedProperty ) {
-				dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
-			}
-
-			yield {
-				payload: { data },
-				type: FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
-			};
-		} catch ( e ) {
-			error = e;
-
-			yield {
-				payload: {
-					data,
-					error,
-				},
-				type: CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
-			};
-		}
-
-		return { response, error };
-	},
-
-	/**
-	 * Creates an action for receiving accounts.
-	 *
-	 * @since 1.8.0
-	 * @private
-	 *
-	 * @param {Array} accounts Accounts to receive.
-	 * @return {Object} action object.
-	 */
-	receiveAccounts( accounts ) {
+const baseActions = {
+	receiveGetAccounts( accounts ) {
 		invariant( Array.isArray( accounts ), 'accounts must be an array.' );
 
 		return {
 			payload: { accounts },
-			type: RECEIVE_ACCOUNTS,
+			type: RECEIVE_GET_ACCOUNTS,
+		};
+	},
+
+	receiveAccountsPropertiesProfilesCompletion() {
+		return {
+			payload: {},
+			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION,
 		};
 	},
 
@@ -167,105 +146,45 @@ export const actions = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @return {Object} Result object with response and error keys.
+	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createAccount() {
-		let response, error;
+		const registry = yield Data.commonActions.getRegistry();
+		const { getValue } = registry.select( CORE_FORMS );
 
-		yield {
-			payload: {},
-			type: START_FETCH_CREATE_ACCOUNT,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_CREATE_ACCOUNT,
-			};
-
-			yield actions.receiveCreateAccount( response );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_CREATE_ACCOUNT,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_CREATE_ACCOUNT,
-			};
-		}
-		return { response, error };
-	},
-
-	receiveCreateAccount( accountTicket ) {
-		invariant( accountTicket, 'accountTicket is required.' );
-
-		return {
-			payload: { accountTicket },
-			type: RECEIVE_CREATE_ACCOUNT,
-		};
-	},
-};
-
-export const controls = {
-	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: ( { payload } ) => {
-		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', payload.data, {
-			useCache: false,
-		} );
-	},
-	[ FETCH_CREATE_ACCOUNT ]: createRegistryControl( ( { select } ) => () => {
-		const { getValue } = select( CORE_FORMS );
-
-		return API.set( 'modules', 'analytics', 'create-account-ticket', {
+		const data = {
 			accountName: getValue( FORM_ACCOUNT_CREATE, 'accountName' ),
 			propertyName: getValue( FORM_ACCOUNT_CREATE, 'propertyName' ),
 			profileName: getValue( FORM_ACCOUNT_CREATE, 'profileName' ),
 			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
-		} );
-	} ),
+		};
+
+		const { response, error } = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
+		return { response, error };
+	},
 };
 
-export const reducer = ( state, { type, payload } ) => {
+const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
-			return {
-				...state,
-				isFetchingAccountsPropertiesProfiles: true,
-			};
-		}
-
-		case RECEIVE_ACCOUNTS: {
+		case RECEIVE_GET_ACCOUNTS: {
 			const { accounts } = payload;
-
 			return {
 				...state,
-				accounts: [ ...accounts ],
+				accounts,
 			};
 		}
 
-		case FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
+		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION: {
 			return {
 				...state,
-				isFetchingAccountsPropertiesProfiles: false,
-			};
-		}
-
-		case CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingAccountsPropertiesProfiles: false,
+				isAwaitingAccountsPropertiesProfilesCompletion: false,
 			};
 		}
 
 		case RESET_ACCOUNTS: {
 			return {
 				...state,
-				accounts: INITIAL_STATE.accounts,
+				accounts: BASE_INITIAL_STATE.accounts,
 				settings: {
 					...state.settings,
 					accountID: undefined,
@@ -276,56 +195,47 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case FINISH_FETCH_CREATE_ACCOUNT:
-			return {
-				...state,
-				isFetchingCreateAccount: false,
-			};
-
-		case CATCH_FETCH_CREATE_ACCOUNT:
-			const { error } = payload;
-			return {
-				...state,
-				error,
-				isFetchingCreateAccount: false,
-			};
-
-		case START_FETCH_CREATE_ACCOUNT: {
-			return {
-				...state,
-				isFetchingCreateAccount: true,
-			};
-		}
-
-		case RECEIVE_CREATE_ACCOUNT: {
-			const { accountTicket: { id } } = payload;
-			return {
-				...state,
-				accountTicketID: id,
-			};
-		}
-
 		default: {
 			return { ...state };
 		}
 	}
 };
 
-export const resolvers = {
+const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
 		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
 		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 
 		// Only fetch accounts if there are none in the store.
-		if ( ! existingAccounts ) {
+		if ( existingAccounts === undefined ) {
 			yield tagActions.waitForExistingTag();
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
-			const { response } = yield actions.fetchAccountsPropertiesProfiles( {
+			const { response } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
 				existingPropertyID: existingTag,
 			} );
 
 			if ( response ) {
+				const { dispatch } = registry;
+
+				dispatch( STORE_NAME ).receiveGetAccounts( response.accounts );
+
+				if ( response.properties?.[ 0 ]?.accountId ) {
+					const accountID = response.properties[ 0 ].accountId;
+					dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
+				}
+
+				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
+					const propertyID = response.profiles[ 0 ].webPropertyId;
+					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { propertyID } );
+				}
+
+				if ( response.matchedProperty ) {
+					dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
+				}
+
+				dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
+
 				( { matchedProperty } = response );
 			}
 		}
@@ -339,7 +249,7 @@ export const resolvers = {
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets all Google Analytics accounts this user can access.
 	 *
@@ -396,7 +306,15 @@ export const selectors = {
 	 * @return {boolean} Whether accounts are currently being fetched or not.
 	 */
 	isDoingGetAccounts( state ) {
-		return !! state.isFetchingAccountsPropertiesProfiles;
+		// Check if dispatch calls right after fetching are still awaiting.
+		if ( state.isAwaitingAccountsPropertiesProfilesCompletion ) {
+			return true;
+		}
+		// Since isFetchingGetAccountsPropertiesProfiles (via createFetchStore)
+		// holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such
+		// request is in progress.
+		return Object.values( state.isFetchingGetAccountsPropertiesProfiles ).some( Boolean );
 	},
 
 	/**
@@ -408,7 +326,11 @@ export const selectors = {
 	 * @return {boolean} True if an account is being created, false otherwise.
 	 */
 	isDoingCreateAccount( state ) {
-		return !! state.isFetchingCreateAccount;
+		// Since isFetchingCreateAccount (via createFetchStore)
+		// holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such
+		// request is in progress.
+		return Object.values( state.isFetchingCreateAccount ).some( Boolean );
 	},
 
 	/**
@@ -463,11 +385,23 @@ export const selectors = {
 	} ),
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetAccountsPropertiesProfilesStore,
+	fetchCreateAccountStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

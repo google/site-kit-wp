@@ -39,7 +39,7 @@ import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util
  * @return {(string|null)} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
-	const { homeURL, ampMode } = global.googlesitekit.admin;
+	const { homeURL, ampMode } = global._googlesitekitLegacyData.admin;
 	const tagFetchQueryArgs = {
 		// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
 		tagverify: 1,

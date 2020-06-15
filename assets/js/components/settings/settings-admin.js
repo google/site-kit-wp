@@ -33,7 +33,7 @@ class SettingsAdmin extends Component {
 	constructor() {
 		super();
 
-		const { userData: { email = '', picture = '', name = '' } } = global.googlesitekit.admin;
+		const { userData: { email = '', picture = '', name = '' } } = global._googlesitekitLegacyData.admin;
 
 		this.state = {
 			data: {

@@ -47,10 +47,10 @@ storiesOf( 'Analytics Module', module )
 	.add( 'Account Property Profile Select (none selected)', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {} );
-			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 		};
 
 		return (
@@ -68,10 +68,10 @@ storiesOf( 'Analytics Module', module )
 	.add( 'Account Property Profile Select (all selected)', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
-			dispatch( STORE_NAME ).receiveSettings( {
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: profiles[ 0 ].accountId,
 				propertyID: profiles[ 0 ].webPropertyId,
 				internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
@@ -172,7 +172,7 @@ storiesOf( 'Analytics Module', module )
 		);
 	} )
 	.add( 'Audience Overview Chart', () => {
-		global.googlesitekit = analyticsData;
+		global._googlesitekitLegacyData = analyticsData;
 
 		const selectedStats = [
 			0,
@@ -223,7 +223,7 @@ storiesOf( 'Analytics Module', module )
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
 	.add( 'Top Acquisition Pie Chart', () => {
-		global.googlesitekit = analyticsData;
+		global._googlesitekitLegacyData = analyticsData;
 
 		// Load the datacache with data.
 		setTimeout( () => {

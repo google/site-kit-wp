@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -35,9 +30,7 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense URL channels', () => {
-	let apiFetchSpy;
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -45,9 +38,6 @@ describe( 'modules/adsense URL channels', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -56,7 +46,6 @@ describe( 'modules/adsense URL channels', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -66,14 +55,10 @@ describe( 'modules/adsense URL channels', () => {
 	describe( 'selectors', () => {
 		describe( 'getURLChannels', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.urlchannels ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
+					{ body: fixtures.urlchannels, status: 200 }
+				);
 
 				const clientID = fixtures.clients[ 0 ].id;
 
@@ -88,7 +73,7 @@ describe( 'modules/adsense URL channels', () => {
 
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( clientID );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
 			} );
 
@@ -97,7 +82,7 @@ describe( 'modules/adsense URL channels', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveURLChannels( fixtures.urlchannels, { clientID } );
+				registry.dispatch( STORE_NAME ).receiveGetURLChannels( fixtures.urlchannels, { clientID } );
 
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( clientID );
 
@@ -106,7 +91,7 @@ describe( 'modules/adsense URL channels', () => {
 					.hasFinishedResolution( 'getURLChannels', [ clientID ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
 			} );
 
@@ -116,26 +101,20 @@ describe( 'modules/adsense URL channels', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
+					{ body: response, status: 500 }
+				);
 
 				const fakeClientID = 'ca-pub-777888999';
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getURLChannels( fakeClientID );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingURLChannels[ fakeClientID ] === false,
+					() => registry.select( STORE_NAME ).isFetchingGetURLChannels( fakeClientID ) === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeClientID );
 				expect( urlchannels ).toEqual( undefined );
@@ -152,16 +131,14 @@ describe( 'modules/adsense URL channels', () => {
 
 				registry.select( STORE_NAME ).getURLChannels( invalidClientID );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingURLChannels[ invalidClientID ] === false,
+					() => registry.select( STORE_NAME ).isFetchingGetURLChannels( invalidClientID ) === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( invalidClientID );
 				expect( urlchannels ).toEqual( undefined );
-				expect( store.getState().error ).toEqual( clientResponse );
+				expect( registry.select( STORE_NAME ).getError() ).toEqual( clientResponse );
 			} );
 		} );
 	} );
