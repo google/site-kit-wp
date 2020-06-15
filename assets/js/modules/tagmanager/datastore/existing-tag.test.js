@@ -164,9 +164,14 @@ describe( 'modules/tagmanager existing-tag', () => {
 		it( 'returns true if a user has access to this tag', async () => {
 			const { account, containers } = factories.buildAccountWithContainers();
 			const container = containers[ 0 ];
+			const permissionResponse = {
+				accountID: account.accountId,
+				containerID: container.publicId,
+				permission: true,
+			};
 			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
-				{ body: { account, container }, status: 200 }
+				{ body: permissionResponse, status: 200 }
 			);
 
 			const tag = container.publicId;
@@ -189,28 +194,28 @@ describe( 'modules/tagmanager existing-tag', () => {
 		} );
 
 		it( 'returns false if a user cannot access the requested tag', async () => {
-			const response = {
-				code: 'tag_manager_existing_tag_permission',
-				message: 'no tag for you', // Real message is irrelevant :)
-				data: { status: 403 },
+			const tag = 'GTM-ABC1234';
+			const noPermission = {
+				accountID: '',
+				containerID: tag,
+				permission: false,
 			};
 			fetchMock.getOnce(
-				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
-				{ body: response, status: 403 }
+				{
+					url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
+					query: { tag },
+				},
+				{ body: noPermission, status: 200 }
 			);
 
-			const tag = 'GTM-ABC1234';
-
-			muteConsole( 'error' ); // 403 response is expected.
 			const initialSelect = registry.select( STORE_NAME ).hasTagPermission( tag );
 
 			expect( initialSelect ).toEqual( undefined );
 			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ tag ] ) );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
-			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( false );
-			// This is an expected error, so it is not set as an error state.
 			expect( registry.select( STORE_NAME ).getError() ).toEqual( null );
+			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( false );
 		} );
 
 		it( 'dispatches an error if the request fails', async () => {

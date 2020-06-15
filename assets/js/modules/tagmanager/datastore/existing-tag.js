@@ -29,238 +29,76 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { getExistingTag } from '../../../util/tag';
 import { isValidContainerID } from '../util/validation';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
-// Actions
-const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
-const START_FETCH_EXISTING_TAG = 'START_FETCH_EXISTING_TAG';
-const FINISH_FETCH_EXISTING_TAG = 'FINISH_FETCH_EXISTING_TAG';
-const CATCH_FETCH_EXISTING_TAG = 'CATCH_FETCH_EXISTING_TAG';
+const fetchGetExistingTagStore = createFetchStore( {
+	baseName: 'getExistingTag',
+	controlCallback: () => getExistingTag( 'tagmanager' ),
+	reducerCallback: ( state, existingTag ) => {
+		return {
+			...state,
+			existingTag,
+		};
+	},
+} );
 
-const FETCH_TAG_PERMISSION = 'FETCH_TAG_PERMISSION';
-const START_FETCH_TAG_PERMISSION = 'START_FETCH_TAG_PERMISSION';
-const FINISH_FETCH_TAG_PERMISSION = 'FINISH_FETCH_TAG_PERMISSION';
-const CATCH_FETCH_TAG_PERMISSION = 'CATCH_FETCH_TAG_PERMISSION';
+const fetchGetTagPermissionStore = createFetchStore( {
+	baseName: 'getTagPermission',
+	argsToParams: ( tag ) => {
+		invariant( isValidContainerID( tag ), 'a valid tag is required to for fetching and receiving permission.' );
 
-const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
-const RECEIVE_TAG_PERMISSION = 'RECEIVE_TAG_PERMISSION';
+		return { tag };
+	},
+	controlCallback: ( { tag } ) => API.get( 'modules', 'tagmanager', 'tag-permission', { tag }, { useCache: false } ),
+	reducerCallback: ( state, { permission }, { tag } ) => {
+		return {
+			...state,
+			tagPermission: {
+				...state.tagPermission,
+				[ tag ]: permission,
+			},
+		};
+	},
+} );
 
-export const INITIAL_STATE = {
+const BASE_INITIAL_STATE = {
 	existingTag: undefined,
-	isFetchingExistingTag: false,
-	isFetchingTagPermission: {},
 	tagPermission: {},
 };
 
-export const actions = {
-	*fetchExistingTag() {
-		let response, error;
-
-		yield {
-			payload: {},
-			type: START_FETCH_EXISTING_TAG,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_EXISTING_TAG,
-			};
-
-			yield actions.receiveExistingTag( response, {} );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_EXISTING_TAG,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_EXISTING_TAG,
-			};
-		}
-		return { response, error };
-	},
-	*fetchTagPermission( tag ) {
-		let response, error;
-
-		yield {
-			payload: { tag },
-			type: START_FETCH_TAG_PERMISSION,
-		};
-
-		try {
-			response = yield {
-				payload: { tag },
-				type: FETCH_TAG_PERMISSION,
-			};
-
-			yield actions.receiveTagPermission( true, { tag } );
-
-			yield {
-				payload: { tag },
-				type: FINISH_FETCH_TAG_PERMISSION,
-			};
-		} catch ( e ) {
-			if ( e.code === 'tag_manager_existing_tag_permission' ) {
-				response = e;
-				yield actions.receiveTagPermission( false, { tag } );
-				yield {
-					payload: { tag },
-					type: FINISH_FETCH_TAG_PERMISSION,
-				};
-			} else {
-				error = e;
-				yield {
-					payload: { tag, error },
-					type: CATCH_FETCH_TAG_PERMISSION,
-				};
-			}
-		}
-		return { response, error };
-	},
-	receiveExistingTag( existingTag ) {
-		invariant(
-			existingTag === null || isValidContainerID( existingTag ),
-			'existingTag must be a valid container public ID or null.'
-		);
-
-		return {
-			payload: { existingTag },
-			type: RECEIVE_EXISTING_TAG,
-		};
-	},
+const baseActions = {
+	fetchExistingTag: fetchGetExistingTagStore.actions.fetchGetExistingTag,
+	fetchTagPermission: fetchGetTagPermissionStore.actions.fetchGetTagPermission,
+	receiveExistingTag: fetchGetExistingTagStore.actions.receiveGetExistingTag,
 	receiveTagPermission( permission, { tag } ) {
-		invariant( typeof permission === 'boolean', 'permission can only be received as boolean.' );
-		invariant( isValidContainerID( tag ), 'a valid tag is required to receive permission.' );
-
-		return {
-			payload: { permission, tag },
-			type: RECEIVE_TAG_PERMISSION,
-		};
+		return fetchGetTagPermissionStore.actions.receiveGetTagPermission( {
+			accountID: '',
+			containerID: tag,
+			permission,
+		}, { tag } );
 	},
 };
 
-export const controls = {
-	[ FETCH_EXISTING_TAG ]: () => {
-		return getExistingTag( 'tagmanager' );
-	},
-	[ FETCH_TAG_PERMISSION ]: ( { payload: { tag } } ) => {
-		return API.get( 'modules', 'tagmanager', 'tag-permission', { tag }, { useCache: false } );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case START_FETCH_EXISTING_TAG: {
-			return {
-				...state,
-				isFetchingExistingTag: true,
-			};
-		}
-
-		case RECEIVE_EXISTING_TAG: {
-			const { existingTag } = payload;
-
-			return {
-				...state,
-				existingTag,
-			};
-		}
-
-		case FINISH_FETCH_EXISTING_TAG: {
-			return {
-				...state,
-				isFetchingExistingTag: false,
-			};
-		}
-
-		case CATCH_FETCH_EXISTING_TAG: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingExistingTag: false,
-			};
-		}
-
-		// FETCH TAG PERMISSION
-		case START_FETCH_TAG_PERMISSION: {
-			const { tag } = payload;
-
-			return {
-				...state,
-				isFetchingTagPermission: {
-					...state.isFetchingTagPermission,
-					[ tag ]: true,
-				},
-			};
-		}
-
-		case RECEIVE_TAG_PERMISSION: {
-			const { tag, permission } = payload;
-
-			return {
-				...state,
-				tagPermission: {
-					...state.tagPermission,
-					[ tag ]: permission,
-				},
-			};
-		}
-
-		case FINISH_FETCH_TAG_PERMISSION: {
-			const { tag } = payload;
-
-			return {
-				...state,
-				isFetchingTagPermission: {
-					...state.isFetchingTagPermission,
-					[ tag ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_TAG_PERMISSION: {
-			const { error, tag } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingTagPermission: {
-					...state.isFetchingTagPermission,
-					[ tag ]: false,
-				},
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-};
-
-export const resolvers = {
+const baseResolvers = {
 	*getExistingTag() {
 		const { select } = yield Data.commonActions.getRegistry();
 
 		if ( select( STORE_NAME ).getExistingTag() === undefined ) {
-			yield actions.fetchExistingTag();
+			yield baseActions.fetchExistingTag();
 		}
 	},
 	*hasTagPermission( tag ) {
 		const { select } = yield Data.commonActions.getRegistry();
 
 		if ( select( STORE_NAME ).hasTagPermission( tag ) === undefined ) {
-			yield actions.fetchTagPermission( tag );
+			yield baseActions.fetchTagPermission( tag );
 		}
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets the existing tag, if any.
 	 *
@@ -330,11 +168,24 @@ export const selectors = {
 	} ),
 };
 
-export default {
+const store = Data.combineStores(
+	fetchGetExistingTagStore,
+	fetchGetTagPermissionStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const {
 	INITIAL_STATE,
 	actions,
 	controls,
 	reducer,
 	resolvers,
 	selectors,
-};
+} = store;
+
+export default store;
