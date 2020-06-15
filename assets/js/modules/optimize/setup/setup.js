@@ -1,5 +1,5 @@
 /**
- * OptimizeSetup component.
+ * Optimize Setup component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -37,12 +37,12 @@ import {
 	validateOptimizeID,
 	toggleConfirmModuleSettings,
 	getModulesData,
-} from '../../util';
-import SvgIcon from '../../util/svg-icon';
-import Button from '../../components/button';
-import Link from '../../components/link';
-import data, { TYPE_MODULES } from '../../components/data';
-import { TextField, Input, HelperText } from '../../material-components';
+} from '../../../util';
+import SvgIcon from '../../../util/svg-icon';
+import Button from '../../../components/button';
+import Link from '../../../components/link';
+import data, { TYPE_MODULES } from '../../../components/data';
+import { TextField, Input, HelperText } from '../../../material-components';
 
 class OptimizeSetup extends Component {
 	constructor( props ) {

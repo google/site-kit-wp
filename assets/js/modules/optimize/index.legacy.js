@@ -25,34 +25,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import OptimizeSetup from '../../modules/optimize/setup';
-import { fillFilterWithComponent, getModulesData } from '../../util';
+import { getModulesData } from '../../util';
 
 const slug = 'optimize';
 const modulesData = getModulesData();
 if ( modulesData.optimize.active ) {
-	/**
-	 * Add components to the settings page.
-	 */
-	addFilter(
-		`googlesitekit.ModuleSettingsDetails-${ slug }`,
-		'googlesitekit.OptimizeModuleSettingsDetails',
-		fillFilterWithComponent( OptimizeSetup, {
-			onSettingsPage: true,
-		} )
-	);
-
-	/**
-	 * Add component to the setup wizard
-	 */
-	addFilter(
-		`googlesitekit.ModuleSetup-${ slug }`,
-		'googlesitekit.OptimizeModuleSetupWizard',
-		fillFilterWithComponent( OptimizeSetup, {
-			onSettingsPage: false,
-		} )
-	);
-
 	/**
 	 * Add data to the congrats setup Win Notification for display.
 	 */

@@ -17,6 +17,39 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
+/**
  * Internal dependencies
  */
 import './datastore';
+import OptimizeSetup from './setup/setup';
+import { fillFilterWithComponent, getModulesData } from '../../util';
+
+const slug = 'optimize';
+const modulesData = getModulesData();
+if ( modulesData.optimize.active ) {
+	/**
+	 * Add components to the settings page.
+	 */
+	addFilter(
+		`googlesitekit.ModuleSettingsDetails-${ slug }`,
+		'googlesitekit.OptimizeModuleSettingsDetails',
+		fillFilterWithComponent( OptimizeSetup, {
+			onSettingsPage: true,
+		} )
+	);
+
+	/**
+	 * Add component to the setup wizard
+	 */
+	addFilter(
+		`googlesitekit.ModuleSetup-${ slug }`,
+		'googlesitekit.OptimizeModuleSetupWizard',
+		fillFilterWithComponent( OptimizeSetup, {
+			onSettingsPage: false,
+		} )
+	);
+}
