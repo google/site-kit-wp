@@ -45,22 +45,21 @@ describe( 'modules/tagmanager settings', () => {
 	let receiveExistingTag;
 	let receiveTagPermission;
 
-	const tagWithPermission = 'GTM-G000GL3';
-
 	const validSettings = {
 		accountID: '100',
-		containerID: tagWithPermission,
+		containerID: 'GTM-WEB1234',
 		internalContainerID: '300',
-		ampContainerID: '',
-		internalAMPContainerID: '',
+		// ampContainerID: '',
+		// internalAMPContainerID: '',
 		useSnippet: true,
 	};
+
 	const validSettingsAMP = {
 		accountID: '100',
-		containerID: '',
-		internalContainerID: '',
-		ampContainerID: tagWithPermission,
-		internalAMPContainerID: '300',
+		// containerID: '',
+		// internalContainerID: '',
+		ampContainerID: 'GTM-AMP1234',
+		internalAMPContainerID: '399',
 		useSnippet: true,
 	};
 
@@ -97,9 +96,6 @@ describe( 'modules/tagmanager settings', () => {
 		API.setUsingCache( true );
 	} );
 
-	function setNoAMP() {
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } );
-	}
 	function setPrimaryAMP() {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
 	}
@@ -237,50 +233,7 @@ describe( 'modules/tagmanager settings', () => {
 			} );
 
 			describe( 'with primary AMP', () => {
-				beforeAll( () => setPrimaryAMP() );
-				afterAll( () => setNoAMP() );
-
-				it( 'dispatches createContainer for both web and AMP containers when selected', async () => {
-					const account = accountBuilder();
-					registry.dispatch( STORE_NAME ).setSettings( {
-						...validSettings,
-						containerID: CONTAINER_CREATE,
-						ampContainerID: CONTAINER_CREATE,
-					} );
-					const createdWebContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } );
-					const createdAMPContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } );
-
-					fetchMock.postOnce(
-						{
-							url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
-							body: { data: { usageContext: CONTEXT_WEB } },
-						},
-						{ body: createdWebContainer, status: 200 },
-						{ matchPartialBody: true }
-					);
-					fetchMock.postOnce(
-						{
-							url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
-							body: { data: { usageContext: CONTEXT_AMP } },
-						},
-						{ body: createdAMPContainer, status: 200 },
-						{ matchPartialBody: true }
-					);
-					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
-						( url, opts ) => {
-							const { data } = JSON.parse( opts.body );
-							// Return the same settings passed to the API.
-							return { body: data, status: 200 };
-						}
-					);
-
-					const { error } = await submitChanges();
-
-					expect( error ).toBe( undefined );
-					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( createdWebContainer.publicId );
-					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( createdAMPContainer.publicId );
-				} );
+				beforeEach( () => setPrimaryAMP() );
 
 				it( 'dispatches createContainer if the "set up a new container" option is chosen', async () => {
 					setSettings( {
@@ -320,8 +273,8 @@ describe( 'modules/tagmanager settings', () => {
 			} );
 
 			describe( 'with secondary AMP', () => {
-				beforeAll( () => setSecondaryAMP() );
-				afterAll( () => setNoAMP() );
+				beforeEach( () => setSecondaryAMP() );
+
 				it( 'dispatches createContainer for both web and AMP containers when selected', async () => {
 					const account = accountBuilder();
 					registry.dispatch( STORE_NAME ).setSettings( {
@@ -387,87 +340,213 @@ describe( 'modules/tagmanager settings', () => {
 		} );
 
 		describe( 'canSubmitChanges', () => {
-			it( 'requires a valid accountID', () => {
-				setSettings( validSettings );
-				receiveExistingTag( null );
+			describe( 'with no AMP', () => {
+				beforeEach( () => {
+					setSettings( validSettings );
+					receiveExistingTag( null );
+				} );
 
-				expect( canSubmitChanges() ).toBe( true );
+				it( 'requires a valid accountID', () => {
+					expect( canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setAccountID( '0' );
+					registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
-				expect( canSubmitChanges() ).toBe( false );
+					expect( canSubmitChanges() ).toBe( false );
+				} );
+
+				it( 'requires a valid containerID', () => {
+					expect( canSubmitChanges() ).toBe( true );
+
+					registry.dispatch( STORE_NAME ).setContainerID( '0' );
+
+					expect( canSubmitChanges() ).toBe( false );
+				} );
+
+				it( 'requires a valid internal container ID', () => {
+					expect( canSubmitChanges() ).toBe( true );
+
+					registry.dispatch( STORE_NAME ).setInternalContainerID( '0' );
+
+					expect( canSubmitChanges() ).toBe( false );
+				} );
+
+				it( 'requires permissions for an existing tag when present', () => {
+					receiveExistingTag( validSettings.containerID );
+					receiveTagPermission( true, { tag: validSettings.containerID } );
+
+					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+
+					receiveTagPermission( false, { tag: validSettings.containerID } );
+
+					expect( canSubmitChanges() ).toBe( false );
+				} );
+
+				it( 'supports creating a web container', () => {
+					registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
+
+					expect( canSubmitChanges() ).toBe( true );
+				} );
+
+				it( 'does not support creating an account', () => {
+					registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
+
+					expect( canSubmitChanges() ).toBe( false );
+				} );
 			} );
 
-			it( 'requires a valid containerID (no AMP)', () => {
-				setSettings( validSettings );
-				receiveExistingTag( null );
+			describe( 'with primary AMP', () => {
+				beforeEach( () => {
+					setPrimaryAMP();
+					setSettings( validSettingsAMP );
+					receiveExistingTag( null );
+				} );
 
-				expect( canSubmitChanges() ).toBe( true );
+				it( 'requires a valid accountID', () => {
+					expect( canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setContainerID( '0' );
+					registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
-				expect( canSubmitChanges() ).toBe( false );
+					expect( canSubmitChanges() ).toBe( false );
+				} );
+
+				it( 'requires a valid AMP containerID', () => {
+					expect( canSubmitChanges() ).toBe( true );
+
+					// Invalid web container ID is allowed (although technically not possible).
+					registry.dispatch( STORE_NAME ).setContainerID( '0' );
+					expect( canSubmitChanges() ).toBe( true );
+
+					registry.dispatch( STORE_NAME ).setAMPContainerID( '0' );
+
+					expect( canSubmitChanges() ).toBe( false );
+				} );
+
+				it( 'requires a valid internal AMP container ID', () => {
+					expect( canSubmitChanges() ).toBe( true );
+
+					// Invalid internal web container ID is allowed (although technically not possible).
+					registry.dispatch( STORE_NAME ).setInternalContainerID( '0' );
+					expect( canSubmitChanges() ).toBe( true );
+
+					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '0' );
+
+					expect( canSubmitChanges() ).toBe( false );
+				} );
+
+				it( 'supports creating an AMP container', () => {
+					registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
+					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+
+					expect( canSubmitChanges() ).toBe( true );
+				} );
+
+				it( 'requires permissions for an existing tag when present', () => {
+					receiveExistingTag( validSettings.containerID );
+					receiveTagPermission( true, { tag: validSettings.containerID } );
+
+					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+
+					receiveTagPermission( false, { tag: validSettings.containerID } );
+
+					expect( canSubmitChanges() ).toBe( false );
+				} );
+
+				it( 'does not support creating an account', () => {
+					registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
+
+					expect( canSubmitChanges() ).toBe( false );
+				} );
 			} );
 
-			it( 'requires a valid internal container ID (no AMP)', () => {
-				setSettings( validSettings );
-				receiveExistingTag( null );
+			describe( 'with secondary AMP', () => {
+				beforeEach( () => {
+					setSecondaryAMP();
+					setSettings( {
+						...validSettings,
+						...validSettingsAMP,
+					} );
+					receiveExistingTag( null );
+				} );
 
-				expect( canSubmitChanges() ).toBe( true );
+				it( 'requires a valid accountID', () => {
+					expect( canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setInternalContainerID( '0' );
+					registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
-				expect( canSubmitChanges() ).toBe( false );
-			} );
+					expect( canSubmitChanges() ).toBe( false );
+				} );
 
-			it( 'requires permissions for an existing tag when present', () => {
-				setSettings( validSettings );
-				receiveExistingTag( validSettings.containerID );
-				receiveTagPermission( true, { tag: validSettings.containerID } );
+				it( 'requires valid containerID', () => {
+					expect( canSubmitChanges() ).toBe( true );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+					registry.dispatch( STORE_NAME ).setContainerID( '0' );
 
-				receiveTagPermission( false, { tag: validSettings.containerID } );
+					expect( canSubmitChanges() ).toBe( false );
+				} );
 
-				expect( canSubmitChanges() ).toBe( false );
-			} );
+				it( 'requires a valid AMP containerID', () => {
+					expect( canSubmitChanges() ).toBe( true );
 
-			it( 'supports creating a web container (no AMP)', () => {
-				setSettings( validSettings );
+					registry.dispatch( STORE_NAME ).setAMPContainerID( '0' );
 
-				registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
+					expect( canSubmitChanges() ).toBe( false );
+				} );
 
-				expect( canSubmitChanges() ).toBe( true );
-			} );
+				it( 'requires a valid internal container ID', () => {
+					expect( canSubmitChanges() ).toBe( true );
 
-			it( 'supports creating an AMP container', () => {
-				setPrimaryAMP();
-				setSettings( validSettingsAMP );
+					registry.dispatch( STORE_NAME ).setInternalContainerID( '0' );
 
-				registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
-				registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+					expect( canSubmitChanges() ).toBe( false );
+				} );
 
-				expect( canSubmitChanges() ).toBe( true );
-			} );
+				it( 'requires a valid internal AMP container ID', () => {
+					expect( canSubmitChanges() ).toBe( true );
 
-			it( 'supports creating an AMP container and a web container (AMP secondary)', () => {
-				setSecondaryAMP();
-				setSettings( validSettings );
+					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '0' );
 
-				registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
-				registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
-				registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
-				registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+					expect( canSubmitChanges() ).toBe( false );
+				} );
 
-				expect( canSubmitChanges() ).toBe( true );
-			} );
+				it( 'supports creating a web container', () => {
+					registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
+					registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
 
-			it( 'does not support creating an account', () => {
-				setSettings( validSettings );
+					expect( canSubmitChanges() ).toBe( true );
+				} );
 
-				registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
+				it( 'supports creating an AMP container', () => {
+					registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
+					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
 
-				expect( canSubmitChanges() ).toBe( false );
+					expect( canSubmitChanges() ).toBe( true );
+				} );
+
+				it( 'supports creating an AMP container and a web container', () => {
+					registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
+					registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+					registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
+					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+
+					expect( canSubmitChanges() ).toBe( true );
+				} );
+
+				it( 'requires permissions for an existing tag when present', () => {
+					receiveExistingTag( validSettings.containerID );
+					receiveTagPermission( true, { tag: validSettings.containerID } );
+
+					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+
+					receiveTagPermission( false, { tag: validSettings.containerID } );
+
+					expect( canSubmitChanges() ).toBe( false );
+				} );
+
+				it( 'does not support creating an account', () => {
+					registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
+
+					expect( canSubmitChanges() ).toBe( false );
+				} );
 			} );
 		} );
 	} );
