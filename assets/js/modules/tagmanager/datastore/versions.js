@@ -92,6 +92,8 @@ const baseSelectors = {
 	/**
 	 * Checks whether or not the live container version is being fetched for the given account and container IDs.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} accountID Account ID the container belongs to.
 	 * @param {string} internalContainerID Internal container ID to get version for.
