@@ -32,13 +32,12 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import { sortObjectMapByKey } from '../../../util';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
 
 describe( 'core/modules modules', () => {
-	const fixturesKeyValue = FIXTURES.reduce( ( acc, module ) => {
-		return { ...acc, [ module.slug ]: module };
-	}, {} );
+	const fixturesKeyValue = sortObjectMapByKey( FIXTURES, 'order' );
 	let registry;
 	let store;
 
@@ -355,7 +354,7 @@ describe( 'core/modules modules', () => {
 
 				const state = store.getState();
 
-				expect( state ).toMatchObject( { modules: fixturesKeyValue } );
+				expect( state ).toMatchObject( { modules: [ ...fixturesKeyValue ] } );
 			} );
 		} );
 	} );
@@ -380,7 +379,7 @@ describe( 'core/modules modules', () => {
 				const modules = registry.select( STORE_NAME ).getModules();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( modules ).toEqual( fixturesKeyValue );
+				expect( modules ).toEqual( [ ...fixturesKeyValue ] );
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
@@ -431,6 +430,7 @@ describe( 'core/modules modules', () => {
 				);
 				const slug = 'analytics';
 				const module = registry.select( STORE_NAME ).getModule( slug );
+
 				// The modules will be undefined whilst loading.
 				expect( module ).toEqual( undefined );
 
@@ -443,7 +443,7 @@ describe( 'core/modules modules', () => {
 				const moduleLoaded = registry.select( STORE_NAME ).getModule( slug );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( moduleLoaded ).toEqual( fixturesKeyValue[ slug ] );
+				expect( moduleLoaded ).toEqual( fixturesKeyValue.filter( ( mod ) => mod.slug === slug )[ 0 ] );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {

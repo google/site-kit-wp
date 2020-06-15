@@ -58,9 +58,7 @@ const fetchGetModulesStore = createFetchStore( {
 		return {
 			...state,
 			isAwaitingModulesRefresh: false,
-			modules: modules.reduce( ( acc, module ) => {
-				return { ...acc, [ module.slug ]: module };
-			}, {} ),
+			modules: sortObjectMapByKey( modules, 'order' ),
 		};
 	},
 } );
@@ -358,14 +356,17 @@ const baseSelectors = {
 			return undefined;
 		}
 
+		// The getModules() selector returns an array of objects.
+		const requestedModule = modules.filter( ( module ) => module.slug === slug );
+
 		// A module with this slug couldn't be found; return `null` to signify the
 		// "not found" state.
-		if ( modules[ slug ] === undefined ) {
+		if ( requestedModule.length === 0 ) {
 			return null;
 		}
 
 		// This module exists, so let's return it.
-		return modules[ slug ];
+		return requestedModule[ 0 ];
 	} ),
 
 	/**
