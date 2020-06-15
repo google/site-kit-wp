@@ -315,11 +315,12 @@ export const selectors = {
 	 * Returns true if this site supports AMP.
 	 *
 	 * @since 1.7.0
+	 * @since n.e.x.t Renamed from isAmp to isAMP.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
-	isAmp: createRegistrySelector( ( select ) => () => {
+	isAMP: createRegistrySelector( ( select ) => () => {
 		const ampMode = select( STORE_NAME ).getAMPMode();
 
 		return ampMode !== undefined ? !! ampMode : ampMode;

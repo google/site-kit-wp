@@ -150,7 +150,7 @@ export const selectors = {
 			isDoingSubmitChanges,
 		} = select( STORE_NAME );
 		const {
-			isAmp: isAMP,
+			isAMP,
 			getAMPMode,
 		} = select( CORE_SITE );
 
