@@ -668,7 +668,9 @@ final class Tag_Manager extends Module
 						$response['accountID']  = $account_container['account']['accountId'];
 						$response['permission'] = true;
 
-						return $response;
+						// Return full `account` and `container` for backwards compat with legacy setup component.
+						// TODO: Remove $account_container from response.
+						return array_merge( $response, $account_container );
 					} catch ( Exception $exception ) {
 						return $response;
 					}
