@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import isPlainObject from 'lodash/isPlainObject';
 import invariant from 'invariant';
 
 /**
@@ -29,130 +28,40 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { isValidAccountID, isValidInternalContainerID } from '../util/validation';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-// Actions
-const FETCH_LIVE_CONTAINER_VERSION = 'FETCH_LIVE_CONTAINER_VERSION';
-const START_FETCH_LIVE_CONTAINER_VERSION = 'START_FETCH_LIVE_CONTAINER_VERSION';
-const FINISH_FETCH_LIVE_CONTAINER_VERSION = 'FINISH_FETCH_LIVE_CONTAINER_VERSION';
-const CATCH_FETCH_LIVE_CONTAINER_VERSION = 'CATCH_FETCH_LIVE_CONTAINER_VERSION';
+const fetchGetLiveContainerVersionStore = createFetchStore( {
+	baseName: 'getLiveContainerVersion',
+	argsToParams: ( accountID, internalContainerID ) => {
+		invariant( isValidAccountID( accountID ), 'a valid accountID is required to fetch or receive a live container version.' );
+		invariant( isValidInternalContainerID( internalContainerID ), 'a valid accountID is required to fetch or receive a live container version.' );
 
-const RECEIVE_LIVE_CONTAINER_VERSION = 'RECEIVE_LIVE_CONTAINER_VERSION';
+		return { accountID, internalContainerID };
+	},
+	controlCallback: ( { accountID, internalContainerID } ) => {
+		return API.get( 'modules', 'tagmanager', 'live-container-version', { accountID, internalContainerID }, { useCache: false } );
+	},
+	reducerCallback: ( state, liveContainerVersion, { accountID, internalContainerID } ) => {
+		return {
+			...state,
+			liveContainerVersions: {
+				...state.liveContainerVersions,
+				[ `${ accountID }::${ internalContainerID }` ]: { ...liveContainerVersion },
+			},
+		};
+	},
+} );
 
-export const INITIAL_STATE = {
-	isFetchingLiveContainerVersion: {},
+const BASE_INITIAL_STATE = {
 	liveContainerVersions: {},
 };
 
-export const actions = {
-	*fetchLiveContainerVersion( accountID, internalContainerID ) {
-		invariant( isValidAccountID( accountID ), 'a valid accountID is required to fetch a live container version.' );
-		invariant( isValidInternalContainerID( internalContainerID ), 'a valid accountID is required to fetch a live container version.' );
-
-		let response, error;
-
-		yield {
-			payload: { accountID, internalContainerID },
-			type: START_FETCH_LIVE_CONTAINER_VERSION,
-		};
-
-		try {
-			response = yield {
-				payload: { accountID, internalContainerID },
-				type: FETCH_LIVE_CONTAINER_VERSION,
-			};
-
-			yield actions.receiveLiveContainerVersion( response, { accountID, internalContainerID } );
-
-			yield {
-				payload: { accountID, internalContainerID },
-				type: FINISH_FETCH_LIVE_CONTAINER_VERSION,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: {
-					error,
-					accountID,
-					internalContainerID,
-				},
-				type: CATCH_FETCH_LIVE_CONTAINER_VERSION,
-			};
-		}
-
-		return { response, error };
-	},
-	receiveLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } = {} ) {
-		invariant( isPlainObject( liveContainerVersion ), 'a valid live container version is required to receive.' );
-		invariant( isValidAccountID( accountID ), 'a valid accountID is required to receive live container version.' );
-		invariant( isValidInternalContainerID( internalContainerID ), 'a valid internalContainerID is required to receive live container version.' );
-
-		return {
-			payload: {
-				liveContainerVersion,
-				accountID,
-				internalContainerID,
-			},
-			type: RECEIVE_LIVE_CONTAINER_VERSION,
-		};
-	},
+const baseActions = {
+	fetchLiveContainerVersion: fetchGetLiveContainerVersionStore.actions.fetchGetLiveContainerVersion,
+	receiveLiveContainerVersion: fetchGetLiveContainerVersionStore.actions.receiveGetLiveContainerVersion,
 };
 
-export const controls = {
-	[ FETCH_LIVE_CONTAINER_VERSION ]: ( { payload: { accountID, internalContainerID } } ) => {
-		return API.get( 'modules', 'tagmanager', 'live-container-version', { accountID, internalContainerID } );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case START_FETCH_LIVE_CONTAINER_VERSION : {
-			const { accountID, internalContainerID } = payload;
-			return {
-				...state,
-				isFetchingLiveContainerVersion: {
-					...state.isFetchingLiveContainerVersion,
-					[ `${ accountID }::${ internalContainerID }` ]: true,
-				},
-			};
-		}
-		case FINISH_FETCH_LIVE_CONTAINER_VERSION : {
-			const { accountID, internalContainerID } = payload;
-			return {
-				...state,
-				isFetchingLiveContainerVersion: {
-					...state.isFetchingLiveContainerVersion,
-					[ `${ accountID }::${ internalContainerID }` ]: false,
-				},
-			};
-		}
-		case CATCH_FETCH_LIVE_CONTAINER_VERSION : {
-			const { accountID, internalContainerID, error } = payload;
-			return {
-				...state,
-				error,
-				isFetchingLiveContainerVersion: {
-					...state.isFetchingLiveContainerVersion,
-					[ `${ accountID }::${ internalContainerID }` ]: false,
-				},
-			};
-		}
-		case RECEIVE_LIVE_CONTAINER_VERSION : {
-			const { accountID, internalContainerID, liveContainerVersion } = payload;
-			return {
-				...state,
-				liveContainerVersions: {
-					...state.liveContainerVersions,
-					[ `${ accountID }::${ internalContainerID }` ]: { ...liveContainerVersion },
-				},
-			};
-		}
-
-		default:
-			return { ...state };
-	}
-};
-
-export const resolvers = {
+const baseResolvers = {
 	*getLiveContainerVersion( accountID, internalContainerID ) {
 		if ( ! isValidAccountID( accountID ) || ! isValidInternalContainerID( internalContainerID ) ) {
 			return;
@@ -161,12 +70,12 @@ export const resolvers = {
 		const { select } = yield Data.commonActions.getRegistry();
 
 		if ( ! select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ) {
-			yield actions.fetchLiveContainerVersion( accountID, internalContainerID );
+			yield baseActions.fetchLiveContainerVersion( accountID, internalContainerID );
 		}
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets the live container version for the given account and container IDs.
 	 *
@@ -188,16 +97,26 @@ export const selectors = {
 	 * @param {string} internalContainerID Internal container ID to get version for.
 	 * @return {(boolean|undefined)} True if the live container version is being fetched, otherwise false.
 	 */
-	isDoingGetLiveContainerVersion( state, accountID, internalContainerID ) {
-		return !! state.isFetchingLiveContainerVersion[ `${ accountID }::${ internalContainerID }` ];
-	},
+	isDoingGetLiveContainerVersion: fetchGetLiveContainerVersionStore.selectors.isFetchingGetLiveContainerVersion,
 };
 
-export default {
+const store = Data.combineStores(
+	fetchGetLiveContainerVersionStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const {
 	INITIAL_STATE,
 	actions,
 	controls,
 	reducer,
 	resolvers,
 	selectors,
-};
+} = store;
+
+export default store;
