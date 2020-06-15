@@ -82,7 +82,7 @@ final class Tracking {
 	private function inline_js_base_data( $data ) {
 		global $hook_suffix;
 		
-		$data['trackingAllowed'] = false !== strpos( $hook_suffix, 'googlesitekit' );
+		$data['trackingAllowed'] = 0 === strpos( $hook_suffix, 'googlesitekit-' );
 		$data['trackingEnabled'] = $this->is_active();
 		$data['trackingID']      = self::TRACKING_ID;
 
