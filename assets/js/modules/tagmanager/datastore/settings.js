@@ -21,7 +21,8 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import dataAPI, { TYPE_MODULES } from '../../../components/data';
+import { TYPE_MODULES } from '../../../components/data/constants';
+import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
 	isValidAccountID,
 	isValidContainerID,
@@ -104,7 +105,7 @@ export const controls = {
 
 		await API.invalidateCache( 'modules', 'tagmanager' );
 		// TODO: Remove once legacy dataAPI is no longer used.
-		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'tagmanager' );
+		invalidateCacheGroup( TYPE_MODULES, 'tagmanager' );
 
 		return {};
 	} ),
