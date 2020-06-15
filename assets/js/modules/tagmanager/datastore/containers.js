@@ -32,7 +32,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 
 const fetchGetContainersStore = createFetchStore( {
 	baseName: 'getContainers',
-	argsToParams( accountID ) {
+	argsToParams: ( accountID ) => {
 		invariant( isValidAccountID( accountID ), 'a valid accountID is required to fetch containers.' );
 
 		return { accountID };
@@ -40,7 +40,7 @@ const fetchGetContainersStore = createFetchStore( {
 	controlCallback: ( { accountID } ) => {
 		return API.get( 'modules', 'tagmanager', 'containers', { accountID }, { useCache: false } );
 	},
-	reducerCallback( state, containers, { accountID } ) {
+	reducerCallback: ( state, containers, { accountID } ) => {
 		return {
 			...state,
 			containers: {
