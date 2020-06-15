@@ -25,8 +25,11 @@ $c-white: #fff;
 $c-alabaster: #f9f9f9;
 $c-mercury: #e6e6e6;
 $c-silver: #bbb;
+$c-header-gray: #fafafa;
 $c-jumbo: #828286; // 3.82 contrast
 $c-boulder: #757575;
+$c-gray-cx: #6e7275;
+$c-device-icon-gray: #5f6368;
 $c-scarpa-flow: #5b5b61;
 $c-cape-cod: #3c4043;
 $c-black: #000;
@@ -40,21 +43,24 @@ $c-deep-sky-blue: #00b9eb;
 $c-scooter: #27bcd4;
 $c-golden-rod-yellow: #fafad2;
 $c-selective-yellow: #fbbc05;
+$c-yellow-900: #e37400;
 $c-sun: #f8a708;
 $c-orange-roughy: #ca4a1f;
 $c-valencia: #d53e36;
+$c-red-600: #d93025;
 $c-rangitoto: #2a2a21;
 $c-chateau-green: #34a853;
 $c-elm: #1b9688;
+$c-green-700: #188038;
 $c-purple-heart: #673ab7;
 $c-jewel: #178239;
 $c-mango-tango: #e67700;
 $c-thunderbird: #c7221f;
 
 // PageSpeed Insights colors
-$c-pagespeed-fast: $c-jewel;
-$c-pagespeed-average: $c-mango-tango;
-$c-pagespeed-slow: $c-thunderbird;
+$c-pagespeed-fast: $c-green-700;
+$c-pagespeed-average: $c-yellow-900;
+$c-pagespeed-slow: $c-red-600;
 
 $c-base: $c-white;
 $c-primary: $c-boulder;

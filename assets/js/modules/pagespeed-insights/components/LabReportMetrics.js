@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -64,19 +64,13 @@ export default function LabReportMetrics( { data } ) {
 		/>
 	);
 
-	if ( ! totalBlockingTime || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
-		return null;
-	}
-
-	const footerLinkHTML = (
-		<p
+	const footerLink = (
+		<Link
+			href={ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url } ) }
+			external
+			inherit
 			dangerouslySetInnerHTML={ sanitizeHTML(
-				sprintf(
-					/* translators: 1: link attributes, 2: translated service name */
-					__( 'View details at <a %1$s>%2$s</a>', 'google-site-kit' ),
-					`href="${ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url } ) }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank"`,
-					_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' )
-				),
+				_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
 				{
 					ALLOWED_TAGS: [ 'a' ],
 					ALLOWED_ATTR: [ 'href', 'class', 'target' ],
@@ -84,6 +78,10 @@ export default function LabReportMetrics( { data } ) {
 			) }
 		/>
 	);
+
+	if ( ! totalBlockingTime || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
@@ -132,7 +130,11 @@ export default function LabReportMetrics( { data } ) {
 				</tbody>
 			</table>
 			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row__last">
-				{ footerLinkHTML }
+				<p>
+					{ __( 'View details at', 'google-site-kit' ) }
+					{ ' ' }
+					{ footerLink }
+				</p>
 			</div>
 		</div>
 	);

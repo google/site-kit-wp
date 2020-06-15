@@ -26,36 +26,36 @@
 
 		button.mdc-tab {
 
-			background: #fff;
-			box-shadow: 0px 1px 3px rgba(63, 63, 68, 0.15), 0px 0px 0px rgba(63, 63, 68, 0.05);
-			width: 56px;
+			background: $c-white;
+			box-shadow: 0 1px 3px rgba(63, 63, 68, 0.15), 0 0 0 rgba(63, 63, 68, 0.05);
 			height: 32px;
-	
+			width: 56px;
+
 			&:first-child {
-				border-top-left-radius: 8px;
 				border-bottom-left-radius: 8px;
+				border-top-left-radius: 8px;
 			}
 
 			&:last-child {
-				border-top-right-radius: 8px;
 				border-bottom-right-radius: 8px;
+				border-top-right-radius: 8px;
 			}
 
 			svg {
-	
+
 				path {
-					fill: #5f6368;
+					fill: $c-device-icon-gray;
 				}
 			}
-	
+
 			&.mdc-tab--active {
-	
-				background: #1a73e8;
-	
+
+				background: $c-brand;
+
 				svg {
-	
+
 					path {
-						fill: #fff;
+						fill: $c-white;
 					}
 				}
 			}

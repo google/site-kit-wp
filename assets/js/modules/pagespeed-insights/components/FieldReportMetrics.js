@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -59,6 +59,21 @@ export default function FieldReportMetrics( { data } ) {
 		/>
 	);
 
+	const footerLink = (
+		<Link
+			href={ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url } ) }
+			external
+			inherit
+			dangerouslySetInnerHTML={ sanitizeHTML(
+				_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
+				{
+					ALLOWED_TAGS: [ 'a' ],
+					ALLOWED_ATTR: [ 'href', 'class', 'target' ],
+				}
+			) }
+		/>
+	);
+
 	const {
 		FIRST_INPUT_DELAY_MS: firstInputDelay,
 		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
@@ -78,23 +93,6 @@ export default function FieldReportMetrics( { data } ) {
 			</div>
 		);
 	}
-
-	const footerLinkHTML = (
-		<p
-			dangerouslySetInnerHTML={ sanitizeHTML(
-				sprintf(
-					/* translators: 1: link attributes, 2: translated service name */
-					__( 'View details at <a %1$s>%2$s</a>', 'google-site-kit' ),
-					`href="${ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url } ) }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank"`,
-					_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' )
-				),
-				{
-					ALLOWED_TAGS: [ 'a' ],
-					ALLOWED_ATTR: [ 'href', 'class', 'target' ],
-				}
-			) }
-		/>
-	);
 
 	// Convert milliseconds to seconds with 1 fraction digit.
 	const lcpSeconds = ( Math.round( largestContentfulPaint.percentile / 100 ) / 10 ).toFixed( 1 );
@@ -148,7 +146,11 @@ export default function FieldReportMetrics( { data } ) {
 				</tbody>
 			</table>
 			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row__last">
-				{ footerLinkHTML }
+				<p>
+					{ __( 'View details at', 'google-site-kit' ) }
+					{ ' ' }
+					{ footerLink }
+				</p>
 			</div>
 		</div>
 	);

@@ -52,7 +52,7 @@ const DeviceSizeTabBar = ( { activeIndex, deviceSizes, handleDeviceSizeUpdate } 
 DeviceSizeTabBar.propTypes = {
 	activeIndex: PropTypes.number,
 	deviceSizes: PropTypes.array,
-	handleDeviceSizeUpdate: PropTypes.function,
+	handleDeviceSizeUpdate: PropTypes.func,
 };
 
 DeviceSizeTabBar.defaultProps = {
