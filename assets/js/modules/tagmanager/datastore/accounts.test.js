@@ -26,12 +26,12 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
+	muteFetch,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/tagmanager accounts', () => {
 	let registry;
-	let store;
 
 	const defaultSettings = {
 		accountID: '',
@@ -48,10 +48,9 @@ describe( 'modules/tagmanager accounts', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
 		// Preload default settings to prevent the resolver from making unexpected requests
 		// as this is covered in settings store tests.
-		registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 	} );
 
 	afterAll( () => {
@@ -108,24 +107,21 @@ describe( 'modules/tagmanager accounts', () => {
 	describe( 'selectors', () => {
 		describe( 'getAccounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ )
-					.mockResponseOnce(
-						JSON.stringify( fixtures.accounts ),
-						{ status: 200 }
-					);
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
+					{ body: fixtures.accounts, status: 200 }
+				);
 
 				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
 
 				expect( initialAccounts ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getAccounts() !== undefined
-					),
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getAccounts' )
 				);
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( accounts ).toEqual( fixtures.accounts );
 			} );
 
@@ -140,7 +136,7 @@ describe( 'modules/tagmanager accounts', () => {
 				);
 
 				expect( accounts ).toEqual( fixtures.accounts );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
@@ -154,7 +150,7 @@ describe( 'modules/tagmanager accounts', () => {
 				);
 
 				expect( accounts ).toEqual( [] );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -163,23 +159,20 @@ describe( 'modules/tagmanager accounts', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ )
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 
-				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingAccounts === false,
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getAccounts' )
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 				expect( accounts ).toEqual( undefined );
@@ -188,13 +181,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 		describe( 'isDoingGetAccounts', () => {
 			it( 'returns true while the request is in progress', async () => {
-				fetch
-					.doMockIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ )
-					.mockResponse(
-						JSON.stringify( [] ),
-						{ status: 200 }
-					);
-
+				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/, [] );
 				expect( registry.select( STORE_NAME ).isDoingGetAccounts() ).toBe( false );
 
 				registry.select( STORE_NAME ).getAccounts();
