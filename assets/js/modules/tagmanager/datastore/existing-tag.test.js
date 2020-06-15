@@ -31,6 +31,7 @@ import * as factories from './__factories__';
 
 describe( 'modules/tagmanager existing-tag', () => {
 	let registry;
+	let hasFinishedResolution;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -38,6 +39,8 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		hasFinishedResolution = registry.select( STORE_NAME ).hasFinishedResolution;
 	} );
 
 	afterEach( () => {
@@ -57,23 +60,19 @@ describe( 'modules/tagmanager existing-tag', () => {
 		describe( 'getExistingTag', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const expectedTag = 'GTM-ABC0123';
-				fetch
-					.doMockOnceIf( /tagverify=1/ )
-					.mockResponse(
-						factories.generateHTMLWithTag( expectedTag ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					{ query: { tagverify: '1' } },
+					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
+				);
 
 				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
 
 				expect( initialExistingTag ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).getExistingTag() !== undefined
-				);
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
 
 				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( existingTag ).toEqual( expectedTag );
 			} );
 
@@ -82,12 +81,10 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
-				);
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
 
 				expect( existingTag ).toEqual( 'GTM-ABC0123' );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'does not make a network request if existingTag is null', async () => {
@@ -95,36 +92,30 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
-				);
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
 
 				expect( existingTag ).toEqual( null );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'receives null for the tag if the request fails', async () => {
 				// This is a limitation of the current underlying `getExistingTag` function.
-				const response = {
+				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf( /tagverify=1/ )
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					{ query: { tagverify: '1' } },
+					{ body: errorResponse, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getExistingTag();
 
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
-				);
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 				expect( existingTag ).toEqual( null );
@@ -137,9 +128,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
-				);
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
 
 				expect( hasExistingTag ).toEqual( true );
 			} );
@@ -149,31 +138,24 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
-				// Ensure the proper parameters were sent.
-				await subscribeUntil( registry, () =>
-					registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
-				);
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
 
 				expect( hasExistingTag ).toEqual( false );
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				fetch
-					.doMockOnceIf( /tagverify=1/ )
-					.mockResponse(
-						factories.generateHTMLWithTag(),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					{ query: { tagverify: '1' } },
+					{ body: factories.generateHTMLWithTag(), status: 200 }
+				);
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				expect( hasExistingTag ).toEqual( undefined );
 
-				await subscribeUntil( registry, () =>
-					registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
-				);
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 		} );
 	} );
@@ -182,32 +164,27 @@ describe( 'modules/tagmanager existing-tag', () => {
 		it( 'returns true if a user has access to this tag', async () => {
 			const { account, containers } = factories.buildAccountWithContainers();
 			const container = containers[ 0 ];
-			fetch
-				.doMockOnceIf(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/
-				)
-				.mockResponseOnce(
-					JSON.stringify( { account, container } ),
-					{ status: 200 }
-				);
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
+				{ body: { account, container }, status: 200 }
+			);
 
 			const tag = container.publicId;
 			const initialSelect = registry.select( STORE_NAME ).hasTagPermission( tag );
 
 			// Ensure the proper parameters were sent.
-			expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+			expect( fetchMock ).toHaveFetched(
+				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
 				{
-					tag,
+					query: { tag },
 				}
 			);
 
 			// The value will be undefined until the response is received.
 			expect( initialSelect ).toEqual( undefined );
-			await subscribeUntil( registry,
-				() => registry.select( STORE_NAME ).hasFinishedResolution( 'hasTagPermission', [ tag ] ),
-			);
+			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ tag ] ) );
 
-			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( true );
 		} );
 
@@ -217,14 +194,10 @@ describe( 'modules/tagmanager existing-tag', () => {
 				message: 'no tag for you', // Real message is irrelevant :)
 				data: { status: 403 },
 			};
-			fetch
-				.doMockOnceIf(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/
-				)
-				.mockResponseOnce(
-					JSON.stringify( response ),
-					{ status: 403 }
-				);
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
+				{ body: response, status: 403 }
+			);
 
 			const tag = 'GTM-ABC1234';
 
@@ -232,40 +205,35 @@ describe( 'modules/tagmanager existing-tag', () => {
 			const initialSelect = registry.select( STORE_NAME ).hasTagPermission( tag );
 
 			expect( initialSelect ).toEqual( undefined );
-			await subscribeUntil( registry,
-				() => registry.select( STORE_NAME ).hasFinishedResolution( 'hasTagPermission', [ tag ] ),
-			);
+			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ tag ] ) );
 
-			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( false );
+			// This is an expected error, so it is not set as an error state.
+			expect( registry.select( STORE_NAME ).getError() ).toEqual( null );
 		} );
 
 		it( 'dispatches an error if the request fails', async () => {
-			const response = {
+			const errorResponse = {
 				code: 'internal_server_error',
 				message: 'Internal server error',
 				data: { status: 500 },
 			};
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/
-				)
-				.mockResponse(
-					JSON.stringify( response ),
-					{ status: 500 }
-				);
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
+				{ body: errorResponse, status: 500 }
+			);
 
 			const tag = 'GTM-ABC1234';
 
 			muteConsole( 'error' ); // 500 response expected.
 			registry.select( STORE_NAME ).hasTagPermission( tag );
 
-			await subscribeUntil( registry,
-				() => registry.select( STORE_NAME ).hasFinishedResolution( 'hasTagPermission', [ tag ] ),
-			);
+			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ tag ] ) );
 
-			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( undefined );
+			expect( registry.select( STORE_NAME ).getError() ).toEqual( errorResponse );
 		} );
 	} );
 } );
