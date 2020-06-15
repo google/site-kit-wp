@@ -119,7 +119,7 @@ export default function DashboardPageSpeed() {
 							</Tab>
 						</TabBar>
 					</div>
-					<div className="googlesitekit-pagespeed-widget-device-size-tab-bar-container">
+					<div className="googlesitekit-pagespeed-widget-device-size-tab-bar-wrapper">
 						<DeviceSizeTabBar
 							activeIndex={ strategy === STRATEGY_DESKTOP ? 1 : 0 }
 							handleDeviceSizeUpdate={ updateActiveDeviceSize }
