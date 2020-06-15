@@ -1,7 +1,7 @@
 /**
- * DashboardSpeedInner component.
+ * PageSpeed Insights Dashboard Widget styles.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,14 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
+.googlesitekit-pagespeed-widget {
 
-class DashboardSpeedInner extends Component {
-	render() {
-		return null;
+	header {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.googlesitekit-pagespeed-data-src-tabs {
+		display: flex;
 	}
 }
-
-export default withFilters( 'googlesitekit.DashboardSpeed' )( DashboardSpeedInner );
