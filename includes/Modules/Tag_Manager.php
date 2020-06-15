@@ -771,12 +771,6 @@ final class Tag_Manager extends Module
 				);
 
 				return array_values( $containers );
-			case 'GET:tags':
-				/* @var Google_Service_TagManager_ListTagsResponse $response Response object */
-				return $response->getTag();
-			case 'GET:workspaces':
-				/* @var Google_Service_TagManager_ListWorkspacesResponse $response Response object. */
-				return $response->getWorkspace();
 		}
 
 		return $response;
