@@ -28,6 +28,7 @@ import {
 	PropertySelect,
 	TrackingExclusionSwitches,
 	UseSnippetSwitch,
+	ProfileName,
 } from '../common/';
 
 export default function SettingsForm() {
@@ -46,6 +47,8 @@ export default function SettingsForm() {
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+				<ProfileName />
+
 				<UseSnippetSwitch />
 
 				<AnonymizeIPSwitch />
