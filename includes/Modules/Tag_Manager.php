@@ -657,15 +657,19 @@ final class Tag_Manager extends Module
 						return $accounts;
 					}
 
+					$response = array(
+						'accountID'   => '',
+						'containerID' => $data['tag'],
+						'permission'  => false,
+					);
+
 					try {
-						return $this->get_account_for_container( $data['tag'], $accounts );
+						$account_container     = $this->get_account_for_container( $data['tag'], $accounts );
+						$response['accountID'] = $account_container['account']['accountId'];
+
+						return $response;
 					} catch ( Exception $exception ) {
-						return new WP_Error(
-							'tag_manager_existing_tag_permission',
-							/* translators: %s: Container ID */
-							sprintf( __( 'We’ve detected there’s already an existing Tag Manager tag on your site (%s), but your account doesn’t seem to have the necessary access to this container. You can either remove the existing tag and connect to a different account, or request access to this container from your team.', 'google-site-kit' ), $data['tag'] ),
-							array( 'status' => 403 )
-						);
+						return $response;
 					}
 				};
 		}
