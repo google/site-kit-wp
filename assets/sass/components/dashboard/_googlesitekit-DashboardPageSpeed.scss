@@ -26,6 +26,12 @@
 		display: flex;
 		justify-content: space-between;
 
+		@media (max-width: $bp-xsmallOnly ) {
+			align-items: center;
+			flex-direction: column-reverse;
+			justify-content: flex-end;
+		}
+
 		.googlesitekit-pagespeed-data-src-tabs {
 
 			button.mdc-tab {
@@ -49,7 +55,11 @@
 			align-items: center;
 			display: flex;
 			justify-content: space-between;
-			padding: 18px $grid-gap-desktop;
+			padding: 18px $grid-gap-phone;
+
+			@media ( min-width: $bp-tablet ) {
+				padding: 18px $grid-gap-desktop;
+			}
 
 			p {
 				color: $c-gray-cx;
@@ -59,7 +69,12 @@
 			}
 
 			&.googlesitekit-pagespeed-report-row__first {
-				padding: 18px $grid-gap-desktop 12px $grid-gap-desktop;
+
+				padding: 12px $grid-gap-phone 8px $grid-gap-phone;
+
+				@media ( min-width: $bp-tablet ) {
+					padding: 18px $grid-gap-desktop 12px $grid-gap-desktop;
+				}
 
 				p {
 					margin-left: 3px;
@@ -67,7 +82,12 @@
 			}
 
 			&.googlesitekit-pagespeed-report-row__last {
-				padding: 12px $grid-gap-desktop 18px $grid-gap-desktop;
+
+				padding: 8px $grid-gap-desktop 12px $grid-gap-desktop;
+
+				@media ( min-width: $bp-tablet ) {
+					padding: 12px $grid-gap-desktop 18px $grid-gap-desktop;
+				}
 
 				p {
 					margin-left: 4px;

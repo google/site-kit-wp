@@ -130,12 +130,14 @@ $grid-gap-phone: 16px;
 $grid-gap-desktop: 24px;
 
 // Width Variables (breakpoints)
+$width-xsmall: 450;
 $width-tablet: 600;
 $width-wpAdminBarTablet: 783;
 $width-desktop: 960;
 $width-xlarge: 1280;
 
 // Custom Media Breakpoints
+$bp-xsmallOnly: $width-xsmall - 1 + px;
 $bp-mobileOnly: $width-tablet - 1 + px;
 $bp-tablet: $width-tablet + px;
 $bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
