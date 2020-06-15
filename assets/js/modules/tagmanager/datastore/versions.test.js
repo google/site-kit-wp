@@ -24,6 +24,7 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -111,12 +112,10 @@ describe( 'modules/tagmanager versions', () => {
 				const accountID = fixtures.liveContainerVersion.accountId;
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 
-				fetch
-					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ )
-					.mockResponseOnce(
-						JSON.stringify( fixtures.liveContainerVersion ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
+					{ body: fixtures.liveContainerVersion, status: 200 }
+				);
 
 				const initialContainerVersion = getLiveContainerVersion( accountID, internalContainerID );
 
@@ -126,7 +125,7 @@ describe( 'modules/tagmanager versions', () => {
 				);
 
 				const liveContainerVersion = getLiveContainerVersion( accountID, internalContainerID );
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( liveContainerVersion ).toEqual( fixtures.liveContainerVersion );
 			} );
 
@@ -142,24 +141,21 @@ describe( 'modules/tagmanager versions', () => {
 				);
 
 				expect( liveContainerVersion ).toEqual( fixtures.liveContainerVersion );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
 				const accountID = fixtures.liveContainerVersion.accountId;
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
-
-				const response = {
+				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ )
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
+					{ body: errorResponse, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				getLiveContainerVersion( accountID, internalContainerID );
@@ -167,8 +163,8 @@ describe( 'modules/tagmanager versions', () => {
 					() => hasFinishedResolution( 'getLiveContainerVersion', [ accountID, internalContainerID ] )
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( getError() ).toEqual( response );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( getError() ).toEqual( errorResponse );
 				expect( getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( undefined );
 			} );
 		} );
@@ -176,13 +172,8 @@ describe( 'modules/tagmanager versions', () => {
 			it( 'returns true while the live container version fetch is in progress', async () => {
 				const accountID = '100';
 				const internalContainerID = '200';
-				fetch
-					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ )
-					.mockResponseOnce(
-						JSON.stringify( {} ),
-						{ status: 200 }
-					);
 
+				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 				expect( isDoingGetLiveContainerVersion( accountID, internalContainerID ) ).toBe( false );
 
 				getLiveContainerVersion( accountID, internalContainerID );
