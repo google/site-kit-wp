@@ -51,8 +51,8 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 	.add( 'Dashboard widget (Field Data Unavailable)', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobileFieldDataUnavailable, { url, strategy: STRATEGY_MOBILE } );
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopFieldDataUnavailable, { url, strategy: STRATEGY_DESKTOP } );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobileNoFieldData, { url, strategy: STRATEGY_MOBILE } );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldData, { url, strategy: STRATEGY_DESKTOP } );
 			dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
 		};
 		return (
