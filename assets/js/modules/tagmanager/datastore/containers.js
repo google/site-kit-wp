@@ -84,6 +84,26 @@ const BASE_INITIAL_STATE = {
 	containers: {},
 };
 
+const baseActions = {
+	/**
+	 * Creates a new Tag Manager container in the given account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID    Google Tag Manager account ID.
+	 * @param {string} usageContext Container usage context. (Either 'web', or 'amp')
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*createContainer( accountID, usageContext ) {
+		invariant( isValidAccountID( accountID ), 'a valid accountID is required to create a container.' );
+		invariant( isValidUsageContext( usageContext ), 'a valid usageContext is required to create a container.' );
+
+		const { response, error } = yield fetchCreateContainerStore.actions.fetchCreateContainer( accountID, usageContext );
+
+		return { response, error };
+	},
+};
+
 const baseResolvers = {
 	*getContainers( accountID ) {
 		const { select } = yield Data.commonActions.getRegistry();
@@ -132,6 +152,7 @@ const store = Data.combineStores(
 	fetchCreateContainerStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

@@ -111,14 +111,14 @@ describe( 'modules/tagmanager settings', () => {
 
 		describe( 'submitChanges', () => {
 			describe( 'with no AMP', () => {
-				it( 'dispatches fetchCreateContainer if the "set up a new container" option is chosen', async () => {
+				it( 'dispatches createContainer if the "set up a new container" option is chosen', async () => {
 					setSettings( {
 						...validSettings,
 						accountID: '12345',
 						containerID: CONTAINER_CREATE,
 					} );
 					const createdContainer = {
-						...fixtures.fetchCreateContainer,
+						...fixtures.createContainer,
 					};
 
 					fetchMock.postOnce(
@@ -235,7 +235,7 @@ describe( 'modules/tagmanager settings', () => {
 			describe( 'with primary AMP', () => {
 				beforeEach( () => setPrimaryAMP() );
 
-				it( 'dispatches fetchCreateContainer if the "set up a new container" option is chosen', async () => {
+				it( 'dispatches createContainer if the "set up a new container" option is chosen', async () => {
 					setSettings( {
 						...validSettings,
 						accountID: '12345',
@@ -275,7 +275,7 @@ describe( 'modules/tagmanager settings', () => {
 			describe( 'with secondary AMP', () => {
 				beforeEach( () => setSecondaryAMP() );
 
-				it( 'dispatches fetchCreateContainer for both web and AMP containers when selected', async () => {
+				it( 'dispatches createContainer for both web and AMP containers when selected', async () => {
 					const account = accountBuilder();
 					registry.dispatch( STORE_NAME ).setSettings( {
 						...validSettings,
