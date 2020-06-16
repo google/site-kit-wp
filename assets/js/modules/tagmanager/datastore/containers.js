@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import { isValidAccountID, isValidUsageContext } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
@@ -38,7 +38,11 @@ const fetchGetContainersStore = createFetchStore( {
 		return { accountID };
 	},
 	controlCallback: ( { accountID } ) => {
-		return API.get( 'modules', 'tagmanager', 'containers', { accountID }, { useCache: false } );
+		// Always request both contexts to prevent filtering on server.
+		// TODO: Remove `usageContext` param when legacy component is removed and datapoint
+		// defaults to returning all containers if no context is provided.
+		const usageContext = [ CONTEXT_WEB, CONTEXT_AMP ];
+		return API.get( 'modules', 'tagmanager', 'containers', { accountID, usageContext }, { useCache: false } );
 	},
 	reducerCallback: ( state, containers, { accountID } ) => {
 		return {
