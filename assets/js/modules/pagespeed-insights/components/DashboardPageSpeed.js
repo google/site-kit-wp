@@ -110,10 +110,14 @@ export default function DashboardPageSpeed() {
 						handleActiveIndexUpdate={ updateActiveTab }
 					>
 						<Tab aria-label="in the lab">
-							<span className="mdc-tab__text-label">{ __( 'In the Lab', 'google-site-kit' ) }</span>
+							<span className="mdc-tab__text-label">
+								{ __( 'In the Lab', 'google-site-kit' ) }
+							</span>
 						</Tab>
 						<Tab aria-label="in the field">
-							<span className="mdc-tab__text-label">{ __( 'In the Field', 'google-site-kit' ) }</span>
+							<span className="mdc-tab__text-label">
+								{ __( 'In the Field', 'google-site-kit' ) }
+							</span>
 						</Tab>
 					</TabBar>
 				</div>
