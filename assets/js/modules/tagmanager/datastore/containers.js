@@ -134,6 +134,7 @@ const baseSelectors = {
 
 		return containers;
 	},
+
 	/**
 	 * Checks if any request for creating a container is in progress.
 	 *

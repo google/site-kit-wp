@@ -85,6 +85,7 @@ const baseSelectors = {
 	getLiveContainerVersion( state, accountID, internalContainerID ) {
 		return state.liveContainerVersions[ `${ accountID }::${ internalContainerID }` ];
 	},
+
 	/**
 	 * Checks whether or not the live container version is being fetched for the given account and container IDs.
 	 *

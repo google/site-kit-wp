@@ -76,6 +76,7 @@ const baseResolvers = {
 			yield fetchGetExistingTagStore.actions.fetchGetExistingTag();
 		}
 	},
+
 	*hasTagPermission( containerID ) {
 		if ( ! isValidContainerSelection( containerID ) ) {
 			return;
@@ -100,6 +101,7 @@ const baseSelectors = {
 	getExistingTag( state ) {
 		return state.existingTag;
 	},
+
 	/**
 	 * Checks whether or not an existing tag is present.
 	 *
@@ -116,6 +118,7 @@ const baseSelectors = {
 
 		return !! existingTag;
 	} ),
+
 	/**
 	 * Checks whether the user has access to the given tag.
 	 *
@@ -134,6 +137,7 @@ const baseSelectors = {
 
 		return !! permission;
 	},
+
 	/**
 	 * Checks whether the user has access to the existing tag, if present.
 	 *
