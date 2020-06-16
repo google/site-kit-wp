@@ -66,6 +66,23 @@ export default function DashboardPageSpeed() {
 	const setDataSrcField = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_FIELD } ), [] );
 	const setDataSrcLab = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_LAB } ), [] );
 
+	// Update the active tab for "In the Lab" or "In The Field".
+	const updateActiveTab = useCallback( ( dataSrcIndex ) => {
+		if ( dataSrcIndex === 0 ) {
+			setDataSrcLab();
+		} else {
+			setDataSrcField();
+		}
+	}, [] );
+	// Update the active tab for "mobile" or "desktop".
+	const updateActiveDeviceSize = useCallback( ( strategyIndex ) => {
+		if ( strategyIndex === 1 ) {
+			setStrategyDesktop();
+		} else {
+			setStrategyMobile();
+		}
+	}, [] );
+
 	// Set the default data source based on report data.
 	useEffect( () => {
 		if ( ! reportMobile || ! reportDesktop ) {
@@ -83,24 +100,6 @@ export default function DashboardPageSpeed() {
 	}
 
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
-
-	// Update the active tab for "In the Lab" or "In The Field".
-	const updateActiveTab = ( dataSrcIndex ) => {
-		if ( dataSrcIndex === 0 ) {
-			setDataSrcLab();
-		} else {
-			setDataSrcField();
-		}
-	};
-
-	// Update the active tab for "mobile" or "desktop".
-	const updateActiveDeviceSize = ( strategyIndex ) => {
-		if ( strategyIndex === 1 ) {
-			setStrategyDesktop();
-		} else {
-			setStrategyMobile();
-		}
-	};
 
 	return (
 		<Fragment>
