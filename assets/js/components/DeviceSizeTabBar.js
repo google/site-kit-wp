@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,7 +35,22 @@ import { useCallback } from '@wordpress/element';
 import DeviceSizeMobileIcon from './icons/DeviceSizeMobileIcon';
 import DeviceSizeDesktopIcon from './icons/DeviceSizeDesktopIcon';
 
-const DeviceSizeTabBar = ( { activeTab, deviceSizes, handleDeviceSizeUpdate } ) => {
+const DeviceSizeTabBar = ( {
+	activeTab,
+	handleDeviceSizeUpdate,
+	deviceSizes = [
+		{
+			slug: 'mobile',
+			label: __( 'Mobile', 'google-site-kit' ),
+			icon: <DeviceSizeMobileIcon />,
+		},
+		{
+			slug: 'desktop',
+			label: __( 'Desktop', 'google-site-kit' ),
+			icon: <DeviceSizeDesktopIcon />,
+		},
+	],
+} ) => {
 	const onUpdate = useCallback( ( index ) => {
 		const device = deviceSizes[ index ];
 		handleDeviceSizeUpdate( device, index );
@@ -52,11 +68,11 @@ const DeviceSizeTabBar = ( { activeTab, deviceSizes, handleDeviceSizeUpdate } ) 
 			activeIndex={ activeIndex }
 			handleActiveIndexUpdate={ onUpdate }
 		>
-			{ deviceSizes.map( ( { slug, icon }, i ) => {
+			{ deviceSizes.map( ( { icon, label }, i ) => {
 				return (
 					<Tab
 						key={ `google-sitekit-device-size-tab-key-${ i }` }
-						aria-label={ slug }
+						aria-label={ label }
 					>
 						{ icon }
 					</Tab>
@@ -68,10 +84,10 @@ const DeviceSizeTabBar = ( { activeTab, deviceSizes, handleDeviceSizeUpdate } ) 
 };
 
 DeviceSizeTabBar.propTypes = {
-	activeIndex: PropTypes.number,
+	activeTab: PropTypes.string,
 	deviceSizes: PropTypes.arrayOf(
 		PropTypes.shape( {
-			index: PropTypes.number,
+			label: PropTypes.string,
 			slug: PropTypes.string,
 			icon: PropTypes.node,
 		} ),
@@ -80,16 +96,6 @@ DeviceSizeTabBar.propTypes = {
 };
 
 DeviceSizeTabBar.defaultProps = {
-	deviceSizes: [
-		{
-			slug: 'mobile',
-			icon: <DeviceSizeMobileIcon />,
-		},
-		{
-			slug: 'desktop',
-			icon: <DeviceSizeDesktopIcon />,
-		},
-	],
 	handleDeviceSizeUpdate: () => {},
 };
 
