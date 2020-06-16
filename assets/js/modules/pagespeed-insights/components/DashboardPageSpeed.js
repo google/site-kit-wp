@@ -25,7 +25,7 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -102,34 +102,32 @@ export default function DashboardPageSpeed() {
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
 
 	return (
-		<Fragment>
-			<Layout className="googlesitekit-pagespeed-widget">
-				<header className="googlesitekit-pagespeed-widget__header">
-					<div className="googlesitekit-pagespeed-widget__data-src-tabs">
-						<TabBar
-							activeIndex={ dataSrc === DATA_SRC_FIELD ? 1 : 0 }
-							handleActiveIndexUpdate={ updateActiveTab }
-						>
-							<Tab aria-label="in the lab">
-								<span className="mdc-tab__text-label">{ __( 'In the Lab', 'google-site-kit' ) }</span>
-							</Tab>
-							<Tab aria-label="in the field">
-								<span className="mdc-tab__text-label">{ __( 'In the Field', 'google-site-kit' ) }</span>
-							</Tab>
-						</TabBar>
-					</div>
-					<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
-						<DeviceSizeTabBar
-							activeIndex={ strategy === STRATEGY_DESKTOP ? 1 : 0 }
-							handleDeviceSizeUpdate={ updateActiveDeviceSize }
-						/>
-					</div>
-				</header>
-				<section>
-					{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } /> }
-					{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } /> }
-				</section>
-			</Layout>
-		</Fragment>
+		<Layout className="googlesitekit-pagespeed-widget">
+			<header className="googlesitekit-pagespeed-widget__header">
+				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
+					<TabBar
+						activeIndex={ dataSrc === DATA_SRC_FIELD ? 1 : 0 }
+						handleActiveIndexUpdate={ updateActiveTab }
+					>
+						<Tab aria-label="in the lab">
+							<span className="mdc-tab__text-label">{ __( 'In the Lab', 'google-site-kit' ) }</span>
+						</Tab>
+						<Tab aria-label="in the field">
+							<span className="mdc-tab__text-label">{ __( 'In the Field', 'google-site-kit' ) }</span>
+						</Tab>
+					</TabBar>
+				</div>
+				<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
+					<DeviceSizeTabBar
+						activeIndex={ strategy === STRATEGY_DESKTOP ? 1 : 0 }
+						handleDeviceSizeUpdate={ updateActiveDeviceSize }
+					/>
+				</div>
+			</header>
+			<section>
+				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } /> }
+				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } /> }
+			</section>
+		</Layout>
 	);
 }
