@@ -26,7 +26,6 @@ import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/c
 import * as fixtures from '../datastore/__fixtures__';
 import fetchMock from 'fetch-mock';
 
-// TODO: update the active class.
 const activeClass = 'mdc-tab--active';
 const url = fixtures.pagespeedMobile.loadingExperience.id;
 const setupRegistry = ( { dispatch } ) => {
