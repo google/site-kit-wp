@@ -70,7 +70,7 @@ export const controls = {
 		const containerID = select( STORE_NAME ).getContainerID();
 
 		if ( containerID === CONTAINER_CREATE ) {
-			const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_WEB );
+			const { response: container, error } = await dispatch( STORE_NAME ).fetchCreateContainer( accountID, CONTEXT_WEB );
 
 			if ( error ) {
 				return { error };
@@ -83,7 +83,7 @@ export const controls = {
 		const ampContainerID = select( STORE_NAME ).getAMPContainerID();
 
 		if ( ampContainerID === CONTAINER_CREATE ) {
-			const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_AMP );
+			const { response: container, error } = await dispatch( STORE_NAME ).fetchCreateContainer( accountID, CONTEXT_AMP );
 
 			if ( error ) {
 				return { error };

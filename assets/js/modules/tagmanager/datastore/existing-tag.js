@@ -68,25 +68,12 @@ const BASE_INITIAL_STATE = {
 	tagPermission: {},
 };
 
-const baseActions = {
-	fetchExistingTag: fetchGetExistingTagStore.actions.fetchGetExistingTag,
-	fetchTagPermission: fetchGetTagPermissionStore.actions.fetchGetTagPermission,
-	receiveExistingTag: fetchGetExistingTagStore.actions.receiveGetExistingTag,
-	receiveTagPermission( permission, { containerID } ) {
-		return fetchGetTagPermissionStore.actions.receiveGetTagPermission( {
-			accountID: '',
-			containerID,
-			permission,
-		}, { containerID } );
-	},
-};
-
 const baseResolvers = {
 	*getExistingTag() {
 		const { select } = yield Data.commonActions.getRegistry();
 
 		if ( select( STORE_NAME ).getExistingTag() === undefined ) {
-			yield baseActions.fetchExistingTag();
+			yield fetchGetExistingTagStore.actions.fetchGetExistingTag();
 		}
 	},
 	*hasTagPermission( containerID ) {
@@ -96,7 +83,7 @@ const baseResolvers = {
 		const { select } = yield Data.commonActions.getRegistry();
 
 		if ( select( STORE_NAME ).hasTagPermission( containerID ) === undefined ) {
-			yield baseActions.fetchTagPermission( containerID );
+			yield fetchGetTagPermissionStore.actions.fetchGetTagPermission( containerID );
 		}
 	},
 };
@@ -176,7 +163,6 @@ const store = Data.combineStores(
 	fetchGetTagPermissionStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
-		actions: baseActions,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

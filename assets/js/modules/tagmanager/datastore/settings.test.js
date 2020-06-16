@@ -42,8 +42,8 @@ describe( 'modules/tagmanager settings', () => {
 	let setSettings;
 	let submitChanges;
 	let receiveGetSettings;
-	let receiveExistingTag;
-	let receiveTagPermission;
+	let receiveGetExistingTag;
+	let receiveGetTagPermission;
 
 	const validSettings = {
 		accountID: '100',
@@ -81,8 +81,8 @@ describe( 'modules/tagmanager settings', () => {
 		} = registry.select( STORE_NAME ) );
 		( {
 			receiveGetSettings,
-			receiveExistingTag,
-			receiveTagPermission,
+			receiveGetExistingTag,
+			receiveGetTagPermission,
 			setSettings,
 			submitChanges,
 		} = registry.dispatch( STORE_NAME ) );
@@ -111,14 +111,14 @@ describe( 'modules/tagmanager settings', () => {
 
 		describe( 'submitChanges', () => {
 			describe( 'with no AMP', () => {
-				it( 'dispatches createContainer if the "set up a new container" option is chosen', async () => {
+				it( 'dispatches fetchCreateContainer if the "set up a new container" option is chosen', async () => {
 					setSettings( {
 						...validSettings,
 						accountID: '12345',
 						containerID: CONTAINER_CREATE,
 					} );
 					const createdContainer = {
-						...fixtures.createContainer,
+						...fixtures.fetchCreateContainer,
 					};
 
 					fetchMock.postOnce(
@@ -235,7 +235,7 @@ describe( 'modules/tagmanager settings', () => {
 			describe( 'with primary AMP', () => {
 				beforeEach( () => setPrimaryAMP() );
 
-				it( 'dispatches createContainer if the "set up a new container" option is chosen', async () => {
+				it( 'dispatches fetchCreateContainer if the "set up a new container" option is chosen', async () => {
 					setSettings( {
 						...validSettings,
 						accountID: '12345',
@@ -275,7 +275,7 @@ describe( 'modules/tagmanager settings', () => {
 			describe( 'with secondary AMP', () => {
 				beforeEach( () => setSecondaryAMP() );
 
-				it( 'dispatches createContainer for both web and AMP containers when selected', async () => {
+				it( 'dispatches fetchCreateContainer for both web and AMP containers when selected', async () => {
 					const account = accountBuilder();
 					registry.dispatch( STORE_NAME ).setSettings( {
 						...validSettings,
@@ -343,7 +343,7 @@ describe( 'modules/tagmanager settings', () => {
 			describe( 'with no AMP', () => {
 				beforeEach( () => {
 					setSettings( validSettings );
-					receiveExistingTag( null );
+					receiveGetExistingTag( null );
 				} );
 
 				it( 'requires a valid accountID', () => {
@@ -371,12 +371,12 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'requires permissions for an existing tag when present', () => {
-					receiveExistingTag( validSettings.containerID );
-					receiveTagPermission( true, { containerID: validSettings.containerID } );
+					receiveGetExistingTag( validSettings.containerID );
+					receiveGetTagPermission( { permission: true }, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-					receiveTagPermission( false, { containerID: validSettings.containerID } );
+					receiveGetTagPermission( { permission: false }, { containerID: validSettings.containerID } );
 
 					expect( canSubmitChanges() ).toBe( false );
 				} );
@@ -398,7 +398,7 @@ describe( 'modules/tagmanager settings', () => {
 				beforeEach( () => {
 					setPrimaryAMP();
 					setSettings( validSettingsAMP );
-					receiveExistingTag( null );
+					receiveGetExistingTag( null );
 				} );
 
 				it( 'requires a valid accountID', () => {
@@ -441,12 +441,12 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'requires permissions for an existing tag when present', () => {
-					receiveExistingTag( validSettings.containerID );
-					receiveTagPermission( true, { containerID: validSettings.containerID } );
+					receiveGetExistingTag( validSettings.containerID );
+					receiveGetTagPermission( { permission: true }, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-					receiveTagPermission( false, { containerID: validSettings.containerID } );
+					receiveGetTagPermission( { permission: false }, { containerID: validSettings.containerID } );
 
 					expect( canSubmitChanges() ).toBe( false );
 				} );
@@ -465,7 +465,7 @@ describe( 'modules/tagmanager settings', () => {
 						...validSettings,
 						...validSettingsAMP,
 					} );
-					receiveExistingTag( null );
+					receiveGetExistingTag( null );
 				} );
 
 				it( 'requires a valid accountID', () => {
@@ -532,12 +532,12 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'requires permissions for an existing tag when present', () => {
-					receiveExistingTag( validSettings.containerID );
-					receiveTagPermission( true, { containerID: validSettings.containerID } );
+					receiveGetExistingTag( validSettings.containerID );
+					receiveGetTagPermission( { permission: true }, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-					receiveTagPermission( false, { containerID: validSettings.containerID } );
+					receiveGetTagPermission( { permission: false }, { containerID: validSettings.containerID } );
 
 					expect( canSubmitChanges() ).toBe( false );
 				} );

@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { isValidAccountID, isValidInternalContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistrySelector } = Data;
 
 const fetchGetLiveContainerVersionStore = createFetchStore( {
 	baseName: 'getLiveContainerVersion',
@@ -56,11 +57,6 @@ const BASE_INITIAL_STATE = {
 	liveContainerVersions: {},
 };
 
-const baseActions = {
-	fetchLiveContainerVersion: fetchGetLiveContainerVersionStore.actions.fetchGetLiveContainerVersion,
-	receiveLiveContainerVersion: fetchGetLiveContainerVersionStore.actions.receiveGetLiveContainerVersion,
-};
-
 const baseResolvers = {
 	*getLiveContainerVersion( accountID, internalContainerID ) {
 		if ( ! isValidAccountID( accountID ) || ! isValidInternalContainerID( internalContainerID ) ) {
@@ -70,7 +66,7 @@ const baseResolvers = {
 		const { select } = yield Data.commonActions.getRegistry();
 
 		if ( ! select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ) {
-			yield baseActions.fetchLiveContainerVersion( accountID, internalContainerID );
+			yield fetchGetLiveContainerVersionStore.actions.fetchGetLiveContainerVersion( accountID, internalContainerID );
 		}
 	},
 };
@@ -99,14 +95,15 @@ const baseSelectors = {
 	 * @param {string} internalContainerID Internal container ID to get version for.
 	 * @return {(boolean|undefined)} True if the live container version is being fetched, otherwise false.
 	 */
-	isDoingGetLiveContainerVersion: fetchGetLiveContainerVersionStore.selectors.isFetchingGetLiveContainerVersion,
+	isDoingGetLiveContainerVersion: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID ) => {
+		return select( STORE_NAME ).isFetchingGetLiveContainerVersion( accountID, internalContainerID );
+	} ),
 };
 
 const store = Data.combineStores(
 	fetchGetLiveContainerVersionStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
-		actions: baseActions,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

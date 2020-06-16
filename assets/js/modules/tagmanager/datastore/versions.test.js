@@ -38,7 +38,7 @@ describe( 'modules/tagmanager versions', () => {
 	let isDoingGetLiveContainerVersion;
 	let hasFinishedResolution;
 	// Actions
-	let receiveLiveContainerVersion;
+	let receiveGetLiveContainerVersion;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -53,7 +53,7 @@ describe( 'modules/tagmanager versions', () => {
 			hasFinishedResolution,
 		} = registry.select( STORE_NAME ) );
 		( {
-			receiveLiveContainerVersion,
+			receiveGetLiveContainerVersion,
 		} = registry.dispatch( STORE_NAME ) );
 	} );
 
@@ -66,24 +66,24 @@ describe( 'modules/tagmanager versions', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'receiveLiveContainerVersion', () => {
+		describe( 'receiveGetLiveContainerVersion', () => {
 			const validContainerVersion = {};
 			const validAccountID = '100';
 			const validInternalContainerID = '200';
 
 			it( 'requires a liveContainerVersion object', () => {
-				expect( () => receiveLiveContainerVersion() ).toThrow( 'response is required.' );
+				expect( () => receiveGetLiveContainerVersion() ).toThrow( 'response is required.' );
 			} );
 
 			it( 'requires params', () => {
 				expect( () => {
-					receiveLiveContainerVersion( validContainerVersion );
+					receiveGetLiveContainerVersion( validContainerVersion );
 				} ).toThrow( 'params is required.' );
 			} );
 
 			it( 'does not throw with valid input', () => {
 				expect( () => {
-					receiveLiveContainerVersion( validContainerVersion, {
+					receiveGetLiveContainerVersion( validContainerVersion, {
 						accountID: validAccountID,
 						internalContainerID: validInternalContainerID,
 					} );
@@ -119,7 +119,7 @@ describe( 'modules/tagmanager versions', () => {
 				const accountID = fixtures.liveContainerVersion.accountId;
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 
-				receiveLiveContainerVersion( fixtures.liveContainerVersion, { accountID, internalContainerID } );
+				receiveGetLiveContainerVersion( fixtures.liveContainerVersion, { accountID, internalContainerID } );
 
 				const liveContainerVersion = getLiveContainerVersion( accountID, internalContainerID );
 				await subscribeUntil( registry,

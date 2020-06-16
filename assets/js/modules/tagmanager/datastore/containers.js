@@ -84,10 +84,6 @@ const BASE_INITIAL_STATE = {
 	containers: {},
 };
 
-const baseActions = {
-	createContainer: fetchCreateContainerStore.actions.fetchCreateContainer,
-};
-
 const baseResolvers = {
 	*getContainers( accountID ) {
 		const { select } = yield Data.commonActions.getRegistry();
@@ -136,7 +132,6 @@ const store = Data.combineStores(
 	fetchCreateContainerStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
-		actions: baseActions,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

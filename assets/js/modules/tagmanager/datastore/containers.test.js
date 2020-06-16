@@ -65,16 +65,16 @@ describe( 'modules/tagmanager containers', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'createContainer', () => {
+		describe( 'fetchCreateContainer', () => {
 			it( 'creates a container and adds it to the store ', async () => {
-				const accountID = fixtures.createContainer.accountId; // Capitalization rule exception: `accountId`
-				const usageContext = fixtures.createContainer.usageContext[ 0 ];
+				const accountID = fixtures.fetchCreateContainer.accountId; // Capitalization rule exception: `accountId`
+				const usageContext = fixtures.fetchCreateContainer.usageContext[ 0 ];
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
-					{ body: fixtures.createContainer, status: 200 }
+					{ body: fixtures.fetchCreateContainer, status: 200 }
 				);
 
-				await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
+				await registry.dispatch( STORE_NAME ).fetchCreateContainer( accountID, usageContext );
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
@@ -90,15 +90,15 @@ describe( 'modules/tagmanager containers', () => {
 				);
 
 				const containers = registry.select( STORE_NAME ).getContainers( accountID );
-				expect( containers ).toMatchObject( [ fixtures.createContainer ] );
+				expect( containers ).toMatchObject( [ fixtures.fetchCreateContainer ] );
 			} );
 
 			it( 'sets isDoingCreateContainer ', async () => {
-				const accountID = fixtures.createContainer.accountId; // Capitalization rule exception: `accountId`
-				const usageContext = fixtures.createContainer.usageContext[ 0 ];
+				const accountID = fixtures.fetchCreateContainer.accountId; // Capitalization rule exception: `accountId`
+				const usageContext = fixtures.fetchCreateContainer.usageContext[ 0 ];
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/ );
-				const promise = registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
+				const promise = registry.dispatch( STORE_NAME ).fetchCreateContainer( accountID, usageContext );
 				expect( registry.select( STORE_NAME ).isDoingCreateContainer( accountID ) ).toEqual( true );
 
 				await promise;
@@ -107,8 +107,8 @@ describe( 'modules/tagmanager containers', () => {
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
-				const accountID = fixtures.createContainer.accountId; // Capitalization rule exception: `accountId`
-				const usageContext = fixtures.createContainer.usageContext[ 0 ];
+				const accountID = fixtures.fetchCreateContainer.accountId; // Capitalization rule exception: `accountId`
+				const usageContext = fixtures.fetchCreateContainer.usageContext[ 0 ];
 				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -121,7 +121,7 @@ describe( 'modules/tagmanager containers', () => {
 				);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
+				registry.dispatch( STORE_NAME ).fetchCreateContainer( accountID, usageContext );
 
 				await subscribeUntil( registry, () => registry.select( STORE_NAME ).getError() );
 

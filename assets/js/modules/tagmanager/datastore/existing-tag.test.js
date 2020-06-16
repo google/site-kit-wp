@@ -77,7 +77,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 			} );
 
 			it( 'does not make a network request if existingTag is present', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( 'GTM-ABC0123' );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-ABC0123' );
 
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
@@ -88,7 +88,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 			} );
 
 			it( 'does not make a network request if existingTag is null', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
@@ -124,7 +124,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 		describe( 'hasExistingTag', () => {
 			it( 'returns true if an existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( 'GTM-G000GL3' );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
@@ -134,7 +134,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 			} );
 
 			it( 'returns false if no existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
