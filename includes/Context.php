@@ -191,9 +191,11 @@ final class Context {
 		// If currently in WP admin, run admin-specific checks.
 		if ( is_admin() ) {
 			// Support specific URL stats being checked in Site Kit dashboard details view.
-			$entity_url_query_param = 'googlesitekit-dashboard' === $this->input()->filter( INPUT_GET, 'page' ) ? $this->input()->filter( INPUT_GET, 'permaLink' ) : '';
-			if ( ! empty( $entity_url_query_param ) ) {
-				return $this->get_reference_entity_from_url( $entity_url_query_param );
+			if ( 'googlesitekit-dashboard' === $this->input()->filter( INPUT_GET, 'page' ) ) {
+				$entity_url_query_param = $this->input()->filter( INPUT_GET, 'permaLink' );
+				if ( ! empty( $entity_url_query_param ) ) {
+					return $this->get_reference_entity_from_url( $entity_url_query_param );
+				}
 			}
 
 			$post = get_post();
