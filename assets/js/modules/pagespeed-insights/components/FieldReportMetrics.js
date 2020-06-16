@@ -82,14 +82,18 @@ export default function FieldReportMetrics( { data } ) {
 
 	if ( ! firstInputDelay || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
 		return (
-			<div>
-				<h3>
-					{ __( 'Field data unavailable', 'google-site-kit' ) }
-				</h3>
-				<p>
-					{ __( 'Field data is useful for capturing true, real-world user experience. However, the Chrome User Experience Report does not have sufficient real-world speed data for this page.', 'google-site-kit' ) }
-				</p>
-				{ learnMoreLink }
+			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics googlesitekit-pagespeed-insights-web-vitals-metrics--field-data-unavailable">
+				<div className="googlesitekit-pagespeed-insights-web-vitals-metrics__field-data-unavailable-content">
+					<h3>
+						{ __( 'Field data unavailable', 'google-site-kit' ) }
+					</h3>
+					<p>
+						{ __( 'Field data is useful for capturing true, real-world user experience. However, the Chrome User Experience Report does not have sufficient real-world speed data for this page.', 'google-site-kit' ) }
+					</p>
+					<p>
+						{ learnMoreLink }
+					</p>
+				</div>
 			</div>
 		);
 	}
@@ -101,7 +105,7 @@ export default function FieldReportMetrics( { data } ) {
 
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
-			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row__first">
+			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row--first">
 				<p>
 					{ __( 'Field data is useful for capturing true, real-world user experience - but has a more limited set of metrics.', 'google-site-kit' ) }
 					{ ' ' }
@@ -145,7 +149,7 @@ export default function FieldReportMetrics( { data } ) {
 					/>
 				</tbody>
 			</table>
-			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row__last">
+			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row--last">
 				<p>
 					{ __( 'View details at', 'google-site-kit' ) }
 					{ ' ' }

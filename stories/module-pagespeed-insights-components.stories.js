@@ -48,4 +48,19 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 			</WithTestRegistry>
 		);
 	} )
+	.add( 'Dashboard widget (Field Data Unavailable)', () => {
+		const url = fixtures.pagespeedMobile.loadingExperience.id;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobileFieldDataUnavailable, { url, strategy: STRATEGY_MOBILE } );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopFieldDataUnavailable, { url, strategy: STRATEGY_DESKTOP } );
+			dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<Layout>
+					<DashboardPageSpeed />
+				</Layout>
+			</WithTestRegistry>
+		);
+	} )
 ;

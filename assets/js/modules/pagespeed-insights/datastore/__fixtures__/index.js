@@ -17,5 +17,7 @@
  */
 
 export { default as pagespeedDesktop } from './pagespeed--desktop.json';
+export { default as pagespeedDesktopFieldDataUnavailable } from './pagespeed--desktop__field-data-unavailable.json';
 export { default as pagespeedMobile } from './pagespeed--mobile.json';
+export { default as pagespeedMobileFieldDataUnavailable } from './pagespeed--mobile__field-data-unavailable.json';
 
