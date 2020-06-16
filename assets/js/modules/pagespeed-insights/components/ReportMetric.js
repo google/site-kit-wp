@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -41,7 +42,12 @@ export default function ReportMetric( {
 	category = category.toLowerCase();
 
 	return (
-		<tr className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report-metric">
+		<tr
+			className={ classnames(
+				'googlesitekit-pagespeed-report__row',
+				'googlesitekit-pagespeed-report-metric'
+			) }
+		>
 			<td>
 				<div className="googlesitekit-pagespeed-report-metric__title">
 					{ title }
@@ -51,12 +57,22 @@ export default function ReportMetric( {
 				</div>
 			</td>
 
-			<td className={ `googlesitekit-pagespeed-report-metric-value googlesitekit-pagespeed-report-metric--${ category.toLowerCase() }` }>
+			<td
+				className={ classnames(
+					'googlesitekit-pagespeed-report-metric-value',
+					`googlesitekit-pagespeed-report-metric--${ category.toLowerCase() }`
+				) }
+			>
 				<div className="googlesitekit-pagespeed-report-metric-value-container">
 					<div className="googlesitekit-pagespeed-report-metric-value__number">
 						{ displayValue }
 					</div>
-					<div className="googlesitekit-pagespeed-report-metric-value__rating googlesitekit-uppercase">
+					<div
+						className={ classnames(
+							'googlesitekit-pagespeed-report-metric-value__rating',
+							'googlesitekit-uppercase'
+						) }
+					>
 						{ category === CATEGORY_FAST && _x( 'Good', 'Performance rating', 'google-site-kit' ) }
 						{ category === CATEGORY_AVERAGE && _x( 'Needs improvement', 'Performance rating', 'google-site-kit' ) }
 						{ category === CATEGORY_SLOW && _x( 'Poor', 'Performance rating', 'google-site-kit' ) }
