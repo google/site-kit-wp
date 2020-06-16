@@ -43,7 +43,9 @@ const isValidNumericID = function( input ) {
  * @param {(string|number)} accountID Account ID to test.
  * @return {boolean} Whether or not the given account ID is valid.
  */
-export { isValidNumericID as isValidAccountID };
+export function isValidAccountID( accountID ) {
+	return isValidNumericID( accountID );
+}
 
 /**
  * Checks if the given value is a valid selection for an Account.
@@ -58,7 +60,7 @@ export function isValidAccountSelection( value ) {
 		return true;
 	}
 
-	return isValidNumericID( value );
+	return isValidAccountID( value );
 }
 
 /**
@@ -97,7 +99,9 @@ export function isValidContainerSelection( value ) {
  * @param {(string|number)} internalContainerID Internal container ID to test.
  * @return {boolean} Whether or not the given ID is valid.
  */
-export { isValidNumericID as isValidInternalContainerID };
+export function isValidInternalContainerID( internalContainerID ) {
+	return isValidNumericID( internalContainerID );
+}
 
 /**
  * Checks if the given context is a valid container usage context.
