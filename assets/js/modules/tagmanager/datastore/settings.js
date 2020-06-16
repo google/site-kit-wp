@@ -137,6 +137,10 @@ export const resolvers = {};
 export const selectors = {
 	/**
 	 * Checks if changes can be submitted.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} `true` if can submit changes, otherwise false.
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => () => {
 		const {

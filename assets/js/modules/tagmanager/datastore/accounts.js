@@ -129,7 +129,6 @@ export const baseSelectors = {
 	 * Checks whether accounts are currently being fetched.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} Whether accounts are currently being fetched or not.
