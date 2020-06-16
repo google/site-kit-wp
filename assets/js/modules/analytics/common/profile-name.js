@@ -29,7 +29,6 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
 import { TextField, HelperText, Input } from '../../../material-components';
 import { STORE_NAME, PROFILE_CREATE, FORM_SETUP } from '../datastore/constants';
-import SvgIcon from '../../../util/svg-icon';
 
 export default function ProfileName() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
@@ -55,13 +54,17 @@ export default function ProfileName() {
 	const existingProfile = profiles.find( ( item ) => item.name === profileName );
 	if ( existingProfile ) {
 		helperText = (
-			<HelperText>
+			<HelperText persistent>
 				{ __( 'You have multiple views with this name.', 'google-site-kit' ) }
 			</HelperText>
 		);
 
 		trailingIcon = (
-			<SvgIcon id="warning" width="20" height="20" />
+			<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--warning">
+				<span className="screen-reader-text">
+					{ __( 'Warning', 'google-site-kit' ) }
+				</span>
+			</span>
 		);
 	}
 
