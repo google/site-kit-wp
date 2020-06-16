@@ -30,7 +30,9 @@ import DashboardModuleHeader from '../../../components/dashboard/dashboard-modul
 import DashboardPageSpeed from '../components/DashboardPageSpeed';
 
 function DashboardSpeed() {
-	const description = global.googlesitekit.permaLink ? __( 'How fast this page is.', 'google-site-kit' ) : __( 'How fast your home page is.', 'google-site-kit' );
+	const description = global._googlesitekitLegacyData.permaLink
+		? __( 'How fast this page is.', 'google-site-kit' )
+		: __( 'How fast your home page is.', 'google-site-kit' );
 
 	return (
 		<Fragment>
