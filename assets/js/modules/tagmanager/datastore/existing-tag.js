@@ -46,18 +46,18 @@ const fetchGetExistingTagStore = createFetchStore( {
 
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
-	argsToParams: ( tag ) => {
-		invariant( isValidContainerID( tag ), 'a valid tag is required to for fetching and receiving permission.' );
+	argsToParams: ( containerID ) => {
+		invariant( isValidContainerID( containerID ), 'a valid containerID is required to for fetching permission.' );
 
-		return { tag };
+		return { containerID };
 	},
-	controlCallback: ( { tag } ) => API.get( 'modules', 'tagmanager', 'tag-permission', { tag }, { useCache: false } ),
-	reducerCallback: ( state, { permission }, { tag } ) => {
+	controlCallback: ( { containerID } ) => API.get( 'modules', 'tagmanager', 'tag-permission', { containerID }, { useCache: false } ),
+	reducerCallback: ( state, { permission }, { containerID } ) => {
 		return {
 			...state,
 			tagPermission: {
 				...state.tagPermission,
-				[ tag ]: permission,
+				[ containerID ]: permission,
 			},
 		};
 	},
@@ -72,12 +72,12 @@ const baseActions = {
 	fetchExistingTag: fetchGetExistingTagStore.actions.fetchGetExistingTag,
 	fetchTagPermission: fetchGetTagPermissionStore.actions.fetchGetTagPermission,
 	receiveExistingTag: fetchGetExistingTagStore.actions.receiveGetExistingTag,
-	receiveTagPermission( permission, { tag } ) {
+	receiveTagPermission( permission, { containerID } ) {
 		return fetchGetTagPermissionStore.actions.receiveGetTagPermission( {
 			accountID: '',
-			containerID: tag,
+			containerID,
 			permission,
-		}, { tag } );
+		}, { containerID } );
 	},
 };
 
@@ -89,23 +89,23 @@ const baseResolvers = {
 			yield baseActions.fetchExistingTag();
 		}
 	},
-	*hasTagPermission( tag ) {
+	*hasTagPermission( containerID ) {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).hasTagPermission( tag ) === undefined ) {
-			yield baseActions.fetchTagPermission( tag );
+		if ( select( STORE_NAME ).hasTagPermission( containerID ) === undefined ) {
+			yield baseActions.fetchTagPermission( containerID );
 		}
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets the existing tag, if any.
+	 * Gets the existing tag (a container publicId), if any.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|null|undefined)} The existing tag ID if present, `null` if not present, or `undefined` if not loaded yet.
+	 * @return {(string|null|undefined)} The existing container ID if present, `null` if not present, or `undefined` if not loaded yet.
 	 */
 	getExistingTag( state ) {
 		return state.existingTag;
@@ -132,11 +132,11 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} tag Container publicId to check permission for.
+	 * @param {string} containerID Container publicId to check permission for.
 	 * @return {(boolean|undefined)} Permission
 	 */
-	hasTagPermission( state, tag ) {
-		const permission = state.tagPermission[ tag ];
+	hasTagPermission( state, containerID ) {
+		const permission = state.tagPermission[ containerID ];
 
 		if ( permission === undefined ) {
 			return undefined;
@@ -150,8 +150,8 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @return {(boolean|undefined)} true or false if tag permission is available,
-	 *                    null if no existing tag,
-	 *                    otherwise undefined if resolution is incomplete.
+	 *                               null if no existing tag,
+	 *                               otherwise undefined if resolution is incomplete.
 	 */
 	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
 		const hasExistingTag = select( STORE_NAME ).hasExistingTag();
@@ -159,9 +159,9 @@ const baseSelectors = {
 		if ( hasExistingTag === undefined ) {
 			return undefined;
 		} else if ( hasExistingTag ) {
-			const propertyID = select( STORE_NAME ).getExistingTag();
+			const containerID = select( STORE_NAME ).getExistingTag();
 
-			return select( STORE_NAME ).hasTagPermission( propertyID );
+			return select( STORE_NAME ).hasTagPermission( containerID );
 		}
 
 		return null;

@@ -174,48 +174,48 @@ describe( 'modules/tagmanager existing-tag', () => {
 				{ body: permissionResponse, status: 200 }
 			);
 
-			const tag = container.publicId;
-			const initialSelect = registry.select( STORE_NAME ).hasTagPermission( tag );
+			const containerID = container.publicId;
+			const initialSelect = registry.select( STORE_NAME ).hasTagPermission( containerID );
 
 			// Ensure the proper parameters were sent.
 			expect( fetchMock ).toHaveFetched(
 				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
 				{
-					query: { tag },
+					query: { containerID },
 				}
 			);
 
 			// The value will be undefined until the response is received.
 			expect( initialSelect ).toEqual( undefined );
-			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ tag ] ) );
+			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ containerID ] ) );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
-			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( true );
+			expect( registry.select( STORE_NAME ).hasTagPermission( containerID ) ).toEqual( true );
 		} );
 
 		it( 'returns false if a user cannot access the requested tag', async () => {
-			const tag = 'GTM-ABC1234';
+			const containerID = 'GTM-ABC1234';
 			const noPermission = {
 				accountID: '',
-				containerID: tag,
+				containerID,
 				permission: false,
 			};
 			fetchMock.getOnce(
 				{
 					url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
-					query: { tag },
+					query: { containerID },
 				},
 				{ body: noPermission, status: 200 }
 			);
 
-			const initialSelect = registry.select( STORE_NAME ).hasTagPermission( tag );
+			const initialSelect = registry.select( STORE_NAME ).hasTagPermission( containerID );
 
 			expect( initialSelect ).toEqual( undefined );
-			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ tag ] ) );
+			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ containerID ] ) );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( registry.select( STORE_NAME ).getError() ).toEqual( undefined );
-			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( false );
+			expect( registry.select( STORE_NAME ).hasTagPermission( containerID ) ).toEqual( false );
 		} );
 
 		it( 'dispatches an error if the request fails', async () => {
@@ -229,15 +229,15 @@ describe( 'modules/tagmanager existing-tag', () => {
 				{ body: errorResponse, status: 500 }
 			);
 
-			const tag = 'GTM-ABC1234';
+			const containerID = 'GTM-ABC1234';
 
 			muteConsole( 'error' ); // 500 response expected.
-			registry.select( STORE_NAME ).hasTagPermission( tag );
+			registry.select( STORE_NAME ).hasTagPermission( containerID );
 
-			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ tag ] ) );
+			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ containerID ] ) );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
-			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( undefined );
+			expect( registry.select( STORE_NAME ).hasTagPermission( containerID ) ).toEqual( undefined );
 			expect( registry.select( STORE_NAME ).getError() ).toEqual( errorResponse );
 		} );
 	} );

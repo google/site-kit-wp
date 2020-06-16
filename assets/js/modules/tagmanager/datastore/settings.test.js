@@ -372,11 +372,11 @@ describe( 'modules/tagmanager settings', () => {
 
 				it( 'requires permissions for an existing tag when present', () => {
 					receiveExistingTag( validSettings.containerID );
-					receiveTagPermission( true, { tag: validSettings.containerID } );
+					receiveTagPermission( true, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-					receiveTagPermission( false, { tag: validSettings.containerID } );
+					receiveTagPermission( false, { containerID: validSettings.containerID } );
 
 					expect( canSubmitChanges() ).toBe( false );
 				} );
@@ -442,11 +442,11 @@ describe( 'modules/tagmanager settings', () => {
 
 				it( 'requires permissions for an existing tag when present', () => {
 					receiveExistingTag( validSettings.containerID );
-					receiveTagPermission( true, { tag: validSettings.containerID } );
+					receiveTagPermission( true, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-					receiveTagPermission( false, { tag: validSettings.containerID } );
+					receiveTagPermission( false, { containerID: validSettings.containerID } );
 
 					expect( canSubmitChanges() ).toBe( false );
 				} );
@@ -533,11 +533,11 @@ describe( 'modules/tagmanager settings', () => {
 
 				it( 'requires permissions for an existing tag when present', () => {
 					receiveExistingTag( validSettings.containerID );
-					receiveTagPermission( true, { tag: validSettings.containerID } );
+					receiveTagPermission( true, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-					receiveTagPermission( false, { tag: validSettings.containerID } );
+					receiveTagPermission( false, { containerID: validSettings.containerID } );
 
 					expect( canSubmitChanges() ).toBe( false );
 				} );
