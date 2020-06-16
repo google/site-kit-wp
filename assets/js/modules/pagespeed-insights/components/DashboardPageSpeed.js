@@ -102,6 +102,9 @@ export default function DashboardPageSpeed() {
 					<div className="mdc-layout-grid__inner">
 						<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							<ProgressBar />
+							<p className="googlesitekit-text-align-center">
+								{ __( 'PageSpeed Insights is preparing data…', 'google-site-kit' ) }
+							</p>
 						</div>
 					</div>
 				</div>
