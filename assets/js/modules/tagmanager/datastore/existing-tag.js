@@ -121,7 +121,7 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state       Data store's state.
 	 * @param {string} containerID Container publicId to check permission for.
 	 * @return {(boolean|undefined)} Permission
 	 */

@@ -120,8 +120,8 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} accountID Account ID to get containers for.
+	 * @param {Object} state          Data store's state.
+	 * @param {string} accountID      Account ID to get containers for.
 	 * @param {string} [usageContext] Usage context of containers to filter by.
 	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
 	 */

@@ -77,8 +77,8 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} accountID Account ID the container belongs to.
+	 * @param {Object} state               Data store's state.
+	 * @param {string} accountID           Account ID the container belongs to.
 	 * @param {string} internalContainerID Internal container ID to get version for.
 	 * @return {(Object|undefined)} Live container version object, or `undefined` if not loaded yet.
 	 */
@@ -90,8 +90,8 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} accountID Account ID the container belongs to.
+	 * @param {Object} state               Data store's state.
+	 * @param {string} accountID           Account ID the container belongs to.
 	 * @param {string} internalContainerID Internal container ID to get version for.
 	 * @return {(boolean|undefined)} True if the live container version is being fetched, otherwise false.
 	 */
