@@ -51,12 +51,9 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
-	// TODO: replace global with selector.
-	const permalink = global._googlesitekitLegacyData.permaLink;
-	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	const url = permalink || referenceURL;
-	const reportMobile = useSelect( ( select ) => select( STORE_NAME ).getReport( url, STRATEGY_MOBILE ) );
-	const reportDesktop = useSelect( ( select ) => select( STORE_NAME ).getReport( url, STRATEGY_DESKTOP ) );
+	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
+	const reportMobile = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_MOBILE ) );
+	const reportDesktop = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_DESKTOP ) );
 	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
 	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) );
 
