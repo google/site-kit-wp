@@ -328,7 +328,8 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|undefined)} The reference site URL.
+	 * @return {(string|undefined)} The current reference URL, or undefined if
+	 *                              not loaded yet.
 	 */
 	getCurrentReferenceURL: createRegistrySelector( ( select ) => () => {
 		const { currentEntityURL, referenceSiteURL } = select( STORE_NAME ).getSiteInfo() || {};
