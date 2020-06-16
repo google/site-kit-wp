@@ -103,9 +103,7 @@ export default function DashboardPageSpeed() {
 
 	return (
 		<Fragment>
-			<Layout
-				className="googlesitekit-pagespeed-widget"
-			>
+			<Layout className="googlesitekit-pagespeed-widget">
 				<header className="googlesitekit-pagespeed-widget__header">
 					<div className="googlesitekit-pagespeed-widget__data-src-tabs">
 						<TabBar
