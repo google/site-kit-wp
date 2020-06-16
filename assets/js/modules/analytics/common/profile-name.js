@@ -27,10 +27,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
-import { TextField, Input } from '../../../material-components';
+import { TextField, HelperText, Input } from '../../../material-components';
 import { STORE_NAME, PROFILE_CREATE, FORM_SETUP } from '../datastore/constants';
+import SvgIcon from '../../../util/svg-icon';
 
 export default function ProfileName() {
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( propertyID ) );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const profileName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' ) );
 
@@ -46,9 +49,25 @@ export default function ProfileName() {
 		return false;
 	}
 
+	let helperText;
+	let trailingIcon;
+
+	const existingProfile = profiles.find( ( item ) => item.name === profileName );
+	if ( existingProfile ) {
+		helperText = (
+			<HelperText>
+				{ __( 'You have multiple views with this name.', 'google-site-kit' ) }
+			</HelperText>
+		);
+
+		trailingIcon = (
+			<SvgIcon id="warning" width="20" height="20" />
+		);
+	}
+
 	return (
 		<div className="googlesitekit-analytics-profilename">
-			<TextField label="View Name">
+			<TextField label="View Name" outlined helperText={ helperText } trailingIcon={ trailingIcon }>
 				<Input value={ profileName } onChange={ onChange } />
 			</TextField>
 
