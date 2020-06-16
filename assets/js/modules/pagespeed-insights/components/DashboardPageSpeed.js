@@ -78,7 +78,7 @@ export default function DashboardPageSpeed() {
 	const footerLinkHTML = sprintf(
 		/* translators: 1: link attributes, 2: translated service name */
 		__( 'View details at <a %1$s>%2$s</a>', 'google-site-kit' ),
-		`href="${ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { referenceURL } ) }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank"`,
+		`href="${ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url: referenceURL } ) }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank"`,
 		_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' )
 	);
 

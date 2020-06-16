@@ -268,9 +268,7 @@ describe( 'core/site site info', () => {
 
 				registry.select( STORE_NAME ).getCurrentReferenceURL();
 				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getCurrentReferenceURL() !== undefined
-					),
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getSiteInfo' )
 				);
 
 				const referenceURL = registry.select( STORE_NAME ).getCurrentReferenceURL();
@@ -290,9 +288,7 @@ describe( 'core/site site info', () => {
 
 				registry.select( STORE_NAME ).getCurrentReferenceURL();
 				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getCurrentReferenceURL() !== undefined
-					),
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getSiteInfo' )
 				);
 
 				const referenceURL = registry.select( STORE_NAME ).getCurrentReferenceURL();
