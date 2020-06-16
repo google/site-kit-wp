@@ -32,13 +32,7 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/tagmanager versions', () => {
 	let registry;
-	// Selectors
-	let getError;
-	let getLiveContainerVersion;
-	let isDoingGetLiveContainerVersion;
 	let hasFinishedResolution;
-	// Actions
-	let receiveGetLiveContainerVersion;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -46,15 +40,7 @@ describe( 'modules/tagmanager versions', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		( {
-			getError,
-			getLiveContainerVersion,
-			isDoingGetLiveContainerVersion,
-			hasFinishedResolution,
-		} = registry.select( STORE_NAME ) );
-		( {
-			receiveGetLiveContainerVersion,
-		} = registry.dispatch( STORE_NAME ) );
+		hasFinishedResolution = registry.select( STORE_NAME ).hasFinishedResolution;
 	} );
 
 	afterAll( () => {
@@ -72,21 +58,24 @@ describe( 'modules/tagmanager versions', () => {
 			const validInternalContainerID = '200';
 
 			it( 'requires a liveContainerVersion object', () => {
-				expect( () => receiveGetLiveContainerVersion() ).toThrow( 'response is required.' );
+				expect(
+					() => registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion()
+				).toThrow( 'response is required.' );
 			} );
 
 			it( 'requires params', () => {
-				expect( () => {
-					receiveGetLiveContainerVersion( validContainerVersion );
-				} ).toThrow( 'params is required.' );
+				expect(
+					() => registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( validContainerVersion )
+				).toThrow( 'params is required.' );
 			} );
 
 			it( 'does not throw with valid input', () => {
 				expect( () => {
-					receiveGetLiveContainerVersion( validContainerVersion, {
-						accountID: validAccountID,
-						internalContainerID: validInternalContainerID,
-					} );
+					registry.dispatch( STORE_NAME )
+						.receiveGetLiveContainerVersion( validContainerVersion, {
+							accountID: validAccountID,
+							internalContainerID: validInternalContainerID,
+						} );
 				} ).not.toThrow();
 			} );
 		} );
@@ -103,14 +92,14 @@ describe( 'modules/tagmanager versions', () => {
 					{ body: fixtures.liveContainerVersion, status: 200 }
 				);
 
-				const initialContainerVersion = getLiveContainerVersion( accountID, internalContainerID );
+				const initialContainerVersion = registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect( initialContainerVersion ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => hasFinishedResolution( 'getLiveContainerVersion', [ accountID, internalContainerID ] )
 				);
 
-				const liveContainerVersion = getLiveContainerVersion( accountID, internalContainerID );
+				const liveContainerVersion = registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( liveContainerVersion ).toEqual( fixtures.liveContainerVersion );
 			} );
@@ -119,9 +108,12 @@ describe( 'modules/tagmanager versions', () => {
 				const accountID = fixtures.liveContainerVersion.accountId;
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 
-				receiveGetLiveContainerVersion( fixtures.liveContainerVersion, { accountID, internalContainerID } );
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion(
+					fixtures.liveContainerVersion,
+					{ accountID, internalContainerID }
+				);
 
-				const liveContainerVersion = getLiveContainerVersion( accountID, internalContainerID );
+				const liveContainerVersion = registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 				await subscribeUntil( registry,
 					() => hasFinishedResolution( 'getLiveContainerVersion', [ accountID, internalContainerID ] )
 				);
@@ -144,14 +136,14 @@ describe( 'modules/tagmanager versions', () => {
 				);
 
 				muteConsole( 'error' );
-				getLiveContainerVersion( accountID, internalContainerID );
+				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 				await subscribeUntil( registry,
 					() => hasFinishedResolution( 'getLiveContainerVersion', [ accountID, internalContainerID ] )
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( getError() ).toEqual( errorResponse );
-				expect( getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( undefined );
+				expect( registry.select( STORE_NAME ).getError() ).toEqual( errorResponse );
+				expect( registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( undefined );
 			} );
 		} );
 
@@ -161,17 +153,23 @@ describe( 'modules/tagmanager versions', () => {
 				const internalContainerID = '200';
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
-				expect( isDoingGetLiveContainerVersion( accountID, internalContainerID ) ).toBe( false );
+				expect(
+					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID )
+				).toBe( false );
 
-				getLiveContainerVersion( accountID, internalContainerID );
+				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
-				expect( isDoingGetLiveContainerVersion( accountID, internalContainerID ) ).toBe( true );
+				expect(
+					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID )
+				).toBe( true );
 
 				await subscribeUntil( registry,
 					() => hasFinishedResolution( 'getLiveContainerVersion', [ accountID, internalContainerID ] )
 				);
 
-				expect( isDoingGetLiveContainerVersion( accountID, internalContainerID ) ).toBe( false );
+				expect(
+					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID )
+				).toBe( false );
 			} );
 		} );
 	} );
