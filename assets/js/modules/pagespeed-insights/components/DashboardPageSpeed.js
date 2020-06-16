@@ -45,10 +45,10 @@ import { sanitizeHTML } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
-	// TODO: replace global with selector.
-	const permalink = global._googlesitekitLegacyData.permaLink;
+	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	const url = permalink || referenceURL;
+	const url = entityURL !== null ? entityURL : referenceURL;
+
 	const reportMobile = useSelect( ( select ) => select( STORE_NAME ).getReport( url, STRATEGY_MOBILE ) );
 	const reportDesktop = useSelect( ( select ) => select( STORE_NAME ).getReport( url, STRATEGY_DESKTOP ) );
 	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
@@ -72,7 +72,7 @@ export default function DashboardPageSpeed() {
 		}
 	}, [ reportMobile, reportDesktop ] );
 
-	if ( ! reportMobile || ! reportDesktop || ! dataSrc ) {
+	if ( ! url || ! reportMobile || ! reportDesktop || ! dataSrc ) {
 		return <ProgressBar />;
 	}
 
