@@ -21,7 +21,6 @@
  */
 import DashboardPageSpeed from './DashboardPageSpeed';
 import { fireEvent, render } from '../../../../../tests/js/test-utils';
-import { subscribeUntil } from 'tests/js/utils';
 import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../datastore/__fixtures__';
@@ -42,12 +41,6 @@ const setupRegistryNoReports = ( { dispatch } ) => {
 	dispatch( CORE_SITE ).receiveSiteInfo( {
 		referenceSiteURL: url,
 		currentEntityURL: null,
-	} );
-};
-const setupRegistryNoReportsWithEntityURL = ( { dispatch } ) => {
-	dispatch( CORE_SITE ).receiveSiteInfo( {
-		referenceSiteURL: 'https://other-url-that-should-not-be-used.com',
-		currentEntityURL: url,
 	} );
 };
 const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
@@ -142,58 +135,5 @@ describe( 'DashboardPageSpeed', () => {
 		fireEvent.click( getByText( /desktop/i ) );
 
 		expect( queryByText( /Field data unavailable/i ) ).toBeInTheDocument();
-	} );
-
-	it( 'uses reference site URL if current entity URL is null', () => {
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
-			new Promise( () => fixtures.pagespeedMobile ),
-		);
-		// referenceSiteURL is url, currentEntityURL is null.
-		render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoReports } );
-
-		expect( fetchMock ).toHaveFetched(
-			`/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed?strategy=mobile&url=${ encodeURIComponent( url ) }&_locale=user`,
-			{
-				body: undefined,
-				credentials: 'include',
-				headers: {
-					Accept: 'application/json, */*;q=0.1',
-				},
-				method: 'GET',
-			}
-		);
-	} );
-
-	it( 'uses current entity URL if it is present', async () => {
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
-			new Promise( () => fixtures.pagespeedMobile ),
-		);
-
-		let registry;
-		// currentEntityURL is url, referenceSiteURL is something else.
-		render( <DashboardPageSpeed />, {
-			setupRegistry: ( r ) => {
-				registry = r;
-				setupRegistryNoReportsWithEntityURL( r );
-			},
-		} );
-
-		await subscribeUntil( registry,
-			() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, 'mobile' ] )
-		);
-
-		expect( fetchMock ).toHaveFetched(
-			`/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed?strategy=mobile&url=${ encodeURIComponent( url ) }&_locale=user`,
-			{
-				body: undefined,
-				credentials: 'include',
-				headers: {
-					Accept: 'application/json, */*;q=0.1',
-				},
-				method: 'GET',
-			}
-		);
 	} );
 } );

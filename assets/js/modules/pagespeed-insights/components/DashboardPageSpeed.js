@@ -45,12 +45,10 @@ import { sanitizeHTML } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
-	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	const url = entityURL !== null ? entityURL : referenceURL;
+	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
 
-	const reportMobile = useSelect( ( select ) => select( STORE_NAME ).getReport( url, STRATEGY_MOBILE ) );
-	const reportDesktop = useSelect( ( select ) => select( STORE_NAME ).getReport( url, STRATEGY_DESKTOP ) );
+	const reportMobile = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_MOBILE ) );
+	const reportDesktop = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_DESKTOP ) );
 	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
 	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) );
 
@@ -72,7 +70,7 @@ export default function DashboardPageSpeed() {
 		}
 	}, [ reportMobile, reportDesktop ] );
 
-	if ( ! url || ! reportMobile || ! reportDesktop || ! dataSrc ) {
+	if ( ! referenceURL || ! reportMobile || ! reportDesktop || ! dataSrc ) {
 		return <ProgressBar />;
 	}
 
@@ -80,7 +78,7 @@ export default function DashboardPageSpeed() {
 	const footerLinkHTML = sprintf(
 		/* translators: 1: link attributes, 2: translated service name */
 		__( 'View details at <a %1$s>%2$s</a>', 'google-site-kit' ),
-		`href="${ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url } ) }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank"`,
+		`href="${ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { referenceURL } ) }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank"`,
 		_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' )
 	);
 

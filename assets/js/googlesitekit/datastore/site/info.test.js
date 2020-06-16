@@ -260,5 +260,45 @@ describe( 'core/site site info', () => {
 				expect( result ).toEqual( undefined );
 			} );
 		} );
+
+		describe( 'getCurrentReferenceURL', () => {
+			it( 'uses a resolver to load site info, then returns entity URL if set', async () => {
+				global[ baseInfoVar ] = baseInfo;
+				global[ entityInfoVar ] = entityInfo;
+
+				registry.select( STORE_NAME ).getCurrentReferenceURL();
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getCurrentReferenceURL() !== undefined
+					),
+				);
+
+				const referenceURL = registry.select( STORE_NAME ).getCurrentReferenceURL();
+
+				expect( referenceURL ).toEqual( entityInfo.currentEntityURL );
+			} );
+
+			it( 'uses a resolver to load site info, then returns reference site URL if entity URL not set', async () => {
+				global[ baseInfoVar ] = baseInfo;
+				// Set empty entity info as it would come from the server in such a case.
+				global[ entityInfoVar ] = {
+					currentEntityURL: null,
+					currentEntityType: null,
+					currentEntityTitle: null,
+					currentEntityID: null,
+				};
+
+				registry.select( STORE_NAME ).getCurrentReferenceURL();
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getCurrentReferenceURL() !== undefined
+					),
+				);
+
+				const referenceURL = registry.select( STORE_NAME ).getCurrentReferenceURL();
+
+				expect( referenceURL ).toEqual( baseInfo.referenceSiteURL );
+			} );
+		} );
 	} );
 } );

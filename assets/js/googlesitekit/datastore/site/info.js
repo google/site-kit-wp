@@ -316,6 +316,33 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Gets the current reference URL to use.
+	 *
+	 * This selector should be used to get the contextual URL for requesting
+	 * URL-specific data from Google APIs.
+	 *
+	 * If a current entity exists, this will return the same value as the
+	 * `getCurrentEntityURL` selector. Otherwise it will fall back to returning
+	 * the same value as the `getReferenceSiteURL` selector.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The reference site URL.
+	 */
+	getCurrentReferenceURL: createRegistrySelector( ( select ) => () => {
+		const { currentEntityURL, referenceSiteURL } = select( STORE_NAME ).getSiteInfo() || {};
+
+		// Use current entity URL if present or still loading.
+		if ( currentEntityURL !== null ) {
+			return currentEntityURL;
+		}
+
+		// Otherwise fall back to reference site URL.
+		return referenceSiteURL;
+	} ),
+
+	/**
 	 * Returns true if this site supports AMP.
 	 *
 	 * @since 1.7.0
