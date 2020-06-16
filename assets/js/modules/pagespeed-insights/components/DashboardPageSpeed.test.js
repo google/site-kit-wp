@@ -37,13 +37,8 @@ const setupNoReports = ( { dispatch } ) => {
 	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
 };
 const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
-	// eslint-disable-next-line no-unused-vars
-	const { metrics, ...desktopLoadingExperience } = fixtures.pagespeedDesktop.loadingExperience;
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
-	dispatch( STORE_NAME ).receiveGetReport( {
-		...fixtures.pagespeedDesktop,
-		loadingExperience: desktopLoadingExperience, // no field data metrics
-	}, { url, strategy: STRATEGY_DESKTOP } );
+	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldData, { url, strategy: STRATEGY_DESKTOP } );
 	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
 };
 
