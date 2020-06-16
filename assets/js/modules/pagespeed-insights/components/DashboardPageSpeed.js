@@ -75,8 +75,8 @@ export default function DashboardPageSpeed() {
 		}
 	}, [] );
 	// Update the active tab for "mobile" or "desktop".
-	const updateActiveDeviceSize = useCallback( ( strategyIndex ) => {
-		if ( strategyIndex === 1 ) {
+	const updateActiveDeviceSize = useCallback( ( { slug } ) => {
+		if ( slug === STRATEGY_DESKTOP ) {
 			setStrategyDesktop();
 		} else {
 			setStrategyMobile();
@@ -119,7 +119,7 @@ export default function DashboardPageSpeed() {
 				</div>
 				<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
 					<DeviceSizeTabBar
-						activeIndex={ strategy === STRATEGY_DESKTOP ? 1 : 0 }
+						activeTab={ strategy }
 						handleDeviceSizeUpdate={ updateActiveDeviceSize }
 					/>
 				</div>

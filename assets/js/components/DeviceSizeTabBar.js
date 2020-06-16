@@ -24,29 +24,41 @@ import TabBar from '@material/react-tab-bar';
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import DeviceSizeMobileIcon from './icons/DeviceSizeMobileIcon';
 import DeviceSizeDesktopIcon from './icons/DeviceSizeDesktopIcon';
 
-const DeviceSizeTabBar = ( { activeIndex, deviceSizes, handleDeviceSizeUpdate } ) => {
+const DeviceSizeTabBar = ( { activeTab, deviceSizes, handleDeviceSizeUpdate } ) => {
+	const onUpdate = useCallback( ( index ) => {
+		const device = deviceSizes[ index ];
+		handleDeviceSizeUpdate( device, index );
+	}, [ deviceSizes ] );
+
 	if ( ! deviceSizes.length ) {
 		return null;
 	}
+
+	const activeIndex = deviceSizes.findIndex( ( { slug } ) => slug === activeTab );
 
 	return (
 		<TabBar
 			className="googlesitekit-device-size-tab-bar"
 			activeIndex={ activeIndex }
-			handleActiveIndexUpdate={ handleDeviceSizeUpdate }
+			handleActiveIndexUpdate={ onUpdate }
 		>
-			{ deviceSizes.map( ( deviceSize, i ) => {
+			{ deviceSizes.map( ( { slug, icon }, i ) => {
 				return (
 					<Tab
 						key={ `google-sitekit-device-size-tab-key-${ i }` }
-						aria-label={ deviceSize.slug }
+						aria-label={ slug }
 					>
-						{ deviceSize.icon }
+						{ icon }
 					</Tab>
 				);
 			}
@@ -68,15 +80,12 @@ DeviceSizeTabBar.propTypes = {
 };
 
 DeviceSizeTabBar.defaultProps = {
-	activeIndex: 0,
 	deviceSizes: [
 		{
-			index: 0,
 			slug: 'mobile',
 			icon: <DeviceSizeMobileIcon />,
 		},
 		{
-			index: 1,
 			slug: 'desktop',
 			icon: <DeviceSizeDesktopIcon />,
 		},
