@@ -52,6 +52,11 @@
 		.googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper {
 			padding: 12px;
 			width: auto;
+
+			.googlesitekit-device-size-tab-bar {
+
+				@include shadow;
+			}
 		}
 
 	}
