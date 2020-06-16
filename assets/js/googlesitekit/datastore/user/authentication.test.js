@@ -249,6 +249,7 @@ describe( 'core/user authentication', () => {
 				expect( grantedScopes ).toEqual( undefined );
 			} );
 		} );
+
 		describe( 'getRequiredScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
 				fetchMock.getOnce(
@@ -356,6 +357,62 @@ describe( 'core/user authentication', () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				const unsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();
 				expect( unsatisfiedScopes ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'needsReauthentication', () => {
+			it( 'uses a resolver get all reauthentication info', async () => {
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: coreUserDataExpectedResponse, status: 200 }
+				);
+
+				const initialNeedsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+				// The scopes will be their initial value until the data is resolved.
+				expect( initialNeedsReauthentication ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' )
+				);
+
+				const needsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( needsReauthentication ).toEqual( coreUserDataExpectedResponse.needsReauthentication );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{
+						body: JSON.stringify( response ),
+						status: 500,
+					}
+				);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).needsReauthentication();
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' ),
+				);
+
+				const needsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+				const error = registry.select( STORE_NAME ).getError();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( needsReauthentication ).toEqual( undefined );
+				expect( error ).toEqual( response );
+			} );
+
+			it( 'returns undefined if reauthentication info is not available', async () => {
+				muteFetch( coreUserDataEndpointRegExp );
+				const needsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+
+				expect( needsReauthentication ).toEqual( undefined );
 			} );
 		} );
 	} );
