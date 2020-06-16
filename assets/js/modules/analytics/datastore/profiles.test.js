@@ -68,7 +68,7 @@ describe( 'modules/analytics profiles', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{
 						body: {
-							data: { accountID, propertyID },
+							data: { accountID, propertyID, profileName: '' },
 						},
 					}
 				);

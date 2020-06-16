@@ -170,6 +170,7 @@ describe( 'modules/analytics settings', () => {
 							data: {
 								accountID: '12345',
 								propertyID: 'UA-12345-1',
+								profileName: '',
 							},
 						},
 					},
@@ -196,7 +197,7 @@ describe( 'modules/analytics settings', () => {
 
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: { data: { accountID: '12345', propertyID: 'UA-12345-1' } } },
+					{ body: { data: { accountID: '12345', propertyID: 'UA-12345-1', profileName: '' } } },
 				);
 				expect( result.error ).toEqual( error );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
