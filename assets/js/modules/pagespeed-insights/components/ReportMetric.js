@@ -67,12 +67,7 @@ export default function ReportMetric( {
 					<div className="googlesitekit-pagespeed-report-metric-value__number">
 						{ displayValue }
 					</div>
-					<div
-						className={ classnames(
-							'googlesitekit-pagespeed-report-metric-value__rating',
-							'googlesitekit-uppercase'
-						) }
-					>
+					<div className="googlesitekit-pagespeed-report-metric-value__rating">
 						{ category === CATEGORY_FAST && _x( 'Good', 'Performance rating', 'google-site-kit' ) }
 						{ category === CATEGORY_AVERAGE && _x( 'Needs improvement', 'Performance rating', 'google-site-kit' ) }
 						{ category === CATEGORY_SLOW && _x( 'Poor', 'Performance rating', 'google-site-kit' ) }
