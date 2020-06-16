@@ -21,6 +21,7 @@
  */
 import DashboardPageSpeed from './DashboardPageSpeed';
 import { fireEvent, render } from '../../../../../tests/js/test-utils';
+import { subscribeUntil } from 'tests/js/utils';
 import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../datastore/__fixtures__';
@@ -32,10 +33,22 @@ const url = fixtures.pagespeedMobile.loadingExperience.id;
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
-	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+	dispatch( CORE_SITE ).receiveSiteInfo( {
+		referenceSiteURL: url,
+		currentEntityURL: null,
+	} );
 };
-const setupNoReports = ( { dispatch } ) => {
-	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+const setupRegistryNoReports = ( { dispatch } ) => {
+	dispatch( CORE_SITE ).receiveSiteInfo( {
+		referenceSiteURL: url,
+		currentEntityURL: null,
+	} );
+};
+const setupRegistryNoReportsWithEntityURL = ( { dispatch } ) => {
+	dispatch( CORE_SITE ).receiveSiteInfo( {
+		referenceSiteURL: 'https://other-url-that-should-not-be-used.com',
+		currentEntityURL: url,
+	} );
 };
 const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 	// eslint-disable-next-line no-unused-vars
@@ -45,7 +58,10 @@ const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 		...fixtures.pagespeedDesktop,
 		loadingExperience: desktopLoadingExperience, // no field data metrics
 	}, { url, strategy: STRATEGY_DESKTOP } );
-	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+	dispatch( CORE_SITE ).receiveSiteInfo( {
+		referenceSiteURL: url,
+		currentEntityURL: null,
+	} );
 };
 
 describe( 'DashboardPageSpeed', () => {
@@ -56,7 +72,7 @@ describe( 'DashboardPageSpeed', () => {
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
 			new Promise( () => {} ), // Don't return a response.
 		);
-		const { queryByRole } = render( <DashboardPageSpeed />, { setupRegistry: setupNoReports } );
+		const { queryByRole } = render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoReports } );
 
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
@@ -126,5 +142,58 @@ describe( 'DashboardPageSpeed', () => {
 		fireEvent.click( getByText( /desktop/i ) );
 
 		expect( queryByText( /Field data unavailable/i ) ).toBeInTheDocument();
+	} );
+
+	it( 'uses reference site URL if current entity URL is null', () => {
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+			new Promise( () => {} ), // Don't return a response.
+		);
+		// referenceSiteURL is url, currentEntityURL is null.
+		render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoReports } );
+
+		expect( fetchMock ).toHaveFetched(
+			`/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed?strategy=mobile&url=${ encodeURIComponent( url ) }&_locale=user`,
+			{
+				body: undefined,
+				credentials: 'include',
+				headers: {
+					Accept: 'application/json, */*;q=0.1',
+				},
+				method: 'GET',
+			}
+		);
+	} );
+
+	it( 'uses current entity URL if it is present', async () => {
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+			new Promise( () => {} ), // Don't return a response.
+		);
+
+		let registry;
+		// currentEntityURL is url, referenceSiteURL is something else.
+		render( <DashboardPageSpeed />, {
+			setupRegistry: ( r ) => {
+				registry = r;
+				setupRegistryNoReportsWithEntityURL( r );
+			},
+		} );
+
+		await subscribeUntil( registry,
+			() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, 'mobile' ] )
+		);
+
+		expect( fetchMock ).toHaveFetched(
+			`/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed?strategy=mobile&url=${ encodeURIComponent( url ) }&_locale=user`,
+			{
+				body: undefined,
+				credentials: 'include',
+				headers: {
+					Accept: 'application/json, */*;q=0.1',
+				},
+				method: 'GET',
+			}
+		);
 	} );
 } );
