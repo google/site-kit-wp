@@ -24,6 +24,7 @@ import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import accounts from './accounts';
 import containers from './containers';
+import error from './error';
 import existingTag from './existing-tag';
 import settings from './settings';
 import versions from './versions';
@@ -63,6 +64,7 @@ const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
 	containers,
+	error,
 	existingTag,
 	settings,
 	versions,

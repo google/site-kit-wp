@@ -214,7 +214,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 			await subscribeUntil( registry, () => hasFinishedResolution( 'hasTagPermission', [ tag ] ) );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
-			expect( registry.select( STORE_NAME ).getError() ).toEqual( null );
+			expect( registry.select( STORE_NAME ).getError() ).toEqual( undefined );
 			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( false );
 		} );
 

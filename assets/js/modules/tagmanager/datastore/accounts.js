@@ -126,34 +126,6 @@ export const baseSelectors = {
 	},
 
 	/**
-	 * Gets an error encountered by this store or its side effects.
-	 *
-	 * Returns an object with the shape when there is an error:
-	 * ```
-	 * {
-	 *   code,
-	 *   message,
-	 * }
-	 * ```
-	 *
-	 * Returns `null` if there was no error.
-	 *
-	 * Marked as private, because in the future we'll have more robust error
-	 * handling.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {?Object} Any error encountered with requests in state.
-	 */
-	getError( state ) {
-		const { error } = state;
-
-		return error || null;
-	},
-
-	/**
 	 * Checks whether accounts are currently being fetched.
 	 *
 	 * @since n.e.x.t
