@@ -59,11 +59,12 @@ const fetchGetProfilesStore = createFetchStore( {
 
 const fetchCreateProfileStore = createFetchStore( {
 	baseName: 'createProfile',
-	controlCallback: ( { propertyID } ) => {
+	controlCallback: ( { propertyID, profileName } ) => {
 		const { accountID } = parsePropertyID( propertyID );
 		return API.set( 'modules', 'analytics', 'create-profile', {
 			accountID,
 			propertyID,
+			profileName,
 		} );
 	},
 	reducerCallback: ( state, profile, { propertyID } ) => {
@@ -78,9 +79,9 @@ const fetchCreateProfileStore = createFetchStore( {
 			},
 		};
 	},
-	argsToParams: ( propertyID ) => {
+	argsToParams: ( propertyID, profileName = '' ) => {
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
-		return { propertyID };
+		return { propertyID, profileName };
 	},
 } );
 
@@ -98,12 +99,13 @@ const baseActions = {
 	 * @since 1.8.0
 	 *
 	 * @param {string} propertyID Google Analytics property ID.
+	 * @param {string} profileName The name for a new profile.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createProfile( propertyID ) {
+	*createProfile( propertyID, profileName = '' ) {
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
 
-		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( propertyID );
+		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( propertyID, profileName );
 		return { response, error };
 	},
 };

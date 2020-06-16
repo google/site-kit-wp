@@ -28,15 +28,15 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
 import { TextField, Input } from '../../../material-components';
-import { STORE_NAME, PROFILE_CREATE } from '../datastore/constants';
+import { STORE_NAME, PROFILE_CREATE, FORM_SETUP } from '../datastore/constants';
 
 export default function ProfileName() {
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const profileName = useSelect( ( select ) => select( CORE_FORMS ).getValue( PROFILE_CREATE, 'profileName' ) );
+	const profileName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( ( { currentTarget } ) => {
-		setValues( PROFILE_CREATE, {
+		setValues( FORM_SETUP, {
 			profileName: currentTarget.value,
 		} );
 	}, [ profileID ] );
