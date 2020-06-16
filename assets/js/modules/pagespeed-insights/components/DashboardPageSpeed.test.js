@@ -59,16 +59,16 @@ describe( 'DashboardPageSpeed', () => {
 		expect( fixtures.pagespeedMobile.loadingExperience ).toHaveProperty( 'metrics' );
 		expect( fixtures.pagespeedDesktop.loadingExperience ).toHaveProperty( 'metrics' );
 
-		const { getByText } = render( <DashboardPageSpeed />, { setupRegistry } );
+		const { getByLabelText } = render( <DashboardPageSpeed />, { setupRegistry } );
 
-		expect( getByText( /In the Field/i ).closest( 'button' ) ).toHaveClass( activeClass );
+		expect( getByLabelText( /In the Field/i ).closest( 'button' ) ).toHaveClass( activeClass );
 	} );
 
 	it( 'displays lab data by default when field data is not present in both mobile and desktop reports', () => {
-		const { getByText } = render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoFieldDataDesktop } );
+		const { getByLabelText } = render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoFieldDataDesktop } );
 
-		expect( getByText( /In the Lab/i ).closest( 'button' ) ).toHaveClass( activeClass );
-		expect( getByText( /In the Field/i ).closest( 'button' ) ).not.toHaveClass( activeClass );
+		expect( getByLabelText( /In the Lab/i ).closest( 'button' ) ).toHaveClass( activeClass );
+		expect( getByLabelText( /In the Field/i ).closest( 'button' ) ).not.toHaveClass( activeClass );
 	} );
 
 	it( 'displays the mobile data by default', () => {
@@ -78,14 +78,14 @@ describe( 'DashboardPageSpeed', () => {
 	} );
 
 	it( 'has tabs for toggling the displayed data source', () => {
-		const { getByText } = render( <DashboardPageSpeed />, { setupRegistry } );
+		const { getByLabelText } = render( <DashboardPageSpeed />, { setupRegistry } );
 
-		const labDataTabLink = getByText( /In the Lab/i ).closest( 'button' );
+		const labDataTabLink = getByLabelText( /In the Lab/i ).closest( 'button' );
 		expect( labDataTabLink ).not.toHaveClass( activeClass );
 		fireEvent.click( labDataTabLink );
 
 		expect( labDataTabLink ).toHaveClass( activeClass );
-		expect( getByText( /In the Field/i ) ).not.toHaveClass( activeClass );
+		expect( getByLabelText( /In the Field/i ) ).not.toHaveClass( activeClass );
 	} );
 
 	it( 'has tabs for toggling the tested device', () => {
@@ -101,16 +101,16 @@ describe( 'DashboardPageSpeed', () => {
 	} );
 
 	it( 'displays a "Field data unavailable" message when field data is not available', () => {
-		const { getByText, getByLabelText, queryByText, registry } = render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoFieldDataDesktop } );
+		const { getByLabelText, queryByText, registry } = render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoFieldDataDesktop } );
 
 		const { getReport } = registry.select( STORE_NAME );
 		expect( getReport( url, STRATEGY_MOBILE ).loadingExperience ).toHaveProperty( 'metrics' );
 		expect( getReport( url, STRATEGY_DESKTOP ).loadingExperience ).not.toHaveProperty( 'metrics' );
 
 		// Lab data is shown by default as both reports do not have field data.
-		expect( getByText( /In the Lab/i ).closest( 'button' ) ).toHaveClass( activeClass );
+		expect( getByLabelText( /In the Lab/i ).closest( 'button' ) ).toHaveClass( activeClass );
 		// Switch to Field data source.
-		fireEvent.click( getByText( /In the Field/i ).closest( 'button' ) );
+		fireEvent.click( getByLabelText( /In the Field/i ).closest( 'button' ) );
 
 		expect( getByLabelText( /mobile/i ) ).toHaveClass( activeClass );
 		// Mobile has field data, so ensure the no data message is not present.

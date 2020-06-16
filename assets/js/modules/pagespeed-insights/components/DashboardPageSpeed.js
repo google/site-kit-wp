@@ -109,13 +109,19 @@ export default function DashboardPageSpeed() {
 						activeIndex={ dataSrc === DATA_SRC_FIELD ? 1 : 0 }
 						handleActiveIndexUpdate={ updateActiveTab }
 					>
-						<Tab aria-label="in the lab">
-							<span className="mdc-tab__text-label">
+						<Tab aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }>
+							<span
+								id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
+								className="mdc-tab__text-label"
+							>
 								{ __( 'In the Lab', 'google-site-kit' ) }
 							</span>
 						</Tab>
-						<Tab aria-label="in the field">
-							<span className="mdc-tab__text-label">
+						<Tab aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }>
+							<span
+								id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
+								className="mdc-tab__text-label"
+							>
 								{ __( 'In the Field', 'google-site-kit' ) }
 							</span>
 						</Tab>
