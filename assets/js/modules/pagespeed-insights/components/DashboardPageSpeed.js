@@ -106,7 +106,7 @@ export default function DashboardPageSpeed() {
 			<header className="googlesitekit-pagespeed-widget__header">
 				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
 					<TabBar
-						activeIndex={ dataSrc === DATA_SRC_FIELD ? 1 : 0 }
+						activeIndex={ [ DATA_SRC_LAB, DATA_SRC_FIELD ].indexOf( dataSrc ) }
 						handleActiveIndexUpdate={ updateActiveTab }
 					>
 						<Tab aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }>
