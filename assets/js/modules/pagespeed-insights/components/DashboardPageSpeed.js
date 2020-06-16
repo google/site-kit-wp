@@ -96,7 +96,17 @@ export default function DashboardPageSpeed() {
 	}, [ reportMobile, reportDesktop ] );
 
 	if ( ! reportMobile || ! reportDesktop || ! dataSrc ) {
-		return <ProgressBar />;
+		return (
+			<Layout className="googlesitekit-pagespeed-widget">
+				<div className="mdc-layout-grid">
+					<div className="mdc-layout-grid__inner">
+						<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+							<ProgressBar />
+						</div>
+					</div>
+				</div>
+			</Layout>
+		);
 	}
 
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
