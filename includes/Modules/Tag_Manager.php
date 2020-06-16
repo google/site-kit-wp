@@ -642,11 +642,14 @@ final class Tag_Manager extends Module
 				);
 			case 'GET:tag-permission':
 				return function () use ( $data ) {
-					if ( ! isset( $data['tag'] ) ) {
+					// TODO: Remove 'tag' fallback once legacy components are refactored.
+					$container_id = $data['containerID'] ?: $data['tag'];
+
+					if ( ! $container_id ) {
 						return new WP_Error(
 							'missing_required_param',
 							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'tag' ),
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ),
 							array( 'status' => 400 )
 						);
 					}
@@ -659,12 +662,12 @@ final class Tag_Manager extends Module
 
 					$response = array(
 						'accountID'   => '',
-						'containerID' => $data['tag'],
+						'containerID' => $container_id,
 						'permission'  => false,
 					);
 
 					try {
-						$account_container      = $this->get_account_for_container( $data['tag'], $accounts );
+						$account_container      = $this->get_account_for_container( $container_id, $accounts );
 						$response['accountID']  = $account_container['account']['accountId'];
 						$response['permission'] = true;
 
