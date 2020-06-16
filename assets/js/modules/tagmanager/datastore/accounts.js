@@ -144,9 +144,9 @@ const store = Data.combineStores(
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
 		actions: baseActions,
-		selectors: baseSelectors,
-		resolvers: baseResolvers,
 		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
 	}
 );
 

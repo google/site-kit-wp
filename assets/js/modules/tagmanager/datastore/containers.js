@@ -132,9 +132,9 @@ const store = Data.combineStores(
 	fetchCreateContainerStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
-		selectors: baseSelectors,
-		resolvers: baseResolvers,
 		actions: baseActions,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
 	}
 );
 
