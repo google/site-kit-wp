@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,7 +33,23 @@ import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__f
 import { STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
+function WithNoPermalink( { children } ) {
+	useEffect( () => {
+		// Backup the permalink.
+		const { permaLink } = global._googlesitekitLegacyData;
+		// Delete the permaLink from global state when mounting.
+		delete global._googlesitekitLegacyData.permaLink;
+		// Restore the permalink in global state when unmounting.
+		return () => ( global._googlesitekitLegacyData.permaLink = permaLink );
+	}, [] );
+
+	return children;
+}
+
 storiesOf( 'PageSpeed Insights Module/Components', module )
+	// Render these stories without the legacy permalink global which has a different URL than we provide the report for.
+	// In the future, this can be removed when the permalink is accessed via the datastore.
+	.addDecorator( ( storyFn ) => <WithNoPermalink>{ storyFn() }</WithNoPermalink> )
 	.add( 'Dashboard widget', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
 		const setupRegistry = ( { dispatch } ) => {
