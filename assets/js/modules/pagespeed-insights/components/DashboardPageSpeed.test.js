@@ -147,7 +147,7 @@ describe( 'DashboardPageSpeed', () => {
 	it( 'uses reference site URL if current entity URL is null', () => {
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
-			new Promise( () => {} ), // Don't return a response.
+			new Promise( () => fixtures.pagespeedMobile ),
 		);
 		// referenceSiteURL is url, currentEntityURL is null.
 		render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoReports } );
@@ -168,7 +168,7 @@ describe( 'DashboardPageSpeed', () => {
 	it( 'uses current entity URL if it is present', async () => {
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
-			new Promise( () => {} ), // Don't return a response.
+			new Promise( () => fixtures.pagespeedMobile ),
 		);
 
 		let registry;
