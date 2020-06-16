@@ -111,19 +111,19 @@ export default function LabReportMetrics( { data } ) {
 				<tbody>
 					<ReportMetric
 						title={ __( 'Total Blocking Time', 'google-site-kit' ) }
-						description={ __( 'Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms.', 'google-site-kit' ) }
+						description={ __( 'Measures load responsiveness', 'google-site-kit' ) }
 						displayValue={ totalBlockingTime.displayValue }
 						category={ getScoreCategory( totalBlockingTime.score ) }
 					/>
 					<ReportMetric
 						title={ __( 'Largest Contentful Paint', 'google-site-kit' ) }
-						description={ __( 'Marks the time at which the largest text or image is painted.', 'google-site-kit' ) }
+						description={ __( 'Measures loading performance', 'google-site-kit' ) }
 						displayValue={ largestContentfulPaint.displayValue }
 						category={ getScoreCategory( largestContentfulPaint.score ) }
 					/>
 					<ReportMetric
 						title={ __( 'Cumulative Layout Shift', 'google-site-kit' ) }
-						description={ __( 'Measures the movement of visible elements within the viewport.', 'google-site-kit' ) }
+						description={ __( 'Measures visual stability', 'google-site-kit' ) }
 						displayValue={ cumulativeLayoutShift.displayValue }
 						category={ getScoreCategory( cumulativeLayoutShift.score ) }
 					/>

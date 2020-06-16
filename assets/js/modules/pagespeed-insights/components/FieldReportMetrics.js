@@ -131,19 +131,19 @@ export default function FieldReportMetrics( { data } ) {
 				<tbody>
 					<ReportMetric
 						title={ __( 'First Input Delay', 'google-site-kit' ) }
-						description={ __( 'Helps measure your user’s first impression of your site’s interactivity and responsiveness.', 'google-site-kit' ) }
+						description={ __( 'Measures page interactivity', 'google-site-kit' ) }
 						displayValue={ `${ firstInputDelay.percentile } ms` }
 						category={ firstInputDelay.category }
 					/>
 					<ReportMetric
 						title={ __( 'Largest Contentful Paint', 'google-site-kit' ) }
-						description={ __( 'Marks the time at which the largest text or image is painted.', 'google-site-kit' ) }
+						description={ __( 'Measures loading performance', 'google-site-kit' ) }
 						displayValue={ `${ lcpSeconds } s` }
 						category={ largestContentfulPaint.category }
 					/>
 					<ReportMetric
 						title={ __( 'Cumulative Layout Shift', 'google-site-kit' ) }
-						description={ __( 'Measures the movement of visible elements within the viewport.', 'google-site-kit' ) }
+						description={ __( 'Measures visual stability', 'google-site-kit' ) }
 						displayValue={ cls }
 						category={ cumulativeLayoutShift.category }
 					/>
