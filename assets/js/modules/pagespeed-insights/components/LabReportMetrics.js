@@ -85,7 +85,7 @@ export default function LabReportMetrics( { data } ) {
 
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
-			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row--first">
+			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
 				<p>
 					{ __( 'Lab data is useful for debugging performance issues, as it is collected in a controlled environment.', 'google-site-kit' ) }
 					{ ' ' }
@@ -129,7 +129,7 @@ export default function LabReportMetrics( { data } ) {
 					/>
 				</tbody>
 			</table>
-			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row--last">
+			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--last">
 				<p>
 					{ __( 'View details at', 'google-site-kit' ) }
 					{ ' ' }

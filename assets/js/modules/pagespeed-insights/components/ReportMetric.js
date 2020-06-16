@@ -41,7 +41,7 @@ export default function ReportMetric( {
 	category = category.toLowerCase();
 
 	return (
-		<tr className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-metric">
+		<tr className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report-metric">
 			<td>
 				<div className="googlesitekit-pagespeed-report-metric__title">
 					{ title }

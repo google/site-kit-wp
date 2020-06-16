@@ -18,7 +18,7 @@
 
 .googlesitekit-pagespeed-widget {
 
-	.googlesitekit-pagespeed-widget-header {
+	.googlesitekit-pagespeed-widget__header {
 
 		align-items: flex-end;
 		background: $c-header-gray;
@@ -32,7 +32,7 @@
 			justify-content: flex-end;
 		}
 
-		.googlesitekit-pagespeed-data-src-tabs {
+		.googlesitekit-pagespeed-widget__data-src-tabs {
 
 			button.mdc-tab {
 				font-size: 0.875rem;
@@ -49,7 +49,7 @@
 			}
 		}
 
-		.googlesitekit-pagespeed-widget-device-size-tab-bar-wrapper {
+		.googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper {
 			padding: 12px;
 			width: auto;
 		}
@@ -58,7 +58,7 @@
 
 	.googlesitekit-pagespeed-insights-web-vitals-metrics {
 
-		.googlesitekit-pagespeed-report-row {
+		.googlesitekit-pagespeed-report__row {
 			align-items: center;
 			display: flex;
 			justify-content: space-between;
@@ -75,7 +75,7 @@
 				line-height: 1.25rem;
 			}
 
-			&.googlesitekit-pagespeed-report-row--first {
+			&.googlesitekit-pagespeed-report__row--first {
 
 				padding: 12px $grid-gap-phone 8px $grid-gap-phone;
 
@@ -88,7 +88,7 @@
 				}
 			}
 
-			&.googlesitekit-pagespeed-report-row--last {
+			&.googlesitekit-pagespeed-report__row--last {
 
 				padding: 8px $grid-gap-desktop 12px $grid-gap-desktop;
 

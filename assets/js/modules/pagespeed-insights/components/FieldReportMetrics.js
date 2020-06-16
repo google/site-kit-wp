@@ -105,7 +105,7 @@ export default function FieldReportMetrics( { data } ) {
 
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
-			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row--first">
+			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
 				<p>
 					{ __( 'Field data is useful for capturing true, real-world user experience - but has a more limited set of metrics.', 'google-site-kit' ) }
 					{ ' ' }
@@ -149,7 +149,7 @@ export default function FieldReportMetrics( { data } ) {
 					/>
 				</tbody>
 			</table>
-			<div className="googlesitekit-pagespeed-report-row googlesitekit-pagespeed-report-row--last">
+			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--last">
 				<p>
 					{ __( 'View details at', 'google-site-kit' ) }
 					{ ' ' }

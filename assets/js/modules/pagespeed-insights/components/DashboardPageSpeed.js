@@ -94,8 +94,8 @@ export default function DashboardPageSpeed() {
 	};
 
 	// Update the active tab for "mobile" or "desktop".
-	const updateActiveDeviceSize = ( deviceIndex ) => {
-		if ( deviceIndex === 1 ) {
+	const updateActiveDeviceSize = ( strategyIndex ) => {
+		if ( strategyIndex === 1 ) {
 			setStrategyDesktop();
 		} else {
 			setStrategyMobile();
@@ -107,21 +107,21 @@ export default function DashboardPageSpeed() {
 			<Layout
 				className="googlesitekit-pagespeed-widget"
 			>
-				<header className="googlesitekit-pagespeed-widget-header">
-					<div className="googlesitekit-pagespeed-data-src-tabs">
+				<header className="googlesitekit-pagespeed-widget__header">
+					<div className="googlesitekit-pagespeed-widget__data-src-tabs">
 						<TabBar
 							activeIndex={ dataSrc === DATA_SRC_FIELD ? 1 : 0 }
 							handleActiveIndexUpdate={ updateActiveTab }
 						>
-							<Tab>
+							<Tab aria-label="in the lab">
 								<span className="mdc-tab__text-label">{ __( 'In the Lab', 'google-site-kit' ) }</span>
 							</Tab>
-							<Tab>
+							<Tab aria-label="in the field">
 								<span className="mdc-tab__text-label">{ __( 'In the Field', 'google-site-kit' ) }</span>
 							</Tab>
 						</TabBar>
 					</div>
-					<div className="googlesitekit-pagespeed-widget-device-size-tab-bar-wrapper">
+					<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
 						<DeviceSizeTabBar
 							activeIndex={ strategy === STRATEGY_DESKTOP ? 1 : 0 }
 							handleDeviceSizeUpdate={ updateActiveDeviceSize }
