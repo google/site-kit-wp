@@ -45,12 +45,7 @@ const WidgetArea = ( { area } ) => {
 					'mdc-layout-grid__cell--span-8-tablet',
 					'mdc-layout-grid__cell--span-4-phone',
 				) }>
-					{ /*
-						Disabled legitimately, because these icons don't have appropriate
-						alt-text and should only be used decoratively.
-					*/ }
-					{ /* eslint-disable-next-line jsx-a11y/alt-text */ }
-					<img src={ widgetArea.icon } />
+					<img alt="" src={ widgetArea.icon } />
 					{ widgetArea.title &&
 					<h3 className={ classnames(
 						'googlesitekit-heading-3',
