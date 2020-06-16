@@ -32,6 +32,7 @@ import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/si
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';
 import { STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
+import fetchMock from 'fetch-mock';
 
 function WithNoPermalink( { children } ) {
 	useEffect( () => {
@@ -54,6 +55,26 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
+			dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<Layout>
+					<DashboardPageSpeed />
+				</Layout>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Dashboard widget (loading)', () => {
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+			new Promise( () => {} ) // Never returns a response for perpetual loading.
+		);
+		const url = fixtures.pagespeedMobile.loadingExperience.id;
+		const setupRegistry = ( { dispatch } ) => {
+			// Component will be loading as long as both reports are not present.
+			// Omit receiving mobile here to trigger the request only once.
 			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
 			dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
 		};
