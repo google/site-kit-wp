@@ -84,6 +84,7 @@ export default function DashboardPageSpeed() {
 
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
 
+	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = ( dataSrcIndex ) => {
 		if ( dataSrcIndex === 0 ) {
 			setDataSrcLab();
@@ -92,6 +93,7 @@ export default function DashboardPageSpeed() {
 		}
 	};
 
+	// Update the active tab for "mobile" or "desktop".
 	const updateActiveDeviceSize = ( deviceIndex ) => {
 		if ( deviceIndex === 1 ) {
 			setStrategyDesktop();
