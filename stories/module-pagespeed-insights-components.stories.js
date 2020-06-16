@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,29 +33,16 @@ import { STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespee
 import { WithTestRegistry } from '../tests/js/utils';
 import fetchMock from 'fetch-mock';
 
-function WithNoPermalink( { children } ) {
-	useEffect( () => {
-		// Backup the permalink.
-		const { permaLink } = global._googlesitekitLegacyData;
-		// Delete the permaLink from global state when mounting.
-		delete global._googlesitekitLegacyData.permaLink;
-		// Restore the permalink in global state when unmounting.
-		return () => ( global._googlesitekitLegacyData.permaLink = permaLink );
-	}, [] );
-
-	return children;
-}
-
 storiesOf( 'PageSpeed Insights Module/Components', module )
-	// Render these stories without the legacy permalink global which has a different URL than we provide the report for.
-	// In the future, this can be removed when the permalink is accessed via the datastore.
-	.addDecorator( ( storyFn ) => <WithNoPermalink>{ storyFn() }</WithNoPermalink> )
 	.add( 'Dashboard widget', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
 			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
-			dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				referenceSiteURL: url,
+				currentEntityURL: null,
+			} );
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
@@ -76,7 +62,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 			// Component will be loading as long as both reports are not present.
 			// Omit receiving mobile here to trigger the request only once.
 			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
-			dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				referenceSiteURL: url,
+				currentEntityURL: null,
+			} );
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
@@ -91,7 +80,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobileNoFieldData, { url, strategy: STRATEGY_MOBILE } );
 			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldData, { url, strategy: STRATEGY_DESKTOP } );
-			dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				referenceSiteURL: url,
+				currentEntityURL: null,
+			} );
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>

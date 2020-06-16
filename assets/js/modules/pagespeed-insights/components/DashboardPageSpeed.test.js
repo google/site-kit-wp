@@ -45,7 +45,10 @@ const setupRegistryNoReports = ( { dispatch } ) => {
 const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldData, { url, strategy: STRATEGY_DESKTOP } );
-	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+	dispatch( CORE_SITE ).receiveSiteInfo( {
+		referenceSiteURL: url,
+		currentEntityURL: null,
+	} );
 };
 
 describe( 'DashboardPageSpeed', () => {
