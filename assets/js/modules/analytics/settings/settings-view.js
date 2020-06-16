@@ -28,13 +28,28 @@ import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../components/display-setting';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { trackingExclusionLabels } from '../common/tracking-exclusion-switches';
 import { ExistingTagError, ExistingTagNotice, ErrorNotice } from '../common';
 const { useSelect } = Data;
 
+function escapeURI( strings, ...values ) {
+	let uri = '';
+
+	for ( let i = 0, len = strings.length; i < len; i++ ) {
+		uri += strings[ i ];
+		if ( i < values.length ) {
+			uri += encodeURIComponent( values[ i ] );
+		}
+	}
+
+	return uri;
+}
+
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
@@ -42,6 +57,9 @@ export default function SettingsView() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
+	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+
+	const editViewSettingsUrl = escapeURI`https://analytics.google.com/analytics/web/?authuser=${ userEmail }#/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`;
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
@@ -75,6 +93,19 @@ export default function SettingsView() {
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ profileID } />
 					</p>
+				</div>
+			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
+					<a
+						className="googlesitekit-cta-link googlesitekit-cta-link--external"
+						href={ editViewSettingsUrl }
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						{ __( 'You can make changes to this view (e.g. exclude URL query parameters) in Google Analytics', 'google-site-kit' ) }
+					</a>
 				</div>
 			</div>
 
