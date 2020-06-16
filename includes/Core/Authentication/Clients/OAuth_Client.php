@@ -829,7 +829,12 @@ final class OAuth_Client {
 			$site_fields  = array_map( 'rawurlencode', $this->google_proxy->get_site_fields() );
 			$query_params = array_merge( $query_params, $site_fields );
 		}
+
+		$user_fields  = array_map( 'rawurlencode', $this->google_proxy->get_user_fields() );
+		$query_params = array_merge( $query_params, $user_fields );
+
 		$query_params['application_name'] = rawurlencode( $this->get_application_name() );
+
 		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
 	}
 

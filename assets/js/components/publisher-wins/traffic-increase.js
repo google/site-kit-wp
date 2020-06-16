@@ -57,7 +57,7 @@ const trafficIncrease = ( data, id ) => {
 		description: __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ),
 		dismiss: __( 'OK, Got it!', 'google-site-kit' ),
 		format: 'large',
-		winImage: `${ global.googlesitekit.admin.assetsRoot }images/sun.png`,
+		winImage: `${ global._googlesitekitLegacyData.admin.assetsRoot }images/sun.png`,
 		blockData:
 			[
 				{

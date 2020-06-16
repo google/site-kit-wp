@@ -23,26 +23,21 @@
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
 import { createRegistry } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import {
-	unsubscribeFromAll,
-} from 'tests/js/utils';
-import {
-	createNotificationsStore,
-} from '../data/create-notifications-store';
+import { unsubscribeFromAll } from 'tests/js/utils';
+import { createNotificationsStore } from '../data/create-notifications-store';
+import { createInfoStore } from './create-info-store';
 import { createModuleStore } from './create-module-store';
 
 const SETTING_SLUG = 'testSetting';
 const MODULE_SLUG = 'base';
 
 describe( 'createModuleStore store', () => {
-	let apiFetchSpy;
 	let registry;
 	let storeDefinition;
 
@@ -58,8 +53,6 @@ describe( 'createModuleStore store', () => {
 			registry,
 		} );
 		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -68,7 +61,6 @@ describe( 'createModuleStore store', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'name', () => {
@@ -99,6 +91,14 @@ describe( 'createModuleStore store', () => {
 	} );
 
 	describe( 'selectors', () => {
+		it( 'includes all info store selectors', () => {
+			const createInfoStoreDefinition = createInfoStore();
+
+			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
+				expect.arrayContaining( Object.keys( createInfoStoreDefinition.selectors ) )
+			);
+		} );
+
 		it( 'includes all notifications store selectors', () => {
 			const notificationsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' );
 

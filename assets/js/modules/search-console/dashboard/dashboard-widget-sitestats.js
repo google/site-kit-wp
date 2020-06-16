@@ -41,7 +41,7 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 
 	setOptions() {
 		const { selectedStats, series, vAxes } = this.props;
-		const { pageTitle } = global.googlesitekit;
+		const { pageTitle } = global._googlesitekitLegacyData;
 
 		let title = __( 'Search Traffic Summary', 'google-site-kit' );
 

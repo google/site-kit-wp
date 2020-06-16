@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -42,7 +37,6 @@ describe( 'core/user authentication', () => {
 		unsatisfiedScopes: [],
 	};
 	const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
-	let apiFetchSpy;
 	let registry;
 
 	beforeAll( () => {
@@ -51,8 +45,6 @@ describe( 'core/user authentication', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -61,7 +53,6 @@ describe( 'core/user authentication', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -85,12 +76,10 @@ describe( 'core/user authentication', () => {
 	describe( 'selectors', () => {
 		describe( 'getAuthentication', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( coreUserDataExpectedResponse ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: coreUserDataExpectedResponse, status: 200 }
+				);
 
 				const initialAuthentication = registry.select( STORE_NAME ).getAuthentication();
 				// The authentication info will be its initial value while the authentication
@@ -104,11 +93,11 @@ describe( 'core/user authentication', () => {
 
 				const authentication = registry.select( STORE_NAME ).getAuthentication();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( authentication ).toEqual( coreUserDataExpectedResponse );
 
 				const authenticationSelect = registry.select( STORE_NAME ).getAuthentication();
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( authenticationSelect ).toEqual( authentication );
 			} );
 
@@ -122,7 +111,7 @@ describe( 'core/user authentication', () => {
 					.hasFinishedResolution( 'getAuthentication' )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 				expect( authentication ).toEqual( coreUserDataExpectedResponse );
 			} );
 
@@ -132,12 +121,10 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAuthentication();
@@ -148,19 +135,17 @@ describe( 'core/user authentication', () => {
 
 				const authentication = registry.select( STORE_NAME ).getAuthentication();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( authentication ).toEqual( undefined );
 			} );
 		} );
 
 		describe( 'isAuthenticated', () => {
 			it( 'uses a resolver to to load the authenticated value if not yet set.', async () => {
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( coreUserDataExpectedResponse ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: coreUserDataExpectedResponse, status: 200 }
+				);
 
 				const initialIsAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
 				// The autentication info will be its initial value while the authentication
@@ -174,7 +159,7 @@ describe( 'core/user authentication', () => {
 
 				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isAuthenticated ).toEqual( coreUserDataExpectedResponse.authenticated );
 			} );
 
@@ -184,12 +169,10 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).isAuthenticated();
@@ -200,7 +183,7 @@ describe( 'core/user authentication', () => {
 				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
 				const error = registry.select( STORE_NAME ).getError();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isAuthenticated ).toEqual( undefined );
 				expect( error ).toEqual( response );
 			} );
@@ -208,19 +191,16 @@ describe( 'core/user authentication', () => {
 			it( 'returns undefined if authentication info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
-
 				expect( isAuthenticated ).toEqual( undefined );
 			} );
 		} );
 
 		describe( 'getGrantedScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( coreUserDataExpectedResponse ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: coreUserDataExpectedResponse, status: 200 }
+				);
 
 				const initialGrantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
 				// The granted scope info will be its initial value while the granted scope
@@ -234,7 +214,7 @@ describe( 'core/user authentication', () => {
 
 				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( grantedScopes ).toEqual( coreUserDataExpectedResponse.grantedScopes );
 			} );
 
@@ -244,12 +224,10 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getGrantedScopes();
@@ -260,7 +238,7 @@ describe( 'core/user authentication', () => {
 				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
 				const error = registry.select( STORE_NAME ).getError();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( grantedScopes ).toEqual( undefined );
 				expect( error ).toEqual( response );
 			} );
@@ -268,18 +246,16 @@ describe( 'core/user authentication', () => {
 			it( 'returns undefined if authentication info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
-
 				expect( grantedScopes ).toEqual( undefined );
 			} );
 		} );
+
 		describe( 'getRequiredScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( coreUserDataExpectedResponse ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: coreUserDataExpectedResponse, status: 200 }
+				);
 
 				const initialRequiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
 				// The required scope info will be its initial value while the required scope
@@ -293,7 +269,7 @@ describe( 'core/user authentication', () => {
 
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( requiredScopes ).toEqual( coreUserDataExpectedResponse.requiredScopes );
 			} );
 
@@ -303,12 +279,10 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getRequiredScopes();
@@ -319,7 +293,7 @@ describe( 'core/user authentication', () => {
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
 				const error = registry.select( STORE_NAME ).getError();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( requiredScopes ).toEqual( undefined );
 				expect( error ).toEqual( response );
 			} );
@@ -327,19 +301,16 @@ describe( 'core/user authentication', () => {
 			it( 'returns undefined if authentication info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
-
 				expect( requiredScopes ).toEqual( undefined );
 			} );
 		} );
 
 		describe( 'getUnsatisfiedScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( coreUserDataExpectedResponse ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: coreUserDataExpectedResponse, status: 200 }
+				);
 
 				const initialUnsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();
 				// The scopes will be their initial value until the data is resolved.
@@ -350,7 +321,7 @@ describe( 'core/user authentication', () => {
 
 				const unsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( unsatisfiedScopes ).toEqual( coreUserDataExpectedResponse.unsatisfiedScopes );
 			} );
 
@@ -360,12 +331,13 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf( coreUserDataEndpointRegExp )
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{
+						body: JSON.stringify( response ),
+						status: 500,
+					}
+				);
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getUnsatisfiedScopes();
@@ -376,7 +348,7 @@ describe( 'core/user authentication', () => {
 				const unsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();
 				const error = registry.select( STORE_NAME ).getError();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( unsatisfiedScopes ).toEqual( undefined );
 				expect( error ).toEqual( response );
 			} );
@@ -384,8 +356,63 @@ describe( 'core/user authentication', () => {
 			it( 'returns undefined if authentication info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				const unsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();
-
 				expect( unsatisfiedScopes ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'needsReauthentication', () => {
+			it( 'uses a resolver get all reauthentication info', async () => {
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: coreUserDataExpectedResponse, status: 200 }
+				);
+
+				const initialNeedsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+				// The scopes will be their initial value until the data is resolved.
+				expect( initialNeedsReauthentication ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' )
+				);
+
+				const needsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( needsReauthentication ).toEqual( coreUserDataExpectedResponse.needsReauthentication );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{
+						body: JSON.stringify( response ),
+						status: 500,
+					}
+				);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).needsReauthentication();
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' ),
+				);
+
+				const needsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+				const error = registry.select( STORE_NAME ).getError();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( needsReauthentication ).toEqual( undefined );
+				expect( error ).toEqual( response );
+			} );
+
+			it( 'returns undefined if reauthentication info is not available', async () => {
+				muteFetch( coreUserDataEndpointRegExp );
+				const needsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+
+				expect( needsReauthentication ).toEqual( undefined );
 			} );
 		} );
 	} );

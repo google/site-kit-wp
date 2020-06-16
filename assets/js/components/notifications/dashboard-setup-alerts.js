@@ -49,7 +49,7 @@ class DashboardSetupAlerts extends Component {
 			},
 		};
 
-		const { canManageOptions } = global.googlesitekit.permissions;
+		const { canManageOptions } = global._googlesitekitLegacyData.permissions;
 
 		switch ( notification ) {
 			case 'authentication_success':
@@ -69,7 +69,7 @@ class DashboardSetupAlerts extends Component {
 					winData.setupTitle = modulesData[ slug ].name;
 					winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
 
-					winData = applyFilters( ` global.googlesitekit.SetupWinNotification-${ slug }`, winData );
+					winData = applyFilters( `googlesitekit.SetupWinNotification-${ slug }`, winData );
 				}
 
 				return (
@@ -80,13 +80,15 @@ class DashboardSetupAlerts extends Component {
 							title={ sprintf( __( 'Congrats on completing the setup for %s!', 'google-site-kit' ), winData.setupTitle ) }
 							description={ winData.description }
 							handleDismiss={ () => {} }
-							winImage={ global.googlesitekit.admin.assetsRoot + 'images/rocket.png' }
+							winImage={ global._googlesitekitLegacyData.admin.assetsRoot + 'images/rocket.png' }
 							dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 							format="large"
 							type="win-success"
 							learnMoreLabel={ winData.learnMore.label }
 							learnMoreDescription={ winData.learnMore.description }
 							learnMoreURL={ winData.learnMore.url }
+							anchorLink={ 'pagespeed-insights' === slug ? '#googlesitekit-pagespeed-header' : '' }
+							anchorLinkLabel={ 'pagespeed-insights' === slug ? __( 'Jump to the bottom of the dashboard to see how fast your home page is.', 'google-site-kit' ) : '' }
 						>
 							<ModulesList />
 						</Notification>

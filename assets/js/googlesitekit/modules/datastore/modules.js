@@ -31,6 +31,9 @@ import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
+// Actions.
+const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
+
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
 	controlCallback: () => {
@@ -96,6 +99,12 @@ const baseActions = {
 	 */
 	*activateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, true );
+
+		yield {
+			payload: {},
+			type: REFETCH_AUTHENICATION,
+		};
+
 		return { response, error };
 	},
 
@@ -111,6 +120,12 @@ const baseActions = {
 	 */
 	*deactivateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, false );
+
+		yield {
+			payload: {},
+			type: REFETCH_AUTHENICATION,
+		};
+
 		return { response, error };
 	},
 
@@ -138,6 +153,12 @@ const baseActions = {
 		}
 
 		return { response, error };
+	},
+};
+
+export const baseControls = {
+	[ REFETCH_AUTHENICATION ]: () => {
+		return API.get( 'core', 'user', 'authentication', { timestamp: Date.now() }, { useCache: false } );
 	},
 };
 
@@ -292,6 +313,7 @@ const store = Data.combineStores(
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
 		actions: baseActions,
+		controls: baseControls,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

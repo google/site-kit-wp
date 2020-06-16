@@ -107,7 +107,7 @@ export default withData(
 			datapoint: 'report',
 			data: {
 				...overviewReportDataDefaults,
-				url: global.googlesitekit.permaLink,
+				url: global._googlesitekitLegacyData.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),

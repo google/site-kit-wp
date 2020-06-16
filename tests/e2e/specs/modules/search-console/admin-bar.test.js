@@ -30,7 +30,7 @@ async function dismissEditorWelcome() {
 
 describe( 'Site Kit admin bar component display', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();

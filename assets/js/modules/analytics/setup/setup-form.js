@@ -62,8 +62,8 @@ export default function SetupForm( { finishSetup } ) {
 		}
 		if ( ! error ) {
 			setValues( FORM_SETUP, { autoSubmit: false } );
+			await trackEvent( 'analytics_setup', 'analytics_configured' );
 			finishSetup();
-			trackEvent( 'analytics_setup', 'analytics_configured' );
 		}
 	}, [ canSubmitChanges, finishSetup ] );
 

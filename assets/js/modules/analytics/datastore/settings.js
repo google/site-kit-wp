@@ -21,7 +21,8 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import dataAPI, { TYPE_MODULES } from '../../../components/data';
+import { TYPE_MODULES } from '../../../components/data/constants';
+import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
 	isValidAccountID,
 	isValidInternalWebPropertyID,
@@ -43,6 +44,13 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
+	/**
+	 * Submits all changes currently present in the client, persisting them on the server.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return {Object} Empty object on success, object with `error` property on failure.
+	 */
 	*submitChanges() {
 		yield {
 			payload: {},
@@ -103,7 +111,7 @@ export const controls = {
 
 		await API.invalidateCache( 'modules', 'analytics' );
 		// TODO: Remove once legacy dataAPI is no longer used.
-		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'analytics' );
+		invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
 		return {};
 	} ),
