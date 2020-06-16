@@ -332,15 +332,14 @@ export const selectors = {
 	 *                              not loaded yet.
 	 */
 	getCurrentReferenceURL: createRegistrySelector( ( select ) => () => {
-		const { currentEntityURL, referenceSiteURL } = select( STORE_NAME ).getSiteInfo() || {};
-
 		// Use current entity URL if present or still loading.
+		const currentEntityURL = select( STORE_NAME ).getCurrentEntityURL();
 		if ( currentEntityURL !== null ) {
 			return currentEntityURL;
 		}
 
 		// Otherwise fall back to reference site URL.
-		return referenceSiteURL;
+		return select( STORE_NAME ).getReferenceSiteURL();
 	} ),
 
 	/**
