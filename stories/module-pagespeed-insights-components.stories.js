@@ -55,7 +55,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 	.add( 'Dashboard widget (loading)', () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
-			new Promise( () => {} ) // Never returns a response for perpetual loading.
+			new Promise( () => {} ) // Never return a response, to keep the component in a perpetual "loading" state.
 		);
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
 		const setupRegistry = ( { dispatch } ) => {
