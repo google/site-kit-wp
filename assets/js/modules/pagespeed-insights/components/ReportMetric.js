@@ -64,7 +64,7 @@ export default function ReportMetric( {
 				) }
 			>
 				<div className="googlesitekit-pagespeed-report-metric-value-container">
-					<div className="googlesitekit-pagespeed-report-metric-value__number">
+					<div className="googlesitekit-pagespeed-report-metric-value__display-value">
 						{ displayValue }
 					</div>
 					<div className="googlesitekit-pagespeed-report-metric-value__rating">
