@@ -33,11 +33,11 @@ const { useSelect } = Data;
 export default function ReportDetailsLink() {
 	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
 	const pagespeedInsightsURL = addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url: referenceURL } );
+
 	const footerLinkHTML = sprintf(
-		/* translators: 1: link attributes, 2: translated service name */
-		__( 'View details at <a %1$s>%2$s</a>', 'google-site-kit' ),
-		`href="${ pagespeedInsightsURL }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank" rel="noopener noreferrer"`,
-		_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' )
+		/* translators: %s: link with translated service name */
+		__( 'View details at %s', 'google-site-kit' ),
+		`<a href="${ pagespeedInsightsURL }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank" rel="noopener noreferrer">${ _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ) }</a>`
 	);
 
 	return (
@@ -46,7 +46,7 @@ export default function ReportDetailsLink() {
 				footerLinkHTML,
 				{
 					ALLOWED_TAGS: [ 'a' ],
-					ALLOWED_ATTR: [ 'href', 'class', 'target' ],
+					ALLOWED_ATTR: [ 'href', 'class', 'target', 'rel' ],
 				}
 			) }
 		/>
