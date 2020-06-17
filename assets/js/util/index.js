@@ -54,6 +54,7 @@ export * from './storage';
 export * from './i18n';
 export * from './helpers';
 export * from './sort-object-map-by-key';
+export * from './convert-array-to-keyed-object-map';
 
 /**
  * Remove a parameter from a URL string.

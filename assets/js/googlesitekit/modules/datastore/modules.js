@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
-import { sortObjectMapByKey } from '../../../util';
+import { sortObjectMapByKey, convertArrayListToKeyedObjectMap } from '../../../util';
 
 const { commonActions, createRegistrySelector } = Data;
 
@@ -58,7 +58,7 @@ const fetchGetModulesStore = createFetchStore( {
 		return {
 			...state,
 			isAwaitingModulesRefresh: false,
-			modules: sortObjectMapByKey( modules, 'order' ),
+			modules: convertArrayListToKeyedObjectMap( sortObjectMapByKey( modules, 'order' ), 'slug' ),
 		};
 	},
 } );
@@ -300,7 +300,8 @@ const baseSelectors = {
 		const { modules } = state;
 		const registryKey = select( STORE_NAME ).getModuleRegistryKey();
 		if ( undefined !== modules ) {
-			return sortObjectMapByKey( modules, 'order' ).map( ( module ) => {
+			const sortedModules = sortObjectMapByKey( modules, 'order' );
+			const mappedModules = Object.values( sortedModules ).map( ( module ) => {
 				const moduleWithComponent = { ...module };
 				if ( ModuleComponents[ registryKey ] ) {
 					// If there is a settingsComponent that was passed use it, otherwise set to the default.
@@ -313,6 +314,7 @@ const baseSelectors = {
 
 				return moduleWithComponent;
 			} );
+			return convertArrayListToKeyedObjectMap( mappedModules, 'slug' );
 		}
 		return modules;
 	} ),
@@ -356,17 +358,19 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		// The getModules() selector returns an array of objects.
-		const requestedModule = modules.filter( ( module ) => module.slug === slug );
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return undefined;
+		}
 
 		// A module with this slug couldn't be found; return `null` to signify the
 		// "not found" state.
-		if ( requestedModule.length === 0 ) {
+		if ( modules[ slug ] === undefined ) {
 			return null;
 		}
 
 		// This module exists, so let's return it.
-		return requestedModule[ 0 ];
+		return modules[ slug ];
 	} ),
 
 	/**

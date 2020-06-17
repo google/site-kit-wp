@@ -32,12 +32,12 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { sortObjectMapByKey } from '../../../util';
+import { sortObjectMapByKey, convertArrayListToKeyedObjectMap } from '../../../util';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
 
 describe( 'core/modules modules', () => {
-	const fixturesKeyValue = sortObjectMapByKey( FIXTURES, 'order' );
+	const fixturesKeyValue = convertArrayListToKeyedObjectMap( sortObjectMapByKey( FIXTURES, 'order' ), 'slug' );
 	let registry;
 	let store;
 
@@ -354,7 +354,7 @@ describe( 'core/modules modules', () => {
 
 				const state = store.getState();
 
-				expect( state ).toMatchObject( { modules: [ ...fixturesKeyValue ] } );
+				expect( state ).toMatchObject( { modules: fixturesKeyValue } );
 			} );
 		} );
 	} );
@@ -379,7 +379,7 @@ describe( 'core/modules modules', () => {
 				const modules = registry.select( STORE_NAME ).getModules();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( modules ).toEqual( [ ...fixturesKeyValue ] );
+				expect( modules ).toEqual( fixturesKeyValue );
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
@@ -443,7 +443,7 @@ describe( 'core/modules modules', () => {
 				const moduleLoaded = registry.select( STORE_NAME ).getModule( slug );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( moduleLoaded ).toEqual( fixturesKeyValue.filter( ( mod ) => mod.slug === slug )[ 0 ] );
+				expect( moduleLoaded ).toEqual( fixturesKeyValue[ slug ] );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
