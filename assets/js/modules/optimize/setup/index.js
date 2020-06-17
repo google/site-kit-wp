@@ -16,4 +16,5 @@
  * limitations under the License.
  */
 
-export { default as OptimizeSetup } from './setup';
+export { default as SetupMain } from './setup-main';
+export { default as SetupForm } from './setup-form';

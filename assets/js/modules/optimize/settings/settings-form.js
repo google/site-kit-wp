@@ -1,5 +1,5 @@
 /**
- * Optimize common components.
+ * Optimize Settings form.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,4 +16,25 @@
  * limitations under the License.
  */
 
-export { default as ErrorNotice } from './error-notice';
+/**
+ * Internal dependencies
+ */
+import {
+	ErrorNotice,
+} from '../common/';
+
+export default function SettingsForm() {
+	return (
+		<div className="googlesitekit-optimize-settings-fields">
+			<ErrorNotice />
+
+			<div className="googlesitekit-setup-module__inputs">
+				{ /* <OptimizeID /> */ }
+			</div>
+
+			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+
+			</div>
+		</div>
+	);
+}

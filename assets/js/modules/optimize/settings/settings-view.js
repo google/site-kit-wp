@@ -36,14 +36,14 @@ export default function SettingsView() {
 	// const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--optimize">
 
 			<ErrorNotice />
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Analytics Code Snippet', 'google-site-kit' ) }
+						{ __( 'Optimize Code Snippet', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ /* <DisplaySetting value={ optimizeID } /> */ }

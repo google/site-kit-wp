@@ -25,7 +25,8 @@ import { addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import './datastore';
-import OptimizeSetup from './setup/setup';
+import { SetupMain as OptimizeSetup } from './setup';
+import { SettingsMain as OptimizeSettings } from './settings';
 import { fillFilterWithComponent, getModulesData } from '../../util';
 
 const slug = 'optimize';
@@ -37,7 +38,7 @@ if ( modulesData.optimize.active ) {
 	addFilter(
 		`googlesitekit.ModuleSettingsDetails-${ slug }`,
 		'googlesitekit.OptimizeModuleSettingsDetails',
-		fillFilterWithComponent( OptimizeSetup, {
+		fillFilterWithComponent( OptimizeSettings, {
 			onSettingsPage: true,
 		} )
 	);
