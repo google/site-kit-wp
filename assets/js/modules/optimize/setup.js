@@ -251,7 +251,7 @@ class OptimizeSetup extends Component {
 		}
 
 		if ( typeof ampExperimentJSON !== 'string' ) {
-			ampExperimentJSON = JSON.stringify( ampExperimentJSON );
+			ampExperimentJSON = JSON.stringify( ampExperimentJSON, null, 2 );
 		}
 
 		return (
