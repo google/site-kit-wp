@@ -1,5 +1,5 @@
 /**
- * WidgetRenderer component.
+ * Widget component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,31 +17,25 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore';
-import { string } from 'prop-types';
-import WidgetWrapper from './widget-wrapper';
+import classnames from 'classnames';
+import { node, string } from 'prop-types';
 
-const { useSelect } = Data;
+const Widget = ( { children, slug } ) => {
+	return (
+		<div className={ classnames( 'googlesitekit-widget', `googlesitekit-widget--${ slug }` ) }>
+			{ children }
+		</div>
+	);
+};
 
-const Widget = ( { slug } ) => {
-	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
-	// Capitalize the "component" variable, as it is required by JSX.
-	const { component: Component } = widget;
-	const widgetOutput = <Component slug={ slug } />;
-
-	if ( widget.useWrapper ) {
-		return (
-			<WidgetWrapper slug={ slug }>{ widgetOutput }</WidgetWrapper>
-		);
-	}
-
-	return widgetOutput;
+Widget.defaultProps = {
+	children: undefined,
 };
 
 Widget.propTypes = {
+	children: node,
 	slug: string.isRequired,
 };
 

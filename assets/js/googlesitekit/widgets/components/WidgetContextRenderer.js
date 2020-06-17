@@ -19,32 +19,31 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { string } from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import WidgetArea from './widget-area';
+import WidgetAreaRenderer from './WidgetAreaRenderer';
 import { STORE_NAME } from '../datastore';
 
 const { useSelect } = Data;
 
-const WidgetContext = ( { context } ) => {
-	const widgetAreas = useSelect( ( select ) => select( STORE_NAME ).getWidgetAreas( context ) );
+const WidgetContextRenderer = ( { slug } ) => {
+	const widgetAreas = useSelect( ( select ) => select( STORE_NAME ).getWidgetAreas( slug ) );
 
 	return (
-		<div className={ classnames( 'googlesitekit-widget-context' ) }>
+		<div className="googlesitekit-widget-context">
 			{ widgetAreas.map( ( area ) => {
-				return <WidgetArea area={ area.slug } key={ area.slug } />;
+				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } />;
 			} ) }
 		</div>
 	);
 };
 
-WidgetContext.propTypes = {
-	context: string.isRequired,
+WidgetContextRenderer.propTypes = {
+	slug: string.isRequired,
 };
 
-export default WidgetContext;
+export default WidgetContextRenderer;

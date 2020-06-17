@@ -1,5 +1,5 @@
 /**
- * WidgetArea component.
+ * WidgetAreaRenderer component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -27,23 +27,20 @@ import { string } from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore';
-import Widget from './widget';
+import Widget from './WidgetRenderer';
 
 const { useSelect } = Data;
 
-const WidgetArea = ( { area } ) => {
-	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( area ) );
-	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( area ) );
+const WidgetAreaRenderer = ( { slug } ) => {
+	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
+	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
 
 	return (
-		<div className={ classnames( 'mdc-layout-grid', 'WidgetArea', `WidgetArea-${ widgetArea.style }`, `WidgetArea-${ widgetArea.slug }` ) }>
+		<div className={ classnames( 'mdc-layout-grid', 'googlesitekit-widget-area', `googlesitekit-widget-area-${ widgetArea.slug }`, `googlesitekit-widget-area__${ widgetArea.style }` ) }>
 			<div className="mdc-layout-grid__inner">
 				<header className={ classnames(
 					'googlesitekit-widget-area-header',
-					'mdc-layout-grid__cell',
-					'mdc-layout-grid__cell--span-12-desktop',
-					'mdc-layout-grid__cell--span-8-tablet',
-					'mdc-layout-grid__cell--span-4-phone',
+					'mdc-layout-grid__cell--span-12-desktop'
 				) }>
 					<img alt="" src={ widgetArea.icon } />
 					{ widgetArea.title &&
@@ -58,7 +55,7 @@ const WidgetArea = ( { area } ) => {
 					}
 				</header>
 			</div>
-			<div className="googlesitekit-layout">
+			<div className="googlesitekit-widget-area-widgets">
 				<div className="mdc-layout-grid__inner">
 					{ widgets.map( ( widget ) => {
 						return (
@@ -71,8 +68,8 @@ const WidgetArea = ( { area } ) => {
 	);
 };
 
-WidgetArea.propTypes = {
-	area: string.isRequired,
+WidgetAreaRenderer.propTypes = {
+	slug: string.isRequired,
 };
 
-export default WidgetArea;
+export default WidgetAreaRenderer;

@@ -1,5 +1,5 @@
 /**
- * Widget Area styles.
+ * Widget styles.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,27 +16,8 @@
  * limitations under the License.
  */
 
-.googlesitekit-widget-area-widgets.googlesitekit-widget-area__composite {
+.googlesitekit-widget-area__boxes .googlesitekit-widget {
 
 	@include shadow;
 	background: $c-base;
-}
-
-.googlesitekit-widget-area-header {
-	margin: 0 0 1rem 0;
-
-	.googlesitekit-widget-area-header__title {
-		color: $c-tertiary;
-		font-weight: 400;
-		margin: 0;
-	}
-
-	.googlesitekit-widget-area-header__subtitle {
-		color: $c-boulder;
-		font-family: $f-primary;
-		font-size: 0.75rem;
-		font-weight: 400;
-		line-height: 1.2;
-		margin: 0;
-	}
 }

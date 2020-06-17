@@ -19,50 +19,34 @@
 /**
  * Internal dependencies
  */
-import Widget from './widget';
+import Widget from './WidgetRenderer';
 import { STORE_NAME } from '../datastore/constants';
 import { render } from '../../../../../tests/js/test-utils';
 
-const setupRegistry = ( { dispatch } ) => {
+const setupRegistry = ( { component = () => <div>Test</div>, dispatch } ) => {
 	dispatch( STORE_NAME ).registerWidgetArea( 'dashboard-header', {
 		title: 'Dashboard Header',
 		subtitle: 'Cool stuff for yoursite.com',
 		style: 'boxes',
 	} );
 	dispatch( STORE_NAME ).assignWidgetArea( 'dashboard-header', 'dashboard' );
-	dispatch( STORE_NAME ).registerWidget( 'PageViews', {
-		component: () => <div>Test</div>,
-		useWrapper: true,
+	dispatch( STORE_NAME ).registerWidget( 'TestWidget', {
+		component,
 	} );
-	dispatch( STORE_NAME ).assignWidget( 'PageViews', 'dashboard-header' );
-};
-
-const setupRegistryWithoutWrapperWidget = ( { dispatch } ) => {
-	dispatch( STORE_NAME ).registerWidgetArea( 'dashboard-header', {
-		title: 'Dashboard Header',
-		subtitle: 'Cool stuff for yoursite.com',
-		style: 'boxes',
-	} );
-	dispatch( STORE_NAME ).assignWidgetArea( 'dashboard-header', 'dashboard' );
-	dispatch( STORE_NAME ).registerWidget( 'NoWrap', {
-		component: () => <div>Test</div>,
-		useWrapper: false,
-	} );
-	dispatch( STORE_NAME ).assignWidget( 'NoWrap', 'dashboard-header' );
+	dispatch( STORE_NAME ).assignWidget( 'TestWidget', 'dashboard-header' );
 };
 
 describe( 'Widget', () => {
-	it( 'should wrap children in a WidgetWrapper component if useWrapper is true', async () => {
-		const { container } = render( <Widget slug="PageViews" />, { setupRegistry } );
-
-		expect( Object.values( container.firstChild.classList ) ).toMatchObject( [ 'WidgetWrapper', 'WidgetWrapper--PageViews' ] );
-		expect( container.firstChild ).toMatchSnapshot();
-	} );
-
-	it( 'should output children directly if useWrapper is false', async () => {
-		const { container } = render( <Widget slug="NoWrap" />, { setupRegistry: setupRegistryWithoutWrapperWidget } );
+	it( 'should output children directly', async () => {
+		const { container } = render( <Widget slug="TestWidget" />, { setupRegistry } );
 
 		expect( Object.values( container.firstChild.classList ) ).toEqual( [] );
 		expect( container.firstChild ).toMatchSnapshot();
+	} );
+
+	it( 'should output null when no slug is found', async () => {
+		const { container } = render( <Widget slug="NotFound" />, { setupRegistry } );
+
+		expect( container.firstChild ).toEqual( null );
 	} );
 } );

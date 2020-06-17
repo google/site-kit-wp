@@ -219,16 +219,16 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state     Data store's state.
-	 * @param {string} areaSlug  Widget area to select.
+	 * @param {Object} state  Data store's state.
+	 * @param {string} slug   Widget area to select.
 	 * @return {Object|undefined} A widget area if one is found with a matching slug.
 	 */
-	getWidgetArea( state, areaSlug ) {
-		invariant( areaSlug, 'areaSlug is required.' );
+	getWidgetArea( state, slug ) {
+		invariant( slug, 'slug is required.' );
 
 		const { areas } = state;
 
-		return areas[ areaSlug ];
+		return areas[ slug ];
 	},
 };
 
