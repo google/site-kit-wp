@@ -45,7 +45,7 @@ function DashboardSpeed() {
 					mdc-layout-grid__cell--span-12
 				">
 				<DashboardModuleHeader
-					title={ __( 'Speed', 'google-site-kit' ) }
+					title={ __( 'Page Speed and Experience', 'google-site-kit' ) }
 					description={ description }
 				/>
 			</div>
