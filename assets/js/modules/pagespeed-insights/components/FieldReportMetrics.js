@@ -25,25 +25,17 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import ReportMetric from './ReportMetric';
+import ReportDetailsLink from './ReportDetailsLink';
 import Link from '../../../components/link';
 import { sanitizeHTML } from '../../../util';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-
-const { useSelect } = Data;
 
 export default function FieldReportMetrics( { data } ) {
-	const permalink = global._googlesitekitLegacyData.permaLink;
-	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	const url = permalink || referenceURL;
-
 	const learnMoreLink = (
 		<Link
 			href="https://web.dev/user-centric-performance-metrics/#in-the-field"
@@ -54,21 +46,6 @@ export default function FieldReportMetrics( { data } ) {
 				{
 					ALLOWED_TAGS: [ 'span' ],
 					ALLOWED_ATTR: [ 'class' ],
-				}
-			) }
-		/>
-	);
-
-	const footerLink = (
-		<Link
-			href={ addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url } ) }
-			external
-			inherit
-			dangerouslySetInnerHTML={ sanitizeHTML(
-				_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
-				{
-					ALLOWED_TAGS: [ 'a' ],
-					ALLOWED_ATTR: [ 'href', 'class', 'target' ],
 				}
 			) }
 		/>
@@ -150,11 +127,7 @@ export default function FieldReportMetrics( { data } ) {
 				</tbody>
 			</table>
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--last">
-				<p>
-					{ __( 'View details at', 'google-site-kit' ) }
-					{ ' ' }
-					{ footerLink }
-				</p>
+				<ReportDetailsLink />
 			</div>
 		</div>
 	);
