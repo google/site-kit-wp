@@ -49,10 +49,7 @@ export default function FieldReportMetrics( { data } ) {
 						{ __( 'Field data unavailable', 'google-site-kit' ) }
 					</h3>
 					<p>
-						{ __( 'Field data is useful for capturing true, real-world user experience. However, the Chrome User Experience Report does not have sufficient real-world speed data for this page.', 'google-site-kit' ) }
-					</p>
-					<p>
-						<FieldDataLearnMoreLink />
+						{ __( 'Field data shows how real users actually loaded and interacted with your page. We don’t have enough real-world experience and speed data for this page. It may be new, or not enough users with Chrome browsers have visited it yet.', 'google-site-kit' ) }
 					</p>
 				</div>
 			</div>
