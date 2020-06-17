@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { PROVISIONING_SCOPE, EDIT_SCOPE } from '../../../modules/analytics/datastore/constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -140,6 +141,40 @@ describe( 'core/user authentication', () => {
 			} );
 		} );
 
+		describe( 'hasScope', () => {
+			it( 'uses a resolver to to load the value if not yet set', async () => {
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: {
+						authenticated: true,
+						requiredScopes: [],
+						grantedScopes: [ PROVISIONING_SCOPE ],
+						unsatisfiedScopes: [],
+					}, status: 200 }
+				);
+
+				const hasScope = registry.select( STORE_NAME ).hasScope( PROVISIONING_SCOPE );
+				// The granted scope info will be its initial value while the granted scope
+				// info is fetched.
+				expect( hasScope ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' )
+				);
+
+				const hasScopeAfterResolved = registry.select( STORE_NAME ).hasScope( PROVISIONING_SCOPE );
+				expect( hasScopeAfterResolved ).toEqual( true );
+
+				const missingScope = registry.select( STORE_NAME ).hasScope( EDIT_SCOPE );
+				expect( missingScope ).toEqual( false );
+			} );
+
+			it( 'returns undefined if scope info is not available', async () => {
+				muteFetch( coreUserDataEndpointRegExp );
+				const hasProvisioningScope = registry.select( STORE_NAME ).hasScope( PROVISIONING_SCOPE );
+				expect( hasProvisioningScope ).toEqual( undefined );
+			} );
+		} );
+
 		describe( 'isAuthenticated', () => {
 			it( 'uses a resolver to to load the authenticated value if not yet set.', async () => {
 				fetchMock.getOnce(
@@ -249,6 +284,7 @@ describe( 'core/user authentication', () => {
 				expect( grantedScopes ).toEqual( undefined );
 			} );
 		} );
+
 		describe( 'getRequiredScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
 				fetchMock.getOnce(
