@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Layout from '../../../components/layout/layout';
 import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
 import DashboardPageSpeed from '../components/DashboardPageSpeed';
 import { STORE_NAME } from '../../../googlesitekit/datastore/site/constants';
@@ -53,9 +52,7 @@ function DashboardSpeed() {
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12
 			">
-				<Layout className="googlesitekit-pagespeed-report">
-					<DashboardPageSpeed />
-				</Layout>
+				<DashboardPageSpeed />
 			</div>
 		</Fragment>
 	);
