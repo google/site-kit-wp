@@ -1,5 +1,5 @@
 /**
- * Optimize Constants.
+ * Optimize Error component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,6 +16,21 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/optimize';
-// Form ID for the module setup form.
-export const FORM_SETUP = 'optimizeSetup';
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore/constants';
+import ErrorText from '../../../components/error-text';
+const { useSelect } = Data;
+
+export default function ErrorNotice() {
+	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
+
+	// Do not display if no error, or if the error is for missing scopes.
+	if ( ! error ) {
+		return null;
+	}
+
+	return <ErrorText message={ error.message } />;
+}

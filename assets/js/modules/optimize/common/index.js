@@ -1,5 +1,5 @@
 /**
- * Optimize Constants.
+ * Analytics common components.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,6 +16,4 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/optimize';
-// Form ID for the module setup form.
-export const FORM_SETUP = 'optimizeSetup';
+export { default as ErrorNotice } from './error-notice';
