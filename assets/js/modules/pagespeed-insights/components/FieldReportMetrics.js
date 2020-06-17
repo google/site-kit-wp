@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import ReportMetric from './ReportMetric';
 import ReportDetailsLink from './ReportDetailsLink';
-import { FieldDataLearnMoreLink } from './DataSourceLearnMoreLinks';
+import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 
 export default function FieldReportMetrics( { data } ) {
 	const {
@@ -67,7 +67,7 @@ export default function FieldReportMetrics( { data } ) {
 				<p>
 					{ __( 'Field data shows how real users actually loaded and interacted with your page over time.', 'google-site-kit' ) }
 					{ ' ' }
-					<FieldDataLearnMoreLink />
+					<MetricsLearnMoreLink />
 				</p>
 			</div>
 			<table

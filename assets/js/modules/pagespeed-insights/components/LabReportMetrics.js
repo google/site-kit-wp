@@ -32,8 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import ReportMetric from './ReportMetric';
 import ReportDetailsLink from './ReportDetailsLink';
+import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../dashboard/util';
-import { LabDataLearnMoreLink } from './DataSourceLearnMoreLinks';
 
 export default function LabReportMetrics( { data } ) {
 	const totalBlockingTime = data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
@@ -50,7 +50,7 @@ export default function LabReportMetrics( { data } ) {
 				<p>
 					{ __( 'Lab data is a snapshot of how you page performs right now, measured in tests we run in a controlled environment.', 'google-site-kit' ) }
 					{ ' ' }
-					<LabDataLearnMoreLink />
+					<MetricsLearnMoreLink />
 				</p>
 			</div>
 			<table

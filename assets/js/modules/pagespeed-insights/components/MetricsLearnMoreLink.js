@@ -1,5 +1,5 @@
 /**
- * Data Source Learn More Link components.
+ * Metrics Learn More Link component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -27,37 +27,19 @@ import { __ } from '@wordpress/i18n';
 import Link from '../../../components/link';
 import { sanitizeHTML } from '../../../util';
 
-function DataSourceLearnMoreLink( { href, html } ) {
+export default function MetricsLearnMoreLink() {
 	return (
 		<Link
-			href={ href }
+			href="https://web.dev/user-centric-performance-metrics/#how-metrics-are-measured"
 			external
 			inherit
 			dangerouslySetInnerHTML={ sanitizeHTML(
-				html,
+				__( 'Learn more<span class="screen-reader-text"> how metrics are measured.</span>', 'google-site-kit' ),
 				{
 					ALLOWED_TAGS: [ 'span' ],
 					ALLOWED_ATTR: [ 'class' ],
 				}
 			) }
-		/>
-	);
-}
-
-export function FieldDataLearnMoreLink() {
-	return (
-		<DataSourceLearnMoreLink
-			href="https://web.dev/user-centric-performance-metrics/#in-the-field"
-			html={ __( 'Learn more<span class="screen-reader-text"> about field data.</span>', 'google-site-kit' ) }
-		/>
-	);
-}
-
-export function LabDataLearnMoreLink() {
-	return (
-		<DataSourceLearnMoreLink
-			href="https://web.dev/user-centric-performance-metrics/#in-the-lab"
-			html={ __( 'Learn more<span class="screen-reader-text"> about lab data.</span>', 'google-site-kit' ) }
 		/>
 	);
 }
