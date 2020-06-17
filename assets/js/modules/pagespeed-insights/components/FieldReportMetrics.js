@@ -68,7 +68,7 @@ export default function FieldReportMetrics( { data } ) {
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
 				<p>
-					{ __( 'Field data is useful for capturing true, real-world user experience - but has a more limited set of metrics.', 'google-site-kit' ) }
+					{ __( 'Field data shows how real users actually loaded and interacted with your page over time.', 'google-site-kit' ) }
 					{ ' ' }
 					<FieldDataLearnMoreLink />
 				</p>
