@@ -56,7 +56,7 @@ const DeviceSizeTabBar = ( {
 		handleDeviceSizeUpdate( device, index );
 	}, [ deviceSizes, handleDeviceSizeUpdate ] );
 
-	if ( ! deviceSizes.length ) {
+	if ( ! deviceSizes?.length ) {
 		return null;
 	}
 
