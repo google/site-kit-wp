@@ -35,8 +35,8 @@ const { useSelect } = Data;
 function DashboardSpeed() {
 	const currentEntityURL = useSelect( ( select ) => select( STORE_NAME ).getCurrentEntityURL() );
 	const description = currentEntityURL
-		? __( 'How fast this page is.', 'google-site-kit' )
-		: __( 'How fast your home page is.', 'google-site-kit' );
+		? __( 'How fast your page loads, how quickly people can interact with your content, and how stable your content is.', 'google-site-kit' )
+		: __( 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.', 'google-site-kit' );
 
 	return (
 		<Fragment>
