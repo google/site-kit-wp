@@ -1001,7 +1001,7 @@ final class Analytics extends Module
 						array( 'status' => 400 )
 					);
 				}
-				$profile_name = ! empty( $data['profileName'] ) ? trim( $data['profileName'] ) : '';
+				$profile_name = trim( $data['profileName'] );
 				if ( empty( $profile_name ) ) {
 					$profile_name = __( 'All Web Site Data', 'google-site-kit' );
 				}

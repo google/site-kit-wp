@@ -26,25 +26,13 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../components/display-setting';
+import { escapeURI } from '../../../util/escape-uri';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { trackingExclusionLabels } from '../common/tracking-exclusion-switches';
 import { ExistingTagError, ExistingTagNotice, ErrorNotice } from '../common';
 const { useSelect } = Data;
-
-function escapeURI( strings, ...values ) {
-	let uri = '';
-
-	for ( let i = 0, len = strings.length; i < len; i++ ) {
-		uri += strings[ i ];
-		if ( i < values.length ) {
-			uri += encodeURIComponent( values[ i ] );
-		}
-	}
-
-	return uri;
-}
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );

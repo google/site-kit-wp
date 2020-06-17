@@ -23,7 +23,7 @@ export { default as AnonymizeIPSwitch } from './anonymize-ip-switch';
 export { default as ErrorNotice } from './error-notice';
 export { default as ExistingTagError } from './existing-tag-error';
 export { default as ExistingTagNotice } from './existing-tag-notice';
-export { default as ProfileName } from './profile-name';
+export { default as ProfileNameTextField } from './profile-name';
 export { default as ProfileSelect } from './profile-select';
 export { default as PropertySelect } from './property-select';
 export { default as TrackingExclusionSwitches } from './tracking-exclusion-switches';

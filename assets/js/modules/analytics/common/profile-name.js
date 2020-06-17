@@ -1,5 +1,5 @@
 /**
- * Analytics Property Select component.
+ * Analytics Profile Name component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -31,7 +31,7 @@ import { TextField, HelperText, Input } from '../../../material-components';
 import { STORE_NAME, PROFILE_CREATE, FORM_SETUP } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function ProfileName() {
+export default function ProfileNameTextField() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( propertyID ) );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
@@ -42,17 +42,17 @@ export default function ProfileName() {
 		setValues( FORM_SETUP, {
 			profileName: currentTarget.value,
 		} );
-	}, [ profileID ] );
+	}, [] );
 
 	// bounce if an existing profile is selected
 	if ( profileID !== PROFILE_CREATE ) {
-		return false;
+		return null;
 	}
 
 	let helperText;
 	let trailingIcon;
 
-	const existingProfile = profiles.find( ( item ) => item.name === profileName );
+	const existingProfile = profiles.some( ( { name } ) => name === profileName );
 	if ( existingProfile ) {
 		helperText = (
 			<HelperText persistent>
@@ -71,7 +71,7 @@ export default function ProfileName() {
 
 	return (
 		<div className="googlesitekit-analytics-profilename">
-			<TextField label="View Name" outlined helperText={ helperText } trailingIcon={ trailingIcon }>
+			<TextField label={ __( 'View Name', 'google-site-kit' ) } outlined helperText={ helperText } trailingIcon={ trailingIcon }>
 				<Input value={ profileName } onChange={ onChange } />
 			</TextField>
 
