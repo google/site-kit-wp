@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -30,9 +31,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ReportMetric from './ReportMetric';
+import ReportDetailsLink from './ReportDetailsLink';
+import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../dashboard/util';
-import Link from '../../../components/link';
-import { sanitizeHTML } from '../../../util';
 
 export default function LabReportMetrics( { data } ) {
 	const totalBlockingTime = data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
@@ -44,41 +45,54 @@ export default function LabReportMetrics( { data } ) {
 	}
 
 	return (
-		<div>
-			<p>
-				{ __( 'Lab data is useful for debugging performance issues, as it is collected in a controlled environment.', 'google-site-kit' ) }
-				{ ' ' }
-				<Link
-					href="https://web.dev/user-centric-performance-metrics/#in-the-lab"
-					external
-					inherit
-					dangerouslySetInnerHTML={ sanitizeHTML(
-						__( 'Learn more<span class="screen-reader-text"> about lab data.</span>', 'google-site-kit' ),
-						{
-							ALLOWED_TAGS: [ 'span' ],
-							ALLOWED_ATTR: [ 'class' ],
-						}
-					) }
-				/>
-			</p>
-			<ReportMetric
-				title={ __( 'Total Blocking Time', 'google-site-kit' ) }
-				description={ __( 'Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms.', 'google-site-kit' ) }
-				displayValue={ totalBlockingTime.displayValue }
-				category={ getScoreCategory( totalBlockingTime.score ) }
-			/>
-			<ReportMetric
-				title={ __( 'Largest Contentful Paint', 'google-site-kit' ) }
-				description={ __( 'Marks the time at which the largest text or image is painted.', 'google-site-kit' ) }
-				displayValue={ largestContentfulPaint.displayValue }
-				category={ getScoreCategory( largestContentfulPaint.score ) }
-			/>
-			<ReportMetric
-				title={ __( 'Cumulative Layout Shift', 'google-site-kit' ) }
-				description={ __( 'Measures the movement of visible elements within the viewport.', 'google-site-kit' ) }
-				displayValue={ cumulativeLayoutShift.displayValue }
-				category={ getScoreCategory( cumulativeLayoutShift.score ) }
-			/>
+		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
+			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
+				<p>
+					{ __( 'Lab data is a snapshot of how you page performs right now, measured in tests we run in a controlled environment.', 'google-site-kit' ) }
+					{ ' ' }
+					<MetricsLearnMoreLink />
+				</p>
+			</div>
+			<table
+				className={ classnames(
+					'googlesitekit-table',
+					'googlesitekit-table--with-list'
+				) }
+			>
+				<thead>
+					<tr>
+						<th>
+							{ __( 'Metric Name', 'google-site-kit' ) }
+						</th>
+						<th>
+							{ __( 'Metric Value', 'google-site-kit' ) }
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ReportMetric
+						title={ __( 'Total Blocking Time', 'google-site-kit' ) }
+						description={ __( 'How long people had to wait after the page loaded before they could click something', 'google-site-kit' ) }
+						displayValue={ totalBlockingTime.displayValue }
+						category={ getScoreCategory( totalBlockingTime.score ) }
+					/>
+					<ReportMetric
+						title={ __( 'Largest Contentful Paint', 'google-site-kit' ) }
+						description={ __( 'Time it takes for the page to load', 'google-site-kit' ) }
+						displayValue={ largestContentfulPaint.displayValue }
+						category={ getScoreCategory( largestContentfulPaint.score ) }
+					/>
+					<ReportMetric
+						title={ __( 'Cumulative Layout Shift', 'google-site-kit' ) }
+						description={ __( 'How stable the elements on the page are', 'google-site-kit' ) }
+						displayValue={ cumulativeLayoutShift.displayValue }
+						category={ getScoreCategory( cumulativeLayoutShift.score ) }
+					/>
+				</tbody>
+			</table>
+			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--last">
+				<ReportDetailsLink />
+			</div>
 		</div>
 	);
 }
