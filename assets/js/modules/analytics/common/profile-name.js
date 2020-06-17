@@ -56,7 +56,7 @@ export default function ProfileName() {
 	if ( existingProfile ) {
 		helperText = (
 			<HelperText persistent>
-				{ __( 'You have multiple views with this name.', 'google-site-kit' ) }
+				{ __( 'A view with this name already exists.', 'google-site-kit' ) }
 			</HelperText>
 		);
 
