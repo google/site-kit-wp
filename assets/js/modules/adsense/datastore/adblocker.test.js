@@ -56,10 +56,10 @@ describe( 'modules/adsense adblocker', () => {
 	describe( 'selectors', () => {
 		describe( 'isAdBlockerActive', () => {
 			it( 'uses a resolver to load status from a global variable by default', async () => {
-				if ( ! global.googlesitekit ) {
-					global.googlesitekit = {};
+				if ( ! global._googlesitekitLegacyData ) {
+					global._googlesitekitLegacyData = {};
 				}
-				global.googlesitekit.canAdsRun = true;
+				global._googlesitekitLegacyData.canAdsRun = true;
 
 				registry.select( STORE_NAME ).isAdBlockerActive();
 				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'isAdBlockerActive' ) );
@@ -68,16 +68,16 @@ describe( 'modules/adsense adblocker', () => {
 				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( false );
 
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
-				expect( global.googlesitekit.canAdsRun ).not.toEqual( undefined );
+				expect( global._googlesitekitLegacyData.canAdsRun ).not.toEqual( undefined );
 			} );
 
 			it( 'resolver does not rely on global if status is already known', async () => {
-				if ( ! global.googlesitekit ) {
-					global.googlesitekit = {};
+				if ( ! global._googlesitekitLegacyData ) {
+					global._googlesitekitLegacyData = {};
 				}
 				// Setting `canAdsRun` to `false` means an ad-blocker is enabled;
 				// if we can run ads, then we don't have an ad-blocker on.
-				global.googlesitekit.canAdsRun = false;
+				global._googlesitekitLegacyData.canAdsRun = false;
 
 				// Set value to false, contrary to the global above which would result in this being true.
 				registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );

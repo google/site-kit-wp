@@ -220,19 +220,13 @@ final class REST_Routes {
 							$query = rawurldecode( $request['query'] );
 
 							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
-								// Translate public/alternate reference URLs to local if different.
-								$query_url = str_replace(
-									$this->context->get_reference_site_url(),
-									home_url(),
-									$query
-								);
-								if ( function_exists( 'wpcom_vip_url_to_postid' ) ) {
-									$post_id = wpcom_vip_url_to_postid( $query_url );
+								// Get entity via URL, but only return it if it is a post.
+								$entity = $this->context->get_reference_entity_from_url( $query );
+								if ( $entity && $entity->get_id() && in_array( $entity->get_type(), array( 'post', 'blog' ), true ) ) {
+									$posts = array_filter( array( WP_Post::get_instance( $entity->get_id() ) ) );
 								} else {
-									// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions
-									$post_id = url_to_postid( $query_url );
+									$posts = array();
 								}
-								$posts   = array_filter( array( WP_Post::get_instance( $post_id ) ) );
 							} else {
 								$args = array(
 									'posts_per_page'  => 10,

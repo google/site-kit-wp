@@ -36,7 +36,7 @@ import DashboardModulesAlerts from './dashboard-modules-alerts';
 import DashboardWinsAlerts from './dashboard-wins-alerts';
 import DashboardAuthAlert from './dashboard-auth-alert';
 
-const { setup } = global.googlesitekit;
+const { setup } = global._googlesitekitLegacyData;
 const notification = getQueryParameter( 'notification' );
 
 const addCoreSiteNotifications = createAddToFilter( <DashboardCoreSiteAlerts /> );

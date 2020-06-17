@@ -21,7 +21,8 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import dataAPI, { TYPE_MODULES } from '../../../components/data';
+import { TYPE_MODULES } from '../../../components/data/constants';
+import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
 	isValidOptimizeID,
 	isValidAMPExperimentJSON,
@@ -81,7 +82,7 @@ export const controls = {
 
 		await API.invalidateCache( 'modules', 'optimize' );
 		// TODO: Remove once legacy dataAPI is no longer used.
-		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'optimize' );
+		invalidateCacheGroup( TYPE_MODULES, 'optimize' );
 
 		return {};
 	} ),
