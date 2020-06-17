@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { isValidPropertyID, parsePropertyID } from '../util';
+import { isValidPropertyID, parsePropertyID, isValidProfileName } from '../util';
 import { STORE_NAME, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector } = Data;
@@ -102,8 +102,9 @@ const baseActions = {
 	 * @param {string} profileName The name for a new profile.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createProfile( propertyID, profileName = '' ) {
+	*createProfile( propertyID, profileName ) {
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
+		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
 
 		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( propertyID, profileName );
 		return { response, error };

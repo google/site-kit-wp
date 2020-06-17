@@ -30,6 +30,7 @@ import {
 	isValidPropertySelection,
 	isValidProfileSelection,
 	isValidPropertyID,
+	isValidProfileName,
 } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
 
@@ -169,6 +170,10 @@ export const selectors = {
 			return false;
 		}
 		if ( ! isValidProfileSelection( getProfileID() ) ) {
+			return false;
+		}
+		const { getValue } = select( CORE_FORMS );
+		if ( getProfileID() === PROFILE_CREATE && ! isValidProfileName( getValue( FORM_SETUP, 'profileName' ) ) ) {
 			return false;
 		}
 		// If the property ID is valid (non-create) the internal ID must be valid as well.
