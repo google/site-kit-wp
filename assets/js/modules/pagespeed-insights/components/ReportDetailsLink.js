@@ -36,7 +36,7 @@ export default function ReportDetailsLink() {
 	const footerLinkHTML = sprintf(
 		/* translators: 1: link attributes, 2: translated service name */
 		__( 'View details at <a %1$s>%2$s</a>', 'google-site-kit' ),
-		`href="${ pagespeedInsightsURL }" class="googlesitekit-cta-link googlesitekit-cta-link--external"`,
+		`href="${ pagespeedInsightsURL }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank" rel="noopener noreferrer"`,
 		_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' )
 	);
 
