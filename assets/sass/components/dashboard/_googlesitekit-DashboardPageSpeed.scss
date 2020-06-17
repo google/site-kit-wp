@@ -80,35 +80,28 @@
 				line-height: 1.25rem;
 			}
 
-			&.googlesitekit-pagespeed-report__row--first {
+			&--first {
 
 				padding: 12px $grid-gap-phone 8px $grid-gap-phone;
 
 				@media ( min-width: $bp-tablet ) {
 					padding: 18px $grid-gap-desktop 12px $grid-gap-desktop;
 				}
-
-				p {
-					margin-left: 3px;
-				}
 			}
 
-			&.googlesitekit-pagespeed-report__row--last {
+			&--last {
 
 				padding: 8px $grid-gap-phone 12px $grid-gap-phone;
 
 				@media ( min-width: $bp-tablet ) {
 					padding: 12px $grid-gap-desktop 18px $grid-gap-desktop;
 				}
-
-				p {
-					margin-left: 4px;
-				}
 			}
 		}
 
-		table {
+		.googlesitekit-table {
 
+			border-spacing: 0;
 			padding: 0;
 			width: 100%;
 
