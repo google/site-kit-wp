@@ -79,7 +79,7 @@ export const createInfoStore = ( slug, {
 		 * @return {(string|undefined)} The admin reauthentication URL.
 		 */
 		getAdminReauthURL: createRegistrySelector( ( select ) => ( state, reAuth = true ) => {
-			const { needsReauthentication } = select( CORE_USER ).getAuthentication() || {};
+			const needsReauthentication = select( CORE_USER ).needsReauthentication() || false;
 
 			const noSetupQueryArgs = ! requiresSetup ? {
 				notification: 'authentication_success',
