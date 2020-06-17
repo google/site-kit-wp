@@ -54,7 +54,7 @@ const DeviceSizeTabBar = ( {
 	const onUpdate = useCallback( ( index ) => {
 		const device = deviceSizes[ index ];
 		handleDeviceSizeUpdate( device, index );
-	}, [ deviceSizes ] );
+	}, [ deviceSizes, handleDeviceSizeUpdate ] );
 
 	if ( ! deviceSizes.length ) {
 		return null;
