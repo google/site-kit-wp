@@ -92,7 +92,7 @@ export default function DashboardPageSpeed() {
 		}
 	}, [ reportMobile, reportDesktop ] );
 
-	if ( ! reportMobile || ! reportDesktop || ! dataSrc ) {
+	if ( ! referenceURL || ! reportMobile || ! reportDesktop || ! dataSrc ) {
 		return (
 			<Layout className="googlesitekit-pagespeed-widget">
 				<div className="mdc-layout-grid">
