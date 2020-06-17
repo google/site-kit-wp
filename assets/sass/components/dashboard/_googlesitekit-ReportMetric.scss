@@ -18,6 +18,13 @@
 
 .googlesitekit-pagespeed-report-metric {
 
+	.googlesitekit-pagespeed-report-metric__title {
+		color: $c-black;
+		font-size: 1rem;
+		letter-spacing: 0.1px;
+		line-height: 1.5rem;
+	}
+
 	.googlesitekit-pagespeed-report-metric-value-container {
 
 		align-items: flex-end;
