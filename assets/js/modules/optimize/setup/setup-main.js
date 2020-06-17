@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -33,7 +33,7 @@ import { _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import SetupForm from './setup-form';
 import ProgressBar from '../../../components/progress-bar';
-import { SvgIcon, trackEvent } from '../../../util';
+import { SvgIcon } from '../../../util';
 import { STORE_NAME } from '../datastore/constants';
 const { useSelect } = Data;
 
@@ -46,10 +46,6 @@ export default function SetupMain( { finishSetup } ) {
 		finishSetup( ...args );
 		setIsNavigating( true );
 	};
-
-	useEffect( () => {
-		trackEvent( 'optimize_setup', 'configure_optimize_screen' );
-	}, [] );
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below

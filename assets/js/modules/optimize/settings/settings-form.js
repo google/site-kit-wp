@@ -21,6 +21,7 @@
  */
 import {
 	ErrorNotice,
+	OptimizeIDField,
 } from '../common/';
 
 export default function SettingsForm() {
@@ -29,7 +30,7 @@ export default function SettingsForm() {
 			<ErrorNotice />
 
 			<div className="googlesitekit-setup-module__inputs">
-				{ /* <OptimizeID /> */ }
+				<OptimizeIDField />
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">

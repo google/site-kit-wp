@@ -24,16 +24,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-// import Data from 'googlesitekit-data';
-// import DisplaySetting from '../../../components/display-setting';
-// import { STORE_NAME } from '../datastore/constants';
-// import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import Data from 'googlesitekit-data';
+import DisplaySetting from '../../../components/display-setting';
+import { STORE_NAME } from '../datastore/constants';
 import { ErrorNotice } from '../common';
-// const { useSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsView() {
-	// const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
-	// const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
+	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--optimize">
@@ -46,7 +44,7 @@ export default function SettingsView() {
 						{ __( 'Optimize Code Snippet', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ /* <DisplaySetting value={ optimizeID } /> */ }
+						<DisplaySetting value={ optimizeID } />
 					</p>
 				</div>
 			</div>

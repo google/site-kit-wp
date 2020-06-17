@@ -35,14 +35,17 @@ import Button from '../../../components/button';
 import Link from '../../../components/link';
 import { STORE_NAME, FORM_SETUP } from '../datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { isValidOptimizeID } from '../util';
 import {
 	ErrorNotice,
+	AmpExperimentJSONField,
+	OptimizeIDField,
 } from '../common/';
-import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
+	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( STORE_NAME );
@@ -51,7 +54,6 @@ export default function SetupForm( { finishSetup } ) {
 		const { error } = await submitChanges();
 		if ( ! error ) {
 			setValues( FORM_SETUP, { autoSubmit: false } );
-			await trackEvent( 'optimize_setup', 'optimize_configured' );
 			finishSetup();
 		}
 	}, [ canSubmitChanges, finishSetup ] );
@@ -68,8 +70,18 @@ export default function SetupForm( { finishSetup } ) {
 			<ErrorNotice />
 
 			<div className="googlesitekit-setup-module__inputs">
-				{ /* <OptimizeID /> */ }
+				<OptimizeIDField />
 			</div>
+
+			{ ! isValidOptimizeID( optimizeID ) && optimizeID &&
+				<p className="googlesitekit-error-text">{ __( 'Error: Not a valid Optimize ID.', 'google-site-kit' ) }</p>
+			}
+
+			<AmpExperimentJSONField />
+
+			{ /* {
+				this.renderInstructionInfo()
+			} */ }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>

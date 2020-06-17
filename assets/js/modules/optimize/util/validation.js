@@ -25,7 +25,7 @@
  * @return {boolean} True if the given optimize ID is valid, false otherwise.
  */
 export function isValidOptimizeID( optimizeID ) {
-	return typeof optimizeID === 'string' && !! optimizeID.match( /^OPT-[A-Z0-9]+$/ );
+	return typeof optimizeID === 'string' && !! optimizeID.match( /^(OPT|GTM)-[A-Z0-9]+$/ );
 }
 
 /**
