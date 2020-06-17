@@ -32,25 +32,9 @@ import { __ } from '@wordpress/i18n';
  */
 import ReportMetric from './ReportMetric';
 import ReportDetailsLink from './ReportDetailsLink';
-import Link from '../../../components/link';
-import { sanitizeHTML } from '../../../util';
+import { FieldDataLearnMoreLink } from './DataSourceLearnMoreLinks';
 
 export default function FieldReportMetrics( { data } ) {
-	const learnMoreLink = (
-		<Link
-			href="https://web.dev/user-centric-performance-metrics/#in-the-field"
-			external
-			inherit
-			dangerouslySetInnerHTML={ sanitizeHTML(
-				__( 'Learn more<span class="screen-reader-text"> about field data.</span>', 'google-site-kit' ),
-				{
-					ALLOWED_TAGS: [ 'span' ],
-					ALLOWED_ATTR: [ 'class' ],
-				}
-			) }
-		/>
-	);
-
 	const {
 		FIRST_INPUT_DELAY_MS: firstInputDelay,
 		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
@@ -68,7 +52,7 @@ export default function FieldReportMetrics( { data } ) {
 						{ __( 'Field data is useful for capturing true, real-world user experience. However, the Chrome User Experience Report does not have sufficient real-world speed data for this page.', 'google-site-kit' ) }
 					</p>
 					<p>
-						{ learnMoreLink }
+						<FieldDataLearnMoreLink />
 					</p>
 				</div>
 			</div>
@@ -86,7 +70,7 @@ export default function FieldReportMetrics( { data } ) {
 				<p>
 					{ __( 'Field data is useful for capturing true, real-world user experience - but has a more limited set of metrics.', 'google-site-kit' ) }
 					{ ' ' }
-					{ learnMoreLink }
+					<FieldDataLearnMoreLink />
 				</p>
 			</div>
 			<table

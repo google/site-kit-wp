@@ -33,28 +33,12 @@ import { __ } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import ReportDetailsLink from './ReportDetailsLink';
 import { getScoreCategory } from '../dashboard/util';
-import Link from '../../../components/link';
-import { sanitizeHTML } from '../../../util';
+import { LabDataLearnMoreLink } from './DataSourceLearnMoreLinks';
 
 export default function LabReportMetrics( { data } ) {
 	const totalBlockingTime = data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
 	const largestContentfulPaint = data?.lighthouseResult?.audits?.[ 'largest-contentful-paint' ];
 	const cumulativeLayoutShift = data?.lighthouseResult?.audits?.[ 'cumulative-layout-shift' ];
-
-	const learnMoreLink = (
-		<Link
-			href="https://web.dev/user-centric-performance-metrics/#in-the-lab"
-			external
-			inherit
-			dangerouslySetInnerHTML={ sanitizeHTML(
-				__( 'Learn more<span class="screen-reader-text"> about lab data.</span>', 'google-site-kit' ),
-				{
-					ALLOWED_TAGS: [ 'span' ],
-					ALLOWED_ATTR: [ 'class' ],
-				}
-			) }
-		/>
-	);
 
 	if ( ! totalBlockingTime || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
 		return null;
@@ -66,7 +50,7 @@ export default function LabReportMetrics( { data } ) {
 				<p>
 					{ __( 'Lab data is useful for debugging performance issues, as it is collected in a controlled environment.', 'google-site-kit' ) }
 					{ ' ' }
-					{ learnMoreLink }
+					<LabDataLearnMoreLink />
 				</p>
 			</div>
 			<table
