@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -43,8 +43,6 @@ const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
-	const hasEditScope = useSelect( ( select ) => select( STORE_NAME ).hasEditScope() );
-	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( STORE_NAME );
@@ -57,14 +55,6 @@ export default function SetupForm( { finishSetup } ) {
 			finishSetup();
 		}
 	}, [ canSubmitChanges, finishSetup ] );
-
-	// If the user lands back on this component with autoSubmit and the edit scope,
-	// resubmit the form.
-	useEffect( () => {
-		if ( autoSubmit && hasEditScope ) {
-			submitForm( { preventDefault: () => {} } );
-		}
-	}, [ hasEditScope, autoSubmit, submitForm ] );
 
 	return (
 		<form
