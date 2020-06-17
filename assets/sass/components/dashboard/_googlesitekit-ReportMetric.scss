@@ -18,39 +18,36 @@
 
 .googlesitekit-pagespeed-report-metric {
 
-	.googlesitekit-pagespeed-report-metric-value {
+	.googlesitekit-pagespeed-report-metric-value-container {
 
-		.googlesitekit-pagespeed-report-metric-value-container {
+		align-items: flex-end;
+		display: flex;
+		flex-direction: column;
+		font-size: 0.75rem;
+		justify-content: center;
+		letter-spacing: 0.3px;
+		line-height: 1rem;
+		text-align: right;
+	}
 
-			align-items: flex-end;
-			display: flex;
-			flex-direction: column;
-			font-size: 0.75rem;
-			justify-content: center;
-			letter-spacing: 0.3px;
-			line-height: 1rem;
-			text-align: right;
+	.googlesitekit-pagespeed-report-metric-value__number,
+	.googlesitekit-pagespeed-report-metric-value__rating {
+		width: auto;
+	}
 
-			.googlesitekit-pagespeed-report-metric-value__number,
-			.googlesitekit-pagespeed-report-metric-value__rating {
-				width: auto;
-			}
+	.googlesitekit-pagespeed-report-metric-value__rating {
+		text-transform: uppercase;
+	}
 
-			.googlesitekit-pagespeed-report-metric-value__rating {
-				text-transform: uppercase;
-			}
-		}
+	.googlesitekit-pagespeed-report-metric--fast {
+		color: $c-pagespeed-fast;
+	}
 
-		&.googlesitekit-pagespeed-report-metric--fast {
-			color: $c-pagespeed-fast;
-		}
+	.googlesitekit-pagespeed-report-metric--average {
+		color: $c-pagespeed-average;
+	}
 
-		&.googlesitekit-pagespeed-report-metric--average {
-			color: $c-pagespeed-average;
-		}
-
-		&.googlesitekit-pagespeed-report-metric--slow {
-			color: $c-pagespeed-slow;
-		}
+	.googlesitekit-pagespeed-report-metric--slow {
+		color: $c-pagespeed-slow;
 	}
 }
