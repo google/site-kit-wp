@@ -25,12 +25,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Layout from '../../../components/layout/layout';
 import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
 import DashboardPageSpeed from '../components/DashboardPageSpeed';
+import { STORE_NAME } from '../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
 function DashboardSpeed() {
-	const description = global._googlesitekitLegacyData.permaLink
+	const currentEntityURL = useSelect( ( select ) => select( STORE_NAME ).getCurrentEntityURL() );
+	const description = currentEntityURL
 		? __( 'How fast this page is.', 'google-site-kit' )
 		: __( 'How fast your home page is.', 'google-site-kit' );
 
