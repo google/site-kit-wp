@@ -58,7 +58,7 @@ export const selectors = {
 	 * }
 	 * ```
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
