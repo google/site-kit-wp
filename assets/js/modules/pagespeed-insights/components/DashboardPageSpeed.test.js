@@ -32,10 +32,16 @@ const url = fixtures.pagespeedMobile.loadingExperience.id;
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
-	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+	dispatch( CORE_SITE ).receiveSiteInfo( {
+		referenceSiteURL: url,
+		currentEntityURL: null,
+	} );
 };
-const setupNoReports = ( { dispatch } ) => {
-	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+const setupRegistryNoReports = ( { dispatch } ) => {
+	dispatch( CORE_SITE ).receiveSiteInfo( {
+		referenceSiteURL: url,
+		currentEntityURL: null,
+	} );
 };
 const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 	// eslint-disable-next-line no-unused-vars
@@ -45,7 +51,10 @@ const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 		...fixtures.pagespeedDesktop,
 		loadingExperience: desktopLoadingExperience, // no field data metrics
 	}, { url, strategy: STRATEGY_DESKTOP } );
-	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+	dispatch( CORE_SITE ).receiveSiteInfo( {
+		referenceSiteURL: url,
+		currentEntityURL: null,
+	} );
 };
 
 describe( 'DashboardPageSpeed', () => {
@@ -56,7 +65,7 @@ describe( 'DashboardPageSpeed', () => {
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
 			new Promise( () => {} ), // Don't return a response.
 		);
-		const { queryByRole } = render( <DashboardPageSpeed />, { setupRegistry: setupNoReports } );
+		const { queryByRole } = render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoReports } );
 
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
