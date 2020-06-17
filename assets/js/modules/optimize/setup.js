@@ -151,7 +151,7 @@ class OptimizeSetup extends Component {
 				finishSetup();
 			}
 
-			getModulesData().optimize.settings.optimizeID = optimizeID;
+			getModulesData().optimize.settings = optimizeAccount;
 
 			if ( this._isMounted ) {
 				this.setState( {
