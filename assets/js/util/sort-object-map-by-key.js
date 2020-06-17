@@ -22,7 +22,7 @@
  * @param {Object} objectList  Object containg objects to be sorted
  * @param {string} priorityKey The object key to use for matching.
  *
- * @return {Array} Array ordered by the priority key
+ * @return {Array} An Array containing objects ordered by the priority key
  */
 export function sortObjectMapByKey( objectList, priorityKey ) {
 	return Object.values( objectList ).sort( ( objectA, objectB ) => {
@@ -35,4 +35,3 @@ export function sortObjectMapByKey( objectList, priorityKey ) {
 		return 0;
 	} );
 }
-

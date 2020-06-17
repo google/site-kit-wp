@@ -22,32 +22,32 @@
 import { sortObjectMapByKey } from '../';
 
 const sortMe = {
-	objectOne: { name: 'First', order: 1 },
-	objectTwo: { name: 'Fifth', order: 10 },
-	objectThree: { name: 'Fourth', order: 9 },
-	objectFour: { name: 'Second', order: 3 },
-	objectFive: { name: 'Third', order: 7 },
+	objectOne: { slug: 'objectOne', name: 'First', order: 1 },
+	objectTwo: { slug: 'objectTwo', name: 'Fifth', order: 10 },
+	objectThree: { slug: 'objectThree', name: 'Fourth', order: 9 },
+	objectFour: { slug: 'objectFour', name: 'Second', order: 3 },
+	objectFive: { slug: 'objectFive', name: 'Third', order: 7 },
 };
 
 describe( 'sortObjectMapByKey', () => {
-	it( 'returns an array correctly sorted passed key', () => {
+	it( 'returns an object correctly sorted passed key', () => {
 		const expectedResults = [
-			{ name: 'First', order: 1 },
-			{ name: 'Second', order: 3 },
-			{ name: 'Third', order: 7 },
-			{ name: 'Fourth', order: 9 },
-			{ name: 'Fifth', order: 10 },
+			{ slug: 'objectOne', name: 'First', order: 1 },
+			{ slug: 'objectFour', name: 'Second', order: 3 },
+			{ slug: 'objectFive', name: 'Third', order: 7 },
+			{ slug: 'objectThree', name: 'Fourth', order: 9 },
+			{ slug: 'objectTwo', name: 'Fifth', order: 10 },
 		];
 
 		expect( sortObjectMapByKey( sortMe, 'order' ) ).toStrictEqual( expectedResults );
 	} );
-	it( 'returns an array with the same order if sort key is omitted or is not on the object', () => {
+	it( 'returns an object with the same order if sort key is omitted or is not on the object', () => {
 		const expectedResults = [
-			{ name: 'First', order: 1 },
-			{ name: 'Fifth', order: 10 },
-			{ name: 'Fourth', order: 9 },
-			{ name: 'Second', order: 3 },
-			{ name: 'Third', order: 7 },
+			{ slug: 'objectOne', name: 'First', order: 1 },
+			{ slug: 'objectTwo', name: 'Fifth', order: 10 },
+			{ slug: 'objectThree', name: 'Fourth', order: 9 },
+			{ slug: 'objectFour', name: 'Second', order: 3 },
+			{ slug: 'objectFive', name: 'Third', order: 7 },
 		];
 		expect( sortObjectMapByKey( sortMe ) ).toStrictEqual( expectedResults );
 		expect( sortObjectMapByKey( sortMe, 'undefinedSortKey' ) ).toStrictEqual( expectedResults );
