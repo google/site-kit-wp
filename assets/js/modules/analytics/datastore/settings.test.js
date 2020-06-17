@@ -20,7 +20,8 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
+import { STORE_NAME, FORM_SETUP, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
@@ -138,11 +139,15 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'dispatches createProfile if the "set up a new profile" option is chosen', async () => {
+				const profileName = fixtures.createProfile.name;
 				registry.dispatch( STORE_NAME ).setSettings( {
 					...validSettings,
 					accountID: '12345',
 					propertyID: 'UA-12345-1',
 					profileID: PROFILE_CREATE,
+				} );
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					profileName,
 				} );
 				const createdProfile = {
 					...fixtures.propertiesProfiles.profiles[ 0 ],
@@ -170,7 +175,7 @@ describe( 'modules/analytics settings', () => {
 							data: {
 								accountID: '12345',
 								propertyID: 'UA-12345-1',
-								profileName: '',
+								profileName,
 							},
 						},
 					},
@@ -180,11 +185,17 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'handles an error if set while creating a profile', async () => {
+				const profileName = fixtures.createProfile.name;
+
 				registry.dispatch( STORE_NAME ).setSettings( {
 					...validSettings,
 					accountID: '12345',
 					propertyID: 'UA-12345-1',
 					profileID: PROFILE_CREATE,
+				} );
+
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					profileName,
 				} );
 
 				fetchMock.postOnce(
@@ -197,7 +208,15 @@ describe( 'modules/analytics settings', () => {
 
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: { data: { accountID: '12345', propertyID: 'UA-12345-1', profileName: '' } } },
+					{
+						body: {
+							data: {
+								accountID: '12345',
+								propertyID: 'UA-12345-1',
+								profileName,
+							},
+						},
+					},
 				);
 				expect( result.error ).toEqual( error );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
@@ -205,11 +224,15 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'dispatches both createProperty and createProfile when selected', async () => {
+				const profileName = fixtures.createProfile.name;
 				registry.dispatch( STORE_NAME ).setSettings( {
 					...validSettings,
 					accountID: '12345',
 					propertyID: PROPERTY_CREATE,
 					profileID: PROFILE_CREATE,
+				} );
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					profileName,
 				} );
 				const createdProperty = {
 					...fixtures.propertiesProfiles.properties[ 0 ],
@@ -392,6 +415,7 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { profileName: 'all web site data' } );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 			} );

@@ -79,8 +79,9 @@ const fetchCreateProfileStore = createFetchStore( {
 			},
 		};
 	},
-	argsToParams: ( propertyID, profileName = '' ) => {
+	argsToParams: ( propertyID, profileName ) => {
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
+		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
 		return { propertyID, profileName };
 	},
 } );
@@ -163,8 +164,8 @@ const baseSelectors = {
 	 * @param {string} propertyID The Analytics Property ID to check for profile creation.
 	 * @return {boolean} `true` if creating a profile, `false` if not.
 	 */
-	isDoingCreateProfile: createRegistrySelector( ( select ) => ( state, propertyID ) => {
-		return select( STORE_NAME ).isFetchingCreateProfile( propertyID );
+	isDoingCreateProfile: createRegistrySelector( ( select ) => ( state, propertyID, profileName ) => {
+		return select( STORE_NAME ).isFetchingCreateProfile( propertyID, profileName );
 	} ),
 
 	/**
