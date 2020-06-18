@@ -417,7 +417,24 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
 				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { profileName: 'all web site data' } );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBeTruthy();
+			} );
+
+			it( 'should not support creating a new profile when the profile name is empty', () => {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { profileName: '' } );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBeFalsy();
+			} );
+
+			it( 'should not support creating a new profile when the profile name is not set at all', () => {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBeFalsy();
 			} );
 
 			it( 'does not support creating an account', () => {
