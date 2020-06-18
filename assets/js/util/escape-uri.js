@@ -19,6 +19,11 @@
 /**
  * Escapes URI components in a template string as a tag function.
  *
+ * @example
+ * // escape redirect url
+ * const redirectTo = 'http://localhost/admin/';
+ * const loginUrl = escapeURI`http://localhost/login?redirect=${ redirectTo }`;
+ *
  * @since n.e.x.t
  *
  * @param {string[]} strings The array of static strings in the template.
