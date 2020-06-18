@@ -69,7 +69,7 @@ const defaultArgsToParams = () => {
  * * The baseName passed should be 'getSomeData'.
  * * The resolver for 'getSomeData' should call 'fetchGetSomeData'.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  * @private
  *
  * @param {Object}   args                   Arguments for creating the fetch store.

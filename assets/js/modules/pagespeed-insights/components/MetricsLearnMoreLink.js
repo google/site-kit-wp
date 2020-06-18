@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights Datastore Fixtures.
+ * Metrics Learn More Link component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,21 +17,29 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import omit from 'lodash/omit';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { default as pagespeedDesktop } from './pagespeed--desktop';
-import { default as pagespeedMobile } from './pagespeed--mobile';
-const pagespeedDesktopNoFieldData = omit( pagespeedDesktop, 'loadingExperience.metrics' );
-const pagespeedMobileNoFieldData = omit( pagespeedMobile, 'loadingExperience.metrics' );
+import Link from '../../../components/link';
+import { sanitizeHTML } from '../../../util';
 
-export {
-	pagespeedDesktop,
-	pagespeedDesktopNoFieldData,
-	pagespeedMobile,
-	pagespeedMobileNoFieldData,
-};
+export default function MetricsLearnMoreLink() {
+	return (
+		<Link
+			href="https://web.dev/user-centric-performance-metrics/#how-metrics-are-measured"
+			external
+			inherit
+			dangerouslySetInnerHTML={ sanitizeHTML(
+				__( 'Learn more<span class="screen-reader-text"> how metrics are measured.</span>', 'google-site-kit' ),
+				{
+					ALLOWED_TAGS: [ 'span' ],
+					ALLOWED_ATTR: [ 'class' ],
+				}
+			) }
+		/>
+	);
+}
