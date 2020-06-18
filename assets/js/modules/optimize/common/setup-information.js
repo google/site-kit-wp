@@ -1,5 +1,5 @@
 /**
- * Info component.
+ * InstructionInformation component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,27 +19,16 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import Link from '../../../components/link';
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore/constants';
-
-const { useSelect } = Data;
-
-export default function Info() {
-	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
-
+export default function SetupInformation() {
 	return (
-		<Fragment>
-			{
-				optimizeID
-					? <div>{ __( 'Your Optimize Container ID', 'google-site-kit' ) }: <strong>{ optimizeID }</strong></div>
-					: <div>{ __( 'Optimize Container ID missing, press "edit" to add', 'google-site-kit' ) }.</div>
-			}
-		</Fragment>
+		<p>
+			{ __( 'Please copy and paste your Optimize ID to complete your setup.', 'google-site-kit' ) }
+			<Link href="https://support.google.com/optimize/answer/6211921" external inherit>
+				{ __( 'You can locate this here.', 'google-site-kit' ) }
+			</Link>
+		</p>
 	);
 }

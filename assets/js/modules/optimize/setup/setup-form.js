@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../components/button';
-import Link from '../../../components/link';
 import { STORE_NAME, FORM_SETUP } from '../datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { isValidOptimizeID } from '../util';
@@ -41,6 +40,7 @@ import {
 	AMPExperimentJSONField,
 	OptimizeIDField,
 	InstructionInformation,
+	SetupInformation,
 } from '../common/';
 const { useSelect, useDispatch } = Data;
 
@@ -64,9 +64,7 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-optimize-setup__form"
 			onSubmit={ submitForm }
 		>
-			<p>{ __( 'Please copy and paste your Optimize ID to complete your setup.', 'google-site-kit' ) }
-				<Link href="https://support.google.com/optimize/answer/6211921" external inherit>{ __( 'You can locate this here.', 'google-site-kit' ) }</Link>
-			</p>
+			<SetupInformation />
 
 			<ErrorNotice />
 
@@ -75,7 +73,9 @@ export default function SetupForm( { finishSetup } ) {
 			</div>
 
 			{ ! isValidOptimizeID( optimizeID ) && optimizeID &&
-				<p className="googlesitekit-error-text">{ __( 'Error: Not a valid Optimize ID.', 'google-site-kit' ) }</p>
+				<p className="googlesitekit-error-text">
+					{ __( 'Error: Not a valid Optimize ID.', 'google-site-kit' ) }
+				</p>
 			}
 
 			<AMPExperimentJSONField />

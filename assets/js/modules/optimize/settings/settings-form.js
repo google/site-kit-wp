@@ -32,6 +32,7 @@ import {
 	AMPExperimentJSONField,
 	OptimizeIDField,
 	InstructionInformation,
+	SetupInformation,
 } from '../common/';
 const { useSelect } = Data;
 
@@ -40,6 +41,8 @@ export default function SettingsForm() {
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
+			<SetupInformation />
+
 			<ErrorNotice />
 
 			<div className="googlesitekit-setup-module__inputs">
@@ -47,7 +50,9 @@ export default function SettingsForm() {
 			</div>
 
 			{ ! isValidOptimizeID( optimizeID ) && optimizeID &&
-				<p className="googlesitekit-error-text">{ __( 'Error: Not a valid Optimize ID.', 'google-site-kit' ) }</p>
+				<p className="googlesitekit-error-text">
+					{ __( 'Error: Not a valid Optimize ID.', 'google-site-kit' ) }
+				</p>
 			}
 
 			<AMPExperimentJSONField />
