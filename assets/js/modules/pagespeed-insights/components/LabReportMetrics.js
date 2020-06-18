@@ -48,7 +48,7 @@ export default function LabReportMetrics( { data } ) {
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
 				<p>
-					{ __( 'Lab data is a snapshot of how you page performs right now, measured in tests we run in a controlled environment.', 'google-site-kit' ) }
+					{ __( 'Lab data is a snapshot of how your page performs right now, measured in tests we run in a controlled environment.', 'google-site-kit' ) }
 					{ ' ' }
 					<MetricsLearnMoreLink />
 				</p>
