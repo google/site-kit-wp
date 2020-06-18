@@ -19,6 +19,8 @@
 /**
  * A tag function that escapes URI components in a template string.
  *
+ * @since n.e.x.t
+ *
  * @param {string[]} strings The array of static strings in the template.
  * @param {...any} values The array of expressions used in the template.
  * @return {string} Escaped URI string.
