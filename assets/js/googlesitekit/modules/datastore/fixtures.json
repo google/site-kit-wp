@@ -8,8 +8,8 @@
     "active": true,
     "connected": true,
     "dependencies": [],
-	"dependants": [],
-	"order": 10
+    "dependants": [],
+    "order": 10
   },
   {
     "slug": "search-console",
@@ -21,7 +21,7 @@
     "connected": true,
     "dependencies": [],
     "dependants": [],
-	"order": 10
+    "order": 10
   },
   {
     "slug": "adsense",
@@ -33,7 +33,7 @@
     "connected": false,
     "dependencies": [],
     "dependants": [],
-	"order": 10
+    "order": 10
   },
   {
     "slug": "analytics",
@@ -48,7 +48,7 @@
       "optimize",
       "tagmanager"
     ],
-	"order": 10
+    "order": 10
   },
   {
     "slug": "pagespeed-insights",
@@ -60,7 +60,7 @@
     "connected": true,
     "dependencies": [],
     "dependants": [],
-	"order": 10
+    "order": 10
   },
   {
     "slug": "optimize",
@@ -74,7 +74,7 @@
       "analytics"
     ],
     "dependants": [],
-	"order": 10
+    "order": 10
   },
   {
     "slug": "tagmanager",
@@ -88,6 +88,6 @@
       "analytics"
     ],
     "dependants": [],
-	"order": 10
+    "order": 10
   }
 ]
