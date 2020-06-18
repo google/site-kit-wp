@@ -114,7 +114,10 @@ export default function DashboardPageSpeed() {
 						activeIndex={ [ DATA_SRC_LAB, DATA_SRC_FIELD ].indexOf( dataSrc ) }
 						handleActiveIndexUpdate={ updateActiveTab }
 					>
-						<Tab aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }>
+						<Tab
+							focusOnActivate={ false }
+							aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
+						>
 							<span
 								id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
 								className="mdc-tab__text-label"
@@ -122,7 +125,10 @@ export default function DashboardPageSpeed() {
 								{ __( 'In the Lab', 'google-site-kit' ) }
 							</span>
 						</Tab>
-						<Tab aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }>
+						<Tab
+							focusOnActivate={ false }
+							aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
+						>
 							<span
 								id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
 								className="mdc-tab__text-label"
