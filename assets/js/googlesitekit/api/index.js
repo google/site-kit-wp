@@ -109,10 +109,6 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 	// per-request basis.
 	const useCacheForRequest = method === 'GET' && ( useCache !== undefined ? useCache : usingCache() );
 
-	if ( false === useCacheForRequest ) {
-		// Add timestamp parameter to ensure that only the first request is preloaded.
-		queryParams = { ...queryParams, timestamp: Date.now() };
-	}
 	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
 
 	if ( useCacheForRequest ) {
@@ -121,6 +117,11 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 		if ( cacheHit ) {
 			return value;
 		}
+	}
+	// If we're bypassing the cache on GET requests, add the timestamp parameter.
+	if ( false === useCacheForRequest && method === 'GET' ) {
+		// Add timestamp parameter to ensure that only the first request is preloaded.
+		queryParams = { ...queryParams, timestamp: Date.now() };
 	}
 
 	// Make an API request to retrieve the results.
