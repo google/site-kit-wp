@@ -81,6 +81,7 @@
 @import "components/global/googlesitekit-cta";
 @import "components/global/googlesitekit-cta-link";
 @import "components/global/googlesitekit-data-block";
+@import "components/global/googlesitekit-DeviceSizeTabBar";
 @import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-header";
 @import "components/global/googlesitekit-layout";
@@ -94,7 +95,7 @@
 @import "components/global/googlesitekit-opt-in";
 @import "components/global/googlesitekit-overlay";
 @import "components/global/googlesitekit-page";
-@import "components/global/googlesitekit-pagespeed-report";
+@import "components/global/googlesitekit-pagespeed-dashboard-widget";
 @import "components/global/googlesitekit-page-header";
 @import "components/global/googlesitekit-percent-circle";
 @import "components/global/googlesitekit-post-searcher";
@@ -111,6 +112,8 @@
 @import "components/dashboard/googlesitekit-signin-box";
 @import "components/dashboard/googlesitekit-dashboard-module-header";
 @import "components/dashboard/googlesitekit-dashboard-single-url";
+@import "components/dashboard/googlesitekit-DashboardPageSpeed";
+@import "components/dashboard/googlesitekit-ReportMetric";
 
 // Dashboard Splash
 @import "components/dashboard/splash/googlesitekit-splash";
@@ -143,3 +146,4 @@
 
 // Utilities
 @import "utilities/margin";
+@import "utilities/text-align";
