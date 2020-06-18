@@ -55,7 +55,7 @@ export default function DashboardPageSpeed() {
 	const reportMobile = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_MOBILE ) );
 	const reportDesktop = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_DESKTOP ) );
 	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
-	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) );
+	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) ) || DATA_SRC_LAB;
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const setStrategyMobile = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_MOBILE } ), [] );
@@ -82,13 +82,8 @@ export default function DashboardPageSpeed() {
 
 	// Set the default data source based on report data.
 	useEffect( () => {
-		if ( ! reportMobile || ! reportDesktop ) {
-			return;
-		}
 		if ( reportMobile?.loadingExperience?.metrics && reportDesktop?.loadingExperience?.metrics ) {
 			setDataSrcField();
-		} else {
-			setDataSrcLab();
 		}
 	}, [ reportMobile, reportDesktop ] );
 
