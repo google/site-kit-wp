@@ -17,7 +17,7 @@
  */
 
 /**
- * A tag function that escapes URI components in a template string.
+ * Escapes URI components in a template string as a tag function.
  *
  * @since n.e.x.t
  *
