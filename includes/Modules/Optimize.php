@@ -10,11 +10,14 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
@@ -30,8 +33,9 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Optimize extends Module implements Module_With_Settings, Module_With_Debug_Fields {
-	use Module_With_Settings_Trait;
+final class Optimize extends Module
+	implements Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets {
+	use Module_With_Settings_Trait, Module_With_Assets_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -324,5 +328,33 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Sets up the module's assets to register.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @return Asset[] List of Asset objects.
+	 */
+	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		return array(
+			new Script(
+				'googlesitekit-modules-optimize',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-optimize.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-forms',
+					),
+				)
+			),
+		);
 	}
 }

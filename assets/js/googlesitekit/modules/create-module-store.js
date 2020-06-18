@@ -31,6 +31,9 @@ import {
 import {
 	createSettingsStore,
 } from '../data/create-settings-store';
+import {
+	createInfoStore,
+} from './create-info-store';
 
 /**
  * Creates a base store object for a Site Kit module.
@@ -44,21 +47,23 @@ import {
  *
  * @since 1.6.0
  *
- * @param {string} slug                 Slug of the module that the store is for.
- * @param {Object} options              Optional. Options to consider for the store.
- * @param {number} options.storeName    Store name to use. Default is 'modules/{slug}'.
- * @param {Array}  options.settingSlugs If the module store should support settings, this needs to be
- *                                      a list of the slugs that are part of the module and handled
- *                                      by the module's 'modules/{slug}/data/settings' API endpoint.
- *                                      Default is undefined.
- * @param {Object} options.registry     Store registry that this store will be registered on. Default
- *                                      is the main Site Kit registry `googlesitekit.data`.
+ * @param {string}  slug                  Slug of the module that the store is for.
+ * @param {Object}  options               Optional. Options to consider for the store.
+ * @param {number}  options.storeName     Store name to use. Default is 'modules/{slug}'.
+ * @param {Array}   options.settingSlugs  If the module store should support settings, this needs to be
+ *                                        a list of the slugs that are part of the module and handled
+ *                                        by the module's 'modules/{slug}/data/settings' API endpoint.
+ *                                        Default is undefined.
+ * @param {string}  options.adminPage     Store admin page. Default is 'googlesitekit-dashboard'.
+ * @param {boolean} options.requiresSetup Store flag for requires setup. Default is 'true'
  * @return {Object} The base module store object, with additional `STORE_NAME` and
  *                  `INITIAL_STATE` properties.
  */
 export const createModuleStore = ( slug, {
 	storeName = undefined,
 	settingSlugs = undefined,
+	adminPage = 'googlesitekit-dashboard',
+	requiresSetup = true,
 } = {} ) => {
 	invariant( slug, 'slug is required.' );
 
@@ -68,17 +73,34 @@ export const createModuleStore = ( slug, {
 		storeName,
 	} );
 
-	const settingsStore = ( 'undefined' !== typeof settingSlugs )
-		? createSettingsStore( 'modules', slug, 'settings', {
+	const infoStore = createInfoStore( slug, {
+		storeName,
+		adminPage,
+		requiresSetup,
+	} );
+
+	let combinedStore = {};
+	if ( 'undefined' !== typeof settingSlugs ) {
+		const settingsStore = createSettingsStore( 'modules', slug, 'settings', {
 			storeName,
 			settingSlugs,
-		} )
-		: {};
+		} );
 
-	const combinedStore = Data.combineStores(
-		notificationsStore,
-		settingsStore,
-	);
+		// to prevent duplication errors during combining stores, we don't need to combine
+		// Data.commontStore here since settingsStore already uses commonActions and commonControls
+		// from the Data.commonStore.
+		combinedStore = Data.combineStores(
+			notificationsStore,
+			settingsStore,
+			infoStore,
+		);
+	} else {
+		combinedStore = Data.combineStores(
+			Data.commonStore,
+			notificationsStore,
+			infoStore,
+		);
+	}
 
 	combinedStore.STORE_NAME = storeName;
 

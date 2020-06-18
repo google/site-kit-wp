@@ -29,66 +29,49 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { parseAccountID } from '../util';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+
+const fetchGetURLChannelsStore = createFetchStore( {
+	baseName: 'getURLChannels',
+	controlCallback: ( { clientID } ) => {
+		const accountID = parseAccountID( clientID );
+		if ( undefined === accountID ) {
+			// Mirror the API response that would happen for an invalid client ID.
+			return new Promise( () => {
+				throw {
+					code: 'invalid_param',
+					message: __( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
+					data: { status: 400 },
+				};
+			} );
+		}
+		return API.get( 'modules', 'adsense', 'urlchannels', { accountID, clientID }, {
+			useCache: false,
+		} );
+	},
+	reducerCallback: ( state, urlchannels, { clientID } ) => {
+		return {
+			...state,
+			urlchannels: {
+				...state.urlchannels,
+				[ clientID ]: [ ...urlchannels ],
+			},
+		};
+	},
+	argsToParams: ( clientID ) => {
+		invariant( clientID, 'clientID is required.' );
+		return { clientID };
+	},
+} );
 
 // Actions
-const FETCH_URLCHANNELS = 'FETCH_URLCHANNELS';
-const START_FETCH_URLCHANNELS = 'START_FETCH_URLCHANNELS';
-const FINISH_FETCH_URLCHANNELS = 'FINISH_FETCH_URLCHANNELS';
-const CATCH_FETCH_URLCHANNELS = 'CATCH_FETCH_URLCHANNELS';
-
-const RECEIVE_URLCHANNELS = 'RECEIVE_URLCHANNELS';
 const RESET_URLCHANNELS = 'RESET_URLCHANNELS';
 
-export const INITIAL_STATE = {
-	isFetchingURLChannels: {},
+const BASE_INITIAL_STATE = {
 	urlchannels: {},
 };
 
-export const actions = {
-	*fetchURLChannels( clientID ) {
-		invariant( clientID, 'clientID is required.' );
-
-		let response, error;
-
-		yield {
-			payload: { clientID },
-			type: START_FETCH_URLCHANNELS,
-		};
-
-		try {
-			response = yield {
-				payload: { clientID },
-				type: FETCH_URLCHANNELS,
-			};
-
-			yield actions.receiveURLChannels( response, { clientID } );
-
-			yield {
-				payload: { clientID },
-				type: FINISH_FETCH_URLCHANNELS,
-			};
-		} catch ( err ) {
-			error = err;
-
-			yield {
-				payload: { error, clientID },
-				type: CATCH_FETCH_URLCHANNELS,
-			};
-		}
-
-		return { response, error };
-	},
-
-	receiveURLChannels( urlchannels, { clientID } ) {
-		invariant( Array.isArray( urlchannels ), 'urlchannels must be an array.' );
-		invariant( clientID, 'clientID is required.' );
-
-		return {
-			payload: { clientID, urlchannels },
-			type: RECEIVE_URLCHANNELS,
-		};
-	},
-
+const baseActions = {
 	*resetURLChannels() {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 
@@ -102,77 +85,8 @@ export const actions = {
 	},
 };
 
-export const controls = {
-	[ FETCH_URLCHANNELS ]: ( { payload: { clientID } } ) => {
-		const accountID = parseAccountID( clientID );
-		if ( undefined === accountID ) {
-			// Mirror the API response that would happen for an invalid client ID.
-			return new Promise( () => {
-				throw {
-					code: 'invalid_param',
-					message: __( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
-					data: { status: 400 },
-				};
-			} );
-		}
-
-		return API.get( 'modules', 'adsense', 'urlchannels', { accountID, clientID }, {
-			useCache: false,
-		} );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
+const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
-		case START_FETCH_URLCHANNELS: {
-			const { clientID } = payload;
-
-			return {
-				...state,
-				isFetchingURLChannels: {
-					...state.isFetchingURLChannels,
-					[ clientID ]: true,
-				},
-			};
-		}
-
-		case RECEIVE_URLCHANNELS: {
-			const { clientID, urlchannels } = payload;
-
-			return {
-				...state,
-				urlchannels: {
-					...state.urlchannels,
-					[ clientID ]: [ ...urlchannels ],
-				},
-			};
-		}
-
-		case FINISH_FETCH_URLCHANNELS: {
-			const { clientID } = payload;
-
-			return {
-				...state,
-				isFetchingURLChannels: {
-					...state.isFetchingURLChannels,
-					[ clientID ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_URLCHANNELS: {
-			const { error, clientID } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingURLChannels: {
-					...state.isFetchingURLChannels,
-					[ clientID ]: false,
-				},
-			};
-		}
-
 		case RESET_URLCHANNELS: {
 			const {
 				siteStatus,
@@ -195,7 +109,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
+const baseResolvers = {
 	*getURLChannels( clientID ) {
 		if ( undefined === clientID ) {
 			return;
@@ -207,11 +121,11 @@ export const resolvers = {
 			return;
 		}
 
-		yield actions.fetchURLChannels( clientID );
+		yield fetchGetURLChannelsStore.actions.fetchGetURLChannels( clientID );
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets all Google AdSense URL channels for this account and client.
 	 *
@@ -232,11 +146,22 @@ export const selectors = {
 	},
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetURLChannelsStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

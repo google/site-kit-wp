@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -35,9 +30,7 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense report', () => {
-	let apiFetchSpy;
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -45,9 +38,6 @@ describe( 'modules/adsense report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -56,7 +46,6 @@ describe( 'modules/adsense report', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
@@ -66,14 +55,10 @@ describe( 'modules/adsense report', () => {
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.report ),
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
+					{ body: fixtures.report, status: 200 }
+				);
 
 				const initialReport = registry.select( STORE_NAME ).getReport( {} );
 
@@ -86,7 +71,7 @@ describe( 'modules/adsense report', () => {
 
 				const report = registry.select( STORE_NAME ).getReport( {} );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
 			} );
 
@@ -97,7 +82,7 @@ describe( 'modules/adsense report', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveReport( fixtures.report, { options } );
+				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.report, { options } );
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 
@@ -106,7 +91,7 @@ describe( 'modules/adsense report', () => {
 					.hasFinishedResolution( 'getReport', [ options ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.report );
 			} );
 
@@ -116,14 +101,10 @@ describe( 'modules/adsense report', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
+					{ body: response, status: 500 }
+				);
 
 				const options = {
 					dateRange: 'last-90-days',
@@ -133,13 +114,10 @@ describe( 'modules/adsense report', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getReport( options );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					// This hash must remain stable, so hard-coding it here ensures it is the case.
-					() => store.getState().isFetchingReport[ '029df8a6f771dcfe67c270ef5f3fa62a' ] === false,
+					() => registry.select( STORE_NAME ).isFetchingGetReport( options ) === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 				expect( report ).toEqual( undefined );

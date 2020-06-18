@@ -38,19 +38,19 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 
 const setupRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
-	registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 };
 
 const setupLoadingRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 };
 
 const setupEmptyRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveAccounts( [] );
-	registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+	registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
+	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 };
 
 describe( 'AccountSelect', () => {
@@ -117,8 +117,8 @@ describe( 'AccountSelect', () => {
 		const propertyID = properties[ 0 ].id;
 		const accountID = properties[ 0 ].accountId;
 
-		registry.dispatch( STORE_NAME ).receiveProperties( properties, { accountID } );
-		registry.dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID } );
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID } );
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );

@@ -28,7 +28,7 @@ import { extractSearchConsoleDashboardData } from '../../modules/search-console/
 import { readableLargeNumber, getModulesData } from '../../util';
 
 const publishingWin = ( data, id ) => {
-	const showNotification = 5 === parseInt( global.googlesitekit.admin.newSitePosts, 10 );
+	const showNotification = 5 === parseInt( global._googlesitekitLegacyData.admin.newSitePosts, 10 );
 
 	if ( ! showNotification ) {
 		return false;
@@ -73,7 +73,7 @@ const publishingWin = ( data, id ) => {
 		title: __( 'Congrats on five published posts', 'google-site-kit' ),
 		description: message,
 		format: 'large',
-		winImage: `${ global.googlesitekit.admin.assetsRoot }images/rocket.png`,
+		winImage: `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png`,
 		blockData: dataBlocks,
 		type: 'win-stats',
 		showOnce: true,

@@ -95,7 +95,7 @@ export default withData(
 			identifier: 'search-console',
 			datapoint: 'searchanalytics',
 			data: {
-				url: global.googlesitekit.permaLink,
+				url: global._googlesitekitLegacyData.permaLink,
 				dimensions: 'query',
 				limit: 10,
 			},
