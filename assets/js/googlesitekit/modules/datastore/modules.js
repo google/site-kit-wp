@@ -297,25 +297,28 @@ const baseSelectors = {
 	 */
 	getModules: createRegistrySelector( ( select ) => ( state ) => {
 		const { modules } = state;
-		const registryKey = select( STORE_NAME ).getModuleRegistryKey();
-		if ( undefined !== modules ) {
-			const sortedModules = sortObjectMapByKey( modules, 'order' );
-			const mappedModules = Object.values( sortedModules ).map( ( module ) => {
-				const moduleWithComponent = { ...module };
-				if ( ModuleComponents[ registryKey ] ) {
-					// If there is a settingsComponent that was passed use it, otherwise set to the default.
-					if ( ModuleComponents[ registryKey ][ module.slug ] ) {
-						moduleWithComponent.settingsComponent = ModuleComponents[ registryKey ][ module.slug ];
-					} else {
-						moduleWithComponent.settingsComponent = DefaultModuleSettings;
-					}
-				}
 
-				return moduleWithComponent;
-			} );
-			return convertArrayListToKeyedObjectMap( mappedModules, 'slug' );
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return undefined;
 		}
-		return modules;
+
+		const registryKey = select( STORE_NAME ).getModuleRegistryKey();
+		const sortedModules = sortObjectMapByKey( modules, 'order' );
+		const mappedModules = Object.values( sortedModules ).map( ( module ) => {
+			const moduleWithComponent = { ...module };
+			if ( ModuleComponents[ registryKey ] ) {
+				// If there is a settingsComponent that was passed use it, otherwise set to the default.
+				if ( ModuleComponents[ registryKey ][ module.slug ] ) {
+					moduleWithComponent.settingsComponent = ModuleComponents[ registryKey ][ module.slug ];
+				} else {
+					moduleWithComponent.settingsComponent = DefaultModuleSettings;
+				}
+			}
+
+			return moduleWithComponent;
+		} );
+		return convertArrayListToKeyedObjectMap( mappedModules, 'slug' );
 	} ),
 
 	/**
@@ -351,11 +354,6 @@ const baseSelectors = {
 	 */
 	getModule: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const modules = select( STORE_NAME ).getModules();
-
-		// Return `undefined` if modules haven't been loaded yet.
-		if ( modules === undefined ) {
-			return undefined;
-		}
 
 		// Return `undefined` if modules haven't been loaded yet.
 		if ( modules === undefined ) {
