@@ -40,6 +40,7 @@ import {
 	ErrorNotice,
 	AmpExperimentJSONField,
 	OptimizeIDField,
+	InstructionInformation,
 } from '../common/';
 const { useSelect, useDispatch } = Data;
 
@@ -79,9 +80,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			<AmpExperimentJSONField />
 
-			{ /* {
-				this.renderInstructionInfo()
-			} */ }
+			<InstructionInformation />
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>

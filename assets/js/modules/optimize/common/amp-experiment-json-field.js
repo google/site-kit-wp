@@ -32,6 +32,8 @@ import {
 } from '../../../material-components';
 import classnames from 'classnames';
 import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as analyticsStoreName } from '../../analytics/datastore/constants';
 import { isValidAMPExperimentJSON } from '../util';
 import Link from '../../../components/link';
 
@@ -39,11 +41,17 @@ const { useSelect, useDispatch } = Data;
 
 export default function AmpExperimentJSONField() {
 	const ampExperimentJSON = useSelect( ( select ) => select( STORE_NAME ).getAMPExperimentJSON() );
+	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
+	const useSnippet = useSelect( ( select ) => select( analyticsStoreName ).getUseSnippet() );
 
 	const { setAMPExperimentJSON } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( event ) => {
 		setAMPExperimentJSON( event.target.value );
 	}, [ ampExperimentJSON ] );
+
+	if ( ! useSnippet || ! ampMode ) {
+		return null;
+	}
 
 	return (
 		<Fragment>

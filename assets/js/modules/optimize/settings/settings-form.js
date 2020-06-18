@@ -17,14 +17,27 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore/constants';
+import { isValidOptimizeID } from '../util';
 import {
 	ErrorNotice,
+	AmpExperimentJSONField,
 	OptimizeIDField,
+	InstructionInformation,
 } from '../common/';
+const { useSelect } = Data;
 
 export default function SettingsForm() {
+	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
+
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
 			<ErrorNotice />
@@ -33,9 +46,13 @@ export default function SettingsForm() {
 				<OptimizeIDField />
 			</div>
 
-			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+			{ ! isValidOptimizeID( optimizeID ) && optimizeID &&
+				<p className="googlesitekit-error-text">{ __( 'Error: Not a valid Optimize ID.', 'google-site-kit' ) }</p>
+			}
 
-			</div>
+			<AmpExperimentJSONField />
+
+			<InstructionInformation />
 		</div>
 	);
 }
