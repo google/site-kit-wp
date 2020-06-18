@@ -22,7 +22,7 @@
  * @since n.e.x.t
  *
  * @param {string[]} strings The array of static strings in the template.
- * @param {...any} values The array of expressions used in the template.
+ * @param {...*} values The array of expressions used in the template.
  * @return {string} Escaped URI string.
  */
 export function escapeURI( strings, ...values ) {
