@@ -27,13 +27,13 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
-import { STORE_NAME as analyticsStoreName } from '../../analytics/datastore/constants';
+import { STORE_NAME as MODULE_ANALYTICS } from '../../analytics/datastore/constants';
 import { getModulesData } from '../../../util';
 
 const { useSelect } = Data;
 
 export default function InstructionInformation() {
-	const analyticsUseSnippet = useSelect( ( select ) => select( analyticsStoreName ).getUseSnippet() );
+	const analyticsUseSnippet = useSelect( ( select ) => select( MODULE_ANALYTICS ).getUseSnippet() );
 	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
 	const { settings } = getModulesData().tagmanager;
 	const gtmUseSnippet = settings.useSnippet;
@@ -43,7 +43,12 @@ export default function InstructionInformation() {
 		return (
 			<Fragment>
 				<p>{ __( 'You are using auto insert snippet with Tag Manager', 'google-site-kit' ) }</p>
-				<p><a href="https://support.google.com/optimize/answer/6314801">{ __( 'Click here', 'google-site-kit' ) }</a> { __( 'for how to implement Optimize tag through your Tag Manager', 'google-site-kit' ) }</p>
+				<p>
+					<a href="https://support.google.com/optimize/answer/6314801">
+						{ __( 'Click here', 'google-site-kit' ) }
+					</a>
+					{ __( 'for how to implement Optimize tag through your Tag Manager', 'google-site-kit' ) }
+				</p>
 			</Fragment>
 		);
 	}
@@ -53,10 +58,18 @@ export default function InstructionInformation() {
 			<Fragment>
 				<p>{ __( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }</p>
 				<pre>
-					ga(&quot;require&quot;, &quot;{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }&quot;);
+					{ /* eslint-disable-next-line react/no-unescaped-entities */ }
+					ga( 'require', `{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }` );
 				</pre>
-				<p><a href="https://support.google.com/optimize/answer/6262084">{ __( 'Click here', 'google-site-kit' ) }</a> { __( 'for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ) }</p>
+				<p>
+					<a href="https://support.google.com/optimize/answer/6262084">
+						{ __( 'Click here', 'google-site-kit' ) }
+					</a>
+					{ __( 'for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ) }
+				</p>
 			</Fragment>
 		);
 	}
+
+	return null;
 }

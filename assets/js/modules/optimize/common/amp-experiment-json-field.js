@@ -39,7 +39,7 @@ import Link from '../../../components/link';
 
 const { useSelect, useDispatch } = Data;
 
-export default function AmpExperimentJSONField() {
+export default function AMPExperimentJSONField() {
 	const ampExperimentJSON = useSelect( ( select ) => select( STORE_NAME ).getAMPExperimentJSON() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 	const useSnippet = useSelect( ( select ) => select( analyticsStoreName ).getUseSnippet() );
@@ -59,7 +59,7 @@ export default function AmpExperimentJSONField() {
 			<TextField
 				className={ classnames(
 					'mdc-text-field',
-					{ 'mdc-text-field--error': ! isValidAMPExperimentJSON }
+					{ 'mdc-text-field--error': ! isValidAMPExperimentJSON( ampExperimentJSON ) }
 				) }
 				name="amp-experiment"
 				onChange={ onChange }
@@ -70,8 +70,10 @@ export default function AmpExperimentJSONField() {
 					value={ null === ampExperimentJSON ? '' : ampExperimentJSON }
 				/>
 			</TextField>
-			{ ! isValidAMPExperimentJSON &&
-				<p className="googlesitekit-error-text">{ __( 'Error: AMP experiment settings are not in a valid JSON format.', 'google-site-kit' ) }</p>
+			{ ! isValidAMPExperimentJSON( ampExperimentJSON ) &&
+				<p className="googlesitekit-error-text">
+					{ __( 'Error: AMP experiment settings are not in a valid JSON format.', 'google-site-kit' ) }
+				</p>
 			}
 		</Fragment>
 	);

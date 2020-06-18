@@ -50,7 +50,7 @@ export default function OptimizeIDField() {
 			<TextField
 				className={ classnames(
 					'mdc-text-field',
-					{ 'mdc-text-field--error': ! isValidOptimizeID }
+					{ 'mdc-text-field--error': ! isValidOptimizeID( optimizeID ) }
 				) }
 				label={ __( 'Optimize Container ID', 'google-site-kit' ) }
 				name="optimizeID"

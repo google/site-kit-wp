@@ -18,5 +18,5 @@
 
 export { default as ErrorNotice } from './error-notice';
 export { default as OptimizeIDField } from './optimize-id-field';
-export { default as AmpExperimentJSONField } from './amp-experiment-json-field';
+export { default as AMPExperimentJSONField } from './amp-experiment-json-field';
 export { default as InstructionInformation } from './instruction-information';

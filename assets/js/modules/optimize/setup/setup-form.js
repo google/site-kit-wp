@@ -38,7 +38,7 @@ import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms
 import { isValidOptimizeID } from '../util';
 import {
 	ErrorNotice,
-	AmpExperimentJSONField,
+	AMPExperimentJSONField,
 	OptimizeIDField,
 	InstructionInformation,
 } from '../common/';
@@ -78,7 +78,7 @@ export default function SetupForm( { finishSetup } ) {
 				<p className="googlesitekit-error-text">{ __( 'Error: Not a valid Optimize ID.', 'google-site-kit' ) }</p>
 			}
 
-			<AmpExperimentJSONField />
+			<AMPExperimentJSONField />
 
 			<InstructionInformation />
 

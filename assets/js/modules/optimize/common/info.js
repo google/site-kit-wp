@@ -1,5 +1,5 @@
 /**
- * Optimize Settings form.
+ * Info component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -26,33 +27,19 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
-import { isValidOptimizeID } from '../util';
-import {
-	ErrorNotice,
-	AMPExperimentJSONField,
-	OptimizeIDField,
-	InstructionInformation,
-} from '../common/';
+
 const { useSelect } = Data;
 
-export default function SettingsForm() {
+export default function Info() {
 	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
 
 	return (
-		<div className="googlesitekit-optimize-settings-fields">
-			<ErrorNotice />
-
-			<div className="googlesitekit-setup-module__inputs">
-				<OptimizeIDField />
-			</div>
-
-			{ ! isValidOptimizeID( optimizeID ) && optimizeID &&
-				<p className="googlesitekit-error-text">{ __( 'Error: Not a valid Optimize ID.', 'google-site-kit' ) }</p>
+		<Fragment>
+			{
+				optimizeID
+					? <div>{ __( 'Your Optimize Container ID', 'google-site-kit' ) }: <strong>{ optimizeID }</strong></div>
+					: <div>{ __( 'Optimize Container ID missing, press "edit" to add', 'google-site-kit' ) }.</div>
 			}
-
-			<AMPExperimentJSONField />
-
-			<InstructionInformation />
-		</div>
+		</Fragment>
 	);
 }
