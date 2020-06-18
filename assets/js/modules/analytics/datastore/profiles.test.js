@@ -95,7 +95,7 @@ describe( 'modules/analytics profiles', () => {
 
 				registry.dispatch( STORE_NAME ).createProfile( propertyID, profileName );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( STORE_NAME ).isDoingCreateProfile( propertyID, profileName ) ).toEqual( true );
+				expect( registry.select( STORE_NAME ).isDoingCreateProfile() ).toEqual( true );
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {

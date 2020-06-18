@@ -160,13 +160,14 @@ const baseSelectors = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} propertyID The Analytics Property ID to check for profile creation.
+	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if creating a profile, `false` if not.
 	 */
-	isDoingCreateProfile: createRegistrySelector( ( select ) => ( state, propertyID, profileName ) => {
-		return select( STORE_NAME ).isFetchingCreateProfile( propertyID, profileName );
-	} ),
+	isDoingCreateProfile( state ) {
+		// Since isFetchingCreateProfile holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such request is in progress.
+		return Object.values( state.isFetchingCreateProfile ).some( Boolean );
+	},
 
 	/**
 	 * Checks if profiles are being fetched for the given account and property.
