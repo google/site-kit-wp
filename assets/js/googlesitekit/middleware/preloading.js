@@ -58,23 +58,25 @@ function createPreloadingMiddleware( preloadedData ) {
 				uri = removeTimestampQueryParam( options.path );
 				deleteCache = true;
 			}
-
 			const path = getStablePath( uri );
-			if ( deleteCache ) {
-				delete cache[ method ][ path ];
-			}
-
 			if ( parse && 'GET' === method && cache[ path ] ) {
-				return Promise.resolve( cache[ path ].body );
+				const result = Promise.resolve( cache[ path ].body );
+				if ( deleteCache ) {
+					delete cache[ path ];
+				}
+				return result;
 			} else if (
 				'OPTIONS' === method &&
 				cache[ method ] &&
 				cache[ method ][ path ]
 			) {
-				return Promise.resolve( cache[ method ][ path ] );
+				const result = Promise.resolve( cache[ method ][ path ] );
+				if ( deleteCache ) {
+					delete cache[ method ][ path ];
+				}
+				return result;
 			}
 		}
-
 		return next( options );
 	};
 }

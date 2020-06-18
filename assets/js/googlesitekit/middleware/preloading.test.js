@@ -27,29 +27,32 @@ import { addQueryArgs } from '@wordpress/url';
 import createPreloadingMiddleware from './preloading';
 
 describe( 'Preloading Middleware', () => {
-	it( 'should return the preloaded data if provided', () => {
+	it( 'should return cached data for the first request only.', async () => {
 		const body = {
 			status: 'this is the preloaded response',
 		};
 
-		const requestURI = addQueryArgs( 'google-site-kit/v1/core/user/authentication', { timestamp: Date.now() } );
+		const requestURI = 'google-site-kit/v1/core/user/authentication';
 
 		const preloadedData = {
 			[ requestURI ]: {
+				method: 'GET',
 				body,
 			},
 		};
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
 		);
+
 		const requestOptions = {
 			method: 'GET',
-			path: requestURI,
+			path: addQueryArgs( requestURI, { timestamp: Date.now() } ),
 		};
 
-		const response = preloadingMiddleware( requestOptions );
-		return response.then( ( value ) => {
-			expect( value ).toEqual( body );
-		} );
+		const firstRequest = await preloadingMiddleware( requestOptions, () => {} );
+		expect( firstRequest ).toEqual( body );
+
+		const secondRequest = await preloadingMiddleware( requestOptions, () => {} );
+		expect( secondRequest ).toEqual( undefined );
 	} );
 } );
