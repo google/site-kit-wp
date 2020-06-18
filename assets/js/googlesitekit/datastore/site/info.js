@@ -325,7 +325,7 @@ export const selectors = {
 	 * `getCurrentEntityURL` selector. Otherwise it will fall back to returning
 	 * the same value as the `getReferenceSiteURL` selector.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The current reference URL, or undefined if

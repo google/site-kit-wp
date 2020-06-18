@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights Dashboard Widget styles.
+ * Text alignment utility styles.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,14 +16,9 @@
  * limitations under the License.
  */
 
-.googlesitekit-pagespeed-widget {
+.googlesitekit-plugin {
 
-	header {
-		display: flex;
-		justify-content: space-between;
-	}
-
-	.googlesitekit-pagespeed-widget__data-src-tabs {
-		display: flex;
+	.googlesitekit-text-align-center {
+		text-align: center;
 	}
 }

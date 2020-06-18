@@ -33,7 +33,7 @@ const { createRegistrySelector } = Data;
 /**
  * Creates a store object that has selectors for managing site info.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  * @private
  *
  * @param {string}  slug                  Slug of the module that the store is for.
@@ -61,7 +61,7 @@ export const createInfoStore = ( slug, {
 		/**
 		 * Returns admin screen URL.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.10.0
 		 *
 		 * @param {(Object|undefined)} queryArgs Query arguments to add to admin URL.
 		 * @return {(string|undefined)} The admin screen URL.
@@ -73,7 +73,7 @@ export const createInfoStore = ( slug, {
 		/**
 		 * Returns admin reauthentication URL.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.10.0
 		 *
 		 * @param {boolean} reAuth The module activation status. Default is true.
 		 * @return {(string|undefined)} The admin reauthentication URL, or

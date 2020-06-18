@@ -95,7 +95,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * Sometimes a different response may be required to match the expected type,
  * but for anything else, a full mock should be used.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  *
  * @param {RegExp} urlMatcher Regular expression for matching the request URL.
  * @param {*}      [response] Optional. Response to return.

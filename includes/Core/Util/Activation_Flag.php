@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Options;
 /**
  * Class handling plugin activation.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ final class Activation_Flag {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 * @var Context
 	 */
 	private $context;
@@ -35,7 +35,7 @@ final class Activation_Flag {
 	/**
 	 * Option API instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 * @var Options
 	 */
 	protected $options;
@@ -43,7 +43,7 @@ final class Activation_Flag {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Options $options Optional. The Option API instance. Default is a new instance.
@@ -59,7 +59,7 @@ final class Activation_Flag {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 */
 	public function register() {
 		add_action(
@@ -96,7 +96,7 @@ final class Activation_Flag {
 	/**
 	 * Sets the flag that the plugin has just been activated.
 	 *
-	 * @since n.e.x.t Migrated from Activation class.
+	 * @since 1.10.0 Migrated from Activation class.
 	 *
 	 * @param bool $network_wide Whether the plugin is being activated network-wide.
 	 */
@@ -112,7 +112,7 @@ final class Activation_Flag {
 	/**
 	 * Gets the flag that the plugin has just been activated.
 	 *
-	 * @since n.e.x.t Migrated from Activation class.
+	 * @since 1.10.0 Migrated from Activation class.
 	 *
 	 * @param bool $network_wide Whether to check the flag network-wide.
 	 * @return bool True if just activated, false otherwise.
@@ -128,7 +128,7 @@ final class Activation_Flag {
 	/**
 	 * Deletes the flag that the plugin has just been activated.
 	 *
-	 * @since n.e.x.t Migrated from Activation class.
+	 * @since 1.10.0 Migrated from Activation class.
 	 *
 	 * @param bool $network_wide Whether the plugin is being activated network-wide.
 	 */
@@ -147,7 +147,7 @@ final class Activation_Flag {
 	 * If the number of posts is above the limit, the count will no longer be recorded. The count is used for the
 	 * publisher wins.
 	 *
-	 * @since n.e.x.t Migrated from Activation class.
+	 * @since 1.10.0 Migrated from Activation class.
 	 *
 	 * @param int $win_limit Optional. Limit of posts to consider. Default 5.
 	 */
@@ -188,7 +188,7 @@ final class Activation_Flag {
 	/**
 	 * Modifies the admin data to pass to JS.
 	 *
-	 * @since n.e.x.t Migrated from Activation class.
+	 * @since 1.10.0 Migrated from Activation class.
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.
