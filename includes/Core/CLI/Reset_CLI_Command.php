@@ -11,16 +11,19 @@
 namespace Google\Site_Kit\Core\CLI;
 
 use Google\Site_Kit\Core\Util\Reset;
+use WP_CLI;
 
 /**
  * Resets Site Kit Settings and Data 
  *
  * @since n.e.x.t
+ * @access private
+ * @ignore
  */
 class Reset_CLI_Command extends CLI_Command {
 
 	/**
-	 * Resets Site Kit Settings and Data
+	 * Deletes options, user stored options, transients and clears object cache for stored options.
 	 *
 	 * ## OPTIONS
 	 *
@@ -29,14 +32,12 @@ class Reset_CLI_Command extends CLI_Command {
 	 *     wp google-site-kit reset
 	 *
 	 * @since n.e.x.t
-	 * 
-	 * @access public
 	 */
 	public function __invoke() {
 		$reset = new Reset( $this->context );
 		$reset->all();
 	
-		\WP_CLI::success( 'Settings successfully reset.' );
+		WP_CLI::success( 'Settings successfully reset.' );
 	}
 
 }

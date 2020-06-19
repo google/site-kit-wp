@@ -17,6 +17,8 @@ use WP_CLI_Command;
  * Base CLI Command class.
  *
  * @since n.e.x.t
+ * @access private
+ * @ignore
  */
 class CLI_Command extends WP_CLI_Command {
 
@@ -25,8 +27,7 @@ class CLI_Command extends WP_CLI_Command {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @access protected
-	 * @var \Google\Site_Kit\Context
+	 * @var Context
 	 */
 	protected $context;
 
@@ -35,7 +36,6 @@ class CLI_Command extends WP_CLI_Command {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @access public
 	 * @param \Google\Site_Kit\Context $context Plugin context.
 	 */
 	public function __construct( Context $context ) {

@@ -11,11 +11,14 @@
 namespace Google\Site_Kit\Core\CLI;
 
 use Google\Site_Kit\Context;
+use WP_CLI;
 
 /**
  * CLI commands hub class.
  *
  * @since n.e.x.t
+ * @access private
+ * @ignore
  */
 class CLI_Commands {
 
@@ -24,8 +27,7 @@ class CLI_Commands {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @access private
-	 * @var \Google\Site_Kit\Context
+	 * @var Context
 	 */
 	private $context;
 
@@ -34,7 +36,6 @@ class CLI_Commands {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @access public
 	 * @param \Google\Site_Kit\Context $context Plugin context.
 	 */
 	public function __construct( Context $context ) {
@@ -45,12 +46,10 @@ class CLI_Commands {
 	 * Registers WP CLI commands.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @access public
 	 */
 	public function register() {
-		\WP_CLI::add_command( 'google-site-kit reset', new Reset_CLI_Command( $this->context ) );
-		\WP_CLI::add_command( 'google-site-kit auth', new Authentication_CLI_Command( $this->context ) );
+		WP_CLI::add_command( 'google-site-kit auth', new Authentication_CLI_Command( $this->context ) );
+		WP_CLI::add_command( 'google-site-kit reset', new Reset_CLI_Command( $this->context ) );
 	}
 
 }
