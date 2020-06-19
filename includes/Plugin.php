@@ -200,6 +200,12 @@ final class Plugin {
 				return $args;
 			}
 		);
+
+		// WP CLI Commands.
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			$cli_commands = new \Google\Site_Kit\Core\CLI\CLI_Commands( $this->context );
+			$cli_commands->register();
+		}
 	}
 
 	/**

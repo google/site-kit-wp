@@ -2,38 +2,39 @@
 /**
  * Site Kit Authentication CLI Commands
  *
- * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @package   Google\Site_Kit\Core\CLI
+ * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\CLI;
+namespace Google\Site_Kit\Core\CLI;
 
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use WP_CLI;
-use WP_CLI_Command;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
-
-WP_CLI::add_command( 'google-site-kit auth', __NAMESPACE__ . '\Authentication_CLI_Command' );
 
 /**
- * Site Kit Authentication CLI Command
+ * Site Kit authentication commands
+ * 
+ * @since n.e.x.t
  */
-class Authentication_CLI_Command extends WP_CLI_Command {
+class Authentication_CLI_Command extends CLI_Command {
 
 	/**
 	 * Logout and revoke refresh token
 	 *
-	 * @synopsis [--id]
-	 * @subcommand revoke
-	 * @since      1.0.0
+	 * ## OPTIONS
 	 *
+	 * --id=<id>
+	 * : User id to disconnect.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp google-site-kit auth revoke 11
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @access public
 	 * @param array $args Array of arguments.
 	 * @param array $assoc_args Array of associated arguments.
 	 */
@@ -41,13 +42,14 @@ class Authentication_CLI_Command extends WP_CLI_Command {
 		$user_id = absint( $assoc_args['id'] );
 
 		$authentication = new Authentication(
-			new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
+			$this->context,
 			null,
 			new User_Options( null, $user_id ),
 			$user_id
 		);
 		$authentication->disconnect();
 
-		WP_CLI::success( sprintf( 'User with ID %d successfully disconnected.', $user_id ) );
+		\WP_CLI::success( sprintf( 'User with ID %d successfully disconnected.', $user_id ) );
 	}
+
 }
