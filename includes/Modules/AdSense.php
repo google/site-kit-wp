@@ -349,7 +349,7 @@ tag_partner: "site_kit"
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */

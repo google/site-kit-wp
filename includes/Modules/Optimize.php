@@ -191,19 +191,19 @@ final class Optimize extends Module
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
+	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
+	 * @return array Map of datapoints to their definitions.
 	 */
-	protected function get_datapoint_services() {
+	protected function get_datapoint_definitions() {
 		return array(
-			// GET / POST.
-			'optimize-id'         => '',
-			'amp-experiment-json' => '',
-			// POST.
-			'settings'            => '',
+			'GET:optimize-id'          => array( 'service' => '' ),
+			'GET:amp-experiment-json'  => array( 'service' => '' ),
+			'POST:optimize-id'         => array( 'service' => '' ),
+			'POST:amp-experiment-json' => array( 'service' => '' ),
+			'POST:settings'            => array( 'service' => '' ),
 		);
 	}
 
