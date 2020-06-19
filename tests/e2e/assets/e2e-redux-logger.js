@@ -1,5 +1,5 @@
 /**
- * E2E Utilities.
+ * E2E Redux Logger.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,15 +20,6 @@
  * External dependencies
  */
 import { applyMiddleware } from 'redux';
-
-/**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-if ( global._e2eApiFetch === undefined ) {
-	global._e2eApiFetch = apiFetch;
-}
 
 /**
  * Creates a middleware for logging dispatched actions to the console.
