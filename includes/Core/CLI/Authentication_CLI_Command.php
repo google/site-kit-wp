@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\CLI;
 
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use WP_CLI;
 
@@ -48,7 +49,7 @@ class Authentication_CLI_Command extends CLI_Command {
 			$this->context,
 			new Options( $this->context ),
 			new User_Options( $this->context, $user_id ),
-			$user_id
+			new Transients( $this->context )
 		);
 		$authentication->disconnect();
 
