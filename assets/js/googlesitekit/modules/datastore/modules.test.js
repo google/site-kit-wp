@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { keyBy } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { getQueryArg } from '@wordpress/url';
@@ -32,12 +37,12 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { sortObjectMapByKey, convertArrayListToKeyedObjectMap } from '../../../util';
+import { sortObjectMapByKey } from '../../../util/sort-object-map-by-key';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
 
 describe( 'core/modules modules', () => {
-	const fixturesKeyValue = convertArrayListToKeyedObjectMap( sortObjectMapByKey( FIXTURES, 'order' ), 'slug' );
+	const fixturesKeyValue = keyBy( sortObjectMapByKey( FIXTURES, 'order' ), 'slug' );
 	let registry;
 	let store;
 

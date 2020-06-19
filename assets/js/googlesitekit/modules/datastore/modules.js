@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { keyBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -29,7 +30,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
-import { sortObjectMapByKey, convertArrayListToKeyedObjectMap } from '../../../util';
+import { sortObjectMapByKey } from '../../../util/sort-object-map-by-key';
 
 const { commonActions, createRegistrySelector } = Data;
 
@@ -58,7 +59,7 @@ const fetchGetModulesStore = createFetchStore( {
 		return {
 			...state,
 			isAwaitingModulesRefresh: false,
-			modules: convertArrayListToKeyedObjectMap( sortObjectMapByKey( modules, 'order' ), 'slug' ),
+			modules: keyBy( sortObjectMapByKey( modules, 'order' ), 'slug' ),
 		};
 	},
 } );
@@ -318,7 +319,7 @@ const baseSelectors = {
 
 			return moduleWithComponent;
 		} );
-		return convertArrayListToKeyedObjectMap( mappedModules, 'slug' );
+		return keyBy( mappedModules, 'slug' );
 	} ),
 
 	/**

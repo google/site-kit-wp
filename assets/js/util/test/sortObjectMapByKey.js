@@ -19,7 +19,7 @@
 /**
  * Internal depedencies
  */
-import { sortObjectMapByKey } from '../';
+import { sortObjectMapByKey } from '../sort-object-map-by-key';
 
 const sortMe = {
 	objectOne: { slug: 'objectOne', name: 'First', order: 1 },
@@ -51,5 +51,9 @@ describe( 'sortObjectMapByKey', () => {
 		];
 		expect( sortObjectMapByKey( sortMe ) ).toStrictEqual( expectedResults );
 		expect( sortObjectMapByKey( sortMe, 'undefinedSortKey' ) ).toStrictEqual( expectedResults );
+	} );
+
+	it( 'is chainable', () => {
+
 	} );
 } );

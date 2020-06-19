@@ -21,7 +21,6 @@
  *
  * @param {Object} objectList  Object containg objects to be sorted
  * @param {string} priorityKey The object key to use for matching.
- *
  * @return {Array} An Array containing objects ordered by the priority key
  */
 export function sortObjectMapByKey( objectList, priorityKey ) {
