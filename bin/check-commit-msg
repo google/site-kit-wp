@@ -1,35 +1,41 @@
 #!/usr/bin/env php
 <?php
 
-function echo_error_and_die( $message, $code ) {
-	$red = "\033[31m";
-	$reset = "\033[0m";
+function echo_error_and_die_if( $condition, $message ) {
+	static $code = 0;
 
-	fwrite( STDERR, $red . $message . $reset . PHP_EOL );
-	exit( $code );
+	$code++;
+
+	if ( $condition ) {
+		fwrite( STDERR, "\033[31m" . $message . "\033[0m" . PHP_EOL );
+		exit( $code );
+	}
 }
 
-if ( empty( $argv[1] ) || ! file_exists( $argv[1] ) ) {
-	echo_error_and_die( 'The commit message hasn\'t been found.', 1 );
-}
+echo_error_and_die_if(
+	empty( $argv[1] ) || ! file_exists( $argv[1] ),
+	'The commit message hasn\'t been found.'
+);
 
 $message = explode( PHP_EOL, file_get_contents( $argv[1] ) );
 $message = array_filter( $message, function( $line ) { return preg_match( '/^[^#]+/', $line ); } );
 $message = trim( implode( ' ', $message ) );
-
-// message ends in a dot
-if ( preg_match( '/[^\.]$/', $message ) ) {
-	echo_error_and_die( 'The commit message must end with a full stop.', 2 );
-}
-
 $first_word = current( explode( ' ', $message ) );
 
+// message ends in a dot
+echo_error_and_die_if(
+	preg_match( '/[^\.]$/', $message ),
+	'The commit message must end with a full stop.'
+);
+
 // message starts with a capital letter.
-if ( ! preg_match( '/^[A-Z][a-z-]*$/', $first_word ) ) {
-	echo_error_and_die( 'The commit message must start with a capital letter.', 3 );
-}
+echo_error_and_die_if(
+	! preg_match( '/^[A-Z][a-z-]*$/', $first_word ),
+	'The commit message must start with a capital letter.'
+);
 
 // first word of the message does not end in "ed" or "es"
-if ( preg_match( '/(ed|es)$/', $first_word ) ) {
-	echo_error_and_die( 'The commit message must start with a verb in present tense.', 4 );
-}
+echo_error_and_die_if(
+	preg_match( '/(ed|es)$/', $first_word ),
+	'The commit message must start with a verb in present tense.'
+);
