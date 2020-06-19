@@ -556,38 +556,6 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
-	 */
-	protected function get_datapoint_services() {
-		return array(
-			// GET / POST.
-			'connection'                   => '',
-			'account-id'                   => '',
-			'property-id'                  => '',
-			'profile-id'                   => '',
-			'internal-web-property-id'     => '',
-			'use-snippet'                  => '',
-			'tracking-disabled'            => '',
-			// GET.
-			'anonymize-ip'                 => '',
-			'goals'                        => 'analytics',
-			'accounts-properties-profiles' => 'analytics',
-			'properties-profiles'          => 'analytics',
-			'profiles'                     => 'analytics',
-			'tag-permission'               => '',
-			'report'                       => 'analyticsreporting',
-			// POST.
-			'create-property'              => 'analytics',
-			'create-profile'               => 'analytics',
-			'create-account-ticket'        => 'analyticsprovisioning',
-		);
-	}
-
-	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
 	 * @since 1.9.0
@@ -595,30 +563,46 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$map = parent::get_datapoint_definitions();
-
-		$map['POST:create-account-ticket'] = array_merge(
-			$map['POST:create-account-ticket'],
-			array(
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
-			)
+		$map = array(
+			'GET:connection'                   => array( 'serice' => '' ),
+			'GET:account-id'                   => array( 'serice' => '' ),
+			'GET:property-id'                  => array( 'serice' => '' ),
+			'GET:profile-id'                   => array( 'serice' => '' ),
+			'GET:internal-web-property-id'     => array( 'serice' => '' ),
+			'GET:use-snippet'                  => array( 'serice' => '' ),
+			'GET:tracking-disabled'            => array( 'serice' => '' ),
+			'GET:anonymize-ip'                 => array( 'serice' => '' ),
+			'GET:goals'                        => array( 'serice' => 'analytics' ),
+			'GET:accounts-properties-profiles' => array( 'serice' => 'analytics' ),
+			'GET:properties-profiles'          => array( 'serice' => 'analytics' ),
+			'GET:profiles'                     => array( 'serice' => 'analytics' ),
+			'GET:tag-permission'               => array( 'serice' => '' ),
+			'GET:report'                       => array( 'serice' => 'analyticsreporting' ),
+			'POST:connection'                  => array( 'serice' => '' ),
+			'POST:account-id'                  => array( 'serice' => '' ),
+			'POST:property-id'                 => array( 'serice' => '' ),
+			'POST:profile-id'                  => array( 'serice' => '' ),
+			'POST:internal-web-property-id'    => array( 'serice' => '' ),
+			'POST:use-snippet'                 => array( 'serice' => '' ),
+			'POST:tracking-disabled'           => array( 'serice' => '' ),
 		);
 
-		$map['POST:create-property'] = array_merge(
-			$map['POST:create-property'],
-			array(
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
-			)
+		$map['POST:create-account-ticket'] = array(
+			'service'                => 'analyticsprovisioning',
+			'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
+			'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 		);
 
-		$map['POST:create-profile'] = array_merge(
-			$map['POST:create-profile'],
-			array(
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
-			)
+		$map['POST:create-property'] = array(
+			'service'                => 'analytics',
+			'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+			'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
+		);
+
+		$map['POST:create-profile'] = array(
+			'service'                => 'analytics',
+			'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+			'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
 		);
 
 		return $map;
