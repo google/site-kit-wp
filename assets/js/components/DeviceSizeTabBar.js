@@ -73,6 +73,7 @@ const DeviceSizeTabBar = ( {
 					<Tab
 						key={ `google-sitekit-device-size-tab-key-${ i }` }
 						aria-label={ label }
+						focusOnActivate={ false }
 					>
 						{ icon }
 					</Tab>

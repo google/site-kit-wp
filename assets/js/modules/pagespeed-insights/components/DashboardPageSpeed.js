@@ -55,7 +55,7 @@ export default function DashboardPageSpeed() {
 	const reportMobile = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_MOBILE ) );
 	const reportDesktop = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_DESKTOP ) );
 	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
-	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) );
+	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) ) || DATA_SRC_LAB;
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const setStrategyMobile = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_MOBILE } ), [] );
@@ -82,13 +82,8 @@ export default function DashboardPageSpeed() {
 
 	// Set the default data source based on report data.
 	useEffect( () => {
-		if ( ! reportMobile || ! reportDesktop ) {
-			return;
-		}
 		if ( reportMobile?.loadingExperience?.metrics && reportDesktop?.loadingExperience?.metrics ) {
 			setDataSrcField();
-		} else {
-			setDataSrcLab();
 		}
 	}, [ reportMobile, reportDesktop ] );
 
@@ -119,7 +114,10 @@ export default function DashboardPageSpeed() {
 						activeIndex={ [ DATA_SRC_LAB, DATA_SRC_FIELD ].indexOf( dataSrc ) }
 						handleActiveIndexUpdate={ updateActiveTab }
 					>
-						<Tab aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }>
+						<Tab
+							focusOnActivate={ false }
+							aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
+						>
 							<span
 								id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
 								className="mdc-tab__text-label"
@@ -127,7 +125,10 @@ export default function DashboardPageSpeed() {
 								{ __( 'In the Lab', 'google-site-kit' ) }
 							</span>
 						</Tab>
-						<Tab aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }>
+						<Tab
+							focusOnActivate={ false }
+							aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
+						>
 							<span
 								id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
 								className="mdc-tab__text-label"
