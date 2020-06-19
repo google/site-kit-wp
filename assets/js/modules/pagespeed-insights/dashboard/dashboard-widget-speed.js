@@ -25,12 +25,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../../../components/layout/layout';
+import Data from 'googlesitekit-data';
 import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
 import DashboardPageSpeed from '../components/DashboardPageSpeed';
+import { STORE_NAME } from '../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
 function DashboardSpeed() {
-	const description = global.googlesitekit.permaLink ? __( 'How fast this page is.', 'google-site-kit' ) : __( 'How fast your home page is.', 'google-site-kit' );
+	const currentReferenceURL = useSelect( ( select ) => select( STORE_NAME ).getCurrentReferenceURL() );
+	const currentEntityURL = useSelect( ( select ) => select( STORE_NAME ).getCurrentEntityURL() );
+	const description = currentEntityURL === currentReferenceURL
+		? __( 'How fast your page loads, how quickly people can interact with your content, and how stable your content is.', 'google-site-kit' )
+		: __( 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.', 'google-site-kit' );
 
 	return (
 		<Fragment>
@@ -39,7 +45,7 @@ function DashboardSpeed() {
 					mdc-layout-grid__cell--span-12
 				">
 				<DashboardModuleHeader
-					title={ __( 'Speed', 'google-site-kit' ) }
+					title={ __( 'Page Speed and Experience', 'google-site-kit' ) }
 					description={ description }
 				/>
 			</div>
@@ -47,9 +53,7 @@ function DashboardSpeed() {
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12
 			">
-				<Layout className="googlesitekit-pagespeed-report">
-					<DashboardPageSpeed />
-				</Layout>
+				<DashboardPageSpeed />
 			</div>
 		</Fragment>
 	);

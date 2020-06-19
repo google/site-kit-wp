@@ -84,7 +84,7 @@ const baseSelectors = {
 	/**
 	 * Gets a PageSpeed Insights report for the given strategy and URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} url      URL used for generating the report.

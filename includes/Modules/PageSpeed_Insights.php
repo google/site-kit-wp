@@ -129,7 +129,7 @@ final class PageSpeed_Insights extends Module
 	 * Parses a response for the given datapoint.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t GET:pagespeed returns the full response, not just the lighthouse result.
+	 * @since 1.10.0 GET:pagespeed returns the full response, not just the lighthouse result.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @param mixed        $response Request response.

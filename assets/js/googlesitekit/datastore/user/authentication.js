@@ -151,7 +151,7 @@ const baseSelectors = {
 	 * Returns true if any required scopes are not satisfied or undefined
 	 * if reauthentication info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} User reauthentication status.

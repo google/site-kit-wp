@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 /**
  * Class handling plugin activation.
  *
- * @since n.e.x.t Renamed from Activation.
+ * @since 1.10.0 Renamed from Activation.
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ final class Activation_Notice {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 * @var Context
 	 */
 	private $context;
@@ -36,7 +36,7 @@ final class Activation_Notice {
 	/**
 	 * Activation flag instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 * @var Activation_Flag
 	 */
 	protected $activation_flag;
@@ -44,7 +44,7 @@ final class Activation_Notice {
 	/**
 	 * Assets API instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 * @var Assets
 	 */
 	protected $assets;
@@ -52,7 +52,7 @@ final class Activation_Notice {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @param Context         $context         Plugin context.
 	 * @param Activation_Flag $activation_flag Activation flag instance.
@@ -71,7 +71,7 @@ final class Activation_Notice {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 */
 	public function register() {
 		add_filter(
@@ -106,7 +106,7 @@ final class Activation_Notice {
 	/**
 	 * Gets the admin notice indicating that the plugin has just been activated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @return Notice Admin notice instance.
 	 */
