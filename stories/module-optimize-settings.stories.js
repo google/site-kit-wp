@@ -118,7 +118,7 @@ storiesOf( 'Optimize Module/Settings', module )
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: 'OPT-1234567',
+				optimizeID: 'OPT-1234567',
 				trackingDisabled: [ 'loggedinUsers' ],
 			} );
 		};

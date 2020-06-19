@@ -37,5 +37,18 @@ export function isValidOptimizeID( optimizeID ) {
  * @return {boolean} True if the given ampExperimentJSON is valid, false otherwise.
  */
 export function isValidAMPExperimentJSON( ampExperimentJSON ) {
-	return typeof ampExperimentJSON === 'string';
+	if ( undefined === ampExperimentJSON || '' === ampExperimentJSON ) {
+		return true;
+	}
+
+	if ( typeof ampExperimentJSON !== 'string' ) {
+		return false;
+	}
+
+	try {
+		JSON.parse( ampExperimentJSON );
+		return true;
+	} catch {
+		return false;
+	}
 }

@@ -26,29 +26,41 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { sanitizeHTML } from '../../../util/sanitize';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as MODULE_ANALYTICS } from '../../analytics/datastore/constants';
+import { STORE_NAME as CORE_MODULE } from '../../../googlesitekit/modules/datastore/constants';
 import { getModulesData } from '../../../util';
 
 const { useSelect } = Data;
 
 export default function InstructionInformation() {
-	const analyticsUseSnippet = useSelect( ( select ) => select( MODULE_ANALYTICS ).getUseSnippet() );
 	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
+	const analyticsActive = useSelect( ( select ) => select( CORE_MODULE ).isModuleActive( 'analytics' ) );
+	const analyticsUseSnippet = useSelect( ( select ) => select( MODULE_ANALYTICS ).getUseSnippet() );
+	const gtmActive = useSelect( ( select ) => select( CORE_MODULE ).isModuleActive( 'tagmanager' ) );
+	// TO DO: To be removed once tag manager store is merged
 	const { settings } = getModulesData().tagmanager;
 	const gtmUseSnippet = settings.useSnippet;
 
+	if ( ! analyticsActive ) {
+		return null;
+	}
+
 	// If we don't use auto insert gtag, but use auto insert gtm. Show instruction of how to implement it on GTM.
-	if ( ! analyticsUseSnippet && gtmUseSnippet ) {
+	if ( ! analyticsUseSnippet && gtmActive && gtmUseSnippet ) {
 		return (
 			<Fragment>
 				<p>{ __( 'You are using auto insert snippet with Tag Manager', 'google-site-kit' ) }</p>
-				<p>
-					<a href="https://support.google.com/optimize/answer/6314801">
-						{ __( 'Click here', 'google-site-kit' ) }
-					</a>
-					{ __( 'for how to implement Optimize tag through your Tag Manager', 'google-site-kit' ) }
-				</p>
+				<p
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						__( '<a href="https://support.google.com/optimize/answer/6314801">Click here for how to implement Optimize tag through your Tag Manager</a>', 'google-site-kit' ),
+						{
+							ALLOWED_TAGS: [ 'a' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
+					) }
+				/>
 			</Fragment>
 		);
 	}
@@ -61,12 +73,15 @@ export default function InstructionInformation() {
 					{ /* eslint-disable-next-line react/no-unescaped-entities */ }
 					ga( 'require', `{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }` );
 				</pre>
-				<p>
-					<a href="https://support.google.com/optimize/answer/6262084">
-						{ __( 'Click here', 'google-site-kit' ) }
-					</a>
-					{ __( 'for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ) }
-				</p>
+				<p
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						__( '<a href="https://support.google.com/optimize/answer/6262084">Click here for how to implement Optimize tag in Google Analytics Code Snippet</a>', 'google-site-kit' ),
+						{
+							ALLOWED_TAGS: [ 'a' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
+					) }
+				/>
 			</Fragment>
 		);
 	}
