@@ -406,29 +406,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
-	 */
-	protected function get_datapoint_services() {
-		return array(
-			// GET / POST.
-			'connection'          => '',
-			'account-id'          => '',
-			'container-id'        => '',
-			// GET.
-			'accounts'            => 'tagmanager',
-			'accounts-containers' => 'tagmanager',
-			'containers'          => 'tagmanager',
-			'tag-permission'      => 'tagmanager',
-			// POST.
-			'settings'            => '',
-		);
-	}
-
-	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
 	 * @since 1.9.0
@@ -436,18 +413,19 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$map = parent::get_datapoint_definitions();
-
-		// TODO: remove this once datapoint exists.
-		if ( isset( $map['POST:create-container'] ) ) {
-			$map['POST:create-container'] = array_merge(
-				$map['POST:create-container'],
-				array(
-					'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
-					'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container.', 'google-site-kit' ),
-				)
-			);
-		}
+		$map = array(
+			'GET:connection'          => array( 'service' => '' ),
+			'GET:account-id'          => array( 'service' => '' ),
+			'GET:container-id'        => array( 'service' => '' ),
+			'GET:accounts'            => array( 'service' => 'tagmanager' ),
+			'GET:accounts-containers' => array( 'service' => 'tagmanager' ),
+			'GET:containers'          => array( 'service' => 'tagmanager' ),
+			'GET:tag-permission'      => array( 'service' => 'tagmanager' ),
+			'POST:connection'         => array( 'service' => '' ),
+			'POST:account-id'         => array( 'service' => '' ),
+			'POST:container-id'       => array( 'service' => '' ),
+			'POST:settings'           => array( 'service' => '' ),
+		);
 
 		return $map;
 	}
