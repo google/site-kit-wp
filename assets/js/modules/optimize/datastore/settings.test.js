@@ -138,8 +138,8 @@ describe( 'modules/optimize settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 0 );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 10 );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 
 				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( null );
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );

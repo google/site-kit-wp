@@ -40,8 +40,8 @@ export default function InstructionInformation() {
 	const analyticsUseSnippet = useSelect( ( select ) => select( MODULE_ANALYTICS ).getUseSnippet() );
 	const gtmActive = useSelect( ( select ) => select( CORE_MODULE ).isModuleActive( 'tagmanager' ) );
 	// TO DO: To be removed once tag manager store is merged
-	const { settings } = getModulesData().tagmanager;
-	const gtmUseSnippet = settings.useSnippet;
+	const gtmSettings = getModulesData().tagmanager;
+	const gtmUseSnippet = gtmActive && gtmSettings ? gtmSettings.settings.useSnippet : undefined;
 
 	if ( ! analyticsActive ) {
 		return null;
