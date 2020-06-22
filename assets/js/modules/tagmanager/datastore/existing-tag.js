@@ -52,12 +52,15 @@ const fetchGetTagPermissionStore = createFetchStore( {
 		return { containerID };
 	},
 	controlCallback: ( { containerID } ) => API.get( 'modules', 'tagmanager', 'tag-permission', { containerID }, { useCache: false } ),
-	reducerCallback: ( state, { permission }, { containerID } ) => {
+	reducerCallback: ( state, { accountID, permission }, { containerID } ) => {
 		return {
 			...state,
 			tagPermission: {
 				...state.tagPermission,
-				[ containerID ]: permission,
+				[ containerID ]: {
+					accountID,
+					permission,
+				},
 			},
 		};
 	},
@@ -77,7 +80,7 @@ const baseResolvers = {
 		}
 	},
 
-	*hasTagPermission( containerID ) {
+	*getTagPermission( containerID ) {
 		if ( ! isValidContainerSelection( containerID ) ) {
 			return;
 		}
@@ -100,6 +103,19 @@ const baseSelectors = {
 	 */
 	getExistingTag( state ) {
 		return state.existingTag;
+	},
+
+	/**
+	 * Checks permissions for an existing Google Tag Manager container.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} containerID Container publicId to check permission for.
+	 * @return {(Object|undefined)} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
+	 */
+	getTagPermission( state, containerID ) {
+		return state.tagPermission[ containerID ];
 	},
 
 	/**
@@ -128,15 +144,15 @@ const baseSelectors = {
 	 * @param {string} containerID Container publicId to check permission for.
 	 * @return {(boolean|undefined)} Permission
 	 */
-	hasTagPermission( state, containerID ) {
-		const permission = state.tagPermission[ containerID ];
+	hasTagPermission: createRegistrySelector( ( select ) => ( state, containerID ) => {
+		const { permission } = select( STORE_NAME ).getTagPermission( containerID ) || {};
 
 		if ( permission === undefined ) {
 			return undefined;
 		}
 
 		return !! permission;
-	},
+	} ),
 
 	/**
 	 * Checks whether the user has access to the existing tag, if present.
