@@ -6,11 +6,11 @@ on:
       - develop
       - master
   pull_request:
-    # types:
-    #   - opened
-    #   - closed
-    #   - reopened
-    #   - synchronize
+    types:
+      - opened
+      - closed
+      - reopened
+      - synchronize
 jobs:
   build-storybook:
     runs-on: ubuntu-latest
@@ -87,14 +87,18 @@ jobs:
 
   remove-storybook:
     runs-on: ubuntu-latest
-    # if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
     steps:
       - uses: actions/checkout@v2
         with:
           ref: gh-pages
-      - name: Dump GitHub context
+      - name: Remove storybook
         env:
-          GITHUB_EVENTNAME: ${{ github.event_name }}
-          GITHUB_REFNAME: ${{ github.ref }}
-          GITHUB_EVENT: ${{ toJson(github.event) }}
-        run: echo "${{ toJson(github.event) }}"
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
+        run: |
+          git rm -rf "storybook/pull/${PULL_REQUEST_NUMBER}"
+          git status
+          git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
+          git commit -m "Remove storybook for pull/${PULL_REQUEST_NUMBER}."
+          git pull --no-edit --quiet
+          git push origin gh-pages
