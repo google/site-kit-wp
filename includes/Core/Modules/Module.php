@@ -388,7 +388,18 @@ abstract class Module {
 	 * @return array List of datapoints.
 	 */
 	final public function get_datapoints() {
-		return array_keys( $this->get_datapoint_services() );
+		$keys        = array();
+		$definitions = $this->get_datapoint_definitions();
+
+		foreach ( array_keys( $definitions ) as $key ) {
+			$parts = explode( ':', $key );
+			$name  = end( $parts );
+			if ( ! empty( $name ) ) {
+				$keys[ $name ] = $name;
+			}
+		}
+
+		return array_values( $keys );
 	}
 
 	/**
@@ -396,10 +407,17 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 * @since 1.9.0 No longer abstract.
+	 * @deprecated n.e.x.t
 	 *
 	 * @return array Associative array of $datapoint => $service_identifier pairs.
 	 */
 	protected function get_datapoint_services() {
+		_deprecated_function(
+			sprintf( '%s::get_datapoint_services', static::class ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			'',
+			sprintf( '::get_datapoint_definitions', static::class ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		);
+
 		return array();
 	}
 
@@ -411,18 +429,7 @@ abstract class Module {
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$services = $this->get_datapoint_services();
-
-		return array_reduce(
-			array_keys( $services ),
-			function ( $map, $datapoint ) use ( $services ) {
-				$map[ "GET:$datapoint" ]  = array( 'service' => $services[ $datapoint ] );
-				$map[ "POST:$datapoint" ] = array( 'service' => $services[ $datapoint ] );
-
-				return $map;
-			},
-			array()
-		);
+		return array();
 	}
 
 	/**
