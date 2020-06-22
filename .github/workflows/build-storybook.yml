@@ -10,6 +10,7 @@ on:
     #   - opened
     #   - closed
     #   - reopened
+    #   - synchronize
 jobs:
   build-storybook:
     runs-on: ubuntu-latest
@@ -96,4 +97,4 @@ jobs:
           GITHUB_EVENTNAME: ${{ github.event_name }}
           GITHUB_REFNAME: ${{ github.ref }}
           GITHUB_EVENT: ${{ toJson(github.event) }}
-        run: echo "$GITHUB_EVENTNAME -- $GITHUB_REFNAME -- $GITHUB_EVENT"
+        run: echo "${{ toJson(github.event) }}"
