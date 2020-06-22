@@ -48,7 +48,7 @@ jobs:
           ${{ runner.os }}-node-cache-
     - name: npm install
       run: |
-        npm install
+        npm ci
     - name: Build Storybook
       run: |
         npm run build:storybook
