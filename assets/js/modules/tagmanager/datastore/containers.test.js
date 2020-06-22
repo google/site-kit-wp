@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	muteConsole,
 	muteFetch,
-	subscribeUntil,
+	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
@@ -33,7 +33,6 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/tagmanager containers', () => {
 	let registry;
-	let hasFinishedResolution;
 
 	const defaultSettings = {
 		accountID: '',
@@ -53,7 +52,6 @@ describe( 'modules/tagmanager containers', () => {
 		// Preload default settings to prevent the resolver from making unexpected requests
 		// as this is covered in settings store tests.
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
-		hasFinishedResolution = registry.select( STORE_NAME ).hasFinishedResolution;
 	} );
 
 	afterEach( () => {
@@ -121,11 +119,10 @@ describe( 'modules/tagmanager containers', () => {
 				);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
+				const { error } = await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
 
-				await subscribeUntil( registry, () => registry.select( STORE_NAME ).getError() );
-
-				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( errorResponse );
+				expect( error ).toEqual( errorResponse );
+				expect( registry.select( STORE_NAME ).getError() ).toEqual( errorResponse );
 
 				// Ignore the request fired by the `getContainers` selector.
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
@@ -159,7 +156,7 @@ describe( 'modules/tagmanager containers', () => {
 
 				expect( initialContainers ).toEqual( undefined );
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getContainers', [ accountID ] ) );
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
@@ -175,7 +172,7 @@ describe( 'modules/tagmanager containers', () => {
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getContainers', [ accountID ] ) );
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( resolvedContainers ).toEqual( containers );
@@ -197,7 +194,7 @@ describe( 'modules/tagmanager containers', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getContainers( accountID );
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getContainers', [ accountID ] ) );
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				const containers = registry.select( STORE_NAME ).getContainers( accountID );

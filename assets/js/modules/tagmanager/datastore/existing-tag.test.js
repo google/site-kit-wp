@@ -25,14 +25,13 @@ import {
 	createTestRegistry,
 	muteConsole,
 	muteFetch,
-	subscribeUntil,
+	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 
 describe( 'modules/tagmanager existing-tag', () => {
 	let registry;
-	let hasFinishedResolution;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -40,8 +39,6 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		hasFinishedResolution = registry.select( STORE_NAME ).hasFinishedResolution;
 	} );
 
 	afterEach( () => {
@@ -69,7 +66,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
 
 				expect( initialExistingTag ).toEqual( undefined );
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
@@ -82,7 +79,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( existingTag ).toEqual( 'GTM-S1T3K1T' );
 				expect( fetchMock ).not.toHaveFetched();
@@ -93,7 +90,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( existingTag ).toEqual( null );
 				expect( fetchMock ).not.toHaveFetched();
@@ -114,7 +111,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getExistingTag();
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
@@ -143,7 +140,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 					}
 				);
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getTagPermission', [ containerID ] ) );
+				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				// The value will be undefined until the response is received.
@@ -168,7 +165,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				muteConsole( 'error' ); // 500 response expected.
 				registry.select( STORE_NAME ).hasTagPermission( containerID );
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getTagPermission', [ containerID ] ) );
+				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( registry.select( STORE_NAME ).getTagPermission( containerID ) ).toEqual( undefined );
@@ -182,7 +179,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasExistingTag ).toEqual( true );
 			} );
@@ -192,7 +189,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasExistingTag ).toEqual( false );
 			} );
@@ -203,7 +200,8 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
+
 				expect( registry.select( STORE_NAME ).hasExistingTag() ).not.toEqual( undefined );
 			} );
 		} );
@@ -241,7 +239,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/ );
 				expect( registry.select( STORE_NAME ).hasTagPermission( containerID ) ).toEqual( undefined );
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getTagPermission', [ containerID ] ) );
+				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
 			} );
 		} );
 	} );

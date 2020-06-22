@@ -25,14 +25,13 @@ import {
 	createTestRegistry,
 	muteConsole,
 	muteFetch,
-	subscribeUntil,
+	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/tagmanager accounts', () => {
 	let registry;
-	let hasFinishedResolution;
 
 	const defaultSettings = {
 		accountID: '',
@@ -52,7 +51,6 @@ describe( 'modules/tagmanager accounts', () => {
 		// Preload default settings to prevent the resolver from making unexpected requests
 		// as this is covered in settings store tests.
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
-		hasFinishedResolution = registry.select( STORE_NAME ).hasFinishedResolution;
 	} );
 
 	afterAll( () => {
@@ -95,11 +93,11 @@ describe( 'modules/tagmanager accounts', () => {
 				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 				registry.select( STORE_NAME ).getAccounts();
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getAccounts' ) );
+				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				registry.dispatch( STORE_NAME ).resetAccounts();
 
-				expect( hasFinishedResolution( 'getAccounts' ) ).toStrictEqual( false );
+				expect( registry.select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) ).toStrictEqual( false );
 			} );
 		} );
 	} );
@@ -115,7 +113,7 @@ describe( 'modules/tagmanager accounts', () => {
 				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
 
 				expect( initialAccounts ).toEqual( undefined );
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getAccounts' ) );
+				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -127,7 +125,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getAccounts' ) );
+				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				expect( accounts ).toEqual( fixtures.accounts );
 				expect( fetchMock ).not.toHaveFetched();
@@ -138,7 +136,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getAccounts' ) );
+				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				expect( accounts ).toEqual( [] );
 				expect( fetchMock ).not.toHaveFetched();
@@ -158,7 +156,7 @@ describe( 'modules/tagmanager accounts', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getAccounts' ) );
+				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
@@ -176,7 +174,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 				expect( registry.select( STORE_NAME ).isDoingGetAccounts() ).toBe( true );
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getAccounts' ) );
+				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				expect( registry.select( STORE_NAME ).isDoingGetAccounts() ).toBe( false );
 			} );

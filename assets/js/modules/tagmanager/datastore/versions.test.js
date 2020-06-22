@@ -25,14 +25,13 @@ import {
 	createTestRegistry,
 	muteConsole,
 	muteFetch,
-	subscribeUntil,
+	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/tagmanager versions', () => {
 	let registry;
-	let hasFinishedResolution;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -40,7 +39,6 @@ describe( 'modules/tagmanager versions', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		hasFinishedResolution = registry.select( STORE_NAME ).hasFinishedResolution;
 	} );
 
 	afterAll( () => {
@@ -95,9 +93,7 @@ describe( 'modules/tagmanager versions', () => {
 				const initialContainerVersion = registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect( initialContainerVersion ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => hasFinishedResolution( 'getLiveContainerVersion', [ accountID, internalContainerID ] )
-				);
+				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				const liveContainerVersion = registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -114,9 +110,7 @@ describe( 'modules/tagmanager versions', () => {
 				);
 
 				const liveContainerVersion = registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
-				await subscribeUntil( registry,
-					() => hasFinishedResolution( 'getLiveContainerVersion', [ accountID, internalContainerID ] )
-				);
+				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect( liveContainerVersion ).toEqual( fixtures.liveContainerVersion );
 				expect( fetchMock ).not.toHaveFetched();
@@ -137,9 +131,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
-				await subscribeUntil( registry,
-					() => hasFinishedResolution( 'getLiveContainerVersion', [ accountID, internalContainerID ] )
-				);
+				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( registry.select( STORE_NAME ).getError() ).toEqual( errorResponse );
@@ -163,9 +155,7 @@ describe( 'modules/tagmanager versions', () => {
 					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID )
 				).toBe( true );
 
-				await subscribeUntil( registry,
-					() => hasFinishedResolution( 'getLiveContainerVersion', [ accountID, internalContainerID ] )
-				);
+				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect(
 					registry.select( STORE_NAME ).isDoingGetLiveContainerVersion( accountID, internalContainerID )
