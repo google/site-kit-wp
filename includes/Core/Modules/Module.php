@@ -285,7 +285,8 @@ abstract class Module {
 				continue;
 			}
 
-			if ( ! isset( $datapoint_services[ $dataset->datapoint ] ) ) {
+			$datapoint_name = strtoupper( $dataset->method ) . ':' . $dataset->datapoint;
+			if ( ! isset( $datapoint_services[ $datapoint_name ] ) ) {
 				continue;
 			}
 
@@ -319,15 +320,15 @@ abstract class Module {
 				continue;
 			}
 
-			if ( empty( $datapoint_services[ $datapoint ] ) ) {
+			if ( empty( $datapoint_services[ $datapoint_name ]['service'] ) ) {
 				continue;
 			}
 
-			if ( ! isset( $service_batches[ $datapoint_services[ $datapoint ] ] ) ) {
-				$service_batches[ $datapoint_services[ $datapoint ] ] = $this->google_services[ $datapoint_services[ $datapoint ] ]->createBatch();
+			if ( ! isset( $service_batches[ $datapoint_services[ $datapoint_name ]['service'] ] ) ) {
+				$service_batches[ $datapoint_services[ $datapoint_name ]['service'] ] = $this->google_services[ $datapoint_services[ $datapoint_name ]['service'] ]->createBatch();
 			}
 
-			$service_batches[ $datapoint_services[ $datapoint ] ]->add( $request, $key );
+			$service_batches[ $datapoint_services[ $datapoint_name ]['service'] ]->add( $request, $key );
 			$results[ $key ] = $datapoint;
 		}
 
@@ -337,7 +338,7 @@ abstract class Module {
 			} catch ( Exception $e ) {
 				// Set every result of this batch to the exception.
 				foreach ( $results as $key => $datapoint ) {
-					if ( ! is_string( $datapoint ) || ! isset( $datapoint_services[ $datapoint ] ) || $service_identifier !== $datapoint_services[ $datapoint ] ) {
+					if ( ! is_string( $datapoint ) || ! isset( $datapoint_services[ $datapoint_name ] ) || $service_identifier !== $datapoint_services[ $datapoint ]['service'] ) {
 						continue;
 					}
 
