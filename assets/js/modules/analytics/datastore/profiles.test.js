@@ -62,7 +62,7 @@ describe( 'modules/analytics profiles', () => {
 					{ body: fixtures.createProfile, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProfile( propertyID, profileName );
+				registry.dispatch( STORE_NAME ).createProfile( propertyID, { profileName } );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -93,7 +93,7 @@ describe( 'modules/analytics profiles', () => {
 					{ body: fixtures.createProfile, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProfile( propertyID, profileName );
+				registry.dispatch( STORE_NAME ).createProfile( propertyID, { profileName } );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( registry.select( STORE_NAME ).isDoingCreateProfile() ).toEqual( true );
 			} );
@@ -115,7 +115,7 @@ describe( 'modules/analytics profiles', () => {
 				);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).createProfile( propertyID, profileName );
+				registry.dispatch( STORE_NAME ).createProfile( propertyID, { profileName } );
 
 				await subscribeUntil( registry,
 					() => (

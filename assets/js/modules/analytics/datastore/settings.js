@@ -94,7 +94,7 @@ export const controls = {
 
 		if ( profileID === PROFILE_CREATE ) {
 			const profileName = registry.select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' );
-			const { response: profile, error } = await registry.dispatch( STORE_NAME ).createProfile( propertyID, profileName );
+			const { response: profile, error } = await registry.dispatch( STORE_NAME ).createProfile( propertyID, { profileName } );
 
 			if ( error ) {
 				return { error };

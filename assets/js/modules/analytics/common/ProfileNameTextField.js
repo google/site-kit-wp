@@ -73,7 +73,12 @@ export default function ProfileNameTextField() {
 
 	return (
 		<div className="googlesitekit-analytics-profilename">
-			<TextField label={ __( 'View Name', 'google-site-kit' ) } outlined helperText={ helperText } trailingIcon={ trailingIcon }>
+			<TextField
+				label={ __( 'View Name', 'google-site-kit' ) }
+				outlined
+				helperText={ helperText }
+				trailingIcon={ trailingIcon }
+			>
 				<Input value={ profileName } onChange={ onChange } />
 			</TextField>
 

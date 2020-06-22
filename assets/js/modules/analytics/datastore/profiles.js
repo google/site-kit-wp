@@ -79,7 +79,7 @@ const fetchCreateProfileStore = createFetchStore( {
 			},
 		};
 	},
-	argsToParams: ( propertyID, profileName ) => {
+	argsToParams: ( propertyID, { profileName } ) => {
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
 		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
 		return { propertyID, profileName };
@@ -100,14 +100,15 @@ const baseActions = {
 	 * @since 1.8.0
 	 *
 	 * @param {string} propertyID Google Analytics property ID.
-	 * @param {string} profileName The name for a new profile.
+	 * @param {Object} args Profile arguments.
+	 * @param {string} args.profileName The name for a new profile.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createProfile( propertyID, profileName ) {
+	*createProfile( propertyID, { profileName } ) {
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
 		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
 
-		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( propertyID, profileName );
+		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( propertyID, { profileName } );
 		return { response, error };
 	},
 };
