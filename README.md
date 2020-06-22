@@ -12,4 +12,4 @@ Any kind of contributions to Site Kit by Google are welcome. Head over to the [C
 ## Requirements
 
 * WordPress >= 4.7
-* PHP >= 5.4
+* PHP >= 5.6
