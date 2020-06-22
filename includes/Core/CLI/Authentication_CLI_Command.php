@@ -26,7 +26,7 @@ use WP_CLI;
 class Authentication_CLI_Command extends CLI_Command {
 
 	/**
-	 * Logout and revoke refresh token
+	 * Disconnects a user from Site Kit, removing their relevant user options and revoking their token.
 	 *
 	 * ## OPTIONS
 	 *
@@ -35,14 +35,15 @@ class Authentication_CLI_Command extends CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp google-site-kit auth revoke --id=11
+	 *     wp google-site-kit auth disconnect --id=11
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @alias revoke
 	 * @param array $args Array of arguments.
 	 * @param array $assoc_args Array of associated arguments.
 	 */
-	public function revoke( $args, $assoc_args ) {
+	public function disconnect( $args, $assoc_args ) {
 		$user_id = absint( $assoc_args['id'] );
 
 		$authentication = new Authentication(

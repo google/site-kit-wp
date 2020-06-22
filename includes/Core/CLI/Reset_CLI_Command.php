@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Util\Reset;
 use WP_CLI;
 
 /**
- * Resets Site Kit Settings and Data 
+ * Resets Site Kit Settings and Data.
  *
  * @since n.e.x.t
  * @access private
