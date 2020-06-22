@@ -6,6 +6,10 @@ on:
       - develop
       - master
   pull_request:
+    # types:
+    #   - opened
+    #   - closed
+    #   - reopened
 jobs:
   build-storybook:
     runs-on: ubuntu-latest
@@ -82,7 +86,7 @@ jobs:
 
   remove-storybook:
     runs-on: ubuntu-latest
-    # if: startsWith(github.ref, 'refs/pull/')
+    # if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -91,4 +95,5 @@ jobs:
         env:
           GITHUB_EVENTNAME: ${{ github.event_name }}
           GITHUB_REFNAME: ${{ github.ref }}
-        run: echo "$GITHUB_EVENTNAME -- $GITHUB_REFNAME"
+          GITHUB_EVENT: ${{ toJson(github.event) }}
+        run: echo "$GITHUB_EVENTNAME -- $GITHUB_REFNAME -- $GITHUB_EVENT"
