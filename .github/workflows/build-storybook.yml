@@ -11,9 +11,11 @@ on:
       - closed
       - reopened
       - synchronize
+
 jobs:
   build-storybook:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.action != 'closed'
     steps:
     - uses: actions/checkout@v2
     - name: Get Composer Cache Directory
@@ -58,6 +60,7 @@ jobs:
 
   deploy-storybook:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.action != 'closed'
     needs: build-storybook
     steps:
       - uses: actions/checkout@v2
@@ -68,15 +71,25 @@ jobs:
         with:
           name: storybook-files
           path: dist
+      - name: Set branch environment variables
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "::set-env name=TARGET_DIR::${GITHUB_REF##*/}"
+      - name: Set PR environment variables
+        if: github.event_name == 'pull_request'
+        env:
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
+        run: |
+          echo "::set-env name=TARGET_DIR::pull/${PULL_REQUEST_NUMBER}"
       - name: Commit updates
         run: |
           mkdir -p storybook
-          rm -rf storybook/${GITHUB_REF##*/}
-          mv dist storybook/${GITHUB_REF##*/}
+          rm -rf storybook/${TARGET_DIR}
+          mv dist storybook/${TARGET_DIR}
           git add .
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
-          git commit -m "Deploy storybook for ${GITHUB_REF##*/}."
+          git commit -m "Deploy storybook for ${TARGET_DIR}."
           git pull --no-edit --quiet
           git push origin gh-pages
         env:
@@ -96,7 +109,7 @@ jobs:
         env:
           PULL_REQUEST_NUMBER: ${{ github.event.number }}
         run: |
-          git rm -rf "storybook/pull/${PULL_REQUEST_NUMBER}"
+          git rm -rf storybook/pull/${PULL_REQUEST_NUMBER}
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
           git commit -m "Remove storybook for pull/${PULL_REQUEST_NUMBER}."
