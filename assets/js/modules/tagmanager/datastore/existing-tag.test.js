@@ -24,9 +24,9 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
-	muteFetch,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 
@@ -60,7 +60,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 	describe( 'selectors', () => {
 		describe( 'getExistingTag', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				const expectedTag = 'GTM-ABC0123';
+				const expectedTag = 'GTM-S1T3K1T';
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
 					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
@@ -78,13 +78,13 @@ describe( 'modules/tagmanager existing-tag', () => {
 			} );
 
 			it( 'does not make a network request if existingTag is present', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-ABC0123' );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-S1T3K1T' );
 
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
 				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
 
-				expect( existingTag ).toEqual( 'GTM-ABC0123' );
+				expect( existingTag ).toEqual( 'GTM-S1T3K1T' );
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
@@ -198,17 +198,13 @@ describe( 'modules/tagmanager existing-tag', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				fetchMock.getOnce(
-					{ query: { tagverify: '1' } },
-					{ body: factories.generateHTMLWithTag(), status: 200 }
-				);
-
+				muteFetch( { query: { tagverify: '1' } } );
 				expect( registry.select( STORE_NAME ).hasExistingTag() ).toEqual( undefined );
 
-				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
-
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( STORE_NAME ).hasExistingTag() ).toEqual( false );
+
+				await subscribeUntil( registry, () => hasFinishedResolution( 'getExistingTag' ) );
+				expect( registry.select( STORE_NAME ).hasExistingTag() ).not.toEqual( undefined );
 			} );
 		} );
 
