@@ -83,7 +83,7 @@ jobs:
           echo "::set-env name=TARGET_DIR::pull/${PULL_REQUEST_NUMBER}"
       - name: Commit updates
         run: |
-          mkdir -p storybook
+          mkdir -p storybook/${TARGET_DIR}
           rm -rf storybook/${TARGET_DIR}
           mv dist storybook/${TARGET_DIR}
           git add .
