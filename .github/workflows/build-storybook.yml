@@ -108,6 +108,10 @@ jobs:
       - name: Remove storybook
         env:
           PULL_REQUEST_NUMBER: ${{ github.event.number }}
+          GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
+          GIT_AUTHOR_NAME: ${{ github.actor }}
+          GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
+          GIT_COMMITTER_NAME: ${{ github.actor }}
         run: |
           git rm -rf storybook/pull/${PULL_REQUEST_NUMBER}
           git status
