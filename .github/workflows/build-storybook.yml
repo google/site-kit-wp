@@ -87,3 +87,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: gh-pages
+      - name: Dump GitHub context
+        env:
+          GITHUB_EVENTNAME: ${{ github.event_name }}
+          GITHUB_REFNAME: ${{ github.ref }}
+        run: echo "$GITHUB_EVENTNAME -- $GITHUB_REFNAME"
