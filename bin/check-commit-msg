@@ -1,41 +1,89 @@
 #!/usr/bin/env php
 <?php
+/**
+ * Script to validate commit message
+ *
+ * @package   Google\Site_Kit
+ * @copyright 2020 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
 
-function echo_error_and_die_if( $condition, $message ) {
-	static $code = 0;
-
-	$code++;
-
-	if ( $condition ) {
-		fwrite( STDERR, "\033[31m" . $message . "\033[0m" . PHP_EOL );
-		exit( $code );
+function has_color_support() {
+	// Follow https://no-color.org/
+	if ( isset( $_SERVER['NO_COLOR']) || false !== getenv( 'NO_COLOR' ) ) {
+		return false;
 	}
+
+	if ( 'Hyper' === getenv( 'TERM_PROGRAM' ) ) {
+		return true;
+	}
+
+	if ( DIRECTORY_SEPARATOR === '\\' ) {
+		return ( function_exists( 'sapi_windows_vt100_support' ) && @sapi_windows_vt100_support( STDERR ) )
+			|| false !== getenv( 'ANSICON' )
+			|| 'ON' === getenv( 'ConEmuANSI' )
+			|| 'xterm' === getenv( 'TERM' );
+	}
+
+	return stream_isatty( STDERR );
 }
 
-echo_error_and_die_if(
+function echo_error_if( $condition, $message ) {
+	static $code = 1;
+
+	$current_code = $code;
+	$code <<= 1;
+
+	if ( $condition ) {
+		$has_color_support = has_color_support();
+
+		$has_color_support && fwrite( STDERR, "\033[31m" );
+		fwrite( STDERR, '- ' . $message );
+		$has_color_support && fwrite( STDERR, "\033[0m" );
+		fwrite( STDERR, PHP_EOL );
+
+		return $current_code;
+	}
+
+	return 0;
+}
+
+$error_code = echo_error_if(
 	empty( $argv[1] ) || ! file_exists( $argv[1] ),
 	'The commit message hasn\'t been found.'
 );
 
+// die early if the file with commit message hasn't been found
+if ( $error_code ) {
+	exit( $error_code );
+}
+
+// read file and prepare commit message
 $message = explode( PHP_EOL, file_get_contents( $argv[1] ) );
 $message = array_filter( $message, function( $line ) { return preg_match( '/^[^#]+/', $line ); } );
 $message = trim( implode( ' ', $message ) );
 $first_word = current( explode( ' ', $message ) );
 
-// message ends in a dot
-echo_error_and_die_if(
-	preg_match( '/[^\.]$/', $message ),
-	'The commit message must end with a full stop.'
-);
-
 // message starts with a capital letter.
-echo_error_and_die_if(
+$error_code |= echo_error_if(
 	! preg_match( '/^[A-Z][a-z-]*$/', $first_word ),
 	'The commit message must start with a capital letter.'
 );
 
 // first word of the message does not end in "ed" or "es"
-echo_error_and_die_if(
+$error_code |= echo_error_if(
 	preg_match( '/(ed|es)$/', $first_word ),
 	'The commit message must start with a verb in present tense.'
 );
+
+// message ends in a dot
+$error_code |= echo_error_if(
+	preg_match( '/[^\.]$/', $message ),
+	'The commit message must end with a full stop.'
+);
+
+// exit with non-zero code if errors have been found
+if ( $error_code ) {
+	exit( $error_code );
+}
