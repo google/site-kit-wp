@@ -137,6 +137,34 @@ export const subscribeWithUnsubscribe = ( registry, ...args ) => {
 	return unsubscribe;
 };
 
+/**
+ * Returns an object that returns hasFinishedResolution selectors for each key
+ * that are bound to the given registry and store name.
+ *
+ * @example
+ * await untilResolved( registry, STORE_NAME ).selectorWithResolver( arg1, arg2, arg3 );
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry  WP data registry instance.
+ * @param {string} storeName Store name the selector belongs to.
+ * @return {Proxy} Proxy instance that dynamically returns a function to await a selector's
+ *                 resolution by the same name, with the same arguments.
+ */
+export const untilResolved = ( registry, storeName ) => {
+	return new Proxy(
+		{},
+		{
+			get( target, name ) {
+				return ( ...args ) => subscribeUntil(
+					registry,
+					() => registry.select( storeName ).hasFinishedResolution( name, args )
+				);
+			},
+		}
+	);
+};
+
 export const subscribeUntil = ( registry, predicates ) => {
 	predicates = castArray( predicates );
 
