@@ -92,7 +92,8 @@ if ( $error_code ) {
 // read file and prepare commit message.
 $message    = explode( PHP_EOL, file_get_contents( $argv[1] ) ); // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
 $message    = trim( implode( ' ', array_filter( $message, 'is_not_comment' ) ) );
-$first_word = current( explode( ' ', $message ) );
+$words      = preg_split( '/[^A-Za-z-]+/', $message );
+$first_word = current( $words );
 
 // message starts with a capital letter.
 $error_code |= echo_error_if(
@@ -110,6 +111,14 @@ $error_code |= echo_error_if(
 $error_code |= echo_error_if(
 	preg_match( '/[^\.]$/', $message ),
 	'The commit message must end with a full stop.'
+);
+
+var_export( $words ); // phpcs:ignore
+
+// single word commit.
+$error_code |= echo_error_if(
+	count( $words ) < 2,
+	'The commit message cannot be a signle word.'
 );
 
 // exit with non-zero code if errors have been found.
