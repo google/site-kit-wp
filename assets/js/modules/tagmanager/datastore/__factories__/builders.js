@@ -31,9 +31,11 @@ import { CONTEXT_WEB, CONTEXT_AMP } from '../constants';
  *
  * @see {@link https://developers.google.com/tag-manager/api/v2/reference/accounts/list}
  *
- * @param {Object} [args] Optional arguments to the builder.
+ * @since n.e.x.t
+ *
+ * @param {Object} [args]           Optional arguments to the builder.
  * @param {Object} [args.overrides] Optional fields overrides to take precedence over the default generated values.
- * @param {Object} [args.map] Optional function for transforming the generated object.
+ * @param {Object} [args.map]       Optional function for transforming the generated object.
  * @return {Object} Resulting generated account object.
  */
 export const accountBuilder = build( 'Tag Manager Account', {
@@ -56,9 +58,11 @@ export const accountBuilder = build( 'Tag Manager Account', {
  *
  * @see {@link https://developers.google.com/tag-manager/api/v2/reference/accounts/containers/list}
  *
- * @param {Object} [args] Optional arguments to the builder.
+ * @since n.e.x.t
+ *
+ * @param {Object} [args]           Optional arguments to the builder.
  * @param {Object} [args.overrides] Optional fields overrides to take precedence over the default generated values.
- * @param {Object} [args.map] Optional function for transforming the generated object.
+ * @param {Object} [args.map]       Optional function for transforming the generated object.
  * @return {Object} Resulting generated container object.
  */
 export const containerBuilder = build( 'Tag Manager Container', {
@@ -91,10 +95,12 @@ export const containerBuilder = build( 'Tag Manager Container', {
 /**
  * Generate an account with one or more containers.
  *
- * @param {Object} [args] Optional args for controlling the output.
- * @param {Object} [args.account] Account field overrides.
+ * @since n.e.x.t
+ *
+ * @param {Object} [args]           Optional args for controlling the output.
+ * @param {Object} [args.account]   Account field overrides.
  * @param {Object} [args.container] Container field overrides.
- * @param {number} [args.count] Number of containers to create.
+ * @param {number} [args.count]     Number of containers to create.
  * @return {Object} Generated account and containers { account, containers }.
  */
 export function buildAccountWithContainers( {
