@@ -156,37 +156,12 @@ describe( 'modules/tagmanager containers', () => {
 
 				expect( initialContainers ).toEqual( undefined );
 
-				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( resolvedContainers ).toEqual( containers );
-			} );
-
-			it( 'only makes a single request regardless of usageContext', async () => {
-				const { account, containers } = factories.buildAccountWithContainers();
-				const accountID = account.accountId;
-
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					{ body: containers, status: 200 }
-				);
-
-				registry.select( STORE_NAME ).getContainers( accountID );
-				registry.select( STORE_NAME ).getContainers( accountID, CONTEXT_WEB );
-				registry.select( STORE_NAME ).getContainers( accountID, CONTEXT_AMP );
-
-				// Ensure the proper parameters were sent.
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					{
-						query: { accountID },
-					}
-				);
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
 			} );
 
 			it( 'does not make a network request if containers for this account are already present', async () => {
@@ -197,7 +172,7 @@ describe( 'modules/tagmanager containers', () => {
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
-				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( resolvedContainers ).toEqual( containers );
@@ -219,7 +194,7 @@ describe( 'modules/tagmanager containers', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getContainers( accountID );
 
-				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				const containers = registry.select( STORE_NAME ).getContainers( accountID );
@@ -227,37 +202,14 @@ describe( 'modules/tagmanager containers', () => {
 				const error = registry.select( STORE_NAME ).getError();
 				expect( error ).toEqual( errorResponse );
 			} );
-
-			it( 'filters selected containers by the given usageContext if provided', () => {
-				const { account, containers: webContainers } = factories.buildAccountWithContainers( {
-					container: {
-						usageContext: [ CONTEXT_WEB ],
-					},
-					count: 2,
-				} );
-				const { containers: ampContainers } = factories.buildAccountWithContainers( {
-					account,
-					container: {
-						usageContext: [ CONTEXT_AMP ],
-					},
-					count: 3,
-				} );
-				const accountID = account.accountId;
-				registry.dispatch( STORE_NAME ).receiveGetContainers(
-					[ ...webContainers, ...ampContainers ],
-					{ accountID }
-				);
-
-				const { getContainers } = registry.select( STORE_NAME );
-				expect( getContainers( accountID, CONTEXT_WEB ) ).toEqual( webContainers );
-				expect( getContainers( accountID, CONTEXT_AMP ) ).toEqual( ampContainers );
-				expect( getContainers( accountID ) ).toEqual( [ ...webContainers, ...ampContainers ] );
-			} );
 		} );
 
-		describe( 'getAllContainers', () => {
-			it( 'uses a resolver to make a network request', async () => {
-				const { account, containers } = factories.buildAccountWithContainers();
+		describe( 'getWebContainers', () => {
+			it( 'uses the getContainers resolver to make a network request', async () => {
+				const account = factories.accountBuilder();
+				const containers = factories.buildContainers(
+					3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
+				);
 				const accountID = account.accountId;
 
 				fetchMock.getOnce(
@@ -265,7 +217,7 @@ describe( 'modules/tagmanager containers', () => {
 					{ body: containers, status: 200 }
 				);
 
-				const initialContainers = registry.select( STORE_NAME ).getAllContainers( accountID );
+				const initialContainers = registry.select( STORE_NAME ).getWebContainers( accountID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -277,27 +229,47 @@ describe( 'modules/tagmanager containers', () => {
 
 				expect( initialContainers ).toEqual( undefined );
 
-				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
-
-				const resolvedContainers = registry.select( STORE_NAME ).getAllContainers( accountID );
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( resolvedContainers ).toEqual( containers );
+				expect(
+					registry.select( STORE_NAME ).getWebContainers( accountID )
+				).toEqual( containers );
 			} );
 
-			it( 'returns all containers for an account regardless of usageContext', async () => {
+			it( 'returns only containers with a web usageContext', () => {
 				const account = factories.accountBuilder();
-				const webContainers = factories.buildContainers( 3, { usageContext: [ CONTEXT_WEB ] } );
-				const ampContainers = factories.buildContainers( 3, { usageContext: [ CONTEXT_AMP ] } );
+				const webContainers = factories.buildContainers(
+					3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
+				);
+				const ampContainers = factories.buildContainers(
+					3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] }
+				);
 				const containers = [ ...webContainers, ...ampContainers ];
 				const accountID = account.accountId;
 
+				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
+				expect(
+					registry.select( STORE_NAME ).getWebContainers( accountID )
+				).toEqual( webContainers );
+			} );
+		} );
+
+		describe( 'getAMPContainers', () => {
+			it( 'uses the getContainers resolver to make a network request', async () => {
+				const account = factories.accountBuilder();
+				const containers = factories.buildContainers(
+					3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] }
+				);
+				const accountID = account.accountId;
+
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
 					{ body: containers, status: 200 }
 				);
 
-				const initialContainers = registry.select( STORE_NAME ).getAllContainers( accountID );
+				const initialContainers = registry.select( STORE_NAME ).getAMPContainers( accountID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -309,12 +281,30 @@ describe( 'modules/tagmanager containers', () => {
 
 				expect( initialContainers ).toEqual( undefined );
 
-				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
-
-				const resolvedContainers = registry.select( STORE_NAME ).getAllContainers( accountID );
+				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( resolvedContainers ).toEqual( containers );
+				expect(
+					registry.select( STORE_NAME ).getAMPContainers( accountID )
+				).toEqual( containers );
+			} );
+
+			it( 'returns only containers with an AMP usageContext', () => {
+				const account = factories.accountBuilder();
+				const webContainers = factories.buildContainers(
+					3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
+				);
+				const ampContainers = factories.buildContainers(
+					3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] }
+				);
+				const containers = [ ...webContainers, ...ampContainers ];
+				const accountID = account.accountId;
+
+				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
+				expect(
+					registry.select( STORE_NAME ).getAMPContainers( accountID )
+				).toEqual( ampContainers );
 			} );
 		} );
 	} );

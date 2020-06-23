@@ -106,14 +106,14 @@ const baseActions = {
 };
 
 const baseResolvers = {
-	*getAllContainers( accountID ) {
+	*getContainers( accountID ) {
 		if ( ! isValidAccountID( accountID ) ) {
 			return;
 		}
 
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getAllContainers( accountID ) ) {
+		if ( ! select( STORE_NAME ).getContainers( accountID ) ) {
 			yield fetchGetContainersStore.actions.fetchGetContainers( accountID );
 		}
 	},
@@ -121,36 +121,57 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets the containers for a given account, optionally filtered by the given usageContext.
+	 * Gets all web containers for the given account.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state          Data store's state.
-	 * @param {string} accountID      Account ID to get containers for.
-	 * @param {string} [usageContext] Usage context of containers to filter by.
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID Account ID to get containers for.
 	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
 	 */
-	getContainers: createRegistrySelector( ( select ) => ( state, accountID, usageContext ) => {
-		const containers = select( STORE_NAME ).getAllContainers( accountID );
+	getWebContainers: createRegistrySelector( ( select ) => ( state, accountID ) => {
+		const containers = select( STORE_NAME ).getContainers( accountID );
 
-		if ( containers && usageContext ) {
-			return containers.filter( ( container ) => container.usageContext.includes( usageContext ) );
+		if ( ! Array.isArray( containers ) ) {
+			return undefined;
 		}
 
-		return containers;
+		return containers.filter(
+			( { usageContext } ) => usageContext.includes( CONTEXT_WEB )
+		);
+	} ),
+
+	/**
+	 * Gets all AMP containers for the given account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID Account ID to get containers for.
+	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
+	 */
+	getAMPContainers: createRegistrySelector( ( select ) => ( state, accountID ) => {
+		const containers = select( STORE_NAME ).getContainers( accountID );
+
+		if ( ! Array.isArray( containers ) ) {
+			return undefined;
+		}
+
+		return containers.filter(
+			( { usageContext } ) => usageContext.includes( CONTEXT_AMP )
+		);
 	} ),
 
 	/**
 	 * Gets all containers for the given account.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID Account ID to get containers for.
 	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
 	 */
-	getAllContainers( state, accountID ) {
+	getContainers( state, accountID ) {
 		return state.containers[ accountID ];
 	},
 

@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/progress-bar';
-import { STORE_NAME, CONTEXT_WEB, CONTAINER_CREATE } from '../../datastore/constants';
+import { STORE_NAME, CONTAINER_CREATE } from '../../datastore/constants';
 import { isValidAccountID } from '../../util';
 const { useSelect, useDispatch } = Data;
 
@@ -36,7 +36,7 @@ export default function WebContainerSelect() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
-	const containers = useSelect( ( select ) => select( STORE_NAME ).getContainers( accountID, CONTEXT_WEB ) );
+	const containers = useSelect( ( select ) => select( STORE_NAME ).getWebContainers( accountID ) );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const isLoadingContainers = useSelect( ( select ) => select( STORE_NAME ).isDoingGetContainers( accountID ) );
 
