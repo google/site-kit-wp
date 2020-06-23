@@ -40,7 +40,7 @@ const fetchGetAccountsStore = createFetchStore( {
 	reducerCallback: ( state, accounts ) => {
 		return {
 			...state,
-			accounts: [ ...accounts ],
+			accounts,
 		};
 	},
 } );
@@ -68,7 +68,8 @@ export const baseActions = {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
 		if ( ACCOUNT_CREATE === accountID ) {
-
+			// eslint-disable-next-line no-useless-return
+			return;
 		}
 
 		// Trigger cascading selections.

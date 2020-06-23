@@ -69,7 +69,7 @@ export const containerBuilder = build( 'Tag Manager Container', {
 		name: fake( ( { lorem } ) => lorem.words() ),
 		publicId: fake( ( { random } ) => {
 			const char = random.alphaNumeric;
-			return `GTM-FAKE${ char() + char() + char() }`.toUpperCase();
+			return `GTM-FAKE${ char() }${ char() }${ char() }`.toUpperCase();
 		} ),
 		usageContext: [
 			oneOf( CONTEXT_WEB, CONTEXT_AMP ),

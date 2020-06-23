@@ -159,9 +159,9 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(boolean|undefined)} true or false if tag permission is available,
-	 *                               null if no existing tag,
-	 *                               otherwise undefined if resolution is incomplete.
+	 * @return {(boolean|null|undefined)} true or false if tag permission is available,
+	 *                                    null if no existing tag,
+	 *                                    otherwise undefined if resolution is incomplete.
 	 */
 	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
 		const hasExistingTag = select( STORE_NAME ).hasExistingTag();
