@@ -19,7 +19,9 @@
 /**
  * Internal dependencies
  */
-import Widgets from './googlesitekit/widgets';
+import { Widget } from './googlesitekit/widgets';
+
+const Widgets = { componenets: Widget };
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};

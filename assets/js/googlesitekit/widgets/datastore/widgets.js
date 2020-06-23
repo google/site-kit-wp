@@ -248,7 +248,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state  Data store's state.
 	 * @param {string} slug   Widget slug.
-	 * @return {Object|undefined} A widget object, if one exists.
+	 * @return {Object|null} A widget object, if one exists.
 	 */
 	getWidget: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required to get a widget.' );
@@ -262,7 +262,7 @@ export const selectors = {
 			widget.component = WidgetComponents[ registryKey ][ widget.slug ];
 		}
 
-		return widget;
+		return widget || null;
 	} ),
 
 	/**

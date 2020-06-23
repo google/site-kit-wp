@@ -36,7 +36,7 @@ const WidgetAreaRenderer = ( { slug } ) => {
 	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
 
 	return (
-		<div className={ classnames( 'mdc-layout-grid', 'googlesitekit-widget-area', `googlesitekit-widget-area-${ widgetArea.slug }`, `googlesitekit-widget-area__${ widgetArea.style }` ) }>
+		<div className={ classnames( 'mdc-layout-grid', 'googlesitekit-widget-area', `googlesitekit-widget-area--${ widgetArea.slug }`, `googlesitekit-widget-area--${ widgetArea.style }` ) }>
 			<div className="mdc-layout-grid__inner">
 				<header className={ classnames(
 					'googlesitekit-widget-area-header',
