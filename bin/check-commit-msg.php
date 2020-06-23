@@ -96,13 +96,13 @@ $first_word = current( explode( ' ', $message ) );
 
 // message starts with a capital letter.
 $error_code |= echo_error_if(
-	! preg_match( '/^[A-Z][a-z-]*$/', $first_word ),
+	! preg_match( '/^[A-Z][a-z][a-z-]*$/', $first_word ),
 	'The commit message must start with a capital letter.'
 );
 
 // first word of the message does not end in "ed" or "es".
 $error_code |= echo_error_if(
-	preg_match( '/(ed|es)$/', $first_word ),
+	preg_match( '/(ed|es|-)$/', $first_word ),
 	'The commit message must start with a verb in present tense.'
 );
 
