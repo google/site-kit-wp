@@ -263,7 +263,7 @@ abstract class Module {
 
 		$restore_defer = $this->with_client_defer( true );
 
-		$datapoint_services = $this->get_datapoint_services();
+		$datapoint_services = $this->get_datapoint_definitions();
 		$service_batches    = array();
 
 		$data_requests = array();
