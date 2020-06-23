@@ -162,6 +162,22 @@ const baseSelectors = {
 		const { unsatisfiedScopes } = select( STORE_NAME ).getAuthentication() || {};
 		return unsatisfiedScopes;
 	} ),
+
+	/**
+	 * Checks reauthentication status for this user.
+	 *
+	 * Returns true if any required scopes are not satisfied or undefined
+	 * if reauthentication info is not available/loaded.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} User reauthentication status.
+	 */
+	needsReauthentication: createRegistrySelector( ( select ) => () => {
+		const { needsReauthentication } = select( STORE_NAME ).getAuthentication() || {};
+		return needsReauthentication;
+	} ),
 };
 
 const store = Data.combineStores(

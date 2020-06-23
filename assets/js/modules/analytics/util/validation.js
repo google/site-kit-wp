@@ -102,6 +102,18 @@ export function isValidProfileSelection( value ) {
 }
 
 /**
+ * Checks if the given profile name appears to be valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} value Profile name to test
+ * @return {boolean} True if valid, otherwise false.
+ */
+export function isValidProfileName( value ) {
+	return typeof value === 'string' && value.trim().length > 0;
+}
+
+/**
  * Checks if the given internal web property ID appears to be valid.
  *
  * @param {(string|number)} accountID Account ID to test.

@@ -19,7 +19,7 @@
 /**
  * Checks if the given optimize ID appears to be a valid.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  *
  * @param {string|number} optimizeID optimize ID to test.
  * @return {boolean} True if the given optimize ID is valid, false otherwise.
@@ -31,7 +31,7 @@ export function isValidOptimizeID( optimizeID ) {
 /**
  * Checks if the given AmpExperimentJSON appears to be a valid.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  *
  * @param {string|number} ampExperimentJSON ampExperimentJSON to test.
  * @return {boolean} True if the given ampExperimentJSON is valid, false otherwise.

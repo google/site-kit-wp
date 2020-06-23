@@ -42,6 +42,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 		'useSnippet',
 		'trackingDisabled',
 	],
+	adminPage: 'googlesitekit-module-analytics',
 } );
 
 const store = Data.combineStores(

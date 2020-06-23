@@ -233,7 +233,8 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(number|undefined)} Current entity's ID.
+	 * @return {(number|null|undefined)} Current entity's ID, null if there is
+	 *                                   none, undefined if not loaded yet.
 	 */
 	getCurrentEntityID: createRegistrySelector( ( select ) => () => {
 		const { currentEntityID } = select( STORE_NAME ).getSiteInfo() || {};
@@ -247,7 +248,8 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|undefined)} Current entity's title.
+	 * @return {(string|null|undefined)} Current entity's title, null if there
+	 *                                   is none, undefined if not loaded yet.
 	 */
 	getCurrentEntityTitle: createRegistrySelector( ( select ) => () => {
 		const { currentEntityTitle } = select( STORE_NAME ).getSiteInfo() || {};
@@ -261,7 +263,8 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|undefined)} Current entity's type.
+	 * @return {(string|null|undefined)} Current entity's type, null if there
+	 *                                   is none, undefined if not loaded yet.
 	 */
 	getCurrentEntityType: createRegistrySelector( ( select ) => () => {
 		const { currentEntityType } = select( STORE_NAME ).getSiteInfo() || {};
@@ -275,7 +278,8 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|undefined)} Current entity's reference URL.
+	 * @return {(string|null|undefined)} Current entity's URL, null if there is
+	 *                                   none, undefined if not loaded yet.
 	 */
 	getCurrentEntityURL: createRegistrySelector( ( select ) => () => {
 		const { currentEntityURL } = select( STORE_NAME ).getSiteInfo() || {};
@@ -312,14 +316,42 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Gets the current reference URL to use.
+	 *
+	 * This selector should be used to get the contextual URL for requesting
+	 * URL-specific data from Google APIs.
+	 *
+	 * If a current entity exists, this will return the same value as the
+	 * `getCurrentEntityURL` selector. Otherwise it will fall back to returning
+	 * the same value as the `getReferenceSiteURL` selector.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The current reference URL, or undefined if
+	 *                              not loaded yet.
+	 */
+	getCurrentReferenceURL: createRegistrySelector( ( select ) => () => {
+		// Use current entity URL if present or still loading.
+		const currentEntityURL = select( STORE_NAME ).getCurrentEntityURL();
+		if ( currentEntityURL !== null ) {
+			return currentEntityURL;
+		}
+
+		// Otherwise fall back to reference site URL.
+		return select( STORE_NAME ).getReferenceSiteURL();
+	} ),
+
+	/**
 	 * Returns true if this site supports AMP.
 	 *
 	 * @since 1.7.0
+	 * @since n.e.x.t Renamed from isAmp to isAMP.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
-	isAmp: createRegistrySelector( ( select ) => () => {
+	isAMP: createRegistrySelector( ( select ) => () => {
 		const ampMode = select( STORE_NAME ).getAMPMode();
 
 		return ampMode !== undefined ? !! ampMode : ampMode;
