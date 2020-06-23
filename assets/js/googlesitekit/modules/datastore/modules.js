@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { keyBy } from 'lodash';
+import { keyBy, sortBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -30,7 +30,6 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
-import { sortObjectMapByKey } from '../../../util/sort-object-map-by-key';
 
 const { commonActions, createRegistrySelector } = Data;
 
@@ -59,7 +58,7 @@ const fetchGetModulesStore = createFetchStore( {
 		return {
 			...state,
 			isAwaitingModulesRefresh: false,
-			modules: keyBy( sortObjectMapByKey( modules, 'order' ), 'slug' ),
+			modules: keyBy( sortBy( modules, [ ( { order } ) => order ] ), 'slug' ),
 		};
 	},
 } );
@@ -305,7 +304,7 @@ const baseSelectors = {
 		}
 
 		const registryKey = select( STORE_NAME ).getModuleRegistryKey();
-		const sortedModules = sortObjectMapByKey( modules, 'order' );
+		const sortedModules = sortBy( modules, [ ( { order } ) => order ] );
 		const mappedModules = Object.values( sortedModules ).map( ( module ) => {
 			const moduleWithComponent = { ...module };
 			if ( ModuleComponents[ registryKey ] ) {

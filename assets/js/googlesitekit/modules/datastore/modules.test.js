@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { keyBy } from 'lodash';
+import { keyBy, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -37,12 +37,11 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { sortObjectMapByKey } from '../../../util/sort-object-map-by-key';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
 
 describe( 'core/modules modules', () => {
-	const fixturesKeyValue = keyBy( sortObjectMapByKey( FIXTURES, 'order' ), 'slug' );
+	const fixturesKeyValue = keyBy( sortBy( FIXTURES, [ ( { order } ) => order ] ), 'slug' );
 	let registry;
 	let store;
 
