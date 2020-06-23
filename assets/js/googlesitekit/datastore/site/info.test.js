@@ -214,21 +214,21 @@ describe( 'core/site site info', () => {
 			} );
 		} );
 
-		describe( 'isAmp', () => {
+		describe( 'isAMP', () => {
 			it( 'uses a resolver to load site info, then returns true if AMP mode is set', async () => {
 				global[ baseInfoVar ] = baseInfo;
 				global[ entityInfoVar ] = entityInfo;
 
-				registry.select( STORE_NAME ).isAmp();
+				registry.select( STORE_NAME ).isAMP();
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).isAmp() !== undefined
+						registry.select( STORE_NAME ).isAMP() !== undefined
 					),
 				);
 
-				const isAmp = registry.select( STORE_NAME ).isAmp();
+				const isAMP = registry.select( STORE_NAME ).isAMP();
 
-				expect( isAmp ).toEqual( true );
+				expect( isAMP ).toEqual( true );
 			} );
 
 			it( 'uses a resolver to load site info, then returns false if AMP mode is not set', async () => {
@@ -238,16 +238,16 @@ describe( 'core/site site info', () => {
 				};
 				global[ entityInfoVar ] = entityInfo;
 
-				registry.select( STORE_NAME ).isAmp();
+				registry.select( STORE_NAME ).isAMP();
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).isAmp() !== undefined
+						registry.select( STORE_NAME ).isAMP() !== undefined
 					),
 				);
 
-				const isAmp = registry.select( STORE_NAME ).isAmp();
+				const isAMP = registry.select( STORE_NAME ).isAMP();
 
-				expect( isAmp ).toEqual( false );
+				expect( isAMP ).toEqual( false );
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
@@ -255,7 +255,7 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				muteConsole( 'error' );
-				const result = registry.select( STORE_NAME ).isAmp();
+				const result = registry.select( STORE_NAME ).isAMP();
 
 				expect( result ).toEqual( undefined );
 			} );

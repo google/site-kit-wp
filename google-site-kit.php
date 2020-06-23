@@ -31,7 +31,7 @@ define( 'GOOGLESITEKIT_PHP_MINIMUM', '5.6.0' );
 /**
  * Handles plugin activation.
  *
- * Throws an error if the plugin is activated on an older version than PHP 5.4.
+ * Throws an error if the plugin is activated with an insufficient version of PHP.
  *
  * @since 1.0.0
  * @since 1.3.0 Minimum required version of PHP raised to 5.6

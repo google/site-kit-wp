@@ -59,11 +59,3 @@ autoload_vendor_files();
 
 // Initialize the plugin.
 Plugin::load( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
-/**
- * WP CLI Commands
- */
-if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'bin/authentication-cli.php';
-	require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'bin/reset-cli.php';
-}
