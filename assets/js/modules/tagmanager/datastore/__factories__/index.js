@@ -1,5 +1,5 @@
 /**
- * Tag Manager module initialization.
+ * Tag Manager datastore test factories.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,7 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import './datastore';
+export * from './builders';
+export * from './html-with-tag';

@@ -102,6 +102,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
 				'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
 				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
+				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
 				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
