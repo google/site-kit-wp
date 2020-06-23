@@ -236,7 +236,8 @@ const webpackConfig = ( mode ) => {
 const testBundle = () => {
 	return {
 		entry: {
-			'e2e-utilities': './tests/e2e/e2e-utilities.js',
+			'e2e-api-fetch': './tests/e2e/assets/e2e-api-fetch.js',
+			'e2e-redux-logger': './tests/e2e/assets/e2e-redux-logger.js',
 		},
 		output: {
 			filename: '[name].js',

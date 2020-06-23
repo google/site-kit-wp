@@ -1,5 +1,5 @@
 /**
- * E2E Utilities.
+ * Redux Debugging utilties.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,15 +20,6 @@
  * External dependencies
  */
 import { applyMiddleware } from 'redux';
-
-/**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-if ( global._e2eApiFetch === undefined ) {
-	global._e2eApiFetch = apiFetch;
-}
 
 /**
  * Creates a middleware for logging dispatched actions to the console.
@@ -56,11 +47,12 @@ function createLoggerMiddleware() {
  *
  * We set this because wp.data registry middleware is not extendable,
  * but it has built-in support for the devtools extension.
- * Since extensions can't be used in an E2E context, we're safe to hijack the global here.
+ * Since the real extension can't be used in a unit or E2E testing context, we're safe to hijack the global here.
  *
  * @see {@link https://github.com/WordPress/gutenberg/blob/2611a1df0a423dd22cbbabef8f2e87eb91b54bb2/packages/data/src/namespace-store/index.js#L124-L147}
- * @return {Object} Redux logger enhancer.
  */
-global.__REDUX_DEVTOOLS_EXTENSION__ = () => {
-	return applyMiddleware( createLoggerMiddleware );
-};
+export function setupReduxLogger() {
+	global.__REDUX_DEVTOOLS_EXTENSION__ = () => {
+		return applyMiddleware( createLoggerMiddleware );
+	};
+}
