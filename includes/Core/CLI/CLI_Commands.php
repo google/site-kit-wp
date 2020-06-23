@@ -36,7 +36,7 @@ class CLI_Commands {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param \Google\Site_Kit\Context $context Plugin context.
+	 * @param Context $context Plugin context.
 	 */
 	public function __construct( Context $context ) {
 		$this->context = $context;
