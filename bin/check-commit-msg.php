@@ -116,7 +116,7 @@ $error_code |= echo_error_if(
 // single word commit.
 $error_code |= echo_error_if(
 	count( $words ) < 2,
-	'The commit message cannot be a signle word.'
+	'The commit message must be more than one word.'
 );
 
 // exit with non-zero code if errors have been found.
