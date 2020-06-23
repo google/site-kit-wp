@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import sortBy from 'lodash';
 
 /**
  * Internal dependencies
@@ -219,26 +220,20 @@ export const selectors = {
 
 		const registryKey = select( STORE_NAME ).getWidgetRegistryKey();
 
-		return Object.values( widgets ).filter( ( widget ) => {
-			return areaAssignments[ widgetAreaSlug ] && areaAssignments[ widgetAreaSlug ].includes( widget.slug );
-		} ).sort( ( widgetA, widgetB ) => {
-			if ( widgetA.priority > widgetB.priority ) {
-				return 1;
-			}
+		const sorted = sortBy(
+			Object.values( widgets ).filter( ( widget ) => {
+				return areaAssignments[ widgetAreaSlug ] && areaAssignments[ widgetAreaSlug ].includes( widget.slug );
+			} ).map( ( widget ) => {
+				const widgetWithComponent = { ...widget };
+				if ( WidgetComponents[ registryKey ] ) {
+					widgetWithComponent.component = WidgetComponents[ registryKey ][ widget.slug ];
+				}
 
-			if ( widgetA.priority < widgetB.priority ) {
-				return -1;
-			}
-
-			return 0;
-		} ).map( ( widget ) => {
-			const widgetWithComponent = { ...widget };
-			if ( WidgetComponents[ registryKey ] ) {
-				widgetWithComponent.component = WidgetComponents[ registryKey ][ widget.slug ];
-			}
-
-			return widgetWithComponent;
-		} );
+				return widgetWithComponent;
+			} ),
+			[ ( widget ) => widget.priorty ]
+		);
+		return sorted.value();
 	} ),
 
 	/**
