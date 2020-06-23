@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import { isValidAccountID, isValidUsageContext } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistrySelector } = Data;
 
 const fetchGetContainersStore = createFetchStore( {
 	baseName: 'getContainers',
@@ -105,10 +106,14 @@ const baseActions = {
 };
 
 const baseResolvers = {
-	*getContainers( accountID ) {
+	*getAllContainers( accountID ) {
+		if ( ! isValidAccountID( accountID ) ) {
+			return;
+		}
+
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getContainers( accountID ) ) {
+		if ( ! select( STORE_NAME ).getAllContainers( accountID ) ) {
 			yield fetchGetContainersStore.actions.fetchGetContainers( accountID );
 		}
 	},
@@ -116,7 +121,7 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets the containers for a given account.
+	 * Gets the containers for a given account, optionally filtered by the given usageContext.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -125,15 +130,42 @@ const baseSelectors = {
 	 * @param {string} [usageContext] Usage context of containers to filter by.
 	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
 	 */
-	getContainers( state, accountID, usageContext ) {
-		const containers = state.containers[ accountID ];
+	getContainers: createRegistrySelector( ( select ) => ( state, accountID, usageContext ) => {
+		const containers = select( STORE_NAME ).getAllContainers( accountID );
 
 		if ( containers && usageContext ) {
 			return containers.filter( ( container ) => container.usageContext.includes( usageContext ) );
 		}
 
 		return containers;
+	} ),
+
+	/**
+	 * Gets all containers for the given account.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID Account ID to get containers for.
+	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
+	 */
+	getAllContainers( state, accountID ) {
+		return state.containers[ accountID ];
 	},
+
+	/**
+	 * Checks if containers are currently being fetched for the given account or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID Account ID to get containers for.
+	 * @return {boolean} True if containers are being fetched for the given account, otherwise false.
+	 */
+	isDoingGetContainers: createRegistrySelector( ( select ) => ( state, accountID ) => {
+		return select( STORE_NAME ).isFetchingGetContainers( accountID );
+	} ),
 
 	/**
 	 * Checks if any request for creating a container is in progress.

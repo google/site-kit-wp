@@ -156,12 +156,37 @@ describe( 'modules/tagmanager containers', () => {
 
 				expect( initialContainers ).toEqual( undefined );
 
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( resolvedContainers ).toEqual( containers );
+			} );
+
+			it( 'only makes a single request regardless of usageContext', async () => {
+				const { account, containers } = factories.buildAccountWithContainers();
+				const accountID = account.accountId;
+
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					{ body: containers, status: 200 }
+				);
+
+				registry.select( STORE_NAME ).getContainers( accountID );
+				registry.select( STORE_NAME ).getContainers( accountID, CONTEXT_WEB );
+				registry.select( STORE_NAME ).getContainers( accountID, CONTEXT_AMP );
+
+				// Ensure the proper parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					{
+						query: { accountID },
+					}
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
 			} );
 
 			it( 'does not make a network request if containers for this account are already present', async () => {
@@ -172,7 +197,7 @@ describe( 'modules/tagmanager containers', () => {
 
 				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
 
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( resolvedContainers ).toEqual( containers );
@@ -194,7 +219,7 @@ describe( 'modules/tagmanager containers', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getContainers( accountID );
 
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				const containers = registry.select( STORE_NAME ).getContainers( accountID );
@@ -227,6 +252,69 @@ describe( 'modules/tagmanager containers', () => {
 				expect( getContainers( accountID, CONTEXT_WEB ) ).toEqual( webContainers );
 				expect( getContainers( accountID, CONTEXT_AMP ) ).toEqual( ampContainers );
 				expect( getContainers( accountID ) ).toEqual( [ ...webContainers, ...ampContainers ] );
+			} );
+		} );
+
+		describe( 'getAllContainers', () => {
+			it( 'uses a resolver to make a network request', async () => {
+				const { account, containers } = factories.buildAccountWithContainers();
+				const accountID = account.accountId;
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					{ body: containers, status: 200 }
+				);
+
+				const initialContainers = registry.select( STORE_NAME ).getAllContainers( accountID );
+
+				// Ensure the proper parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					{
+						query: { accountID },
+					}
+				);
+
+				expect( initialContainers ).toEqual( undefined );
+
+				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
+
+				const resolvedContainers = registry.select( STORE_NAME ).getAllContainers( accountID );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( resolvedContainers ).toEqual( containers );
+			} );
+
+			it( 'returns all containers for an account regardless of usageContext', async () => {
+				const account = factories.accountBuilder();
+				const webContainers = factories.buildContainers( 3, { usageContext: [ CONTEXT_WEB ] } );
+				const ampContainers = factories.buildContainers( 3, { usageContext: [ CONTEXT_AMP ] } );
+				const containers = [ ...webContainers, ...ampContainers ];
+				const accountID = account.accountId;
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					{ body: containers, status: 200 }
+				);
+
+				const initialContainers = registry.select( STORE_NAME ).getAllContainers( accountID );
+
+				// Ensure the proper parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					{
+						query: { accountID },
+					}
+				);
+
+				expect( initialContainers ).toEqual( undefined );
+
+				await untilResolved( registry, STORE_NAME ).getAllContainers( accountID );
+
+				const resolvedContainers = registry.select( STORE_NAME ).getAllContainers( accountID );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( resolvedContainers ).toEqual( containers );
 			} );
 		} );
 	} );
