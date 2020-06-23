@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { sortBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -199,19 +200,12 @@ export const selectors = {
 
 		const { areas, contextAssignments } = state;
 
-		return Object.values( areas ).filter( ( area ) => {
-			return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
-		} ).sort( ( areaA, areaB ) => {
-			if ( areaA.priority > areaB.priority ) {
-				return 1;
-			}
-
-			if ( areaA.priority < areaB.priority ) {
-				return -1;
-			}
-
-			return 0;
-		} );
+		return sortBy(
+			Object.values( areas ).filter( ( area ) => {
+				return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
+			} ),
+			[ ( area ) => area.priorty ]
+		);
 	},
 };
 
