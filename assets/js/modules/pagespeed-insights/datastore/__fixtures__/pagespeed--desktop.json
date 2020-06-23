@@ -6,7 +6,7 @@
     "id": "https://example.com/",
     "metrics": {
       "FIRST_INPUT_DELAY_MS": {
-        "percentile": 3,
+        "percentile": 98,
         "distributions": [
           {
             "min": 0,
@@ -26,7 +26,7 @@
         "category": "FAST"
       },
       "CUMULATIVE_LAYOUT_SHIFT_SCORE": {
-        "percentile": 0,
+        "percentile": 13,
         "distributions": [
           {
             "min": 0,
@@ -43,10 +43,10 @@
             "proportion": 0.0009592744396965205
           }
         ],
-        "category": "FAST"
+        "category": "AVERAGE"
       },
       "LARGEST_CONTENTFUL_PAINT_MS": {
-        "percentile": 1997,
+        "percentile": 4100,
         "distributions": [
           {
             "min": 0,
@@ -63,7 +63,7 @@
             "proportion": 0.08624036708041648
           }
         ],
-        "category": "FAST"
+        "category": "SLOW"
       },
       "FIRST_CONTENTFUL_PAINT_MS": {
         "percentile": 1964,
@@ -314,9 +314,9 @@
         "id": "cumulative-layout-shift",
         "title": "Cumulative Layout Shift",
         "description": "Cumulative Layout Shift measures the movement of visible elements within the viewport. [Learn more](https://web.dev/cls).",
-        "score": 1,
+        "score": 0.5,
         "scoreDisplayMode": "numeric",
-        "displayValue": "0",
+        "displayValue": "0.13",
         "details": {
           "type": "debugdata",
           "items": [
@@ -325,7 +325,7 @@
             }
           ]
         },
-        "numericValue": 0
+        "numericValue": 0.13
       },
       "total-byte-weight": {
         "id": "total-byte-weight",
@@ -1167,10 +1167,10 @@
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
         "description": "Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn More](https://web.dev/lighthouse-largest-contentful-paint)",
-        "score": 1,
+        "score": 0.4,
         "scoreDisplayMode": "numeric",
-        "displayValue": "0.2 s",
-        "numericValue": 237
+        "displayValue": "3.7 s",
+        "numericValue": 3700
       },
       "user-timings": {
         "id": "user-timings",

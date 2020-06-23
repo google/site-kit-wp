@@ -33,21 +33,21 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import SvgIcon from '../../util/svg-icon';
-import { getExistingTag } from '../../util/tag';
-import { toggleConfirmModuleSettings, getModulesData } from '../../util';
+import SvgIcon from '../../../util/svg-icon';
+import { getExistingTag } from '../../../util/tag';
+import { toggleConfirmModuleSettings, getModulesData } from '../../../util';
 import {
 	getContainers,
 	isValidAccountID,
 	isValidContainerID,
-} from './util';
-import { Select, Option } from '../../material-components';
-import Button from '../../components/button';
-import DisplaySetting from '../../components/display-setting';
-import Link from '../../components/link';
-import Switch from '../../components/switch';
-import data, { TYPE_MODULES } from '../../components/data';
-import ProgressBar from '../../components/progress-bar';
+} from '../util';
+import { Select, Option } from '../../../material-components';
+import Button from '../../../components/button';
+import DisplaySetting from '../../../components/display-setting';
+import Link from '../../../components/link';
+import Switch from '../../../components/switch';
+import data, { TYPE_MODULES } from '../../../components/data';
+import ProgressBar from '../../../components/progress-bar';
 
 const ACCOUNT_CREATE = 'account_create';
 const CONTAINER_CREATE = 'container_create';
@@ -162,7 +162,17 @@ class TagmanagerSetup extends Component {
 		if ( existingContainerID ) {
 			// Verify the user has access to existing tag if found.
 			try {
-				const { account, container } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingContainerID } );
+				const { account, container, permission } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingContainerID } );
+				if ( ! permission ) {
+					throw {
+						code: 'tag_manager_existing_tag_permission',
+						message: sprintf(
+							/* translators: %s: Container ID */
+							__( 'We’ve detected there’s already an existing Tag Manager tag on your site (%s), but your account doesn’t seem to have the necessary access to this container. You can either remove the existing tag and connect to a different account, or request access to this container from your team.', 'google-site-kit' ),
+							existingContainerID
+						),
+					};
+				}
 				const containers = getContainers( [ container ] ).byContext( USAGE_CONTEXT_WEB );
 				const containersAMP = getContainers( [ container ] ).byContext( USAGE_CONTEXT_AMP );
 

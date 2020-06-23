@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -41,27 +42,39 @@ export default function ReportMetric( {
 	category = category.toLowerCase();
 
 	return (
-		<div>
-			<div>
+		<tr
+			className={ classnames(
+				'googlesitekit-pagespeed-report__row',
+				'googlesitekit-pagespeed-report-metric'
+			) }
+		>
+			<td>
 				<div className="googlesitekit-pagespeed-report-metric__title">
 					{ title }
 				</div>
 				<div className="googlesitekit-pagespeed-report-metric__description">
 					{ description }
 				</div>
-			</div>
+			</td>
 
-			<div className={ `googlesitekit-pagespeed-report-metric--${ category }` }>
-				<div className="googlesitekit-pagespeed-report-metric__value">
-					{ displayValue }
+			<td
+				className={ classnames(
+					'googlesitekit-pagespeed-report-metric-value',
+					`googlesitekit-pagespeed-report-metric--${ category.toLowerCase() }`
+				) }
+			>
+				<div className="googlesitekit-pagespeed-report-metric-value-container">
+					<div className="googlesitekit-pagespeed-report-metric-value__display-value">
+						{ displayValue }
+					</div>
+					<div className="googlesitekit-pagespeed-report-metric-value__rating">
+						{ category === CATEGORY_FAST && _x( 'Good', 'Performance rating', 'google-site-kit' ) }
+						{ category === CATEGORY_AVERAGE && _x( 'Needs improvement', 'Performance rating', 'google-site-kit' ) }
+						{ category === CATEGORY_SLOW && _x( 'Poor', 'Performance rating', 'google-site-kit' ) }
+					</div>
 				</div>
-				<div className="googlesitekit-pagespeed-report-metric__rating googlesitekit-uppercase">
-					{ category === CATEGORY_FAST && _x( 'Good', 'Performance rating', 'google-site-kit' ) }
-					{ category === CATEGORY_AVERAGE && _x( 'Needs improvement', 'Performance rating', 'google-site-kit' ) }
-					{ category === CATEGORY_SLOW && _x( 'Poor', 'Performance rating', 'google-site-kit' ) }
-				</div>
-			</div>
-		</div>
+			</td>
+		</tr>
 	);
 }
 
