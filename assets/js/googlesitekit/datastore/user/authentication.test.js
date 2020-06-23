@@ -140,6 +140,43 @@ describe( 'core/user authentication', () => {
 			} );
 		} );
 
+		describe( 'hasScope', () => {
+			it( 'uses a resolver to to load the value if not yet set', async () => {
+				const grantedScope = 'https://www.googleapis.com/auth/granted.scope';
+				const ungrantedScope = 'https://www.googleapis.com/auth/ungranted.scope';
+
+				fetchMock.getOnce(
+					coreUserDataEndpointRegExp,
+					{ body: {
+						authenticated: true,
+						requiredScopes: [],
+						grantedScopes: [ grantedScope ],
+						unsatisfiedScopes: [],
+					}, status: 200 }
+				);
+
+				const hasScope = registry.select( STORE_NAME ).hasScope( grantedScope );
+				// The granted scope info will be its initial value while the granted scope
+				// info is fetched.
+				expect( hasScope ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' )
+				);
+
+				const hasScopeAfterResolved = registry.select( STORE_NAME ).hasScope( grantedScope );
+				expect( hasScopeAfterResolved ).toEqual( true );
+
+				const missingScope = registry.select( STORE_NAME ).hasScope( ungrantedScope );
+				expect( missingScope ).toEqual( false );
+			} );
+
+			it( 'returns undefined if scope info is not available', async () => {
+				muteFetch( coreUserDataEndpointRegExp );
+				const hasProvisioningScope = registry.select( STORE_NAME ).hasScope( 'https://www.googleapis.com/auth/ungranted.scope' );
+				expect( hasProvisioningScope ).toEqual( undefined );
+			} );
+		} );
+
 		describe( 'isAuthenticated', () => {
 			it( 'uses a resolver to to load the authenticated value if not yet set.', async () => {
 				fetchMock.getOnce(
