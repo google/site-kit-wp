@@ -365,8 +365,8 @@ describe( 'core/widgets Widget areas', () => {
 				} );
 			} );
 
-			it( 'returns false if the widget area is not registered', () => {
-				expect( registry.select( STORE_NAME ).getWidgetArea( 'NotRealArea' ) ).toEqual( undefined );
+			it( 'returns null if the widget area is not registered', () => {
+				expect( registry.select( STORE_NAME ).getWidgetArea( 'NotRealArea' ) ).toEqual( null );
 			} );
 		} );
 

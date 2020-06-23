@@ -340,8 +340,8 @@ describe( 'core/widgets Widgets', () => {
 				expect( registry.select( STORE_NAME ).getWidget( 'TestWidget' ) ).toMatchSnapshot();
 			} );
 
-			it( 'returns undefined if the widget is not registered', () => {
-				expect( registry.select( STORE_NAME ).getWidget( 'NotRealWidget' ) ).toEqual( undefined );
+			it( 'returns null if the widget is not registered', () => {
+				expect( registry.select( STORE_NAME ).getWidget( 'NotRealWidget' ) ).toEqual( null );
 			} );
 		} );
 	} );
