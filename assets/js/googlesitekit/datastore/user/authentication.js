@@ -82,12 +82,12 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks to see if the current user has a particular scope.
+	 * Checks to see if the current user has granted a particular scope.
 	 *
 	 * Returns `undefined` if the scope info is not available/loaded.
 	 *
-	 * @private
 	 * @since n.e.x.t
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} scope The scope constant to check for.
@@ -96,7 +96,11 @@ const baseSelectors = {
 	hasScope: createRegistrySelector( ( select ) => ( state, scope ) => {
 		const grantedScopes = select( STORE_NAME ).getGrantedScopes( state );
 
-		return ( grantedScopes !== undefined ) ? grantedScopes.includes( scope ) : undefined;
+		if ( grantedScopes === undefined ) {
+			return undefined;
+		}
+
+		return grantedScopes.includes( scope );
 	} ),
 
 	/**
