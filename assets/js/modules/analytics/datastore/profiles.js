@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { isValidPropertyID, parsePropertyID } from '../util';
+import { isValidPropertyID, parsePropertyID, isValidProfileName } from '../util';
 import { STORE_NAME, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector } = Data;
@@ -59,11 +59,12 @@ const fetchGetProfilesStore = createFetchStore( {
 
 const fetchCreateProfileStore = createFetchStore( {
 	baseName: 'createProfile',
-	controlCallback: ( { propertyID } ) => {
+	controlCallback: ( { propertyID, profileName } ) => {
 		const { accountID } = parsePropertyID( propertyID );
 		return API.set( 'modules', 'analytics', 'create-profile', {
 			accountID,
 			propertyID,
+			profileName,
 		} );
 	},
 	reducerCallback: ( state, profile, { propertyID } ) => {
@@ -78,9 +79,10 @@ const fetchCreateProfileStore = createFetchStore( {
 			},
 		};
 	},
-	argsToParams: ( propertyID ) => {
+	argsToParams: ( propertyID, { profileName } ) => {
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
-		return { propertyID };
+		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
+		return { propertyID, profileName };
 	},
 } );
 
@@ -98,12 +100,15 @@ const baseActions = {
 	 * @since 1.8.0
 	 *
 	 * @param {string} propertyID Google Analytics property ID.
+	 * @param {Object} args Profile arguments.
+	 * @param {string} args.profileName The name for a new profile.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createProfile( propertyID ) {
+	*createProfile( propertyID, { profileName } ) {
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
+		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
 
-		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( propertyID );
+		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( propertyID, { profileName } );
 		return { response, error };
 	},
 };
@@ -156,13 +161,14 @@ const baseSelectors = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} propertyID The Analytics Property ID to check for profile creation.
+	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if creating a profile, `false` if not.
 	 */
-	isDoingCreateProfile: createRegistrySelector( ( select ) => ( state, propertyID ) => {
-		return select( STORE_NAME ).isFetchingCreateProfile( propertyID );
-	} ),
+	isDoingCreateProfile( state ) {
+		// Since isFetchingCreateProfile holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such request is in progress.
+		return Object.values( state.isFetchingCreateProfile ).some( Boolean );
+	},
 
 	/**
 	 * Checks if profiles are being fetched for the given account and property.
