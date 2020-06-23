@@ -33,7 +33,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 const fetchGetContainersStore = createFetchStore( {
 	baseName: 'getContainers',
 	argsToParams: ( accountID ) => {
-		invariant( isValidAccountID( accountID ), 'a valid accountID is required to fetch containers.' );
+		invariant( isValidAccountID( accountID ), 'A valid accountID is required to fetch containers.' );
 
 		return { accountID };
 	},
@@ -58,8 +58,8 @@ const fetchGetContainersStore = createFetchStore( {
 const fetchCreateContainerStore = createFetchStore( {
 	baseName: 'createContainer',
 	argsToParams( accountID, usageContext ) {
-		invariant( isValidAccountID( accountID ), 'a valid accountID is required to create a container.' );
-		invariant( isValidUsageContext( usageContext ), 'a valid usageContext is required to create a container.' );
+		invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
+		invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );
 
 		return { accountID, usageContext };
 	},
@@ -95,8 +95,8 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createContainer( accountID, usageContext ) {
-		invariant( isValidAccountID( accountID ), 'a valid accountID is required to create a container.' );
-		invariant( isValidUsageContext( usageContext ), 'a valid usageContext is required to create a container.' );
+		invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
+		invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );
 
 		const { response, error } = yield fetchCreateContainerStore.actions.fetchCreateContainer( accountID, usageContext );
 

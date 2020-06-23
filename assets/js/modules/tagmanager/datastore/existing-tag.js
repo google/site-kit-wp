@@ -47,7 +47,7 @@ const fetchGetExistingTagStore = createFetchStore( {
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
 	argsToParams: ( containerID ) => {
-		invariant( isValidContainerID( containerID ), 'a valid containerID is required to for fetching permission.' );
+		invariant( isValidContainerID( containerID ), 'A valid containerID is required to for fetching permission.' );
 
 		return { containerID };
 	},
