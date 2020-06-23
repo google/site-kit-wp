@@ -1,7 +1,8 @@
 /**
  * External dependencies
  */
-import { castArray } from 'lodash';
+import castArray from 'lodash/castArray';
+import mapValues from 'lodash/mapValues';
 
 /**
  * WordPress dependencies
@@ -148,19 +149,16 @@ export const subscribeWithUnsubscribe = ( registry, ...args ) => {
  *
  * @param {Object} registry  WP data registry instance.
  * @param {string} storeName Store name the selector belongs to.
- * @return {Proxy} Proxy instance that dynamically returns a function to await a selector's
- *                 resolution by the same name, with the same arguments.
+ * @return {Object} Object with keys as functions for each resolver in the given store.
  */
 export const untilResolved = ( registry, storeName ) => {
-	return new Proxy(
-		{},
-		{
-			get( target, name ) {
-				return ( ...args ) => subscribeUntil(
-					registry,
-					() => registry.select( storeName ).hasFinishedResolution( name, args )
-				);
-			},
+	return mapValues(
+		registry.stores[ storeName ].resolvers || {},
+		( resolverFn, resolverName ) => ( ...args ) => {
+			return subscribeUntil(
+				registry,
+				() => registry.select( storeName ).hasFinishedResolution( resolverName, args )
+			);
 		}
 	);
 };
