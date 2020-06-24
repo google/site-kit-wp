@@ -42,19 +42,20 @@ function createPreloadingMiddleware( preloadedData ) {
 	return ( options, next ) => {
 		const { parse = true } = options;
 		let uri = options.path;
-		let deleteCache = false;
 		if ( typeof options.path === 'string' ) {
 			const method = options.method?.toUpperCase() || 'GET';
+
+			// If the path contains the timestamp param, we remove the cache and return the next() call.
 			if ( getQueryArg( options.patch, 'timestamp' ) ) {
 				uri = removeQueryArgs( options.path, 'timestamp' );
-				deleteCache = true;
+				delete cache[ path ];
+				return next( options );
 			}
+
 			const path = getStablePath( uri );
 			if ( parse && 'GET' === method && cache[ path ] ) {
 				const result = Promise.resolve( cache[ path ].body );
-				if ( deleteCache ) {
-					delete cache[ path ];
-				}
+				delete cache[ path ];
 				return result;
 			} else if (
 				'OPTIONS' === method &&
@@ -62,9 +63,7 @@ function createPreloadingMiddleware( preloadedData ) {
 				cache[ method ][ path ]
 			) {
 				const result = Promise.resolve( cache[ method ][ path ] );
-				if ( deleteCache ) {
-					delete cache[ method ][ path ];
-				}
+				delete cache[ method ][ path ];
 				return result;
 			}
 		}
