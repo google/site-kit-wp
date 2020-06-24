@@ -26,19 +26,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Select, Option } from '../../../../material-components';
-import ProgressBar from '../../../../components/progress-bar';
-import { STORE_NAME, CONTAINER_CREATE } from '../../datastore/constants';
-import { isValidAccountID } from '../../util';
+import { STORE_NAME } from '../../datastore/constants';
+import ContainerSelect from './ContainerSelect';
 const { useSelect, useDispatch } = Data;
 
 export default function WebContainerSelect() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
 	const containers = useSelect( ( select ) => select( STORE_NAME ).getWebContainers( accountID ) );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const isLoadingContainers = useSelect( ( select ) => select( STORE_NAME ).isDoingGetContainers( accountID ) );
 
 	const { setContainerID, setInternalContainerID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -49,34 +44,12 @@ export default function WebContainerSelect() {
 		}
 	}, [ containerID ] );
 
-	if ( accounts === undefined || isLoadingContainers ) {
-		return <ProgressBar small />;
-	}
-
 	return (
-		<Select
-			className="googlesitekit-tagmanager__select-container-web"
+		<ContainerSelect
 			label={ __( 'Container', 'google-site-kit' ) }
 			value={ containerID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || ! isValidAccountID( accountID ) }
-			enhanced
-			outlined
-		>
-			{ ( containers || [] )
-				.concat( {
-					publicId: CONTAINER_CREATE,
-					name: __( 'Set up a new container', 'google-site-kit' ),
-				} )
-				.map( ( { publicId, name, containerId }, index ) => ( // Capitalization rule exception: publicId, containerId
-					<Option
-						key={ index }
-						value={ publicId }
-						data-internal-id={ containerId } // Capitalization rule exception: containerId
-					>
-						{ name }
-					</Option>
-				) ) }
-		</Select>
+			containers={ containers }
+		/>
 	);
 }
