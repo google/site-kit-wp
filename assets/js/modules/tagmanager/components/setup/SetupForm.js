@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useEffect, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -32,7 +33,6 @@ import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/sit
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 import { ErrorNotice, ExistingTagNotice, AMPContainerSelect, WebContainerSelect, AccountSelect } from '../common';
-import { __ } from '@wordpress/i18n';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -88,9 +88,9 @@ export default function SetupForm( { finishSetup } ) {
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
 
-				<AMPContainerSelect />
-
 				<WebContainerSelect />
+
+				<AMPContainerSelect />
 			</div>
 
 			<div className="googlesitekit-setup-module__action">
