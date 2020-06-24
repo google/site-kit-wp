@@ -45,7 +45,7 @@ describe( 'SettingsMain', () => {
 		rerender( <SettingsMain isOpen={ true } isEditing={ true } /> );
 
 		await wait( () => container.querySelector( '.mdc-text-field__input' ) );
-		fireEvent.changeText( container.querySelector( '.mdc-text-field__input' ), 'OPT-2222222' );
+		fireEvent.change( container.querySelector( '.mdc-text-field__input' ), { target: { value: 'OPT-2222222' } } );
 		expect( select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
 
 		rerender( <SettingsMain isOpen={ true } isEditing={ false } /> );
@@ -66,13 +66,11 @@ describe( 'SettingsMain', () => {
 		rerender( <SettingsMain isOpen={ true } isEditing={ true } /> );
 
 		await wait( () => container.querySelector( '.mdc-text-field__input' ) );
-		fireEvent.changeText( container.querySelector( '.mdc-text-field__input' ), 'OPT-2222222' );
+		fireEvent.change( container.querySelector( '.mdc-text-field__input' ), { target: { value: 'OPT-2222222' } } );
 		expect( select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
 
 		rerender( <SettingsMain isOpen={ false } isEditing={ true } /> );
 
-		expect( select( STORE_NAME ).getSettings() ).toEqual( {
-			newSettings,
-		} );
+		expect( select( STORE_NAME ).getSettings() ).toEqual( newSettings );
 	} );
 } );
