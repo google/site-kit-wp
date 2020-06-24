@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
 const { useSelect, useDispatch } = Data;
 
@@ -34,6 +35,7 @@ export default function WebContainerSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
 	const containers = useSelect( ( select ) => select( STORE_NAME ).getWebContainers( accountID ) );
+	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
 	const { setContainerID, setInternalContainerID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -44,9 +46,13 @@ export default function WebContainerSelect() {
 		}
 	}, [ containerID ] );
 
+	const label = isSecondaryAMP
+		? __( 'Web Container', 'google-site-kit' )
+		: __( 'Container', 'google-site-kit' );
+
 	return (
 		<ContainerSelect
-			label={ __( 'Container', 'google-site-kit' ) }
+			label={ label }
 			value={ containerID }
 			onEnhancedChange={ onChange }
 			containers={ containers }

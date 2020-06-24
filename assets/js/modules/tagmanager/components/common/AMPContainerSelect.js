@@ -28,12 +28,14 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import ContainerSelect from './ContainerSelect';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AMPContainerSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const containerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
 	const containers = useSelect( ( select ) => select( STORE_NAME ).getAMPContainers( accountID ) );
+	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
 	const { setAMPContainerID, setInternalAMPContainerID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -44,9 +46,13 @@ export default function AMPContainerSelect() {
 		}
 	}, [ containerID ] );
 
+	const label = isSecondaryAMP
+		? __( 'AMP Container', 'google-site-kit' )
+		: __( 'Container', 'google-site-kit' );
+
 	return (
 		<ContainerSelect
-			label={ __( 'Container', 'google-site-kit' ) }
+			label={ label }
 			value={ containerID }
 			onEnhancedChange={ onChange }
 			containers={ containers }
