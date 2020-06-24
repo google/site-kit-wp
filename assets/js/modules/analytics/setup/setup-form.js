@@ -32,7 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../components/button';
-import { STORE_NAME, FORM_SETUP } from '../datastore/constants';
+import { STORE_NAME, FORM_SETUP, EDIT_SCOPE } from '../datastore/constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	AccountSelect,
@@ -49,7 +50,7 @@ export default function SetupForm( { finishSetup } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
-	const hasEditScope = useSelect( ( select ) => select( STORE_NAME ).hasEditScope() );
+	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );

@@ -1001,8 +1001,12 @@ final class Analytics extends Module
 						array( 'status' => 400 )
 					);
 				}
+				$profile_name = trim( $data['profileName'] );
+				if ( empty( $profile_name ) ) {
+					$profile_name = __( 'All Web Site Data', 'google-site-kit' );
+				}
 				$profile = new Google_Service_Analytics_Profile();
-				$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
+				$profile->setName( $profile_name );
 				return $profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
 			case 'GET:tag-permission':
 				return function() use ( $data ) {

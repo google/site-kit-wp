@@ -16,6 +16,22 @@
  * limitations under the License.
  */
 
-export { default as pagespeedDesktop } from './pagespeed--desktop.json';
-export { default as pagespeedMobile } from './pagespeed--mobile.json';
+/**
+ * External dependencies
+ */
+import omit from 'lodash/omit';
 
+/**
+ * Internal dependencies
+ */
+import { default as pagespeedDesktop } from './pagespeed--desktop';
+import { default as pagespeedMobile } from './pagespeed--mobile';
+const pagespeedDesktopNoFieldData = omit( pagespeedDesktop, 'loadingExperience.metrics' );
+const pagespeedMobileNoFieldData = omit( pagespeedMobile, 'loadingExperience.metrics' );
+
+export {
+	pagespeedDesktop,
+	pagespeedDesktopNoFieldData,
+	pagespeedMobile,
+	pagespeedMobileNoFieldData,
+};
