@@ -43,7 +43,7 @@ jobs:
           ${{ runner.os }}-node-cache-
     - name: npm install
       run: |
-        npm install
+        npm ci
     - name: Create destination directory
       run: mkdir -p ${{ github.ref }}
     - name: Build develop version
