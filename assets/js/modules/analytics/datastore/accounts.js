@@ -355,7 +355,7 @@ const baseSelectors = {
 				authuser: email,
 				provisioningSignup: 'false',
 			}
-		) + `#management/TermsOfService/?api.accountTicketId=${ accountTicketID }`;
+		) + `#/termsofservice/${ accountTicketID }`;
 	} ),
 
 	/**
