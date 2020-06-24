@@ -20,28 +20,7 @@
  * WordPress dependencies.
  */
 import { getStablePath } from '@wordpress/api-fetch/build/middlewares/preloading';
-import { addQueryArgs } from '@wordpress/url';
-
-/**
- * Helper to remove the timestamp query param
- *
- * @since n.e.x.t
- *
- * @param {string} uri The URI to remove the timestamp query param from.
- * @return {string} Passed URI without the timestamp query param
- */
-function removeTimestampQueryParam( uri ) {
-	const [ baseUrl, queryParams ] = uri.split( '?' );
-
-	const paramsObject = queryParams.split( '&' )?.reduce( ( acc, paramSet ) => {
-		const split = paramSet.split( '=' );
-		if ( split[ 0 ] !== 'timestamp' ) {
-			return { ...acc, [ split[ 0 ] ]: split[ 1 ] };
-		}
-	}, {} );
-
-	return addQueryArgs( baseUrl, paramsObject );
-}
+import { removeQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * createPreloadingMiddleware
@@ -66,8 +45,8 @@ function createPreloadingMiddleware( preloadedData ) {
 		let deleteCache = false;
 		if ( typeof options.path === 'string' ) {
 			const method = options.method?.toUpperCase() || 'GET';
-			if ( options.path.match( /timestamp=[0-9]+/ ) ) {
-				uri = removeTimestampQueryParam( options.path );
+			if ( getQueryArg( options.patch, 'timestamp' ) ) {
+				uri = removeQueryArgs( options.path, 'timestamp' );
 				deleteCache = true;
 			}
 			const path = getStablePath( uri );
