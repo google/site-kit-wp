@@ -1,5 +1,5 @@
 /**
- * Tag Manager constants.
+ * Tag Manager Setup components.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,15 +16,5 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/tagmanager';
-
-// A special Account ID value used for the "Set up a new account" option.
-export const ACCOUNT_CREATE = 'account_create';
-// A special Container ID value used for the "Set up a new container" option.
-export const CONTAINER_CREATE = 'container_create';
-// Usage context for web containers.
-export const CONTEXT_WEB = 'web';
-// Usage context for AMP containers.
-export const CONTEXT_AMP = 'amp';
-// OAuth scope needed for creating containers.
-export const EDIT_SCOPE = 'https://www.googleapis.com/auth/tagmanager.edit.containers';
+export { default as SetupMain } from './SetupMain';
+export { default as SetupForm } from './SetupForm';
