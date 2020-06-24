@@ -22,7 +22,7 @@
 import WebContainerSelect from './WebContainerSelect';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY, AMP_MODE_PRIMARY } from '../../../../googlesitekit/datastore/site/constants';
 import { createTestRegistry } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
@@ -152,5 +152,16 @@ describe( 'WebContainerSelect', () => {
 		const { container } = render( <WebContainerSelect />, { registry } );
 
 		expect( container.querySelector( '.mdc-floating-label' ) ).toHaveTextContent( /Web Container/i );
+	} );
+
+	it( 'should render nothing in a primary AMP context', () => {
+		const account = factories.accountBuilder();
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
+
+		const { queryByRole } = render( <WebContainerSelect />, { registry } );
+
+		expect( queryByRole( 'progressbar' ) ).not.toBeInTheDocument();
+		expect( queryByRole( 'menu', { hidden: true } ) ).not.toBeInTheDocument();
 	} );
 } );

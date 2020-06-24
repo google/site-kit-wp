@@ -35,6 +35,7 @@ export default function WebContainerSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
 	const containers = useSelect( ( select ) => select( STORE_NAME ).getWebContainers( accountID ) );
+	const isPrimaryAMP = useSelect( ( select ) => select( CORE_SITE ).isPrimaryAMP() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
 	const { setContainerID, setInternalContainerID } = useDispatch( STORE_NAME );
@@ -45,6 +46,10 @@ export default function WebContainerSelect() {
 			setInternalContainerID( item.dataset.internalId );
 		}
 	}, [ containerID ] );
+
+	if ( isPrimaryAMP ) {
+		return null;
+	}
 
 	const label = isSecondaryAMP
 		? __( 'Web Container', 'google-site-kit' )

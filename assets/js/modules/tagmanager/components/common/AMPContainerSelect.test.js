@@ -154,7 +154,7 @@ describe( 'AMPContainerSelect', () => {
 		expect( container.querySelector( '.mdc-floating-label' ) ).toHaveTextContent( /AMP Container/i );
 	} );
 
-	it( 'renders nothing in a non-AMP context', () => {
+	it( 'should render nothing in a non-AMP context', () => {
 		const account = factories.accountBuilder();
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } );
