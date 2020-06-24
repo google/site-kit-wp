@@ -25,8 +25,9 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Helper to remove the timestamp query param
  *
- * @param {string} uri The URI to remove the timestamp query param from.
+ * @since n.e.x.t
  *
+ * @param {string} uri The URI to remove the timestamp query param from.
  * @return {string} Passed URI without the timestamp query param
  */
 function removeTimestampQueryParam( uri ) {
@@ -42,6 +43,17 @@ function removeTimestampQueryParam( uri ) {
 	return addQueryArgs( baseUrl, paramsObject );
 }
 
+/**
+ * createPreloadingMiddleware
+ *
+ * Based on preloadMiddleware from from @wordpress/api-fetch, this middle is a single-use per-endpoint and provides cached
+ * data for the first request only and any subsequent requests hit the server.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} preloadedData Preloaded data paths.
+ * @return {Function} Function.
+ */
 function createPreloadingMiddleware( preloadedData ) {
 	const cache = Object.keys( preloadedData ).reduce( ( result, path ) => {
 		result[ getStablePath( path ) ] = preloadedData[ path ];

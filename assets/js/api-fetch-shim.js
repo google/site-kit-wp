@@ -24,7 +24,7 @@ import apiFetch from '@wordpress/api-fetch__non-shim';
 /**
  * Internal dependencies
  */
-import createPreloadingMiddleware from './googlesitekit/middleware/preloading.js';
+import createPreloadingMiddleware from './googlesitekit/api/middleware/preloading.js';
 
 const {
 	nonce,
