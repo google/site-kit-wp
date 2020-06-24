@@ -22,9 +22,21 @@
 import WebContainerSelect from './WebContainerSelect';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { createTestRegistry } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'WebContainerSelect', () => {
+	let registry;
+	beforeEach( () => {
+		registry = createTestRegistry();
+		// Set settings to prevent fetch in resolver.
+		registry.dispatch( STORE_NAME ).setSettings( {} );
+		// Set set no existing tag.
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		// Set site info to prevent error in resolver.
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+	} );
 	afterEach( () => fetchMock.mockReset() );
 
 	it( 'should render an option for each web container of the currently selected account.', () => {
@@ -35,16 +47,12 @@ describe( 'WebContainerSelect', () => {
 		const ampContainers = factories.buildContainers(
 			3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] }
 		);
-		const setupRegistry = ( registry ) => {
-			const accountID = account.accountId;
-			registry.dispatch( STORE_NAME ).setSettings( {} );
-			registry.dispatch( STORE_NAME ).setAccountID( accountID );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-			registry.dispatch( STORE_NAME ).receiveGetContainers( [ ...webContainers, ...ampContainers ], { accountID } );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		};
+		const accountID = account.accountId;
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [ ...webContainers, ...ampContainers ], { accountID } );
 
-		const { getAllByRole } = render( <WebContainerSelect />, { setupRegistry } );
+		const { getAllByRole } = render( <WebContainerSelect />, { registry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
@@ -56,19 +64,15 @@ describe( 'WebContainerSelect', () => {
 	} );
 
 	it( 'should have a "Set up a new container" item at the end of the list', () => {
-		const setupRegistry = ( registry ) => {
-			const { account, containers } = factories.buildAccountWithContainers(
-				{ container: { usageContext: [ CONTEXT_WEB ] } }
-			);
-			const accountID = account.accountId;
-			registry.dispatch( STORE_NAME ).setSettings( {} );
-			registry.dispatch( STORE_NAME ).setAccountID( accountID );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-			registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		};
+		const { account, containers } = factories.buildAccountWithContainers(
+			{ container: { usageContext: [ CONTEXT_WEB ] } }
+		);
+		const accountID = account.accountId;
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 
-		const { getAllByRole } = render( <WebContainerSelect />, { setupRegistry } );
+		const { getAllByRole } = render( <WebContainerSelect />, { registry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems.pop() ).toHaveTextContent( /set up a new container/i );
@@ -79,16 +83,13 @@ describe( 'WebContainerSelect', () => {
 			{ container: { usageContext: [ CONTEXT_WEB ] } }
 		);
 		const webContainer = containers[ 0 ];
-		const setupRegistry = ( registry ) => {
-			const accountID = account.accountId;
-			registry.dispatch( STORE_NAME ).setSettings( {} );
-			registry.dispatch( STORE_NAME ).setAccountID( accountID );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-			registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		};
+		const accountID = account.accountId;
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 
-		const { container, getByText, registry } = render( <WebContainerSelect />, { setupRegistry } );
+		const { container, getByText } = render( <WebContainerSelect />, { registry } );
+
 		expect( registry.select( STORE_NAME ).getContainerID() ).toBeFalsy();
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBeFalsy();
 
@@ -100,15 +101,11 @@ describe( 'WebContainerSelect', () => {
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
-		const setupRegistry = ( registry ) => {
-			fetchMock.getOnce(
-				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-				new Promise( () => {} ) // Return a promise that never resolves to simulate an endless request.
-			);
-			registry.dispatch( STORE_NAME ).setSettings( {} );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		};
-		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { setupRegistry } );
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
+			new Promise( () => {} ) // Return a promise that never resolves to simulate an endless request.
+		);
+		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { registry } );
 
 		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 
@@ -120,15 +117,12 @@ describe( 'WebContainerSelect', () => {
 			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
 			new Promise( () => {} ) // Return a promise that never resolves to simulate an endless request.
 		);
-		const setupRegistry = ( registry ) => {
-			const account = factories.accountBuilder();
-			const accountID = account.accountId;
-			registry.dispatch( STORE_NAME ).setSettings( {} );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-			registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		};
-		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { setupRegistry } );
+		const account = factories.accountBuilder();
+		const accountID = account.accountId;
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+
+		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { registry } );
 
 		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 
