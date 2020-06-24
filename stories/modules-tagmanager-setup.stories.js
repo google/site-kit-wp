@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import fetchMock from 'fetch-mock';
 
 /**
  * WordPress dependencies
@@ -29,12 +30,13 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { WithTestRegistry } from '../tests/js/utils';
+import { WithTestRegistry, createTestRegistry } from '../tests/js/utils';
 import { fillFilterWithComponent } from '../assets/js/util';
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
-import { STORE_NAME } from '../assets/js/modules/tagmanager/datastore';
+import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user';
 import { SetupMain as TagManagerSetup } from '../assets/js/modules/tagmanager/components/setup';
-import fetchMock from 'fetch-mock';
+import { STORE_NAME, ACCOUNT_CREATE } from '../assets/js/modules/tagmanager/datastore/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 
 function Setup( props ) {
@@ -55,24 +57,115 @@ function Setup( props ) {
 }
 
 storiesOf( 'Tag Manager Module/Setup', module )
-	.add( 'Loading', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			fetchMock.getOnce(
-				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-				new Promise( () => {} )
-			);
-			dispatch( STORE_NAME ).setSettings( {} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		};
-		return <Setup callback={ setupRegistry } />;
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		registry.dispatch( STORE_NAME ).setSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
+
+		return storyFn( registry );
 	} )
-	.add( 'Start', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setSettings( {} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-			dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID: fixtures.accounts[ 0 ].accountId } );
-		};
-		return <Setup callback={ setupRegistry } />;
+	.add( 'Loading', ( registry ) => {
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
+			new Promise( () => {} )
+		);
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Start', ( registry ) => {
+		registry.dispatch( STORE_NAME ).setSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID: fixtures.accounts[ 0 ].accountId } );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'No accounts', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'ACCOUNT_CREATE', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Existing tag (with access)', ( registry ) => {
+		const accountID = fixtures.accounts[ 0 ].accountId;
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-S1T3K1T' );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-S1T3K1T' } );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Existing tag (no access)', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-GXXXGL3' );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID: '', permission: false }, { containerID: 'GTM-GXXXGL3' } );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+
+		return <Setup registry={ registry } />;
+	} )
+;
+
+storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		registry.dispatch( STORE_NAME ).setSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
+
+		return storyFn( registry );
+	} )
+	.add( 'Start', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID: fixtures.accounts[ 0 ].accountId } );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Selected', ( registry ) => {
+		const accountID = fixtures.accounts[ 0 ].accountId;
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		const [ container ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
+		registry.dispatch( STORE_NAME ).setAMPContainerID( container.publicId );
+		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
+
+		return <Setup registry={ registry } />;
+	} )
+;
+
+storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		registry.dispatch( STORE_NAME ).setSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
+
+		return storyFn( registry );
+	} )
+	.add( 'Start', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID: fixtures.accounts[ 0 ].accountId } );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Selected', ( registry ) => {
+		const accountID = fixtures.accounts[ 0 ].accountId;
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		const [ webContainer ] = registry.select( STORE_NAME ).getWebContainers( accountID );
+		registry.dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
+		registry.dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
+		const [ ampContainer ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
+		registry.dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
+		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
+
+		return <Setup registry={ registry } />;
 	} )
 ;
