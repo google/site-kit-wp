@@ -35,7 +35,7 @@ describe( 'AMPContainerSelect', () => {
 		// Set set no existing tag.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		// Set site info to prevent error in resolver.
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
 	} );
 	afterEach( () => fetchMock.mockReset() );
 
@@ -106,10 +106,9 @@ describe( 'AMPContainerSelect', () => {
 			new Promise( () => {} ) // Return a promise that never resolves to simulate an endless request.
 		);
 
-		const { queryAllByRole, queryByRole } = render( <AMPContainerSelect />, { registry } );
+		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
 
-		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
-
+		expect( queryByRole( 'menu', { hidden: true } ) ).not.toBeInTheDocument();
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
@@ -123,10 +122,9 @@ describe( 'AMPContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
-		const { queryAllByRole, queryByRole } = render( <AMPContainerSelect />, { registry } );
+		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
 
-		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
-
+		expect( queryByRole( 'menu', { hidden: true } ) ).not.toBeInTheDocument();
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
@@ -154,5 +152,16 @@ describe( 'AMPContainerSelect', () => {
 		const { container } = render( <AMPContainerSelect />, { registry } );
 
 		expect( container.querySelector( '.mdc-floating-label' ) ).toHaveTextContent( /AMP Container/i );
+	} );
+
+	it( 'renders nothing in a non-AMP context', () => {
+		const account = factories.accountBuilder();
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } );
+
+		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
+
+		expect( queryByRole( 'progressbar' ) ).not.toBeInTheDocument();
+		expect( queryByRole( 'menu', { hidden: true } ) ).not.toBeInTheDocument();
 	} );
 } );

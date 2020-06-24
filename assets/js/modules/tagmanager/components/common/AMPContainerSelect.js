@@ -35,6 +35,7 @@ export default function AMPContainerSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const containerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
 	const containers = useSelect( ( select ) => select( STORE_NAME ).getAMPContainers( accountID ) );
+	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
 	const { setAMPContainerID, setInternalAMPContainerID } = useDispatch( STORE_NAME );
@@ -45,6 +46,10 @@ export default function AMPContainerSelect() {
 			setInternalAMPContainerID( item.dataset.internalId );
 		}
 	}, [ containerID ] );
+
+	if ( ! isAMP ) {
+		return null;
+	}
 
 	const label = isSecondaryAMP
 		? __( 'AMP Container', 'google-site-kit' )
