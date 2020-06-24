@@ -33,6 +33,7 @@ import WebContainerSelect from '../assets/js/modules/tagmanager/components/commo
 import AMPContainerSelect from '../assets/js/modules/tagmanager/components/common/AMPContainerSelect';
 import UseSnippetSwitch from '../assets/js/modules/tagmanager/components/common/UseSnippetSwitch';
 import ExistingTagNotice from '../assets/js/modules/tagmanager/components/common/ExistingTagNotice';
+import ExistingTagError from '../assets/js/modules/tagmanager/components/common/ExistingTagError';
 
 storiesOf( 'Tag Manager Module/Components', module )
 	.add( 'AccountSelect', () => {
@@ -102,6 +103,17 @@ storiesOf( 'Tag Manager Module/Components', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<ExistingTagNotice />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'ExistingTagError', () => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-S1T3K1T' );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<ExistingTagError />
 			</WithTestRegistry>
 		);
 	} )
