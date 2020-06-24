@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store
+ * modules/tagmanager data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -21,48 +21,65 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
-import accounts from './accounts';
-import properties from './properties';
-import profiles from './profiles';
-import settings from './settings';
-import tags from './tags';
 import { STORE_NAME } from './constants';
-
+import accounts from './accounts';
+import containers from './containers';
+import error from './error';
+import existingTag from './existing-tag';
+import settings from './settings';
+import versions from './versions';
 export { STORE_NAME };
 
-const baseModuleStore = Modules.createModuleStore( 'analytics', {
+let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 	storeName: STORE_NAME,
 	settingSlugs: [
-		'anonymizeIP',
 		'accountID',
-		'profileID',
-		'propertyID',
-		'internalWebPropertyID',
+		'ampContainerID',
+		'containerID',
+		'internalContainerID',
+		'internalAMPContainerID',
 		'useSnippet',
-		'trackingDisabled',
 	],
-	adminPage: 'googlesitekit-module-analytics',
 } );
+
+// Rename generated pieces to adhere to our convention.
+baseModuleStore = ( ( { actions, selectors, ...store } ) => {
+	const { setAmpContainerID, ...restActions } = actions;
+	const { getAmpContainerID, ...restSelectors } = selectors;
+
+	return {
+		...store,
+		actions: {
+			...restActions,
+			setAMPContainerID: setAmpContainerID,
+		},
+		selectors: {
+			...restSelectors,
+			getAMPContainerID: getAmpContainerID,
+		},
+	};
+} )( baseModuleStore );
 
 const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
-	properties,
-	profiles,
+	containers,
+	error,
+	existingTag,
 	settings,
-	createSnapshotStore( STORE_NAME ),
-	tags,
+	versions,
 );
-
-export const INITIAL_STATE = store.INITIAL_STATE;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
+
+export const {
+	INITIAL_STATE,
+	actions,
+	controls,
+	reducer,
+	resolvers,
+	selectors,
+} = store;
 
 export default store;

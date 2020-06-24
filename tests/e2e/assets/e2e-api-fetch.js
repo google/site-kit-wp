@@ -1,5 +1,5 @@
 /**
- * Tag Manager module initialization.
+ * E2E API Fetch.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,6 +17,11 @@
  */
 
 /**
- * Internal dependencies
+ * WordPress dependencies
  */
-import './datastore';
+import apiFetch from '@wordpress/api-fetch';
+
+if ( global._e2eApiFetch === undefined ) {
+	global._e2eApiFetch = apiFetch;
+}
+

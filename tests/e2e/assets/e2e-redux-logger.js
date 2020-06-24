@@ -1,5 +1,5 @@
 /**
- * Tag Manager module initialization.
+ * E2E Redux Logger.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,4 +19,7 @@
 /**
  * Internal dependencies
  */
-import './datastore';
+import { setupReduxLogger } from '../../js/redux-debug';
+
+// Bootstrap the logger as early as possible.
+setupReduxLogger();
