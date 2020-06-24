@@ -34,6 +34,7 @@ import AMPContainerSelect from '../assets/js/modules/tagmanager/components/commo
 import UseSnippetSwitch from '../assets/js/modules/tagmanager/components/common/UseSnippetSwitch';
 import ExistingTagNotice from '../assets/js/modules/tagmanager/components/common/ExistingTagNotice';
 import ExistingTagError from '../assets/js/modules/tagmanager/components/common/ExistingTagError';
+import ErrorNotice from '../assets/js/modules/tagmanager/components/common/ErrorNotice';
 
 storiesOf( 'Tag Manager Module/Components', module )
 	.add( 'AccountSelect', () => {
@@ -114,6 +115,20 @@ storiesOf( 'Tag Manager Module/Components', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<ExistingTagError />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'ErrorNotice', () => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).receiveError( {
+				code: 'KavHBokm704',
+				message: 'They taste like burning!',
+			} );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<ErrorNotice />
 			</WithTestRegistry>
 		);
 	} )
