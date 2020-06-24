@@ -29,6 +29,8 @@ import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_MODULE } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as MODULE_ANALYTICS } from '../../analytics/datastore/constants';
+import { STORE_NAME as MODULE_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import * as fixtures from '../datastore//__fixtures__';
 
 // Mock apiFetch so we know if it's called.
 jest.mock( '@wordpress/api-fetch' );
@@ -39,7 +41,7 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 
 const allParamsRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-	registry.dispatch( CORE_MODULE ).activateModule( 'analytics' );
+	registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsActivate );
 };
 
 const noAmpModeModeRegistry = ( registry ) => {
@@ -48,15 +50,14 @@ const noAmpModeModeRegistry = ( registry ) => {
 
 const falseUseSnippetRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-	registry.dispatch( CORE_MODULE ).activateModule( 'analytics' );
+	registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsActivate );
 	registry.dispatch( MODULE_ANALYTICS ).setUseSnippet( true );
 };
 
 const invalidAmpExperimentJSONRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-	registry.dispatch( CORE_MODULE ).activateModule( 'analytics' );
-	registry.dispatch( CORE_MODULE ).activateModule( 'tagmanager' );
-	// Need to set gtmUseSnippet
+	registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsGtmActivate );
+	registry.dispatch( MODULE_TAGMANAGER ).setUseSnippet( true );
 };
 
 describe( 'InstructionInformation', () => {
@@ -79,7 +80,7 @@ describe( 'InstructionInformation', () => {
 
 		expect( container.querySelector( 'p' ) ).toEqual( null );
 	} );
-	it( 'should render with analytics active and no analytics useSnippet, also with tagmanager active and an a gtm useSnippet', () => {
+	it( 'should render with analytics active and no analytics useSnippet, also with tagmanager active and a gtm useSnippet', () => {
 		const { container } = render( <InstructionInformation />, { setupRegistry: invalidAmpExperimentJSONRegistry } );
 
 		const selectedText = container.querySelector( 'p' );

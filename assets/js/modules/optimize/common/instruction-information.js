@@ -29,8 +29,9 @@ import Data from 'googlesitekit-data';
 import { sanitizeHTML } from '../../../util/sanitize';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as MODULE_ANALYTICS } from '../../analytics/datastore/constants';
+import { STORE_NAME as MODULE_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { STORE_NAME as CORE_MODULE } from '../../../googlesitekit/modules/datastore/constants';
-import { getModulesData } from '../../../util';
+// import { getModulesData } from '../../../util';
 
 const { useSelect } = Data;
 
@@ -39,9 +40,7 @@ export default function InstructionInformation() {
 	const analyticsActive = useSelect( ( select ) => select( CORE_MODULE ).isModuleActive( 'analytics' ) );
 	const analyticsUseSnippet = useSelect( ( select ) => select( MODULE_ANALYTICS ).getUseSnippet() );
 	const gtmActive = useSelect( ( select ) => select( CORE_MODULE ).isModuleActive( 'tagmanager' ) );
-	// TO DO: To be removed once tag manager store is merged
-	const gtmSettings = getModulesData().tagmanager;
-	const gtmUseSnippet = gtmActive && gtmSettings ? gtmSettings.settings.useSnippet : undefined;
+	const gtmUseSnippet = useSelect( ( select ) => select( MODULE_TAGMANAGER ).getUseSnippet() );
 
 	if ( ! analyticsActive ) {
 		return null;
