@@ -65,7 +65,7 @@ function createPreloadingMiddleware( preloadedData ) {
 		let uri = options.path;
 		let deleteCache = false;
 		if ( typeof options.path === 'string' ) {
-			const method = options.method || 'GET';
+			const method = options.method?.toUpperCase() || 'GET';
 			if ( options.path.match( /timestamp=[0-9]+/ ) ) {
 				uri = removeTimestampQueryParam( options.path );
 				deleteCache = true;
