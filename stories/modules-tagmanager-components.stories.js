@@ -26,10 +26,12 @@ import { storiesOf } from '@storybook/react';
  */
 import { WithTestRegistry } from '../tests/js/utils';
 import { STORE_NAME } from '../assets/js/modules/tagmanager/datastore';
+import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 import AccountSelect from '../assets/js/modules/tagmanager/components/common/AccountSelect';
 import WebContainerSelect from '../assets/js/modules/tagmanager/components/common/WebContainerSelect';
 import AMPContainerSelect from '../assets/js/modules/tagmanager/components/common/AMPContainerSelect';
+import UseSnippetSwitch from '../assets/js/modules/tagmanager/components/common/UseSnippetSwitch';
 
 storiesOf( 'Tag Manager Module/Components', module )
 	.add( 'AccountSelect', () => {
@@ -53,6 +55,7 @@ storiesOf( 'Tag Manager Module/Components', module )
 			registry.dispatch( STORE_NAME ).setAccountID( accountID );
 			registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 		};
 
 		return (
@@ -69,11 +72,24 @@ storiesOf( 'Tag Manager Module/Components', module )
 			registry.dispatch( STORE_NAME ).setAccountID( accountID );
 			registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
 		};
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<AMPContainerSelect />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'UseSnippetSwitch', () => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).setSettings( {} );
+			registry.dispatch( STORE_NAME ).setUseSnippet( true );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<UseSnippetSwitch />
 			</WithTestRegistry>
 		);
 	} )
