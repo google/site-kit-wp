@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -33,9 +28,7 @@ import {
 import { STORE_NAME } from './constants';
 
 describe( 'core/site html', () => {
-	let apiFetchSpy;
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -43,8 +36,6 @@ describe( 'core/site html', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -53,66 +44,65 @@ describe( 'core/site html', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
-		describe( 'fetchHTMLForURL', () => {
-			it( 'sets isFetchingHTML while fetching HTML then sets back to false', async () => {
+		describe( 'fetchGetHTMLForURL', () => {
+			it( 'sets isFetchingGetHTMLForURL while fetching HTML then sets back to false', async () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
-				// TODO Use fetch-mock-jest with proper matcher once 1477 is merged.
-				fetch
-					.doMockOnceIf(
-						url
-					)
-					.mockResponseOnce(
-						html,
-						{ status: 200 }
-					);
-				registry.dispatch( STORE_NAME ).fetchHTMLForURL( url );
-				expect( store.getState().isFetchingHTML[ url ] ).toEqual( true );
+				fetchMock.getOnce(
+					url,
+					{ body: html, status: 200 }
+				);
+
+				registry.dispatch( STORE_NAME ).fetchGetHTMLForURL( url );
+				expect( registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) ).toEqual( true );
 				await subscribeUntil( registry,
-					// TODO: Add selector for getting these values.
-					() => store.getState().isFetchingHTML[ url ] === false,
+					() => registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) === false,
 				);
 				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( selectedHTML ).toEqual( html );
-				expect( store.getState().isFetchingHTML[ url ] ).toEqual( false );
+				expect( registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) ).toEqual( false );
 			} );
 		} );
 
-		describe( 'invalidateHTMLForURL', () => {
+		describe( 'resetHTMLForURL', () => {
 			it( 'invalidates the resolver for getHTMLForURL', async () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
-				registry.dispatch( STORE_NAME ).receiveHTMLForURL( html, url );
+				registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
 				registry.select( STORE_NAME ).getHTMLForURL( url );
 
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getHTMLForURL', [ url ] )
 				);
 
-				registry.dispatch( STORE_NAME ).invalidateHTMLForURL( url );
+				registry.dispatch( STORE_NAME ).resetHTMLForURL( url );
 
 				expect( registry.select( STORE_NAME ).hasFinishedResolution( 'getHTMLForURL', [ url ] ) ).toStrictEqual( false );
 			} );
 		} );
 
-		describe( 'receiveHTMLForURL', () => {
-			it( 'requires the htmlForURL param', () => {
+		describe( 'receiveGetHTMLForURL', () => {
+			it( 'requires the htmlForURL response', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).receiveHTMLForURL();
-				} ).toThrow( 'html for URL is required.' );
+					registry.dispatch( STORE_NAME ).receiveGetHTMLForURL();
+				} ).toThrow( 'response is required.' );
+			} );
+
+			it( 'requires the params', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( '<html>' );
+				} ).toThrow( 'params is required.' );
 			} );
 
 			it( 'receives and sets HTML for a URL ', async () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
-				await registry.dispatch( STORE_NAME ).receiveHTMLForURL( html, url );
-				const state = store.getState();
-				expect( state.html[ url ] ).toBe( html );
+				await registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
+				expect( registry.select( STORE_NAME ).getHTMLForURL( url ) ).toBe( html );
 			} );
 		} );
 	} );
@@ -123,15 +113,10 @@ describe( 'core/site html', () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
 
-				// TODO Use fetch-mock-jest with proper matcher once 1477 is merged.
-				fetch
-					.doMockOnceIf(
-						url
-					)
-					.mockResponseOnce(
-						html,
-						{ status: 200 }
-					);
+				fetchMock.getOnce(
+					url,
+					{ body: html, status: 200 }
+				);
 
 				const initialHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 				// The connection info will be its initial value while the connection
@@ -145,14 +130,14 @@ describe( 'core/site html', () => {
 
 				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetched( url );
 				expect( selectedHTML ).toEqual( html );
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
-				registry.dispatch( STORE_NAME ).receiveHTMLForURL( html, url );
+				registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
 
 				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 
@@ -161,7 +146,7 @@ describe( 'core/site html', () => {
 					.hasFinishedResolution( 'getHTMLForURL', [ url ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).not.toHaveFetched();
 				expect( selectedHTML ).toEqual( html );
 			} );
 
@@ -172,26 +157,21 @@ describe( 'core/site html', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				// TODO Use fetch-mock-jest with proper matcher once 1477 is merged.
-				fetch
-					.doMockOnceIf(
-						url
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.getOnce(
+					url,
+					{ body: response, status: 500 }
+				);
 
 				// muteConsole( 'error' );
 				registry.select( STORE_NAME ).getHTMLForURL( url );
 				await subscribeUntil( registry,
 					// TODO: Add selector for getting these values.
-					() => store.getState().isFetchingHTML[ url ] === false,
+					() => registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) === false,
 				);
 
 				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( selectedHTML ).toEqual( undefined );
 			} );
 		} );

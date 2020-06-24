@@ -151,24 +151,24 @@ const baseSelectors = {
 		return existingTag !== undefined ? !! existingTag : undefined;
 	} ),
 
-	/**
-	 * Get an existing tag on the site, if present.
-	 *
-	 * @since 1.8.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(string|undefined)} Existing tag, or `null` if none.
-	 *                   Returns `undefined` if not resolved yet.
-	 */
-	getExistingTag( state ) {
-		// Use Data.select('core/site').getHTMLforURL( url ) to get HTML
+	// /**
+	//  * Get an existing tag on the site, if present.
+	//  *
+	//  * @since 1.8.0
+	//  *
+	//  * @param {Object} state Data store's state.
+	//  * @return {(string|undefined)} Existing tag, or `null` if none.
+	//  *                   Returns `undefined` if not resolved yet.
+	//  */
+	// getExistingTag( state ) {
+	// 	// Use Data.select('core/site').getHTMLforURL( url ) to get HTML
 
-		// Use getExistingTagURLs() and tagMatchers (from this modules utils)
+	// 	// Use getExistingTagURLs() and tagMatchers (from this modules utils)
 
-		// Internally, use something like extractExistingTag( html, tagMatchers ) to check for existing tags and return them if found.
+	// 	// Internally, use something like extractExistingTag( html, tagMatchers ) to check for existing tags and return them if found.
 
-		// The getExistingTag() selector should continue to add the query params {tagverify: 1, timestamp: Date.now()} to the URLs it uses, as in the existing approach
-	},
+	// 	// The getExistingTag() selector should continue to add the query params {tagverify: 1, timestamp: Date.now()} to the URLs it uses, as in the existing approach
+	// },
 
 	/**
 	 * Checks whether the user has access to the existing Analytics tag.

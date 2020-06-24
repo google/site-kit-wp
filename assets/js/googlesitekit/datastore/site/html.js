@@ -31,113 +31,14 @@ import { isURL } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 // Actions
-const START_FETCH_HTML_FOR_URL = 'START_FETCH_HTML_FOR_URL';
-const FETCH_HTML_FOR_URL = 'FETCH_HTML_FOR_URL';
-const FINISH_FETCH_HTML_FOR_URL = 'FINISH_FETCH_HTML_FOR_URL';
-const CATCH_FETCH_HTML_FOR_URL = 'CATCH_FETCH_HTML_FOR_URL';
-const INVALIDATE_HTML_FOR_URL = 'INVALIDATE_HTML_FOR_URL';
+const RESET_HTML_FOR_URL = 'RESET_HTML_FOR_URL';
 
-const RECEIVE_HTML_FOR_URL = 'RECEIVE_HTML_FOR_URL';
-
-export const INITIAL_STATE = {
-	html: {},
-	isFetchingHTML: {},
-};
-
-export const actions = {
-	/**
-	 * Dispatches an action that creates an HTTP request.
-	 *
-	 * Requests the HTML for a URL.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {string} url URL for which to fetch HTML.
-	 * @return {Object} Object with {response, error}
-	 */
-	*fetchHTMLForURL( url ) {
-		invariant( isURL( url ), 'a valid url is required to fetch HTML.' );
-		let response, error;
-
-		yield {
-			payload: { url },
-			type: START_FETCH_HTML_FOR_URL,
-		};
-
-		try {
-			response = yield {
-				payload: { url },
-				type: FETCH_HTML_FOR_URL,
-			};
-
-			yield actions.receiveHTMLForURL( response, url );
-
-			yield {
-				payload: { url },
-				type: FINISH_FETCH_HTML_FOR_URL,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: {
-					error,
-					url,
-				},
-				type: CATCH_FETCH_HTML_FOR_URL,
-			};
-		}
-
-		return { response, error };
-	},
-
-	/**
-	 * Invalidates the resolver for HTML for URL and re-runs fetchHTMLForURL.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {string} url URL for which the resolver should be invalidated.
-	 * @return {Object} Redux-style action.
-	 */
-	*invalidateHTMLForURL( url ) {
-		invariant( isURL( url ), 'a valid url is required to invalidate HTML.' );
-		const { dispatch } = yield Data.commonActions.getRegistry();
-
-		yield {
-			payload: { url },
-			type: INVALIDATE_HTML_FOR_URL,
-		};
-
-		return dispatch( STORE_NAME )
-			.invalidateResolution( 'getHTMLForURL', [ url ] );
-	},
-
-	/**
-	 * Stores HTML string received from the REST API.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {string} htmlForURL HTML string returned from the API.
-	 * @param {string} url URL for which the HTML was fetched.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveHTMLForURL( htmlForURL, url ) {
-		invariant( htmlForURL, 'html for URL is required.' );
-		invariant( isURL( url ), 'a valid url is required.' );
-
-		return {
-			payload: { htmlForURL, url },
-			type: RECEIVE_HTML_FOR_URL,
-		};
-	},
-};
-
-export const controls = {
-	[ FETCH_HTML_FOR_URL ]: async ( { payload: { url } } ) => {
+const fetchHTMLForURLStore = createFetchStore( {
+	baseName: 'getHTMLForURL',
+	controlCallback: async ( { url } ) => {
 		const fetchHTMLArgs = {
 			credentials: 'omit',
 			useCache: false,
@@ -146,7 +47,6 @@ export const controls = {
 		const html = await fetch( url, fetchHTMLArgs )
 			.then( ( res ) => {
 				if ( ! res.ok ) {
-					// TODO: Properly throw errors.
 					throw {
 						code: res.statusText,
 						message: res.statusText,
@@ -160,70 +60,50 @@ export const controls = {
 
 		return html;
 	},
+	reducerCallback: ( state, htmlForURL, { url } ) => {
+		return {
+			...state,
+			htmlForURL: {
+				...state.htmlForURL,
+				[ url ]: htmlForURL,
+			},
+		};
+	},
+	argsToParams: ( url ) => {
+		invariant( isURL( url ), 'a valid url is required to fetch HTML.' );
+		return { url };
+	},
+} );
+
+export const BASE_INITIAL_STATE = {
+	htmlForURL: {},
 };
 
-export const reducer = ( state, { type, payload } ) => {
-	// TODO: Remove console.log.
-	// console.log(`REDUCER ${type}:`,payload );
+const baseActions = {
+	*resetHTMLForURL( url ) {
+		const { dispatch } = yield Data.commonActions.getRegistry();
+
+		yield {
+			payload: { url },
+			type: RESET_HTML_FOR_URL,
+		};
+
+		return dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getHTMLForURL' );
+	},
+};
+
+const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_FETCH_HTML_FOR_URL: {
+		case RESET_HTML_FOR_URL: {
 			const { url } = payload;
 			return {
 				...state,
-				isFetchingHTML: {
-					...state.isFetchingHTML,
-					[ url ]: true,
-				},
-			};
-		}
-
-		case RECEIVE_HTML_FOR_URL: {
-			const { htmlForURL, url } = payload;
-
-			return {
-				...state,
-				html: {
-					...state.html,
-					[ url ]: htmlForURL,
-				},
-			};
-		}
-
-		case FINISH_FETCH_HTML_FOR_URL: {
-			const { url } = payload;
-			return {
-				...state,
-				isFetchingHTML: {
-					...state.isFetchingHTML,
-					[ url ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_HTML_FOR_URL: {
-			const { error, url } = payload;
-			return {
-				...state,
-				error,
-				isFetchingHTML: {
-					...state.isFetchingHTML,
-					[ url ]: false,
-				},
-			};
-		}
-
-		case INVALIDATE_HTML_FOR_URL: {
-			const { url } = payload;
-			const { html, isFetchingHTML } = state;
-
-			return {
-				...state,
-				html: {
-					...html,
+				htmlForURL: {
+					...state.htmlForURL,
 					[ url ]: undefined,
 				},
-				isFetchingHTML: {
-					...isFetchingHTML,
+				isFetchingHTMLForURL: {
+					...state.isFetchingHTMLForURL,
 					[ url ]: false,
 				},
 			};
@@ -235,19 +115,19 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
+export const baseResolvers = {
 	*getHTMLForURL( url ) {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const existingHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 
 		if ( ! existingHTML ) {
-			yield actions.fetchHTMLForURL( url );
+			yield fetchHTMLForURLStore.actions.fetchGetHTMLForURL( url );
 		}
 	},
 };
 
-export const selectors = {
+export const baseSelectors = {
 	/**
 	 * Gets the HTML for a given URL.
 	 *
@@ -263,17 +143,28 @@ export const selectors = {
 	 * @return {(Object|undefined)} String representation of HTML for given URL.
 	 */
 	getHTMLForURL( state, url ) {
-		const { html = {} } = state;
+		const { htmlForURL = {} } = state;
 
-		return html[ url ];
+		return htmlForURL[ url ];
 	},
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchHTMLForURLStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;
