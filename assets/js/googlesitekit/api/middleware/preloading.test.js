@@ -26,20 +26,59 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import createPreloadingMiddleware from './preloading';
 
+const requestURI = 'google-site-kit/v1/core/user/authentication';
+const body = {
+	status: 'this is the preloaded response',
+};
+const preloadedData = {
+	[ requestURI ]: {
+		method: 'GET',
+		body,
+	},
+};
+
 describe( 'Preloading Middleware', () => {
-	it( 'should return cached data for the first request only.', async () => {
-		const body = {
-			status: 'this is the preloaded response',
+	it( 'returns a preloaded response when present', async () => {
+		const preloadingMiddleware = createPreloadingMiddleware(
+			preloadedData
+		);
+
+		const requestOptions = {
+			method: 'GET',
+			path: requestURI,
 		};
 
-		const requestURI = 'google-site-kit/v1/core/user/authentication';
+		const firstRequest = await preloadingMiddleware( requestOptions, jest.fn() );
+		expect( firstRequest ).toEqual( body );
+	} );
 
-		const preloadedData = {
-			[ requestURI ]: {
-				method: 'GET',
-				body,
-			},
+	it( 'does nothing and calls next middleware when no preloaded response exists for the request', async () => {
+		const next = jest.fn();
+		const preloadingMiddleware = createPreloadingMiddleware( {} );
+		const requestOptions = {
+			method: 'GET',
+			path: requestURI,
 		};
+		await preloadingMiddleware( requestOptions, next );
+		expect( next ).toHaveBeenCalled();
+	} );
+
+	it( 'returns a preloaded response only once for each preloaded request', async () => {
+		const preloadingMiddleware = createPreloadingMiddleware(
+			preloadedData
+		);
+
+		const requestOptions = {
+			method: 'GET',
+			path: requestURI,
+		};
+		const firstRequest = await preloadingMiddleware( requestOptions, jest.fn() );
+		expect( firstRequest ).toEqual( body );
+
+		const secondRequest = await preloadingMiddleware( requestOptions, jest.fn() );
+		expect( secondRequest ).toBeUndefined();
+	} );
+	it( 'deletes a preloaded response from the cache when requested with a timestamp query paramater', async () => {
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
 		);
@@ -48,11 +87,7 @@ describe( 'Preloading Middleware', () => {
 			method: 'GET',
 			path: addQueryArgs( requestURI, { timestamp: Date.now() } ),
 		};
-
-		const firstRequest = await preloadingMiddleware( requestOptions, () => {} );
-		expect( firstRequest ).toEqual( body );
-
-		const secondRequest = await preloadingMiddleware( requestOptions, () => {} );
-		expect( secondRequest ).toEqual( undefined );
+		const firstRequest = await preloadingMiddleware( requestOptions, jest.fn() );
+		expect( firstRequest ).toBeUndefined();
 	} );
 } );
