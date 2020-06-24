@@ -70,7 +70,7 @@ export default function AccountCreateLegacy() {
 
 				<div className="googlesitekit-setup-module__sub-action">
 					<Link onClick={ refetchAccountsHandler }>
-						{ __( 'Re-fetch my account', 'google-site-kit' ) }
+						{ __( 'Re-fetch My Account', 'google-site-kit' ) }
 					</Link>
 				</div>
 			</div>
