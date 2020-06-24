@@ -11,8 +11,12 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
@@ -28,6 +32,8 @@ use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListAccountsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListTagsResponse;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListWorkspacesResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -39,8 +45,9 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields {
-	use Module_With_Scopes_Trait, Module_With_Settings_Trait;
+final class Tag_Manager extends Module
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields {
+	use Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait;
 
 	/**
 	 * Container usage context for web.
@@ -415,16 +422,17 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	protected function get_datapoint_services() {
 		return array(
 			// GET / POST.
-			'connection'          => '',
-			'account-id'          => '',
-			'container-id'        => '',
+			'connection'             => '',
+			'account-id'             => '',
+			'container-id'           => '',
 			// GET.
-			'accounts'            => 'tagmanager',
-			'accounts-containers' => 'tagmanager',
-			'containers'          => 'tagmanager',
-			'tag-permission'      => 'tagmanager',
+			'accounts'               => 'tagmanager',
+			'accounts-containers'    => 'tagmanager',
+			'containers'             => 'tagmanager',
+			'live-container-version' => 'tagmanager',
+			'tag-permission'         => 'tagmanager',
 			// POST.
-			'settings'            => '',
+			'create-container'       => 'tagmanager',
 		);
 	}
 
@@ -438,16 +446,13 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	protected function get_datapoint_definitions() {
 		$map = parent::get_datapoint_definitions();
 
-		// TODO: remove this once datapoint exists.
-		if ( isset( $map['POST:create-container'] ) ) {
-			$map['POST:create-container'] = array_merge(
-				$map['POST:create-container'],
-				array(
-					'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
-					'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container.', 'google-site-kit' ),
-				)
-			);
-		}
+		$map['POST:create-container'] = array_merge(
+			$map['POST:create-container'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
+				'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container on your behalf.', 'google-site-kit' ),
+			)
+		);
 
 		return $map;
 	}
@@ -571,34 +576,80 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
-			case 'POST:settings':
-				return function() use ( $data ) {
-					$option = $data->data;
+			case 'POST:create-container':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
 
-					if ( isset( $option['accountID'] ) ) {
-						try {
-							if ( isset( $option['containerID'] ) && 'container_create' === $option['containerID'] ) {
-								$option['containerID'] = $this->create_container( $option['accountID'], self::USAGE_CONTEXT_WEB );
-							}
-							if ( isset( $option['ampContainerID'] ) && 'container_create' === $option['ampContainerID'] ) {
-								$option['ampContainerID'] = $this->create_container( $option['accountID'], self::USAGE_CONTEXT_AMP );
-							}
-						} catch ( Exception $e ) {
-							return $this->exception_to_error( $e, $data->datapoint );
-						}
+				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+
+				if ( empty( $this->context_map[ $usage_context ] ) ) {
+					return new WP_Error(
+						'invalid_param',
+						sprintf(
+						/* translators: 1: Invalid parameter name, 2: list of valid values */
+							__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
+							'usageContext',
+							implode( ', ', array_keys( $this->context_map ) )
+						),
+						array( 'status' => 400 )
+					);
+				}
+
+				$account_id = $data['accountID'];
+
+				if ( $data['name'] ) {
+					$container_name = $data['name'];
+				} else {
+					// Use site name for container, fallback to domain of reference URL.
+					$container_name = get_bloginfo( 'name' ) ?: wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+					// Prevent naming conflict (Tag Manager does not allow more than one with same name).
+					if ( self::USAGE_CONTEXT_AMP === $usage_context ) {
+						$container_name .= ' AMP';
 					}
+				}
 
-					$this->get_settings()->merge( $option );
+				$container = new Google_Service_TagManager_Container();
+				$container->setName( self::sanitize_container_name( $container_name ) );
+				$container->setUsageContext( (array) $usage_context );
 
-					return $this->get_settings()->get();
-				};
+				return $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
+			case 'GET:live-container-version':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				if ( ! isset( $data['internalContainerID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers_versions->live(
+					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
+				);
 			case 'GET:tag-permission':
 				return function () use ( $data ) {
-					if ( ! isset( $data['tag'] ) ) {
+					// TODO: Remove 'tag' fallback once legacy components are refactored.
+					$container_id = $data['containerID'] ?: $data['tag'];
+
+					if ( ! $container_id ) {
 						return new WP_Error(
 							'missing_required_param',
 							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'tag' ),
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ),
 							array( 'status' => 400 )
 						);
 					}
@@ -609,18 +660,24 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 						return $accounts;
 					}
 
+					$response = array(
+						'accountID'   => '',
+						'containerID' => $container_id,
+						'permission'  => false,
+					);
+
 					try {
-						return $this->get_account_for_container( $data['tag'], $accounts );
+						$account_container      = $this->get_account_for_container( $container_id, $accounts );
+						$response['accountID']  = $account_container['account']['accountId'];
+						$response['permission'] = true;
+
+						// Return full `account` and `container` for backwards compat with legacy setup component.
+						// TODO: Remove $account_container from response.
+						return array_merge( $response, $account_container );
 					} catch ( Exception $exception ) {
-						return new WP_Error(
-							'tag_manager_existing_tag_permission',
-							/* translators: %s: Container ID */
-							sprintf( __( 'We’ve detected there’s already an existing Tag Manager tag on your site (%s), but your account doesn’t seem to have the necessary access to this container. You can either remove the existing tag and connect to a different account, or request access to this container from your team.', 'google-site-kit' ), $data['tag'] ),
-							array( 'status' => 403 )
-						);
+						return $response;
 					}
 				};
-
 		}
 
 		throw new Invalid_Datapoint_Exception();
@@ -828,5 +885,32 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Sets up the module's assets to register.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Asset[] List of Asset objects.
+	 */
+	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		return array(
+			new Script(
+				'googlesitekit-modules-tagmanager',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-tagmanager.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+						'googlesitekit-datastore-site',
+					),
+				)
+			),
+		);
 	}
 }
