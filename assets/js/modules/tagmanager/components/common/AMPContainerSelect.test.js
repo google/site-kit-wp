@@ -1,5 +1,5 @@
 /**
- * Account Select component tests.
+ * AMP Container Select component tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
