@@ -54,16 +54,14 @@ export default function SetupMain( { finishSetup } ) {
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.
-	const { setAccountID } = useDispatch( STORE_NAME );
+	const { setAccountID, setContainerID, setAMPContainerID } = useDispatch( STORE_NAME );
 	useEffect( () => {
 		if ( hasExistingTag && hasExistingTagPermission ) {
 			setAccountID( existingTagPermission.accountID );
-			// selectContainer(
-			// 	existingTagPermission.containerID,
-			// 	existingTagPermission.internalContainerID,
-			// );
+			setContainerID( existingTag );
+			setAMPContainerID( existingTag );
 		}
-	}, [ hasExistingTag, hasExistingTagPermission, existingTagPermission ] );
+	}, [ hasExistingTag, existingTag, hasExistingTagPermission, existingTagPermission ] );
 
 	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
 	const [ isNavigating, setIsNavigating ] = useState( false );
