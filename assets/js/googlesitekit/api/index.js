@@ -118,9 +118,8 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 			return value;
 		}
 	}
-	// If we're bypassing the cache on GET requests, add the timestamp parameter.
+	// Add timestamp to the request to act as a cache-buster to ensure a cached response is not returned from either our middleware or the server.
 	if ( false === useCacheForRequest && method === 'GET' ) {
-		// Add timestamp parameter to ensure that only the first request is preloaded.
 		queryParams = { ...queryParams, timestamp: Date.now() };
 	}
 
