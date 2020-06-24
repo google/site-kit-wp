@@ -165,7 +165,6 @@ describe( 'core/site html', () => {
 				// muteConsole( 'error' );
 				registry.select( STORE_NAME ).getHTMLForURL( url );
 				await subscribeUntil( registry,
-					// TODO: Add selector for getting these values.
 					() => registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) === false,
 				);
 
