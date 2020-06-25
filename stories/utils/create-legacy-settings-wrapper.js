@@ -34,7 +34,7 @@ import { WithTestRegistry } from '../../tests/js/utils';
  *
  * @since n.e.x.t
  *
- * @param {string} moduleSlug         The module's slug.
+ * @param {string}    moduleSlug      The module's slug.
  * @param {WPElement} moduleComponent Module settings component to filter in.
  * @return {Function} Legacy settings component.
  */
