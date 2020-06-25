@@ -29,16 +29,20 @@ import Data from 'googlesitekit-data';
 import Button from '../../../../components/button';
 import { STORE_NAME, FORM_SETUP, EDIT_SCOPE } from '../../datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
-import { ErrorNotice, ExistingTagNotice, AMPContainerSelect, WebContainerSelect, AccountSelect } from '../common';
+import {
+	AccountSelect,
+	AMPContainerSelect,
+	ErrorNotice,
+	ExistingTagNotice,
+	FormInstructions,
+	WebContainerSelect,
+} from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
-	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
 
@@ -73,17 +77,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			<ExistingTagNotice />
 
-			{ ( ! hasExistingTag && ! isSecondaryAMP ) && (
-				<p>
-					{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.', 'google-site-kit' ) }
-				</p>
-			) }
-
-			{ ( ! hasExistingTag && isSecondaryAMP ) && (
-				<p>
-					{ __( 'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.', 'google-site-kit' ) }
-				</p>
-			) }
+			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
