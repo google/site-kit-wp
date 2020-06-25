@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -30,25 +31,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ReportMetric from './ReportMetric';
-import Link from '../../../components/link';
-import { sanitizeHTML } from '../../../util';
+import ReportDetailsLink from './ReportDetailsLink';
+import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 
 export default function FieldReportMetrics( { data } ) {
-	const learnMoreLink = (
-		<Link
-			href="https://web.dev/user-centric-performance-metrics/#in-the-field"
-			external
-			inherit
-			dangerouslySetInnerHTML={ sanitizeHTML(
-				__( 'Learn more<span class="screen-reader-text"> about field data.</span>', 'google-site-kit' ),
-				{
-					ALLOWED_TAGS: [ 'span' ],
-					ALLOWED_ATTR: [ 'class' ],
-				}
-			) }
-		/>
-	);
-
 	const {
 		FIRST_INPUT_DELAY_MS: firstInputDelay,
 		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
@@ -57,14 +43,15 @@ export default function FieldReportMetrics( { data } ) {
 
 	if ( ! firstInputDelay || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
 		return (
-			<div>
-				<h3>
-					{ __( 'Field data unavailable', 'google-site-kit' ) }
-				</h3>
-				<p>
-					{ __( 'Field data is useful for capturing true, real-world user experience. However, the Chrome User Experience Report does not have sufficient real-world speed data for this page.', 'google-site-kit' ) }
-				</p>
-				{ learnMoreLink }
+			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics googlesitekit-pagespeed-insights-web-vitals-metrics--field-data-unavailable">
+				<div className="googlesitekit-pagespeed-insights-web-vitals-metrics__field-data-unavailable-content">
+					<h3>
+						{ __( 'Field data unavailable', 'google-site-kit' ) }
+					</h3>
+					<p>
+						{ __( 'Field data shows how real users actually loaded and interacted with your page. We don’t have enough real-world experience and speed data for this page. It may be new, or not enough users with Chrome browsers have visited it yet.', 'google-site-kit' ) }
+					</p>
+				</div>
 			</div>
 		);
 	}
@@ -75,30 +62,54 @@ export default function FieldReportMetrics( { data } ) {
 	const cls = ( cumulativeLayoutShift.percentile / 100 ).toFixed( 2 );
 
 	return (
-		<div>
-			<p>
-				{ __( 'Field data is useful for capturing true, real-world user experience - but has a more limited set of metrics.', 'google-site-kit' ) }
-				{ ' ' }
-				{ learnMoreLink }
-			</p>
-			<ReportMetric
-				title={ __( 'First Input Delay', 'google-site-kit' ) }
-				description={ __( 'Helps measure your user’s first impression of your site’s interactivity and responsiveness.', 'google-site-kit' ) }
-				displayValue={ `${ firstInputDelay.percentile } ms` }
-				category={ firstInputDelay.category }
-			/>
-			<ReportMetric
-				title={ __( 'Largest Contentful Paint', 'google-site-kit' ) }
-				description={ __( 'Marks the time at which the largest text or image is painted.', 'google-site-kit' ) }
-				displayValue={ `${ lcpSeconds } s` }
-				category={ largestContentfulPaint.category }
-			/>
-			<ReportMetric
-				title={ __( 'Cumulative Layout Shift', 'google-site-kit' ) }
-				description={ __( 'Measures the movement of visible elements within the viewport.', 'google-site-kit' ) }
-				displayValue={ cls }
-				category={ cumulativeLayoutShift.category }
-			/>
+		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
+			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
+				<p>
+					{ __( 'Field data shows how real users actually loaded and interacted with your page over time.', 'google-site-kit' ) }
+					{ ' ' }
+					<MetricsLearnMoreLink />
+				</p>
+			</div>
+			<table
+				className={ classnames(
+					'googlesitekit-table',
+					'googlesitekit-table--with-list'
+				) }
+			>
+				<thead>
+					<tr>
+						<th>
+							{ __( 'Metric Name', 'google-site-kit' ) }
+						</th>
+						<th>
+							{ __( 'Metric Value', 'google-site-kit' ) }
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ReportMetric
+						title={ __( 'First Input Delay', 'google-site-kit' ) }
+						description={ __( 'Time it takes for the browser to respond when people first interact with the page', 'google-site-kit' ) }
+						displayValue={ `${ firstInputDelay.percentile } ms` }
+						category={ firstInputDelay.category }
+					/>
+					<ReportMetric
+						title={ __( 'Largest Contentful Paint', 'google-site-kit' ) }
+						description={ __( 'Time it takes for the page to load', 'google-site-kit' ) }
+						displayValue={ `${ lcpSeconds } s` }
+						category={ largestContentfulPaint.category }
+					/>
+					<ReportMetric
+						title={ __( 'Cumulative Layout Shift', 'google-site-kit' ) }
+						description={ __( 'How stable the elements on the page are', 'google-site-kit' ) }
+						displayValue={ cls }
+						category={ cumulativeLayoutShift.category }
+					/>
+				</tbody>
+			</table>
+			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--last">
+				<ReportDetailsLink />
+			</div>
 		</div>
 	);
 }

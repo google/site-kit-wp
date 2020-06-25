@@ -46,7 +46,7 @@
         "category": "AVERAGE"
       },
       "CUMULATIVE_LAYOUT_SHIFT_SCORE": {
-        "percentile": 0,
+        "percentile": 30,
         "distributions": [
           {
             "min": 0,
@@ -63,10 +63,10 @@
             "proportion": 0.000026818998578593078
           }
         ],
-        "category": "FAST"
+        "category": "SLOW"
       },
       "LARGEST_CONTENTFUL_PAINT_MS": {
-        "percentile": 2035,
+        "percentile": 2600,
         "distributions": [
           {
             "min": 0,
@@ -83,7 +83,7 @@
             "proportion": 0.05950363196125909
           }
         ],
-        "category": "FAST"
+        "category": "AVERAGE"
       }
     },
     "overall_category": "AVERAGE",
@@ -312,10 +312,10 @@
         "id": "total-blocking-time",
         "title": "Total Blocking Time",
         "description": "Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms, expressed in milliseconds. [Learn more](https://web.dev/lighthouse-total-blocking-time).",
-        "score": 1,
+        "score": 0.3,
         "scoreDisplayMode": "numeric",
-        "displayValue": "0 ms",
-        "numericValue": 0
+        "displayValue": "90 ms",
+        "numericValue": 90
       },
       "unused-css-rules": {
         "id": "unused-css-rules",
@@ -996,10 +996,10 @@
         "id": "largest-contentful-paint",
         "title": "Largest Contentful Paint",
         "description": "Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn More](https://web.dev/lighthouse-largest-contentful-paint)",
-        "score": 1,
+        "score": 0.75,
         "scoreDisplayMode": "numeric",
-        "displayValue": "0.8 s",
-        "numericValue": 798
+        "displayValue": "1.5 s",
+        "numericValue": 1100
       },
       "speed-index": {
         "id": "speed-index",

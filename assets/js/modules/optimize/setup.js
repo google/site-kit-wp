@@ -146,12 +146,12 @@ class OptimizeSetup extends Component {
 			ampExperimentJSON,
 		};
 
-		return await data.set( TYPE_MODULES, 'optimize', 'settings', optimizeAccount ).then( () => {
+		return await data.set( TYPE_MODULES, 'optimize', 'settings', optimizeAccount ).then( ( savedSettings ) => {
 			if ( finishSetup ) {
 				finishSetup();
 			}
 
-			getModulesData().optimize.settings.optimizeID = optimizeID;
+			getModulesData().optimize.settings = savedSettings;
 
 			if ( this._isMounted ) {
 				this.setState( {
@@ -240,14 +240,18 @@ class OptimizeSetup extends Component {
 	renderAMPSnippet() {
 		const {
 			analyticsUseSnippet,
-			ampExperimentJSON,
 			ampExperimentJSONValidated,
 		} = this.state;
+		let { ampExperimentJSON } = this.state;
 
 		const { ampEnabled } = global._googlesitekitLegacyData.admin;
 
 		if ( ! analyticsUseSnippet || ! ampEnabled ) {
 			return null;
+		}
+
+		if ( typeof ampExperimentJSON !== 'string' ) {
+			ampExperimentJSON = JSON.stringify( ampExperimentJSON, null, 2 );
 		}
 
 		return (

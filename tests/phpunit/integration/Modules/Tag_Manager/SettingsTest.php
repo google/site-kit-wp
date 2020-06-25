@@ -27,10 +27,12 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'      => '',
-				'containerID'    => '',
-				'ampContainerID' => '',
-				'useSnippet'     => true,
+				'accountID'              => '',
+				'containerID'            => '',
+				'ampContainerID'         => '',
+				'useSnippet'             => true,
+				'internalContainerID'    => '',
+				'internalAMPContainerID' => '',
 			),
 			get_option( Settings::OPTION )
 		);
