@@ -107,6 +107,20 @@ export const muteFetch = ( urlMatcher, response = {} ) => {
 };
 
 /**
+ * Mocks a fetch request in a way so that a response is never returned.
+ *
+ * Useful for simulating a loading state.
+ *
+ * @since n.e.x.t
+ *
+ * @param {(string|RegExp|Function|URL|Object)} matcher Criteria for deciding which requests to mock.
+ *                                                      (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ */
+export const freezeFetch = ( matcher ) => {
+	fetchMock.once( matcher, new Promise( () => {} ) );
+};
+
+/**
  * Register all Site Kit stores on a registry.
  *
  * Use this to register every available Site Kit store on a registry.
