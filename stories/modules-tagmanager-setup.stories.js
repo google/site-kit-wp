@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import fetchMock from 'fetch-mock';
 
 /**
  * WordPress dependencies
