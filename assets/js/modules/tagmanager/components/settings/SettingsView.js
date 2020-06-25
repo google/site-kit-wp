@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -46,7 +47,7 @@ export default function SettingsView() {
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--tagmanager">
+		<Fragment>
 
 			{ /* Prevent showing ExistingTagError and general ErrorNotice at the same time. */ }
 			{ ( ! hasExistingTag || hasExistingTagPermission ) && <ErrorNotice /> }
@@ -106,6 +107,6 @@ export default function SettingsView() {
 					) }
 				</div>
 			</div>
-		</div>
+		</Fragment>
 	);
 }
