@@ -24,6 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
+import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user';
 import { SettingsMain as TagManagerSettings } from '../assets/js/modules/tagmanager/components/settings';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
@@ -140,6 +141,29 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-GXXXGL3' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: false }, { containerID: 'GTM-GXXXGL3' } );
+
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	} )
+;
+
+storiesOf( 'Tag Manager Module/Settings/Primary AMP', module )
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
+
+		return storyFn( registry );
+	} )
+	.add( 'Edit, with all settings', ( registry ) => {
+		const accountID = fixtures.accounts[ 0 ].accountId;
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		const [ container ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
+		registry.dispatch( STORE_NAME ).setAMPContainerID( container.publicId );
+		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
