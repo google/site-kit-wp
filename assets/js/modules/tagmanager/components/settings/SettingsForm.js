@@ -21,6 +21,7 @@ import {
 	AMPContainerSelect,
 	ErrorNotice,
 	ExistingTagNotice,
+	FormInstructions,
 	UseSnippetSwitch,
 	WebContainerSelect,
 } from '../common';
@@ -31,6 +32,8 @@ export default function SettingsForm() {
 			<ErrorNotice />
 
 			<ExistingTagNotice />
+
+			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
