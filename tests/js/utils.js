@@ -3,6 +3,7 @@
  */
 import castArray from 'lodash/castArray';
 import mapValues from 'lodash/mapValues';
+import fetchMock from 'fetch-mock';
 
 /**
  * WordPress dependencies
