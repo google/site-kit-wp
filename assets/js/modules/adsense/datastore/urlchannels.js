@@ -28,13 +28,11 @@ import { __ } from '@wordpress/i18n';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { parseAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetURLChannelsStore = createFetchStore( {
 	baseName: 'getURLChannels',
-	controlCallback: ( { clientID } ) => {
-		const accountID = parseAccountID( clientID );
+	controlCallback: ( { accountID, clientID } ) => {
 		if ( undefined === accountID ) {
 			// Mirror the API response that would happen for an invalid client ID.
 			return new Promise( () => {
@@ -49,18 +47,19 @@ const fetchGetURLChannelsStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, urlchannels, { clientID } ) => {
+	reducerCallback: ( state, urlchannels, { accountID, clientID } ) => {
 		return {
 			...state,
 			urlchannels: {
 				...state.urlchannels,
-				[ clientID ]: [ ...urlchannels ],
+				[ `${ accountID }::${ clientID }` ]: [ ...urlchannels ],
 			},
 		};
 	},
-	argsToParams: ( clientID ) => {
+	argsToParams: ( accountID, clientID ) => {
 		invariant( clientID, 'clientID is required.' );
-		return { clientID };
+		invariant( accountID, 'accountID is required.' );
+		return { accountID, clientID };
 	},
 } );
 
@@ -110,18 +109,22 @@ const baseReducer = ( state, { type } ) => {
 };
 
 const baseResolvers = {
-	*getURLChannels( clientID ) {
+	*getURLChannels( accountID, clientID ) {
 		if ( undefined === clientID ) {
 			return;
 		}
 
+		if ( undefined === accountID ) {
+			return;
+		}
+
 		const registry = yield Data.commonActions.getRegistry();
-		const existingURLChannels = registry.select( STORE_NAME ).getURLChannels( clientID );
+		const existingURLChannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
 		if ( existingURLChannels ) {
 			return;
 		}
 
-		yield fetchGetURLChannelsStore.actions.fetchGetURLChannels( clientID );
+		yield fetchGetURLChannelsStore.actions.fetchGetURLChannels( accountID, clientID );
 	},
 };
 
@@ -131,18 +134,23 @@ const baseSelectors = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {Object} state    Data store's state.
-	 * @param {string} clientID The AdSense Client ID to fetch URL channels for.
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID The AdSense Client ID to fetch URL channels for.
+	 * @param {string} clientID  The AdSense Account ID to fetch URL channels for.
 	 * @return {(Array.<Object>|undefined)} An array of AdSense URL channels; `undefined` if not loaded.
 	 */
-	getURLChannels( state, clientID ) {
+	getURLChannels( state, accountID, clientID ) {
 		if ( undefined === clientID ) {
+			return undefined;
+		}
+
+		if ( undefined === accountID ) {
 			return undefined;
 		}
 
 		const { urlchannels } = state;
 
-		return urlchannels[ clientID ];
+		return urlchannels[ `${ accountID }::${ clientID }` ];
 	},
 };
 

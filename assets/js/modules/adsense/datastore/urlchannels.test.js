@@ -61,17 +61,18 @@ describe( 'modules/adsense URL channels', () => {
 				);
 
 				const clientID = fixtures.clients[ 0 ].id;
+				const accountID = fixtures.accounts[ 0 ].id;
 
-				const initialURLChannels = registry.select( STORE_NAME ).getURLChannels( clientID );
+				const initialURLChannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
 
 				expect( initialURLChannels ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getURLChannels( clientID ) !== undefined
+						registry.select( STORE_NAME ).getURLChannels( accountID, clientID ) !== undefined
 					),
 				);
 
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( clientID );
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
@@ -79,16 +80,17 @@ describe( 'modules/adsense URL channels', () => {
 
 			it( 'does not make a network request if urlchannels for this account + client are already present', async () => {
 				const clientID = fixtures.clients[ 0 ].id;
+				const accountID = fixtures.accounts[ 0 ].id;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetURLChannels( fixtures.urlchannels, { clientID } );
+				registry.dispatch( STORE_NAME ).receiveGetURLChannels( fixtures.urlchannels, { accountID, clientID } );
 
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( clientID );
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getURLChannels', [ clientID ] )
+					.hasFinishedResolution( 'getURLChannels', [ accountID, clientID ] )
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -107,16 +109,17 @@ describe( 'modules/adsense URL channels', () => {
 				);
 
 				const fakeClientID = 'ca-pub-777888999';
+				const fakeAccountID = 'pub-4555666777888999';
 
 				muteConsole( 'error' );
-				registry.select( STORE_NAME ).getURLChannels( fakeClientID );
+				registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isFetchingGetURLChannels( fakeClientID ) === false,
+					() => registry.select( STORE_NAME ).isFetchingGetURLChannels( fakeAccountID, fakeClientID ) === false,
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeClientID );
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
 				expect( urlchannels ).toEqual( undefined );
 			} );
 
@@ -128,15 +131,16 @@ describe( 'modules/adsense URL channels', () => {
 				};
 
 				const invalidClientID = 'invalid-client-id';
+				const invalidAccountID = 'invalid-account-id';
 
-				registry.select( STORE_NAME ).getURLChannels( invalidClientID );
+				registry.select( STORE_NAME ).getURLChannels( invalidAccountID, invalidClientID );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isFetchingGetURLChannels( invalidClientID ) === false,
+					() => registry.select( STORE_NAME ).isFetchingGetURLChannels( invalidAccountID, invalidClientID ) === false,
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
 
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( invalidClientID );
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( invalidAccountID, invalidClientID );
 				expect( urlchannels ).toEqual( undefined );
 				expect( registry.select( STORE_NAME ).getError() ).toEqual( clientResponse );
 			} );
