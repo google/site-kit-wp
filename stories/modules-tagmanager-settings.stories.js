@@ -33,10 +33,19 @@ import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper'
 
 const Settings = createLegacySettingsWrapper( 'tagmanager', TagManagerSettings );
 
+const defaultSettings = {
+	accountID: '',
+	containerID: '',
+	internalContainerID: '',
+	ampContainerID: '',
+	internalAMPContainerID: '',
+	useSnippet: true,
+};
+
 storiesOf( 'Tag Manager Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
-		registry.dispatch( STORE_NAME ).setSettings( { useSnippet: true } );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
 
