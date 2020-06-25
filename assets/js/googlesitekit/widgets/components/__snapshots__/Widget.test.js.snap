@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Widget should output children directly 1`] = `
+<div>
+  Test
+</div>
+`;
