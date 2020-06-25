@@ -432,7 +432,6 @@ final class Tag_Manager extends Module
 			'POST:connection'            => array( 'service' => '' ),
 			'POST:account-id'            => array( 'service' => '' ),
 			'POST:container-id'          => array( 'service' => '' ),
-			'POST:settings'              => array( 'service' => '' ),
 		);
 
 		$map['POST:create-container'] = array(
