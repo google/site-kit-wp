@@ -108,7 +108,7 @@
     "@wordpress/i18n": "^3.13.0",
     "@wordpress/is-shallow-equal": "^1.8.0",
     "@wordpress/library-export-default-webpack-plugin": "^1.6.0",
-    "@wordpress/scripts": "^3.4.0",
+    "@wordpress/scripts": "^4.1.0",
     "@wordpress/url": "^2.15.0",
     "accessible-autocomplete": "^2.0.2",
     "classnames": "^2.2.6",
