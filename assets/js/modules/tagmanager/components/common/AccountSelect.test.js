@@ -23,29 +23,23 @@ import AccountSelect from './AccountSelect';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import { freezeFetch } from '../../../../../../tests/js/utils';
-
-const setupRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-};
-
-const setupLoadingRegistry = ( registry ) => {
-	freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
-	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-};
-
-const setupEmptyRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-};
+import { freezeFetch, createTestRegistry } from '../../../../../../tests/js/utils';
 
 describe( 'AccountSelect', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		// Set settings to prevent fetch in resolver.
+		registry.dispatch( STORE_NAME ).setSettings( {} );
+		// Set set no existing tag by default.
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	} );
+
 	it( 'should render an option for each analytics account', () => {
-		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+
+		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
@@ -57,14 +51,18 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should have a "Set up a new account" item at the end of the list', async () => {
-		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+
+		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
+		expect( listItems.pop() ).toHaveTextContent( /set up a new account/i );
 	} );
 
 	it( 'should render a loading state when accounts are undefined', async () => {
-		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
+
+		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { registry } );
 
 		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 
@@ -72,15 +70,19 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should render a select box with only the set up option when no accounts exist', async () => {
-		const { getAllByRole } = render( <AccountSelect />, { setupRegistry: setupEmptyRegistry } );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
+
+		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
+		expect( listItems.pop() ).toHaveTextContent( /set up a new account/i );
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
-		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+
+		const { getByText, container } = render( <AccountSelect />, { registry } );
 		const originalAccountID = registry.select( STORE_NAME ).getAccountID();
 
 		// Click the label to expose the elements in the menu.
