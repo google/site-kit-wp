@@ -16,6 +16,33 @@
  * limitations under the License.
  */
 
+import {
+	AccountSelect,
+	AMPContainerSelect,
+	ErrorNotice,
+	ExistingTagNotice,
+	UseSnippetSwitch,
+	WebContainerSelect,
+} from '../common';
+
 export default function SettingsForm() {
-	return 'SettingsForm';
+	return (
+		<div className="googlesitekit-tagmanager-settings-fields">
+			<ErrorNotice />
+
+			<ExistingTagNotice />
+
+			<div className="googlesitekit-setup-module__inputs">
+				<AccountSelect />
+
+				<WebContainerSelect />
+
+				<AMPContainerSelect />
+			</div>
+
+			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+				<UseSnippetSwitch />
+			</div>
+		</div>
+	);
 }
