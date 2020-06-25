@@ -37,7 +37,6 @@ describe( 'WebContainerSelect', () => {
 		// Set site info to prevent error in resolver.
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
-	afterEach( () => fetchMock.mockReset() );
 
 	it( 'should render an option for each web container of the currently selected account.', () => {
 		const account = factories.accountBuilder();

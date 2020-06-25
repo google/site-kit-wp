@@ -35,7 +35,6 @@ describe( 'AccountCreateLegacy', () => {
 		// Set user info.
 		registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'user@example.com' } );
 	} );
-	afterEach( () => fetchMock.mockReset() );
 
 	it( 'displays a progress bar while accounts are being loaded', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );

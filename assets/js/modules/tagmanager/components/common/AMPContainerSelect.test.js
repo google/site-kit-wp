@@ -37,7 +37,6 @@ describe( 'AMPContainerSelect', () => {
 		// Set site info to prevent error in resolver.
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
 	} );
-	afterEach( () => fetchMock.mockReset() );
 
 	it( 'should render an option for each AMP container of the currently selected account.', () => {
 		const account = factories.accountBuilder();

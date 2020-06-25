@@ -23,7 +23,6 @@ import AccountSelect from './AccountSelect';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import fetchMock from 'fetch-mock';
 import { freezeFetch } from '../../../../../../tests/js/utils';
 
 const setupRegistry = ( registry ) => {
@@ -45,8 +44,6 @@ const setupEmptyRegistry = ( registry ) => {
 };
 
 describe( 'AccountSelect', () => {
-	afterEach( () => fetchMock.mockClear() );
-
 	it( 'should render an option for each analytics account', () => {
 		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
 
