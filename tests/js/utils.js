@@ -92,18 +92,19 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 /**
  * Mutes a fetch request to the given URL once.
  *
- * Useful for mocking the given URL for the purpose of preventing a fetch error
+ * Useful for mocking a request for the purpose of preventing a fetch error
  * where the response itself is not significant but the request should not fail.
  * Sometimes a different response may be required to match the expected type,
  * but for anything else, a full mock should be used.
  *
  * @since 1.10.0
  *
- * @param {RegExp} urlMatcher Regular expression for matching the request URL.
- * @param {*}      [response] Optional. Response to return.
+ * @param {(string|RegExp|Function|URL|Object)} matcher   Criteria for deciding which requests to mock.
+ *                                                        (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ * @param {*}                                  [response] Optional. Response to return.
  */
-export const muteFetch = ( urlMatcher, response = {} ) => {
-	fetchMock.once( urlMatcher, { body: response, status: 200 } );
+export const muteFetch = ( matcher, response = {} ) => {
+	fetchMock.once( matcher, { body: response, status: 200 } );
 };
 
 /**
