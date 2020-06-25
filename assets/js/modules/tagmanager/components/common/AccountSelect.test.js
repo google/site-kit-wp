@@ -24,6 +24,7 @@ import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import fetchMock from 'fetch-mock';
+import { freezeFetch } from '../../../../../../tests/js/utils';
 
 const setupRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( {} );
@@ -32,10 +33,7 @@ const setupRegistry = ( registry ) => {
 };
 
 const setupLoadingRegistry = ( registry ) => {
-	fetchMock.getOnce(
-		/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-		new Promise( () => {} ) // Return a promise that never resolves to simulate an endless request.
-	);
+	freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 	registry.dispatch( STORE_NAME ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 };

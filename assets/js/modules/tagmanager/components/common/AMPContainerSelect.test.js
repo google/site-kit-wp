@@ -23,7 +23,7 @@ import AMPContainerSelect from './AMPContainerSelect';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../../googlesitekit/datastore/site/constants';
-import { createTestRegistry } from '../../../../../../tests/js/utils';
+import { createTestRegistry, freezeFetch } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'AMPContainerSelect', () => {
@@ -101,10 +101,7 @@ describe( 'AMPContainerSelect', () => {
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-			new Promise( () => {} ) // Return a promise that never resolves to simulate an endless request.
-		);
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 
 		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -113,10 +110,7 @@ describe( 'AMPContainerSelect', () => {
 	} );
 
 	it( 'should render a loading state while containers are loading', () => {
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-			new Promise( () => {} ) // Return a promise that never resolves to simulate an endless request.
-		);
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 		const account = factories.accountBuilder();
 		const accountID = account.accountId;
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );

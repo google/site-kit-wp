@@ -23,7 +23,7 @@ import AccountCreateLegacy from './AccountCreateLegacy';
 import { fireEvent, render, wait } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { createTestRegistry } from '../../../../../../tests/js/utils';
+import { createTestRegistry, freezeFetch } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'AccountCreateLegacy', () => {
@@ -38,10 +38,7 @@ describe( 'AccountCreateLegacy', () => {
 	afterEach( () => fetchMock.mockReset() );
 
 	it( 'displays a progress bar while accounts are being loaded', () => {
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-			new Promise( () => {} )
-		);
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 
 		const { getByRole, queryByRole } = render( <AccountCreateLegacy />, { registry } );
 

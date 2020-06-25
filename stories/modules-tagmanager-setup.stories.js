@@ -30,7 +30,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { WithTestRegistry, createTestRegistry } from '../tests/js/utils';
+import { WithTestRegistry, createTestRegistry, freezeFetch } from '../tests/js/utils';
 import { fillFilterWithComponent } from '../assets/js/util';
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
 import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
@@ -66,10 +66,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 		return storyFn( registry );
 	} )
 	.add( 'Loading', ( registry ) => {
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-			new Promise( () => {} )
-		);
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 
 		return <Setup registry={ registry } />;
 	} )

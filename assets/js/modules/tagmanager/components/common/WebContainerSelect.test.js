@@ -23,7 +23,7 @@ import WebContainerSelect from './WebContainerSelect';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY, AMP_MODE_PRIMARY } from '../../../../googlesitekit/datastore/site/constants';
-import { createTestRegistry } from '../../../../../../tests/js/utils';
+import { createTestRegistry, freezeFetch } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'WebContainerSelect', () => {
@@ -101,10 +101,8 @@ describe( 'WebContainerSelect', () => {
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-			new Promise( () => {} ) // Return a promise that never resolves to simulate an endless request.
-		);
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
+
 		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { registry } );
 
 		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
@@ -113,10 +111,7 @@ describe( 'WebContainerSelect', () => {
 	} );
 
 	it( 'should render a loading state while containers are loading', () => {
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-			new Promise( () => {} ) // Return a promise that never resolves to simulate an endless request.
-		);
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
 		const account = factories.accountBuilder();
 		const accountID = account.accountId;
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
