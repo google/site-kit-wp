@@ -47,7 +47,7 @@ export default function ContainerSelect( {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const isLoadingContainers = useSelect( ( select ) => select( STORE_NAME ).isDoingGetContainers( accountID ) );
 
-	if ( accounts === undefined || isLoadingContainers ) {
+	if ( accounts === undefined || containers === undefined || isLoadingContainers ) {
 		return <ProgressBar small />;
 	}
 
