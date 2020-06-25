@@ -557,8 +557,11 @@ tag_partner: "site_kit"
 							array( 'status' => 400 )
 						);
 					}
-					$client_id  = $data['clientID'];
-					$account_id = $this->parse_account_id( $client_id );
+					$client_id     = $data['clientID'];
+					$client_access = $this->has_access_to_client( $client_id );
+
+					list ( $account_id, $permission ) = $client_access;
+
 					if ( empty( $account_id ) ) {
 						return new WP_Error(
 							'invalid_param',
@@ -569,7 +572,7 @@ tag_partner: "site_kit"
 					return array(
 						'accountID'  => $account_id,
 						'clientID'   => $client_id,
-						'permission' => $this->has_access_to_client( $client_id ),
+						'permission' => $permission,
 					);
 				};
 			case 'GET:reports-url':
@@ -882,29 +885,41 @@ tag_partner: "site_kit"
 	 * @since 1.9.0
 	 *
 	 * @param string $client_id  Client found in the existing tag.
-	 * @return bool True if the user has access, false otherwise.
+	 * @return array Associative array of accountID and permission.
 	 */
 	protected function has_access_to_client( $client_id ) {
 		$account_id = $this->parse_account_id( $client_id );
 		
 		if ( empty( $client_id ) || empty( $account_id ) ) {
-			return false;
+			return array(
+				'accountID'  => $account_id,
+				'permission' => false,
+			);
 		}
 
 		// Try to get clients for that account.
 		$clients = $this->get_data( 'clients', array( 'accountID' => $account_id ) );
 		if ( is_wp_error( $clients ) ) {
 			// No access to the account.
-			return false;
+			return array(
+				'accountID'  => $account_id,
+				'permission' => false,
+			);
 		}
 
 		// Ensure there is access to the client.
 		foreach ( $clients as $client ) {
 			if ( $client->getId() === $client_id ) {
-				return true;
+				return array(
+					'accountID'  => $account_id,
+					'permission' => true,
+				);
 			}
 		}
-		return false;
+		return array(
+			'accountID'  => $account_id,
+			'permission' => false,
+		);
 	}
 
 	/**
