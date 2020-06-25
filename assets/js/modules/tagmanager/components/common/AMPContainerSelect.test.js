@@ -109,7 +109,7 @@ describe( 'AMPContainerSelect', () => {
 	} );
 
 	it( 'should render a loading state while containers are loading', () => {
-		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
 		const account = factories.accountBuilder();
 		const accountID = account.accountId;
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
