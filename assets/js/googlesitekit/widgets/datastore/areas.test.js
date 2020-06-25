@@ -347,6 +347,29 @@ describe( 'core/widgets Widget areas', () => {
 			} );
 		} );
 
+		describe( 'getWidgetArea', () => {
+			it( 'returns an area if the widget area is registered', () => {
+				registry.dispatch( STORE_NAME ).registerWidgetArea( 'TestArea', {
+					title: 'Test Header',
+					subtitle: 'Cool stuff for yoursite.com',
+					style: 'composite',
+				} );
+
+				expect( registry.select( STORE_NAME ).getWidgetArea( 'TestArea' ) ).toEqual( {
+					icon: undefined,
+					priority: 10,
+					title: 'Test Header',
+					subtitle: 'Cool stuff for yoursite.com',
+					style: 'composite',
+					slug: 'TestArea',
+				} );
+			} );
+
+			it( 'returns null if the widget area is not registered', () => {
+				expect( registry.select( STORE_NAME ).getWidgetArea( 'NotRealArea' ) ).toEqual( null );
+			} );
+		} );
+
 		describe( 'isWidgetAreaRegistered', () => {
 			it( 'returns true if the widget area is registered', () => {
 				registry.dispatch( STORE_NAME ).registerWidgetArea( 'TestArea', {
