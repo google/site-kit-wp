@@ -57,6 +57,7 @@ export default function AMPContainerSelect() {
 
 	return (
 		<ContainerSelect
+			className="googlesitekit-tagmanager__select-container--amp"
 			label={ label }
 			value={ containerID }
 			onEnhancedChange={ onChange }
