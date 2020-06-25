@@ -26,5 +26,7 @@ export const CONTAINER_CREATE = 'container_create';
 export const CONTEXT_WEB = 'web';
 // Usage context for AMP containers.
 export const CONTEXT_AMP = 'amp';
+// Form ID for the module setup form.
+export const FORM_SETUP = 'tagmanagerSetup';
 // OAuth scope needed for creating containers.
 export const EDIT_SCOPE = 'https://www.googleapis.com/auth/tagmanager.edit.containers';
