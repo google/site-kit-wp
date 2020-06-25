@@ -569,7 +569,7 @@ tag_partner: "site_kit"
 					return array(
 						'accountID'  => $account_id,
 						'clientID'   => $client_id,
-						'permission' => $this->has_access_to_client( $client_id, $account_id ),
+						'permission' => $this->has_access_to_client( $client_id ),
 					);
 				};
 			case 'GET:reports-url':
@@ -882,10 +882,11 @@ tag_partner: "site_kit"
 	 * @since 1.9.0
 	 *
 	 * @param string $client_id  Client found in the existing tag.
-	 * @param string $account_id Account ID the client belongs to.
 	 * @return bool True if the user has access, false otherwise.
 	 */
-	protected function has_access_to_client( $client_id, $account_id ) {
+	protected function has_access_to_client( $client_id ) {
+		$account_id = $this->parse_account_id( $client_id );
+		
 		if ( empty( $client_id ) || empty( $account_id ) ) {
 			return false;
 		}
