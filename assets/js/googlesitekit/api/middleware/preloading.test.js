@@ -47,9 +47,10 @@ describe( 'Preloading Middleware', () => {
 			method: 'GET',
 			path: requestURI,
 		};
-
-		const firstRequest = await preloadingMiddleware( requestOptions, jest.fn() );
+		const next = jest.fn();
+		const firstRequest = await preloadingMiddleware( requestOptions, next );
 		expect( firstRequest ).toEqual( body );
+		expect( next ).not.toHaveBeenCalled();
 	} );
 
 	it( 'does nothing and calls next middleware when no preloaded response exists for the request', async () => {
@@ -87,7 +88,47 @@ describe( 'Preloading Middleware', () => {
 			method: 'GET',
 			path: addQueryArgs( requestURI, { timestamp: Date.now() } ),
 		};
-		const firstRequest = await preloadingMiddleware( requestOptions, jest.fn() );
-		expect( firstRequest ).toBeUndefined();
+		const next = jest.fn();
+
+		const request = await preloadingMiddleware( requestOptions, next );
+		expect( request ).toBeUndefined();
+		expect( next ).toHaveBeenCalled();
+	} );
+
+	describe( 'apiFetch integration', () => {
+		let apiFetch;
+		beforeEach( async () => {
+			apiFetch = require( '@wordpress/api-fetch' ).default;
+			apiFetch.use( createPreloadingMiddleware( preloadedData ) );
+		} );
+
+		afterEach( async () => {
+			// Invalidate the require cache for `api-fetch` so that it uses a fresh instance.
+			delete require.cache[ require.resolve( '@wordpress/api-fetch' ) ];
+		} );
+
+		it( 'returns a preloaded response when present.', async () => {
+			// This mock is set up but the expectation is that it should never be run.
+			fetchMock.any( '*', 200 );
+			const response = await apiFetch( {
+				method: 'GET',
+				path: requestURI,
+			} );
+			expect( response ).toEqual( body );
+			expect( fetchMock ).not.toHaveFetched();
+		} );
+
+		it( 'returns uncached response timestamp query parmeter is present.', async () => {
+			fetchMock.get(
+				/^\/google-site-kit\/v1\/core\/user\/authentication/,
+				{ body: { status: 'non-cached ressponse' }, status: 200 }
+			);
+			const response = await apiFetch( {
+				method: 'GET',
+				path: addQueryArgs( requestURI, { timestamp: Date.now() } ),
+			} );
+			expect( response ).toEqual( { status: 'non-cached ressponse' } );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+		} );
 	} );
 } );

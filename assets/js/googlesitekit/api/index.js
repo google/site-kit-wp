@@ -118,7 +118,8 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 			return value;
 		}
 	}
-	// Add timestamp to the request to act as a cache-buster to ensure a cached response is not returned from either our middleware or the server.
+	// Add timestamp to the request to act as a cache-buster to ensure a cached
+	// response is not returned from either our middleware or the server.
 	if ( false === useCacheForRequest && method === 'GET' ) {
 		queryParams = { ...queryParams, timestamp: Date.now() };
 	}
