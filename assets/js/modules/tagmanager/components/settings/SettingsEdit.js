@@ -96,7 +96,7 @@ export default function SettingsEdit() {
 	// when the component initially loads and has yet to start fetching accounts.
 	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts ) {
 		viewComponent = <ProgressBar />;
-	} else if ( hasExistingTag && existingTagPermission === false ) {
+	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreateLegacy />;
