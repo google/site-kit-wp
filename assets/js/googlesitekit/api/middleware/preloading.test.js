@@ -121,13 +121,13 @@ describe( 'Preloading Middleware', () => {
 		it( 'returns uncached response timestamp query parmeter is present.', async () => {
 			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/user\/authentication/,
-				{ body: { status: 'non-cached ressponse' }, status: 200 }
+				{ body: { status: 'non-cached response' }, status: 200 }
 			);
 			const response = await apiFetch( {
 				method: 'GET',
 				path: addQueryArgs( requestURI, { timestamp: Date.now() } ),
 			} );
-			expect( response ).toEqual( { status: 'non-cached ressponse' } );
+			expect( response ).toEqual( { status: 'non-cached response' } );
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
