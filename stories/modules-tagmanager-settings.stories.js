@@ -82,4 +82,23 @@ storiesOf( 'Tag Manager Module/Settings', module )
 
 		return <Settings isOpen={ true } registry={ registry } />;
 	} )
+	.add( 'Edit, Loading', ( registry ) => {
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
+
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	} )
+	.add( 'Edit, with all settings', ( registry ) => {
+		const accountID = fixtures.accounts[ 0 ].accountId;
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		const [ container ] = registry.select( STORE_NAME ).getWebContainers( accountID );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			accountID,
+			containerID: container.publicId,
+			internalContainerID: container.containerId,
+			useSnippet: true,
+		} );
+
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	} )
 ;
