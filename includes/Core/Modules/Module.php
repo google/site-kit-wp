@@ -338,7 +338,7 @@ abstract class Module {
 			} catch ( Exception $e ) {
 				// Set every result of this batch to the exception.
 				foreach ( $results as $key => $datapoint ) {
-					if ( ! is_string( $datapoint ) || ! isset( $datapoint_services[ $datapoint_name ] ) || $service_identifier !== $datapoint_services[ $datapoint ]['service'] ) {
+					if ( ! is_string( $datapoint ) || ! isset( $datapoint_services[ $datapoint_name ] ) || $service_identifier !== $datapoint_services[ $datapoint_name ]['service'] ) {
 						continue;
 					}
 
