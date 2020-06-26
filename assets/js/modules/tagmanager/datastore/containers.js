@@ -103,6 +103,25 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	*selectContainer( accountID, containerID ) {
+		invariant( isValidAccountID( accountID ), 'A valid accountID is required to select a container.' );
+		invariant( isValidUsageContext( containerID ), 'A valid containerID is required to select a container.' );
+
+		const { select, dispatch } = yield Data.commonActions.getRegistry();
+		const container = select( STORE_NAME ).getContainerByID( accountID, containerID );
+		if ( ! container ) {
+			// Do nothing if the container was not found or has not been loaded yet.
+			return;
+		}
+		if ( container.usageContext.includes( CONTEXT_WEB ) ) {
+			dispatch( STORE_NAME ).setContainerID( containerID );
+			dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
+		} else if ( container.usageContext.includes( CONTEXT_AMP ) ) {
+			dispatch( STORE_NAME ).setAMPContainerID( containerID );
+			dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
+		}
+	},
 };
 
 const baseResolvers = {
@@ -120,6 +139,27 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
+	/**
+	 * Gets a container by its ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state       Data store's state.
+	 * @param {string} accountID   Account ID to find container in.
+	 * @param {string} containerID Container (publicId) of container to get.
+	 * @return {(Object|null|undefined)} Container object if found, `null` if not found, or `undefined` if not loaded yet.
+	 */
+	getContainerByID: createRegistrySelector( ( select ) => ( state, accountID, containerID ) => {
+		// Select all containers of the account to find the container, regardless of usageContext.
+		const containers = select( STORE_NAME ).getContainers();
+
+		if ( containers === undefined ) {
+			return undefined;
+		}
+
+		return containers.find( ( { publicId } ) => containerID === publicId ) || null;
+	} ),
+
 	/**
 	 * Gets all web containers for the given account.
 	 *
