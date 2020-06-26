@@ -21,10 +21,12 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	muteConsole,
 	muteFetch,
+	subscribeUntil,
 	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -58,18 +60,23 @@ describe( 'modules/tagmanager existing-tag', () => {
 		describe( 'getExistingTag', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const expectedTag = 'GTM-S1T3K1T';
-				fetchMock.getOnce(
-					{ query: { tagverify: '1' } },
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
+
+				fetchMock.get(
+					'http://example.com/',
 					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
 				);
 
 				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
 
 				expect( initialExistingTag ).toEqual( undefined );
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
+				);
 
 				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
+
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( existingTag ).toEqual( expectedTag );
 			} );
@@ -98,13 +105,14 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 			it( 'receives null for the tag if the request fails', async () => {
 				// This is a limitation of the current underlying `getExistingTag` function.
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
 				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.getOnce(
-					{ query: { tagverify: '1' } },
+				fetchMock.get(
+					'http://example.com/',
 					{ body: errorResponse, status: 500 }
 				);
 

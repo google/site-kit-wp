@@ -46,7 +46,7 @@ const fetchHTMLForURLStore = createFetchStore( {
 			timestamp: Date.now(),
 		};
 		const html = await fetch( url, fetchHTMLArgs )
-			.then( ( res ) => {
+			.then( async ( res ) => {
 				if ( ! res.ok ) {
 					throw {
 						code: res.statusText,
@@ -54,6 +54,7 @@ const fetchHTMLForURLStore = createFetchStore( {
 						data: { status: res.status },
 					};
 				}
+
 				return res.text();
 			} ).catch( ( error ) => {
 				throw error;

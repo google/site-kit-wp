@@ -27,7 +27,9 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { getExistingTag } from '../../../util/tag';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { getExistingTagURLs, extractExistingTag } from '../../../util/tag';
+import { tagMatchers } from '../util';
 import { isValidContainerID, isValidContainerSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
@@ -35,7 +37,19 @@ const { createRegistrySelector } = Data;
 
 const fetchGetExistingTagStore = createFetchStore( {
 	baseName: 'getExistingTag',
-	controlCallback: () => getExistingTag( 'tagmanager' ),
+	controlCallback: async () => {
+		const existingTagURLs = await getExistingTagURLs( Data.select( CORE_SITE ) );
+		let tagFound = null;
+
+		for ( const url of existingTagURLs ) {
+			const html = await Data.select( CORE_SITE ).getHTMLForURL( url );
+			tagFound = extractExistingTag( html, tagMatchers );
+			if ( tagFound ) {
+				return tagFound;
+			}
+		}
+		return Promise.resolve( tagFound || null );
+	},
 	reducerCallback: ( state, existingTag ) => {
 		return {
 			...state,
