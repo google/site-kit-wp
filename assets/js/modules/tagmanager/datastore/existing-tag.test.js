@@ -26,7 +26,6 @@ import {
 	createTestRegistry,
 	muteConsole,
 	muteFetch,
-	subscribeUntil,
 	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -34,6 +33,7 @@ import * as factories from './__factories__';
 
 describe( 'modules/tagmanager existing-tag', () => {
 	let registry;
+	const homeURL = 'http://example.com/';
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -41,6 +41,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 	} );
 
 	afterEach( () => {
@@ -60,19 +61,15 @@ describe( 'modules/tagmanager existing-tag', () => {
 		describe( 'getExistingTag', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const expectedTag = 'GTM-S1T3K1T';
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
 
 				fetchMock.get(
-					'http://example.com/',
+					{ query: { tagverify: '1' } },
 					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
 				);
 
 				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
-
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 				expect( initialExistingTag ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
-				);
 
 				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
@@ -105,14 +102,13 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 			it( 'receives null for the tag if the request fails', async () => {
 				// This is a limitation of the current underlying `getExistingTag` function.
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
 				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 				fetchMock.get(
-					'http://example.com/',
+					{ query: { tagverify: '1' } },
 					{ body: errorResponse, status: 500 }
 				);
 

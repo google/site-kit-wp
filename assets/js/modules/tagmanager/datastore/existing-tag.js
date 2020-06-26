@@ -40,7 +40,6 @@ const fetchGetExistingTagStore = createFetchStore( {
 	controlCallback: async () => {
 		const existingTagURLs = await getExistingTagURLs( Data.select( CORE_SITE ) );
 		let tagFound = null;
-
 		for ( const url of existingTagURLs ) {
 			const html = await Data.select( CORE_SITE ).getHTMLForURL( url );
 			tagFound = extractExistingTag( html, tagMatchers );
@@ -48,7 +47,7 @@ const fetchGetExistingTagStore = createFetchStore( {
 				return tagFound;
 			}
 		}
-		return Promise.resolve( tagFound || null );
+		return	tagFound || null;
 	},
 	reducerCallback: ( state, existingTag ) => {
 		return {

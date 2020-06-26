@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -38,6 +39,7 @@ describe( 'modules/adsense tags', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
 	} );
 
 	afterAll( () => {

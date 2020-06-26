@@ -107,6 +107,7 @@ export const extractTag = ( string, module ) => {
 /**
  * Extracts a tag matched by a given matcher from the given HTML string.
  *
+ * @since n.e.x.t
  * @param {string} html The string of html from which to extract the tag.
  * @param {Array} tagMatchers An array of the matchers to use.
  *
@@ -125,6 +126,7 @@ export const extractExistingTag = ( html, tagMatchers = [] ) => {
 /**
  * Gets the existing tag URLs.
  *
+ * @since n.e.x.t
  * @param {Object} coreSiteStore The core/site data store.
  *
  * @return {Array} An array of the existing tag URLs.

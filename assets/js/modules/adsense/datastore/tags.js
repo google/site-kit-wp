@@ -26,22 +26,27 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { getExistingTag } from '../../../util/tag';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { getExistingTagURLs, extractExistingTag } from '../../../util/tag';
+import { tagMatchers } from '../util';
 
 const { commonActions, createRegistrySelector } = Data;
 
 const fetchGetExistingTagStore = createFetchStore( {
 	baseName: 'getExistingTag',
-	controlCallback: () => {
-		// TODO: Replace this with data from `core/site` selectors and
-		// an implementation contained inside the store
-		// once https://github.com/google/site-kit-wp/issues/1000 is
-		// implemented.
-		// TODO: Test this in the future. The underlying implementation is
-		// currently quite nested and difficult to straightforwardly test.
-		return getExistingTag( 'adsense' );
+	controlCallback: async () => {
+		const existingTagURLs = await getExistingTagURLs( Data.select( CORE_SITE ) );
+		let tagFound = null;
+		for ( const url of existingTagURLs ) {
+			const html = await Data.select( CORE_SITE ).getHTMLForURL( url );
+			tagFound = extractExistingTag( html, tagMatchers );
+			if ( tagFound ) {
+				return tagFound;
+			}
+		}
+		return	tagFound || null;
 	},
 	reducerCallback: ( state, existingTag ) => {
 		return {

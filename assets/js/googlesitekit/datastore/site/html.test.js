@@ -113,14 +113,13 @@ describe( 'core/site html', () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
 
-				fetchMock.getOnce(
+				fetchMock.get(
 					url,
 					{ body: html, status: 200 }
 				);
 
-				const initialHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
-				// The connection info will be its initial value while the connection
-				// info is fetched.
+				const initialHTML = registry.select( STORE_NAME ).getHTMLForURL( url, 'html.test.js' );
+				// The initialHTML info will be its initial value while the HTML is fetched.
 				expect( initialHTML ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
@@ -128,7 +127,7 @@ describe( 'core/site html', () => {
 					),
 				);
 
-				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
+				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url, 'html.test.js' );
 
 				expect( fetchMock ).toHaveFetched( url );
 				expect( selectedHTML ).toEqual( html );

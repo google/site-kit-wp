@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * WordPress dependencies
  */
-import { isURL } from '@wordpress/url';
+import { isURL, addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -39,26 +39,24 @@ const RESET_HTML_FOR_URL = 'RESET_HTML_FOR_URL';
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',
 	controlCallback: async ( { url } ) => {
-		const fetchHTMLArgs = {
+		const fetchHTMLOptions = {
 			credentials: 'omit',
-			useCache: false,
+		};
+		const fetchHTMLQueryArgs = {
+			// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
 			tagverify: 1,
+			// Add a timestamp for cache-busting.
 			timestamp: Date.now(),
 		};
-		const html = await fetch( url, fetchHTMLArgs )
-			.then( async ( res ) => {
-				if ( ! res.ok ) {
-					throw {
-						code: res.statusText,
-						message: res.statusText,
-						data: { status: res.status },
-					};
-				}
-
-				return res.text();
-			} ).catch( ( error ) => {
-				throw error;
-			} );
+		const response = await fetch( addQueryArgs( url, fetchHTMLQueryArgs ), fetchHTMLOptions );
+		if ( ! response.ok ) {
+			throw {
+				code: response.statusText,
+				message: response.statusText,
+				data: { status: response.status },
+			};
+		}
+		const html = await response.text();
 
 		return html;
 	},
@@ -139,7 +137,6 @@ export const baseSelectors = {
 	 *
 	 * @private
 	 * @since n.e.x.t
-	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} url URL for which to fetch HTML.
 	 * @return {(Object|undefined)} String representation of HTML for given URL.

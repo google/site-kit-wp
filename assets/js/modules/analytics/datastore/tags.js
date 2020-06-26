@@ -26,23 +26,27 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { getExistingTag } from '../../../util/tag';
 import { STORE_NAME } from './constants';
-import { isValidPropertyID } from '../util';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { isValidPropertyID, tagMatchers } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { getExistingTagURLs, extractExistingTag } from '../../../util/tag';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
 const fetchGetExistingTagStore = createFetchStore( {
 	baseName: 'getExistingTag',
-	controlCallback: () => {
-		// TODO: Replace this with data from `core/site` selectors and
-		// an implementation contained inside the store
-		// once https://github.com/google/site-kit-wp/issues/1000 is
-		// implemented.
-		// TODO: Test this in the future. The underlying implementation is
-		// currently quite nested and difficult to straightforwardly test.
-		return getExistingTag( 'analytics' );
+	controlCallback: async () => {
+		const existingTagURLs = await getExistingTagURLs( Data.select( CORE_SITE ) );
+		let tagFound = null;
+		for ( const url of existingTagURLs ) {
+			const html = await Data.select( CORE_SITE ).getHTMLForURL( url );
+			tagFound = extractExistingTag( html, tagMatchers );
+			if ( tagFound ) {
+				return tagFound;
+			}
+		}
+		return	tagFound || null;
 	},
 	reducerCallback: ( state, existingTag ) => {
 		return {
@@ -151,24 +155,20 @@ const baseSelectors = {
 		return existingTag !== undefined ? !! existingTag : undefined;
 	} ),
 
-	// /**
-	//  * Get an existing tag on the site, if present.
-	//  *
-	//  * @since 1.8.0
-	//  *
-	//  * @param {Object} state Data store's state.
-	//  * @return {(string|undefined)} Existing tag, or `null` if none.
-	//  *                   Returns `undefined` if not resolved yet.
-	//  */
-	// getExistingTag( state ) {
-	// 	// Use Data.select('core/site').getHTMLforURL( url ) to get HTML
+	/**
+	 * Get an existing tag on the site, if present.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} Existing tag, or `null` if none.
+	 *                   Returns `undefined` if not resolved yet.
+	 */
+	getExistingTag( state ) {
+		const { existingTag } = state;
 
-	// 	// Use getExistingTagURLs() and tagMatchers (from this modules utils)
-
-	// 	// Internally, use something like extractExistingTag( html, tagMatchers ) to check for existing tags and return them if found.
-
-	// 	// The getExistingTag() selector should continue to add the query params {tagverify: 1, timestamp: Date.now()} to the URLs it uses, as in the existing approach
-	// },
+		return existingTag;
+	},
 
 	/**
 	 * Checks whether the user has access to the existing Analytics tag.
