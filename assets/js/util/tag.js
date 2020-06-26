@@ -121,3 +121,30 @@ export const extractExistingTag = ( html, tagMatchers = [] ) => {
 
 	return false;
 };
+
+/**
+ * Gets the existing tag URLs.
+ *
+ * @param {Object} coreSiteStore The core/site data store.
+ *
+ * @return {Array} An array of the existing tag URLs.
+ */
+export const getExistingTagURLs = async ( coreSiteStore ) => {
+	// Initialize urls with home URL
+	const urls = [ coreSiteStore.getHomeURL() ];
+
+	// Add first post in AMP mode if AMP mode is secondary.
+	if ( 'secondary' === coreSiteStore.getAMPMode() ) {
+		const ampPostURL = await apiFetch( { path: '/wp/v2/posts?per_page=1' } )
+			.then(
+				( posts ) => posts.slice( 0, 1 ).map(
+					( post ) => addQueryArgs( post.link, { amp: 1 } )
+				).pop()
+			);
+		if ( ampPostURL ) {
+			urls.push( ampPostURL );
+		}
+	}
+
+	return urls;
+};
