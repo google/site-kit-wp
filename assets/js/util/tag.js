@@ -103,3 +103,21 @@ export const extractTag = ( string, module ) => {
 
 	return false;
 };
+
+/**
+ * Extracts a tag matched by a given matcher from the given HTML string.
+ *
+ * @param {string} html The string of html from which to extract the tag.
+ * @param {Array} tagMatchers An array of the matchers to use.
+ *
+ * @return {(string|boolean)} The tag id if found, otherwise false.
+ */
+export const extractExistingTag = ( html, tagMatchers = [] ) => {
+	const matchingPattern = tagMatchers.find( ( pattern ) => pattern.test( html ) );
+
+	if ( matchingPattern ) {
+		return matchingPattern.exec( html )[ 1 ];
+	}
+
+	return false;
+};
