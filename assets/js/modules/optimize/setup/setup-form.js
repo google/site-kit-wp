@@ -64,15 +64,15 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-optimize-setup__form"
 			onSubmit={ submitForm }
 		>
-			<FormInstructions />
-
 			<ErrorNotice />
+
+			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<OptimizeIDField />
 			</div>
 
-			{ ! isValidOptimizeID( optimizeID ) && optimizeID &&
+			{ ( ! isValidOptimizeID( optimizeID ) && optimizeID ) &&
 				<p className="googlesitekit-error-text">
 					<ErrorText message={ message } />
 				</p>
