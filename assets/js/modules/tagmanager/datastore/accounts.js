@@ -26,7 +26,8 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, ACCOUNT_CREATE } from './constants';
+import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE } from './constants';
+import { actions as containerActions } from './containers';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector } = Data;
@@ -64,15 +65,34 @@ export const baseActions = {
 	*selectAccount( accountID ) {
 		invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
 
-		const registry = yield Data.commonActions.getRegistry();
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		const { select, dispatch } = yield Data.commonActions.getRegistry();
 
-		if ( ACCOUNT_CREATE === accountID ) {
-			// eslint-disable-next-line no-useless-return
+		// Do nothing if the accountID to select is the same as the current.
+		if ( accountID === select( STORE_NAME ).getAccountID() ) {
 			return;
 		}
 
+		dispatch( STORE_NAME ).setAccountID( accountID );
+		dispatch( STORE_NAME ).setContainerID( '' );
+		dispatch( STORE_NAME ).setInternalContainerID( '' );
+		dispatch( STORE_NAME ).setAMPContainerID( '' );
+		dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+
+		if ( ACCOUNT_CREATE === accountID ) {
+			return;
+		}
+
+		yield containerActions.waitForContainers( accountID );
 		// Trigger cascading selections.
+		const webContainers = select( STORE_NAME ).getWebContainers( accountID );
+		const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE };
+		dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
+		dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
+
+		const ampContainers = select( STORE_NAME ).getAMPContainers( accountID );
+		const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE };
+		dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
+		dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
 	},
 };
 
@@ -101,12 +121,16 @@ export const baseReducer = ( state, { type } ) => {
 
 export const baseResolvers = {
 	*getAccounts() {
-		const registry = yield Data.commonActions.getRegistry();
-		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
+		const { select, dispatch } = yield Data.commonActions.getRegistry();
+		let accounts = select( STORE_NAME ).getAccounts();
 
-		// Only fetch accounts if there are none in the store.
-		if ( ! existingAccounts ) {
-			yield fetchGetAccountsStore.actions.fetchGetAccounts();
+		// Only fetch accounts if they have not been received yet.
+		if ( ! accounts ) {
+			( { response: accounts } = yield fetchGetAccountsStore.actions.fetchGetAccounts() );
+		}
+
+		if ( accounts?.length && ! select( STORE_NAME ).getAccountID() ) {
+			dispatch( STORE_NAME ).selectAccount( accounts[ 0 ].accountId );
 		}
 	},
 };
