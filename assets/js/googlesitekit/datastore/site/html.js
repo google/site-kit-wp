@@ -42,6 +42,7 @@ const fetchHTMLForURLStore = createFetchStore( {
 		const fetchHTMLArgs = {
 			credentials: 'omit',
 			useCache: false,
+			tagverify: 1,
 			timestamp: Date.now(),
 		};
 		const html = await fetch( url, fetchHTMLArgs )
