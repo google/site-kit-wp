@@ -26,7 +26,12 @@ export default function FormInstructions() {
 	return (
 		<p>
 			{ __( 'Please copy and paste your Optimize ID to complete your setup.', 'google-site-kit' ) }
-			<Link href="https://support.google.com/optimize/answer/6211921" external inherit>
+			{ ' ' }
+			<Link
+				href="https://support.google.com/optimize/answer/6211921"
+				external
+				inherit
+			>
 				{ __( 'You can locate this here.', 'google-site-kit' ) }
 			</Link>
 		</p>

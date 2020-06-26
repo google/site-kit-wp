@@ -43,7 +43,7 @@ export default function OptimizeIDField() {
 	const { setOptimizeID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( event ) => {
 		setOptimizeID( event.target.value );
-	}, [ optimizeID ] );
+	}, [] );
 
 	return (
 		<Fragment>
@@ -55,7 +55,11 @@ export default function OptimizeIDField() {
 				label={ __( 'Optimize Container ID', 'google-site-kit' ) }
 				name="optimizeID"
 				onChange={ onChange }
-				helperText={ <HelperText>{ __( 'Format: GTM-XXXXXXX or OPT-XXXXXXX', 'google-site-kit' ) }</HelperText> }
+				helperText={
+					<HelperText>
+						{ __( 'Format: GTM-XXXXXXX or OPT-XXXXXXX', 'google-site-kit' ) }
+					</HelperText>
+				}
 				outlined
 				required
 			>

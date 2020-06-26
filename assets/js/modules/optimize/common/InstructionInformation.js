@@ -49,10 +49,12 @@ export default function InstructionInformation() {
 	if ( ! analyticsUseSnippet && gtmActive && gtmUseSnippet ) {
 		return (
 			<Fragment>
-				<p>{ __( 'You are using auto insert snippet with Tag Manager', 'google-site-kit' ) }</p>
+				<p>
+					{ __( 'You are using auto insert snippet with Tag Manager', 'google-site-kit' ) }
+				</p>
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
-						__( '<a href="https://support.google.com/optimize/answer/6314801">Click here for how to implement Optimize tag through your Tag Manager</a>', 'google-site-kit' ),
+						__( '<a href="https://support.google.com/optimize/answer/6314801">Click here</a> for how to implement Optimize tag through your Tag Manager', 'google-site-kit' ),
 						{
 							ALLOWED_TAGS: [ 'a' ],
 							ALLOWED_ATTR: [ 'href' ],
@@ -66,14 +68,16 @@ export default function InstructionInformation() {
 	if ( ! analyticsUseSnippet ) {
 		return (
 			<Fragment>
-				<p>{ __( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }</p>
+				<p>
+					{ __( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }
+				</p>
 				<pre>
 					{ /* eslint-disable-next-line react/no-unescaped-entities */ }
 					ga( 'require', `{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }` );
 				</pre>
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
-						__( '<a href="https://support.google.com/optimize/answer/6262084">Click here for how to implement Optimize tag in Google Analytics Code Snippet</a>', 'google-site-kit' ),
+						__( '<a href="https://support.google.com/optimize/answer/6262084">Click here</a> for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ),
 						{
 							ALLOWED_TAGS: [ 'a' ],
 							ALLOWED_ATTR: [ 'href' ],
