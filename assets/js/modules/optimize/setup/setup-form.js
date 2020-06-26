@@ -57,7 +57,7 @@ export default function SetupForm( { finishSetup } ) {
 		}
 	}, [ canSubmitChanges, finishSetup ] );
 
-	const message = __( 'Configure Optimize', 'google-site-kit' );
+	const message = __( 'Error: Not a valid Optimize ID.', 'google-site-kit' );
 
 	return (
 		<form
@@ -74,7 +74,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			{ ! isValidOptimizeID( optimizeID ) && optimizeID &&
 				<p className="googlesitekit-error-text">
-					{ __( 'Error: Not a valid Optimize ID.', 'google-site-kit' ) }
+					<ErrorText message={ message } />
 				</p>
 			}
 
@@ -84,7 +84,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
-					<ErrorText message={ message } />
+					{ __( 'Configure Optimize', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</form>
