@@ -24,13 +24,13 @@ import apiFetchMock from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import InstructionInformation from './instruction-information';
+import InstructionInformation from './InstructionInformation';
 import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_MODULE } from '../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as MODULE_ANALYTICS } from '../../analytics/datastore/constants';
-import { STORE_NAME as MODULE_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import * as fixtures from '../datastore//__fixtures__';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import * as fixtures from '../datastore/__fixtures__';
 
 // Mock apiFetch so we know if it's called.
 jest.mock( '@wordpress/api-fetch' );
@@ -51,13 +51,13 @@ const noAmpModeModeRegistry = ( registry ) => {
 const falseUseSnippetRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
 	registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsActivate );
-	registry.dispatch( MODULE_ANALYTICS ).setUseSnippet( true );
+	registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 };
 
 const invalidAmpExperimentJSONRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
 	registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsGtmActivate );
-	registry.dispatch( MODULE_TAGMANAGER ).setUseSnippet( true );
+	registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
 };
 
 describe( 'InstructionInformation', () => {

@@ -19,34 +19,34 @@
 /**
  * Internal dependencies
  */
-import AMPExperimentJSONField from './amp-experiment-json-field';
+import AMPExperimentJSONField from './AMPExperimentJSONField';
 import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULE_ANALYTICS } from '../../analytics/datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 
 const allParamsRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 'amp-experiment-test' );
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
-	registry.dispatch( MODULE_ANALYTICS ).setUseSnippet( true );
+	registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 };
 
 const noAmpModeModeRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 'amp-experiment-test' );
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: '' } );
-	registry.dispatch( MODULE_ANALYTICS ).setUseSnippet( true );
+	registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 };
 
 const falseUseSnippetRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 'amp-experiment-test' );
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
-	registry.dispatch( MODULE_ANALYTICS ).setUseSnippet( false );
+	registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
 };
 
 const invalidAmpExperimentJSONRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 10 );
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
-	registry.dispatch( MODULE_ANALYTICS ).setUseSnippet( true );
+	registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 };
 
 describe( 'AMPExperimentJSONField', () => {

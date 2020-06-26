@@ -33,16 +33,17 @@ import {
 import classnames from 'classnames';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULE_ANALYTICS } from '../../analytics/datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { isValidAMPExperimentJSON } from '../util';
 import Link from '../../../components/link';
+import ErrorText from '../../../components/error-text';
 
 const { useSelect, useDispatch } = Data;
 
 export default function AMPExperimentJSONField() {
 	const ampExperimentJSON = useSelect( ( select ) => select( STORE_NAME ).getAMPExperimentJSON() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-	const useSnippet = useSelect( ( select ) => select( MODULE_ANALYTICS ).getUseSnippet() );
+	const useSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );
 
 	const { setAMPExperimentJSON } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( event ) => {
@@ -53,9 +54,21 @@ export default function AMPExperimentJSONField() {
 		return null;
 	}
 
+	const message = __( 'Error: AMP experiment settings are not in a valid JSON format.', 'google-site-kit' );
+
 	return (
 		<Fragment>
-			<p>{ __( 'Please input your AMP experiment settings in JSON format below.', 'google-site-kit' ) } <Link href="https://developers.google.com/optimize/devguides/amp-experiments" external inherit>{ __( 'Learn More.', 'google-site-kit' ) }</Link></p>
+			<p>
+				{ __( 'Please input your AMP experiment settings in JSON format below.', 'google-site-kit' ) }
+				{ ' ' }
+				<Link
+					href="https://developers.google.com/optimize/devguides/amp-experiments"
+					external
+					inherit
+				>
+					{ __( 'Learn More.', 'google-site-kit' ) }
+				</Link>
+			</p>
 			<TextField
 				className={ classnames(
 					'mdc-text-field',
@@ -67,12 +80,12 @@ export default function AMPExperimentJSONField() {
 			>
 				<Input
 					inputType="textarea"
-					value={ null === ampExperimentJSON ? '' : ampExperimentJSON }
+					value={ ampExperimentJSON }
 				/>
 			</TextField>
 			{ ! isValidAMPExperimentJSON( ampExperimentJSON ) &&
 				<p className="googlesitekit-error-text">
-					{ __( 'Error: AMP experiment settings are not in a valid JSON format.', 'google-site-kit' ) }
+					<ErrorText message={ message } />
 				</p>
 			}
 		</Fragment>

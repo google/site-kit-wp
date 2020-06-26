@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import OptimizeIDField from './optimize-id-field';
+import OptimizeIDField from './OptimizeIDField';
 import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../datastore/constants';
 
