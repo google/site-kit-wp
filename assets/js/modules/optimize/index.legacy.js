@@ -27,14 +27,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { getModulesData } from '../../util';
 
-const slug = 'optimize';
 const modulesData = getModulesData();
 if ( modulesData.optimize.active ) {
 	/**
 	 * Add data to the congrats setup Win Notification for display.
 	 */
 	addFilter(
-		`googlesitekit.SetupWinNotification-${ slug }`,
+		'googlesitekit.SetupWinNotification-optimize',
 		'googlesitekit.OptimizeSetupWinNotification', ( winData ) => {
 			winData.description = __( 'To set up experiments and see the results, go to ', 'google-site-kit' );
 			winData.learnMore.label = 'Optimize';

@@ -27,30 +27,22 @@ import { addFilter } from '@wordpress/hooks';
 import './datastore';
 import { SetupMain as OptimizeSetup } from './setup';
 import { SettingsMain as OptimizeSettings } from './settings';
-import { fillFilterWithComponent, getModulesData } from '../../util';
+import { fillFilterWithComponent } from '../../util';
 
-const slug = 'optimize';
-const modulesData = getModulesData();
-if ( modulesData.optimize.active ) {
-	/**
-	 * Add components to the settings page.
-	 */
-	addFilter(
-		`googlesitekit.ModuleSettingsDetails-${ slug }`,
-		'googlesitekit.OptimizeModuleSettingsDetails',
-		fillFilterWithComponent( OptimizeSettings, {
-			onSettingsPage: true,
-		} )
-	);
+/**
+ * Add components to the settings page.
+ */
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-optimize',
+	'googlesitekit.OptimizeModuleSettingsDetails',
+	fillFilterWithComponent( OptimizeSettings )
+);
 
-	/**
-	 * Add component to the setup wizard
-	 */
-	addFilter(
-		`googlesitekit.ModuleSetup-${ slug }`,
-		'googlesitekit.OptimizeModuleSetupWizard',
-		fillFilterWithComponent( OptimizeSetup, {
-			onSettingsPage: false,
-		} )
-	);
-}
+/**
+ * Add component to the setup wizard
+ */
+addFilter(
+	'googlesitekit.ModuleSetup-optimize',
+	'googlesitekit.OptimizeModuleSetupWizard',
+	fillFilterWithComponent( OptimizeSetup )
+);
