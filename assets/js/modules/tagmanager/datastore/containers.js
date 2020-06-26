@@ -29,7 +29,10 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import { isValidAccountID, isValidUsageContext } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-const { createRegistrySelector } = Data;
+const { createRegistrySelector, createRegistryControl } = Data;
+
+// Actions
+const WAIT_FOR_CONTAINERS = 'WAIT_FOR_CONTAINERS';
 
 const fetchGetContainersStore = createFetchStore( {
 	baseName: 'getContainers',
@@ -122,6 +125,35 @@ const baseActions = {
 			dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 		}
 	},
+
+	*waitForContainers( accountID ) {
+		invariant( isValidAccountID( accountID ), 'A valid accountID is required to wait for containers.' );
+		return {
+			payload: { accountID },
+			type: WAIT_FOR_CONTAINERS,
+		};
+	},
+};
+
+const baseControls = {
+	[ WAIT_FOR_CONTAINERS ]: createRegistryControl( ( registry ) => ( { payload: { accountID } } ) => {
+		// Select first to ensure resolution is always triggered.
+		registry.select( STORE_NAME ).getContainers( accountID );
+		const areContainersLoaded = () => registry.select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] );
+
+		if ( areContainersLoaded() ) {
+			return;
+		}
+
+		return new Promise( ( resolve ) => {
+			const unsubscribe = registry.subscribe( () => {
+				if ( areContainersLoaded() ) {
+					unsubscribe();
+					resolve();
+				}
+			} );
+		} );
+	} ),
 };
 
 const baseResolvers = {
@@ -247,6 +279,7 @@ const store = Data.combineStores(
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
 		actions: baseActions,
+		controls: baseControls,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
