@@ -63,9 +63,16 @@ describe( 'InstructionInformation', () => {
 	} );
 
 	it( 'should render with analytics active and no analytics useSnippet, also with tagmanager active and a gtm useSnippet', () => {
+		const newFixtures = fixtures.map( ( fixture ) => {
+			if ( fixture.slug !== 'tagmanager' && fixture.slug !== 'optimize' ) {
+				return fixture;
+			}
+			return { ...fixture, active: true, connected: true };
+		} );
+
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsGtmActivate );
+			registry.dispatch( CORE_MODULE ).receiveGetModules( newFixtures );
 			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
 		};
 
