@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
 import { isValidOptimizeID } from '../util';
+import ErrorText from '../../../components/error-text';
 import {
 	ErrorNotice,
 	AMPExperimentJSONField,
@@ -38,20 +39,21 @@ const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
+	const message = __( 'Error: Not a valid Optimize ID.', 'google-site-kit' );
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
-			<FormInstructions />
-
 			<ErrorNotice />
+
+			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<OptimizeIDField />
 			</div>
 
-			{ ! isValidOptimizeID( optimizeID ) && optimizeID &&
+			{ ( ! isValidOptimizeID( optimizeID ) && optimizeID ) &&
 				<p className="googlesitekit-error-text">
-					{ __( 'Error: Not a valid Optimize ID.', 'google-site-kit' ) }
+					<ErrorText message={ message } />
 				</p>
 			}
 

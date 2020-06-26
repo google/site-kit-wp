@@ -72,8 +72,7 @@ export default function InstructionInformation() {
 					{ __( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }
 				</p>
 				<pre>
-					{ /* eslint-disable-next-line react/no-unescaped-entities */ }
-					ga( 'require', `{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }` );
+					ga(&quot;require&quot;, &quot;{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }&quot;);
 				</pre>
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(

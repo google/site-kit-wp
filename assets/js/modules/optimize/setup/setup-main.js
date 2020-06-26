@@ -48,8 +48,6 @@ export default function SetupMain( { finishSetup } ) {
 	};
 
 	let viewComponent;
-	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
-	// when the component initially loads and has yet to start fetching accounts.
 	if ( isDoingSubmitChanges || isNavigating ) {
 		viewComponent = <ProgressBar />;
 	} else {

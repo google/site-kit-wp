@@ -34,6 +34,7 @@ import Data from 'googlesitekit-data';
 import Button from '../../../components/button';
 import { STORE_NAME } from '../datastore/constants';
 import { isValidOptimizeID } from '../util';
+import ErrorText from '../../../components/error-text';
 import {
 	ErrorNotice,
 	AMPExperimentJSONField,
@@ -55,6 +56,8 @@ export default function SetupForm( { finishSetup } ) {
 			finishSetup();
 		}
 	}, [ canSubmitChanges, finishSetup ] );
+
+	const message = __( 'Configure Optimize', 'google-site-kit' );
 
 	return (
 		<form
@@ -81,7 +84,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
-					{ __( 'Configure Optimize', 'google-site-kit' ) }
+					<ErrorText message={ message } />
 				</Button>
 			</div>
 		</form>
