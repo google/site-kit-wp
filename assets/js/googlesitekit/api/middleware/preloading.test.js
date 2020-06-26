@@ -26,19 +26,38 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import createPreloadingMiddleware from './preloading';
 
-const requestURI = 'google-site-kit/v1/core/user/authentication';
-const body = {
-	status: 'this is the preloaded response',
-};
 const preloadedData = {
-	[ requestURI ]: {
-		method: 'GET',
-		body,
+	'google-site-kit/v1/core/site/data/connection': {
+		headers: [],
+		body: {
+			connected: true,
+			resettable: true,
+			setupCompleted: true,
+		},
+	},
+
+	'google-site-kit/v1/core/user/authentication': {
+		headers: [],
+		body: {
+			authenticated: true,
+			grantedScopes: [],
+			requiredScopes: [
+				'openid',
+				'https://www.googleapis.com/auth/userinfo.profile',
+				'https://www.googleapis.com/auth/userinfo.email',
+				'https://www.googleapis.com/auth/siteverification',
+				'https://www.googleapis.com/auth/webmasters',
+				'https://www.googleapis.com/auth/adsense.readonly',
+				'https://www.googleapis.com/auth/analytics.readonly',
+			],
+			unsatisfiedScopes: [],
+		},
 	},
 };
 
 describe( 'Preloading Middleware', () => {
 	it( 'returns a preloaded response when present', async () => {
+		const requestURI = 'google-site-kit/v1/core/user/authentication';
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
 		);
@@ -48,12 +67,41 @@ describe( 'Preloading Middleware', () => {
 			path: requestURI,
 		};
 		const next = jest.fn();
-		const firstRequest = await preloadingMiddleware( requestOptions, next );
-		expect( firstRequest ).toEqual( body );
+		const firstResponse = await preloadingMiddleware( requestOptions, next );
+		expect( firstResponse ).toEqual( preloadedData[ requestURI ].body );
 		expect( next ).not.toHaveBeenCalled();
 	} );
 
+	it( 'returns a preloaded reponse from multiple URIs', async () => {
+		const firstRequestURI = 'google-site-kit/v1/core/user/authentication';
+		const secondRequestURI = 'google-site-kit/v1/core/site/data/connection';
+
+		const preloadingMiddleware = createPreloadingMiddleware(
+			preloadedData
+		);
+
+		const firstResponseNext = jest.fn();
+		const secondResponseNext = jest.fn();
+
+		const firstResponse = await preloadingMiddleware( { method: 'GET', path: firstRequestURI }, firstResponseNext );
+		expect( firstResponse ).toEqual( preloadedData[ firstRequestURI ].body );
+		expect( firstResponseNext ).not.toHaveBeenCalled();
+
+		const firstResponseAgain = await preloadingMiddleware( { method: 'GET', path: firstRequestURI }, firstResponseNext );
+		expect( firstResponseAgain ).toBeUndefined();
+		expect( firstResponseNext ).toHaveBeenCalled();
+
+		const secondResponse = await preloadingMiddleware( { method: 'GET', path: secondRequestURI }, secondResponseNext );
+		expect( secondResponse ).toEqual( preloadedData[ secondRequestURI ].body );
+		expect( secondResponseNext ).not.toHaveBeenCalled();
+
+		const secondResponseAgain = await preloadingMiddleware( { method: 'GET', path: secondRequestURI }, secondResponseNext );
+		expect( secondResponseAgain ).toBeUndefined();
+		expect( secondResponseNext ).toHaveBeenCalled();
+	} );
+
 	it( 'does nothing and calls next middleware when no preloaded response exists for the request', async () => {
+		const requestURI = 'google-site-kit/v1/core/user/authentication';
 		const next = jest.fn();
 		const preloadingMiddleware = createPreloadingMiddleware( {} );
 		const requestOptions = {
@@ -65,6 +113,7 @@ describe( 'Preloading Middleware', () => {
 	} );
 
 	it( 'returns a preloaded response only once for each preloaded request', async () => {
+		const requestURI = 'google-site-kit/v1/core/user/authentication';
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
 		);
@@ -73,13 +122,17 @@ describe( 'Preloading Middleware', () => {
 			method: 'GET',
 			path: requestURI,
 		};
-		const firstRequest = await preloadingMiddleware( requestOptions, jest.fn() );
-		expect( firstRequest ).toEqual( body );
+		const next = jest.fn();
+		const firstResponse = await preloadingMiddleware( requestOptions, next );
+		expect( firstResponse ).toEqual( preloadedData[ requestURI ].body );
+		expect( next ).not.toHaveBeenCalled();
 
-		const secondRequest = await preloadingMiddleware( requestOptions, jest.fn() );
+		const secondRequest = await preloadingMiddleware( requestOptions, next );
 		expect( secondRequest ).toBeUndefined();
+		expect( next ).toHaveBeenCalled();
 	} );
 	it( 'deletes a preloaded response from the cache when requested with a timestamp query paramater', async () => {
+		const requestURI = 'google-site-kit/v1/core/user/authentication';
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
 		);
@@ -90,9 +143,13 @@ describe( 'Preloading Middleware', () => {
 		};
 		const next = jest.fn();
 
-		const request = await preloadingMiddleware( requestOptions, next );
-		expect( request ).toBeUndefined();
+		const firstResponse = await preloadingMiddleware( requestOptions, next );
+		expect( firstResponse ).toBeUndefined();
 		expect( next ).toHaveBeenCalled();
+
+		// Confirm that the preloaded response was deleted
+		const secondResponse = await preloadingMiddleware( { method: 'GET', path: requestURI }, next );
+		expect( secondResponse ).toBeUndefined();
 	} );
 
 	describe( 'apiFetch integration', () => {
@@ -108,26 +165,28 @@ describe( 'Preloading Middleware', () => {
 		} );
 
 		it( 'returns a preloaded response when present.', async () => {
+			const requestURI = 'google-site-kit/v1/core/user/authentication';
 			// This mock is set up but the expectation is that it should never be run.
 			fetchMock.any( '*', 200 );
 			const response = await apiFetch( {
 				method: 'GET',
 				path: requestURI,
 			} );
-			expect( response ).toEqual( body );
+			expect( response ).toEqual( preloadedData[ requestURI ].body );
 			expect( fetchMock ).not.toHaveFetched();
 		} );
 
-		it( 'returns uncached response timestamp query parmeter is present.', async () => {
+		it( 'returns an uncached response when a timestamp query parameter is present.', async () => {
+			const requestURI = 'google-site-kit/v1/core/user/authentication';
 			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/user\/authentication/,
-				{ body: { status: 'non-cached response' }, status: 200 }
+				{ body: { message: 'non-cached response' }, status: 200 }
 			);
 			const response = await apiFetch( {
 				method: 'GET',
 				path: addQueryArgs( requestURI, { timestamp: Date.now() } ),
 			} );
-			expect( response ).toEqual( { status: 'non-cached response' } );
+			expect( response ).toEqual( { message: 'non-cached response' } );
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );

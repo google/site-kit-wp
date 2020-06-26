@@ -48,7 +48,7 @@ function createPreloadingMiddleware( preloadedData ) {
 			// If the path contains the timestamp param, we remove the cache and return the next() call.
 			if ( getQueryArg( options.path, 'timestamp' ) ) {
 				uri = removeQueryArgs( options.path, 'timestamp' );
-				delete cache[ path ];
+				delete cache[ getStablePath( uri ) ];
 				return next( options );
 			}
 
