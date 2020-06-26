@@ -23,7 +23,7 @@
     "test:js:watch": "wp-scripts test-unit-js --config=tests/js/jest.config.js --watch",
     "pretest:e2e": "./bin/local-env/env-check.sh",
     "test:e2e": "WP_BASE_URL=http://localhost:9002 wp-scripts test-e2e --config=tests/e2e/jest.config.js",
-    "test:e2e:interactive": "HEADLESS=no npm run test:e2e",
+    "test:e2e:interactive": "PUPPETEER_HEADLESS=false npm run test:e2e",
     "test:e2e:ci": "npm run test:e2e -- --runInBand",
     "test:e2e:watch": "npm run test:e2e -- --watch",
     "test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
