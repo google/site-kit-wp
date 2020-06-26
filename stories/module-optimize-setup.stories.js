@@ -43,9 +43,7 @@ function filterOptimizeSetup() {
 	addFilter(
 		'googlesitekit.ModuleSetup-optimize',
 		'googlesitekit.OptimizeModuleSetupWizard',
-		fillFilterWithComponent( OptimizeSetup, {
-			onSettingsPage: false,
-		} )
+		fillFilterWithComponent( OptimizeSetup )
 	);
 }
 
@@ -58,15 +56,6 @@ function Setup( props ) {
 }
 
 storiesOf( 'Optimize Module/Setup', module )
-	.add( 'Loading', () => {
-		filterOptimizeSetup();
-
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( {} );
-		};
-
-		return <Setup callback={ setupRegistry } />;
-	} )
 	.add( 'Start', () => {
 		filterOptimizeSetup();
 

@@ -37,14 +37,11 @@ import { STORE_NAME } from '../assets/js/modules/optimize/datastore';
 import { WithTestRegistry } from '../tests/js/utils';
 
 function filterOptimizeSettings() {
-	// set( global, 'googlesitekit.modules.optimize.setupComplete', true );
 	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-optimize' );
 	addFilter(
 		'googlesitekit.ModuleSettingsDetails-optimize',
 		'googlesitekit.OptimizeModuleSettingsDetails',
-		fillFilterWithComponent( OptimizeSettings, {
-			onSettingsPage: true,
-		} )
+		fillFilterWithComponent( OptimizeSettings )
 	);
 }
 
@@ -119,7 +116,6 @@ storiesOf( 'Optimize Module/Settings', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				optimizeID: 'OPT-1234567',
-				trackingDisabled: [ 'loggedinUsers' ],
 			} );
 		};
 
@@ -129,10 +125,8 @@ storiesOf( 'Optimize Module/Settings', module )
 		filterOptimizeSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				optimizeID: 'OPT-1234567',
-				trackingDisabled: [ 'loggedinUsers' ],
-			} );
+			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
@@ -141,7 +135,7 @@ storiesOf( 'Optimize Module/Settings', module )
 		filterOptimizeSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
+			dispatch( STORE_NAME ).setSettings( {} );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
