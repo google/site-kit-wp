@@ -560,8 +560,6 @@ tag_partner: "site_kit"
 					$client_id     = $data['clientID'];
 					$client_access = $this->has_access_to_client( $client_id );
 
-					list ( $account_id, $permission ) = $client_access;
-
 					if ( empty( $account_id ) ) {
 						return new WP_Error(
 							'invalid_param',
@@ -570,9 +568,9 @@ tag_partner: "site_kit"
 						);
 					}
 					return array(
-						'accountID'  => $account_id,
+						'accountID'  => $client_access['accountID'],
 						'clientID'   => $client_id,
-						'permission' => $permission,
+						'permission' => $client_access['permission'],
 					);
 				};
 			case 'GET:reports-url':

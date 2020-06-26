@@ -122,28 +122,6 @@ describe( 'modules/adsense URL channels', () => {
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
 				expect( urlchannels ).toEqual( undefined );
 			} );
-
-			it( 'dispatches an error when account ID cannot be parsed from client ID', async () => {
-				const clientResponse = {
-					code: 'invalid_param',
-					message: 'The clientID parameter is not a valid AdSense client ID.',
-					data: { status: 400 },
-				};
-
-				const invalidClientID = 'invalid-client-id';
-				const invalidAccountID = 'invalid-account-id';
-
-				registry.select( STORE_NAME ).getURLChannels( invalidAccountID, invalidClientID );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isFetchingGetURLChannels( invalidAccountID, invalidClientID ) === false,
-				);
-
-				expect( fetchMock ).not.toHaveFetched();
-
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( invalidAccountID, invalidClientID );
-				expect( urlchannels ).toEqual( undefined );
-				expect( registry.select( STORE_NAME ).getError() ).toEqual( clientResponse );
-			} );
 		} );
 	} );
 } );
