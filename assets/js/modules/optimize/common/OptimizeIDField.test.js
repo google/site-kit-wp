@@ -22,34 +22,39 @@
 import OptimizeIDField from './OptimizeIDField';
 import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../datastore/constants';
-
-const optimizeIDFieldRegistery = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-};
-
-const invalidOptimizeIDFieldRegistery = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT' );
-};
-
-const noOptimizeIDFieldRegistery = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setOptimizeID( '' );
-};
+import { createTestRegistry } from '../../../../../tests/js/utils';
 
 describe( 'OptimizeIDField', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		// Set settings to prevent fetch in resolver.
+		registry.dispatch( STORE_NAME ).setSettings( {} );
+	} );
+
 	it( 'should render with a valid optimize id passed', () => {
-		const { container } = render( <OptimizeIDField />, { setupRegistry: optimizeIDFieldRegistery } );
+		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+
+		const { container } = render( <OptimizeIDField />, { registry } );
 
 		expect( container.querySelector( '.mdc-text-field' ) ).not.toEqual( null );
 		expect( container.querySelector( '.mdc-text-field--error' ) ).toEqual( null );
 	} );
+
 	it( 'should display an error message with an invalid optimize id passed', () => {
-		const { container } = render( <OptimizeIDField />, { setupRegistry: invalidOptimizeIDFieldRegistery } );
+		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT' );
+
+		const { container } = render( <OptimizeIDField />, { registry } );
 
 		expect( container.querySelector( '.mdc-text-field' ) ).not.toEqual( null );
 		expect( container.querySelector( '.mdc-text-field--error' ) ).not.toEqual( null );
 	} );
+
 	it( 'should display an error message with no optimize id passed', () => {
-		const { container } = render( <OptimizeIDField />, { setupRegistry: noOptimizeIDFieldRegistery } );
+		registry.dispatch( STORE_NAME ).setOptimizeID( '' );
+
+		const { container } = render( <OptimizeIDField />, { registry } );
 
 		expect( container.querySelector( '.mdc-text-field' ) ).not.toEqual( null );
 		expect( container.querySelector( '.mdc-text-field--error' ) ).not.toEqual( null );

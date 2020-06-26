@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetchMock from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import InstructionInformation from './InstructionInformation';
@@ -32,56 +27,49 @@ import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/const
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import * as fixtures from '../datastore/__fixtures__';
 
-// Mock apiFetch so we know if it's called.
-jest.mock( '@wordpress/api-fetch' );
-apiFetchMock.mockImplementation( ( ...args ) => {
-	// eslint-disable-next-line no-console
-	console.warn( 'apiFetch', ...args );
-} );
-
-const allParamsRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-	registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsActivate );
-};
-
-const noAmpModeModeRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-};
-
-const falseUseSnippetRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-	registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsActivate );
-	registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-};
-
-const invalidAmpExperimentJSONRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-	registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsGtmActivate );
-	registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
-};
-
 describe( 'InstructionInformation', () => {
-	afterEach( () => apiFetchMock.mockClear() );
-	afterAll( () => jest.restoreAllMocks() );
-
 	it( 'should render with analytics active and no useSnippet', () => {
-		const { container } = render( <InstructionInformation />, { setupRegistry: allParamsRegistry } );
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsActivate );
+		};
+
+		const { container } = render( <InstructionInformation />, { setupRegistry } );
 
 		const selectedText = container.querySelector( 'p' );
 		expect( selectedText ).toHaveTextContent( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:' );
 	} );
+
 	it( 'should not render tagmanger and anylytics inactive', () => {
-		const { container } = render( <InstructionInformation />, { setupRegistry: noAmpModeModeRegistry } );
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+		};
+
+		const { container } = render( <InstructionInformation />, { setupRegistry } );
 
 		expect( container.querySelector( 'p' ) ).toEqual( null );
 	} );
+
 	it( 'should not render with analytics active and a useSnippet', () => {
-		const { container } = render( <InstructionInformation />, { setupRegistry: falseUseSnippetRegistry } );
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsActivate );
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+		};
+
+		const { container } = render( <InstructionInformation />, { setupRegistry } );
 
 		expect( container.querySelector( 'p' ) ).toEqual( null );
 	} );
+
 	it( 'should render with analytics active and no analytics useSnippet, also with tagmanager active and a gtm useSnippet', () => {
-		const { container } = render( <InstructionInformation />, { setupRegistry: invalidAmpExperimentJSONRegistry } );
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsGtmActivate );
+			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
+		};
+
+		const { container } = render( <InstructionInformation />, { setupRegistry } );
 
 		const selectedText = container.querySelector( 'p' );
 		expect( selectedText ).toHaveTextContent( 'You are using auto insert snippet with Tag Manager' );
