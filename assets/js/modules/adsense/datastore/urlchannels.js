@@ -34,11 +34,11 @@ const fetchGetURLChannelsStore = createFetchStore( {
 	baseName: 'getURLChannels',
 	controlCallback: ( { accountID, clientID } ) => {
 		if ( undefined === accountID ) {
-			// Mirror the API response that would happen for an invalid client ID.
+			// Mirror the API response that would happen for an invalid account ID.
 			return new Promise( () => {
 				throw {
 					code: 'invalid_param',
-					message: __( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
+					message: __( 'The accountID parameter is not a valid AdSense account ID.', 'google-site-kit' ),
 					data: { status: 400 },
 				};
 			} );
