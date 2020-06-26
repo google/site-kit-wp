@@ -39,10 +39,24 @@ describe( 'modules/tagmanager existing-tag', () => {
 				'http://example.com/',
 			];
 
+			fetchMock.getOnce(
+				/^\/wp\/v2\/posts/,
+				{
+					body: [
+						{ link: 'http://example.com/amp/' },
+						{ link: 'http://example.com/ignore-me' },
+					],
+					status: 200,
+				}
+			);
+
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
 			const coreRegistry = registry.select( CORE_SITE );
 
-			expect( await getExistingTagURLs( coreRegistry ) ).toEqual( expectedURLs );
+			const existingTagURLs = await getExistingTagURLs( coreRegistry );
+
+			expect( fetchMock ).not.toHaveFetched();
+			expect( existingTagURLs ).toEqual( expectedURLs );
 		} );
 
 		it( 'gets the home URL and the first amp post if AMP mode is secondary', async () => {
