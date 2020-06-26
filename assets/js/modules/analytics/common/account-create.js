@@ -76,7 +76,7 @@ export default function AccountCreate() {
 			setValues( FORM_ACCOUNT_CREATE, {
 				accountName: siteName,
 				propertyName: hostname,
-				profileName: __( 'All website traffic', 'google-site-kit' ),
+				profileName: __( 'All Web Site Data', 'google-site-kit' ),
 				countryCode: countryCodesByTimezone[ timezone ],
 				timezone,
 			} );
