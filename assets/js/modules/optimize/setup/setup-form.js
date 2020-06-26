@@ -32,8 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../components/button';
-import { STORE_NAME, FORM_SETUP } from '../datastore/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { STORE_NAME } from '../datastore/constants';
 import { isValidOptimizeID } from '../util';
 import {
 	ErrorNotice,
@@ -48,13 +47,11 @@ export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( STORE_NAME );
 	const submitForm = useCallback( async ( event ) => {
 		event.preventDefault();
 		const { error } = await submitChanges();
 		if ( ! error ) {
-			setValues( FORM_SETUP, { autoSubmit: false } );
 			finishSetup();
 		}
 	}, [ canSubmitChanges, finishSetup ] );

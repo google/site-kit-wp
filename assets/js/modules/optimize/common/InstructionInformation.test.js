@@ -25,13 +25,13 @@ import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_MODULE } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import * as fixtures from '../datastore/__fixtures__';
+import fixtures from '../../../googlesitekit/modules/datastore/fixtures.json';
 
 describe( 'InstructionInformation', () => {
 	it( 'should render with analytics active and no useSnippet', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsActivate );
+			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
 		};
 
 		const { container } = render( <InstructionInformation />, { setupRegistry } );
@@ -53,7 +53,7 @@ describe( 'InstructionInformation', () => {
 	it( 'should not render with analytics active and a useSnippet', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures.analyticsActivate );
+			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		};
 

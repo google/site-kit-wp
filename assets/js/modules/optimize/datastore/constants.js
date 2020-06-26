@@ -17,5 +17,3 @@
  */
 
 export const STORE_NAME = 'modules/optimize';
-// Form ID for the module setup form.
-export const FORM_SETUP = 'optimizeSetup';
