@@ -30,15 +30,15 @@ import { sanitizeHTML } from '../../../util/sanitize';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import { STORE_NAME as CORE_MODULE } from '../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
 
 export default function InstructionInformation() {
 	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
-	const analyticsActive = useSelect( ( select ) => select( CORE_MODULE ).isModuleActive( 'analytics' ) );
+	const analyticsActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const analyticsUseSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );
-	const gtmActive = useSelect( ( select ) => select( CORE_MODULE ).isModuleActive( 'tagmanager' ) );
+	const gtmActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
 	const gtmUseSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
 
 	if ( ! analyticsActive ) {

@@ -40,7 +40,7 @@ import {
 	AMPExperimentJSONField,
 	OptimizeIDField,
 	InstructionInformation,
-	SetupInformation,
+	FormInstructions,
 } from '../common/';
 const { useSelect, useDispatch } = Data;
 
@@ -64,7 +64,7 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-optimize-setup__form"
 			onSubmit={ submitForm }
 		>
-			<SetupInformation />
+			<FormInstructions />
 
 			<ErrorNotice />
 

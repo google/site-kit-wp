@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-export { default as ErrorNotice } from './ErrorNotice';
-export { default as OptimizeIDField } from './OptimizeIDField';
 export { default as AMPExperimentJSONField } from './AMPExperimentJSONField';
+export { default as ErrorNotice } from './ErrorNotice';
+export { default as FormInstructions } from './FormInstructions';
 export { default as InstructionInformation } from './InstructionInformation';
-export { default as SetupInformation } from './SetupInformation';
+export { default as OptimizeIDField } from './OptimizeIDField';

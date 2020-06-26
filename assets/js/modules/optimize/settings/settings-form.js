@@ -32,7 +32,7 @@ import {
 	AMPExperimentJSONField,
 	OptimizeIDField,
 	InstructionInformation,
-	SetupInformation,
+	FormInstructions,
 } from '../common/';
 const { useSelect } = Data;
 
@@ -41,7 +41,7 @@ export default function SettingsForm() {
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
-			<SetupInformation />
+			<FormInstructions />
 
 			<ErrorNotice />
 

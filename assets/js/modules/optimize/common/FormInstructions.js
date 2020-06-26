@@ -1,5 +1,5 @@
 /**
- * SetupInformation component.
+ * FormInstructions component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -22,7 +22,7 @@
 import { __ } from '@wordpress/i18n';
 import Link from '../../../components/link';
 
-export default function SetupInformation() {
+export default function FormInstructions() {
 	return (
 		<p>
 			{ __( 'Please copy and paste your Optimize ID to complete your setup.', 'google-site-kit' ) }

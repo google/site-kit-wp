@@ -27,7 +27,6 @@ const { useSelect } = Data;
 export default function ErrorNotice() {
 	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
 
-	// Do not display if no error, or if the error is for missing scopes.
 	if ( ! error ) {
 		return null;
 	}
