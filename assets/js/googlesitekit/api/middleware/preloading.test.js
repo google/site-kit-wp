@@ -27,37 +27,22 @@ import { addQueryArgs } from '@wordpress/url';
 import createPreloadingMiddleware from './preloading';
 
 const preloadedData = {
-	'google-site-kit/v1/core/site/data/connection': {
+	'test/path/a': {
 		headers: [],
 		body: {
-			connected: true,
-			resettable: true,
-			setupCompleted: true,
+			body: { keyName: 'value' },
 		},
 	},
 
-	'google-site-kit/v1/core/user/authentication': {
+	'test/path/b': {
 		headers: [],
-		body: {
-			authenticated: true,
-			grantedScopes: [],
-			requiredScopes: [
-				'openid',
-				'https://www.googleapis.com/auth/userinfo.profile',
-				'https://www.googleapis.com/auth/userinfo.email',
-				'https://www.googleapis.com/auth/siteverification',
-				'https://www.googleapis.com/auth/webmasters',
-				'https://www.googleapis.com/auth/adsense.readonly',
-				'https://www.googleapis.com/auth/analytics.readonly',
-			],
-			unsatisfiedScopes: [],
-		},
+		body: { keyName: 'value' },
 	},
 };
 
-describe( 'Preloading Middleware', () => {
+describe( 'apiFetch.preloadingMiddleware', () => {
 	it( 'returns a preloaded response when present', async () => {
-		const requestURI = 'google-site-kit/v1/core/user/authentication';
+		const requestURI = 'test/path/a';
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
 		);
@@ -72,9 +57,9 @@ describe( 'Preloading Middleware', () => {
 		expect( next ).not.toHaveBeenCalled();
 	} );
 
-	it( 'returns a preloaded reponse from multiple URIs', async () => {
-		const firstRequestURI = 'google-site-kit/v1/core/user/authentication';
-		const secondRequestURI = 'google-site-kit/v1/core/site/data/connection';
+	it( 'returns a preloaded response from multiple URIs', async () => {
+		const firstRequestURI = 'test/path/a';
+		const secondRequestURI = 'test/path/b';
 
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
@@ -101,7 +86,7 @@ describe( 'Preloading Middleware', () => {
 	} );
 
 	it( 'does nothing and calls next middleware when no preloaded response exists for the request', async () => {
-		const requestURI = 'google-site-kit/v1/core/user/authentication';
+		const requestURI = 'test/path/a';
 		const next = jest.fn();
 		const preloadingMiddleware = createPreloadingMiddleware( {} );
 		const requestOptions = {
@@ -112,27 +97,8 @@ describe( 'Preloading Middleware', () => {
 		expect( next ).toHaveBeenCalled();
 	} );
 
-	it( 'returns a preloaded response only once for each preloaded request', async () => {
-		const requestURI = 'google-site-kit/v1/core/user/authentication';
-		const preloadingMiddleware = createPreloadingMiddleware(
-			preloadedData
-		);
-
-		const requestOptions = {
-			method: 'GET',
-			path: requestURI,
-		};
-		const next = jest.fn();
-		const firstResponse = await preloadingMiddleware( requestOptions, next );
-		expect( firstResponse ).toEqual( preloadedData[ requestURI ].body );
-		expect( next ).not.toHaveBeenCalled();
-
-		const secondRequest = await preloadingMiddleware( requestOptions, next );
-		expect( secondRequest ).toBeUndefined();
-		expect( next ).toHaveBeenCalled();
-	} );
-	it( 'deletes a preloaded response from the cache when requested with a timestamp query paramater', async () => {
-		const requestURI = 'google-site-kit/v1/core/user/authentication';
+	it( 'deletes a preloaded response from the cache when requested with a timestamp query parameter', async () => {
+		const requestURI = 'test/path/a';
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
 		);
@@ -164,8 +130,8 @@ describe( 'Preloading Middleware', () => {
 			delete require.cache[ require.resolve( '@wordpress/api-fetch' ) ];
 		} );
 
-		it( 'returns a preloaded response when present.', async () => {
-			const requestURI = 'google-site-kit/v1/core/user/authentication';
+		it( 'returns a preloaded response when present', async () => {
+			const requestURI = 'test/path/a';
 			// This mock is set up but the expectation is that it should never be run.
 			fetchMock.any( '*', 200 );
 			const response = await apiFetch( {
@@ -176,10 +142,10 @@ describe( 'Preloading Middleware', () => {
 			expect( fetchMock ).not.toHaveFetched();
 		} );
 
-		it( 'returns an uncached response when a timestamp query parameter is present.', async () => {
-			const requestURI = 'google-site-kit/v1/core/user/authentication';
+		it( 'returns an uncached response when a timestamp query parameter is present', async () => {
+			const requestURI = 'test/path/a';
 			fetchMock.get(
-				/^\/google-site-kit\/v1\/core\/user\/authentication/,
+				/^\/test\/path\/a/,
 				{ body: { message: 'non-cached response' }, status: 200 }
 			);
 			const response = await apiFetch( {
