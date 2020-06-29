@@ -49,12 +49,11 @@ export default function SettingsEdit() {
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.
-	const { setAccountID, setContainerID, setAMPContainerID } = useDispatch( STORE_NAME );
+	const { setAccountID, selectContainer } = useDispatch( STORE_NAME );
 	useEffect( () => {
 		if ( hasExistingTag && hasExistingTagPermission ) {
 			setAccountID( existingTagPermission.accountID );
-			setContainerID( existingTag );
-			setAMPContainerID( existingTag );
+			selectContainer( existingTagPermission.accountID, existingTag );
 		}
 	}, [ hasExistingTag, existingTag, hasExistingTagPermission, existingTagPermission ] );
 
