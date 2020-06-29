@@ -24,7 +24,13 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { resetSiteKit, setSearchConsoleProperty, deactivateUtilityPlugins, pageWait } from '../utils';
+import {
+	deactivateUtilityPlugins,
+	pageWait,
+	resetSiteKit,
+	setSearchConsoleProperty,
+	setupSiteKit,
+} from '../utils';
 
 async function toggleOptIn() {
 	await Promise.all( [
@@ -58,10 +64,13 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 	} );
 
 	it( 'should be opted-out by default', async () => {
+		await expect( page ).not.toHaveTracking();
 		expect( await page.$eval( '#googlesitekit-opt-in', ( el ) => el.checked ) ).toBe( false );
 	} );
 
 	it( 'should have tracking code when opted in', async () => {
+		await expect( page ).not.toHaveTracking();
+
 		// Make sure the script tags are not yet loaded on the page.
 		await expect( page ).not.toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
 
@@ -70,6 +79,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 		expect( await page.$eval( '#googlesitekit-opt-in', ( el ) => el.checked ) ).toBe( true );
 
+		await expect( page ).toHaveTracking();
 		// Ensure the script tags are injected into the page if they weren't
 		// loaded already.
 		await page.waitForSelector( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
@@ -109,6 +119,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		// Ensure no analytics script tag exists.
 		await expect( page ).not.toMatchElement( 'script[src^="https://www.google-analytics.com/analytics.js"]' );
 
+		await expect( page ).not.toHaveTracking();
 		// Ensure no tag manager script exists.
 		await expect( page ).not.toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
 	} );
