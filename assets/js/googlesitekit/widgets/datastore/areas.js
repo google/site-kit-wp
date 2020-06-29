@@ -213,6 +213,23 @@ export const selectors = {
 			return 0;
 		} );
 	},
+
+	/**
+	 * Returns a widget area based on slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state  Data store's state.
+	 * @param {string} slug   Widget area to select.
+	 * @return {Object|null} A widget area if one is found with a matching slug.
+	 */
+	getWidgetArea( state, slug ) {
+		invariant( slug, 'slug is required.' );
+
+		const { areas } = state;
+
+		return areas[ slug ] || null;
+	},
 };
 
 export default {

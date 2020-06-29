@@ -52,10 +52,12 @@ class Settings extends Module_Settings {
 	 */
 	protected function get_default() {
 		return array(
-			'accountID'      => '',
-			'ampContainerID' => '',
-			'containerID'    => '',
-			'useSnippet'     => true,
+			'accountID'              => '',
+			'ampContainerID'         => '',
+			'containerID'            => '',
+			'internalContainerID'    => '',
+			'internalAMPContainerID' => '',
+			'useSnippet'             => true,
 		);
 	}
 
