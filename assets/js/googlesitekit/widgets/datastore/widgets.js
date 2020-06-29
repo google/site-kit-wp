@@ -75,11 +75,11 @@ export const actions = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {string}          slug               Widget's slug.
-	 * @param {Object}          settings           Widget's settings.
-	 * @param {React.Component} settings.component React component used to display the contents of this widget.
-	 * @param {number}          settings.priority  Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
-	 * @param {string}          settings.width     Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @param {string}      slug                Widget's slug.
+	 * @param {Object}      settings            Widget's settings.
+	 * @param {WPComponent} settings.component  React component used to display the contents of this widget.
+	 * @param {number}      settings.priority   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string}      settings.width      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
 	 * @return {Object} Redux-style action.
 	 */
 	*registerWidget( slug, {
@@ -239,6 +239,30 @@ export const selectors = {
 
 			return widgetWithComponent;
 		} );
+	} ),
+
+	/**
+	 * Returns a single widget, by slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state  Data store's state.
+	 * @param {string} slug   Widget slug.
+	 * @return {Object|null} A widget object, if one exists.
+	 */
+	getWidget: createRegistrySelector( ( select ) => ( state, slug ) => {
+		invariant( slug, 'slug is required to get a widget.' );
+
+		const { widgets } = state;
+
+		const registryKey = select( STORE_NAME ).getWidgetRegistryKey();
+
+		const widget = widgets[ slug ];
+		if ( widget && WidgetComponents[ registryKey ] ) {
+			widget.component = WidgetComponents[ registryKey ][ widget.slug ];
+		}
+
+		return widget || null;
 	} ),
 
 	/**

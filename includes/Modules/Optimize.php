@@ -33,7 +33,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Optimize extends Module 
+final class Optimize extends Module
 	implements Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets {
 	use Module_With_Settings_Trait, Module_With_Assets_Trait;
 
@@ -333,7 +333,7 @@ final class Optimize extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

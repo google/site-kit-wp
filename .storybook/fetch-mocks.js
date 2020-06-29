@@ -43,7 +43,7 @@ export function fetchMockSaveSettings() {
 
 // Catch-all mock to log any other requests.
 export function fetchMockCatchAll() {
-	fetchMock.mock( '*', ( url, opts ) => {
+	fetchMock.catch( ( url, opts ) => {
 		global.console.warn( 'fetch', opts.method, url, opts );
 
 		return {
