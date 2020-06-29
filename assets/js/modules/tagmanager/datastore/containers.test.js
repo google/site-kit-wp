@@ -131,6 +131,55 @@ describe( 'modules/tagmanager containers', () => {
 				expect( containers ).toEqual( undefined );
 			} );
 		} );
+
+		describe( 'selectContainer', () => {
+			it( 'sets the containerID and internalContainerID for a web container', () => {
+				const { account, containers } = factories.buildAccountWithContainers( {
+					container: { usageContext: [ CONTEXT_WEB ] },
+				} );
+				const accountID = account.accountId;
+				const [ container ] = containers;
+				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
+
+				registry.dispatch( STORE_NAME ).selectContainer( accountID, container.publicId );
+
+				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( container.publicId );
+				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( container.containerId );
+			} );
+
+			it( 'sets the ampContainerID and internalAMPContainerID for an AMP container', () => {
+				const { account, containers } = factories.buildAccountWithContainers( {
+					container: { usageContext: [ CONTEXT_AMP ] },
+				} );
+				const accountID = account.accountId;
+				const [ container ] = containers;
+				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+
+				registry.dispatch( STORE_NAME ).selectContainer( accountID, container.publicId );
+
+				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( container.publicId );
+				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( container.containerId );
+			} );
+
+			it( 'does nothing for a containerID that does not exist in state', () => {
+				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+
+				muteFetch( 'path:/google-site-kit/v1/modules/tagmanager/data/containers', [] );
+				registry.dispatch( STORE_NAME ).selectContainer( '12345', 'GTM-GXXXXGL3' );
+
+				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
