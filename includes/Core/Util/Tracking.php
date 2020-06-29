@@ -11,7 +11,10 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Admin\Screen;
+use Google\Site_Kit\Core\Admin\Screens;
 use Google\Site_Kit\Core\Storage\User_Options;
+use WP_Screen;
 
 /**
  * Class managing admin tracking.
@@ -25,6 +28,15 @@ final class Tracking {
 	const TRACKING_ID = 'UA-130569087-3';
 
 	/**
+	 * Screens instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Screens
+	 */
+	protected $screens;
+
+	/**
 	 * Tracking_Consent instance.
 	 *
 	 * @var Tracking_Consent
@@ -35,11 +47,19 @@ final class Tracking {
 	 * Constructor.
 	 *
 	 * @since 1.4.0
+	 * @since n.e.x.t Added `Screens` instance.
+	 *
 	 * @param Context      $context      Context instance.
 	 * @param User_Options $user_options Optional. User_Options instance. Default is a new instance.
+	 * @param Screens      $screens      Optional. Screens instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, User_Options $user_options = null ) {
+	public function __construct(
+		Context $context,
+		User_Options $user_options = null,
+		Screens $screens = null
+	) {
 		$user_options  = $user_options ?: new User_Options( $context );
+		$this->screens = $screens ?: new Screens( $context );
 		$this->consent = new Tracking_Consent( $user_options );
 	}
 
