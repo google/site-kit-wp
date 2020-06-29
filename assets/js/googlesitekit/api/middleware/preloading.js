@@ -23,15 +23,15 @@ import { getStablePath } from '@wordpress/api-fetch/build/middlewares/preloading
 import { removeQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
- * createPreloadingMiddleware
+ * Creates a preloadingMiddleware instance with the given preloaded data.
  *
- * Based on preloadMiddleware from from @wordpress/api-fetch, this middle is a single-use per-endpoint and provides cached
+ * Based on preloadingMiddleware from @wordpress/api-fetch, this middleware is single-use per-endpoint and provides cached
  * data for the first request only and any subsequent requests hit the server.
  *
  * @since n.e.x.t
  *
  * @param {Object} preloadedData Preloaded data paths.
- * @return {Function} Function.
+ * @return {Function} apiFetch middleware function.
  */
 function createPreloadingMiddleware( preloadedData ) {
 	const cache = Object.keys( preloadedData ).reduce( ( result, path ) => {
