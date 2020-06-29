@@ -183,6 +183,22 @@ describe( 'modules/tagmanager containers', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getContainerByID', () => {
+			it( 'returns undefined for a container ID that does not belong to a container in state', () => {
+				muteFetch( 'path:/google-site-kit/v1/modules/tagmanager/data/containers', [] );
+				expect( registry.select( STORE_NAME ).getContainerByID( '12345', 'GTM-GXXXXGL3' ) ).toBe( undefined );
+			} );
+
+			it( 'returns the full container object for a container in state with a matching publicId', () => {
+				const { account, containers } = factories.buildAccountWithContainers( { count: 5 } );
+				const accountID = account.accountId;
+				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+				const container = containers[ 2 ];
+
+				expect( registry.select( STORE_NAME ).getContainerByID( accountID, container.publicId ) ).toEqual( container );
+			} );
+		} );
+
 		describe( 'getContainers', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const { account, containers } = factories.buildAccountWithContainers();
