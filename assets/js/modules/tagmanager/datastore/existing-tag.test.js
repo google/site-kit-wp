@@ -62,17 +62,18 @@ describe( 'modules/tagmanager existing-tag', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const expectedTag = 'GTM-S1T3K1T';
 
-				fetchMock.get(
+				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
 					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
 				);
 
 				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
 				expect( initialExistingTag ).toEqual( undefined );
 
 				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
+
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( existingTag ).toEqual( expectedTag );
@@ -107,7 +108,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.get(
+				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
 					{ body: errorResponse, status: 500 }
 				);
@@ -199,12 +200,17 @@ describe( 'modules/tagmanager existing-tag', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				muteFetch( { query: { tagverify: '1' } } );
+				const expectedTag = 'GTM-S1T3K1T';
+
+				fetchMock.getOnce(
+					{ query: { tagverify: '1' } },
+					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
+				);
 				expect( registry.select( STORE_NAME ).hasExistingTag() ).toEqual( undefined );
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( registry.select( STORE_NAME ).hasExistingTag() ).not.toEqual( undefined );
 			} );

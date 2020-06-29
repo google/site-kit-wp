@@ -143,7 +143,6 @@ export const baseSelectors = {
 	 */
 	getHTMLForURL( state, url ) {
 		const { htmlForURL = {} } = state;
-
 		return htmlForURL[ url ];
 	},
 };

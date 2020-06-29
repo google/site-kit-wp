@@ -51,16 +51,19 @@ describe( 'core/site html', () => {
 			it( 'sets isFetchingGetHTMLForURL while fetching HTML then sets back to false', async () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
+
 				fetchMock.getOnce(
-					url,
+					{ query: { tagverify: '1' } },
 					{ body: html, status: 200 }
 				);
 
 				registry.dispatch( STORE_NAME ).fetchGetHTMLForURL( url );
 				expect( registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) ).toEqual( true );
+
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) === false,
 				);
+
 				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( selectedHTML ).toEqual( html );
@@ -113,23 +116,22 @@ describe( 'core/site html', () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
 
-				fetchMock.get(
-					url,
+				fetchMock.getOnce(
+					{ query: { tagverify: '1' } },
 					{ body: html, status: 200 }
 				);
 
-				const initialHTML = registry.select( STORE_NAME ).getHTMLForURL( url, 'html.test.js' );
+				const initialHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 				// The initialHTML info will be its initial value while the HTML is fetched.
 				expect( initialHTML ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getHTMLForURL( url ) !== undefined
-					),
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getHTMLForURL', [ url ] )
 				);
 
-				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url, 'html.test.js' );
+				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 
-				expect( fetchMock ).toHaveFetched( url );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( selectedHTML ).toEqual( html );
 			} );
 
@@ -157,7 +159,7 @@ describe( 'core/site html', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					url,
+					{ query: { tagverify: '1' } },
 					{ body: response, status: 500 }
 				);
 

@@ -42,6 +42,7 @@ const fetchGetExistingTagStore = createFetchStore( {
 		let tagFound = null;
 		for ( const url of existingTagURLs ) {
 			const html = await Data.select( CORE_SITE ).getHTMLForURL( url );
+			// TODO: html ends up being undefined here.
 			tagFound = extractExistingTag( html, tagMatchers );
 			if ( tagFound ) {
 				return tagFound;
