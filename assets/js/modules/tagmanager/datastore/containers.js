@@ -27,7 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
-import { isValidAccountID, isValidUsageContext } from '../util/validation';
+import { isValidAccountID, isValidUsageContext, isValidContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -109,7 +109,7 @@ const baseActions = {
 
 	*selectContainer( accountID, containerID ) {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to select a container.' );
-		invariant( isValidUsageContext( containerID ), 'A valid containerID is required to select a container.' );
+		invariant( isValidContainerID( containerID ), 'A valid containerID is required to select a container.' );
 
 		const { select, dispatch } = yield Data.commonActions.getRegistry();
 		const container = select( STORE_NAME ).getContainerByID( accountID, containerID );
