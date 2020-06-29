@@ -183,7 +183,7 @@ const baseSelectors = {
 	 */
 	getContainerByID: createRegistrySelector( ( select ) => ( state, accountID, containerID ) => {
 		// Select all containers of the account to find the container, regardless of usageContext.
-		const containers = select( STORE_NAME ).getContainers();
+		const containers = select( STORE_NAME ).getContainers( accountID );
 
 		if ( containers === undefined ) {
 			return undefined;
