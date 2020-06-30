@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -38,15 +38,14 @@ import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import {
 	AccountCreateLegacy,
 	ExistingTagError,
+	useExistingTagEffect,
 } from '../common';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
@@ -54,13 +53,7 @@ export default function SetupMain( { finishSetup } ) {
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.
-	const { setAccountID, selectContainer } = useDispatch( STORE_NAME );
-	useEffect( () => {
-		if ( hasExistingTag && hasExistingTagPermission ) {
-			setAccountID( existingTagPermission.accountID );
-			selectContainer( existingTagPermission.accountID, existingTag );
-		}
-	}, [ hasExistingTag, existingTag, hasExistingTagPermission, existingTagPermission ] );
+	useExistingTagEffect();
 
 	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
 	const [ isNavigating, setIsNavigating ] = useState( false );
