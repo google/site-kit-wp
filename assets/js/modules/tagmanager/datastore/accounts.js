@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, CONTAINER_CREATE } from './constants';
 import { actions as containerActions } from './containers';
 import { isValidAccountSelection, isValidAccountID } from '../util/validation';
@@ -84,15 +85,20 @@ export const baseActions = {
 
 		yield containerActions.waitForContainers( accountID );
 		// Trigger cascading selections.
-		const webContainers = select( STORE_NAME ).getWebContainers( accountID ) || [];
-		const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
-		dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
-		dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
+		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
+		if ( ! isAMP() || isSecondaryAMP() ) {
+			const webContainers = select( STORE_NAME ).getWebContainers( accountID ) || [];
+			const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
+			dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
+			dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
+		}
 
-		const ampContainers = select( STORE_NAME ).getAMPContainers( accountID ) || [];
-		const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
-		dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
-		dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
+		if ( isAMP() ) {
+			const ampContainers = select( STORE_NAME ).getAMPContainers( accountID ) || [];
+			const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
+			dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
+			dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
+		}
 	},
 };
 
