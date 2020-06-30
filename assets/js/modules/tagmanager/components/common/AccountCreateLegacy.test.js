@@ -23,7 +23,7 @@ import AccountCreateLegacy from './AccountCreateLegacy';
 import { fireEvent, render, wait } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { createTestRegistry, freezeFetch } from '../../../../../../tests/js/utils';
+import { createTestRegistry, freezeFetch, muteFetch } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'AccountCreateLegacy', () => {
@@ -45,17 +45,6 @@ describe( 'AccountCreateLegacy', () => {
 		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'has a button for creating an account which links to the new account screen for the current user', () => {
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-
-		const { getByRole } = render( <AccountCreateLegacy />, { registry } );
-
-		const createAccountButton = getByRole( 'button', { name: /Create an account/i } );
-
-		expect( createAccountButton ).toHaveAttribute( 'href', expect.stringMatching( /^https:\/\/tagmanager.google.com\/\?/ ) );
-		expect( createAccountButton ).toHaveAttribute( 'href', expect.stringContaining( `authuser=${ encodeURIComponent( 'user@example.com' ) }` ) );
-	} );
-
 	it( 'resets accounts when the re-fetch accounts link is clicked', async () => {
 		const accountA = factories.accountBuilder();
 		const accountB = factories.accountBuilder();
@@ -69,8 +58,33 @@ describe( 'AccountCreateLegacy', () => {
 
 		const refechMyAccountButton = getByRole( 'button', { name: /re-fetch my account/i } );
 
+		muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
 		fireEvent.click( refechMyAccountButton );
 
 		await wait( () => expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ ) );
+	} );
+
+	describe( '"Create an account" button', () => {
+		let openSpy;
+		beforeEach( () => {
+			openSpy = jest.spyOn( global, 'open' );
+			// Need to set a dummy implementation here to prevent JSDOM from raising a "Error: Not implemented" error.
+			openSpy.mockImplementation( () => {} );
+		} );
+		afterEach( () => openSpy.mockRestore() );
+
+		it( 'opens a new window  new account screen for the current user', () => {
+			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
+
+			const { getByRole } = render( <AccountCreateLegacy />, { registry } );
+
+			const createAccountButton = getByRole( 'button', { name: /Create an account/i } );
+
+			fireEvent.click( createAccountButton );
+
+			expect( openSpy ).toHaveBeenCalledTimes( 1 );
+			expect( openSpy ).toHaveBeenCalledWith( expect.stringMatching( /^https:\/\/tagmanager.google.com\/\?/ ), '_blank' );
+			expect( openSpy ).toHaveBeenCalledWith( expect.stringContaining( `authuser=${ encodeURIComponent( 'user@example.com' ) }` ), '_blank' );
+		} );
 	} );
 } );
