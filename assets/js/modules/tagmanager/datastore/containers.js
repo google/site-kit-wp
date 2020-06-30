@@ -112,9 +112,10 @@ const baseActions = {
 		invariant( isValidContainerID( containerID ), 'A valid containerID is required to select a container.' );
 
 		const { select, dispatch } = yield Data.commonActions.getRegistry();
+		yield baseActions.waitForContainers( accountID );
 		const container = select( STORE_NAME ).getContainerByID( accountID, containerID );
 		if ( ! container ) {
-			// Do nothing if the container was not found or has not been loaded yet.
+			// Do nothing if the container was not found.
 			return;
 		}
 		if ( container.usageContext.includes( CONTEXT_WEB ) ) {
