@@ -34,6 +34,8 @@ describe( 'AccountSelect', () => {
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		// Set set no existing tag by default.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		// Receive containers for the first account in fixtures to prevent fetching in getAccounts resolver.
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID: fixtures.accounts[ 0 ].accountId } );
 	} );
 
 	it( 'should render an option for each analytics account', () => {
