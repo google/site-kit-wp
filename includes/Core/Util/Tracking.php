@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screen;
 use Google\Site_Kit\Core\Admin\Screens;
 use Google\Site_Kit\Core\Storage\User_Options;
-use WP_Screen;
 
 /**
  * Class managing admin tracking.
