@@ -54,21 +54,23 @@ export default function ProfileNameTextField() {
 	let helperText;
 	let trailingIcon;
 
-	const existingProfile = profiles.some( ( { name } ) => name === profileName );
-	if ( existingProfile ) {
-		helperText = (
-			<HelperText persistent>
-				{ __( 'A view with this name already exists.', 'google-site-kit' ) }
-			</HelperText>
-		);
+	if ( Array.isArray( profiles ) && profiles.length ) {
+		const existingProfile = profiles.some( ( { name } ) => name === profileName );
+		if ( existingProfile ) {
+			helperText = (
+				<HelperText persistent>
+					{ __( 'A view with this name already exists.', 'google-site-kit' ) }
+				</HelperText>
+			);
 
-		trailingIcon = (
-			<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--warning">
-				<span className="screen-reader-text">
-					{ __( 'Warning', 'google-site-kit' ) }
+			trailingIcon = (
+				<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--warning">
+					<span className="screen-reader-text">
+						{ __( 'Warning', 'google-site-kit' ) }
+					</span>
 				</span>
-			</span>
-		);
+			);
+		}
 	}
 
 	return (
