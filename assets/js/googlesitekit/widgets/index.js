@@ -20,12 +20,20 @@
  * Internal dependencies
  */
 import { dispatch, select } from 'googlesitekit-data';
+import Widget from './components/Widget';
 import { STORE_NAME } from './datastore/constants';
 // This import has side-effects; it registers the Widgets datastore on the default
 // data store registry (eg. `googlesitekit.data`).
 import './datastore';
 
 const Widgets = {
+	/**
+	 * Public Widget components for creating Site Kit widgets.
+	 *
+	 * @since n.e.x.t
+	 */
+	components: { Widget },
+
 	/**
 	 * Registers a widget area.
 	 *

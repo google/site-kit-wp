@@ -49,7 +49,7 @@ export default function AccountCreate() {
 	const canSubmitAccountCreate = useSelect( ( select ) => select( STORE_NAME ).canSubmitAccountCreate() );
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
-	const hasProvisioningScope = useSelect( ( select ) => select( STORE_NAME ).hasProvisioningScope() );
+	const hasProvisioningScope = useSelect( ( select ) => select( CORE_USER ).hasScope( PROVISIONING_SCOPE ) );
 	const hasAccountCreateForm = useSelect( ( select ) => select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' ) );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
@@ -76,7 +76,7 @@ export default function AccountCreate() {
 			setValues( FORM_ACCOUNT_CREATE, {
 				accountName: siteName,
 				propertyName: hostname,
-				profileName: __( 'All website traffic', 'google-site-kit' ),
+				profileName: __( 'All Web Site Data', 'google-site-kit' ),
 				countryCode: countryCodesByTimezone[ timezone ],
 				timezone,
 			} );
