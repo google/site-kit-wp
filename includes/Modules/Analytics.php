@@ -34,6 +34,7 @@ use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Proxy_Provisioning;
+use Google\Site_Kit\Modules\Analytics\Shirshu_Class;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
@@ -70,6 +71,8 @@ final class Analytics extends Module
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
+
+	private $shirshu_instance;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -139,6 +142,8 @@ final class Analytics extends Module
 				$this->handle_provisioning_callback();
 			}
 		);
+
+		$this->shirshu_instance = Shirshu_Class::get_instance();
 	}
 
 	/**
