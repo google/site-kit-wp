@@ -31,6 +31,7 @@ import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import {
 	AccountCreateLegacy,
 	ExistingTagError,
+	useExistingTagEffect,
 } from '../common';
 import SettingsForm from './SettingsForm';
 const { useSelect, useDispatch } = Data;
@@ -39,8 +40,6 @@ export default function SettingsEdit() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
@@ -49,13 +48,7 @@ export default function SettingsEdit() {
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.
-	const { setAccountID, selectContainer } = useDispatch( STORE_NAME );
-	useEffect( () => {
-		if ( hasExistingTag && hasExistingTagPermission ) {
-			setAccountID( existingTagPermission.accountID );
-			selectContainer( existingTagPermission.accountID, existingTag );
-		}
-	}, [ hasExistingTag, existingTag, hasExistingTagPermission, existingTagPermission ] );
+	useExistingTagEffect();
 
 	// Toggle disabled state of legacy confirm changes button.
 	useEffect( () => {
