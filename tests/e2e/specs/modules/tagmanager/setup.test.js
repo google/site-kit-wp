@@ -59,6 +59,10 @@ describe( 'Tag Manager module setup', () => {
 				request.respond( {
 					status: 200,
 				} );
+			} else if ( request.url().match( /^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/ ) ) {
+				request.respond( {
+					status: 200,
+				} );
 			} else {
 				request.continue();
 			}
