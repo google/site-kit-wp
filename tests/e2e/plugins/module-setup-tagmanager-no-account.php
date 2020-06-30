@@ -20,14 +20,11 @@ add_action(
 
 		register_rest_route(
 			REST_Routes::REST_ROOT,
-			'modules/tagmanager/data/accounts-containers',
+			'modules/tagmanager/data/accounts',
 			array(
 				'methods'  => 'GET',
 				'callback' => function () {
-					return array(
-						'accounts'   => array(),
-						'containers' => array(),
-					);
+					return array();
 				},
 			),
 			true
@@ -53,5 +50,5 @@ add_action(
 		);
 
 	},
-	0 
+	0
 );
