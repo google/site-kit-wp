@@ -23,5 +23,6 @@ export { default as ErrorNotice } from './ErrorNotice';
 export { default as ExistingTagError } from './ExistingTagError';
 export { default as ExistingTagNotice } from './ExistingTagNotice';
 export { default as FormInstructions } from './FormInstructions';
+export { default as useExistingTagEffect } from './useExistingTagEffect';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
 export { default as WebContainerSelect } from './WebContainerSelect';
