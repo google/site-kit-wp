@@ -43,7 +43,7 @@ export default function WebContainerSelect() {
 		const newContainerID = item.dataset.value;
 		if ( containerID !== newContainerID ) {
 			setContainerID( newContainerID );
-			setInternalContainerID( item.dataset.internalId );
+			setInternalContainerID( item.dataset.internalId || '' );
 		}
 	}, [ containerID ] );
 

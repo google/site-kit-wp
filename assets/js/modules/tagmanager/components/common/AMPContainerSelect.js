@@ -43,7 +43,7 @@ export default function AMPContainerSelect() {
 		const newContainerID = item.dataset.value;
 		if ( containerID !== newContainerID ) {
 			setAMPContainerID( newContainerID );
-			setInternalAMPContainerID( item.dataset.internalId );
+			setInternalAMPContainerID( item.dataset.internalId || '' );
 		}
 	}, [ containerID ] );
 
