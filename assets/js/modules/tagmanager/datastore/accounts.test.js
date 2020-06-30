@@ -91,6 +91,8 @@ describe( 'modules/tagmanager accounts', () => {
 
 			it( 'invalidates the resolver for getAccounts', async () => {
 				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+
+				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
 				registry.select( STORE_NAME ).getAccounts();
 
 				await untilResolved( registry, STORE_NAME ).getAccounts();
@@ -109,26 +111,29 @@ describe( 'modules/tagmanager accounts', () => {
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
 					{ body: fixtures.accounts, status: 200 }
 				);
-
+				// Mute fetch for containers request triggered in the resolver from auto-selecting first account.
+				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
 				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
 
 				expect( initialAccounts ).toEqual( undefined );
 				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1, /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 				expect( accounts ).toEqual( fixtures.accounts );
 			} );
 
 			it( 'does not make a network request if accounts are already present', async () => {
 				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 
+				// Mute fetch for containers request triggered in the resolver from auto-selecting first account.
+				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 
 				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				expect( accounts ).toEqual( fixtures.accounts );
-				expect( fetchMock ).not.toHaveFetched();
+				expect( fetchMock ).not.toHaveFetched( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 			} );
 
 			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
