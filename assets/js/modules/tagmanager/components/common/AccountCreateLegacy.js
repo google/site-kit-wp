@@ -19,8 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -45,6 +45,11 @@ export default function AccountCreateLegacy() {
 		resetAccounts();
 	} );
 
+	const createAccountHandler = useCallback( () => {
+		// Need to use window.open for this to allow for stubbing in E2E.
+		global.window.open( escapeURI`https://tagmanager.google.com/?authuser=${ userEmail }#/admin/accounts/create`, '_blank' );
+	}, [ userEmail ] );
+
 	if ( undefined === accounts || isDoingGetAccounts ) {
 		return <ProgressBar />;
 	}
@@ -62,7 +67,7 @@ export default function AccountCreateLegacy() {
 
 			<div className="googlesitekit-setup-module__action">
 				<Button
-					href={ escapeURI`https://tagmanager.google.com/?authuser=${ userEmail }#/admin/accounts/create` }
+					onClick={ createAccountHandler }
 					target="_blank"
 				>
 					{ __( 'Create an account', 'google-site-kit' ) }
