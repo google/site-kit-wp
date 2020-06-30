@@ -41,7 +41,7 @@ describe( 'ContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( account.accountId );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID: account.accountId } );
 
-		const { container } = render( <ContainerSelect />, { registry } );
+		const { container } = render( <ContainerSelect containers={ [] } />, { registry } );
 		const select = container.querySelector( '.mdc-select' );
 
 		expect( select ).not.toHaveClass( 'mdc-select--disabled' );
@@ -57,7 +57,7 @@ describe( 'ContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( account.accountId );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID: account.accountId } );
 
-		const { container } = render( <ContainerSelect />, { registry } );
+		const { container } = render( <ContainerSelect containers={ [] } />, { registry } );
 		const select = container.querySelector( '.mdc-select' );
 
 		expect( select ).not.toHaveClass( 'mdc-select--disabled' );
