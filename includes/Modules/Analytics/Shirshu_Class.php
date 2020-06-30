@@ -2,8 +2,8 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
-use Google\Site_Kit\Modules\Analytics\Shirshu\Plugin_Detector;
-use Google\Site_Kit\Modules\Analytics\Shirshu\Measurement_Code_Injector;
+use Google\Site_Kit\Modules\Analytics\Plugin_Detector;
+use Google\Site_Kit\Modules\Analytics\Measurement_Code_Injector;
 
 /**
  * Main ShirshuClass class
@@ -41,10 +41,9 @@ final class Shirshu_Class {
 	protected $measurement_code_injector = null;
 
 	/**
-	 * Returns the main ShirshuClass instance
+	 * Returns the main Shirshu_Class instance
 	 *
-	 * @return ShirshuClass - Main instance
-	 *@see SS()
+	 * @return Shirshu_Class - Main instance
 	 */
 	public static function get_instance(){
 		if(is_null(self::$instance)){
