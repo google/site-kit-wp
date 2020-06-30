@@ -192,11 +192,11 @@ describe( 'Tag Manager module setup', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new account/i } );
 
 		// Ensure instructions are present.
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager p', { text: /to create a new account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module p', { text: /to create a new account/i } );
 
 		// Ensure buttons are present.
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager .mdc-button', { text: /create an account/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager .googlesitekit-cta-link', { text: /re-fetch my account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module .mdc-button', { text: /create an account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module .googlesitekit-cta-link', { text: /re-fetch my account/i } );
 	} );
 
 	describe( 'Setup with AMP active', () => {
