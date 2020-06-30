@@ -199,10 +199,10 @@ final class Optimize extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:optimize-id'          => array( 'service' => '' ),
 			'GET:amp-experiment-json'  => array( 'service' => '' ),
-			'POST:optimize-id'         => array( 'service' => '' ),
+			'GET:optimize-id'          => array( 'service' => '' ),
 			'POST:amp-experiment-json' => array( 'service' => '' ),
+			'POST:optimize-id'         => array( 'service' => '' ),
 			'POST:settings'            => array( 'service' => '' ),
 		);
 	}

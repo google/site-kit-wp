@@ -164,9 +164,9 @@ final class Search_Console extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:sites'           => array( 'service' => 'webmasters' ),
 			'GET:matched-sites'   => array( 'service' => 'webmasters' ),
 			'GET:searchanalytics' => array( 'service' => 'webmasters' ),
+			'GET:sites'           => array( 'service' => 'webmasters' ),
 			'POST:site'           => array( 'service' => 'webmasters' ),
 		);
 	}

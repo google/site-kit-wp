@@ -263,8 +263,8 @@ abstract class Module {
 
 		$restore_defer = $this->with_client_defer( true );
 
-		$datapoint_services = $this->get_datapoint_definitions();
-		$service_batches    = array();
+		$datapoint_definitions = $this->get_datapoint_definitions();
+		$service_batches       = array();
 
 		$data_requests = array();
 		$results       = array();
@@ -285,8 +285,8 @@ abstract class Module {
 				continue;
 			}
 
-			$datapoint_name = strtoupper( $dataset->method ) . ':' . $dataset->datapoint;
-			if ( ! isset( $datapoint_services[ $datapoint_name ] ) ) {
+			$datapoint_name = "{$dataset->method}:{$dataset->datapoint}";
+			if ( ! isset( $datapoint_definitions[ $datapoint_name ] ) ) {
 				continue;
 			}
 
@@ -320,15 +320,16 @@ abstract class Module {
 				continue;
 			}
 
-			if ( empty( $datapoint_services[ $datapoint_name ]['service'] ) ) {
+			$datapoint_service = $datapoint_definitions[ $datapoint_name ]['service'];
+			if ( empty( $datapoint_service ) ) {
 				continue;
 			}
 
-			if ( ! isset( $service_batches[ $datapoint_services[ $datapoint_name ]['service'] ] ) ) {
-				$service_batches[ $datapoint_services[ $datapoint_name ]['service'] ] = $this->google_services[ $datapoint_services[ $datapoint_name ]['service'] ]->createBatch();
+			if ( ! isset( $service_batches[ $datapoint_service ] ) ) {
+				$service_batches[ $datapoint_service ] = $this->google_services[ $datapoint_service ]->createBatch();
 			}
 
-			$service_batches[ $datapoint_services[ $datapoint_name ]['service'] ]->add( $request, $key );
+			$service_batches[ $datapoint_service ]->add( $request, $key );
 			$results[ $key ] = $datapoint;
 		}
 
@@ -338,7 +339,7 @@ abstract class Module {
 			} catch ( Exception $e ) {
 				// Set every result of this batch to the exception.
 				foreach ( $results as $key => $datapoint ) {
-					if ( ! is_string( $datapoint ) || ! isset( $datapoint_services[ $datapoint_name ] ) || $service_identifier !== $datapoint_services[ $datapoint_name ]['service'] ) {
+					if ( ! is_string( $datapoint ) || ! isset( $datapoint_definitions[ $datapoint_name ] ) || $service_identifier !== $datapoint_definitions[ $datapoint_name ]['service'] ) {
 						continue;
 					}
 
@@ -413,12 +414,7 @@ abstract class Module {
 	 * @return array Associative array of $datapoint => $service_identifier pairs.
 	 */
 	protected function get_datapoint_services() {
-		_deprecated_function(
-			sprintf( '%s::get_datapoint_services', static::class ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			'',
-			sprintf( '::get_datapoint_definitions', static::class ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		);
-
+		_deprecated_function( __METHOD__, 'n.e.x.t', static::class . '::get_datapoint_definitions' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		return array();
 	}
 

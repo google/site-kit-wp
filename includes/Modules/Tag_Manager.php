@@ -420,27 +420,24 @@ final class Tag_Manager extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$map = array(
-			'GET:connection'             => array( 'service' => '' ),
-			'GET:account-id'             => array( 'service' => '' ),
-			'GET:container-id'           => array( 'service' => '' ),
+		return array(
 			'GET:accounts'               => array( 'service' => 'tagmanager' ),
 			'GET:accounts-containers'    => array( 'service' => 'tagmanager' ),
+			'GET:account-id'             => array( 'service' => '' ),
+			'GET:connection'             => array( 'service' => '' ),
 			'GET:containers'             => array( 'service' => 'tagmanager' ),
+			'GET:container-id'           => array( 'service' => '' ),
 			'GET:live-container-version' => array( 'service' => 'tagmanager' ),
 			'GET:tag-permission'         => array( 'service' => 'tagmanager' ),
-			'POST:connection'            => array( 'service' => '' ),
 			'POST:account-id'            => array( 'service' => '' ),
+			'POST:connection'            => array( 'service' => '' ),
 			'POST:container-id'          => array( 'service' => '' ),
+			'POST:create-container'      => array(
+				'service'                => 'tagmanager',
+				'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
+				'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container on your behalf.', 'google-site-kit' ),
+			),
 		);
-
-		$map['POST:create-container'] = array(
-			'service'                => 'tagmanager',
-			'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
-			'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container on your behalf.', 'google-site-kit' ),
-		);
-
-		return $map;
 	}
 
 	/**

@@ -355,26 +355,26 @@ tag_partner: "site_kit"
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:connection'      => array( 'service' => '' ),
+			'GET:accounts'        => array( 'service' => 'adsense' ),
 			'GET:account-id'      => array( 'service' => '' ),
-			'GET:client-id'       => array( 'service' => '' ),
-			'GET:use-snippet'     => array( 'service' => '' ),
 			'GET:account-status'  => array( 'service' => '' ),
 			'GET:account-url'     => array( 'service' => '' ),
-			'GET:reports-url'     => array( 'service' => '' ),
-			'GET:notifications'   => array( 'service' => '' ),
-			'GET:tag-permission'  => array( 'service' => '' ),
-			'GET:accounts'        => array( 'service' => 'adsense' ),
 			'GET:alerts'          => array( 'service' => 'adsense' ),
 			'GET:clients'         => array( 'service' => 'adsense' ),
-			'GET:urlchannels'     => array( 'service' => 'adsense' ),
+			'GET:client-id'       => array( 'service' => '' ),
+			'GET:connection'      => array( 'service' => '' ),
 			'GET:earnings'        => array( 'service' => 'adsense' ),
-			'POST:connection'     => array( 'service' => '' ),
+			'GET:notifications'   => array( 'service' => '' ),
+			'GET:reports-url'     => array( 'service' => '' ),
+			'GET:tag-permission'  => array( 'service' => '' ),
+			'GET:urlchannels'     => array( 'service' => 'adsense' ),
+			'GET:use-snippet'     => array( 'service' => '' ),
 			'POST:account-id'     => array( 'service' => '' ),
-			'POST:client-id'      => array( 'service' => '' ),
-			'POST:use-snippet'    => array( 'service' => '' ),
 			'POST:account-status' => array( 'service' => '' ),
+			'POST:client-id'      => array( 'service' => '' ),
+			'POST:connection'     => array( 'service' => '' ),
 			'POST:setup-complete' => array( 'service' => '' ),
+			'POST:use-snippet'    => array( 'service' => '' ),
 		);
 	}
 
