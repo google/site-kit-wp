@@ -37,7 +37,7 @@ class Measurement_Code_Injector {
 		$this->active_plugins = $active_plugins;
 		$this->event_factory = Measurement_Event_Factory::get_instance();
 		$this->event_configurations = $this->build_event_configurations();
-		add_action('wp_head', array($this, 'inject_event_tracking'), 1);
+		add_action('wp_enqueue_scripts', array($this, 'inject_event_tracking'), 1);
 	}
 
 	/**
@@ -67,21 +67,19 @@ class Measurement_Code_Injector {
 	 * Creates list of measurement event configurations and javascript to inject
 	 */
 	public function inject_event_tracking() {
-		?>
-		<script>
-            let event_configurations = <?php echo json_encode($this->event_configurations); ?>;
-            let config;
-            for(config of event_configurations) {
-                const this_config = config;
-                document.addEventListener(config.on, function(e){
-                    if(e.target.matches(this_config.selector)) {
-                        alert('Got an event called: '.concat(this_config.action));
-                    }else if(e.target.matches(this_config.selector.concat(' *'))){
-                        alert('Got an event called: '.concat(this_config.action));
-                    }
-                }, true);
-            }
-		</script>
-		<?php
+		$main_file_path = plugin_basename(GOOGLESITEKIT_PLUGIN_MAIN_FILE);
+		$main_dir_path = strstr($main_file_path, '/', true);
+		wp_enqueue_script(
+			'shirshu_inject_event_tracking',
+			'/wp-content/plugins/' . $main_dir_path . '/assets/js/modules/analytics/shirshu/measurement-event-tracking.js',
+			false,
+			null,
+			false
+		);
+		wp_localize_script(
+			'shirshu_inject_event_tracking',
+			'eventConfigurations',
+			$this->event_configurations
+		);
 	}
 }
