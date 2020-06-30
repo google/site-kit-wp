@@ -26,9 +26,9 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE } from './constants';
+import { STORE_NAME, CONTAINER_CREATE } from './constants';
 import { actions as containerActions } from './containers';
-import { isValidAccountSelection } from '../util/validation';
+import { isValidAccountSelection, isValidAccountID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector } = Data;
 
@@ -63,7 +63,7 @@ export const baseActions = {
 	},
 
 	*selectAccount( accountID ) {
-		invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
+		invariant( isValidAccountSelection( accountID ), 'A valid accountID selection is required to select.' );
 
 		const { select, dispatch } = yield Data.commonActions.getRegistry();
 
@@ -78,19 +78,19 @@ export const baseActions = {
 		dispatch( STORE_NAME ).setAMPContainerID( '' );
 		dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
 
-		if ( ACCOUNT_CREATE === accountID ) {
+		if ( ! isValidAccountID( accountID ) ) {
 			return;
 		}
 
 		yield containerActions.waitForContainers( accountID );
 		// Trigger cascading selections.
-		const webContainers = select( STORE_NAME ).getWebContainers( accountID );
-		const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE };
+		const webContainers = select( STORE_NAME ).getWebContainers( accountID ) || [];
+		const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
 		dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
 		dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
 
-		const ampContainers = select( STORE_NAME ).getAMPContainers( accountID );
-		const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE };
+		const ampContainers = select( STORE_NAME ).getAMPContainers( accountID ) || [];
+		const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
 		dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
 		dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
 	},
