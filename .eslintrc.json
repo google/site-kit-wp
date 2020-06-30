@@ -29,6 +29,13 @@
       }
     ],
     "jest/no-identical-title": "off",
+    "jsdoc/check-access": "off",
+    "jsdoc/check-property-names": "off",
+    "jsdoc/empty-tags": "off",
+    "jsdoc/require-property": "off",
+    "jsdoc/require-property-name": "off",
+    "jsdoc/require-property-description": "off",
+    "jsdoc/require-property-type": "off",
     "@wordpress/i18n-text-domain": [
       "error",
       {
