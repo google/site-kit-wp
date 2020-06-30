@@ -79,7 +79,7 @@ export const baseActions = {
 		dispatch( STORE_NAME ).setAMPContainerID( '' );
 		dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
 
-		if ( ! isValidAccountID( accountID ) ) {
+		if ( ! isValidAccountID( accountID ) || select( STORE_NAME ).hasExistingTag() ) {
 			return;
 		}
 
