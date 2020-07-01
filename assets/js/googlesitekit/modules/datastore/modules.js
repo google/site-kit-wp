@@ -154,7 +154,7 @@ const baseActions = {
 		const { response, error } = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation( slug, active );
 		if ( response?.success === true ) {
 			// Fetch (or re-fetch) all modules, with their updated status.
-			yield fetchGetModulesStore.actions.fetchGetModules();
+			yield fetchGetModulesStore.actions.fetchGetModules( { useCache: false } );
 		}
 
 		return { response, error };
