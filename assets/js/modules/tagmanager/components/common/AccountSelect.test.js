@@ -21,6 +21,7 @@
  */
 import AccountSelect from './AccountSelect';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { freezeFetch, createTestRegistry } from '../../../../../../tests/js/utils';
@@ -36,6 +37,8 @@ describe( 'AccountSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		// Receive containers for the first account in fixtures to prevent fetching in getAccounts resolver.
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID: fixtures.accounts[ 0 ].accountId } );
+		// Prevent error when loading site info.
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
 
 	it( 'should render an option for each analytics account', () => {
