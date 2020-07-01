@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME, ACCOUNT_CREATE, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -29,6 +29,7 @@ import {
 	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/tagmanager accounts', () => {
@@ -105,6 +106,135 @@ describe( 'modules/tagmanager accounts', () => {
 				registry.dispatch( STORE_NAME ).resetAccounts();
 
 				expect( registry.select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) ).toStrictEqual( false );
+			} );
+		} );
+
+		describe( 'selectAccount', () => {
+			it( 'does nothing when called with the same accountID', async () => {
+				const accountID = '123';
+				const containerID = 'GTM-S1T3K1T';
+				const internalID = '12345';
+				registry.dispatch( STORE_NAME ).setAccountID( accountID );
+				registry.dispatch( STORE_NAME ).setContainerID( containerID );
+				registry.dispatch( STORE_NAME ).setInternalContainerID( internalID );
+
+				await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( accountID );
+				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( containerID );
+				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( internalID );
+			} );
+
+			it( 'sets the accountID and clears all container-related selections', async () => {
+				registry.dispatch( STORE_NAME ).setAccountID( '123' );
+				registry.dispatch( STORE_NAME ).setContainerID( 'GTM-S1T3K1T' );
+				registry.dispatch( STORE_NAME ).setInternalContainerID( '12345' );
+				registry.dispatch( STORE_NAME ).setAMPContainerID( 'GTM-AMP1234' );
+				registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '92345' );
+
+				await registry.dispatch( STORE_NAME ).selectAccount( ACCOUNT_CREATE );
+
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( ACCOUNT_CREATE );
+				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+			} );
+
+			describe( 'with no AMP', () => {
+				it( 'selects the first web container for the selected account', async () => {
+					const { account, containers } = factories.buildAccountWithContainers( {
+						container: { usageContext: [ CONTEXT_WEB ] },
+						count: 3,
+					} );
+					const accountID = account.accountId;
+					const [ firstContainer ] = containers;
+					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( firstContainer.publicId );
+					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId );
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
+					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+				} );
+
+				it( 'selects "set up a new container" if there are none', async () => {
+					const accountID = '123';
+					registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( CONTAINER_CREATE );
+					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
+					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+				} );
+			} );
+
+			describe( 'with primary AMP', () => {
+				beforeEach( () => registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } ) );
+
+				it( 'selects the first AMP container for the selected account', async () => {
+					const { account, containers } = factories.buildAccountWithContainers( {
+						container: { usageContext: [ CONTEXT_AMP ] },
+						count: 3,
+					} );
+					const accountID = account.accountId;
+					const [ firstContainer ] = containers;
+					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
+					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( firstContainer.publicId );
+					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( firstContainer.containerId );
+				} );
+
+				it( 'selects "set up a new container" if there are none', async () => {
+					const accountID = '123';
+					registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
+					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( CONTAINER_CREATE );
+					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+				} );
+			} );
+
+			describe( 'with secondary AMP', () => {
+				beforeEach( () => registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } ) );
+
+				it( 'selects both first containers for the selected account', async () => {
+					const { accountId } = factories.accountBuilder();
+					const accountID = accountId;
+					const webContainers = factories.buildContainers( 3, { accountId, usageContext: [ CONTEXT_WEB ] } );
+					const ampContainers = factories.buildContainers( 3, { accountId, usageContext: [ CONTEXT_AMP ] } );
+					const containers = [ ...webContainers, ...ampContainers ];
+					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( webContainers[ 0 ].publicId );
+					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( webContainers[ 0 ].containerId );
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( ampContainers[ 0 ].publicId );
+					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( ampContainers[ 0 ].containerId );
+				} );
+
+				it( 'selects "set up a new container" if there are none', async () => {
+					const accountID = '123';
+					registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+
+					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( CONTAINER_CREATE );
+					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( CONTAINER_CREATE );
+					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+				} );
 			} );
 		} );
 	} );
