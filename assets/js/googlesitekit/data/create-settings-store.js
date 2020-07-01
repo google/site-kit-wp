@@ -76,9 +76,14 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const fetchGetSettingsStore = createFetchStore( {
 		baseName: 'getSettings',
-		controlCallback: () => {
+		argsToParams: ( { useCache = true } = {} ) => {
+			return {
+				options: { useCache },
+			};
+		},
+		controlCallback: ( { options: { useCache } } ) => {
 			return API.get( type, identifier, datapoint, {}, {
-				useCache: false,
+				useCache,
 			} );
 		},
 		reducerCallback: ( state, values ) => {

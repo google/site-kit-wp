@@ -442,9 +442,12 @@ describe( 'createSettingsStore store', () => {
 					}
 				);
 
+				const params = {
+					options: { useCache: true },
+				};
 				const result = await storeDefinition.controls.FETCH_GET_SETTINGS( {
 					type: 'FETCH_GET_SETTINGS',
-					payload: { params: {} },
+					payload: { params },
 				} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
