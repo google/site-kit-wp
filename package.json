@@ -158,7 +158,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "babel-plugin-lodash": "^3.3.4",
-    "backstopjs": "3.8.8",
+    "backstopjs": "^5.0.1",
     "bundlesize": "^0.18.0",
     "circular-dependency-plugin": "^5.2.0",
     "core-js": "^3.6.5",
