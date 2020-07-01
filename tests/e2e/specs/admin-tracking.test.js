@@ -33,10 +33,9 @@ import {
 } from '../utils';
 
 async function toggleOptIn() {
-	await Promise.all( [
-		page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) ),
-		expect( page ).toClick( '#googlesitekit-opt-in' ),
-	] );
+	await page.waitForSelector( '#googlesitekit-opt-in' );
+	await expect( page ).toClick( '#googlesitekit-opt-in' );
+	await page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) );
 }
 
 describe( 'management of tracking opt-in/out via settings page', () => {
