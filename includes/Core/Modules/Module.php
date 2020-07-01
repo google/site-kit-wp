@@ -285,8 +285,8 @@ abstract class Module {
 				continue;
 			}
 
-			$datapoint_name = "{$dataset->method}:{$dataset->datapoint}";
-			if ( ! isset( $datapoint_definitions[ $datapoint_name ] ) ) {
+			$definition_key = "{$dataset->method}:{$dataset->datapoint}";
+			if ( ! isset( $datapoint_definitions[ $definition_key ] ) ) {
 				continue;
 			}
 
@@ -320,7 +320,7 @@ abstract class Module {
 				continue;
 			}
 
-			$datapoint_service = $datapoint_definitions[ $datapoint_name ]['service'];
+			$datapoint_service = $datapoint_definitions[ $definition_key ]['service'];
 			if ( empty( $datapoint_service ) ) {
 				continue;
 			}
@@ -339,7 +339,7 @@ abstract class Module {
 			} catch ( Exception $e ) {
 				// Set every result of this batch to the exception.
 				foreach ( $results as $key => $datapoint ) {
-					if ( ! is_string( $datapoint ) || ! isset( $datapoint_definitions[ $datapoint_name ] ) || $service_identifier !== $datapoint_definitions[ $datapoint_name ]['service'] ) {
+					if ( ! is_string( $datapoint ) || ! isset( $datapoint_definitions[ $definition_key ] ) || $service_identifier !== $datapoint_definitions[ $definition_key ]['service'] ) {
 						continue;
 					}
 

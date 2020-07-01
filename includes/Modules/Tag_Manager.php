@@ -424,19 +424,19 @@ final class Tag_Manager extends Module
 			'GET:accounts'               => array( 'service' => 'tagmanager' ),
 			'GET:accounts-containers'    => array( 'service' => 'tagmanager' ),
 			'GET:account-id'             => array( 'service' => '' ),
+			'POST:account-id'            => array( 'service' => '' ),
 			'GET:connection'             => array( 'service' => '' ),
+			'POST:connection'            => array( 'service' => '' ),
 			'GET:containers'             => array( 'service' => 'tagmanager' ),
 			'GET:container-id'           => array( 'service' => '' ),
-			'GET:live-container-version' => array( 'service' => 'tagmanager' ),
-			'GET:tag-permission'         => array( 'service' => 'tagmanager' ),
-			'POST:account-id'            => array( 'service' => '' ),
-			'POST:connection'            => array( 'service' => '' ),
 			'POST:container-id'          => array( 'service' => '' ),
 			'POST:create-container'      => array(
 				'service'                => 'tagmanager',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
 				'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container on your behalf.', 'google-site-kit' ),
 			),
+			'GET:live-container-version' => array( 'service' => 'tagmanager' ),
+			'GET:tag-permission'         => array( 'service' => 'tagmanager' ),
 		);
 	}
 

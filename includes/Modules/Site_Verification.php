@@ -138,9 +138,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	protected function get_datapoint_definitions() {
 		return array(
 			'GET:verification'       => array( 'service' => 'siteverification' ),
+			'POST:verification'      => array( 'service' => 'siteverification' ),
 			'GET:verification-token' => array( 'service' => 'siteverification' ),
 			'GET:verified-sites'     => array( 'service' => 'siteverification' ),
-			'POST:verification'      => array( 'service' => 'siteverification' ),
 		);
 	}
 
