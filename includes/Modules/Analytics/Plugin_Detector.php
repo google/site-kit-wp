@@ -25,16 +25,16 @@ class Plugin_Detector {
 	}
 
 	/**
-	 * Determines the user's current active plugins that ShirshuClass supports
+	 * Determines the user's current active plugins that Shirshu_Class supports
 	 *
 	 * @return array of strings
 	 */
 	public function get_active_plugins() {
 		$active_plugins = array();
 		foreach ($this->supported_plugins as $key => $function_name) {
-            if (defined($function_name) || function_exists($function_name)) {
-                array_push($active_plugins, $key);
-            }
+			if (defined($function_name) || function_exists($function_name)) {
+				array_push($active_plugins, $key);
+			}
 		}
 		return $active_plugins;
 	}
