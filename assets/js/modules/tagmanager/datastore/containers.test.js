@@ -133,7 +133,7 @@ describe( 'modules/tagmanager containers', () => {
 		} );
 
 		describe( 'selectContainer', () => {
-			it( 'sets the containerID and internalContainerID for a web container', () => {
+			it( 'sets the containerID and internalContainerID for a web container', async () => {
 				const { account, containers } = factories.buildAccountWithContainers( {
 					container: { usageContext: [ CONTEXT_WEB ] },
 				} );
@@ -143,13 +143,13 @@ describe( 'modules/tagmanager containers', () => {
 				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
 
-				registry.dispatch( STORE_NAME ).selectContainer( accountID, container.publicId );
+				await registry.dispatch( STORE_NAME ).selectContainer( accountID, container.publicId );
 
 				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( container.publicId );
 				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( container.containerId );
 			} );
 
-			it( 'sets the ampContainerID and internalAMPContainerID for an AMP container', () => {
+			it( 'sets the ampContainerID and internalAMPContainerID for an AMP container', async () => {
 				const { account, containers } = factories.buildAccountWithContainers( {
 					container: { usageContext: [ CONTEXT_AMP ] },
 				} );
@@ -159,20 +159,20 @@ describe( 'modules/tagmanager containers', () => {
 				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
 
-				registry.dispatch( STORE_NAME ).selectContainer( accountID, container.publicId );
+				await registry.dispatch( STORE_NAME ).selectContainer( accountID, container.publicId );
 
 				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( container.publicId );
 				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( container.containerId );
 			} );
 
-			it( 'does nothing for a containerID that does not exist in state', () => {
+			it( 'does nothing for a containerID that does not exist in state', async () => {
 				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
 
 				muteFetch( 'path:/google-site-kit/v1/modules/tagmanager/data/containers', [] );
-				registry.dispatch( STORE_NAME ).selectContainer( '12345', 'GTM-GXXXXGL3' );
+				await registry.dispatch( STORE_NAME ).selectContainer( '12345', 'GTM-GXXXXGL3' );
 
 				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
