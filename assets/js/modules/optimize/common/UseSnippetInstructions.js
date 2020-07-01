@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -54,7 +54,12 @@ export default function UseSnippetInstructions() {
 				</p>
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
-						__( '<a href="https://support.google.com/optimize/answer/6314801">Click here</a> for how to implement Optimize tag through your Tag Manager', 'google-site-kit' ),
+						sprintf(
+							'<a href="%1$s">%2$s</a> %3$s',
+							__( 'https://support.google.com/optimize/answer/6314801', 'google-site-kit' ),
+							_x( 'Click here', 'from "Click here for how to implement Optimize tag through your Tag Manager"', 'google-site-kit' ),
+							_x( 'for how to implement Optimize tag through your Tag Manager', 'from "Click here for how to implement Optimize tag through your Tag Manager"', 'google-site-kit' )
+						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
 							ALLOWED_ATTR: [ 'href' ],
@@ -76,7 +81,12 @@ export default function UseSnippetInstructions() {
 				</pre>
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
-						__( '<a href="https://support.google.com/optimize/answer/6262084">Click here</a> for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ),
+						sprintf(
+							'<a href="%1$s">%2$s</a> %3$s',
+							__( 'https://support.google.com/optimize/answer/6262084', 'google-site-kit' ),
+							_x( 'Click here', 'from "Click here for how to implement Optimize tag in Google Analytics Code Snippet"', 'google-site-kit' ),
+							_x( 'for how to implement Optimize tag in Google Analytics Code Snippet', 'from "Click here for how to implement Optimize tag in Google Analytics Code Snippet"', 'google-site-kit' )
+						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
 							ALLOWED_ATTR: [ 'href' ],
