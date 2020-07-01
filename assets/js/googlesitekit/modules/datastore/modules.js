@@ -106,11 +106,6 @@ const baseActions = {
 	*activateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, true );
 
-		yield {
-			payload: {},
-			type: REFETCH_AUTHENICATION,
-		};
-
 		return { response, error };
 	},
 
@@ -126,11 +121,6 @@ const baseActions = {
 	 */
 	*deactivateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, false );
-
-		yield {
-			payload: {},
-			type: REFETCH_AUTHENICATION,
-		};
 
 		return { response, error };
 	},
@@ -156,6 +146,10 @@ const baseActions = {
 		if ( response?.success === true ) {
 			// Fetch (or re-fetch) all modules, with their updated status.
 			yield fetchGetModulesStore.actions.fetchGetModules( { useCache: false } );
+			yield {
+				payload: {},
+				type: REFETCH_AUTHENICATION,
+			};
 		}
 
 		return { response, error };
