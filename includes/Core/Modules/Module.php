@@ -339,11 +339,11 @@ abstract class Module {
 			} catch ( Exception $e ) {
 				// Set every result of this batch to the exception.
 				foreach ( $results as $key => $datapoint ) {
-					if ( ! is_string( $datapoint ) || ! isset( $datapoint_definitions[ $definition_key ] ) || $service_identifier !== $datapoint_definitions[ $definition_key ]['service'] ) {
-						continue;
+					$get_service  = ! empty( $datapoint_definitions[ "GET:{$datapoint}" ] ) ? $datapoint_definitions[ "GET:{$datapoint}" ]['service'] : null;
+					$post_service = ! empty( $datapoint_definitions[ "POST:{$datapoint}" ] ) ? $datapoint_definitions[ "POST:{$datapoint}" ]['service'] : null;
+					if ( is_string( $datapoint ) && ( $service_identifier === $get_service || $service_identifier === $post_service ) ) {
+						$results[ $key ] = $this->exception_to_error( $e, $datapoint );
 					}
-
-					$results[ $key ] = $this->exception_to_error( $e, $datapoint );
 				}
 				continue;
 			}
