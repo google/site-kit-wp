@@ -52,6 +52,14 @@ export const BASE_INITIAL_STATE = {
 };
 
 export const baseActions = {
+	/**
+	 * Clears received accounts, and unsets related selections.
+	 *
+	 * The `getAccounts` selector will be invalidated to allow accounts to be re-fetched from the server.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 */
 	*resetAccounts() {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 
@@ -63,6 +71,14 @@ export const baseActions = {
 		dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
+	/**
+	 * Selects the given account and makes related selections.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} accountID Tag Manager account ID to select.
+	 */
 	*selectAccount( accountID ) {
 		invariant( isValidAccountSelection( accountID ), 'A valid accountID selection is required to select.' );
 

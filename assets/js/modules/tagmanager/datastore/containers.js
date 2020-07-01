@@ -107,6 +107,17 @@ const baseActions = {
 		return { response, error };
 	},
 
+	/**
+	 * Selects the given container, including its internal ID.
+	 *
+	 * Supports selecting a container that has not been received yet.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} accountID   Tag Manager account ID of container to select.
+	 * @param {string} containerID Tag Manager container `publicId` of container to select.
+	 */
 	*selectContainer( accountID, containerID ) {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to select a container.' );
 		invariant( isValidContainerID( containerID ), 'A valid containerID is required to select a container.' );
@@ -127,6 +138,15 @@ const baseActions = {
 		}
 	},
 
+	/**
+	 * Waits for containers to be resolved for the given account ID.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} accountID Google Tag Manager account ID to await containers for.
+	 * @return {Object} Redux-style action.
+	 */
 	*waitForContainers( accountID ) {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to wait for containers.' );
 		return {
