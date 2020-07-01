@@ -40,14 +40,15 @@ describe( 'UseSnippetInstructions', () => {
 		expect( selectedText ).toHaveTextContent( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:' );
 	} );
 
-	it( 'should not render tagmanger and anylytics inactive', () => {
+	it( 'should render with analytics message if analytics is inactive', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
 		};
 
 		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
 
-		expect( container.querySelector( 'p' ) ).toEqual( null );
+		const selectedText = container.querySelector( 'p' );
+		expect( selectedText ).toHaveTextContent( 'Google Analytics must be active to use Optimize' );
 	} );
 
 	it( 'should not render with analytics active and a useSnippet', () => {

@@ -31,6 +31,7 @@ import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 const { useSelect } = Data;
 
@@ -40,9 +41,30 @@ export default function UseSnippetInstructions() {
 	const analyticsUseSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );
 	const gtmActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
 	const gtmUseSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
+	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
 
 	if ( ! analyticsActive ) {
-		return null;
+		return (
+			<Fragment>
+				<p>
+					{ __( 'Google Analytics must be active to use Optimize', 'google-site-kit' ) }
+				</p>
+				<p
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						sprintf(
+							'<a href="%1$s">%2$s</a> %3$s',
+							`${ settingsURL }#connect`,
+							_x( 'Click here', 'from "Click here to connect Google Analytics"', 'google-site-kit' ),
+							_x( 'to connect Google Analytics', 'from "Click here to connect Google Analytics"', 'google-site-kit' )
+						),
+						{
+							ALLOWED_TAGS: [ 'a' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
+					) }
+				/>
+			</Fragment>
+		);
 	}
 
 	// If we don't use auto insert gtag, but use auto insert gtm. Show instruction of how to implement it on GTM.
