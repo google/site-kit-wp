@@ -39,8 +39,8 @@ import {
 	ErrorNotice,
 	AMPExperimentJSONField,
 	OptimizeIDField,
-	InstructionInformation,
-	FormInstructions,
+	UseSnippetInstructions,
+	OptimizeIDFieldInstructions,
 } from '../common/';
 const { useSelect, useDispatch } = Data;
 
@@ -66,7 +66,7 @@ export default function SetupForm( { finishSetup } ) {
 		>
 			<ErrorNotice />
 
-			<FormInstructions />
+			<OptimizeIDFieldInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<OptimizeIDField />
@@ -80,7 +80,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			<AMPExperimentJSONField />
 
-			<InstructionInformation />
+			<UseSnippetInstructions />
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>

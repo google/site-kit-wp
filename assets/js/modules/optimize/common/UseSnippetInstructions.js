@@ -1,5 +1,5 @@
 /**
- * InstructionInformation component.
+ * UseSnippetInstructions component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -34,7 +34,7 @@ import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datas
 
 const { useSelect } = Data;
 
-export default function InstructionInformation() {
+export default function UseSnippetInstructions() {
 	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
 	const analyticsActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const analyticsUseSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );

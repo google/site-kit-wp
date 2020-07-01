@@ -1,5 +1,5 @@
 /**
- * InstructionInformation component tests.
+ * UseSnippetInstructions component tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import InstructionInformation from './InstructionInformation';
+import UseSnippetInstructions from './UseSnippetInstructions';
 import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_MODULE } from '../../../googlesitekit/modules/datastore/constants';
@@ -27,14 +27,14 @@ import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/const
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import fixtures from '../../../googlesitekit/modules/datastore/fixtures.json';
 
-describe( 'InstructionInformation', () => {
+describe( 'UseSnippetInstructions', () => {
 	it( 'should render with analytics active and no useSnippet', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
 			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
 		};
 
-		const { container } = render( <InstructionInformation />, { setupRegistry } );
+		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
 
 		const selectedText = container.querySelector( 'p' );
 		expect( selectedText ).toHaveTextContent( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:' );
@@ -45,7 +45,7 @@ describe( 'InstructionInformation', () => {
 			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
 		};
 
-		const { container } = render( <InstructionInformation />, { setupRegistry } );
+		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
 
 		expect( container.querySelector( 'p' ) ).toEqual( null );
 	} );
@@ -57,7 +57,7 @@ describe( 'InstructionInformation', () => {
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		};
 
-		const { container } = render( <InstructionInformation />, { setupRegistry } );
+		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
 
 		expect( container.querySelector( 'p' ) ).toEqual( null );
 	} );
@@ -76,7 +76,7 @@ describe( 'InstructionInformation', () => {
 			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
 		};
 
-		const { container } = render( <InstructionInformation />, { setupRegistry } );
+		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
 
 		const selectedText = container.querySelector( 'p' );
 		expect( selectedText ).toHaveTextContent( 'You are using auto insert snippet with Tag Manager' );
