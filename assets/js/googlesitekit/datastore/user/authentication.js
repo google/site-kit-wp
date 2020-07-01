@@ -28,9 +28,14 @@ const { createRegistrySelector } = Data;
 
 const fetchGetAuthenticationStore = createFetchStore( {
 	baseName: 'getAuthentication',
-	controlCallback: () => {
+	argsToParams: ( { useCache = true } = {} ) => {
+		return {
+			options: { useCache },
+		};
+	},
+	controlCallback: ( { options: { useCache } } ) => {
 		return API.get( 'core', 'user', 'authentication', undefined, {
-			useCache: false,
+			useCache,
 		} );
 	},
 	reducerCallback: ( state, authentication ) => {
