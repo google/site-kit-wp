@@ -36,9 +36,14 @@ const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
-	controlCallback: () => {
+	argsToParams: ( { useCache = true } = {} ) => {
+		return {
+			options: { useCache },
+		};
+	},
+	controlCallback: ( { options: { useCache } } ) => {
 		return API.get( 'core', 'modules', 'list', null, {
-			useCache: false,
+			useCache,
 		} );
 	},
 	reducerCallback: ( state, modules ) => {
