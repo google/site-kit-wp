@@ -162,8 +162,8 @@ export default function AccountCreate() {
 				<TimezoneSelect />
 			</div>
 
-			{ hasProvisioningScope && <p className="googlesitekit-tos-redirect-msg">{ __( 'You will be redirected to Google Analytics to accept the terms of service.', 'google-site-kit' ) }</p> }
-			{ ! hasProvisioningScope && <p className="googlesitekit-permissions-msg">{ __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }</p> }
+			{ hasProvisioningScope && <p id="googlesitekit_analytics_need_tos_redirect_msg">{ __( 'You will be redirected to Google Analytics to accept the terms of service.', 'google-site-kit' ) }</p> }
+			{ ! hasProvisioningScope && <p id="googlesitekit_analytics_need_permissions_msg">{ __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }</p> }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

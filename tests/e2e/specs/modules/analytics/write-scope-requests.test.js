@@ -43,7 +43,7 @@ describe( 'Analytics write scope requests', () => {
 							'oauth2callback=1',
 							'code=valid-test-code',
 							// This is how the additional scope is granted.
-							'scope=',//https://www.googleapis.com/auth/analytics.provision',
+							'scope=https://www.googleapis.com/auth/analytics.provision',
 						].join( '&' ) ),
 					},
 				} );
@@ -78,6 +78,24 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } );
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 
-		await expect( page ).toMatchElement( '.googlesitekit-permissions-msg' );
+		// The user sees a notice above the button that explains they will need to grant additional permissions.
+		await expect( page ).toMatchElement( '#googlesitekit_analytics_need_permissions_msg' );
+
+		// Upon clicking the button, they're redirected to OAuth (should be mocked).
+		await Promise.all( [
+			page.waitForNavigation(), // User is sent directly to OAuth.
+			expect( page ).toClick( '.mdc-button', { text: /create account/i } ),
+		] );
+
+		// When returning, their original action is automatically invoked, without requiring them to click the button again.
+		await page.waitForRequest( ( req ) => req.url().match( 'analytics/data/create-account-ticket' ) );
+
+		// They should be redirected to the Analytics TOS (can be mocked to an immediate success redirect to Site Kit (...?gatoscallback=1...)).
+
+		// They should end up on the dashboard.
 	} );
+
+	it.todo( 'creating an Analytics property when not having the https://www.googleapis.com/auth/analytics.edit scope yet.' );
+
+	it.todo( 'creating an Analytics view when not having the https://www.googleapis.com/auth/analytics.edit scope yet.' );
 } );
