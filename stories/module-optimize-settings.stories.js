@@ -32,9 +32,14 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 import SettingsModule from '../assets/js/components/settings/settings-module';
 import { SettingsMain as OptimizeSettings } from '../assets/js/modules/optimize/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
-
+import { STORE_NAME as CORE_MODULE } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore';
 import { WithTestRegistry } from '../tests/js/utils';
+import fixtures from '../assets/js/googlesitekit/modules/datastore/fixtures.json';
+
+const analyticsFixture = fixtures.filter( ( fixture ) => fixture.slug === 'analytics' );
 
 function filterOptimizeSettings() {
 	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-optimize' );
@@ -125,6 +130,8 @@ storiesOf( 'Optimize Module/Settings', module )
 		filterOptimizeSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_MODULE ).receiveGetModules( analyticsFixture );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
 		};
@@ -135,7 +142,23 @@ storiesOf( 'Optimize Module/Settings', module )
 		filterOptimizeSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_MODULE ).receiveGetModules( analyticsFixture );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 			dispatch( STORE_NAME ).setSettings( {} );
+		};
+
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+	} )
+	.add( 'Edit, open with all settings and Experimental AMP Field', () => {
+		filterOptimizeSettings();
+
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_MODULE ).receiveGetModules( analyticsFixture );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+			dispatch( STORE_NAME ).setAMPExperimentJSON( 'amp-experiment-test' );
+			dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
