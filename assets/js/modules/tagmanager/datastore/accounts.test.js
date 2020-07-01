@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
@@ -51,6 +52,10 @@ describe( 'modules/tagmanager accounts', () => {
 		// Preload default settings to prevent the resolver from making unexpected requests
 		// as this is covered in settings store tests.
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		// Prevent fetches for existing tags.
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		// Prevent error loading site info.
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
 
 	afterAll( () => {
