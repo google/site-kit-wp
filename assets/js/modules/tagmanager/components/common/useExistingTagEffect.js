@@ -36,9 +36,11 @@ export default function useExistingTagEffect() {
 	// Set the accountID and containerID if there is an existing tag.
 	const { selectAccount, selectContainer } = useDispatch( STORE_NAME );
 	useEffect( () => {
-		if ( hasExistingTag && hasExistingTagPermission ) {
-			selectAccount( existingTagPermission.accountID );
-			selectContainer( existingTagPermission.accountID, existingTag );
-		}
+		( async () => {
+			if ( hasExistingTag && hasExistingTagPermission ) {
+				await selectAccount( existingTagPermission.accountID );
+				await selectContainer( existingTagPermission.accountID, existingTag );
+			}
+		} )();
 	}, [ hasExistingTag, existingTag, hasExistingTagPermission, existingTagPermission ] );
 }

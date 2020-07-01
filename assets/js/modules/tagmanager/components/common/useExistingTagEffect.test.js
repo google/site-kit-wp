@@ -64,10 +64,10 @@ describe( 'useExistingTagEffect', () => {
 			registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: existingContainer.publicId } );
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingContainer.publicId );
 			await untilResolved( registry, STORE_NAME ).getTagPermission( existingContainer.publicId );
+			rerender();
 			resolve();
 		} ) );
 
-		rerender();
 		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( existingContainer.publicId );
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( existingContainer.containerId );
 	} );
