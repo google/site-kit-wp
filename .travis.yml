@@ -83,6 +83,7 @@ script:
     fi
   - |
     if [[ "$PHP" == "1" ]]; then
+      composer validate --strict || exit 1
       composer test || exit 1
     fi
   - |
