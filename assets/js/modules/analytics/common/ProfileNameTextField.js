@@ -54,7 +54,7 @@ export default function ProfileNameTextField() {
 	let helperText;
 	let trailingIcon;
 
-	const existingProfile = profiles.some( ( { name } ) => name === profileName );
+	const existingProfile = Array.isArray( profiles ) && profiles.some( ( { name } ) => name === profileName );
 	if ( existingProfile ) {
 		helperText = (
 			<HelperText persistent>
