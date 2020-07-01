@@ -1,5 +1,5 @@
 /**
- * Widget component tests.
+ * WidgetRenderer component tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -36,7 +36,7 @@ const setupRegistry = ( { component = () => <div>Test</div>, dispatch } ) => {
 	dispatch( STORE_NAME ).assignWidget( 'TestWidget', 'dashboard-header' );
 };
 
-describe( 'Widget', () => {
+describe( 'WidgetRenderer', () => {
 	it( 'should output children directly', async () => {
 		const { container } = render( <Widget slug="TestWidget" />, { setupRegistry } );
 
