@@ -42,10 +42,10 @@ describe( 'core/modules modules', () => {
 	let registry;
 	let store;
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		// Invalidate the cache before every request, but keep it enabled to
 		// make sure we're opting-out of the cache for the correct requests.
-		API.invalidateCache();
+		await API.invalidateCache();
 
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
