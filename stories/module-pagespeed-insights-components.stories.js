@@ -30,7 +30,6 @@ import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/si
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';
 import { STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
 import { WithTestRegistry, freezeFetch } from '../tests/js/utils';
-import fetchMock from 'fetch-mock';
 
 storiesOf( 'PageSpeed Insights Module/Components', module )
 	.add( 'Dashboard widget', () => {
