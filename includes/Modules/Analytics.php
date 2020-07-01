@@ -72,6 +72,11 @@ final class Analytics extends Module
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
+	/**
+	 * Main Shirshu instance
+	 *
+	 * @var Shirshu_Class
+	 */
 	private $shirshu_instance;
 
 	/**
