@@ -22,6 +22,7 @@
 import AccountCreateLegacy from './AccountCreateLegacy';
 import { fireEvent, render, wait } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { createTestRegistry, freezeFetch, muteFetch } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
@@ -32,8 +33,12 @@ describe( 'AccountCreateLegacy', () => {
 		registry = createTestRegistry();
 		// Set settings to prevent fetch in resolver.
 		registry.dispatch( STORE_NAME ).setSettings( {} );
+		// Set set no existing tag by default.
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		// Set user info.
 		registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'user@example.com' } );
+		// Prevent error when loading site info.
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
 
 	it( 'displays a progress bar while accounts are being loaded', () => {
