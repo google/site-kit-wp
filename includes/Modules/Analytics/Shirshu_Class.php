@@ -1,4 +1,12 @@
 <?php
+/**
+ * Class Google\Site_Kit\Modules\Analytics\Shirshu_Class
+ *
+ * @package   Google\Site_Kit\Modules\Analytics
+ * @copyright 2019 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
 
 namespace Google\Site_Kit\Modules\Analytics;
 
@@ -6,7 +14,7 @@ use Google\Site_Kit\Modules\Analytics\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Measurement_Code_Injector;
 
 /**
- * Main ShirshuClass class
+ * Main Shirshu_Class class
  *
  * @class Shirshu_Class
  */
@@ -22,7 +30,7 @@ final class Shirshu_Class {
 	/**
 	 * Single instance of the class
 	 *
-	 * @var ShirshuClass
+	 * @var Shirshu_Class
 	 */
 	protected static $instance = null;
 
@@ -45,33 +53,35 @@ final class Shirshu_Class {
 	 *
 	 * @return Shirshu_Class - Main instance
 	 */
-	public static function get_instance(){
-		if(is_null(self::$instance)){
+	public static function get_instance() {
+		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
 	}
 
 	/**
-	 * ShirshuClass constructor
+	 * Shirshu_Class constructor
 	 */
-	private function __construct(){
-		$this->supported_plugins = array('Contact Form 7' => 'WPCF7_PLUGIN_DIR',
+	private function __construct() {
+		$this->supported_plugins = array(
+			'Contact Form 7'   => 'WPCF7_PLUGIN_DIR',
 			'Formidable Forms' => 'load_formidable_forms',
-			'Ninja Forms' => 'NF_PLUGIN_DIR',
-			'WooCommerce' => 'WC_PLUGIN_FILE',
-			'WPForms' => 'WPFORMS_PLUGIN_DIR',
-			'WPForms Lite' => 'WPFORMS_PLUGIN_DIR');
-		$this->plugin_detector = new Plugin_Detector($this->supported_plugins);
+			'Ninja Forms'      => 'NF_PLUGIN_DIR',
+			'WooCommerce'      => 'WC_PLUGIN_FILE',
+			'WPForms'          => 'WPFORMS_PLUGIN_DIR',
+			'WPForms Lite'     => 'WPFORMS_PLUGIN_DIR',
+		);
+		$this->plugin_detector   = new Plugin_Detector( $this->supported_plugins );
 		$this->get_active_plugins();
 	}
 
 	/**
-	 * Returns a list of plugins that ShirshuClass supports
+	 * Returns a list of plugins that Shirshu_Class supports
 	 *
 	 * @return array of strings
 	 */
-	protected function get_supported_plugins(){
+	protected function get_supported_plugins() {
 		return $this->supported_plugins;
 	}
 
@@ -79,8 +89,8 @@ final class Shirshu_Class {
 	 * Determines active plugins once WordPress loads plugins
 	 */
 	public function get_active_plugins() {
-		$active_plugins = $this->plugin_detector->get_active_plugins();
-		$this->measurement_code_injector = new Measurement_Code_Injector($active_plugins);
+		$active_plugins                  = $this->plugin_detector->get_active_plugins();
+		$this->measurement_code_injector = new Measurement_Code_Injector( $active_plugins );
 	}
 
 }

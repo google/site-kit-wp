@@ -1,4 +1,12 @@
 <?php
+/**
+ * Class Google\Site_Kit\Modules\Analytics\Measurement_Event_Factory
+ *
+ * @package   Google\Site_Kit\Modules\Analytics
+ * @copyright 2019 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
 
 namespace Google\Site_Kit\Modules\Analytics;
 
@@ -9,6 +17,11 @@ use Google\Site_Kit\Modules\Analytics\Measurement_Events\CF7_Event_List;
 use Google\Site_Kit\Modules\Analytics\Measurement_Events\FormidableForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Measurement_Events\NinjaForms_Event_List;
 
+/**
+ * Produces Measurement_Event objects
+ *
+ * Class Measurement_Event_Factory
+ */
 class Measurement_Event_Factory {
 
 	/**
@@ -24,7 +37,7 @@ class Measurement_Event_Factory {
 	 * @return Measurement_Event_Factory
 	 */
 	public static function get_instance() {
-		if(is_null(self::$instance)){
+		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -33,12 +46,12 @@ class Measurement_Event_Factory {
 	/**
 	 * Instantiates a subclass of MeasurementEventList based on the given plugin name
 	 *
-	 * @param $plugin_name - string that represents the plugin name to create a list of events for
+	 * @param string $plugin_name represents the plugin name to create a list of events for.
 	 * @return Measurement_Event_List
 	 */
-	public function create_measurement_event_list($plugin_name) {
+	public function create_measurement_event_list( $plugin_name ) {
 		$event_list = null;
-		switch($plugin_name) {
+		switch ( $plugin_name ) {
 			case 'WooCommerce':
 				$event_list = new Woocommerce_Event_List();
 				break;
