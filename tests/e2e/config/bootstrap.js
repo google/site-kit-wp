@@ -21,12 +21,7 @@ import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
 } from '../utils';
-import {
-	toHaveAdSenseTag,
-	toHaveValidAMPForUser,
-	toHaveValidAMPForVisitor,
-	toHaveValue,
-} from '../matchers';
+import * as customMatchers from '../matchers';
 
 /**
  * Environment variables
@@ -61,12 +56,7 @@ jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
 setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 500 } );
 
 // Add custom matchers specific to Site Kit.
-expect.extend( {
-	toHaveAdSenseTag,
-	toHaveValidAMPForUser,
-	toHaveValidAMPForVisitor,
-	toHaveValue,
-} );
+expect.extend( customMatchers );
 
 /**
  * Adds an event listener to the page to handle additions of page event
