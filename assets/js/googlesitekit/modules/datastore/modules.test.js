@@ -133,18 +133,8 @@ describe( 'core/modules modules', () => {
 			it( 'does not update status if the API encountered a failure', async () => {
 				// In our fixtures, optimize is off by default.
 				const slug = 'optimize';
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
 
-				// Call a selector that triggers an HTTP request to get the modules.
-				registry.select( STORE_NAME ).isModuleActive( slug );
-				// Wait until the modules have been loaded.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
 				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
 
 				expect( isActiveBefore ).toEqual( false );
@@ -159,10 +149,6 @@ describe( 'core/modules modules', () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{ body: response, status: 500 }
-				);
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
-					{ body: {}, status: 200 }
 				);
 
 				muteConsole( 'error' );
@@ -192,7 +178,7 @@ describe( 'core/modules modules', () => {
 
 				// The fourth request to update the modules shouldn't be called, because the
 				// activation request failed.
-				expect( fetchMock ).toHaveBeenCalledTimes( 3 );
+				expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 				expect( isActiveAfter ).toEqual( false );
 			} );
 		} );
@@ -272,19 +258,8 @@ describe( 'core/modules modules', () => {
 			it( 'does not update status if the API encountered a failure', async () => {
 				// In our fixtures, analytics is on by default.
 				const slug = 'analytics';
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-
-				// Call a selector that triggers an HTTP request to get the modules.
-				registry.select( STORE_NAME ).isModuleActive( slug );
-				// Wait until the modules have been loaded.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
 				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
 
 				expect( isActiveBefore ).toEqual( true );
@@ -299,11 +274,6 @@ describe( 'core/modules modules', () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{ body: response, status: 500 }
-				);
-
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
-					{ body: {}, status: 200 }
 				);
 
 				muteConsole( 'error' );
@@ -327,7 +297,7 @@ describe( 'core/modules modules', () => {
 
 				// The fourth request to update the modules shouldn't be called, because the
 				// deactivation request failed.
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isActiveAfter ).toEqual( true );
 			} );
 		} );
