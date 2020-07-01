@@ -157,6 +157,18 @@ final class Screens {
 	}
 
 	/**
+	 * Gets the Screen instance for a given hook suffix.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $hook_suffix The hook suffix associated with the screen to retrieve.
+	 * @return Screen|null Screen instance if available, otherwise null;
+	 */
+	public function get_screen( $hook_suffix ) {
+		return isset( $this->screens[ $hook_suffix ] ) ? $this->screens[ $hook_suffix ] : null;
+	}
+
+	/**
 	 * Adds all screens to the admin.
 	 *
 	 * @since 1.0.0

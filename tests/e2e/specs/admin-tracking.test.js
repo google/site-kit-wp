@@ -24,13 +24,18 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { resetSiteKit, setSearchConsoleProperty, deactivateUtilityPlugins, pageWait } from '../utils';
+import {
+	deactivateUtilityPlugins,
+	pageWait,
+	resetSiteKit,
+	setSearchConsoleProperty,
+	setupSiteKit,
+} from '../utils';
 
 async function toggleOptIn() {
-	await Promise.all( [
-		page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) ),
-		expect( page ).toClick( '#googlesitekit-opt-in' ),
-	] );
+	await page.waitForSelector( '#googlesitekit-opt-in' );
+	await expect( page ).toClick( '#googlesitekit-opt-in' );
+	await page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) );
 }
 
 describe( 'management of tracking opt-in/out via settings page', () => {
@@ -58,10 +63,13 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 	} );
 
 	it( 'should be opted-out by default', async () => {
+		await expect( page ).not.toHaveTracking();
 		expect( await page.$eval( '#googlesitekit-opt-in', ( el ) => el.checked ) ).toBe( false );
 	} );
 
 	it( 'should have tracking code when opted in', async () => {
+		await expect( page ).not.toHaveTracking();
+
 		// Make sure the script tags are not yet loaded on the page.
 		await expect( page ).not.toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
 
@@ -70,6 +78,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 		expect( await page.$eval( '#googlesitekit-opt-in', ( el ) => el.checked ) ).toBe( true );
 
+		await expect( page ).toHaveTracking();
 		// Ensure the script tags are injected into the page if they weren't
 		// loaded already.
 		await page.waitForSelector( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
@@ -109,7 +118,131 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		// Ensure no analytics script tag exists.
 		await expect( page ).not.toMatchElement( 'script[src^="https://www.google-analytics.com/analytics.js"]' );
 
+		await expect( page ).not.toHaveTracking();
 		// Ensure no tag manager script exists.
 		await expect( page ).not.toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
+	} );
+} );
+
+describe( 'initialization on load for Site Kit screens', () => {
+	describe( 'splash page', () => {
+		afterEach( async () => await resetSiteKit() );
+
+		it( 'does not load tracking if not opted-in', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+
+			await expect( page ).not.toHaveTracking();
+		} );
+
+		it( 'loads tracking when opted-in', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await toggleOptIn();
+			await page.reload();
+
+			await expect( page ).toHaveTracking();
+		} );
+	} );
+
+	describe( 'settings page', () => {
+		beforeEach( async () => await setupSiteKit() );
+		afterEach( async () => await resetSiteKit() );
+
+		it( 'does not load tracking if not opted-in', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+
+			await expect( page ).not.toHaveTracking();
+		} );
+
+		it( 'loads tracking when opted-in', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await toggleOptIn();
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+
+			await expect( page ).toHaveTracking();
+		} );
+	} );
+
+	describe( 'Site Kit dashboard', () => {
+		beforeEach( async () => await setupSiteKit() );
+
+		afterEach( async () => {
+			await resetSiteKit();
+			await deactivateUtilityPlugins();
+		} );
+
+		it( 'does not load tracking if not opted-in', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+			await expect( page ).not.toHaveTracking();
+		} );
+
+		it( 'loads tracking when opted-in', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await toggleOptIn();
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+			await expect( page ).toHaveTracking();
+		} );
+	} );
+
+	describe( 'module pages', () => {
+		beforeEach( async () => await setupSiteKit() );
+
+		afterEach( async () => {
+			await resetSiteKit();
+			await deactivateUtilityPlugins();
+		} );
+
+		it( 'does not load tracking if not opted-in', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
+
+			await expect( page ).not.toHaveTracking();
+		} );
+
+		it( 'loads tracking when opted-in', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await toggleOptIn();
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
+
+			await expect( page ).toHaveTracking();
+		} );
+	} );
+} );
+
+describe( 'initialization on load for non-Site Kit screens', () => {
+	describe( 'plugins page', () => {
+		afterEach( async () => await resetSiteKit() );
+
+		it( 'does not load tracking if not opted-in', async () => {
+			await visitAdminPage( 'plugins.php' );
+
+			await expect( page ).not.toHaveTracking();
+		} );
+
+		it( 'does not load tracking if opted-in', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await toggleOptIn();
+			await visitAdminPage( 'plugins.php' );
+
+			await expect( page ).not.toHaveTracking();
+		} );
+	} );
+
+	describe( 'WordPress dashboard', () => {
+		afterEach( async () => await resetSiteKit() );
+
+		it( 'does not load tracking if not opted-in', async () => {
+			await visitAdminPage( 'index.php' );
+
+			await expect( page ).not.toHaveTracking();
+		} );
+
+		it( 'does not load tracking if opted-in', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await toggleOptIn();
+			await visitAdminPage( 'index.php' );
+
+			await expect( page ).not.toHaveTracking();
+		} );
 	} );
 } );
