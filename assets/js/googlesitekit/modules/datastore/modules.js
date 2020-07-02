@@ -158,7 +158,7 @@ const baseActions = {
 
 export const baseControls = {
 	[ REFETCH_AUTHENICATION ]: () => {
-		return API.get( 'core', 'user', 'authentication', {}, { useCache: false } );
+		return API.get( 'core', 'user', 'authentication', { timestamp: Date.now() }, { useCache: false } );
 	},
 };
 
