@@ -29,8 +29,9 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, CONTAINER_CREATE } from './constants';
 import { actions as containerActions } from './containers';
-import { isValidAccountSelection, isValidAccountID } from '../util/validation';
+import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { ACCOUNT_CREATE } from '../../analytics/datastore/constants';
 const { createRegistrySelector } = Data;
 
 // Actions
@@ -95,7 +96,7 @@ export const baseActions = {
 		dispatch( STORE_NAME ).setAMPContainerID( '' );
 		dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
 
-		if ( ! isValidAccountID( accountID ) || select( STORE_NAME ).hasExistingTag() ) {
+		if ( ACCOUNT_CREATE === accountID || select( STORE_NAME ).hasExistingTag() ) {
 			return;
 		}
 
