@@ -64,9 +64,9 @@ export default function ContainerSelect( {
 					publicId: CONTAINER_CREATE,
 					name: __( 'Set up a new container', 'google-site-kit' ),
 				} )
-				.map( ( { publicId, name, containerId }, index ) => ( // Capitalization rule exception: publicId, containerId
+				.map( ( { publicId, name, containerId } ) => ( // Capitalization rule exception: publicId, containerId
 					<Option
-						key={ index }
+						key={ publicId } // Capitalization rule exception: publicId
 						value={ publicId } // Capitalization rule exception: publicId
 						data-internal-id={ containerId } // Capitalization rule exception: containerId
 					>
