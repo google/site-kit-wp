@@ -29,6 +29,7 @@ import {
 	resetSiteKit,
 	setSearchConsoleProperty,
 	useRequestInterception,
+	setupAnalytics,
 } from '../../../utils';
 
 describe( 'Analytics write scope requests', () => {
@@ -73,7 +74,7 @@ describe( 'Analytics write scope requests', () => {
 		await resetSiteKit();
 	} );
 
-	it.only( 'creating an analytics account when not having the https://www.googleapis.com/auth/analytics.provision scope yet.', async () => {
+	it( 'creating an analytics account when not having the https://www.googleapis.com/auth/analytics.provision scope yet.', async () => {
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
 		await setSearchConsoleProperty();
 
@@ -101,7 +102,35 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForRequest( ( req ) => req.url().match( 'analytics.google.com/analytics/web' ) );
 	} );
 
-	it.todo( 'creating an Analytics property when not having the https://www.googleapis.com/auth/analytics.edit scope yet.' );
+	it( 'creating an analytics property when not having the https://www.googleapis.com/auth/analytics.edit scope yet.', async () => {
+		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
+		await setSearchConsoleProperty();
+		await setupAnalytics();
 
-	it.todo( 'creating an Analytics view when not having the https://www.googleapis.com/auth/analytics.edit scope yet.' );
+		// Go to the analytics settings and edit it.
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+		await expect( page ).toClick( '#googlesitekit-settings-module__header--analytics' );
+		await expect( page ).toClick( '.googlesitekit-settings-module--analytics .googlesitekit-cta-link', { text: /edit/i } );
+
+		// Select "Test Account A" account.
+		await expect( page ).toClick( '.googlesitekit-analytics__select-account' );
+		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /test account a/i } );
+
+		// Select "create a new property" option.
+		await expect( page ).toClick( '.googlesitekit-analytics__select-property' );
+		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new property/i } );
+
+		// Click on confirm changes button and wait for permissions modal dialog.
+		await expect( page ).toClick( '.mdc-button', { text: /confirm changes/i } );
+		await page.waitForSelector( '.mdc-dialog__container' );
+
+		// Click on proceed button and wait for oauth request.
+		await Promise.all( [
+			page.waitForNavigation(),
+			expect( page ).toClick( '.mdc-dialog__actions .mdc-button', { text: /proceed/i } ),
+			page.waitForRequest( ( req ) => req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' ) ),
+		] );
+	} );
+
+	it.todo( 'creating an analytics view when not having the https://www.googleapis.com/auth/analytics.edit scope yet.' );
 } );
