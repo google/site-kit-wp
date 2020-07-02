@@ -48,9 +48,19 @@ describe( 'Analytics write scope requests', () => {
 					},
 				} );
 			} else if ( request.url().match( 'analytics/data/create-account-ticket' ) ) {
-				request.respond( { status: 200 } ); // Do nothing for now, return 200 to prevent error.
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( { id: `${ Math.ceil( 1000 * Math.random() ) }` } ),
+				} );
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( { status: 200 } );
+			} else if ( request.url().match( `//analytics.google.com/analytics/web/` ) ) {
+				request.respond( {
+					status: 302,
+					headers: {
+						location: createURL( '/wp-admin/index.php', 'gatoscallback=1' ),
+					},
+				} );
 			} else {
 				request.continue();
 			}
