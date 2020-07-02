@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
 export default function WebContainerSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
@@ -37,15 +36,6 @@ export default function WebContainerSelect() {
 	const containers = useSelect( ( select ) => select( STORE_NAME ).getWebContainers( accountID ) );
 	const isPrimaryAMP = useSelect( ( select ) => select( CORE_SITE ).isPrimaryAMP() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
-
-	const { setContainerID, setInternalContainerID } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( index, item ) => {
-		const newContainerID = item.dataset.value;
-		if ( containerID !== newContainerID ) {
-			setContainerID( newContainerID );
-			setInternalContainerID( item.dataset.internalId || '' );
-		}
-	}, [ containerID ] );
 
 	if ( isPrimaryAMP ) {
 		return null;
@@ -60,7 +50,6 @@ export default function WebContainerSelect() {
 			className="googlesitekit-tagmanager__select-container--web"
 			label={ label }
 			value={ containerID }
-			onEnhancedChange={ onChange }
 			containers={ containers }
 		/>
 	);

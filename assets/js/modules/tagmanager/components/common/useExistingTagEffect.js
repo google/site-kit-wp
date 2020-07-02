@@ -39,7 +39,7 @@ export default function useExistingTagEffect() {
 		( async () => {
 			if ( hasExistingTag && hasExistingTagPermission ) {
 				await selectAccount( existingTagPermission.accountID );
-				await selectContainer( existingTagPermission.accountID, existingTag );
+				await selectContainer( existingTag );
 			}
 		} )();
 	}, [ hasExistingTag, existingTag, hasExistingTagPermission, existingTagPermission ] );

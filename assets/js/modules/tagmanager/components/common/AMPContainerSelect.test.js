@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import AMPContainerSelect from './AMPContainerSelect';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../../googlesitekit/datastore/site/constants';
-import { createTestRegistry, freezeFetch } from '../../../../../../tests/js/utils';
+import { createTestRegistry, freezeFetch, untilResolved } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'AMPContainerSelect', () => {
@@ -77,7 +77,7 @@ describe( 'AMPContainerSelect', () => {
 		expect( listItems.pop() ).toHaveTextContent( /set up a new container/i );
 	} );
 
-	it( 'should update the container ID and internal container ID when selected', () => {
+	it( 'should update the container ID and internal container ID when selected', async () => {
 		const { account, containers } = factories.buildAccountWithContainers(
 			{ container: { usageContext: [ CONTEXT_AMP ] } }
 		);
@@ -93,7 +93,11 @@ describe( 'AMPContainerSelect', () => {
 		expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBeFalsy();
 
 		fireEvent.click( container.querySelector( '.mdc-select__selected-text' ) );
-		fireEvent.click( getByText( ampContainer.name ) );
+
+		await act( async () => {
+			fireEvent.click( getByText( ampContainer.name ) );
+			await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+		} );
 
 		expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( ampContainer.publicId );
 		expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( ampContainer.containerId );

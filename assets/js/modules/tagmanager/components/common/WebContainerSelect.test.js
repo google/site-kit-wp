@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import WebContainerSelect from './WebContainerSelect';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY, AMP_MODE_PRIMARY } from '../../../../googlesitekit/datastore/site/constants';
-import { createTestRegistry, freezeFetch } from '../../../../../../tests/js/utils';
+import { createTestRegistry, freezeFetch, untilResolved } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'WebContainerSelect', () => {
@@ -77,7 +77,7 @@ describe( 'WebContainerSelect', () => {
 		expect( listItems.pop() ).toHaveTextContent( /set up a new container/i );
 	} );
 
-	it( 'should update the container ID and internal container ID when selected', () => {
+	it( 'should update the container ID and internal container ID when selected', async () => {
 		const { account, containers } = factories.buildAccountWithContainers(
 			{ container: { usageContext: [ CONTEXT_WEB ] } }
 		);
@@ -93,7 +93,11 @@ describe( 'WebContainerSelect', () => {
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBeFalsy();
 
 		fireEvent.click( container.querySelector( '.mdc-select__selected-text' ) );
-		fireEvent.click( getByText( webContainer.name ) );
+
+		await act( async () => {
+			fireEvent.click( getByText( webContainer.name ) );
+			await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+		} );
 
 		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( webContainer.publicId );
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( webContainer.containerId );

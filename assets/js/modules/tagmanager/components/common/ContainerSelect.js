@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,17 +36,26 @@ import { Select, Option } from '../../../../material-components';
 import { STORE_NAME, CONTAINER_CREATE } from '../../datastore/constants';
 import ProgressBar from '../../../../components/progress-bar';
 import { isValidAccountID } from '../../util';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function ContainerSelect( {
 	containers,
 	className,
+	value,
 	...props
 } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const isLoadingContainers = useSelect( ( select ) => select( STORE_NAME ).isDoingGetContainers( accountID ) );
+
+	const { selectContainer } = useDispatch( STORE_NAME );
+	const onSelect = useCallback( ( index, item ) => {
+		const newContainerID = item.dataset.value;
+		if ( value !== newContainerID ) {
+			selectContainer( newContainerID );
+		}
+	}, [ value ] );
 
 	if ( accounts === undefined || containers === undefined || isLoadingContainers ) {
 		return <ProgressBar small />;
@@ -55,6 +65,8 @@ export default function ContainerSelect( {
 		<Select
 			className={ classnames( 'googlesitekit-tagmanager__select-container', className ) }
 			disabled={ hasExistingTag || ! isValidAccountID( accountID ) }
+			onEnhancedChange={ onSelect }
+			value={ value }
 			enhanced
 			outlined
 			{ ...props }
