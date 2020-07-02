@@ -127,7 +127,12 @@ const baseActions = {
 			return;
 		}
 
+		// Containers may not be loaded yet for this account,
+		// and no selections are done in the getContainers resolver, so we wait here.
+		// This will not guarantee that containers exist, as an account may also have no containers
+		// it will simply wait for `getContainers` to be resolved for this account ID.
 		yield baseActions.waitForContainers( accountID );
+
 		const container = select( STORE_NAME ).getContainerByID( accountID, containerID );
 		if ( ! container ) {
 			// Do nothing if the container was not found.
