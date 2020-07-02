@@ -153,9 +153,10 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
 
-		const { queryByRole } = render( <WebContainerSelect />, { registry } );
+		const { queryByRole, container } = render( <WebContainerSelect />, { registry } );
 
 		expect( queryByRole( 'progressbar' ) ).not.toBeInTheDocument();
 		expect( queryByRole( 'menu', { hidden: true } ) ).not.toBeInTheDocument();
+		expect( container ).toBeEmpty();
 	} );
 } );

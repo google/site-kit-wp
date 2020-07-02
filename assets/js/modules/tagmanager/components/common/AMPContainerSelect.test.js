@@ -152,9 +152,10 @@ describe( 'AMPContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } );
 
-		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
+		const { queryByRole, container } = render( <AMPContainerSelect />, { registry } );
 
 		expect( queryByRole( 'progressbar' ) ).not.toBeInTheDocument();
 		expect( queryByRole( 'menu', { hidden: true } ) ).not.toBeInTheDocument();
+		expect( container ).toBeEmpty();
 	} );
 } );
