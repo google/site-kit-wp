@@ -53,7 +53,7 @@ const fetchGetContainersStore = createFetchStore( {
 			...state,
 			containers: {
 				...state.containers,
-				[ accountID ]: [ ...containers ],
+				[ accountID ]: containers,
 			},
 		};
 	},
