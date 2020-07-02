@@ -166,8 +166,8 @@ final class Search_Console extends Module
 		return array(
 			'GET:matched-sites'   => array( 'service' => 'webmasters' ),
 			'GET:searchanalytics' => array( 'service' => 'webmasters' ),
-			'GET:sites'           => array( 'service' => 'webmasters' ),
 			'POST:site'           => array( 'service' => 'webmasters' ),
+			'GET:sites'           => array( 'service' => 'webmasters' ),
 		);
 	}
 
