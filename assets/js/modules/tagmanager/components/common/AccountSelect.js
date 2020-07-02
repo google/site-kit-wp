@@ -64,9 +64,9 @@ export default function AccountSelect() {
 					accountId: ACCOUNT_CREATE,
 					name: __( 'Set up a new account', 'google-site-kit' ),
 				} )
-				.map( ( { accountId, name }, index ) => (
+				.map( ( { accountId, name } ) => (
 					<Option
-						key={ index }
+						key={ accountId }
 						value={ accountId }
 					>
 						{ name }
