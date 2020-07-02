@@ -85,6 +85,7 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForSelector( '.googlesitekit-settings-connect-module--analytics' );
 		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } );
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
+		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// The user sees a notice above the button that explains they will need to grant additional permissions.
 		await expect( page ).toMatchElement( '#googlesitekit_analytics_need_permissions_msg' );
