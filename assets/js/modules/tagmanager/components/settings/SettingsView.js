@@ -43,7 +43,7 @@ export default function SettingsView() {
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const ampEnabled = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
+	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
 	return (
@@ -64,11 +64,11 @@ export default function SettingsView() {
 					</p>
 				</div>
 
-				{ ( ! ampEnabled || isSecondaryAMP ) && (
+				{ ( ! isAMP || isSecondaryAMP ) && (
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ isSecondaryAMP && __( 'Web Container ID', 'google-site-kit' ) }
-							{ ! ampEnabled && __( 'Container ID', 'google-site-kit' ) }
+							{ ! isAMP && __( 'Container ID', 'google-site-kit' ) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting value={ containerID } />
@@ -76,7 +76,7 @@ export default function SettingsView() {
 					</div>
 				) }
 
-				{ ampEnabled && (
+				{ isAMP && (
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ isSecondaryAMP && __( 'AMP Container ID', 'google-site-kit' ) }
