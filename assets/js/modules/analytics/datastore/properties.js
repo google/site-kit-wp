@@ -139,14 +139,18 @@ const baseActions = {
 		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
 
 		const registry = yield Data.commonActions.getRegistry();
+
+		const accountID = registry.select( STORE_NAME ).getAccountID();
+		if ( ! isValidAccountID( accountID ) ) {
+			return;
+		}
+
 		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
 
 		if ( PROPERTY_CREATE === propertyID ) {
 			registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
 			return;
 		}
-
-		const { accountID } = parsePropertyID( propertyID );
 
 		yield baseActions.waitForProperties( accountID );
 		const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
