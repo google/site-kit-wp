@@ -36,7 +36,7 @@ import ProgressBar from '../../../../components/progress-bar';
 import { SvgIcon } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import {
-	AccountCreateLegacy,
+	AccountCreate,
 	ExistingTagError,
 	useExistingTagEffect,
 } from '../common';
@@ -70,7 +70,7 @@ export default function SetupMain( { finishSetup } ) {
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
-		viewComponent = <AccountCreateLegacy />;
+		viewComponent = <AccountCreate />;
 	} else {
 		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } />;
 	}

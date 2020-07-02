@@ -1,5 +1,5 @@
 /**
- * Tag Manager Account Create Legacy component.
+ * Tag Manager Account Create component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -35,7 +35,7 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { escapeURI } from '../../../../util/escape-uri';
 const { useSelect, useDispatch } = Data;
 
-export default function AccountCreateLegacy() {
+export default function AccountCreate() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );

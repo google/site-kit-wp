@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/progress-bar';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import {
-	AccountCreateLegacy,
+	AccountCreate,
 	ExistingTagError,
 	useExistingTagEffect,
 } from '../common';
@@ -91,7 +91,7 @@ export default function SettingsEdit() {
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
-		viewComponent = <AccountCreateLegacy />;
+		viewComponent = <AccountCreate />;
 	} else {
 		viewComponent = <SettingsForm />;
 	}

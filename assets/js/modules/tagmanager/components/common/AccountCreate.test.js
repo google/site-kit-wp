@@ -1,5 +1,5 @@
 /**
- * Account Select component tests.
+ * Account Create component tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import AccountCreateLegacy from './AccountCreateLegacy';
+import AccountCreate from './AccountCreate';
 import { fireEvent, render, wait } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -27,7 +27,7 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { createTestRegistry, freezeFetch, muteFetch } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
-describe( 'AccountCreateLegacy', () => {
+describe( 'AccountCreate', () => {
 	let registry;
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -44,7 +44,7 @@ describe( 'AccountCreateLegacy', () => {
 	it( 'displays a progress bar while accounts are being loaded', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 
-		const { getByRole, queryByRole } = render( <AccountCreateLegacy />, { registry } );
+		const { getByRole, queryByRole } = render( <AccountCreate />, { registry } );
 
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
@@ -59,7 +59,7 @@ describe( 'AccountCreateLegacy', () => {
 			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
 			{ body: [ accountA, accountB ], status: 200 }
 		);
-		const { getByRole } = render( <AccountCreateLegacy />, { registry } );
+		const { getByRole } = render( <AccountCreate />, { registry } );
 
 		const refechMyAccountButton = getByRole( 'button', { name: /re-fetch my account/i } );
 
@@ -81,7 +81,7 @@ describe( 'AccountCreateLegacy', () => {
 		it( 'opens a new window  new account screen for the current user', () => {
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 
-			const { getByRole } = render( <AccountCreateLegacy />, { registry } );
+			const { getByRole } = render( <AccountCreate />, { registry } );
 
 			const createAccountButton = getByRole( 'button', { name: /Create an account/i } );
 

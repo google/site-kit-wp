@@ -35,7 +35,7 @@ import UseSnippetSwitch from '../assets/js/modules/tagmanager/components/common/
 import ExistingTagNotice from '../assets/js/modules/tagmanager/components/common/ExistingTagNotice';
 import ExistingTagError from '../assets/js/modules/tagmanager/components/common/ExistingTagError';
 import ErrorNotice from '../assets/js/modules/tagmanager/components/common/ErrorNotice';
-import AccountCreateLegacy from '../assets/js/modules/tagmanager/components/common/AccountCreateLegacy';
+import AccountCreate from '../assets/js/modules/tagmanager/components/common/AccountCreate';
 
 storiesOf( 'Tag Manager Module/Components', module )
 	.add( 'AccountSelect', () => {
@@ -133,14 +133,14 @@ storiesOf( 'Tag Manager Module/Components', module )
 			</WithTestRegistry>
 		);
 	} )
-	.add( 'AccountCreateLegacy', () => {
+	.add( 'AccountCreate', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 		};
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<AccountCreateLegacy />
+				<AccountCreate />
 			</WithTestRegistry>
 		);
 	} )
