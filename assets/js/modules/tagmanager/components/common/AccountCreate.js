@@ -50,7 +50,7 @@ export default function AccountCreate() {
 		global.window.open( escapeURI`https://tagmanager.google.com/?authuser=${ userEmail }#/admin/accounts/create`, '_blank' );
 	}, [ userEmail ] );
 
-	if ( undefined === accounts || isDoingGetAccounts ) {
+	if ( undefined === accounts || isDoingGetAccounts || ! userEmail ) {
 		return <ProgressBar />;
 	}
 
