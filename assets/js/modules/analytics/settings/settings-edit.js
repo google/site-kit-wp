@@ -35,7 +35,6 @@ import {
 	ExistingTagError,
 	AccountCreateLegacy,
 } from '../common';
-import { parsePropertyID } from '../util';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsEdit() {
@@ -43,7 +42,8 @@ export default function SettingsEdit() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
-	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
+	const getExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
@@ -56,12 +56,12 @@ export default function SettingsEdit() {
 	// These selections will be rolled back by the above hook if the user exits the edit view.
 	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
 	useEffect( () => {
-		if ( hasExistingTag ) {
-			const { accountID: existingTagAccountID } = parsePropertyID( existingTag );
+		if ( hasExistingTag && getExistingTagPermission ) {
+			const { accountID: existingTagAccountID } = getExistingTagPermission;
 			setAccountID( existingTagAccountID );
 			selectProperty( existingTag );
 		}
-	}, [ hasExistingTag, existingTag ] );
+	}, [ hasExistingTag, existingTag, getExistingTagPermission ] );
 
 	// Toggle disabled state of legacy confirm changes button.
 	useEffect( () => {
@@ -101,7 +101,7 @@ export default function SettingsEdit() {
 	// when the component initially loads and has yet to start fetching accounts.
 	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts ) {
 		viewComponent = <ProgressBar />;
-	} else if ( hasExistingTag && existingTagPermission === false ) {
+	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( ! accounts.length || isCreateAccount ) {
 		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
