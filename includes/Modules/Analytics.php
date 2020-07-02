@@ -1088,12 +1088,12 @@ final class Analytics extends Module
 					return array_merge( compact( 'accounts' ), $properties_profiles );
 				}
 
-				if ( ! empty( $data['existingPropertyID'] ) ) {
+				if ( ! empty( $data['existingPropertyID'] ) && ! empty( $data['existingAccountID'] ) ) {
 					// If there is an existing tag, pass it through to ensure only the existing tag is matched.
 					$properties_profiles = $this->get_data(
 						'properties-profiles',
 						array(
-							'accountID'          => $this->parse_account_id( $data['existingPropertyID'] ),
+							'accountID'          => $data['existingAccountID'],
 							'existingPropertyID' => $data['existingPropertyID'],
 						)
 					);

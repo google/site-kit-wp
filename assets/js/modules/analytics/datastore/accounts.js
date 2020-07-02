@@ -211,8 +211,13 @@ const baseResolvers = {
 		if ( existingAccounts === undefined ) {
 			yield tagActions.waitForExistingTag();
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
+
+			yield tagActions.waitForExistingTagPermission( existingTag );
+			const existingTagPermission = registry.select( STORE_NAME ).getTagPermission( existingTag );
+
 			const { response } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
 				existingPropertyID: existingTag,
+				existingAccountID: existingTagPermission || undefined,
 			} );
 
 			if ( response ) {
