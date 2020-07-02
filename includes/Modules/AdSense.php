@@ -355,16 +355,16 @@ tag_partner: "site_kit"
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:accounts'        => array( 'service' => 'adsense' ),
 			'GET:account-id'      => array( 'service' => '' ),
 			'POST:account-id'     => array( 'service' => '' ),
 			'GET:account-status'  => array( 'service' => '' ),
 			'POST:account-status' => array( 'service' => '' ),
 			'GET:account-url'     => array( 'service' => '' ),
+			'GET:accounts'        => array( 'service' => 'adsense' ),
 			'GET:alerts'          => array( 'service' => 'adsense' ),
-			'GET:clients'         => array( 'service' => 'adsense' ),
 			'GET:client-id'       => array( 'service' => '' ),
 			'POST:client-id'      => array( 'service' => '' ),
+			'GET:clients'         => array( 'service' => 'adsense' ),
 			'GET:connection'      => array( 'service' => '' ),
 			'POST:connection'     => array( 'service' => '' ),
 			'GET:earnings'        => array( 'service' => 'adsense' ),

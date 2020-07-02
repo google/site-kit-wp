@@ -564,9 +564,9 @@ final class Analytics extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
 			'GET:account-id'                   => array( 'service' => '' ),
 			'POST:account-id'                  => array( 'service' => '' ),
+			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
 			'GET:anonymize-ip'                 => array( 'service' => '' ),
 			'GET:connection'                   => array( 'service' => '' ),
 			'POST:connection'                  => array( 'service' => '' ),
@@ -588,9 +588,9 @@ final class Analytics extends Module
 			'GET:internal-web-property-id'     => array( 'service' => '' ),
 			'POST:internal-web-property-id'    => array( 'service' => '' ),
 			'GET:goals'                        => array( 'service' => 'analytics' ),
-			'GET:profiles'                     => array( 'service' => 'analytics' ),
 			'GET:profile-id'                   => array( 'service' => '' ),
 			'POST:profile-id'                  => array( 'service' => '' ),
+			'GET:profiles'                     => array( 'service' => 'analytics' ),
 			'GET:properties-profiles'          => array( 'service' => 'analytics' ),
 			'GET:property-id'                  => array( 'service' => '' ),
 			'POST:property-id'                 => array( 'service' => '' ),
