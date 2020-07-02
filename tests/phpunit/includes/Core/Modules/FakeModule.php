@@ -102,11 +102,11 @@ class FakeModule extends Module {
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
+	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 *
+	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
