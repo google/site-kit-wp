@@ -102,7 +102,7 @@ export const containerBuilder = build( 'Tag Manager Container', {
  * @return {Object[]} Array of generated container objects.
  */
 export const buildContainers = ( count, overrides ) => {
-	return Array( count ).fill( undefined )
+	return Array.from( { length: count } )
 		.map( () => containerBuilder( { overrides } ) );
 };
 
