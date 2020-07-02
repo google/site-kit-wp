@@ -104,14 +104,14 @@ export const baseActions = {
 		// Trigger cascading selections.
 		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
 		if ( ! isAMP() || isSecondaryAMP() ) {
-			const webContainers = select( STORE_NAME ).getWebContainers( accountID ) || [];
+			const webContainers = select( STORE_NAME ).getWebContainers( accountID );
 			const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
 			dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
 			dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
 		}
 
 		if ( isAMP() ) {
-			const ampContainers = select( STORE_NAME ).getAMPContainers( accountID ) || [];
+			const ampContainers = select( STORE_NAME ).getAMPContainers( accountID );
 			const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
 			dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
 			dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );

@@ -132,6 +132,8 @@ describe( 'modules/tagmanager accounts', () => {
 				registry.dispatch( STORE_NAME ).setAMPContainerID( 'GTM-AMP1234' );
 				registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '92345' );
 
+				// Since ACCOUNT_CREATE is a valid choice but not a valid account ID,
+				// it will still be selected but subsequent container selections will be skipped.
 				await registry.dispatch( STORE_NAME ).selectAccount( ACCOUNT_CREATE );
 
 				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( ACCOUNT_CREATE );
@@ -139,6 +141,43 @@ describe( 'modules/tagmanager accounts', () => {
 				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+			} );
+
+			it( 'supports asynchronous container resolution', async () => {
+				const { account, containers } = factories.buildAccountWithContainers( {
+					container: { usageContext: [ CONTEXT_WEB ] },
+					count: 3,
+				} );
+				const accountID = account.accountId;
+				const [ firstContainer ] = containers;
+				let resolveResponse;
+				const responsePromise = new Promise( ( resolve ) => {
+					resolveResponse = () => resolve( containers );
+				} );
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					responsePromise
+				);
+
+				const promise = registry.dispatch( STORE_NAME ).selectAccount( accountID );
+
+				expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( accountID );
+				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getWebContainers( accountID ) ).toBe( undefined );
+				expect( registry.select( STORE_NAME ).getAMPContainers( accountID ) ).toBe( undefined );
+
+				resolveResponse();
+				await promise;
+
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( accountID );
+				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( firstContainer.publicId );
+				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId );
+				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+				expect( registry.select( STORE_NAME ).getWebContainers( accountID ) ).toEqual( containers );
+				expect( registry.select( STORE_NAME ).getAMPContainers( accountID ) ).toEqual( [] );
 			} );
 
 			describe( 'with no AMP', () => {
