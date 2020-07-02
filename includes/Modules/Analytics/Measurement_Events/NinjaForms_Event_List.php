@@ -23,11 +23,11 @@ class NinjaForms_Event_List extends Measurement_Event_List {
 	public function __construct() {
 		$builder = Measurement_Event::create_builder(
 			array(
-			'pluginName' => 'Ninja Forms',
-			'category' => 'engagement',
-			'action' => 'form_submit',
-			'selector' => 'div.nf-field-container.submit-container [type="button"]',
-			'on' => 'click',
+				'pluginName' => 'Ninja Forms',
+				'category'   => 'engagement',
+				'action'     => 'form_submit',
+				'selector'   => 'div.nf-field-container.submit-container [type="button"]',
+				'on'         => 'click',
 			)
 		);
 		$this->add_event( $builder->build() );

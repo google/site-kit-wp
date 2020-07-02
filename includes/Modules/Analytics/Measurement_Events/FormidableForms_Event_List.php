@@ -23,11 +23,11 @@ class FormidableForms_Event_List extends Measurement_Event_List {
 	public function __construct() {
 		$builder = Measurement_Event::create_builder(
 			array(
-			'pluginName' => 'Formidable Forms',
-			'category' => 'engagement',
-			'action' => 'form_submit',
-			'selector' => '.frm_fields_container .frm_button_submit',
-			'on' => 'click',
+				'pluginName' => 'Formidable Forms',
+				'category'   => 'engagement',
+				'action'     => 'form_submit',
+				'selector'   => '.frm_fields_container .frm_button_submit',
+				'on'         => 'click',
 			)
 		);
 		$this->add_event( $builder->build() );

@@ -27,7 +27,7 @@ class Measurement_Event_List {
 	/**
 	 * Adds a measurement event to the measurement events array
 	 *
-	 * @param Measurement_Event $e
+	 * @param Measurement_Event $e The measurement event object.
 	 */
 	protected function add_event( Measurement_Event $e ) {
 		array_push( $this->measurement_events, $e );

@@ -23,11 +23,11 @@ class WPForms_Event_List extends Measurement_Event_List {
 	public function __construct() {
 		$builder = Measurement_Event::create_builder(
 			array(
-			'pluginName' => 'WPForms',
-			'category' => 'engagement',
-			'action' => 'form_submit',
-			'selector' => '.wpforms-submit-container button',
-			'on' => 'click',
+				'pluginName' => 'WPForms',
+				'category'   => 'engagement',
+				'action'     => 'form_submit',
+				'selector'   => '.wpforms-submit-container button',
+				'on'         => 'click',
 			)
 		);
 		$this->add_event( $builder->build() );

@@ -26,7 +26,7 @@ class Measurement_Event_Builder {
 	/**
 	 * Measurement_Event_Builder constructor.
 	 *
-	 * @param array $config
+	 * @param array $config The measurement event configuration.
 	 */
 	public function __construct( array $config ) {
 		$this->configuration = $config;
@@ -131,9 +131,9 @@ class Measurement_Event implements \JsonSerializable {
 	private $event_on;
 
 	/**
+	 * Creates a measurement event builder for the plugin.
 	 *
-	 *
-	 * @param $plugin
+	 * @param Array $plugin The measurement event configuration.
 	 *
 	 * @return Measurement_Event_Builder
 	 */
@@ -144,14 +144,14 @@ class Measurement_Event implements \JsonSerializable {
 	/**
 	 * Measurement_Event constructor.
 	 *
-	 * @param Measurement_Event_Builder $builder
+	 * @param Measurement_Event_Builder $builder The measurement event builder.
 	 */
 	public function __construct( Measurement_Event_Builder $builder ) {
-		$this->plugin_name = $builder->get_plugin_name();
+		$this->plugin_name    = $builder->get_plugin_name();
 		$this->event_category = $builder->get_category();
-		$this->event_action = $builder->get_action();
+		$this->event_action   = $builder->get_action();
 		$this->event_selector = $builder->get_selector();
-		$this->event_on = $builder->get_on();
+		$this->event_on       = $builder->get_on();
 	}
 
 	/**
@@ -162,10 +162,10 @@ class Measurement_Event implements \JsonSerializable {
 	public function jsonSerialize() {
 		return array(
 			'pluginName' => $this->plugin_name,
-			'category' => $this->event_category,
-			'action' => $this->event_action,
-			'selector' => $this->event_selector,
-			'on' => $this->event_on,
+			'category'   => $this->event_category,
+			'action'     => $this->event_action,
+			'selector'   => $this->event_selector,
+			'on'         => $this->event_on,
 		);
 	}
 
