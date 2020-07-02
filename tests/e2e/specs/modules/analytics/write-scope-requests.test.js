@@ -55,12 +55,7 @@ describe( 'Analytics write scope requests', () => {
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( { status: 200 } );
 			} else if ( request.url().match( `//analytics.google.com/analytics/web/` ) ) {
-				request.respond( {
-					status: 302,
-					headers: {
-						location: createURL( '/wp-admin/index.php', 'gatoscallback=1' ),
-					},
-				} );
+				request.respond( { status: 200 } );
 			} else {
 				request.continue();
 			}
@@ -71,8 +66,6 @@ describe( 'Analytics write scope requests', () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
-		await setSearchConsoleProperty();
 	} );
 
 	afterEach( async () => {
@@ -80,7 +73,11 @@ describe( 'Analytics write scope requests', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'creating an analytics account when not having the https://www.googleapis.com/auth/analytics.provision scope yet.', async () => {
+	it.only( 'creating an analytics account when not having the https://www.googleapis.com/auth/analytics.provision scope yet.', async () => {
+		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
+		await setSearchConsoleProperty();
+
+		// Go to the analytics setup page.
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
 		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
@@ -101,8 +98,7 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForRequest( ( req ) => req.url().match( 'analytics/data/create-account-ticket' ) );
 
 		// They should be redirected to the Analytics TOS (can be mocked to an immediate success redirect to Site Kit (...?gatoscallback=1...)).
-
-		// They should end up on the dashboard.
+		await page.waitForRequest( ( req ) => req.url().match( 'analytics.google.com/analytics/web' ) );
 	} );
 
 	it.todo( 'creating an Analytics property when not having the https://www.googleapis.com/auth/analytics.edit scope yet.' );
