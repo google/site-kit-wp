@@ -54,11 +54,18 @@ const rules = [
 		use: [
 			{
 				loader: 'babel-loader',
-				query: {
-					presets: [ [ '@babel/env', {
-						useBuiltIns: 'entry',
-						corejs: 2,
-					} ], '@babel/preset-react' ],
+				options: {
+					babelrc: false,
+					configFile: false,
+					cacheDirectory: true,
+					presets: [
+						'@wordpress/default',
+						'@babel/preset-react',
+					],
+					plugins: [
+						'@babel/plugin-proposal-optional-chaining',
+						'@babel/plugin-syntax-dynamic-import',
+					],
 				},
 			},
 			{
