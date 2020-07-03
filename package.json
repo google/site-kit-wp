@@ -161,7 +161,7 @@
     "@wordpress/babel-preset-default": "^4.5.0",
     "@wordpress/browserslist-config": "^2.6.0",
     "@wordpress/e2e-test-utils": "^2.1.0",
-    "@wordpress/eslint-plugin": "^5.0.1",
+    "@wordpress/eslint-plugin": "^7.1.0",
     "amphtml-validator": "^1.0.31",
     "babel-loader": "^8.0.5",
     "babel-plugin-lodash": "^3.3.4",

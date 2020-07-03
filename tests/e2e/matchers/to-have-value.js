@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import { Page, ElementHandle } from 'puppeteer';
-
 /**
  * Asserts the given page/element has the given value.
  *
