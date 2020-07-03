@@ -164,6 +164,13 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
+	/**
+	 * Defines default widget areas for a given context.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} contextSlug Widget context to get areas for.
+	 */
 	*getWidgetAreas( contextSlug ) {
 		if ( contextSlug === CONTEXT_DASHBOARD ) {
 			yield actions.registerWidgetArea( 'dashboardAllTraffic', {
