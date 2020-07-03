@@ -144,9 +144,7 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.10.4",
-    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.2",
-    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-react": "^7.10.4",
     "@babel/register": "^7.4.4",
     "@jackfranklin/test-data-bot": "^1.3.0",
     "@storybook/addon-viewport": "^5.3.18",
