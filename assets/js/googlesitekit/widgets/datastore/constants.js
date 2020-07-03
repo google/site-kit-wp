@@ -20,3 +20,6 @@ export const WIDGET_STYLES = { BOXES: 'boxes', COMPOSITE: 'composite' };
 export const WIDGET_WIDTHS = { QUARTER: 'quarter', HALF: 'half', FULL: 'full' };
 
 export const STORE_NAME = 'core/widgets';
+
+export const CONTEXT_DASHBOARD = 'dashboard';
+export const CONTEXT_PAGE_DASHBOARD = 'pageDashboard';

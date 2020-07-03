@@ -24,7 +24,11 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { WIDGET_STYLES } from './constants';
+import {
+	WIDGET_STYLES,
+	CONTEXT_DASHBOARD,
+	CONTEXT_PAGE_DASHBOARD,
+} from './constants';
 
 /**
  * Store our widget components by registry, then by widget `slug`. We do this because
@@ -160,6 +164,71 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
+	*getWidgetAreas( contextSlug ) {
+		if ( contextSlug === CONTEXT_DASHBOARD ) {
+			yield actions.registerWidgetArea( 'dashboardAllTraffic', {
+				title: 'All Triffic',
+				subtitle: 'How people found your site.',
+			} );
+
+			yield actions.registerWidgetArea( 'dashboardSearchFunnel', {
+				title: 'Search Funnel',
+				subtitle: 'How your site appeared in Search results and how many visitors you got from Search.',
+			} );
+
+			yield actions.registerWidgetArea( 'dashboardPopularity', {
+				title: 'Popularity',
+				subtitle: 'Your most popular pages and how people found them from Search.',
+			} );
+
+			yield actions.registerWidgetArea( 'dashboardSpeed', {
+				title: 'Page Speed and Experience',
+				subtitle: 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.',
+			} );
+
+			yield actions.registerWidgetArea( 'dashboardEarnings', {
+				title: 'Earnings',
+				subtitle: 'How much your site earns.',
+			} );
+
+			yield actions.assignWidgetArea( 'dashboardAllTraffic', CONTEXT_DASHBOARD );
+			yield actions.assignWidgetArea( 'dashboardSearchFunnel', CONTEXT_DASHBOARD );
+			yield actions.assignWidgetArea( 'dashboardPopularity', CONTEXT_DASHBOARD );
+			yield actions.assignWidgetArea( 'dashboardSpeed', CONTEXT_DASHBOARD );
+			yield actions.assignWidgetArea( 'dashboardEarnings', CONTEXT_DASHBOARD );
+		} else if ( contextSlug === CONTEXT_PAGE_DASHBOARD ) {
+			yield actions.registerWidgetArea( 'pageDashboardAllTraffic', {
+				title: 'All Triffic',
+				subtitle: 'How people found your site.',
+			} );
+
+			yield actions.registerWidgetArea( 'pageDashboardSearchFunnel', {
+				title: 'Search Funnel',
+				subtitle: 'How your site appeared in Search results and how many visitors you got from Search.',
+			} );
+
+			yield actions.registerWidgetArea( 'pageDashboardPopularity', {
+				title: 'Popularity',
+				subtitle: 'Your most popular pages and how people found them from Search.',
+			} );
+
+			yield actions.registerWidgetArea( 'pageDashboardSpeed', {
+				title: 'Page Speed and Experience',
+				subtitle: 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.',
+			} );
+
+			yield actions.registerWidgetArea( 'pageDashboardEarnings', {
+				title: 'Earnings',
+				subtitle: 'How much your site earns.',
+			} );
+
+			yield actions.assignWidgetArea( 'pageDashboardAllTraffic', CONTEXT_PAGE_DASHBOARD );
+			yield actions.assignWidgetArea( 'pageDashboardSearchFunnel', CONTEXT_PAGE_DASHBOARD );
+			yield actions.assignWidgetArea( 'pageDashboardPopularity', CONTEXT_PAGE_DASHBOARD );
+			yield actions.assignWidgetArea( 'pageDashboardSpeed', CONTEXT_PAGE_DASHBOARD );
+			yield actions.assignWidgetArea( 'pageDashboardEarnings', CONTEXT_PAGE_DASHBOARD );
+		}
+	},
 };
 
 export const selectors = {
@@ -201,17 +270,7 @@ export const selectors = {
 
 		return Object.values( areas ).filter( ( area ) => {
 			return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
-		} ).sort( ( areaA, areaB ) => {
-			if ( areaA.priority > areaB.priority ) {
-				return 1;
-			}
-
-			if ( areaA.priority < areaB.priority ) {
-				return -1;
-			}
-
-			return 0;
-		} );
+		} ).sort( ( areaA, areaB ) => areaA.priority - areaB.priority );
 	},
 
 	/**
