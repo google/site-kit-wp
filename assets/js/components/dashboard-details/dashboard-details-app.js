@@ -30,6 +30,7 @@ import Header from '../header';
 import Link from '../link';
 import PageHeader from '../page-header';
 import Layout from '../layout/layout';
+import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DateRangeSelector from '../date-range-selector';
 import HelpLink from '../help-link';
 import DashboardDetailsModules from './dashboard-details-modules';
@@ -45,6 +46,7 @@ class DashboardDetailsApp extends Component {
 		return (
 			<Fragment>
 				<Header />
+				<WidgetContextRenderer slug="pageDashboard" />
 				<div className="googlesitekit-module-page">
 					<div className="googlesitekit-dashboard-single-url">
 						<div className="mdc-layout-grid">

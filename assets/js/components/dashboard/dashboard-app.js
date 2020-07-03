@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
 import Header from '../header';
@@ -66,6 +67,7 @@ class DashboardApp extends Component {
 								">
 									<DateRangeSelector />
 								</div>
+								<WidgetContextRenderer slug="dashboard" />
 								<DashboardMain />
 							</div>
 						</div>
