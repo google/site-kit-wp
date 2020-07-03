@@ -118,6 +118,7 @@
     "element-closest": "^2.0.2",
     "focus-trap-react": "^5.0.1",
     "formdata-polyfill": "^3.0.17",
+    "husky": "^4.2.5",
     "intl": "^1.2.5",
     "intl-locales-supported": "^1.6.0",
     "invariant": "^2.2.4",
