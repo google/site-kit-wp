@@ -1,13 +1,13 @@
 /**
  * External dependencies
  */
-import gulp from 'gulp';
-import zip from 'gulp-zip';
-import del from 'del';
-import fs from 'fs';
-import path from 'path';
-import getRepoInfo from 'git-repo-info';
-import sanitizeFilename from 'sanitize-filename';
+const gulp = require( 'gulp' );
+const zip = require( 'gulp-zip' );
+const del = require( 'del' );
+const fs = require( 'fs' );
+const path = require( 'path' );
+const getRepoInfo = require( 'git-repo-info' );
+const sanitizeFilename = require( 'sanitize-filename' );
 
 /**
  * Retrieves the plugin version from the plugin's file header.
@@ -54,7 +54,7 @@ function generateFilename() {
 	);
 }
 
-gulp.task( 'zip', () => {
+module.exports = function() {
 	const filename = generateFilename();
 
 	// Remove any existing file by the same name.
@@ -66,4 +66,4 @@ gulp.task( 'zip', () => {
 	return gulp.src( 'release/google-site-kit/**', { base: 'release/' } )
 		.pipe( zip( filename ) )
 		.pipe( gulp.dest( '.' ) );
-} );
+};
