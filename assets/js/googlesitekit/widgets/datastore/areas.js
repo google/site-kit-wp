@@ -172,68 +172,37 @@ export const resolvers = {
 	 * @param {string} contextSlug Widget context to get areas for.
 	 */
 	*getWidgetAreas( contextSlug ) {
-		if ( contextSlug === CONTEXT_DASHBOARD ) {
-			yield actions.registerWidgetArea( 'dashboardAllTraffic', {
+		if ( contextSlug === CONTEXT_DASHBOARD || contextSlug === CONTEXT_PAGE_DASHBOARD ) {
+			yield actions.registerWidgetArea( `${ contextSlug }AllTraffic`, {
 				title: 'All Triffic',
 				subtitle: 'How people found your site.',
 			} );
 
-			yield actions.registerWidgetArea( 'dashboardSearchFunnel', {
+			yield actions.registerWidgetArea( `${ contextSlug }SearchFunnel`, {
 				title: 'Search Funnel',
 				subtitle: 'How your site appeared in Search results and how many visitors you got from Search.',
 			} );
 
-			yield actions.registerWidgetArea( 'dashboardPopularity', {
+			yield actions.registerWidgetArea( `${ contextSlug }Popularity`, {
 				title: 'Popularity',
 				subtitle: 'Your most popular pages and how people found them from Search.',
 			} );
 
-			yield actions.registerWidgetArea( 'dashboardSpeed', {
+			yield actions.registerWidgetArea( `${ contextSlug }Speed`, {
 				title: 'Page Speed and Experience',
 				subtitle: 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.',
 			} );
 
-			yield actions.registerWidgetArea( 'dashboardEarnings', {
+			yield actions.registerWidgetArea( `${ contextSlug }Earnings`, {
 				title: 'Earnings',
 				subtitle: 'How much your site earns.',
 			} );
 
-			yield actions.assignWidgetArea( 'dashboardAllTraffic', CONTEXT_DASHBOARD );
-			yield actions.assignWidgetArea( 'dashboardSearchFunnel', CONTEXT_DASHBOARD );
-			yield actions.assignWidgetArea( 'dashboardPopularity', CONTEXT_DASHBOARD );
-			yield actions.assignWidgetArea( 'dashboardSpeed', CONTEXT_DASHBOARD );
-			yield actions.assignWidgetArea( 'dashboardEarnings', CONTEXT_DASHBOARD );
-		} else if ( contextSlug === CONTEXT_PAGE_DASHBOARD ) {
-			yield actions.registerWidgetArea( 'pageDashboardAllTraffic', {
-				title: 'All Triffic',
-				subtitle: 'How people found your site.',
-			} );
-
-			yield actions.registerWidgetArea( 'pageDashboardSearchFunnel', {
-				title: 'Search Funnel',
-				subtitle: 'How your site appeared in Search results and how many visitors you got from Search.',
-			} );
-
-			yield actions.registerWidgetArea( 'pageDashboardPopularity', {
-				title: 'Popularity',
-				subtitle: 'Your most popular pages and how people found them from Search.',
-			} );
-
-			yield actions.registerWidgetArea( 'pageDashboardSpeed', {
-				title: 'Page Speed and Experience',
-				subtitle: 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.',
-			} );
-
-			yield actions.registerWidgetArea( 'pageDashboardEarnings', {
-				title: 'Earnings',
-				subtitle: 'How much your site earns.',
-			} );
-
-			yield actions.assignWidgetArea( 'pageDashboardAllTraffic', CONTEXT_PAGE_DASHBOARD );
-			yield actions.assignWidgetArea( 'pageDashboardSearchFunnel', CONTEXT_PAGE_DASHBOARD );
-			yield actions.assignWidgetArea( 'pageDashboardPopularity', CONTEXT_PAGE_DASHBOARD );
-			yield actions.assignWidgetArea( 'pageDashboardSpeed', CONTEXT_PAGE_DASHBOARD );
-			yield actions.assignWidgetArea( 'pageDashboardEarnings', CONTEXT_PAGE_DASHBOARD );
+			yield actions.assignWidgetArea( `${ contextSlug }AllTraffic`, contextSlug );
+			yield actions.assignWidgetArea( `${ contextSlug }SearchFunnel`, contextSlug );
+			yield actions.assignWidgetArea( `${ contextSlug }Popularity`, contextSlug );
+			yield actions.assignWidgetArea( `${ contextSlug }Speed`, contextSlug );
+			yield actions.assignWidgetArea( `${ contextSlug }Earnings`, contextSlug );
 		}
 	},
 };
