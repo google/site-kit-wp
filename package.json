@@ -168,6 +168,7 @@
     "core-js": "^3.1.4",
     "css-loader": "^1.0.1",
     "cssnano": "^4.1.10",
+    "del": "^5.1.0",
     "eslint": "^6.8.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.22.0",
