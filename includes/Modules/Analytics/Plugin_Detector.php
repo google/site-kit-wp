@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName
+
 namespace Google\Site_Kit\Modules\Analytics;
 
 /**
@@ -41,11 +43,9 @@ class Plugin_Detector {
 	public function get_active_plugins() {
 		$active_plugins = array();
 		foreach ( $this->supported_plugins as $key => $function_name ) {
-			// phpcs:disable
 			if ( defined( $function_name ) || function_exists( $function_name ) ) {
 				array_push( $active_plugins, $key );
 			}
-			// phpcs:enable
 		}
 		return $active_plugins;
 	}
