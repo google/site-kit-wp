@@ -134,7 +134,7 @@ storiesOf( 'Optimize Module/Settings', module )
 			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				optimizeID: 'OPT-1234567',
-				ampExperimentJSON: '{"experimentName": {"sticky": true,"variants": {"0": 33.4,"1": 33.3,"2": 33.3}}}',
+				ampExperimentJSON: '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
 			} );
 		};
 
@@ -160,7 +160,7 @@ storiesOf( 'Optimize Module/Settings', module )
 			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				optimizeID: 'OPT-1234567',
-				ampExperimentJSON: '{"experimentName": {"sticky": true,"variants": {"0": 33.4,"1": 33.3,"2": 33.3}}}',
+				ampExperimentJSON: '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
 			} );
 		};
 
