@@ -32,7 +32,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
 import { SetupMain as OptimizeSetup } from '../assets/js/modules/optimize/components/setup/index';
 import { fillFilterWithComponent } from '../assets/js/util';
-import { STORE_NAME as CORE_MODULE } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
@@ -65,9 +65,9 @@ storiesOf( 'Optimize Module/Setup', module )
 		filterOptimizeSetup();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULE ).receiveGetModules( analyticsFixture );
+			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
 			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -76,13 +76,25 @@ storiesOf( 'Optimize Module/Setup', module )
 		filterOptimizeSetup();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULE ).receiveGetModules( analyticsFixture );
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).setSettings( {} );
-			dispatch( STORE_NAME ).setAMPExperimentJSON( 'amp-experiment-test' );
 			dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
+			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 		};
 		return <Setup callback={ setupRegistry } />;
 	} )
+	.add( 'Start with invalid values', () => {
+		filterOptimizeSetup();
 
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
+			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			dispatch( STORE_NAME ).receiveGetSettings( {
+				optimizeID: '1234567',
+				ampExperimentJSON: 'invalid AMP experiment',
+			} );
+		};
+		return <Setup callback={ setupRegistry } />;
+	} )
 ;

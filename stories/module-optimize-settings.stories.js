@@ -32,7 +32,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 import SettingsModule from '../assets/js/components/settings/settings-module';
 import { SettingsMain as OptimizeSettings } from '../assets/js/modules/optimize/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
-import { STORE_NAME as CORE_MODULE } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore';
@@ -130,10 +130,12 @@ storiesOf( 'Optimize Module/Settings', module )
 		filterOptimizeSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULE ).receiveGetModules( analyticsFixture );
+			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
 			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).setSettings( {} );
-			dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+			dispatch( STORE_NAME ).receiveGetSettings( {
+				optimizeID: 'OPT-1234567',
+				ampExperimentJSON: '{"experimentName": {"sticky": true,"variants": {"0": 33.4,"1": 33.3,"2": 33.3}}}',
+			} );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
@@ -142,23 +144,24 @@ storiesOf( 'Optimize Module/Settings', module )
 		filterOptimizeSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULE ).receiveGetModules( analyticsFixture );
+			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
 			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
-	.add( 'Edit, open with all settings and Experimental AMP Field', () => {
+	.add( 'Edit, open with all settings and AMP Experiment JSON Field', () => {
 		filterOptimizeSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULE ).receiveGetModules( analyticsFixture );
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).setSettings( {} );
-			dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-			dispatch( STORE_NAME ).setAMPExperimentJSON( 'amp-experiment-test' );
 			dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
+			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			dispatch( STORE_NAME ).receiveGetSettings( {
+				optimizeID: 'OPT-1234567',
+				ampExperimentJSON: '{"experimentName": {"sticky": true,"variants": {"0": 33.4,"1": 33.3,"2": 33.3}}}',
+			} );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
