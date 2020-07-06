@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Class Google\Site_Kit\Modules\Analytics\Measurement_Events\Measurement_Event
  *
@@ -8,6 +7,8 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+
+// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
 
 namespace Google\Site_Kit\Modules\Analytics\Measurement_Events;
 
