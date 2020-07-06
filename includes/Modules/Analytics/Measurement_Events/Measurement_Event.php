@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile
 /**
  * Class Google\Site_Kit\Modules\Analytics\Measurement_Events\Measurement_Event
  *
