@@ -148,7 +148,7 @@ final class Analytics extends Module
 			}
 		);
 
-		$this->shirshu_instance = Shirshu_Class::get_instance();
+		$this->shirshu_instance = Shirshu_Class::get_instance( $this->context );
 	}
 
 	/**

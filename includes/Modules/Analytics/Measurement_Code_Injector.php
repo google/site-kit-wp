@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
+use Google\Site_Kit\Context;
+
 /**
  * Injects Javascript based on the current active plugins
  *
@@ -38,12 +40,22 @@ class Measurement_Code_Injector {
 	private $event_factory = null;
 
 	/**
+	 * Plugin context.
+	 *
+	 * @since 1.0.0
+	 * @var Context
+	 */
+	protected $context;
+
+	/**
 	 * Injector constructor.
 	 *
-	 * @param array $active_plugins list of supported plugins site currently has activated.
+	 * @param array   $active_plugins list of supported plugins site currently has activated.
+	 * @param Context $module_context context used to check for AMP.
 	 */
-	public function __construct( $active_plugins ) {
+	public function __construct( $active_plugins, $module_context ) {
 		$this->active_plugins       = $active_plugins;
+		$this->context              = $module_context;
 		$this->event_factory        = Measurement_Event_Factory::get_instance();
 		$this->event_configurations = $this->build_event_configurations();
 		add_action( 'wp_enqueue_scripts', array( $this, 'inject_event_tracking' ), 1 );
@@ -76,19 +88,21 @@ class Measurement_Code_Injector {
 	 * Creates list of measurement event configurations and javascript to inject
 	 */
 	public function inject_event_tracking() {
-		$main_file_path = plugin_basename( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$main_dir_path  = strstr( $main_file_path, '/', true );
-		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-			'shirshu_inject_event_tracking',
-			'/wp-content/plugins/' . $main_dir_path . '/assets/js/modules/analytics/advanced-tracking/measurement-event-tracking.js',
-			false,
-			null,
-			false
-		);
-		wp_localize_script(
-			'shirshu_inject_event_tracking',
-			'eventConfigurations',
-			$this->event_configurations
-		);
+		if ( ! $this->context->is_amp() ) {
+			$main_file_path = plugin_basename( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+			$main_dir_path  = strstr( $main_file_path, '/', true );
+			wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+				'shirshu_inject_event_tracking',
+				'/wp-content/plugins/' . $main_dir_path . '/assets/js/modules/analytics/advanced-tracking/measurement-event-tracking.js',
+				false,
+				null,
+				false
+			);
+			wp_localize_script(
+				'shirshu_inject_event_tracking',
+				'eventConfigurations',
+				$this->event_configurations
+			);
+		}
 	}
 }

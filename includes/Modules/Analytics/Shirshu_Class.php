@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Modules\Analytics\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Measurement_Code_Injector;
 
@@ -49,21 +50,33 @@ final class Shirshu_Class {
 	protected $measurement_code_injector = null;
 
 	/**
+	 * Plugin context.
+	 *
+	 * @since 1.0.0
+	 * @var Context
+	 */
+	protected $context;
+
+	/**
 	 * Returns the main Shirshu_Class instance
 	 *
+	 * @param Context $module_context used to check for AMP.
 	 * @return Shirshu_Class - Main instance
 	 */
-	public static function get_instance() {
+	public static function get_instance( $module_context ) {
 		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
+			self::$instance = new self( $module_context );
 		}
 		return self::$instance;
 	}
 
 	/**
 	 * Shirshu_Class constructor
+	 *
+	 * @param Context $module_context context used to check for AMP.
 	 */
-	private function __construct() {
+	private function __construct( $module_context ) {
+		$this->context           = $module_context;
 		$this->supported_plugins = array(
 			'Contact Form 7'   => 'WPCF7_PLUGIN_DIR',
 			'Formidable Forms' => 'load_formidable_forms',
@@ -90,7 +103,7 @@ final class Shirshu_Class {
 	 */
 	public function get_active_plugins() {
 		$active_plugins                  = $this->plugin_detector->get_active_plugins();
-		$this->measurement_code_injector = new Measurement_Code_Injector( $active_plugins );
+		$this->measurement_code_injector = new Measurement_Code_Injector( $active_plugins, $this->context );
 	}
 
 }
