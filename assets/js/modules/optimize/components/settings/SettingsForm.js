@@ -39,7 +39,6 @@ const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
-	const message = __( 'Error: Not a valid Optimize ID.', 'google-site-kit' );
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
@@ -52,9 +51,7 @@ export default function SettingsForm() {
 			</div>
 
 			{ ( ! isValidOptimizeID( optimizeID ) && optimizeID ) &&
-				<p className="googlesitekit-error-text">
-					<ErrorText message={ message } />
-				</p>
+				<ErrorText message={ __( 'Not a valid Optimize ID.', 'google-site-kit' ) } />
 			}
 
 			<AMPExperimentJSONField />

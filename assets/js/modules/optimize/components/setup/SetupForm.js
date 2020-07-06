@@ -57,8 +57,6 @@ export default function SetupForm( { finishSetup } ) {
 		}
 	}, [ canSubmitChanges, finishSetup ] );
 
-	const message = __( 'Error: Not a valid Optimize ID.', 'google-site-kit' );
-
 	return (
 		<form
 			className="googlesitekit-optimize-setup__form"
@@ -73,9 +71,7 @@ export default function SetupForm( { finishSetup } ) {
 			</div>
 
 			{ ( ! isValidOptimizeID( optimizeID ) && optimizeID ) &&
-				<p className="googlesitekit-error-text">
-					<ErrorText message={ message } />
-				</p>
+				<ErrorText message={ __( 'Not a valid Optimize ID.', 'google-site-kit' ) } />
 			}
 
 			<AMPExperimentJSONField />

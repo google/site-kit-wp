@@ -54,8 +54,6 @@ export default function AMPExperimentJSONField() {
 		return null;
 	}
 
-	const message = __( 'Error: AMP experiment settings are not in a valid JSON format.', 'google-site-kit' );
-
 	return (
 		<Fragment>
 			<p>
@@ -84,9 +82,7 @@ export default function AMPExperimentJSONField() {
 				/>
 			</TextField>
 			{ ! isValidAMPExperimentJSON( ampExperimentJSON ) &&
-				<p className="googlesitekit-error-text">
-					<ErrorText message={ message } />
-				</p>
+				<ErrorText message={ __( 'AMP experiment settings are not in a valid JSON format.', 'google-site-kit' ) } />
 			}
 		</Fragment>
 	);
