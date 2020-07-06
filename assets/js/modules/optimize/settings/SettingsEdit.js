@@ -27,7 +27,7 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
-import SettingsForm from './settings-form';
+import SettingsForm from './SettingsForm';
 import ProgressBar from '../../../components/progress-bar';
 const { useSelect, useDispatch } = Data;
 

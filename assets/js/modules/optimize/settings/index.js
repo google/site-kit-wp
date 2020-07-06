@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export { default as SettingsMain } from './settings-main';
+export { default as SettingsMain } from './SettingsMain';
