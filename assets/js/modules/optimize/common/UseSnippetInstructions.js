@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -52,10 +52,9 @@ export default function UseSnippetInstructions() {
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
-							'<a href="%1$s">%2$s</a> %3$s',
-							`${ settingsURL }#connect`,
-							_x( 'Click here', 'from "Click here to connect Google Analytics"', 'google-site-kit' ),
-							_x( 'to connect Google Analytics', 'from "Click here to connect Google Analytics"', 'google-site-kit' )
+							/* translators: %s: Analytics connect URL in Site Kit */
+							__( '<a href="%s">Click here</a> to connect Google Analytics', 'google-site-kit' ),
+							`${ settingsURL }#connect`
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
@@ -77,10 +76,9 @@ export default function UseSnippetInstructions() {
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
-							'<a href="%1$s">%2$s</a> %3$s',
-							__( 'https://support.google.com/optimize/answer/6314801', 'google-site-kit' ),
-							_x( 'Click here', 'from "Click here for how to implement Optimize tag through your Tag Manager"', 'google-site-kit' ),
-							_x( 'for how to implement Optimize tag through your Tag Manager', 'from "Click here for how to implement Optimize tag through your Tag Manager"', 'google-site-kit' )
+							/* translators: %s: external URL with instructions */
+							__( '<a href="%s">Click here</a> for how to implement Optimize tag through your Tag Manager', 'google-site-kit' ),
+							__( 'https://support.google.com/optimize/answer/6314801', 'google-site-kit' )
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
@@ -104,10 +102,9 @@ export default function UseSnippetInstructions() {
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
-							'<a href="%1$s">%2$s</a> %3$s',
-							__( 'https://support.google.com/optimize/answer/6262084', 'google-site-kit' ),
-							_x( 'Click here', 'from "Click here for how to implement Optimize tag in Google Analytics Code Snippet"', 'google-site-kit' ),
-							_x( 'for how to implement Optimize tag in Google Analytics Code Snippet', 'from "Click here for how to implement Optimize tag in Google Analytics Code Snippet"', 'google-site-kit' )
+							/* translators: %s: external URL with instructions */
+							__( '<a href="%s">Click here</a> for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ),
+							__( 'https://support.google.com/optimize/answer/6262084', 'google-site-kit' )
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
