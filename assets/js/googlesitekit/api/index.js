@@ -108,6 +108,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 	// to the `usingCache()` behaviour when caching is manually disabled on a
 	// per-request basis.
 	const useCacheForRequest = method === 'GET' && ( useCache !== undefined ? useCache : usingCache() );
+
 	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
 
 	if ( useCacheForRequest ) {
@@ -116,6 +117,11 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 		if ( cacheHit ) {
 			return value;
 		}
+	}
+	// Add timestamp to the request to act as a cache-buster to ensure a cached
+	// response is not returned from either our middleware or the server.
+	if ( false === useCacheForRequest && method === 'GET' ) {
+		queryParams = { ...queryParams, timestamp: Date.now() };
 	}
 
 	// Make an API request to retrieve the results.
