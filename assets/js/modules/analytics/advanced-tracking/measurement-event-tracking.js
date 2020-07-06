@@ -1,3 +1,4 @@
+/* global eventConfigurations */
 let config;
 for ( config of eventConfigurations ) {
 	const thisConfig = config;
