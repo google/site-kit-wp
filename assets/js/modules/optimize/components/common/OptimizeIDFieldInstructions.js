@@ -20,7 +20,11 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import Link from '../../../components/link';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../../../../components/link';
 
 export default function OptimizeIDFieldInstructions() {
 	return (

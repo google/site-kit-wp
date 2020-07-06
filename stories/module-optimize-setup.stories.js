@@ -30,7 +30,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
-import { SetupMain as OptimizeSetup } from '../assets/js/modules/optimize/setup/index';
+import { SetupMain as OptimizeSetup } from '../assets/js/modules/optimize/components/setup/index';
 import { fillFilterWithComponent } from '../assets/js/util';
 import { STORE_NAME as CORE_MODULE } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';

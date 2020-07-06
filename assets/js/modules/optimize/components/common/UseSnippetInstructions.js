@@ -26,12 +26,12 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { sanitizeHTML } from '../../../util/sanitize';
-import { STORE_NAME } from '../datastore/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { sanitizeHTML } from '../../../../util/sanitize';
+import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const { useSelect } = Data;
 

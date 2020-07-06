@@ -25,9 +25,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore/constants';
-import { isValidOptimizeID } from '../util';
-import ErrorText from '../../../components/error-text';
+import { STORE_NAME } from '../../datastore/constants';
+import { isValidOptimizeID } from '../../util';
+import ErrorText from '../../../../components/error-text';
 import {
 	ErrorNotice,
 	AMPExperimentJSONField,

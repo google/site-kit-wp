@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../components/display-setting';
-import { STORE_NAME } from '../datastore/constants';
+import DisplaySetting from '../../../../components/display-setting';
+import { STORE_NAME } from '../../datastore/constants';
 import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 

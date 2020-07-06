@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore/constants';
-import { PERMISSION_SCOPE_ERROR_CODE } from '../../../googlesitekit/datastore/user/constants';
-import ErrorText from '../../../components/error-text';
+import { STORE_NAME } from '../../datastore/constants';
+import { PERMISSION_SCOPE_ERROR_CODE } from '../../../../googlesitekit/datastore/user/constants';
+import ErrorText from '../../../../components/error-text';
 const { useSelect } = Data;
 
 export default function ErrorNotice() {

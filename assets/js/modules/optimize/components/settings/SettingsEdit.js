@@ -26,9 +26,9 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME } from '../../datastore/constants';
 import SettingsForm from './SettingsForm';
-import ProgressBar from '../../../components/progress-bar';
+import ProgressBar from '../../../../components/progress-bar';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsEdit() {

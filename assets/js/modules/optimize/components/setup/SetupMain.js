@@ -32,9 +32,9 @@ import { _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import SetupForm from './SetupForm';
-import ProgressBar from '../../../components/progress-bar';
-import { SvgIcon } from '../../../util';
-import { STORE_NAME } from '../datastore/constants';
+import ProgressBar from '../../../../components/progress-bar';
+import { SvgIcon } from '../../../../util';
+import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {

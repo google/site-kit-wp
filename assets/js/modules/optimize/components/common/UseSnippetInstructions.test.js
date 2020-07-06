@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import UseSnippetInstructions from './UseSnippetInstructions';
-import { render } from '../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../datastore/constants';
-import { STORE_NAME as CORE_MODULE } from '../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import fixtures from '../../../googlesitekit/modules/datastore/fixtures.json';
+import { render } from '../../../../../../tests/js/test-utils';
+import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_MODULE } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import fixtures from '../../../../googlesitekit/modules/datastore/fixtures.json';
 
 describe( 'UseSnippetInstructions', () => {
 	it( 'should render with analytics active and no useSnippet', () => {

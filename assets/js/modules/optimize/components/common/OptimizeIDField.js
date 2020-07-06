@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
@@ -30,10 +35,9 @@ import {
 	Input,
 	TextField,
 	HelperText,
-} from '../../../material-components';
-import classnames from 'classnames';
-import { STORE_NAME } from '../datastore/constants';
-import { isValidOptimizeID } from '../util';
+} from '../../../../material-components';
+import { STORE_NAME } from '../../datastore/constants';
+import { isValidOptimizeID } from '../../util';
 
 const { useSelect, useDispatch } = Data;
 

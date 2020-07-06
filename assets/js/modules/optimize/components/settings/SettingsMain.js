@@ -27,7 +27,7 @@ import { useEffect } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import SettingsEdit from './SettingsEdit';
 import SettingsView from './SettingsView';
-import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsMain( { isOpen, isEditing } ) {

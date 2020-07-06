@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { render, fireEvent, wait } from '../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../datastore/constants';
+import { render, fireEvent, wait } from '../../../../../../tests/js/test-utils';
+import { STORE_NAME } from '../../datastore/constants';
 import SettingsMain from './SettingsMain';
 
 describe( 'SettingsMain', () => {
