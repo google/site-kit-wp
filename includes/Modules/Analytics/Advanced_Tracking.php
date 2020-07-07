@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics\Shirshu_Class
+ * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking
  *
  * @package   Google\Site_Kit\Modules\Analytics
  * @copyright 2019 Google LLC
@@ -11,15 +11,15 @@
 namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Modules\Analytics\Plugin_Detector;
-use Google\Site_Kit\Modules\Analytics\Measurement_Code_Injector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
 
 /**
- * Main Shirshu_Class class
+ * Main AdvancedTracking class
  *
- * @class Shirshu_Class
+ * @class AdvancedTracking
  */
-final class Shirshu_Class {
+final class Advanced_Tracking {
 
 	/**
 	 * List of plugins ShirshuClass supports for event tracking
@@ -31,7 +31,7 @@ final class Shirshu_Class {
 	/**
 	 * Single instance of the class
 	 *
-	 * @var Shirshu_Class
+	 * @var Advanced_Tracking
 	 */
 	protected static $instance = null;
 
@@ -58,10 +58,11 @@ final class Shirshu_Class {
 	protected $context;
 
 	/**
-	 * Returns the main Shirshu_Class instance
+	 * Returns the main AdvancedTracking instance
 	 *
 	 * @param Context $module_context used to check for AMP.
-	 * @return Shirshu_Class - Main instance
+	 *
+	 * @return Advanced_Tracking - Main instance
 	 */
 	public static function get_instance( $module_context ) {
 		if ( is_null( self::$instance ) ) {
@@ -71,7 +72,7 @@ final class Shirshu_Class {
 	}
 
 	/**
-	 * Shirshu_Class constructor
+	 * AdvancedTracking constructor
 	 *
 	 * @param Context $module_context context used to check for AMP.
 	 */
@@ -90,7 +91,7 @@ final class Shirshu_Class {
 	}
 
 	/**
-	 * Returns a list of plugins that Shirshu_Class supports
+	 * Returns a list of plugins that AdvancedTracking supports
 	 *
 	 * @return array of strings
 	 */

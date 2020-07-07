@@ -34,7 +34,7 @@ use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Proxy_Provisioning;
-use Google\Site_Kit\Modules\Analytics\Shirshu_Class;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
@@ -75,7 +75,7 @@ final class Analytics extends Module
 	/**
 	 * Main Shirshu instance
 	 *
-	 * @var Shirshu_Class
+	 * @var Advanced_Tracking
 	 */
 	private $shirshu_instance;
 
@@ -148,7 +148,7 @@ final class Analytics extends Module
 			}
 		);
 
-		$this->shirshu_instance = Shirshu_Class::get_instance( $this->context );
+		$this->shirshu_instance = Advanced_Tracking::get_instance( $this->context );
 	}
 
 	/**
