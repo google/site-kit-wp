@@ -1,5 +1,5 @@
 /**
- * Widget component tests.
+ * WidgetRenderer component tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Widget from './WidgetRenderer';
+import WidgetRenderer from './WidgetRenderer';
 import { STORE_NAME } from '../datastore/constants';
 import { render } from '../../../../../tests/js/test-utils';
 
@@ -36,16 +36,16 @@ const setupRegistry = ( { component = () => <div>Test</div>, dispatch } ) => {
 	dispatch( STORE_NAME ).assignWidget( 'TestWidget', 'dashboard-header' );
 };
 
-describe( 'Widget', () => {
+describe( 'WidgetRenderer', () => {
 	it( 'should output children directly', async () => {
-		const { container } = render( <Widget slug="TestWidget" />, { setupRegistry } );
+		const { container } = render( <WidgetRenderer slug="TestWidget" />, { setupRegistry } );
 
 		expect( Object.values( container.firstChild.classList ) ).toEqual( [] );
 		expect( container.firstChild ).toMatchSnapshot();
 	} );
 
 	it( 'should output null when no slug is found', async () => {
-		const { container } = render( <Widget slug="NotFound" />, { setupRegistry } );
+		const { container } = render( <WidgetRenderer slug="NotFound" />, { setupRegistry } );
 
 		expect( container.firstChild ).toEqual( null );
 	} );

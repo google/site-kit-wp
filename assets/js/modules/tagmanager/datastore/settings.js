@@ -47,7 +47,7 @@ export const actions = {
 	/**
 	 * Submits all changes currently present in the client, persisting them on the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @return {Object} Empty object on success, object with `error` property on failure.
 	 */
@@ -145,7 +145,7 @@ export const selectors = {
 	/**
 	 * Checks if changes can be submitted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @return {boolean} `true` if can submit changes, otherwise false.
 	 */
@@ -203,7 +203,7 @@ export const selectors = {
 	/**
 	 * Checks whether changes are currently being submitted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if submitting, `false` if not.

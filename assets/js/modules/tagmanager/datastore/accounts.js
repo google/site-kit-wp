@@ -162,7 +162,7 @@ export const baseSelectors = {
 	/**
 	 * Gets all Google Tag Manager accounts this user can access.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?Array.<Object>} An array of account objects; `undefined` if not loaded.
@@ -176,7 +176,7 @@ export const baseSelectors = {
 	/**
 	 * Checks whether accounts are currently being fetched.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} Whether accounts are currently being fetched or not.

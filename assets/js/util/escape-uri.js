@@ -24,7 +24,7 @@
  * const redirectTo = 'http://localhost/admin/';
  * const loginUrl = escapeURI`http://localhost/login?redirect=${ redirectTo }`;
  *
- * @since n.e.x.t
+ * @since 1.11.0
  *
  * @param {string[]} strings The array of static strings in the template.
  * @param {...*} values The array of expressions used in the template.

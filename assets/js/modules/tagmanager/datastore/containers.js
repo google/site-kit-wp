@@ -92,7 +92,7 @@ const baseActions = {
 	/**
 	 * Creates a new Tag Manager container in the given account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {string} accountID    Google Tag Manager account ID.
 	 * @param {string} usageContext Container usage context. (Either 'web', or 'amp')
@@ -204,7 +204,7 @@ const baseSelectors = {
 	/**
 	 * Gets a container by its ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {string} accountID   Account ID to find container in.
@@ -293,7 +293,7 @@ const baseSelectors = {
 	/**
 	 * Checks if any request for creating a container is in progress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if a request for create-container is in progress, otherwise false.

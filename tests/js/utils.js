@@ -161,7 +161,7 @@ export const subscribeWithUnsubscribe = ( registry, ...args ) => {
  * @example
  * await untilResolved( registry, STORE_NAME ).selectorWithResolver( arg1, arg2, arg3 );
  *
- * @since n.e.x.t
+ * @since 1.11.0
  *
  * @param {Object} registry  WP data registry instance.
  * @param {string} storeName Store name the selector belongs to.
