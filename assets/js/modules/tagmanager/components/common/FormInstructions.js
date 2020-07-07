@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from '../../datastore/constants';
+import { ExistingTagNotice } from '.';
 const { useSelect } = Data;
 
 export default function FormInstructions() {
@@ -35,22 +35,20 @@ export default function FormInstructions() {
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
 	if ( hasExistingTag ) {
-		return null;
+		return <ExistingTagNotice />;
+	}
+
+	if ( isSecondaryAMP ) {
+		return (
+			<p>
+				{ __( 'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.', 'google-site-kit' ) }
+			</p>
+		);
 	}
 
 	return (
-		<Fragment>
-			{ ! isSecondaryAMP && (
-				<p>
-					{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.', 'google-site-kit' ) }
-				</p>
-			) }
-
-			{ isSecondaryAMP && (
-				<p>
-					{ __( 'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.', 'google-site-kit' ) }
-				</p>
-			) }
-		</Fragment>
+		<p>
+			{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.', 'google-site-kit' ) }
+		</p>
 	);
 }

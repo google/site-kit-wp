@@ -20,7 +20,6 @@ import {
 	AccountSelect,
 	AMPContainerSelect,
 	ErrorNotice,
-	ExistingTagNotice,
 	FormInstructions,
 	UseSnippetSwitch,
 	WebContainerSelect,
@@ -30,8 +29,6 @@ export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-tagmanager-settings-fields">
 			<ErrorNotice />
-
-			<ExistingTagNotice />
 
 			<FormInstructions />
 

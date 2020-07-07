@@ -35,7 +35,6 @@ import {
 	AccountSelect,
 	AMPContainerSelect,
 	ErrorNotice,
-	ExistingTagNotice,
 	FormInstructions,
 	WebContainerSelect,
 } from '../common';
@@ -74,8 +73,6 @@ export default function SetupForm( { finishSetup } ) {
 			onSubmit={ submitForm }
 		>
 			<ErrorNotice />
-
-			<ExistingTagNotice />
 
 			<FormInstructions />
 
