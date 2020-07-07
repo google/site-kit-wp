@@ -244,7 +244,7 @@ export const selectors = {
 	/**
 	 * Returns a single widget, by slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state  Data store's state.
 	 * @param {string} slug   Widget slug.

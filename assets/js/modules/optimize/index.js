@@ -17,6 +17,32 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
+/**
  * Internal dependencies
  */
 import './datastore';
+import { SetupMain as OptimizeSetup } from './components/setup';
+import { SettingsMain as OptimizeSettings } from './components/settings';
+import { fillFilterWithComponent } from '../../util';
+
+/**
+ * Add components to the settings page.
+ */
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-optimize',
+	'googlesitekit.OptimizeModuleSettingsDetails',
+	fillFilterWithComponent( OptimizeSettings )
+);
+
+/**
+ * Add component to the setup wizard
+ */
+addFilter(
+	'googlesitekit.ModuleSetup-optimize',
+	'googlesitekit.OptimizeModuleSetupWizard',
+	fillFilterWithComponent( OptimizeSetup )
+);

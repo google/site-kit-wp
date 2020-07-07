@@ -30,7 +30,7 @@ const Widgets = {
 	/**
 	 * Public Widget components for creating Site Kit widgets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 */
 	components: { Widget },
 

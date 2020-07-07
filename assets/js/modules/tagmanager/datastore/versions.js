@@ -75,7 +75,7 @@ const baseSelectors = {
 	/**
 	 * Gets the live container version for the given account and container IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state               Data store's state.
 	 * @param {string} accountID           Account ID the container belongs to.
@@ -89,7 +89,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether or not the live container version is being fetched for the given account and container IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state               Data store's state.
 	 * @param {string} accountID           Account ID the container belongs to.

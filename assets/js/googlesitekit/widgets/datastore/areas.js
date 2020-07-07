@@ -217,7 +217,7 @@ export const selectors = {
 	/**
 	 * Returns a widget area based on slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state  Data store's state.
 	 * @param {string} slug   Widget area to select.
