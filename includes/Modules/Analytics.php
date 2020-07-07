@@ -73,13 +73,6 @@ final class Analytics extends Module
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
 	/**
-	 * Main Shirshu instance
-	 *
-	 * @var Advanced_Tracking
-	 */
-	private $shirshu_instance;
-
-	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -148,7 +141,7 @@ final class Analytics extends Module
 			}
 		);
 
-		$this->shirshu_instance = Advanced_Tracking::get_instance( $this->context );
+		( new Advanced_Tracking( $this->context ) )->register();
 	}
 
 	/**

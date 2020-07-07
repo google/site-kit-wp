@@ -40,7 +40,7 @@ class Plugin_Detector {
 	 *
 	 * @return array
 	 */
-	public function get_active_plugins() {
+	public function determine_active_plugins() {
 		$active_plugins = array();
 		foreach ( $this->supported_plugins as $key => $function_name ) {
 			if ( defined( $function_name ) || function_exists( $function_name ) ) {
