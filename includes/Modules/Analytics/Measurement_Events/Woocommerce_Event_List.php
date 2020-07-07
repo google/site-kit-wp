@@ -126,7 +126,7 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'category'   => 'ecommerce',
 				'action'     => 'place_order',
 				'selector'   => '.woocommerce-page form.woocommerce-checkout',
-				'on'         => 'click',
+				'on'         => 'submit',
 			)
 		);
 		$this->add_event( $builder->build() );
