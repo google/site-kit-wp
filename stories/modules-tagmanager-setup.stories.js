@@ -81,7 +81,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 
 		return <Setup registry={ registry } />;
 	} )
-	.add( 'ACCOUNT_CREATE', ( registry ) => {
+	.add( 'Set up a new account', ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
 

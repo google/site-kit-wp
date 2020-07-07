@@ -34,10 +34,20 @@ import AMPContainerSelect from '../assets/js/modules/tagmanager/components/commo
 import UseSnippetSwitch from '../assets/js/modules/tagmanager/components/common/UseSnippetSwitch';
 import ExistingTagNotice from '../assets/js/modules/tagmanager/components/common/ExistingTagNotice';
 import ExistingTagError from '../assets/js/modules/tagmanager/components/common/ExistingTagError';
-import ErrorNotice from '../assets/js/modules/tagmanager/components/common/ErrorNotice';
-import AccountCreate from '../assets/js/modules/tagmanager/components/common/AccountCreate';
 
-storiesOf( 'Tag Manager Module/Components', module )
+function SetupWrap( { children } ) {
+	return (
+		<div className="googlesitekit-setup">
+			<section className="googlesitekit-setup__wrapper">
+				<div className="googlesitekit-setup-module">
+					{ children }
+				</div>
+			</section>
+		</div>
+	);
+}
+
+storiesOf( 'Tag Manager Module', module )
 	.add( 'AccountSelect', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
@@ -47,16 +57,21 @@ storiesOf( 'Tag Manager Module/Components', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<AccountSelect />
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<AccountSelect />
+					</div>
+				</SetupWrap>
 			</WithTestRegistry>
 		);
 	} )
 	.add( 'WebContainerSelect', () => {
 		const setupRegistry = ( registry ) => {
 			const accountID = fixtures.getContainers.all[ 0 ].accountId;
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+				accountID,
+			} );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-			registry.dispatch( STORE_NAME ).setAccountID( accountID );
 			registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
@@ -64,16 +79,21 @@ storiesOf( 'Tag Manager Module/Components', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<WebContainerSelect />
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<WebContainerSelect />
+					</div>
+				</SetupWrap>
 			</WithTestRegistry>
 		);
 	} )
 	.add( 'AMPContainerSelect', () => {
 		const setupRegistry = ( registry ) => {
 			const accountID = fixtures.getContainers.all[ 0 ].accountId;
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+				accountID,
+			} );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-			registry.dispatch( STORE_NAME ).setAccountID( accountID );
 			registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
@@ -81,7 +101,11 @@ storiesOf( 'Tag Manager Module/Components', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<AMPContainerSelect />
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<AMPContainerSelect />
+					</div>
+				</SetupWrap>
 			</WithTestRegistry>
 		);
 	} )
@@ -93,7 +117,9 @@ storiesOf( 'Tag Manager Module/Components', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<UseSnippetSwitch />
+				<SetupWrap>
+					<UseSnippetSwitch />
+				</SetupWrap>
 			</WithTestRegistry>
 		);
 	} )
@@ -104,7 +130,9 @@ storiesOf( 'Tag Manager Module/Components', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<ExistingTagNotice />
+				<SetupWrap>
+					<ExistingTagNotice />
+				</SetupWrap>
 			</WithTestRegistry>
 		);
 	} )
@@ -115,32 +143,9 @@ storiesOf( 'Tag Manager Module/Components', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<ExistingTagError />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'ErrorNotice', () => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveError( {
-				code: 'KavHBokm704',
-				message: 'They taste like burning!',
-			} );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<ErrorNotice />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'AccountCreate', () => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<AccountCreate />
+				<SetupWrap>
+					<ExistingTagError />
+				</SetupWrap>
 			</WithTestRegistry>
 		);
 	} )
