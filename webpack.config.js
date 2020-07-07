@@ -30,6 +30,8 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
+const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
+const flagsConfig = require( './webpack.feature-flags.config' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -151,6 +153,13 @@ const webpackConfig = ( mode ) => {
 					allowAsyncCycles: false,
 					cwd: process.cwd(),
 				} ),
+				new FeatureFlagsPlugin(
+					flagsConfig,
+					{
+						modes: [ 'development', 'production' ],
+						mode,
+					},
+				),
 			],
 			optimization: {
 				minimizer: [

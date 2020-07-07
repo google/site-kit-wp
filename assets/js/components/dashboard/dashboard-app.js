@@ -67,7 +67,7 @@ class DashboardApp extends Component {
 								">
 									<DateRangeSelector />
 								</div>
-								<WidgetContextRenderer slug="dashboard" />
+								{ featureFlags.widgets.dashboard.enabled && <WidgetContextRenderer slug="dashboard" /> }
 								<DashboardMain />
 							</div>
 						</div>
