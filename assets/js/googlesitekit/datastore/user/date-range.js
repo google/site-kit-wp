@@ -16,14 +16,46 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
 export const INITIAL_STATE = {};
 
-export const actions = {};
+// Actions
+const SET_DATE_RANGE = 'SET_DATE_RANGE';
+
+export const actions = {
+	/**
+	 * Sets a new date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Date range slug.
+	 * @return {Object} Redux-style action.
+	 */
+	setDateRange( slug ) {
+		invariant( slug, 'Date range slug is required.' );
+
+		return {
+			type: SET_DATE_RANGE,
+			payload: {
+				slug,
+			},
+		};
+	},
+};
 
 export const controls = {};
 
-export function reducer( state, { type } ) {
+export function reducer( state, { type, payload } ) {
 	switch ( type ) {
+		case SET_DATE_RANGE:
+			return {
+				...state,
+				dateRange: payload.slug,
+			};
 		default:
 			// do nothing
 			break;
@@ -32,9 +64,30 @@ export function reducer( state, { type } ) {
 	return state;
 }
 
-export const resolvers = {};
+export const resolvers = {
+	/**
+	 * Provisions the default date range.
+	 *
+	 * @since n.e.x.t
+	 */
+	*getDateRange() {
+		yield actions.setDateRange( 'last-28-days' );
+	},
+};
 
-export const selectors = {};
+export const selectors = {
+	/**
+	 * Returns the current date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state The current data store's state.
+	 * @return {string} The current date range slug.
+	 */
+	getDateRange( state ) {
+		return state.dateRange;
+	},
+};
 
 export default {
 	INITIAL_STATE,
