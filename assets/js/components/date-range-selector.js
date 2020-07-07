@@ -1,22 +1,23 @@
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
-import {
-	addAction,
-	applyFilters,
-	removeAction,
-	removeFilter,
-	addFilter,
-	doAction,
-} from '@wordpress/hooks';
+import { useCallback, useEffect } from '@wordpress/element';
+// 	addAction,
+// 	applyFilters,
+// 	removeAction,
+// 	removeFilter,
+// 	addFilter,
+import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { Option, Select } from '../material-components';
 import { getAvailableDateRanges } from '../util/date-range';
-
+import { STORE_NAME } from '../googlesitekit/datastore/user/constants';
+const { useSelect, useDispatch } = Data;
+/*
 class DateRangeSelector extends Component {
 	constructor( props ) {
 		super( props );
@@ -83,9 +84,6 @@ class DateRangeSelector extends Component {
 			}
 		);
 
-		// Trigger a data refresh.
-		doAction( 'googlesitekit.moduleDataReset' );
-		doAction( 'googlesitekit.moduleLoaded', context );
 
 		// Update this component.
 		this.setState( {
@@ -94,27 +92,41 @@ class DateRangeSelector extends Component {
 
 		return false;
 	}
+}
+*/
+function DateRangeSelector() {
+	const ranges = Object.values( getAvailableDateRanges() );
 
-	render() {
-		const { dateValue } = this.state;
+	const dateRange = useSelect( ( select ) => select( STORE_NAME ).getDateRange() );
+	const { setDateRange } = useDispatch( STORE_NAME );
+	const onChange = useCallback( ( id ) => {
+		if ( ranges.length > id && id >= 0 ) {
+			setDateRange( ranges[ id ].slug );
+		}
+	}, [] );
 
-		return (
-			<Select
-				enhanced
-				className="mdc-select--minimal"
-				name="time_period"
-				label=""
-				onEnhancedChange={ this.handleSelection }
-				value={ dateValue }
-			>
-				{ Object.values( getAvailableDateRanges() ).map( ( { slug, label } ) => (
-					<Option key={ slug } value={ slug }>
-						{ label }
-					</Option>
-				) ) }
-			</Select>
-		);
-	}
+	useEffect( () => {
+		// Trigger a data refresh.
+		doAction( 'googlesitekit.moduleDataReset' );
+		doAction( 'googlesitekit.moduleLoaded', context );
+	}, [ dateRange ] );
+
+	return (
+		<Select
+			enhanced
+			className="mdc-select--minimal"
+			name="time_period"
+			label=""
+			onEnhancedChange={ onChange }
+			value={ dateRange }
+		>
+			{ ranges.map( ( { slug, label } ) => (
+				<Option key={ slug } value={ slug }>
+					{ label }
+				</Option>
+			) ) }
+		</Select>
+	);
 }
 
 export default DateRangeSelector;
