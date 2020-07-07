@@ -286,7 +286,7 @@ const baseResolvers = {
 
 				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
 					const propertyID = response.profiles[ 0 ].webPropertyId;
-					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { propertyID } );
+					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
 				}
 
 				if ( response.matchedProperty ) {
