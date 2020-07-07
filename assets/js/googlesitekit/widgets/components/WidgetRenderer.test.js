@@ -32,6 +32,7 @@ const setupRegistry = ( { component = () => <div>Test</div>, dispatch } ) => {
 	dispatch( STORE_NAME ).assignWidgetArea( 'dashboard-header', 'dashboard' );
 	dispatch( STORE_NAME ).registerWidget( 'TestWidget', {
 		component,
+		wrapWidget: false,
 	} );
 	dispatch( STORE_NAME ).assignWidget( 'TestWidget', 'dashboard-header' );
 };
