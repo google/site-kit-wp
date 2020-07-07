@@ -29,10 +29,9 @@ import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const containerID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
-	if ( ! hasExistingTag ) {
+	if ( ! containerID ) {
 		return null;
 	}
 
