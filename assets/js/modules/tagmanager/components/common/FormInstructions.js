@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from '../../datastore/constants';
-import { ExistingTagNotice } from '.';
+import { ExistingTagNotice } from './ExistingTagNotice';
 const { useSelect } = Data;
 
 export default function FormInstructions() {
