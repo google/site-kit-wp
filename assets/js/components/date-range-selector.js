@@ -1,7 +1,6 @@
 /**
  * WordPress dependencies
  */
-import { _n, sprintf } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 import {
 	addAction,
@@ -16,6 +15,7 @@ import {
  * Internal dependencies
  */
 import { Option, Select } from '../material-components';
+import { getAvailableDateRanges } from '../util/date-range';
 
 class DateRangeSelector extends Component {
 	constructor( props ) {
@@ -97,16 +97,6 @@ class DateRangeSelector extends Component {
 
 	render() {
 		const { dateValue } = this.state;
-		const options = {
-			/* translators: %s: Number of days to request data. */
-			'last-7-days': sprintf( _n( 'Last %s day', 'Last %s days', 7, 'google-site-kit' ), 7 ),
-			/* translators: %s: Number of days to request data. */
-			'last-14-days': sprintf( _n( 'Last %s day', 'Last %s days', 14, 'google-site-kit' ), 14 ),
-			/* translators: %s: Number of days to request data. */
-			'last-28-days': sprintf( _n( 'Last %s day', 'Last %s days', 28, 'google-site-kit' ), 28 ),
-			/* translators: %s: Number of days to request data. */
-			'last-90-days': sprintf( _n( 'Last %s day', 'Last %s days', 90, 'google-site-kit' ), 90 ),
-		};
 
 		return (
 			<Select
@@ -117,13 +107,11 @@ class DateRangeSelector extends Component {
 				onEnhancedChange={ this.handleSelection }
 				value={ dateValue }
 			>
-				{ Object.keys( options ).map( ( option ) => {
-					return (
-						<Option key={ option } value={ option }>
-							{ options[ option ] }
-						</Option>
-					);
-				} ) }
+				{ Object.values( getAvailableDateRanges() ).map( ( { slug, label } ) => (
+					<Option key={ slug } value={ slug }>
+						{ label }
+					</Option>
+				) ) }
 			</Select>
 		);
 	}
