@@ -227,7 +227,7 @@ final class Optimize extends Module
 						return new WP_Error( 'amp_experiment_json_not_set', __( 'AMP experiment JSON not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
 
-					return wp_json_encode( $option['ampExperimentJSON'] );
+					return $option['ampExperimentJSON'];
 				};
 			case 'POST:amp-experiment-json':
 				if ( ! isset( $data['ampExperimentJSON'] ) ) {
@@ -236,9 +236,6 @@ final class Optimize extends Module
 				}
 				return function() use ( $data ) {
 					$json = $data['ampExperimentJSON'];
-					if ( is_string( $json ) ) {
-						$json = json_decode( $json );
-					}
 					$this->get_settings()->merge( array( 'ampExperimentJSON' => $json ) );
 					return true;
 				};

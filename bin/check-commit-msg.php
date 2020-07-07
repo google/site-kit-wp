@@ -10,9 +10,9 @@
 
 /**
  * Determines whether or not the current terminal supports colors.
- * 
- * @since n.e.x.t
- * 
+ *
+ * @since 1.11.0
+ *
  * @return boolean TRUE if the terminal supports colors, otherwise FALSE.
  */
 function has_color_support() {
@@ -40,9 +40,9 @@ function has_color_support() {
 
 /**
  * Writes the message to the STDERR stream if the provided condition is true.
- * 
- * @since n.e.x.t
- * 
+ *
+ * @since 1.11.0
+ *
  * @param boolean $condition The condition to check.
  * @param string  $message The message to write if condition is met.
  * @return int The error code number.
@@ -69,9 +69,9 @@ function echo_error_if( $condition, $message ) {
 
 /**
  * Filters message line and returns FALSE if the line is a comment.
- * 
- * @since n.e.x.t
- * 
+ *
+ * @since 1.11.0
+ *
  * @param string $line The line to check.
  * @return boolean TRUE if the line is not a comment, otherwise FALSE.
  */
