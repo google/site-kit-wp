@@ -28,6 +28,7 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -201,7 +202,9 @@ describe( 'modules/analytics accounts', () => {
 				// Properties and profiles should also have been received by
 				// this action.
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+
+				//console.log( profiles );
 
 				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
 				expect( properties ).toEqual( fixtures.accountsPropertiesProfiles.properties );
@@ -251,9 +254,7 @@ describe( 'modules/analytics accounts', () => {
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingGetAccounts() === false,
-				);
+				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
