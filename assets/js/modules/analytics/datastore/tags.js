@@ -90,9 +90,9 @@ const baseActions = {
 			type: WAIT_FOR_EXISTING_TAG,
 		};
 	},
-	waitForExistingTagPermission() {
+	waitForExistingTagPermission( existingTag ) {
 		return {
-			payload: {},
+			payload: { existingTag },
 			type: WAIT_FOR_EXISTING_TAG_PERMISSION,
 		};
 	},
