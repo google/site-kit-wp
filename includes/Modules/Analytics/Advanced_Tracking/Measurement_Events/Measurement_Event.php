@@ -19,6 +19,11 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
  */
 class Measurement_Event implements \JsonSerializable {
 
+	/**
+	 * The measurement event's configuration.
+	 *
+	 * @var array
+	 */
 	private $config;
 
 	/**

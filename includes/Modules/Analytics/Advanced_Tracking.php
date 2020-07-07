@@ -22,7 +22,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injecto
 final class Advanced_Tracking {
 
 	/**
-	 * List of plugins ShirshuClass supports for event tracking
+	 * List of plugins SiteKit supports for event tracking
 	 *
 	 * @var array of strings
 	 */
