@@ -21,7 +21,9 @@
  */
 import invariant from 'invariant';
 
-export const INITIAL_STATE = {};
+export const INITIAL_STATE = {
+	dateRange: 'last-28-days',
+};
 
 // Actions
 const SET_DATE_RANGE = 'SET_DATE_RANGE';
@@ -64,16 +66,7 @@ export function reducer( state, { type, payload } ) {
 	return state;
 }
 
-export const resolvers = {
-	/**
-	 * Provisions the default date range.
-	 *
-	 * @since n.e.x.t
-	 */
-	*getDateRange() {
-		yield actions.setDateRange( 'last-28-days' );
-	},
-};
+export const resolvers = {};
 
 export const selectors = {
 	/**
@@ -85,7 +78,8 @@ export const selectors = {
 	 * @return {string} The current date range slug.
 	 */
 	getDateRange( state ) {
-		return state.dateRange;
+		const { dateRange } = state;
+		return dateRange;
 	},
 };
 
