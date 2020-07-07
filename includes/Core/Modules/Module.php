@@ -330,7 +330,7 @@ abstract class Module {
 			}
 
 			$service_batches[ $datapoint_service ]->add( $request, $key );
-			$results[ $key ] = $datapoint;
+			$results[ $key ] = $definition_key;
 		}
 
 		foreach ( $service_batches as $service_identifier => $batch ) {
@@ -338,11 +338,10 @@ abstract class Module {
 				$batch_results = $batch->execute();
 			} catch ( Exception $e ) {
 				// Set every result of this batch to the exception.
-				foreach ( $results as $key => $datapoint ) {
-					$get_service  = ! empty( $datapoint_definitions[ "GET:{$datapoint}" ] ) ? $datapoint_definitions[ "GET:{$datapoint}" ]['service'] : null;
-					$post_service = ! empty( $datapoint_definitions[ "POST:{$datapoint}" ] ) ? $datapoint_definitions[ "POST:{$datapoint}" ]['service'] : null;
-					if ( is_string( $datapoint ) && ( $service_identifier === $get_service || $service_identifier === $post_service ) ) {
-						$results[ $key ] = $this->exception_to_error( $e, $datapoint );
+				foreach ( $results as $key => $definition_key ) {
+					$datapoint_service = ! empty( $datapoint_definitions[ $definition_key ] ) ? $datapoint_definitions[ $definition_key ]['service'] : null;
+					if ( is_string( $definition_key ) && $service_identifier === $datapoint_service ) {
+						$results[ $key ] = $this->exception_to_error( $e, $definition_key );
 					}
 				}
 				continue;
@@ -356,13 +355,13 @@ abstract class Module {
 					continue;
 				}
 
-				$datapoint = $results[ $key ];
+				$definition_key = $results[ $key ];
 
 				if ( ! $result instanceof Exception ) {
 					$results[ $key ] = $result;
 					$results[ $key ] = $this->parse_data_response( $data_requests[ $key ], $result );
 				} else {
-					$results[ $key ] = $this->exception_to_error( $result, $datapoint );
+					$results[ $key ] = $this->exception_to_error( $result, $definition_key );
 				}
 			}
 		}
