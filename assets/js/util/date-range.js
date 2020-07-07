@@ -64,24 +64,24 @@ export function getCurrentDateRangeSlug() {
  */
 export function getAvailableDateRanges() {
 	/* translators: %s: Number of days to request data. */
-	const template = __( 'Last %s days', 'google-site-kit' );
+	const format = __( 'Last %s days', 'google-site-kit' );
 
 	return {
 		'last-7-days': {
 			slug: 'last-7-days',
-			label: sprintf( template, 7 ),
+			label: sprintf( format, 7 ),
 		},
 		'last-14-days': {
 			slug: 'last-14-days',
-			label: sprintf( template, 14 ),
+			label: sprintf( format, 14 ),
 		},
 		'last-28-days': {
 			slug: 'last-28-days',
-			label: sprintf( template, 28 ),
+			label: sprintf( format, 28 ),
 		},
 		'last-90-days': {
 			slug: 'last-90-days',
-			label: sprintf( template, 90 ),
+			label: sprintf( format, 90 ),
 		},
 	};
 }
