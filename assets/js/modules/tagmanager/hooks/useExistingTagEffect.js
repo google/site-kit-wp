@@ -25,7 +25,7 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {

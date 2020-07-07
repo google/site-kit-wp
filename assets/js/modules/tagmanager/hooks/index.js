@@ -1,5 +1,5 @@
 /**
- * Tag Manager common components.
+ * Tag Manager custom hooks.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,12 +16,4 @@
  * limitations under the License.
  */
 
-export { default as AccountCreate } from './AccountCreate';
-export { default as AccountSelect } from './AccountSelect';
-export { default as AMPContainerSelect } from './AMPContainerSelect';
-export { default as ErrorNotice } from './ErrorNotice';
-export { default as ExistingTagError } from './ExistingTagError';
-export { default as ExistingTagNotice } from './ExistingTagNotice';
-export { default as FormInstructions } from './FormInstructions';
-export { default as UseSnippetSwitch } from './UseSnippetSwitch';
-export { default as WebContainerSelect } from './WebContainerSelect';
+export { default as useExistingTagEffect } from './useExistingTagEffect';

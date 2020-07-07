@@ -28,10 +28,10 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/progress-bar';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { useExistingTagEffect } from '../../hooks';
 import {
 	AccountCreate,
 	ExistingTagError,
-	useExistingTagEffect,
 } from '../common';
 import SettingsForm from './SettingsForm';
 const { useSelect, useDispatch } = Data;

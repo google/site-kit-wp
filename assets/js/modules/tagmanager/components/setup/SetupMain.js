@@ -35,10 +35,10 @@ import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/progress-bar';
 import { SvgIcon } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { useExistingTagEffect } from '../../hooks';
 import {
 	AccountCreate,
 	ExistingTagError,
-	useExistingTagEffect,
 } from '../common';
 const { useSelect } = Data;
 

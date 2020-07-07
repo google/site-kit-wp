@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import { renderHook, act } from '../../../../../../tests/js/test-utils';
-import { createTestRegistry, untilResolved, muteConsole } from '../../../../../../tests/js/utils';
-import { STORE_NAME, CONTEXT_WEB } from '../../datastore/constants';
-import * as factories from '../../datastore/__factories__';
+import { renderHook, act } from '../../../../../tests/js/test-utils';
+import { createTestRegistry, untilResolved, muteConsole } from '../../../../../tests/js/utils';
+import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
+import * as factories from '../datastore/__factories__';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {
