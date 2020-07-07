@@ -21,7 +21,7 @@ class CF7_Event_List extends Measurement_Event_List {
 	 * CF7_Event_List constructor.
 	 */
 	public function __construct() {
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Contact Form 7',
 				'category'   => 'engagement',
@@ -30,7 +30,7 @@ class CF7_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 	}
 
 }

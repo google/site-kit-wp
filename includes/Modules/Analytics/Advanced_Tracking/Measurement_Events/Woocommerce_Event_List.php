@@ -21,7 +21,7 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 	 * Woocommerce_Event_List constructor.
 	 */
 	public function __construct() {
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
@@ -30,9 +30,9 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
@@ -41,9 +41,9 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
@@ -52,9 +52,9 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
@@ -63,9 +63,9 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
@@ -74,9 +74,9 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
@@ -85,9 +85,9 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
@@ -96,9 +96,9 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
@@ -107,9 +107,9 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
@@ -118,20 +118,20 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
 				'action'     => 'place_order',
 				'selector'   => '.woocommerce-page form.woocommerce-checkout',
-				'on'         => 'click',
+				'on'         => 'submit',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 
-		$builder = Measurement_Event::create_builder(
+		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
@@ -140,7 +140,7 @@ class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 			)
 		);
-		$this->add_event( $builder->build() );
+		$this->add_event( $event );
 	}
 
 }
