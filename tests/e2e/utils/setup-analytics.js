@@ -36,6 +36,5 @@ export async function setupAnalytics( settingsOverrides = {} ) {
 		data: {
 			data: settings,
 		},
-		parse: false,
 	} );
 }
