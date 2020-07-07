@@ -1,5 +1,5 @@
 /**
- * Optimize module initialization.
+ * OptimizeIDFieldInstructions component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,26 +19,25 @@
 /**
  * WordPress dependencies
  */
-import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { getModulesData } from '../../util';
+import Link from '../../../../components/link';
 
-const modulesData = getModulesData();
-if ( modulesData.optimize.active ) {
-	/**
-	 * Add data to the congrats setup Win Notification for display.
-	 */
-	addFilter(
-		'googlesitekit.SetupWinNotification-optimize',
-		'googlesitekit.OptimizeSetupWinNotification', ( winData ) => {
-			winData.description = __( 'To set up experiments and see the results, go to ', 'google-site-kit' );
-			winData.learnMore.label = 'Optimize';
-			winData.learnMore.url = 'https://optimize.withgoogle.com/';
-			return winData;
-		}
+export default function OptimizeIDFieldInstructions() {
+	return (
+		<p>
+			{ __( 'Please copy and paste your Optimize ID to complete your setup.', 'google-site-kit' ) }
+			{ ' ' }
+			<Link
+				href="https://support.google.com/optimize/answer/6211921"
+				external
+				inherit
+			>
+				{ __( 'You can locate this here.', 'google-site-kit' ) }
+			</Link>
+		</p>
 	);
 }

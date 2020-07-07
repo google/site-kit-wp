@@ -31,7 +31,7 @@ import { CONTEXT_WEB, CONTEXT_AMP } from '../constants';
  *
  * @see {@link https://developers.google.com/tag-manager/api/v2/reference/accounts/list}
  *
- * @since n.e.x.t
+ * @since 1.11.0
  *
  * @param {Object} [args]           Optional arguments to the builder.
  * @param {Object} [args.overrides] Optional fields overrides to take precedence over the default generated values.
@@ -58,7 +58,7 @@ export const accountBuilder = build( 'Tag Manager Account', {
  *
  * @see {@link https://developers.google.com/tag-manager/api/v2/reference/accounts/containers/list}
  *
- * @since n.e.x.t
+ * @since 1.11.0
  *
  * @param {Object} [args]           Optional arguments to the builder.
  * @param {Object} [args.overrides] Optional fields overrides to take precedence over the default generated values.
@@ -95,7 +95,7 @@ export const containerBuilder = build( 'Tag Manager Container', {
 /**
  * Generate an account with one or more containers.
  *
- * @since n.e.x.t
+ * @since 1.11.0
  *
  * @param {Object} [args]           Optional args for controlling the output.
  * @param {Object} [args.account]   Account field overrides.
