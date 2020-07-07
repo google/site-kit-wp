@@ -573,17 +573,17 @@ final class Analytics extends Module
 			'POST:create-account-ticket'       => array(
 				'service'                => 'analyticsprovisioning',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
-				'request_scopes_message' => __( 'You\'ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-profile'              => array(
 				'service'                => 'analytics',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'You\'ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-property'             => array(
 				'service'                => 'analytics',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'You\'ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			),
 			'GET:internal-web-property-id'     => array( 'service' => '' ),
 			'POST:internal-web-property-id'    => array( 'service' => '' ),
@@ -597,7 +597,6 @@ final class Analytics extends Module
 			'GET:report'                       => array( 'service' => 'analyticsreporting' ),
 			'GET:tag-permission'               => array( 'service' => '' ),
 			'GET:tracking-disabled'            => array( 'service' => '' ),
-			'POST:tracking-disabled'           => array( 'service' => '' ),
 			'GET:use-snippet'                  => array( 'service' => '' ),
 			'POST:use-snippet'                 => array( 'service' => '' ),
 		);
@@ -950,19 +949,6 @@ final class Analytics extends Module
 				$body->setReportRequests( array( $request ) );
 
 				return $this->get_analyticsreporting_service()->reports->batchGet( $body );
-			case 'POST:create-property':
-				if ( ! isset( $data['accountID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
-						array( 'status' => 400 )
-					);
-				}
-				$property = new Google_Service_Analytics_Webproperty();
-				$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
-				return $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
 			case 'POST:create-profile':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -987,6 +973,19 @@ final class Analytics extends Module
 				$profile = new Google_Service_Analytics_Profile();
 				$profile->setName( $profile_name );
 				return $profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
+			case 'POST:create-property':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				$property = new Google_Service_Analytics_Webproperty();
+				$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
+				return $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
 					if ( ! isset( $data['propertyID'] ) ) {
