@@ -28,6 +28,7 @@ import { keyBy, sortBy } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_SITE_STORE_NAME } from '../../../googlesitekit/datastore/site';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
 
@@ -186,13 +187,10 @@ const baseActions = {
 		invariant( slug, 'module slug is required' );
 
 		const registry = yield commonActions.getRegistry();
-		let registryKey = yield registry.select( STORE_NAME ).getRegistryKey();
+		let registryKey = yield registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
 		if ( registryKey === undefined ) {
 			registryKey = Object.keys( ModuleComponents ).length + 1;
-			yield {
-				payload: { registryKey },
-				type: SET_MODULE_COMPONENT_KEY,
-			};
+			yield registry.dispatch( CORE_SITE_STORE_NAME ).setRegistryKey( registryKey );
 		}
 
 		// We do this assignment in the action rather than the reducer because we can't send a
@@ -307,7 +305,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const registryKey = select( STORE_NAME ).getRegistryKey();
+		const registryKey = select( CORE_SITE_STORE_NAME ).getRegistryKey();
 		const sortedModules = sortBy( modules, [ ( { order } ) => order ] );
 		const mappedModules = Object.values( sortedModules ).map( ( module ) => {
 			const moduleWithComponent = { ...module };
