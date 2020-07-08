@@ -38,12 +38,36 @@ final class Advanced_Tracking {
 	 */
 	public function __construct() {
 		$this->supported_plugins = array(
-			'Contact Form 7'   => 'WPCF7_PLUGIN_DIR',
-			'Formidable Forms' => 'load_formidable_forms',
-			'Ninja Forms'      => 'NF_PLUGIN_DIR',
-			'WooCommerce'      => 'WC_PLUGIN_FILE',
-			'WPForms'          => 'WPFORMS_PLUGIN_DIR',
-			'WPForms Lite'     => 'WPFORMS_PLUGIN_DIR',
+			array(
+				'name' => 'Contact Form 7',
+				'check_name' => 'WPCF7_PLUGIN_DIR',
+				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+			),
+			array(
+				'name' => 'Formidable Forms',
+				'check_name' => 'load_formidable_forms',
+				'check_type' => Plugin_Detector::$TYPE_FUNCTION,
+			),
+			array(
+				'name' => 'Ninja Forms',
+				'check_name' => 'NF_PLUGIN_DIR',
+				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+			),
+			array(
+				'name' => 'WooCommerce',
+				'check_name' => 'WC_PLUGIN_FILE',
+				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+			),
+			array(
+				'name' => 'WPForms',
+				'check_name' => 'WPFORMS_PLUGIN_DIR',
+				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+			),
+			array(
+				'name' => 'WPForms Lite',
+				'check_name' => 'WPFORMS_PLUGIN_DIR',
+				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+			),
 		);
 	}
 
