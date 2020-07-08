@@ -341,7 +341,7 @@ abstract class Module {
 				foreach ( $results as $key => $definition_key ) {
 					$datapoint_service = ! empty( $datapoint_definitions[ $definition_key ] ) ? $datapoint_definitions[ $definition_key ]['service'] : null;
 					if ( is_string( $definition_key ) && $service_identifier === $datapoint_service ) {
-						$results[ $key ] = $this->exception_to_error( $e, $definition_key );
+						$results[ $key ] = $this->exception_to_error( $e, explode( ':', $definition_key, 2 )[1] );
 					}
 				}
 				continue;
@@ -355,13 +355,12 @@ abstract class Module {
 					continue;
 				}
 
-				$definition_key = $results[ $key ];
-
 				if ( ! $result instanceof Exception ) {
 					$results[ $key ] = $result;
 					$results[ $key ] = $this->parse_data_response( $data_requests[ $key ], $result );
 				} else {
-					$results[ $key ] = $this->exception_to_error( $result, $definition_key );
+					$definition_key  = $results[ $key ];
+					$results[ $key ] = $this->exception_to_error( $result, explode( ':', $definition_key, 2 )[1] );
 				}
 			}
 		}
