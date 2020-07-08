@@ -1,5 +1,5 @@
 /**
- * Utlity to have the page wait for a given length.
+ * Utility to have the page wait for a given length.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
