@@ -24,11 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import {
-	WIDGET_STYLES,
-	CONTEXT_DASHBOARD,
-	CONTEXT_PAGE_DASHBOARD,
-} from './constants';
+import { WIDGET_STYLES } from './constants';
 
 /**
  * Store our widget components by registry, then by widget `slug`. We do this because
@@ -163,49 +159,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
-	/**
-	 * Defines default widget areas for a given context.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} contextSlug Widget context to get areas for.
-	 */
-	*getWidgetAreas( contextSlug ) {
-		if ( contextSlug === CONTEXT_DASHBOARD || contextSlug === CONTEXT_PAGE_DASHBOARD ) {
-			yield actions.registerWidgetArea( `${ contextSlug }AllTraffic`, {
-				title: 'All Triffic',
-				subtitle: 'How people found your site.',
-			} );
-
-			yield actions.registerWidgetArea( `${ contextSlug }SearchFunnel`, {
-				title: 'Search Funnel',
-				subtitle: 'How your site appeared in Search results and how many visitors you got from Search.',
-			} );
-
-			yield actions.registerWidgetArea( `${ contextSlug }Popularity`, {
-				title: 'Popularity',
-				subtitle: 'Your most popular pages and how people found them from Search.',
-			} );
-
-			yield actions.registerWidgetArea( `${ contextSlug }Speed`, {
-				title: 'Page Speed and Experience',
-				subtitle: 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.',
-			} );
-
-			yield actions.registerWidgetArea( `${ contextSlug }Earnings`, {
-				title: 'Earnings',
-				subtitle: 'How much your site earns.',
-			} );
-
-			yield actions.assignWidgetArea( `${ contextSlug }AllTraffic`, contextSlug );
-			yield actions.assignWidgetArea( `${ contextSlug }SearchFunnel`, contextSlug );
-			yield actions.assignWidgetArea( `${ contextSlug }Popularity`, contextSlug );
-			yield actions.assignWidgetArea( `${ contextSlug }Speed`, contextSlug );
-			yield actions.assignWidgetArea( `${ contextSlug }Earnings`, contextSlug );
-		}
-	},
-};
+export const resolvers = {};
 
 export const selectors = {
 	/**

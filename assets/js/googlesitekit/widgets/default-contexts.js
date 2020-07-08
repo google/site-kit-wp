@@ -1,5 +1,5 @@
 /**
- * core/widgets data store: constants.
+ * Widgets API default contexts
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-export const WIDGET_STYLES = { BOXES: 'boxes', COMPOSITE: 'composite' };
-export const WIDGET_WIDTHS = { QUARTER: 'quarter', HALF: 'half', FULL: 'full' };
+export const CONTEXT_DASHBOARD = 'dashboard';
+export const CONTEXT_PAGE_DASHBOARD = 'pageDashboard';
 
-export const STORE_NAME = 'core/widgets';
+export default {
+	CONTEXT_DASHBOARD,
+	CONTEXT_PAGE_DASHBOARD,
+};

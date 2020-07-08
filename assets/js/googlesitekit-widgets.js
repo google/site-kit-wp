@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Widgets from './googlesitekit/widgets';
+import Widgets, { registerDefaults } from './googlesitekit/widgets';
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
@@ -28,6 +28,11 @@ if ( typeof global.googlesitekit === 'undefined' ) {
 if ( global.googlesitekit.widgets === undefined ) {
 	global.googlesitekit.widgets = Widgets;
 }
+
+// register default widget areas
+document.addEventListener( 'DOMContentLoaded', () => {
+	registerDefaults( Widgets );
+} );
 
 // This is only exported for Jest and is not used in production.
 export default Widgets;
