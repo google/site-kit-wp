@@ -66,10 +66,7 @@ export default function AccountCreate() {
 			</p>
 
 			<div className="googlesitekit-setup-module__action">
-				<Button
-					onClick={ createAccountHandler }
-					target="_blank"
-				>
+				<Button onClick={ createAccountHandler }>
 					{ __( 'Create an account', 'google-site-kit' ) }
 				</Button>
 
