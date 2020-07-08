@@ -24,7 +24,7 @@ import { getDefaultOptions } from 'expect-puppeteer';
 /**
  * Jest matcher for asserting the given instance has tracking loaded or not.
  *
- * @since n.e.x.t
+ * @since 1.11.0
  *
  * @param {(Page|ElementHandle)} instance Page or element handle instance.
  * @param {Object} [options]              Matcher options.

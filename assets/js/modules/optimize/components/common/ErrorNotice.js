@@ -1,5 +1,5 @@
 /**
- * WidgetRenderer component.
+ * Optimize Error component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,37 +17,21 @@
  */
 
 /**
- * External dependencies
- */
-import { string } from 'prop-types';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore';
-import Widget from './Widget';
-
+import { STORE_NAME } from '../../datastore/constants';
+import { PERMISSION_SCOPE_ERROR_CODE } from '../../../../googlesitekit/datastore/user/constants';
+import ErrorText from '../../../../components/error-text';
 const { useSelect } = Data;
 
-const WidgetRenderer = ( { slug } ) => {
-	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
+export default function ErrorNotice() {
+	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
 
-	if ( ! widget ) {
+	// Do not display if no error, or if the error is for missing scopes.
+	if ( ! error || error.code === PERMISSION_SCOPE_ERROR_CODE ) {
 		return null;
 	}
 
-	// Capitalize the "component" variable, as it is required by JSX.
-	const { component: Component, wrapWidget } = widget;
-	const widgetComponent = <Component slug={ slug } />;
-
-	return widgetComponent && wrapWidget
-		? <Widget slug={ slug }>{ widgetComponent }</Widget>
-		: widgetComponent;
-};
-
-WidgetRenderer.propTypes = {
-	slug: string.isRequired,
-};
-
-export default WidgetRenderer;
+	return <ErrorText message={ error.message } />;
+}

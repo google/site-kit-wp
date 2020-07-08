@@ -14,5 +14,6 @@ Object {
   "priority": 10,
   "slug": "TestWidget",
   "width": "quarter",
+  "wrapWidget": true,
 }
 `;
