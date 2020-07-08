@@ -30,7 +30,6 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
-import { setupReduxLogger } from '../../../../../tests/js/redux-debug';
 
 describe( 'modules/tagmanager existing-tag', () => {
 	let registry;
@@ -41,7 +40,6 @@ describe( 'modules/tagmanager existing-tag', () => {
 	} );
 
 	beforeEach( () => {
-		setupReduxLogger();
 		registry = createTestRegistry();
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 	} );
