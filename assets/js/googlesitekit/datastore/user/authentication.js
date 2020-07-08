@@ -86,7 +86,7 @@ const baseSelectors = {
 	 *
 	 * Returns `undefined` if the scope info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

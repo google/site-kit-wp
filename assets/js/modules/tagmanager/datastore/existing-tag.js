@@ -96,7 +96,7 @@ const baseSelectors = {
 	/**
 	 * Gets the existing tag (a container publicId), if any.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null|undefined)} The existing container ID if present, `null` if not present, or `undefined` if not loaded yet.
@@ -108,7 +108,7 @@ const baseSelectors = {
 	/**
 	 * Checks permissions for an existing Google Tag Manager container.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} containerID Container publicId to check permission for.
@@ -121,7 +121,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether or not an existing tag is present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @return {(boolean|undefined)} Boolean if tag is present, `undefined` if tag presence has not been resolved yet.
 	 */
@@ -138,7 +138,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the user has access to the given tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {string} containerID Container publicId to check permission for.
@@ -157,7 +157,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the user has access to the existing tag, if present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @return {(boolean|null|undefined)} true or false if tag permission is available,
 	 *                                    null if no existing tag,

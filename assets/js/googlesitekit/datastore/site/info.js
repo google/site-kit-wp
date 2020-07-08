@@ -346,7 +346,7 @@ export const selectors = {
 	 * Returns true if this site supports AMP.
 	 *
 	 * @since 1.7.0
-	 * @since n.e.x.t Renamed from isAmp to isAMP.
+	 * @since 1.11.0 Renamed from isAmp to isAMP.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
