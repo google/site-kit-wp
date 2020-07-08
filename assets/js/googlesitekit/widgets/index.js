@@ -17,7 +17,7 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
 import { React } from '@wordpress/element';
 
