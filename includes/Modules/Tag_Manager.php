@@ -138,8 +138,6 @@ final class Tag_Manager extends Module
 	public function get_scopes() {
 		return array(
 			'https://www.googleapis.com/auth/tagmanager.readonly',
-			'https://www.googleapis.com/auth/tagmanager.edit.containers',
-			'https://www.googleapis.com/auth/tagmanager.manage.accounts',
 		);
 	}
 
