@@ -169,7 +169,7 @@ const baseActions = {
 		// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
 		registry.dispatch( STORE_NAME ).setProfileID( '' );
 
-		const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
+		const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 		if ( profiles === undefined ) {
 			return; // Selection will happen in in getProfiles resolver.
 		}
