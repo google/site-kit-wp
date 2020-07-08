@@ -207,6 +207,23 @@ export const selectors = {
 			[ ( area ) => area.priorty ]
 		);
 	},
+
+	/**
+	 * Returns a widget area based on slug.
+	 *
+	 * @since 1.11.0
+	 *
+	 * @param {Object} state  Data store's state.
+	 * @param {string} slug   Widget area to select.
+	 * @return {Object|null} A widget area if one is found with a matching slug.
+	 */
+	getWidgetArea( state, slug ) {
+		invariant( slug, 'slug is required.' );
+
+		const { areas } = state;
+
+		return areas[ slug ] || null;
+	},
 };
 
 export default {

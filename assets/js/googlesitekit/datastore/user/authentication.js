@@ -82,6 +82,28 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Checks to see if the current user has granted a particular scope.
+	 *
+	 * Returns `undefined` if the scope info is not available/loaded.
+	 *
+	 * @since 1.11.0
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} scope The scope constant to check for.
+	 * @return {(boolean|undefined)} `true` if scope is present; `false` if not.
+	 */
+	hasScope: createRegistrySelector( ( select ) => ( state, scope ) => {
+		const grantedScopes = select( STORE_NAME ).getGrantedScopes( state );
+
+		if ( grantedScopes === undefined ) {
+			return undefined;
+		}
+
+		return grantedScopes.includes( scope );
+	} ),
+
+	/**
 	 * Gets the Site Kit authentication status for this user.
 	 *
 	 * Returns `true` if the user is authenticated, `false` if
@@ -143,6 +165,22 @@ const baseSelectors = {
 	getUnsatisfiedScopes: createRegistrySelector( ( select ) => () => {
 		const { unsatisfiedScopes } = select( STORE_NAME ).getAuthentication() || {};
 		return unsatisfiedScopes;
+	} ),
+
+	/**
+	 * Checks reauthentication status for this user.
+	 *
+	 * Returns true if any required scopes are not satisfied or undefined
+	 * if reauthentication info is not available/loaded.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} User reauthentication status.
+	 */
+	needsReauthentication: createRegistrySelector( ( select ) => () => {
+		const { needsReauthentication } = select( STORE_NAME ).getAuthentication() || {};
+		return needsReauthentication;
 	} ),
 };
 

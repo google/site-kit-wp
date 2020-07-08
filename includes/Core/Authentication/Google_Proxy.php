@@ -95,7 +95,7 @@ class Google_Proxy {
 	/**
 	 * Gets user fields.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */

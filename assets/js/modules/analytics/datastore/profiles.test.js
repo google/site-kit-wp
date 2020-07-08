@@ -55,20 +55,21 @@ describe( 'modules/analytics profiles', () => {
 			it( 'creates a profile and adds it to the store ', async () => {
 				const accountID = fixtures.createProfile.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const profileName = fixtures.createProfile.name;
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{ body: fixtures.createProfile, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProfile( propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( propertyID, { profileName } );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{
 						body: {
-							data: { accountID, propertyID },
+							data: { accountID, propertyID, profileName },
 						},
 					}
 				);
@@ -85,20 +86,22 @@ describe( 'modules/analytics profiles', () => {
 
 			it( 'sets isDoingCreateProfile ', async () => {
 				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const profileName = fixtures.createProfile.name;
 
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{ body: fixtures.createProfile, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProfile( propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( propertyID, { profileName } );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( STORE_NAME ).isDoingCreateProfile( propertyID ) ).toEqual( true );
+				expect( registry.select( STORE_NAME ).isDoingCreateProfile() ).toEqual( true );
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
 				const accountID = fixtures.createProfile.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const profileName = fixtures.createProfile.name;
 
 				const response = {
 					code: 'internal_server_error',
@@ -112,7 +115,7 @@ describe( 'modules/analytics profiles', () => {
 				);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).createProfile( propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( propertyID, { profileName } );
 
 				await subscribeUntil( registry,
 					() => (

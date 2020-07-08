@@ -346,9 +346,7 @@ export default function SetupMain( { finishSetup } ) {
 			</div>
 
 			<div className="googlesitekit-setup-module__step">
-				{ ( ! accountSetupComplete || ! siteSetupComplete ) && (
-					<AdBlockerWarning />
-				) }
+				<AdBlockerWarning />
 
 				{ ! isAdBlockerActive && (
 					viewComponent

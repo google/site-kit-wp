@@ -28,6 +28,7 @@ export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
 	storeName: STORE_NAME,
+	requiresSetup: false,
 } );
 
 const store = Data.combineStores(

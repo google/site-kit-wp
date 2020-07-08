@@ -19,46 +19,44 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Layout from '../../../components/layout/layout';
+import Data from 'googlesitekit-data';
 import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
-import DashboardSpeedInner from './dashboard-widget-speed-inner';
+import DashboardPageSpeed from '../components/DashboardPageSpeed';
+import { STORE_NAME } from '../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
-class DashboardSpeed extends Component {
-	render() {
-		const description = global._googlesitekitLegacyData.permaLink ? __( 'How fast this page is.', 'google-site-kit' ) : __( 'How fast your home page is.', 'google-site-kit' );
+function DashboardSpeed() {
+	const currentReferenceURL = useSelect( ( select ) => select( STORE_NAME ).getCurrentReferenceURL() );
+	const currentEntityURL = useSelect( ( select ) => select( STORE_NAME ).getCurrentEntityURL() );
+	const description = currentEntityURL === currentReferenceURL
+		? __( 'How fast your page loads, how quickly people can interact with your content, and how stable your content is.', 'google-site-kit' )
+		: __( 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.', 'google-site-kit' );
 
-		return (
-			<Fragment>
-				<div id="googlesitekit-pagespeed-header" className="
+	return (
+		<Fragment>
+			<div id="googlesitekit-pagespeed-header" className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
 				">
-					<DashboardModuleHeader
-						title={ __( 'Speed', 'google-site-kit' ) }
-						description={ description }
-					/>
-				</div>
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
-					<Layout className="googlesitekit-pagespeed-report">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								<DashboardSpeedInner />
-							</div>
-						</div>
-					</Layout>
-				</div>
-			</Fragment>
-		);
-	}
+				<DashboardModuleHeader
+					title={ __( 'Page Speed and Experience', 'google-site-kit' ) }
+					description={ description }
+				/>
+			</div>
+			<div className="
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--span-12
+			">
+				<DashboardPageSpeed />
+			</div>
+		</Fragment>
+	);
 }
 
 export default DashboardSpeed;

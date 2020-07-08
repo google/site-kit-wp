@@ -1,7 +1,8 @@
 /**
  * External dependencies
  */
-import { castArray } from 'lodash';
+import castArray from 'lodash/castArray';
+import mapValues from 'lodash/mapValues';
 
 /**
  * WordPress dependencies
@@ -20,6 +21,7 @@ import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../.
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
 import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
 import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
+import modulesTagManagerStore, { STORE_NAME as modulesTagManagerStoreName } from '../../assets/js/modules/tagmanager/datastore';
 import modulesOptimizeStore, { STORE_NAME as modulesOptimizeStoreName } from '../../assets/js/modules/optimize/datastore';
 
 /**
@@ -95,7 +97,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * Sometimes a different response may be required to match the expected type,
  * but for anything else, a full mock should be used.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  *
  * @param {RegExp} urlMatcher Regular expression for matching the request URL.
  * @param {*}      [response] Optional. Response to return.
@@ -125,6 +127,7 @@ export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
 	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
 	registry.registerStore( modulesSearchConsoleStoreName, modulesSearchConsoleStore );
+	registry.registerStore( modulesTagManagerStoreName, modulesTagManagerStore );
 	registry.registerStore( modulesOptimizeStoreName, modulesOptimizeStore );
 };
 
@@ -133,6 +136,31 @@ export const subscribeWithUnsubscribe = ( registry, ...args ) => {
 	const unsubscribe = registry.subscribe( ...args );
 	unsubscribes.push( unsubscribe );
 	return unsubscribe;
+};
+
+/**
+ * Returns an object that returns hasFinishedResolution selectors for each key
+ * that are bound to the given registry and store name.
+ *
+ * @example
+ * await untilResolved( registry, STORE_NAME ).selectorWithResolver( arg1, arg2, arg3 );
+ *
+ * @since 1.11.0
+ *
+ * @param {Object} registry  WP data registry instance.
+ * @param {string} storeName Store name the selector belongs to.
+ * @return {Object} Object with keys as functions for each resolver in the given store.
+ */
+export const untilResolved = ( registry, storeName ) => {
+	return mapValues(
+		registry.stores[ storeName ].resolvers || {},
+		( resolverFn, resolverName ) => ( ...args ) => {
+			return subscribeUntil(
+				registry,
+				() => registry.select( storeName ).hasFinishedResolution( resolverName, args )
+			);
+		}
+	);
 };
 
 export const subscribeUntil = ( registry, predicates ) => {

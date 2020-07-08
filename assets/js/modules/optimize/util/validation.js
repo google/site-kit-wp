@@ -19,23 +19,36 @@
 /**
  * Checks if the given optimize ID appears to be a valid.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  *
  * @param {string|number} optimizeID optimize ID to test.
  * @return {boolean} True if the given optimize ID is valid, false otherwise.
  */
 export function isValidOptimizeID( optimizeID ) {
-	return typeof optimizeID === 'string' && !! optimizeID.match( /^OPT-[A-Z0-9]+$/ );
+	return typeof optimizeID === 'string' && !! optimizeID.match( /^(GTM|OPT)-[A-Z0-9]+$/ );
 }
 
 /**
  * Checks if the given AmpExperimentJSON appears to be a valid.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  *
  * @param {string|number} ampExperimentJSON ampExperimentJSON to test.
  * @return {boolean} True if the given ampExperimentJSON is valid, false otherwise.
  */
 export function isValidAMPExperimentJSON( ampExperimentJSON ) {
-	return typeof ampExperimentJSON === 'string';
+	if ( ! ampExperimentJSON ) {
+		return true;
+	}
+
+	if ( typeof ampExperimentJSON !== 'string' ) {
+		return false;
+	}
+
+	try {
+		JSON.parse( ampExperimentJSON );
+		return true;
+	} catch {
+		return false;
+	}
 }

@@ -19,7 +19,7 @@
 /**
  * Transforms a camel-case name into its pascal-case name.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  * @private
  *
  * @param {string} name Camel-case name to transform.
@@ -32,7 +32,7 @@ export const camelCaseToPascalCase = ( name ) => {
 /**
  * Transforms a camel-case name into its constant-case name.
  *
- * @since n.e.x.t
+ * @since 1.10.0
  * @private
  *
  * @param {string} name Camel-case name to transform.
