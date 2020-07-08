@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { getDefaultOptions } from 'expect-puppeteer';
+import { Page, ElementHandle } from 'puppeteer';
 
 /**
  * Jest matcher for asserting the given instance has tracking loaded or not.

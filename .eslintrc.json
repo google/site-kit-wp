@@ -11,8 +11,6 @@
     "fetchMock": false
   },
   "rules": {
-    "jsdoc/no-undefined-types": "off",
-    "jsdoc/require-param": "off",
     "no-restricted-globals": [
       "error",
       {

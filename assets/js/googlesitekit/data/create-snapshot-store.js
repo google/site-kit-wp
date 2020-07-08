@@ -77,9 +77,12 @@ export const createSnapshotStore = ( storeName ) => {
 		 * @since 1.9.0
 		 * @private
 		 *
+		 * @param {Object}  params Arguments object.
+		 * @param {boolean} params.clearAfterRestore Whether or not to delete snapshot after restore.
 		 * @return {boolean} Cache restoration response.
 		 */
-		*restoreSnapshot( { clearAfterRestore = true } = {} ) {
+		*restoreSnapshot( params = {} ) {
+			const { clearAfterRestore = true } = params;
 			const { cacheHit, value } = yield {
 				payload: {},
 				type: RESTORE_SNAPSHOT,
