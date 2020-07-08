@@ -20,6 +20,13 @@
  * Internal dependencies
  */
 import { CONTEXT_DASHBOARD, CONTEXT_PAGE_DASHBOARD } from './default-contexts';
+import {
+	AREA_ALL_TRAFFIC,
+	AREA_SEARCH_FUNNEL,
+	AREA_POPULARITY,
+	AREA_SPEED,
+	AREA_EARNINGS,
+} from './default-areas';
 
 /**
  * Defines default widget areas for a given context.
@@ -30,36 +37,29 @@ import { CONTEXT_DASHBOARD, CONTEXT_PAGE_DASHBOARD } from './default-contexts';
  */
 export function registerDefaults( widgetsApi ) {
 	const contexts = [ CONTEXT_DASHBOARD, CONTEXT_PAGE_DASHBOARD ];
-	for ( const contextSlug of contexts ) {
-		widgetsApi.registerWidgetArea( `${ contextSlug }AllTraffic`, {
-			title: 'All Triffic',
-			subtitle: 'How people found your site.',
-		} );
 
-		widgetsApi.registerWidgetArea( `${ contextSlug }SearchFunnel`, {
-			title: 'Search Funnel',
-			subtitle: 'How your site appeared in Search results and how many visitors you got from Search.',
-		} );
+	widgetsApi.registerWidgetArea( AREA_ALL_TRAFFIC, {
+		title: 'All Triffic',
+		subtitle: 'How people found your site.',
+	}, contexts );
 
-		widgetsApi.registerWidgetArea( `${ contextSlug }Popularity`, {
-			title: 'Popularity',
-			subtitle: 'Your most popular pages and how people found them from Search.',
-		} );
+	widgetsApi.registerWidgetArea( AREA_SEARCH_FUNNEL, {
+		title: 'Search Funnel',
+		subtitle: 'How your site appeared in Search results and how many visitors you got from Search.',
+	}, contexts );
 
-		widgetsApi.registerWidgetArea( `${ contextSlug }Speed`, {
-			title: 'Page Speed and Experience',
-			subtitle: 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.',
-		} );
+	widgetsApi.registerWidgetArea( AREA_POPULARITY, {
+		title: 'Popularity',
+		subtitle: 'Your most popular pages and how people found them from Search.',
+	}, contexts );
 
-		widgetsApi.registerWidgetArea( `${ contextSlug }Earnings`, {
-			title: 'Earnings',
-			subtitle: 'How much your site earns.',
-		} );
+	widgetsApi.registerWidgetArea( AREA_SPEED, {
+		title: 'Page Speed and Experience',
+		subtitle: 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.',
+	}, contexts );
 
-		widgetsApi.assignWidgetArea( `${ contextSlug }AllTraffic`, contextSlug );
-		widgetsApi.assignWidgetArea( `${ contextSlug }SearchFunnel`, contextSlug );
-		widgetsApi.assignWidgetArea( `${ contextSlug }Popularity`, contextSlug );
-		widgetsApi.assignWidgetArea( `${ contextSlug }Speed`, contextSlug );
-		widgetsApi.assignWidgetArea( `${ contextSlug }Earnings`, contextSlug );
-	}
+	widgetsApi.registerWidgetArea( AREA_EARNINGS, {
+		title: 'Earnings',
+		subtitle: 'How much your site earns.',
+	}, contexts );
 }

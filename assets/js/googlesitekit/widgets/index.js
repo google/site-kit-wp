@@ -28,6 +28,7 @@ import './datastore';
 
 export { registerDefaults } from './register-defaults';
 export { default as contexts } from './default-contexts';
+export { default as areas } from './default-areas';
 
 const Widgets = {
 	/**
