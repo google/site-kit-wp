@@ -26,9 +26,12 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, ACCOUNT_CREATE } from './constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME, CONTAINER_CREATE } from './constants';
+import { actions as containerActions } from './containers';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { ACCOUNT_CREATE } from '../../analytics/datastore/constants';
 const { createRegistrySelector } = Data;
 
 // Actions
@@ -50,6 +53,14 @@ export const BASE_INITIAL_STATE = {
 };
 
 export const baseActions = {
+	/**
+	 * Clears received accounts, and unsets related selections.
+	 *
+	 * The `getAccounts` selector will be invalidated to allow accounts to be re-fetched from the server.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 */
 	*resetAccounts() {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 
@@ -61,18 +72,54 @@ export const baseActions = {
 		dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
+	/**
+	 * Selects the given account and makes related selections.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} accountID Tag Manager account ID to select.
+	 */
 	*selectAccount( accountID ) {
-		invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
+		invariant( isValidAccountSelection( accountID ), 'A valid accountID selection is required to select.' );
 
-		const registry = yield Data.commonActions.getRegistry();
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		const { select, dispatch } = yield Data.commonActions.getRegistry();
 
-		if ( ACCOUNT_CREATE === accountID ) {
-			// eslint-disable-next-line no-useless-return
+		// Do nothing if the accountID to select is the same as the current.
+		if ( accountID === select( STORE_NAME ).getAccountID() ) {
 			return;
 		}
 
+		dispatch( STORE_NAME ).setAccountID( accountID );
+		dispatch( STORE_NAME ).setContainerID( '' );
+		dispatch( STORE_NAME ).setInternalContainerID( '' );
+		dispatch( STORE_NAME ).setAMPContainerID( '' );
+		dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+
+		if ( ACCOUNT_CREATE === accountID || select( STORE_NAME ).hasExistingTag() ) {
+			return;
+		}
+
+		// Containers may not be loaded yet for this account,
+		// and no selections are done in the getContainers resolver, so we wait here.
+		// This will not guarantee that containers exist, as an account may also have no containers
+		// it will simply wait for `getContainers` to be resolved for this account ID.
+		yield containerActions.waitForContainers( accountID );
 		// Trigger cascading selections.
+		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
+		if ( ! isAMP() || isSecondaryAMP() ) {
+			const webContainers = select( STORE_NAME ).getWebContainers( accountID );
+			const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
+			dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
+			dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
+		}
+
+		if ( isAMP() ) {
+			const ampContainers = select( STORE_NAME ).getAMPContainers( accountID );
+			const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
+			dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
+			dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
+		}
 	},
 };
 
@@ -101,12 +148,16 @@ export const baseReducer = ( state, { type } ) => {
 
 export const baseResolvers = {
 	*getAccounts() {
-		const registry = yield Data.commonActions.getRegistry();
-		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
+		const { select, dispatch } = yield Data.commonActions.getRegistry();
+		let accounts = select( STORE_NAME ).getAccounts();
 
-		// Only fetch accounts if there are none in the store.
-		if ( ! existingAccounts ) {
-			yield fetchGetAccountsStore.actions.fetchGetAccounts();
+		// Only fetch accounts if they have not been received yet.
+		if ( ! accounts ) {
+			( { response: accounts } = yield fetchGetAccountsStore.actions.fetchGetAccounts() );
+		}
+
+		if ( accounts?.length && ! select( STORE_NAME ).getAccountID() ) {
+			dispatch( STORE_NAME ).selectAccount( accounts[ 0 ].accountId );
 		}
 	},
 };

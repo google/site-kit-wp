@@ -1,5 +1,5 @@
 /**
- * Tag Manager datastore fixtures.
+ * Tag Manager common components.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,21 +16,12 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import ContainersAMPOnly from './get-containers--amp.json';
-import ContainersWebOnly from './get-containers--web.json';
-
-export { default as accounts } from './accounts.json';
-export { default as createContainer } from './create-container.json';
-export { default as liveContainerVersion } from './live-container-version.json';
-
-export const getContainers = {
-	amp: ContainersAMPOnly,
-	web: ContainersWebOnly,
-	all: [
-		...ContainersAMPOnly,
-		...ContainersWebOnly,
-	],
-};
+export { default as AccountCreate } from './AccountCreate';
+export { default as AccountSelect } from './AccountSelect';
+export { default as AMPContainerSelect } from './AMPContainerSelect';
+export { default as ErrorNotice } from './ErrorNotice';
+export { default as ExistingTagError } from './ExistingTagError';
+export { default as ExistingTagNotice } from './ExistingTagNotice';
+export { default as FormInstructions } from './FormInstructions';
+export { default as UseSnippetSwitch } from './UseSnippetSwitch';
+export { default as WebContainerSelect } from './WebContainerSelect';

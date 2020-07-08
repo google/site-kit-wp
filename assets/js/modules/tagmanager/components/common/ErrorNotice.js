@@ -1,5 +1,5 @@
 /**
- * Tag Manager datastore fixtures.
+ * Tag Manager Error component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,18 +19,19 @@
 /**
  * Internal dependencies
  */
-import ContainersAMPOnly from './get-containers--amp.json';
-import ContainersWebOnly from './get-containers--web.json';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../../datastore/constants';
+import ErrorText from '../../../../components/error-text';
+import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
+const { useSelect } = Data;
 
-export { default as accounts } from './accounts.json';
-export { default as createContainer } from './create-container.json';
-export { default as liveContainerVersion } from './live-container-version.json';
+export default function ErrorNotice() {
+	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
 
-export const getContainers = {
-	amp: ContainersAMPOnly,
-	web: ContainersWebOnly,
-	all: [
-		...ContainersAMPOnly,
-		...ContainersWebOnly,
-	],
-};
+	// Do not display if no error, or if the error is for missing scopes.
+	if ( ! error || isPermissionScopeError( error ) ) {
+		return null;
+	}
+
+	return <ErrorText message={ error.message } />;
+}
