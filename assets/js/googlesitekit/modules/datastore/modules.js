@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { keyBy, sortBy } from 'lodash';
+import { keyBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -44,7 +44,7 @@ const { commonActions, createRegistrySelector } = Data;
 export const ModuleComponents = {};
 
 // Actions.
-const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
+const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
 const SET_MODULE_COMPONENT_KEY = 'SET_MODULE_COMPONENT_KEY';
 const REGISTER_MODULE = 'REGISTER_MODULE';
 
@@ -59,7 +59,9 @@ const fetchGetModulesStore = createFetchStore( {
 		return {
 			...state,
 			isAwaitingModulesRefresh: false,
-			modules: keyBy( sortBy( modules, [ ( { order } ) => order ] ), 'slug' ),
+			modules: modules.reduce( ( acc, module ) => {
+				return { ...acc, [ module.slug ]: module };
+			}, {} ),
 		};
 	},
 } );
@@ -96,7 +98,6 @@ const BASE_INITIAL_STATE = {
 	// a module activation update, since the activation is technically complete
 	// before this data has been refreshed.
 	isAwaitingModulesRefresh: false,
-	registryKey: undefined,
 };
 
 const baseActions = {
@@ -115,7 +116,7 @@ const baseActions = {
 
 		yield {
 			payload: {},
-			type: REFETCH_AUTHENICATION,
+			type: REFETCH_AUTHENTICATION,
 		};
 
 		return { response, error };
@@ -136,7 +137,7 @@ const baseActions = {
 
 		yield {
 			payload: {},
-			type: REFETCH_AUTHENICATION,
+			type: REFETCH_AUTHENTICATION,
 		};
 
 		return { response, error };
@@ -187,10 +188,10 @@ const baseActions = {
 		invariant( slug, 'module slug is required' );
 
 		const registry = yield commonActions.getRegistry();
-		let registryKey = yield registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
+		let registryKey = yield registry.select( CORE_SITE ).getRegistryKey();
 		if ( registryKey === undefined ) {
 			registryKey = Object.keys( ModuleComponents ).length + 1;
-			yield registry.dispatch( CORE_SITE_STORE_NAME ).setRegistryKey( registryKey );
+			yield registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
 		}
 
 		// We do this assignment in the action rather than the reducer because we can't send a
@@ -222,7 +223,7 @@ const baseActions = {
 };
 
 export const baseControls = {
-	[ REFETCH_AUTHENICATION ]: () => {
+	[ REFETCH_AUTHENTICATION ]: () => {
 		return API.get( 'core', 'user', 'authentication', { timestamp: Date.now() }, { useCache: false } );
 	},
 };
@@ -305,10 +306,10 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const registryKey = select( CORE_SITE_STORE_NAME ).getRegistryKey();
-		const sortedModules = modules.sort((a, b) => {
+		const registryKey = select( CORE_SITE ).getRegistryKey();
+		const sortedModules = modules.sort( ( a, b ) => {
 			return a.object > b.object ? 1 : -1;
-		});
+		} );
 		const mappedModules = Object.values( sortedModules ).map( ( module ) => {
 			const moduleWithComponent = { ...module };
 			if ( ModuleComponents[ registryKey ] ) {

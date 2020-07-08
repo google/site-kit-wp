@@ -27,7 +27,7 @@ import { sortBy } from 'lodash';
  */
 import Data from 'googlesitekit-data';
 import { WIDGET_WIDTHS } from './constants';
-import { STORE_NAME as CORE_SITE_STORE_NAME } from '../../../googlesitekit/datastore/site';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 const { commonActions, createRegistrySelector } = Data;
 
@@ -96,11 +96,11 @@ export const actions = {
 		invariant( Object.values( WIDGET_WIDTHS ).includes( width ), `Widget width should be one of: ${ WidgetWidthKeys }, but "${ width }" was provided.` );
 
 		const registry = yield commonActions.getRegistry();
-		let registryKey = yield registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
+		let registryKey = yield registry.select( CORE_SITE ).getRegistryKey();
 
 		if ( registryKey === undefined ) {
 			registryKey = Object.keys( WidgetComponents ).length + 1;
-			yield registry.dispatch( CORE_SITE_STORE_NAME ).setRegistryKey( registryKey );
+			yield registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
 		}
 
 		// We do this assignment in the action rather than the reducer because we can't send a
@@ -219,7 +219,7 @@ export const selectors = {
 
 		const { areaAssignments, widgets } = state;
 
-		const registryKey = select( CORE_SITE_STORE_NAME ).getRegistryKey();
+		const registryKey = select( CORE_SITE ).getRegistryKey();
 
 		const sorted = sortBy(
 			Object.values( widgets ).filter( ( widget ) => {
@@ -251,7 +251,7 @@ export const selectors = {
 
 		const { widgets } = state;
 
-		const registryKey = select( CORE_SITE_STORE_NAME ).getRegistryKey();
+		const registryKey = select( CORE_SITE ).getRegistryKey();
 
 		const widget = widgets[ slug ];
 		if ( widget && WidgetComponents[ registryKey ] ) {
