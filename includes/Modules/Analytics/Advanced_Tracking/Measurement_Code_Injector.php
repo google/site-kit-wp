@@ -14,8 +14,10 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
  * Injects Javascript based on the current active plugins
  *
  * Class Injector
+ * @access private
+ * @ignore
  */
-class Measurement_Code_Injector {
+final class Measurement_Code_Injector {
 
 	/**
 	 * Holds a list of event configurations to be injected

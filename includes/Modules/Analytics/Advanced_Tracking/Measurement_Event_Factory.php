@@ -21,8 +21,10 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Ninja
  * Produces Measurement_Event objects
  *
  * Class Measurement_Event_Factory
+ * @access private
+ * @ignore
  */
-class Measurement_Event_Factory {
+final class Measurement_Event_Factory {
 
 	/**
 	 * Instantiates a subclass of MeasurementEventList based on the given plugin name

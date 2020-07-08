@@ -18,6 +18,8 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injecto
  * Main Advanced_Tracking class
  *
  * @class Advanced_Tracking
+ * @access private
+ * @ignore
  */
 final class Advanced_Tracking {
 

@@ -14,6 +14,8 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
  * Parent class for a specific plugin's event list
  *
  * @class Measurement_Event_List
+ * @access private
+ * @ignore
  */
 class Measurement_Event_List {
 

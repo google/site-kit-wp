@@ -16,8 +16,10 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
  * Detects the user's current active plugins that ShirshuClass supports
  *
  * Class Plugin_Detector
+ * @access private
+ * @ignore
  */
-class Plugin_Detector {
+final class Plugin_Detector {
 
 	/**
 	 * A list of AdvancedTracking supported plugins

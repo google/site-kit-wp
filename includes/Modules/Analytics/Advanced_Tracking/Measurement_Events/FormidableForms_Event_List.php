@@ -14,8 +14,10 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
  * Subclass that contains information for Formidable Forms plugin
  *
  * @class FormidableForms_Event_List
+ * @access ignore
+ * @ignore
  */
-class FormidableForms_Event_List extends Measurement_Event_List {
+final class FormidableForms_Event_List extends Measurement_Event_List {
 
 	/**
 	 * FormidableForms_Event_List constructor.
