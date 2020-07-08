@@ -253,7 +253,7 @@ export const selectors = {
 
 		const { widgets } = state;
 
-		const registryKey = select( STORE_NAME ).getWidgetRegistryKey();
+		const registryKey = select( STORE_NAME ).getRegistryKey();
 
 		const widget = widgets[ slug ];
 		if ( widget && WidgetComponents[ registryKey ] ) {
@@ -262,25 +262,6 @@ export const selectors = {
 
 		return widget || null;
 	} ),
-
-	/**
-	 * Returns the registry key being used for this registry's widgets.
-	 *
-	 * We key each registry with an Integer, so we don't share registered widgets
-	 * between registries. This allows us to access the appropriate registry global
-	 * from inside selectors.
-	 *
-	 * @since 1.9.0
-	 * @private
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(number|undefined)} An ordered array of widgets for this area.
-	 */
-	getWidgetRegistryKey( state ) {
-		const { registryKey } = state;
-
-		return registryKey;
-	},
 };
 
 export default {

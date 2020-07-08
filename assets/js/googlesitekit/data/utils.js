@@ -247,6 +247,30 @@ export const commonControls = {
 };
 
 /**
+ * An object of common selectors some store will use.
+ *
+ * @since n.e.x.t
+ *
+ * @return
+ */
+export const commonSelectors = {
+	/**
+	 * Returns the registry key being used for a given store.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(number|undefined)} The registryKey for a given store.
+	 */
+	getRegistryKey( state ) {
+		const { registryKey } = state;
+
+		return registryKey;
+	},
+};
+
+/**
  * Finds all duplicate items in an array and return them.
  *
  * @since 1.5.0
@@ -280,5 +304,6 @@ const findDuplicates = ( array ) => {
 export const commonStore = {
 	actions: commonActions,
 	controls: commonControls,
+	selectors: commonSelectors,
 	reducer: passthroughReducer,
 };

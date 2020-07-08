@@ -182,7 +182,7 @@ const baseActions = {
 		invariant( slug, 'module slug is required' );
 
 		const registry = yield commonActions.getRegistry();
-		let registryKey = yield registry.select( STORE_NAME ).getModuleRegistryKey();
+		let registryKey = yield registry.select( STORE_NAME ).getRegistryKey();
 		if ( registryKey === undefined ) {
 			registryKey = Object.keys( ModuleComponents ).length + 1;
 			yield {
@@ -286,7 +286,7 @@ const baseSelectors = {
 	 *   "dependencies": [
 	 *     "analytics"
 	 *   ],
-	 *   "dependants": []
+	 *   "dependents": []
 	 * }
 	 * ```
 	 *
@@ -303,7 +303,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const registryKey = select( STORE_NAME ).getModuleRegistryKey();
+		const registryKey = select( STORE_NAME ).getRegistryKey();
 		const sortedModules = sortBy( modules, [ ( { order } ) => order ] );
 		const mappedModules = Object.values( sortedModules ).map( ( module ) => {
 			const moduleWithComponent = { ...module };
@@ -320,25 +320,6 @@ const baseSelectors = {
 		} );
 		return keyBy( mappedModules, 'slug' );
 	} ),
-
-	/**
-	 * Returns the registry key being used for this registry's modules.
-	 *
-	 * We key each registry with an Integer, so we don't share registered widgets
-	 * between registries. This allows us to access the appropriate registry global
-	 * from inside selectors.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(number|undefined)} The registry for the modules store.
-	 */
-	getModuleRegistryKey( state ) {
-		const { registryKey } = state;
-
-		return registryKey;
-	},
 
 	/**
 	 * Gets a specific module by slug.
