@@ -21,6 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
+import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 import { STORE_NAME } from './constants';
 import accounts from './accounts';
 import containers from './containers';
@@ -68,6 +69,7 @@ const store = Data.combineStores(
 	existingTag,
 	settings,
 	versions,
+	createSnapshotStore( STORE_NAME ),
 );
 
 // Register this store on the global registry.

@@ -31,7 +31,8 @@ import { CONTEXT_WEB, CONTEXT_AMP } from '../constants';
  *
  * @see {@link https://developers.google.com/tag-manager/api/v2/reference/accounts/list}
  *
- * @since n.e.x.t
+ * @since 1.11.0
+ * @private
  *
  * @param {Object} [args]           Optional arguments to the builder.
  * @param {Object} [args.overrides] Optional fields overrides to take precedence over the default generated values.
@@ -58,7 +59,8 @@ export const accountBuilder = build( 'Tag Manager Account', {
  *
  * @see {@link https://developers.google.com/tag-manager/api/v2/reference/accounts/containers/list}
  *
- * @since n.e.x.t
+ * @since 1.11.0
+ * @private
  *
  * @param {Object} [args]           Optional arguments to the builder.
  * @param {Object} [args.overrides] Optional fields overrides to take precedence over the default generated values.
@@ -93,9 +95,25 @@ export const containerBuilder = build( 'Tag Manager Container', {
 } );
 
 /**
- * Generate an account with one or more containers.
+ * Generates multiple containers.
  *
  * @since n.e.x.t
+ * @private
+ *
+ * @param {number} count       Number of containers to generate.
+ * @param {Object} [overrides] Optional. Object of container field overrides.
+ * @return {Object[]} Array of generated container objects.
+ */
+export const buildContainers = ( count, overrides ) => {
+	return Array.from( { length: count } )
+		.map( () => containerBuilder( { overrides } ) );
+};
+
+/**
+ * Generates an account with one or more containers.
+ *
+ * @since 1.11.0
+ * @private
  *
  * @param {Object} [args]           Optional args for controlling the output.
  * @param {Object} [args.account]   Account field overrides.
@@ -109,12 +127,12 @@ export function buildAccountWithContainers( {
 	count = 1,
 } = {} ) {
 	const account = accountBuilder( { overrides: accountOverrides } );
-	const containers = Array( count ).fill( undefined ).map(
-		() => containerBuilder( {
-			overrides: {
-				...containerOverrides,
-				accountId: account.accountId,
-			} } )
+	const containers = buildContainers(
+		count,
+		{
+			...containerOverrides,
+			accountId: account.accountId,
+		},
 	);
 
 	return {
