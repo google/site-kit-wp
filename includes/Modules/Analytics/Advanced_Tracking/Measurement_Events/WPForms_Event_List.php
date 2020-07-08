@@ -11,9 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events;
 
 /**
- * Subclass that contains information for WPForms plugin
- *
- * @class WPForms_Event_List
+ * Class for containing tracking event information for WPForms plugin.
  *
  * @since n.e.x.t.
  * @access private

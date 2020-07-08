@@ -11,9 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events;
 
 /**
- * Subclass that contains information for Contact Form 7 plugin
- *
- * @class CF7_Event_List
+ * Class for containing tracking event information for Contact Form 7 plugin.
  *
  * @since n.e.x.t.
  * @access private

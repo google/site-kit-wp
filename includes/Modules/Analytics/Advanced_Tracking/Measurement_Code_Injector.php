@@ -41,7 +41,7 @@ final class Measurement_Code_Injector {
 	}
 
 	/**
-	 * Creates list of measurement event configurations and javascript to inject
+	 * Creates list of measurement event configurations and javascript to inject.
 	 *
 	 * @since n.e.x.t.
 	 */

@@ -18,9 +18,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Formi
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
 
 /**
- * Produces Measurement_Event objects
- *
- * Class Measurement_Event_Factory
+ * Class for producing Measurement_Event objects based on currently active plugins.
  *
  * @since n.e.x.t.
  * @access private
@@ -29,7 +27,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Ninja
 final class Measurement_Event_Factory {
 
 	/**
-	 * Instantiates a subclass of MeasurementEventList based on the given plugin name
+	 * Instantiates a subclass of MeasurementEventList based on the given plugin name.
 	 *
 	 * @since n.e.x.t.
 	 *

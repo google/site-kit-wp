@@ -11,9 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events;
 
 /**
- * Subclass that contains information for Woocommerce plugin
- *
- * @class Woocommerce_Event_List
+ * Class for containing tracking event information for Woocommerce plugin.
  *
  * @since n.e.x.t.
  * @access private

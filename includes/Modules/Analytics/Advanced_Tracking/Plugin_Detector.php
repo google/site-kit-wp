@@ -13,9 +13,7 @@
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
 /**
- * Detects the user's current active plugins that ShirshuClass supports
- *
- * Class Plugin_Detector
+ * Class for detecting the user's current active plugins that Advanced_Tracking class supports.
  *
  * @since n.e.x.t.
  * @access private
@@ -24,7 +22,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 final class Plugin_Detector {
 
 	/**
-	 * A list of AdvancedTracking supported plugins
+	 * A list of AdvancedTracking supported plugins.
 	 *
 	 * @since n.e.x.t.
 	 * @var array
@@ -43,7 +41,7 @@ final class Plugin_Detector {
 	}
 
 	/**
-	 * Determines the user's current active plugins that AdvancedTracking supports
+	 * Determines the user's current active plugins that AdvancedTracking supports.
 	 *
 	 * @since n.e.x.t.
 	 *

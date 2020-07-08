@@ -15,9 +15,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_Factor
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
 
 /**
- * Main Advanced_Tracking class
- *
- * @class Advanced_Tracking
+ * Class for Advanced Tracking.
  *
  * @since n.e.x.t.
  * @access private
@@ -26,7 +24,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injecto
 final class Advanced_Tracking {
 
 	/**
-	 * List of plugins SiteKit supports for event tracking
+	 * List of plugins SiteKit supports for event tracking.
 	 *
 	 * @since n.e.x.t.
 	 * @var array of strings
@@ -34,7 +32,7 @@ final class Advanced_Tracking {
 	private $supported_plugins;
 
 	/**
-	 * Advanced_Tracking constructor
+	 * Advanced_Tracking constructor.
 	 *
 	 * @since n.e.x.t.
 	 */

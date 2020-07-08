@@ -13,9 +13,7 @@
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events;
 
 /**
- * Represents a single event that Advanced_Tracking tracks
- *
- * @class Measurement_Event
+ * Class for representing a single tracking event that Advanced_Tracking tracks.
  *
  * @since n.e.x.t.
  * @access private
@@ -43,7 +41,7 @@ final class Measurement_Event implements \JsonSerializable {
 	}
 
 	/**
-	 * Returns an associative event containing the event attributes
+	 * Returns an associative event containing the event attributes.
 	 *
 	 * @since n.e.x.t.
 	 *
