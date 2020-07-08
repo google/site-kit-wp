@@ -25,7 +25,7 @@ import info from './info';
 import reset from './reset';
 import { STORE_NAME } from './constants';
 import notifications from './notifications';
-import registry from './registry';
+import registryKey from './registry-key';
 
 export { STORE_NAME };
 
@@ -35,7 +35,7 @@ const store = Data.combineStores(
 	info,
 	reset,
 	notifications,
-	registry
+	registryKey
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;
