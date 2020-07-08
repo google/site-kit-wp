@@ -45,12 +45,14 @@ describe( 'core/site registryKey', () => {
 			} );
 		} );
 	} );
+
 	describe( 'selectors', () => {
 		it( 'returns undefined initially', async () => {
 			expect(
 				registry.select( STORE_NAME ).getRegistryKey()
 			).toBeUndefined();
 		} );
+
 		it( 'receives and sets registryKey', async () => {
 			const registryKey = 1;
 			await registry.dispatch( STORE_NAME ).setRegistryKey( registryKey );

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import sortBy from 'lodash';
+import { sortBy } from 'lodash';
 
 /**
  * Internal dependencies
