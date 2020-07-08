@@ -33,7 +33,7 @@ const svgstore = require( './svgstore' );
 const zip = require( './zip' );
 
 /**
- * Gul task to clean up release folder.
+ * Gulp task to clean up release folder.
  *
  * @param {Function} cb The callback indicating the end of the task execution.
  */
