@@ -43,7 +43,9 @@ export default function ProfileNameTextField() {
 	}, [] );
 
 	useEffect( () => {
-		setValues( FORM_SETUP, { profileName: __( 'All Web Site Data', 'google-site-kit' ) } );
+		if ( ! profileName ) {
+			setValues( FORM_SETUP, { profileName: __( 'All Web Site Data', 'google-site-kit' ) } );
+		}
 	}, [] );
 
 	// bounce if an existing profile is selected
