@@ -33,7 +33,9 @@ const svgstore = require( './svgstore' );
 const zip = require( './zip' );
 
 /**
- * Shared tasks
+ * Gul task to clean up release folder.
+ *
+ * @param {Function} cb The callback indicating the end of the task execution.
  */
 function cleanRelease( cb ) {
 	del.sync( './release/**' );
@@ -42,6 +44,8 @@ function cleanRelease( cb ) {
 
 /**
  * Gulp task to minify images.
+ *
+ * @param {Function} cb The callback indicating the end of the task execution.
  */
 exports.imagemin = function( cb ) {
 	pump(
