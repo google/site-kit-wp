@@ -168,6 +168,10 @@ const baseActions = {
 	},
 
 	/**
+	 * Registers a module
+	 *
+	 * @since n.e.x.t
+	 *
 	 * @param {string}          slug                         Module slug.
 	 * @param {Object}          settings                     Module settings.
 	 * @param {string}          [settings.name]              Optional. Module name. Default is the slug.
