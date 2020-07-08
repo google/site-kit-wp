@@ -18,6 +18,8 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injecto
  * Main Advanced_Tracking class
  *
  * @class Advanced_Tracking
+ *
+ * @since n.e.x.t.
  * @access private
  * @ignore
  */
@@ -26,12 +28,15 @@ final class Advanced_Tracking {
 	/**
 	 * List of plugins SiteKit supports for event tracking
 	 *
+	 * @since n.e.x.t.
 	 * @var array of strings
 	 */
 	private $supported_plugins;
 
 	/**
 	 * Advanced_Tracking constructor
+	 *
+	 * @since n.e.x.t.
 	 */
 	public function __construct() {
 		$this->supported_plugins = array(

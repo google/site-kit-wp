@@ -14,6 +14,8 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
  * Injects Javascript based on the current active plugins
  *
  * Class Injector
+ *
+ * @since n.e.x.t.
  * @access private
  * @ignore
  */
@@ -22,12 +24,15 @@ final class Measurement_Code_Injector {
 	/**
 	 * Holds a list of event configurations to be injected
 	 *
+	 * @since n.e.x.t.
 	 * @var array
 	 */
 	private $event_configurations;
 
 	/**
 	 * Injector constructor.
+	 *
+	 * @since n.e.x.t.
 	 *
 	 * @param array $event_configurations list of measurement events to track.
 	 */
@@ -37,6 +42,8 @@ final class Measurement_Code_Injector {
 
 	/**
 	 * Creates list of measurement event configurations and javascript to inject
+	 *
+	 * @since n.e.x.t.
 	 */
 	public function inject_event_tracking() {
 		$main_file_path = plugin_basename( GOOGLESITEKIT_PLUGIN_MAIN_FILE );

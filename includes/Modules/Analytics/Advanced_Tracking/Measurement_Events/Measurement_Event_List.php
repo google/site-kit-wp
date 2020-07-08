@@ -14,6 +14,8 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
  * Parent class for a specific plugin's event list
  *
  * @class Measurement_Event_List
+ *
+ * @since n.e.x.t.
  * @access private
  * @ignore
  */
@@ -22,12 +24,15 @@ class Measurement_Event_List {
 	/**
 	 * Container for list of events - intended to be used per plugin
 	 *
+	 * @since n.e.x.t.
 	 * @var Measurement_Event[]
 	 */
 	private $measurement_events = array();
 
 	/**
 	 * Adds a measurement event to the measurement events array
+	 *
+	 * @since n.e.x.t.
 	 *
 	 * @param Measurement_Event $e The measurement event object.
 	 */
@@ -37,6 +42,8 @@ class Measurement_Event_List {
 
 	/**
 	 * Gets the measurement events array
+	 *
+	 * @since n.e.x.t.
 	 *
 	 * @return Measurement_Event[]
 	 */

@@ -16,6 +16,8 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
  * Represents a single event that Advanced_Tracking tracks
  *
  * @class Measurement_Event
+ *
+ * @since n.e.x.t.
  * @access private
  * @ignore
  */
@@ -24,12 +26,15 @@ final class Measurement_Event implements \JsonSerializable {
 	/**
 	 * The measurement event's configuration.
 	 *
+	 * @since n.e.x.t.
 	 * @var array
 	 */
 	private $config;
 
 	/**
 	 * Measurement_Event constructor.
+	 *
+	 * @since n.e.x.t.
 	 *
 	 * @param array $config The event's configuration.
 	 */
@@ -39,6 +44,8 @@ final class Measurement_Event implements \JsonSerializable {
 
 	/**
 	 * Returns an associative event containing the event attributes
+	 *
+	 * @since n.e.x.t.
 	 *
 	 * @return array
 	 */

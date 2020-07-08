@@ -14,6 +14,8 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
  * Subclass that contains information for Woocommerce plugin
  *
  * @class Woocommerce_Event_List
+ *
+ * @since n.e.x.t.
  * @access private
  * @ignore
  */
@@ -21,6 +23,8 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 
 	/**
 	 * Woocommerce_Event_List constructor.
+	 *
+	 * @since n.e.x.t.
 	 */
 	public function __construct() {
 		$event = new Measurement_Event(
