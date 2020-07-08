@@ -50,8 +50,9 @@ class MockPluginDetector extends Plugin_Detector {
 	 * @param string $plugin_name plugin to be removed.
 	 */
 	public function remove_active_plugin( $plugin_name ) {
-		if ( false !== ( $key = array_search( $plugin_name, $this->mock_active_plugins ) ) ) {
-			unset( $this->mock_active_plugins[$key] );
+		$key = array_search( $plugin_name, $this->mock_active_plugins );
+		if ( false !== $key ) {
+			unset( $this->mock_active_plugins[ $key ] );
 		}
 	}
 }

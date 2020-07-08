@@ -38,8 +38,14 @@ class AdvancedTrackingTest extends TestCase {
 			);
 		}
 
-		$this->supported_plugins = array('Contact Form 7', 'Formidable Forms', 'Ninja Forms', 'WooCommerce', 'WPForms',
-			'WPForms Lite');
+		$this->supported_plugins    = array(
+			'Contact Form 7',
+			'Formidable Forms',
+			'Ninja Forms',
+			'WooCommerce',
+			'WPForms',
+			'WPForms Lite',
+		);
 		$this->mock_plugin_detector = new MockPluginDetector();
 	}
 
@@ -50,7 +56,8 @@ class AdvancedTrackingTest extends TestCase {
 		$advanced_tracking = new Advanced_Tracking( $this->mock_plugin_detector );
 
 		$num_supported_plugins = count( $this->supported_plugins );
-		for ( $permutation = 0; $permutation < pow( 2, $num_supported_plugins ); $permutation++ ) {
+		$num_permutations      = pow( 2, $num_supported_plugins );
+		for ( $permutation = 0; $permutation < $num_permutations; $permutation++ ) {
 			if ( 0 == $permutation ) {
 				$advanced_tracking->set_up_advanced_tracking();
 				$this->assertEmpty( $advanced_tracking->get_event_configurations() );
@@ -71,7 +78,7 @@ class AdvancedTrackingTest extends TestCase {
 	 * @param number $permutation represents what permutation of supported plugins to enable.
 	 */
 	private function update_plugin_detector( $permutation ) {
-		foreach ( $this->supported_plugins as $plugin_name) {
+		foreach ( $this->supported_plugins as $plugin_name ) {
 			if ( 1 == ( $permutation % 2 ) ) {
 				$this->mock_plugin_detector->add_active_plugin( $plugin_name );
 			} else {
@@ -89,7 +96,7 @@ class AdvancedTrackingTest extends TestCase {
 	private function compare_event_configurations( $actual_event_configs ) {
 		foreach ( $this->mock_plugin_detector->determine_active_plugins() as $plugin_name ) {
 			$event_list = null;
-			switch( $plugin_name ) {
+			switch ( $plugin_name ) {
 				case 'WooCommerce':
 					$event_list = new Woocommerce_Event_List();
 					break;

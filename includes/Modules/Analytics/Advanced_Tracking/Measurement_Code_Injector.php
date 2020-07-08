@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector
  *
  * @package   Google\Site_Kit\Modules\Analytics
- * @copyright 2019 Google LLC
+ * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -14,18 +14,47 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
  * Injects Javascript based on the current active plugins
  *
  * Class Injector
+ *
+ * @since n.e.x.t.
+ * @access private
+ * @ignore
  */
-class Measurement_Code_Injector {
+final class Measurement_Code_Injector {
 
 	/**
 	 * Holds a list of event configurations to be injected
 	 *
+	 * @since n.e.x.t.
 	 * @var array
 	 */
 	private $event_configurations;
 
 	/**
+	 * The javascript code that is injected for event tracking.
+	 *
+	 * @since n.e.x.t.
+	 * @var string
+	 */
+	private static $inject_script = <<<INJECT_SCRIPT
+let config;
+for ( config of eventConfigurations ) {
+	const thisConfig = config;
+	document.addEventListener( config.on, function( e ) {
+		if ( e.target.matches( thisConfig.selector ) ) {
+			alert( 'Got an event called: '.concat( thisConfig.action ) );
+			//record event with gtag here
+		} else if ( e.target.matches( thisConfig.selector.concat( ' *' ) ) ) {
+			alert( 'Got an event called: '.concat( thisConfig.action ) );
+			//record event with gtag here
+		}
+	}, true );
+}
+INJECT_SCRIPT;
+
+	/**
 	 * Injector constructor.
+	 *
+	 * @since n.e.x.t.
 	 *
 	 * @param array $event_configurations list of measurement events to track.
 	 */
@@ -34,20 +63,15 @@ class Measurement_Code_Injector {
 	}
 
 	/**
-	 * Creates list of measurement event configurations and javascript to inject
+	 * Creates list of measurement event configurations and javascript to inject.
+	 *
+	 * @since n.e.x.t.
 	 */
 	public function inject_event_tracking() {
-		$main_file_path = plugin_basename( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$main_dir_path  = strstr( $main_file_path, '/', true );
-		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-			'shirshu_inject_event_tracking',
-			'/wp-content/plugins/' . $main_dir_path . '/assets/js/modules/analytics/advanced-tracking/measurement-event-tracking.js',
-			false,
-			null,
-			false
-		);
+		wp_add_inline_script( 'google_gtagjs', self::$inject_script );
+
 		wp_localize_script(
-			'shirshu_inject_event_tracking',
+			'google_gtagjs',
 			'eventConfigurations',
 			$this->event_configurations
 		);

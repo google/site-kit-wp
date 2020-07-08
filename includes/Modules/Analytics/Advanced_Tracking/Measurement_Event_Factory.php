@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_Factory
  *
  * @package   Google\Site_Kit\Modules\Analytics
- * @copyright 2019 Google LLC
+ * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -18,14 +18,18 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Formi
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
 
 /**
- * Produces Measurement_Event objects
+ * Class for producing Measurement_Event objects based on currently active plugins.
  *
- * Class Measurement_Event_Factory
+ * @since n.e.x.t.
+ * @access private
+ * @ignore
  */
-class Measurement_Event_Factory {
+final class Measurement_Event_Factory {
 
 	/**
-	 * Instantiates a subclass of MeasurementEventList based on the given plugin name
+	 * Instantiates a subclass of MeasurementEventList based on the given plugin name.
+	 *
+	 * @since n.e.x.t.
 	 *
 	 * @param string $plugin_name represents the plugin name to create a list of events for.
 	 * @return Measurement_Event_List

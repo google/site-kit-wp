@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking
  *
  * @package   Google\Site_Kit\Modules\Analytics
- * @copyright 2019 Google LLC
+ * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -15,39 +15,81 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_Factor
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
 use Google\Site_Kit\Plugin;
 
+// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 /**
- * Main Advanced_Tracking class
+ * Class for Advanced Tracking.
  *
- * @class Advanced_Tracking
+ * @since n.e.x.t.
+ * @access private
+ * @ignore
  */
 final class Advanced_Tracking {
 
 	/**
-	 * List of plugins SiteKit supports for event tracking
+	 * List of plugins SiteKit supports for event tracking.
 	 *
+	 * @since n.e.x.t.
 	 * @var array of strings
 	 */
 	private $supported_plugins;
 
+	/**
+	 * List of event configurations to be tracked.
+	 *
+	 * @since n.e.x.t.
+	 * @var array
+	 */
 	private $event_configurations;
 
+	/**
+	 * Main class plugin detector instance.
+	 *
+	 * @since n.e.x.t.
+	 * @var Plugin_Detector
+	 */
 	private $plugin_detector;
 
 	/**
-	 * Advanced_Tracking constructor
+	 * Advanced_Tracking constructor.
 	 *
-	 * @param null $plugin_detector optional plugin detector used for testing.
+	 * @param Plugin_Detector $plugin_detector optional plugin detector used for testing.
+	 * @since n.e.x.t.
 	 */
 	public function __construct( $plugin_detector = null ) {
 		$this->supported_plugins = array(
-			'Contact Form 7'   => 'WPCF7_PLUGIN_DIR',
-			'Formidable Forms' => 'load_formidable_forms',
-			'Ninja Forms'      => 'NF_PLUGIN_DIR',
-			'WooCommerce'      => 'WC_PLUGIN_FILE',
-			'WPForms'          => 'WPFORMS_PLUGIN_DIR',
-			'WPForms Lite'     => 'WPFORMS_PLUGIN_DIR',
+			array(
+				'name'       => 'Contact Form 7',
+				'check_name' => 'WPCF7_PLUGIN_DIR',
+				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+			),
+			array(
+				'name'       => 'Formidable Forms',
+				'check_name' => 'load_formidable_forms',
+				'check_type' => Plugin_Detector::$TYPE_FUNCTION,
+			),
+			array(
+				'name'       => 'Ninja Forms',
+				'check_name' => 'NF_PLUGIN_DIR',
+				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+			),
+			array(
+				'name'       => 'WooCommerce',
+				'check_name' => 'WC_PLUGIN_FILE',
+				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+			),
+			array(
+				'name'       => 'WPForms',
+				'check_name' => 'WPFORMS_PLUGIN_DIR',
+				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+			),
+			array(
+				'name'       => 'WPForms Lite',
+				'check_name' => 'WPFORMS_PLUGIN_DIR',
+				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+			),
 		);
-		$this->plugin_detector = $plugin_detector;
+		$this->plugin_detector   = $plugin_detector;
 	}
 
 	/**
@@ -74,7 +116,7 @@ final class Advanced_Tracking {
 		}
 		$active_plugins = $this->plugin_detector->determine_active_plugins();
 
-		$event_factory        = new Measurement_Event_Factory();
+		$event_factory              = new Measurement_Event_Factory();
 		$this->event_configurations = array();
 		foreach ( $active_plugins as $plugin_name ) {
 			$measurement_event_list = $event_factory->create_measurement_event_list( $plugin_name );
@@ -88,6 +130,11 @@ final class Advanced_Tracking {
 		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
 	}
 
+	/**
+	 * Returns list of event configurations.
+	 *
+	 * @return array
+	 */
 	public function get_event_configurations() {
 		return $this->event_configurations;
 	}
