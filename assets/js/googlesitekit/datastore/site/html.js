@@ -33,8 +33,11 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
+const { createRegistryControl } = Data;
+
 // Actions
 const RESET_HTML_FOR_URL = 'RESET_HTML_FOR_URL';
+const WAIT_FOR_HTML_FOR_URL = 'WAIT_FOR_HTML_FOR_URL';
 
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',
@@ -80,6 +83,15 @@ export const BASE_INITIAL_STATE = {
 };
 
 const baseActions = {
+	/**
+	 * Resets the HTML for a given URL.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} url URL for which the HTML should be reset.
+	 * @return {Object} Redux-style action.
+	 */
 	*resetHTMLForURL( url ) {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 
@@ -90,6 +102,42 @@ const baseActions = {
 
 		return dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getHTMLForURL' );
 	},
+	/**
+	 * Waits for HTML for to be resolved for the given account URL.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} url URL for which to fetch HTML.
+	 * @return {Object} Redux-style action.
+	 */
+	*waitForHTMLForURL( url ) {
+		return {
+			payload: { url },
+			type: WAIT_FOR_HTML_FOR_URL,
+		};
+	},
+};
+
+const baseControls = {
+	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl( ( registry ) => ( { payload: { url } } ) => {
+		// Select first to ensure resolution is always triggered.
+		registry.select( STORE_NAME ).getHTMLForURL( url );
+		const isHTMLForURLLoaded = () => registry.select( STORE_NAME ).hasFinishedResolution( 'getHTMLForURL', [ url ] );
+
+		if ( isHTMLForURLLoaded() ) {
+			return;
+		}
+
+		return new Promise( ( resolve ) => {
+			const unsubscribe = registry.subscribe( () => {
+				if ( isHTMLForURLLoaded() ) {
+					unsubscribe();
+					resolve();
+				}
+			} );
+		} );
+	} ),
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -152,6 +200,7 @@ const store = Data.combineStores(
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
 		actions: baseActions,
+		controls: baseControls,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,

@@ -33,30 +33,14 @@ import { tagMatchers } from '../util';
 import { isValidContainerID, isValidContainerSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-const { createRegistrySelector } = Data;
+const { createRegistryControl, createRegistrySelector } = Data;
 
-const fetchGetExistingTagStore = createFetchStore( {
-	baseName: 'getExistingTag',
-	controlCallback: async () => {
-		const existingTagURLs = await getExistingTagURLs( Data.select( CORE_SITE ) );
-		let tagFound = null;
-		for ( const url of existingTagURLs ) {
-			const html = await Data.select( CORE_SITE ).getHTMLForURL( url );
-			// TODO: html ends up being undefined here.
-			tagFound = extractExistingTag( html, tagMatchers );
-			if ( tagFound ) {
-				return tagFound;
-			}
-		}
-		return	tagFound || null;
-	},
-	reducerCallback: ( state, existingTag ) => {
-		return {
-			...state,
-			existingTag,
-		};
-	},
-} );
+// Actions
+const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
+const START_FETCH_EXISTING_TAG = 'START_FETCH_EXISTING_TAG';
+const FINISH_FETCH_EXISTING_TAG = 'FINISH_FETCH_EXISTING_TAG';
+const CATCH_FETCH_EXISTING_TAG = 'CATCH_FETCH_EXISTING_TAG';
+const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
 
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
@@ -82,15 +66,117 @@ const fetchGetTagPermissionStore = createFetchStore( {
 
 const BASE_INITIAL_STATE = {
 	existingTag: undefined,
+	isFetchingExistingTag: false,
 	tagPermission: {},
+};
+
+const baseActions = {
+	*fetchGetExistingTag() {
+		let response, error;
+
+		yield {
+			payload: {},
+			type: START_FETCH_EXISTING_TAG,
+		};
+
+		try {
+			response = yield {
+				payload: {},
+				type: FETCH_EXISTING_TAG,
+			};
+
+			yield baseActions.receiveGetExistingTag( response, {} );
+
+			yield {
+				payload: {},
+				type: FINISH_FETCH_EXISTING_TAG,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: { error },
+				type: CATCH_FETCH_EXISTING_TAG,
+			};
+		}
+		return { response, error };
+	},
+	receiveGetExistingTag( existingTag ) {
+		invariant(
+			existingTag === null || isValidContainerID( existingTag ),
+			'existingTag must be a valid container public ID or null.'
+		);
+
+		return {
+			payload: { existingTag },
+			type: RECEIVE_EXISTING_TAG,
+		};
+	},
+};
+
+const baseControls = {
+	[ FETCH_EXISTING_TAG ]: createRegistryControl( ( registry ) => async () => {
+		const existingTagURLs = await getExistingTagURLs( registry.select( CORE_SITE ) );
+		let tagFound = null;
+		for ( const url of existingTagURLs ) {
+			await registry.dispatch( CORE_SITE ).waitForHTMLForURL( url );
+			const html = registry.select( CORE_SITE ).getHTMLForURL( url );
+			// TODO: html ends up being undefined here.
+			tagFound = extractExistingTag( html, tagMatchers );
+			if ( tagFound ) {
+				return tagFound;
+			}
+		}
+		return	tagFound || null;
+	} ),
+};
+
+const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case START_FETCH_EXISTING_TAG: {
+			return {
+				...state,
+				isFetchingExistingTag: true,
+			};
+		}
+
+		case RECEIVE_EXISTING_TAG: {
+			const { existingTag } = payload;
+
+			return {
+				...state,
+				existingTag,
+			};
+		}
+
+		case FINISH_FETCH_EXISTING_TAG: {
+			return {
+				...state,
+				isFetchingExistingTag: false,
+			};
+		}
+
+		case CATCH_FETCH_EXISTING_TAG: {
+			const { error } = payload;
+
+			return {
+				...state,
+				error,
+				isFetchingExistingTag: false,
+			};
+		}
+
+		default: {
+			return { ...state };
+		}
+	}
 };
 
 const baseResolvers = {
 	*getExistingTag() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const registry = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).getExistingTag() === undefined ) {
-			yield fetchGetExistingTagStore.actions.fetchGetExistingTag();
+		if ( registry.select( STORE_NAME ).getExistingTag() === undefined ) {
+			yield baseActions.fetchGetExistingTag();
 		}
 	},
 
@@ -193,11 +279,13 @@ const baseSelectors = {
 };
 
 const store = Data.combineStores(
-	fetchGetExistingTagStore,
 	fetchGetTagPermissionStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		controls: baseControls,
 		resolvers: baseResolvers,
+		reducer: baseReducer,
 		selectors: baseSelectors,
 	}
 );
