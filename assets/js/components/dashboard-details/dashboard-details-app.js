@@ -46,7 +46,6 @@ class DashboardDetailsApp extends Component {
 		return (
 			<Fragment>
 				<Header />
-				{ featureFlags.widgets.pageDashboard.enabled && <WidgetContextRenderer slug="pageDashboard" /> }
 				<div className="googlesitekit-module-page">
 					<div className="googlesitekit-dashboard-single-url">
 						<div className="mdc-layout-grid">
@@ -104,6 +103,7 @@ class DashboardDetailsApp extends Component {
 										</div>
 									</Layout>
 								</div>
+								{ featureFlags.widgets.pageDashboard.enabled && <WidgetContextRenderer slug="pageDashboard" /> }
 								<DashboardDetailsModules />
 								<div className="
 									mdc-layout-grid__cell
