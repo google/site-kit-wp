@@ -141,7 +141,7 @@ final class Analytics extends Module
 			}
 		);
 
-		( new Advanced_Tracking( $this->context ) )->register();
+		( new Advanced_Tracking() )->register();
 	}
 
 	/**

@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_Factory;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
+use Google\Site_Kit\Plugin;
 
 /**
  * Main Advanced_Tracking class
@@ -28,10 +29,16 @@ final class Advanced_Tracking {
 	 */
 	private $supported_plugins;
 
+	private $event_configurations;
+
+	private $plugin_detector;
+
 	/**
 	 * Advanced_Tracking constructor
+	 *
+	 * @param null $plugin_detector optional plugin detector used for testing.
 	 */
-	public function __construct() {
+	public function __construct( $plugin_detector = null ) {
 		$this->supported_plugins = array(
 			'Contact Form 7'   => 'WPCF7_PLUGIN_DIR',
 			'Formidable Forms' => 'load_formidable_forms',
@@ -40,6 +47,7 @@ final class Advanced_Tracking {
 			'WPForms'          => 'WPFORMS_PLUGIN_DIR',
 			'WPForms Lite'     => 'WPFORMS_PLUGIN_DIR',
 		);
+		$this->plugin_detector = $plugin_detector;
 	}
 
 	/**
@@ -61,20 +69,27 @@ final class Advanced_Tracking {
 			return;
 		}
 
-		$active_plugins = ( new Plugin_Detector( $this->supported_plugins ) )->determine_active_plugins();
+		if ( null === $this->plugin_detector ) {
+			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
+		}
+		$active_plugins = $this->plugin_detector->determine_active_plugins();
 
 		$event_factory        = new Measurement_Event_Factory();
-		$event_configurations = array();
+		$this->event_configurations = array();
 		foreach ( $active_plugins as $plugin_name ) {
 			$measurement_event_list = $event_factory->create_measurement_event_list( $plugin_name );
 			if ( null !== $measurement_event_list ) {
 				foreach ( $measurement_event_list->get_events() as $measurement_event ) {
-					array_push( $event_configurations, $measurement_event );
+					array_push( $this->event_configurations, $measurement_event );
 				}
 			}
 		}
 
-		( new Measurement_Code_Injector( $event_configurations ) )->inject_event_tracking();
+		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
+	}
+
+	public function get_event_configurations() {
+		return $this->event_configurations;
 	}
 
 }
