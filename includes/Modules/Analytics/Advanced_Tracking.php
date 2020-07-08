@@ -14,6 +14,8 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_Factory;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
 
+// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 /**
  * Class for Advanced Tracking.
  *
@@ -39,32 +41,32 @@ final class Advanced_Tracking {
 	public function __construct() {
 		$this->supported_plugins = array(
 			array(
-				'name' => 'Contact Form 7',
+				'name'       => 'Contact Form 7',
 				'check_name' => 'WPCF7_PLUGIN_DIR',
 				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
 			),
 			array(
-				'name' => 'Formidable Forms',
+				'name'       => 'Formidable Forms',
 				'check_name' => 'load_formidable_forms',
 				'check_type' => Plugin_Detector::$TYPE_FUNCTION,
 			),
 			array(
-				'name' => 'Ninja Forms',
+				'name'       => 'Ninja Forms',
 				'check_name' => 'NF_PLUGIN_DIR',
 				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
 			),
 			array(
-				'name' => 'WooCommerce',
+				'name'       => 'WooCommerce',
 				'check_name' => 'WC_PLUGIN_FILE',
 				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
 			),
 			array(
-				'name' => 'WPForms',
+				'name'       => 'WPForms',
 				'check_name' => 'WPFORMS_PLUGIN_DIR',
 				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
 			),
 			array(
-				'name' => 'WPForms Lite',
+				'name'       => 'WPForms Lite',
 				'check_name' => 'WPFORMS_PLUGIN_DIR',
 				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
 			),

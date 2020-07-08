@@ -9,6 +9,8 @@
  */
 
 // phpcs:disable WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName
+// phpcs:disable WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
@@ -35,7 +37,7 @@ final class Plugin_Detector {
 	 * @since n.e.x.t.
 	 * @var string
 	 */
-	public static $TYPE_CONSTANT = "CONSTANT";
+	public static $TYPE_CONSTANT = 'CONSTANT';
 
 	/**
 	 * The function check_type string for support_plugins array in the Advanced_Tracking class.
@@ -43,7 +45,7 @@ final class Plugin_Detector {
 	 * @since n.e.x.t.
 	 * @var string
 	 */
-	public static $TYPE_FUNCTION = "FUNCTION";
+	public static $TYPE_FUNCTION = 'FUNCTION';
 
 	/**
 	 * Plugin_Detector constructor.
@@ -66,10 +68,10 @@ final class Plugin_Detector {
 	public function determine_active_plugins() {
 		$active_plugins = array();
 		foreach ( $this->supported_plugins as $current_plugin ) {
-			if ( ($current_plugin['check_type'] == Plugin_Detector::$TYPE_CONSTANT &&
-			     defined($current_plugin['check_name'])) ||
-			     ($current_plugin['check_type'] == Plugin_Detector::$TYPE_FUNCTION &&
-			     function_exists($current_plugin['check_name'])) ) {
+			if ( ( $current_plugin['check_type'] == self::$TYPE_CONSTANT &&
+					defined( $current_plugin['check_name'] ) ) ||
+					( $current_plugin['check_type'] == self::$TYPE_FUNCTION &&
+					function_exists( $current_plugin['check_name'] ) ) ) {
 				array_push( $active_plugins, $current_plugin['name'] );
 			}
 		}

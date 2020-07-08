@@ -68,7 +68,7 @@ INJECT_SCRIPT;
 	 * @since n.e.x.t.
 	 */
 	public function inject_event_tracking() {
-		wp_add_inline_script('google_gtagjs', Measurement_Code_Injector::$inject_script);
+		wp_add_inline_script( 'google_gtagjs', self::$inject_script );
 
 		wp_localize_script(
 			'google_gtagjs',
