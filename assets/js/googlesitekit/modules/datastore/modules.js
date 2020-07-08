@@ -306,7 +306,9 @@ const baseSelectors = {
 		}
 
 		const registryKey = select( CORE_SITE_STORE_NAME ).getRegistryKey();
-		const sortedModules = sortBy( modules, [ ( { order } ) => order ] );
+		const sortedModules = modules.sort((a, b) => {
+			return a.object > b.object ? 1 : -1;
+		});
 		const mappedModules = Object.values( sortedModules ).map( ( module ) => {
 			const moduleWithComponent = { ...module };
 			if ( ModuleComponents[ registryKey ] ) {

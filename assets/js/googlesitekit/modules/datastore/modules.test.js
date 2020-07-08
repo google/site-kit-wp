@@ -41,7 +41,8 @@ import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
 
 describe( 'core/modules modules', () => {
-	const fixturesKeyValue = keyBy( sortBy( FIXTURES, [ ( { order } ) => order ] ), 'slug' );
+	const sortedFixtures = sortBy( FIXTURES, [ ( { order } ) => order ] );
+	const fixturesKeyValue = keyBy( sortedFixtures, 'slug' );
 	let registry;
 	let store;
 
