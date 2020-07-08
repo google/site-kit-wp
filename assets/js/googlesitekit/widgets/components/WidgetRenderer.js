@@ -17,11 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import { string } from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore';
-import { string } from 'prop-types';
+import Widget from './Widget';
 
 const { useSelect } = Data;
 
@@ -33,9 +38,12 @@ const WidgetRenderer = ( { slug } ) => {
 	}
 
 	// Capitalize the "component" variable, as it is required by JSX.
-	const { component: Component } = widget;
+	const { component: Component, wrapWidget } = widget;
+	const widgetComponent = <Component slug={ slug } />;
 
-	return <Component slug={ slug } />;
+	return widgetComponent && wrapWidget
+		? <Widget slug={ slug }>{ widgetComponent }</Widget>
+		: widgetComponent;
 };
 
 WidgetRenderer.propTypes = {
