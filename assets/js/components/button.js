@@ -80,6 +80,7 @@ class Button extends Component {
 				aria-haspopup={ ariaHaspopup }
 				aria-expanded={ ariaExpanded }
 				aria-controls={ ariaControls }
+				role={ 'a' === SemanticButton ? 'button' : undefined }
 			>
 				{ icon && icon }
 				<span className="mdc-button__label">{ children }</span>

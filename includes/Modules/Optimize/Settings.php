@@ -41,6 +41,22 @@ class Settings extends Module_Settings {
 				'optimizeId'        => 'optimizeID',
 			)
 		);
+
+		add_filter(
+			'option_' . self::OPTION,
+			function ( $option ) {
+				// Migrate legacy values where this was saved as decoded JSON object.
+				if ( is_array( $option ) && array_key_exists( 'ampExperimentJSON', $option ) && ! is_string( $option['ampExperimentJSON'] ) ) {
+					if ( empty( $option['ampExperimentJSON'] ) ) {
+						$option['ampExperimentJSON'] = '';
+					} else {
+						$option['ampExperimentJSON'] = wp_json_encode( $option['ampExperimentJSON'] );
+					}
+				}
+
+				return $option;
+			}
+		);
 	}
 
 	/**
@@ -55,23 +71,5 @@ class Settings extends Module_Settings {
 			'ampExperimentJSON' => '',
 			'optimizeID'        => '',
 		);
-	}
-
-	/**
-	 * Gets the callback for sanitizing the setting's value before saving.
-	 *
-	 * @since 1.6.0
-	 *
-	 * @return callable|null
-	 */
-	protected function get_sanitize_callback() {
-		return function( $option ) {
-			if ( is_array( $option ) ) {
-				if ( isset( $option['ampExperimentJSON'] ) && is_string( $option['ampExperimentJSON'] ) ) {
-					$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
-				}
-			}
-			return $option;
-		};
 	}
 }

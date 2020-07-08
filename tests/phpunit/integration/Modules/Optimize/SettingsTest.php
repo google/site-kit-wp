@@ -60,6 +60,52 @@ class SettingsTest extends SettingsTestCase {
 		}
 	}
 
+	public function test_legacy_amp_experiment_json_value() {
+		$legacy_option = array(
+			'ampExperimentJSON' => (object) array(
+				'experimentName' => (object) array(
+					'sticky'   => true,
+					'variants' => (object) array(
+						'0' => 33.4,
+						'1' => 33.3,
+						'2' => 33.3,
+					),
+				),
+			),
+		);
+		update_option( Settings::OPTION, $legacy_option );
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->register();
+
+		$option = $settings->get();
+		$this->assertArraySubset(
+			array(
+				// The value exposed should be a JSON string.
+				// phpcs:ignore WordPressVIPMinimum.Security.Mustache
+				'ampExperimentJSON' => '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
+			),
+			$option
+		);
+	}
+
+	public function test_legacy_amp_experiment_json_value_empty() {
+		$legacy_option = array(
+			'ampExperimentJSON' => null,
+		);
+		update_option( Settings::OPTION, $legacy_option );
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->register();
+
+		$option = $settings->get();
+		$this->assertArraySubset(
+			array(
+				// The value exposed should be a JSON string.
+				'ampExperimentJSON' => '',
+			),
+			$option
+		);
+	}
+
 	/**
 	 * @inheritDoc
 	 */
