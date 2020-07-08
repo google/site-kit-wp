@@ -41,6 +41,7 @@ import {
 	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
+	ProfileNameTextField,
 } from '../common/';
 import { trackEvent } from '../../../util';
 import { isPermissionScopeError } from '../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
@@ -97,6 +98,10 @@ export default function SetupForm( { finishSetup } ) {
 				<PropertySelect />
 
 				<ProfileSelect />
+			</div>
+
+			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+				<ProfileNameTextField />
 			</div>
 
 			<div className="googlesitekit-setup-module__action">
