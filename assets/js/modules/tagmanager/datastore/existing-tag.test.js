@@ -30,6 +30,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
+import { setupReduxLogger } from '../../../../../tests/js/redux-debug';
 
 describe( 'modules/tagmanager existing-tag', () => {
 	let registry;
@@ -40,6 +41,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 	} );
 
 	beforeEach( () => {
+		setupReduxLogger();
 		registry = createTestRegistry();
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 	} );
@@ -70,10 +72,10 @@ describe( 'modules/tagmanager existing-tag', () => {
 				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
 				expect( initialExistingTag ).toEqual( undefined );
 
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
+
 				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
-
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( existingTag ).toEqual( expectedTag );

@@ -36,10 +36,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 const { createRegistryControl, createRegistrySelector } = Data;
 
 // Actions
-const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
-const START_FETCH_EXISTING_TAG = 'START_FETCH_EXISTING_TAG';
-const FINISH_FETCH_EXISTING_TAG = 'FINISH_FETCH_EXISTING_TAG';
-const CATCH_FETCH_EXISTING_TAG = 'CATCH_FETCH_EXISTING_TAG';
+const GET_EXISTING_TAG = 'FETCH_EXISTING_TAG';
 const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
 
 const fetchGetTagPermissionStore = createFetchStore( {
@@ -71,34 +68,11 @@ const BASE_INITIAL_STATE = {
 };
 
 const baseActions = {
-	*fetchGetExistingTag() {
-		let response, error;
-
-		yield {
+	getExistingTag() {
+		return {
 			payload: {},
-			type: START_FETCH_EXISTING_TAG,
+			type: GET_EXISTING_TAG,
 		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_EXISTING_TAG,
-			};
-
-			yield baseActions.receiveGetExistingTag( response, {} );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_EXISTING_TAG,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_EXISTING_TAG,
-			};
-		}
-		return { response, error };
 	},
 	receiveGetExistingTag( existingTag ) {
 		invariant(
@@ -114,54 +88,33 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ FETCH_EXISTING_TAG ]: createRegistryControl( ( registry ) => async () => {
-		const existingTagURLs = await getExistingTagURLs( registry.select( CORE_SITE ) );
-		let tagFound = null;
+	[ GET_EXISTING_TAG ]: createRegistryControl( ( registry ) => async () => {
+		const homeURL = registry.select( CORE_SITE ).getHomeURL();
+		const ampMode = registry.select( CORE_SITE ).getAMPMode();
+
+		const existingTagURLs = await getExistingTagURLs( homeURL, ampMode );
+
+		let tagFound;
 		for ( const url of existingTagURLs ) {
 			await registry.dispatch( CORE_SITE ).waitForHTMLForURL( url );
 			const html = registry.select( CORE_SITE ).getHTMLForURL( url );
-			// TODO: html ends up being undefined here.
 			tagFound = extractExistingTag( html, tagMatchers );
 			if ( tagFound ) {
 				return tagFound;
 			}
 		}
-		return	tagFound || null;
+		return	null;
 	} ),
 };
 
 const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_FETCH_EXISTING_TAG: {
-			return {
-				...state,
-				isFetchingExistingTag: true,
-			};
-		}
-
 		case RECEIVE_EXISTING_TAG: {
 			const { existingTag } = payload;
 
 			return {
 				...state,
 				existingTag,
-			};
-		}
-
-		case FINISH_FETCH_EXISTING_TAG: {
-			return {
-				...state,
-				isFetchingExistingTag: false,
-			};
-		}
-
-		case CATCH_FETCH_EXISTING_TAG: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingExistingTag: false,
 			};
 		}
 
@@ -176,10 +129,10 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 
 		if ( registry.select( STORE_NAME ).getExistingTag() === undefined ) {
-			yield baseActions.fetchGetExistingTag();
+			const existingTag = yield baseActions.getExistingTag();
+			registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag );
 		}
 	},
-
 	*getTagPermission( containerID ) {
 		if ( ! isValidContainerSelection( containerID ) ) {
 			return;

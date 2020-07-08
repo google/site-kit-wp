@@ -127,16 +127,16 @@ export const extractExistingTag = ( html, tagMatchers = [] ) => {
  * Gets the existing tag URLs.
  *
  * @since n.e.x.t
- * @param {Object} coreSiteStore The core/site data store.
- *
+ * @param {string} homeURL The site's home URL
+ * @param {string} ampMode The site's AMP mode
  * @return {Array} An array of the existing tag URLs.
  */
-export const getExistingTagURLs = async ( coreSiteStore ) => {
+export const getExistingTagURLs = async ( homeURL, ampMode ) => {
 	// Initialize urls with home URL
-	const urls = [ coreSiteStore.getHomeURL() ];
+	const urls = [ homeURL ];
 
 	// Add first post in AMP mode if AMP mode is secondary.
-	if ( 'secondary' === coreSiteStore.getAMPMode() ) {
+	if ( 'secondary' === ampMode ) {
 		const ampPostURL = await apiFetch( { path: '/wp/v2/posts?per_page=1' } )
 			.then(
 				( posts ) => posts.slice( 0, 1 ).map(
