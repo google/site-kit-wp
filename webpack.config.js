@@ -90,7 +90,7 @@ const resolve = {
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
-const webpackConfig = () => {
+const webpackConfig = ( mode ) => {
 	return [
 		// Build the settings js..
 		{
@@ -279,7 +279,7 @@ module.exports = {
 
 module.exports.default = ( ...args ) => {
 	const { includeTests, mode } = args[ 1 ];
-	const config = webpackConfig();
+	const config = webpackConfig( mode );
 
 	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.
