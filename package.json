@@ -122,7 +122,7 @@
     "intl": "^1.2.5",
     "intl-locales-supported": "^1.6.0",
     "invariant": "^2.2.4",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "lodash": "^4.17.15",
     "md5": "^2.2.1",
     "natives": "^1.1.6",
