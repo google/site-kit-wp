@@ -1,7 +1,7 @@
 /**
- * Search console widget styles.
+ * Gulp svgmin task.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,29 @@
  * limitations under the License.
  */
 
-#google_dashboard_widget .googlesitekit-search-console-widget { // stylelint-disable-line selector-id-pattern
-	padding-top: 12px;
+/**
+ * External dependencies
+ */
+const { src, dest } = require( 'gulp' );
+const svgmin = require( 'gulp-svgmin' );
+const pump = require( 'pump' );
 
-	.googlesitekit-search-console-widget__title {
-		font-size: 0.875rem;
-		font-weight: 700;
-		margin: 0;
-		padding: 0;
-	}
-}
+const config = {
+	input: './assets/svg/**/*.svg',
+	output: './dist/assets/svg',
+};
+
+module.exports = function( cb ) {
+	pump(
+		[
+			src( config.input ),
+			svgmin( {
+				plugins: [ {
+					removeViewBox: false,
+				} ],
+			} ),
+			dest( config.output ),
+		],
+		cb
+	);
+};

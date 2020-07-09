@@ -888,7 +888,7 @@ final class Tag_Manager extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

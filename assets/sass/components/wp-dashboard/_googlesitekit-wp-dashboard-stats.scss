@@ -17,7 +17,7 @@
  */
 
 // This doesn't use the MDC Grid because of the WP Dashboard breakpoints.
-#google_dashboard_widget .googlesitekit-wp-dashboard-stats {
+#google_dashboard_widget .googlesitekit-wp-dashboard-stats { // stylelint-disable-line selector-id-pattern
 	box-sizing: border-box;
 	display: flex;
 	flex-wrap: wrap;

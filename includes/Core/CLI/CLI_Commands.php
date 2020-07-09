@@ -16,7 +16,7 @@ use WP_CLI;
 /**
  * CLI commands hub class.
  *
- * @since n.e.x.t
+ * @since 1.11.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class CLI_Commands {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @var Context
 	 */
@@ -34,7 +34,7 @@ class CLI_Commands {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -45,7 +45,7 @@ class CLI_Commands {
 	/**
 	 * Registers WP CLI commands.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 */
 	public function register() {
 		WP_CLI::add_command( 'google-site-kit auth', new Authentication_CLI_Command( $this->context ) );
