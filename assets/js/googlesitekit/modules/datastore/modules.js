@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import { keyBy } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Internal dependencies
@@ -123,9 +124,9 @@ const baseActions = {
 	},
 
 	/**
-	 * Dectivates a module on the server.
+	 * Deactivates a module on the server.
 	 *
-	 * Dectivate a module (based on the slug provided).
+	 * Deactivate a module (based on the slug provided).
 	 *
 	 * @since 1.8.0
 	 *
@@ -190,7 +191,7 @@ const baseActions = {
 		const registry = yield commonActions.getRegistry();
 		let registryKey = yield registry.select( CORE_SITE ).getRegistryKey();
 		if ( registryKey === undefined ) {
-			registryKey = Object.keys( ModuleComponents ).length + 1;
+			registryKey = uuidv4();
 			yield registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
 		}
 

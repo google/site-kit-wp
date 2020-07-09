@@ -140,6 +140,7 @@
     "svgxuse": "^1.2.6",
     "tinymce": "^5.1.6",
     "url-polyfill": "^1.1.5",
+    "uuid": "^8.2.0",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {

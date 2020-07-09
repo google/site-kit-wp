@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import { sortBy } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Internal dependencies
@@ -99,7 +100,7 @@ export const actions = {
 		let registryKey = yield registry.select( CORE_SITE ).getRegistryKey();
 
 		if ( registryKey === undefined ) {
-			registryKey = Object.keys( WidgetComponents ).length + 1;
+			registryKey = uuidv4();
 			yield registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
 		}
 
