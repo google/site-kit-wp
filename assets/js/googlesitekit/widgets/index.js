@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { React } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { dispatch, select } from 'googlesitekit-data';
