@@ -2,6 +2,7 @@
  * External dependencies
  */
 import { render } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import invariant from 'invariant';
 
 /**
@@ -53,6 +54,37 @@ const customRender = ( ui, options = {} ) => {
 	};
 };
 
+/**
+ * Renders a test component that will call the provided callback, including any hooks it calls, every time it renders.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} callback The function that is called each render of the test component. This function should call one or more hooks for testing.
+ *                            The props passed into the callback will be the initialProps provided in the options to renderHook,
+ *                            unless new props are provided by a subsequent rerender call.
+ * @param {Object}  [options] Optional. An options object to modify the execution of the callback function.
+ *                            See the [renderHook Options](@link https://react-hooks-testing-library.com/reference/api#renderhook-options) section for more details.
+ * @return {Object} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result
+ */
+const customRenderHook = (
+	callback,
+	{
+		registry = createTestRegistry(),
+		...renderHookOptions
+	} = {}
+) => {
+	const Wrapper = ( { children } ) => (
+		<RegistryProvider value={ registry }>
+			{ children }
+		</RegistryProvider>
+	);
+
+	return {
+		...renderHook( callback, { wrapper: Wrapper, ...renderHookOptions } ),
+		registry,
+	};
+};
+
 // Export our own test utils from this file.
 export * from 'tests/js/utils';
 
@@ -61,3 +93,5 @@ export * from '@testing-library/react';
 
 // Override @testing-library/react's render method with our own.
 export { customRender as render };
+// Override @testing-library/react-hooks's renderHook method with our own.
+export { customRenderHook as renderHook };

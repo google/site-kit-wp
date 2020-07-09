@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../components/button';
-import { STORE_NAME, FORM_SETUP, EDIT_SCOPE } from '../datastore/constants';
+import { STORE_NAME, PROFILE_CREATE, FORM_SETUP, EDIT_SCOPE } from '../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
@@ -41,6 +41,7 @@ import {
 	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
+	ProfileNameTextField,
 } from '../common/';
 import { trackEvent } from '../../../util';
 import { isPermissionScopeError } from '../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
@@ -52,6 +53,8 @@ export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
+	// Needed to conditionally show the profile name field and surrounding container.
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( STORE_NAME );
@@ -98,6 +101,12 @@ export default function SetupForm( { finishSetup } ) {
 
 				<ProfileSelect />
 			</div>
+
+			{ profileID === PROFILE_CREATE && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+					<ProfileNameTextField />
+				</div>
+			) }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
