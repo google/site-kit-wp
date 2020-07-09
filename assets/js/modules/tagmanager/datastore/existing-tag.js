@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { getExistingTagURLs, extractExistingTag } from '../../../util/tag';
 import { tagMatchers } from '../util';
@@ -63,7 +64,6 @@ const fetchGetTagPermissionStore = createFetchStore( {
 
 const BASE_INITIAL_STATE = {
 	existingTag: undefined,
-	isFetchingExistingTag: false,
 	tagPermission: {},
 };
 
@@ -91,18 +91,17 @@ const baseControls = {
 	[ GET_EXISTING_TAG ]: createRegistryControl( ( registry ) => async () => {
 		const homeURL = registry.select( CORE_SITE ).getHomeURL();
 		const ampMode = registry.select( CORE_SITE ).getAMPMode();
-
 		const existingTagURLs = await getExistingTagURLs( homeURL, ampMode );
 
-		let tagFound;
 		for ( const url of existingTagURLs ) {
 			await registry.dispatch( CORE_SITE ).waitForHTMLForURL( url );
 			const html = registry.select( CORE_SITE ).getHTMLForURL( url );
-			tagFound = extractExistingTag( html, tagMatchers );
+			const tagFound = extractExistingTag( html, tagMatchers );
 			if ( tagFound ) {
 				return tagFound;
 			}
 		}
+
 		return	null;
 	} ),
 };

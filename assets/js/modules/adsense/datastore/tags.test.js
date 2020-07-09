@@ -27,11 +27,14 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
+import * as factories from './__factories__';
 
 describe( 'modules/adsense tags', () => {
 	let registry;
+	const homeURL = 'http://example.com/';
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -39,7 +42,7 @@ describe( 'modules/adsense tags', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 	} );
 
 	afterAll( () => {
@@ -55,6 +58,27 @@ describe( 'modules/adsense tags', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getExistingTag', () => {
+			it( 'uses a resolver to get tag', async () => {
+				const expectedTag = 'ca-pub-12345678';
+
+				fetchMock.getOnce(
+					{ query: { tagverify: '1' } },
+					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
+				);
+
+				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
+				expect( initialExistingTag ).toEqual( undefined );
+
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
+
+				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
+				const existingTag = registry.select( STORE_NAME ).getExistingTag();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( existingTag ).toEqual( expectedTag );
+			} );
+		} );
 		describe( 'getTagPermission', () => {
 			it( 'returns true if a user has access to this tag', async () => {
 				fetchMock.getOnce(

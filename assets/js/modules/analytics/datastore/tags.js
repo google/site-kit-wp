@@ -28,33 +28,12 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { isValidPropertyID, tagMatchers } from '../util';
+import { isValidPropertyID } from '../util';
+import tagMatchers from '../util/tagMatchers';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { getExistingTagURLs, extractExistingTag } from '../../../util/tag';
 
 const { createRegistrySelector, createRegistryControl } = Data;
-
-const fetchGetExistingTagStore = createFetchStore( {
-	baseName: 'getExistingTag',
-	controlCallback: async () => {
-		const existingTagURLs = await getExistingTagURLs( Data.select( CORE_SITE ) );
-		let tagFound = null;
-		for ( const url of existingTagURLs ) {
-			const html = await Data.select( CORE_SITE ).getHTMLForURL( url );
-			tagFound = extractExistingTag( html, tagMatchers );
-			if ( tagFound ) {
-				return tagFound;
-			}
-		}
-		return	tagFound || null;
-	},
-	reducerCallback: ( state, existingTag ) => {
-		return {
-			...state,
-			existingTag: existingTag || null,
-		};
-	},
-} );
 
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
@@ -79,6 +58,8 @@ const fetchGetTagPermissionStore = createFetchStore( {
 } );
 
 // Actions
+const GET_EXISTING_TAG = 'FETCH_EXISTING_TAG';
+const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
 const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
 
 const BASE_INITIAL_STATE = {
@@ -87,6 +68,23 @@ const BASE_INITIAL_STATE = {
 };
 
 const baseActions = {
+	getExistingTag() {
+		return {
+			payload: {},
+			type: GET_EXISTING_TAG,
+		};
+	},
+	receiveGetExistingTag( existingTag ) {
+		invariant(
+			existingTag === null || isValidPropertyID( existingTag ),
+			'existingTag must be a valid property ID or null.'
+		);
+
+		return {
+			payload: { existingTag },
+			type: RECEIVE_EXISTING_TAG,
+		};
+	},
 	waitForExistingTag() {
 		return {
 			payload: {},
@@ -96,6 +94,22 @@ const baseActions = {
 };
 
 const baseControls = {
+	[ GET_EXISTING_TAG ]: createRegistryControl( ( registry ) => async () => {
+		const homeURL = registry.select( CORE_SITE ).getHomeURL();
+		const ampMode = registry.select( CORE_SITE ).getAMPMode();
+		const existingTagURLs = await getExistingTagURLs( homeURL, ampMode );
+
+		for ( const url of existingTagURLs ) {
+			await registry.dispatch( CORE_SITE ).waitForHTMLForURL( url );
+			const html = registry.select( CORE_SITE ).getHTMLForURL( url );
+			const tagFound = extractExistingTag( html, tagMatchers );
+			if ( tagFound ) {
+				return tagFound;
+			}
+		}
+
+		return	null;
+	} ),
 	[ WAIT_FOR_EXISTING_TAG ]: createRegistryControl( ( registry ) => () => {
 		const isExistingTagLoaded = () => registry.select( STORE_NAME ).getExistingTag() !== undefined;
 		if ( isExistingTagLoaded() ) {
@@ -113,14 +127,30 @@ const baseControls = {
 	} ),
 };
 
+const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case RECEIVE_EXISTING_TAG: {
+			const { existingTag } = payload;
+
+			return {
+				...state,
+				existingTag,
+			};
+		}
+
+		default: {
+			return { ...state };
+		}
+	}
+};
+
 const baseResolvers = {
 	*getExistingTag() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const existingTag = registry.select( STORE_NAME ).getExistingTag();
-
-		if ( existingTag === undefined ) {
-			yield fetchGetExistingTagStore.actions.fetchGetExistingTag();
+		if ( registry.select( STORE_NAME ).getExistingTag() === undefined ) {
+			const existingTag = yield baseActions.getExistingTag();
+			registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag );
 		}
 	},
 
@@ -165,9 +195,7 @@ const baseSelectors = {
 	 *                   Returns `undefined` if not resolved yet.
 	 */
 	getExistingTag( state ) {
-		const { existingTag } = state;
-
-		return existingTag;
+		return state.existingTag;
 	},
 
 	/**
@@ -234,12 +262,12 @@ const baseSelectors = {
 };
 
 const store = Data.combineStores(
-	fetchGetExistingTagStore,
 	fetchGetTagPermissionStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
 		actions: baseActions,
 		controls: baseControls,
+		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

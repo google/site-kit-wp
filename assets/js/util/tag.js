@@ -17,10 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
-import { addQueryArgs } from '@wordpress/url';
+import { addQueryArgs, isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -127,11 +132,16 @@ export const extractExistingTag = ( html, tagMatchers = [] ) => {
  * Gets the existing tag URLs.
  *
  * @since n.e.x.t
- * @param {string} homeURL The site's home URL
- * @param {string} ampMode The site's AMP mode
+ * @param {string} homeURL The site's home URL.
+ * @param {string} ampMode The site's AMP mode.
  * @return {Array} An array of the existing tag URLs.
  */
 export const getExistingTagURLs = async ( homeURL, ampMode ) => {
+	invariant(
+		isURL( homeURL ),
+		'homeURL must be valid URL'
+	);
+
 	// Initialize urls with home URL
 	const urls = [ homeURL ];
 

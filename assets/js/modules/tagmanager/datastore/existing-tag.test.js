@@ -53,8 +53,32 @@ describe( 'modules/tagmanager existing-tag', () => {
 	} );
 
 	describe( 'actions', () => {
-		// No non-fetch actions to test yet.
-		// Fetch actions are tested implicitly by their selectors.
+		describe( 'getExistingTag', () => {
+			it( 'supports asynchronous container resolution', async () => {
+				const expectedTag = 'GTM-S1T3K1T';
+
+				let resolveResponse;
+				const responsePromise = new Promise( ( resolve ) => {
+					// resolveResponse = () => resolve( { body: factories.generateHTMLWithTag( expectedTag ), status: 200 } );
+					resolveResponse = () => resolve( { body: factories.generateHTMLWithTag( expectedTag ), status: 200 } );
+				} );
+				fetchMock.getOnce(
+					{ query: { tagverify: '1' } },
+					responsePromise
+				);
+				const promise = registry.dispatch( STORE_NAME ).getExistingTag();
+
+				expect( registry.select( STORE_NAME ).getExistingTag() ).toBe( undefined );
+
+				resolveResponse();
+				await promise;
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				expect( registry.select( STORE_NAME ).getExistingTag() ).toBe( expectedTag );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

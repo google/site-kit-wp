@@ -29,7 +29,6 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 } from '../../../../tests/js/utils';
-import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import fetchMock from 'fetch-mock';
 
 describe( 'modules/tagmanager existing-tag', () => {
@@ -53,8 +52,9 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 	describe( 'getExistingTagURLs', () => {
 		it( 'gets the home URL if AMP mode is not secondary', async () => {
+			const homeURL = 'http://example.com/';
 			const expectedURLs = [
-				'http://example.com/',
+				homeURL,
 			];
 
 			fetchMock.getOnce(
@@ -68,18 +68,16 @@ describe( 'modules/tagmanager existing-tag', () => {
 				}
 			);
 
-			registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
-			const coreRegistry = registry.select( CORE_SITE );
-
-			const existingTagURLs = await getExistingTagURLs( coreRegistry );
+			const existingTagURLs = await getExistingTagURLs( homeURL, '' );
 
 			expect( fetchMock ).not.toHaveFetched();
 			expect( existingTagURLs ).toEqual( expectedURLs );
 		} );
 
 		it( 'gets the home URL and the first amp post if AMP mode is secondary', async () => {
+			const homeURL = 'http://example.com/';
 			const expectedURLs = [
-				'http://example.com/',
+				homeURL,
 				'http://example.com/amp/?amp=1',
 			];
 
@@ -94,10 +92,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				}
 			);
 
-			registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/', ampMode: 'secondary' } );
-			const coreRegistry = registry.select( CORE_SITE );
-
-			const existingTagURLs = await getExistingTagURLs( coreRegistry );
+			const existingTagURLs = await getExistingTagURLs( homeURL, 'secondary' );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( existingTagURLs ).toEqual( expectedURLs );
