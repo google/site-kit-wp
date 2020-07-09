@@ -103,7 +103,14 @@ class DashboardDetailsApp extends Component {
 										</div>
 									</Layout>
 								</div>
-								{ featureFlags.widgets.pageDashboard.enabled && <WidgetContextRenderer slug="pageDashboard" /> }
+								{ featureFlags.widgets.pageDashboard.enabled && (
+									<div className="
+										mdc-layout-grid__cell
+										mdc-layout-grid__cell--span-12
+									">
+										<WidgetContextRenderer slug="pageDashboard" />
+									</div>
+								) }
 								<DashboardDetailsModules />
 								<div className="
 									mdc-layout-grid__cell
