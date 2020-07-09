@@ -119,6 +119,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: '1234567890',
 				propertyID: 'UA-1234567890-1',
+				internalWebPropertyID: '135791113',
 				profileID: '9999999',
 				anonymizeIP: true,
 				useSnippet: true,
@@ -140,6 +141,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: '1234567890',
 				propertyID: 'UA-1234567890-1',
+				internalWebPropertyID: '135791113',
 				profileID: '9999999',
 				anonymizeIP: true,
 				useSnippet: false,
@@ -154,6 +156,7 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
+		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
@@ -162,6 +165,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: accountId,
 				propertyID: webPropertyId,
+				internalWebPropertyID: internalWebPropertyId,
 				profileID,
 				anonymizeIP: true,
 				useSnippet: true,
@@ -175,7 +179,8 @@ storiesOf( 'Analytics Module/Settings', module )
 		filterAnalyticsSettings();
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		const { accountId, webPropertyId } = profiles[ 0 ];
+		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
+		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
@@ -184,10 +189,15 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: accountId,
 				propertyID: webPropertyId,
-				profileID: PROFILE_CREATE,
+				internalWebPropertyID: internalWebPropertyId,
+				profileID,
 				anonymizeIP: true,
 				useSnippet: true,
 				trackingDisabled: [ 'loggedinUsers' ],
+			} );
+			// This is chosen by the user, not received from API.
+			dispatch( STORE_NAME ).setSettings( {
+				profileID: PROFILE_CREATE,
 			} );
 		};
 
@@ -217,10 +227,11 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
-			dispatch( STORE_NAME ).setSettings( {
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: '',
 				propertyID: '',
 				profileID: '',
+				internalWebPropertyID: '',
 				anonymizeIP: true,
 				useSnippet: true,
 				trackingDisabled: [ 'loggedinUsers' ],
@@ -247,7 +258,7 @@ storiesOf( 'Analytics Module/Settings', module )
 				accountID: existingTag.accountID,
 				permission: false,
 			}, { propertyID: existingTag.propertyID } );
-			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );

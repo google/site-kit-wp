@@ -63,7 +63,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		filterAnalyticsSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( {} );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		};
 
@@ -74,7 +74,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
@@ -88,7 +88,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
@@ -103,19 +103,22 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { accountId, webPropertyId } = profiles[ 0 ];
+		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setSettings({
-				accountID: accountId,
-				propertyID: webPropertyId,
-				profileID: PROFILE_CREATE,
-				anonymizeIP: true,
-				useSnippet: true,
-				trackingDisabled: [ 'loggedinUsers' ],
-			});
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: webPropertyId } );
 			dispatch( STORE_NAME ).receiveGetExistingTag( null );
+			dispatch( STORE_NAME ).setSettings( {
+				accountID: accountId,
+				propertyID: webPropertyId,
+				internalWebPropertyID: internalWebPropertyId,
+				profileID: PROFILE_CREATE,
+				anonymizeIP: true,
+				useSnippet: true,
+				trackingDisabled: [ 'loggedinUsers' ],
+			} );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -124,7 +127,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		filterAnalyticsSetup();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( [] );
 			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		};
@@ -140,7 +143,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
-			dispatch( STORE_NAME ).setSettings( {
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: ACCOUNT_CREATE,
 			} );
 		};
@@ -167,7 +170,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
-			dispatch( STORE_NAME ).setSettings( {
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: ACCOUNT_CREATE,
 			} );
 		};
@@ -194,7 +197,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
-			dispatch( STORE_NAME ).setSettings( {
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: ACCOUNT_CREATE,
 			} );
 		};
@@ -211,7 +214,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		};
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
@@ -233,7 +236,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
