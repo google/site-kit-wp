@@ -138,8 +138,6 @@ final class Tag_Manager extends Module
 	public function get_scopes() {
 		return array(
 			'https://www.googleapis.com/auth/tagmanager.readonly',
-			'https://www.googleapis.com/auth/tagmanager.edit.containers',
-			'https://www.googleapis.com/auth/tagmanager.manage.accounts',
 		);
 	}
 
@@ -890,7 +888,7 @@ final class Tag_Manager extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

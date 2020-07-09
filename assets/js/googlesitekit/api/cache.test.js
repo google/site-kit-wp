@@ -355,7 +355,7 @@ describe( 'googlesitekit.api.cache', () => {
 			}
 		} );
 
-		describe( 'get', () => {
+		describe( 'get', () => { // eslint-disable-line jest/no-identical-title
 			it( 'should return nothing when no storage is available', async () => {
 				await setItem( 'key1', 'data' );
 
@@ -369,7 +369,7 @@ describe( 'googlesitekit.api.cache', () => {
 			} );
 		} );
 
-		describe( 'set', () => {
+		describe( 'set', () => { // eslint-disable-line jest/no-identical-title
 			it( 'should not save when no storage is available', async () => {
 				const didSave = await setItem( 'key1', 'data' );
 				expect( didSave ).toEqual( false );
@@ -378,7 +378,7 @@ describe( 'googlesitekit.api.cache', () => {
 			} );
 		} );
 
-		describe( 'deleteItem', () => {
+		describe( 'deleteItem', () => { // eslint-disable-line jest/no-identical-title
 			it( 'should not call delete when no storage is available', async () => {
 				await setItem( 'key1', 'data' );
 
@@ -389,7 +389,7 @@ describe( 'googlesitekit.api.cache', () => {
 			} );
 		} );
 
-		describe( 'getKeys', () => {
+		describe( 'getKeys', () => { // eslint-disable-line jest/no-identical-title
 			it( 'should return nothing when no storage is available', async () => {
 				await setItem( 'key1', 'data' );
 				await setItem( 'key2', 'data' );
@@ -401,7 +401,7 @@ describe( 'googlesitekit.api.cache', () => {
 			} );
 		} );
 
-		describe( 'clearCache', () => {
+		describe( 'clearCache', () => { // eslint-disable-line jest/no-identical-title
 			it( 'should return false when no storage is available', async () => {
 				await setItem( 'key1', 'data' );
 				await setItem( 'key2', 'data' );

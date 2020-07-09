@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { React } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { dispatch, select } from 'googlesitekit-data';
@@ -30,7 +35,7 @@ const Widgets = {
 	/**
 	 * Public Widget components for creating Site Kit widgets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 */
 	components: { Widget },
 

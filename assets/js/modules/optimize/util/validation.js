@@ -25,7 +25,7 @@
  * @return {boolean} True if the given optimize ID is valid, false otherwise.
  */
 export function isValidOptimizeID( optimizeID ) {
-	return typeof optimizeID === 'string' && !! optimizeID.match( /^OPT-[A-Z0-9]+$/ );
+	return typeof optimizeID === 'string' && !! optimizeID.match( /^(GTM|OPT)-[A-Z0-9]+$/ );
 }
 
 /**
@@ -37,5 +37,18 @@ export function isValidOptimizeID( optimizeID ) {
  * @return {boolean} True if the given ampExperimentJSON is valid, false otherwise.
  */
 export function isValidAMPExperimentJSON( ampExperimentJSON ) {
-	return typeof ampExperimentJSON === 'string';
+	if ( ! ampExperimentJSON ) {
+		return true;
+	}
+
+	if ( typeof ampExperimentJSON !== 'string' ) {
+		return false;
+	}
+
+	try {
+		JSON.parse( ampExperimentJSON );
+		return true;
+	} catch {
+		return false;
+	}
 }
