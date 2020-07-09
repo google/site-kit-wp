@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-#google_dashboard_widget .googlesitekit-search-console-widget {
+#google_dashboard_widget .googlesitekit-search-console-widget { // stylelint-disable-line selector-id-pattern
 	padding-top: 12px;
 
 	.googlesitekit-search-console-widget__title {

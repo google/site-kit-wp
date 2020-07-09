@@ -24,7 +24,7 @@ import { getDefaultOptions } from 'expect-puppeteer';
 /**
  * Asserts the given selector is checked.
  *
- * @since n.e.x.t
+ * @since 1.11.0
  *
  * @param {string} selector          Selector for element with value.
  * @param {Object} [options]         Matcher options.

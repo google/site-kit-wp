@@ -30,7 +30,7 @@ import {
 	isValidContainerSelection,
 } from '../util/validation';
 import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from './constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -162,7 +162,7 @@ export const selectors = {
 		} = select( STORE_NAME );
 		const {
 			isAMP,
-			getAMPMode,
+			isSecondaryAMP,
 		} = select( CORE_SITE );
 
 		if ( isDoingSubmitChanges() ) {
@@ -183,7 +183,7 @@ export const selectors = {
 			return false;
 		}
 		// If AMP is not active, or in a secondary mode, validate the web container IDs.
-		if ( ! isAMP() || getAMPMode() === AMP_MODE_SECONDARY ) {
+		if ( ! isAMP() || isSecondaryAMP() ) {
 			if ( ! isValidContainerSelection( getContainerID() ) ) {
 				return false;
 			}

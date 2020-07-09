@@ -30,7 +30,7 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { getExistingTagURLs, extractExistingTag } from '../../../util/tag';
 import { tagMatchers } from '../util';
-import { isValidContainerID, isValidContainerSelection } from '../util/validation';
+import { isValidContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const { createRegistryControl, createRegistrySelector } = Data;
@@ -134,7 +134,7 @@ const baseResolvers = {
 		}
 	},
 	*getTagPermission( containerID ) {
-		if ( ! isValidContainerSelection( containerID ) ) {
+		if ( ! isValidContainerID( containerID ) ) {
 			return;
 		}
 		const { select } = yield Data.commonActions.getRegistry();
