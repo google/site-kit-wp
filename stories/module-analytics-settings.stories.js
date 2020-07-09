@@ -33,8 +33,7 @@ import SettingsModule from '../assets/js/components/settings/settings-module';
 import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytics/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
-
-import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
+import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 function filterAnalyticsSettings() {
@@ -164,6 +163,28 @@ storiesOf( 'Analytics Module/Settings', module )
 				accountID: accountId,
 				propertyID: webPropertyId,
 				profileID,
+				anonymizeIP: true,
+				useSnippet: true,
+				trackingDisabled: [ 'loggedinUsers' ],
+			} );
+		};
+
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+	} )
+	.add( 'Edit, open when creating new view', () => {
+		filterAnalyticsSettings();
+
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const { accountId, webPropertyId } = profiles[ 0 ];
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: webPropertyId } );
+			dispatch( STORE_NAME ).receiveGetSettings( {
+				accountID: accountId,
+				propertyID: webPropertyId,
+				profileID: PROFILE_CREATE,
 				anonymizeIP: true,
 				useSnippet: true,
 				trackingDisabled: [ 'loggedinUsers' ],
