@@ -16,7 +16,7 @@ use WP_CLI_Command;
 /**
  * Base CLI Command class.
  *
- * @since n.e.x.t
+ * @since 1.11.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class CLI_Command extends WP_CLI_Command {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @var Context
 	 */
@@ -34,7 +34,7 @@ class CLI_Command extends WP_CLI_Command {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
