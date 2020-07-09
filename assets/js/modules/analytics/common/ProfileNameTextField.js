@@ -65,7 +65,7 @@ export default function ProfileNameTextField() {
 		);
 
 		trailingIcon = (
-			<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--warning">
+			<span className="googlesitekit-text-field-icon--warning">
 				<span className="screen-reader-text">
 					{ __( 'Warning', 'google-site-kit' ) }
 				</span>
