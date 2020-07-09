@@ -40,7 +40,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 /**
  * Generates valid HTML with or without a GTM tag.
  *
- * @since n.e.x.t
+ * @since 1.11.0
  *
  * @param {string} [containerID] Optional. Container ID to generate tag with.
  * @return {string} HTML.
@@ -64,7 +64,7 @@ ${ containerID && tagBodyOpenHTML( containerID ) }
 /**
  * Generates valid HTML without a GTM tag.
  *
- * @since n.e.x.t
+ * @since 1.11.0
  *
  * @return {string} HTML.
  */

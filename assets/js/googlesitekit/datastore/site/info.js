@@ -27,7 +27,7 @@ import queryString from 'query-string';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 
 const { createRegistrySelector } = Data;
 
@@ -346,7 +346,7 @@ export const selectors = {
 	 * Returns true if this site supports AMP.
 	 *
 	 * @since 1.7.0
-	 * @since n.e.x.t Renamed from isAmp to isAMP.
+	 * @since 1.11.0 Renamed from isAmp to isAMP.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
@@ -354,7 +354,45 @@ export const selectors = {
 	isAMP: createRegistrySelector( ( select ) => () => {
 		const ampMode = select( STORE_NAME ).getAMPMode();
 
-		return ampMode !== undefined ? !! ampMode : ampMode;
+		if ( ampMode === undefined ) {
+			return undefined;
+		}
+
+		return !! ampMode;
+	} ),
+
+	/**
+	 * Checks if the site is in the primary AMP mode.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} `true` or `false` if the site is in the primary AMP mode. Returns `undefined` if not loaded.
+	 */
+	isPrimaryAMP: createRegistrySelector( ( select ) => () => {
+		const ampMode = select( STORE_NAME ).getAMPMode();
+
+		if ( ampMode === undefined ) {
+			return undefined;
+		}
+
+		return ampMode === AMP_MODE_PRIMARY;
+	} ),
+
+	/**
+	 * Checks if the site is in a secondary AMP mode.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} `true` or `false` if the site is in a secondary AMP mode. Returns `undefined` if not loaded.
+	 */
+	isSecondaryAMP: createRegistrySelector( ( select ) => () => {
+		const ampMode = select( STORE_NAME ).getAMPMode();
+
+		if ( ampMode === undefined ) {
+			return undefined;
+		}
+
+		return ampMode === AMP_MODE_SECONDARY;
 	} ),
 
 	/**
