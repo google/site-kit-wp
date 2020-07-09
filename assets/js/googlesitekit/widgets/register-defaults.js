@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { CONTEXT_DASHBOARD, CONTEXT_PAGE_DASHBOARD } from './default-contexts';
@@ -39,27 +44,27 @@ export function registerDefaults( widgetsAPI ) {
 	const contexts = [ CONTEXT_DASHBOARD, CONTEXT_PAGE_DASHBOARD ];
 
 	widgetsAPI.registerWidgetArea( AREA_ALL_TRAFFIC, {
-		title: 'All Triffic',
-		subtitle: 'How people found your site.',
+		title: __( 'All Traffic', 'google-site-kit' ),
+		subtitle: __( 'How people found your site.', 'google-site-kit' ),
 	}, contexts );
 
 	widgetsAPI.registerWidgetArea( AREA_SEARCH_FUNNEL, {
-		title: 'Search Funnel',
-		subtitle: 'How your site appeared in Search results and how many visitors you got from Search.',
+		title: __( 'Search Funnel', 'google-site-kit' ),
+		subtitle: __( 'How your site appeared in Search results and how many visitors you got from Search.', 'google-site-kit' ),
 	}, contexts );
 
 	widgetsAPI.registerWidgetArea( AREA_POPULARITY, {
-		title: 'Popularity',
-		subtitle: 'Your most popular pages and how people found them from Search.',
+		title: __( 'Popularity', 'google-site-kit' ),
+		subtitle: __( 'Your most popular pages and how people found them from Search.', 'google-site-kit' ),
 	}, contexts );
 
 	widgetsAPI.registerWidgetArea( AREA_SPEED, {
-		title: 'Page Speed and Experience',
-		subtitle: 'How fast your home page loads, how quickly people can interact with your content, and how stable your content is.',
+		title: __( 'Page Speed and Experience', 'google-site-kit' ),
+		subtitle: __( 'How fast your page loads, how quickly people can interact with your content, and how stable your content is.', 'google-site-kit' ),
 	}, contexts );
 
 	widgetsAPI.registerWidgetArea( AREA_EARNINGS, {
-		title: 'Earnings',
-		subtitle: 'How much your site earns.',
+		title: __( 'Earnings', 'google-site-kit' ),
+		subtitle: __( 'How much you’re earning from your content through AdSense.', 'google-site-kit' ),
 	}, contexts );
 }
