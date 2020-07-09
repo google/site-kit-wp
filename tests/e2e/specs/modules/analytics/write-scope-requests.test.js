@@ -29,10 +29,13 @@ import {
 	resetSiteKit,
 	setSearchConsoleProperty,
 	useRequestInterception,
-	setupAnalytics,
 } from '../../../utils';
 
 describe( 'Analytics write scope requests', () => {
+	let scope;
+	let bypassCreatePropertyRequest;
+	let bypassCreateProfileRequest;
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
@@ -40,12 +43,7 @@ describe( 'Analytics write scope requests', () => {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/wp-admin/index.php', [
-							'oauth2callback=1',
-							'code=valid-test-code',
-							// This is how the additional scope is granted.
-							'scope=https://www.googleapis.com/auth/analytics.provision',
-						].join( '&' ) ),
+						location: createURL( '/wp-admin/index.php', `oauth2callback=1&code=valid-test-code&scope=${ scope }` ),
 					},
 				} );
 			} else if ( request.url().match( 'analytics/data/create-account-ticket' ) ) {
@@ -53,6 +51,54 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 					body: JSON.stringify( { id: `${ Math.ceil( 1000 * Math.random() ) }` } ),
 				} );
+			} else if ( request.url().match( 'analytics/data/create-property' ) ) {
+				if ( bypassCreatePropertyRequest ) {
+					request.continue();
+					bypassCreatePropertyRequest = false;
+				} else {
+					request.respond( {
+						status: 200,
+						body: JSON.stringify( {
+							accountId: '100',
+							id: 'UA-100-1',
+							internalWebPropertyId: '200',
+							kind: 'analytics#webproperty',
+							level: 'STANDARD',
+							name: 'Test Property X',
+							websiteUrl: '/wp-admin/',
+							permissions: {
+								effective: [
+									'READ_AND_ANALYZE',
+								],
+							},
+						} ),
+					} );
+				}
+			} else if ( request.url().match( 'analytics/data/create-profile' ) ) {
+				if ( bypassCreateProfileRequest ) {
+					request.continue();
+					bypassCreateProfileRequest = false;
+				} else {
+					request.respond( {
+						status: 200,
+						body: JSON.stringify( {
+							id: '300',
+							accountId: '100',
+							webPropertyId: 'UA-100-1',
+							internalWebPropertyId: '200',
+							kind: 'analytics#profile',
+							level: 'STANDARD',
+							name: 'Test Profile X',
+							type: 'WEB',
+							websiteUrl: '/wp-admin/',
+							permissions: {
+								effective: [
+									'READ_AND_ANALYZE',
+								],
+							},
+						} ),
+					} );
+				}
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( { status: 200 } );
 			} else if ( request.url().match( `//analytics.google.com/analytics/web/` ) ) {
@@ -64,6 +110,10 @@ describe( 'Analytics write scope requests', () => {
 	} );
 
 	beforeEach( async () => {
+		scope = 'https://www.googleapis.com/auth/analytics.provision';
+		bypassCreatePropertyRequest = true;
+		bypassCreateProfileRequest = true;
+
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
@@ -104,14 +154,20 @@ describe( 'Analytics write scope requests', () => {
 	} );
 
 	it( 'creating an analytics property when not having the https://www.googleapis.com/auth/analytics.edit scope yet.', async () => {
+		scope = 'https://www.googleapis.com/auth/analytics.edit';
+		bypassCreateProfileRequest = false;
+
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
 		await setSearchConsoleProperty();
-		await setupAnalytics();
 
-		// Go to the analytics settings and edit it.
+		// Go to the analytics setup page.
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-		await expect( page ).toClick( '#googlesitekit-settings-module__header--analytics' );
-		await expect( page ).toClick( '.googlesitekit-settings-module--analytics .googlesitekit-cta-link', { text: /edit/i } );
+		await page.waitForSelector( '.mdc-tab-bar' );
+		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
+		await page.waitForSelector( '.googlesitekit-settings-connect-module--analytics' );
+		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } );
+		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
+		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// Select "Test Account A" account.
 		await expect( page ).toClick( '.googlesitekit-analytics__select-account' );
@@ -122,7 +178,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new property/i } );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button', { text: /confirm changes/i } );
+		await expect( page ).toClick( '.mdc-button', { text: /configure analytics/i } );
 		await page.waitForSelector( '.mdc-dialog__container' );
 
 		// Click on proceed button and wait for oauth request.
@@ -131,17 +187,28 @@ describe( 'Analytics write scope requests', () => {
 			expect( page ).toClick( '.mdc-dialog__actions .mdc-button', { text: /proceed/i } ),
 			page.waitForRequest( ( req ) => req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' ) ),
 		] );
+
+		// They should end up on the dashboard.
+		await Promise.all( [
+			page.waitForNavigation(),
+			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
+		] );
 	} );
 
 	it( 'creating an analytics view when not having the https://www.googleapis.com/auth/analytics.edit scope yet.', async () => {
+		scope = 'https://www.googleapis.com/auth/analytics.edit';
+
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
 		await setSearchConsoleProperty();
-		await setupAnalytics();
 
-		// Go to the analytics settings and edit it.
+		// Go to the analytics setup page.
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-		await expect( page ).toClick( '#googlesitekit-settings-module__header--analytics' );
-		await expect( page ).toClick( '.googlesitekit-settings-module--analytics .googlesitekit-cta-link', { text: /edit/i } );
+		await page.waitForSelector( '.mdc-tab-bar' );
+		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
+		await page.waitForSelector( '.googlesitekit-settings-connect-module--analytics' );
+		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } );
+		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
+		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// Select "Test Account A" account.
 		await expect( page ).toClick( '.googlesitekit-analytics__select-account' );
@@ -156,7 +223,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new view/i } );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button', { text: /confirm changes/i } );
+		await expect( page ).toClick( '.mdc-button', { text: /configure analytics/i } );
 		await page.waitForSelector( '.mdc-dialog__container' );
 
 		// Click on proceed button and wait for oauth request.
@@ -164,6 +231,12 @@ describe( 'Analytics write scope requests', () => {
 			page.waitForNavigation(),
 			expect( page ).toClick( '.mdc-dialog__actions .mdc-button', { text: /proceed/i } ),
 			page.waitForRequest( ( req ) => req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' ) ),
+		] );
+
+		// They should end up on the dashboard.
+		await Promise.all( [
+			page.waitForNavigation(),
+			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
 		] );
 	} );
 } );

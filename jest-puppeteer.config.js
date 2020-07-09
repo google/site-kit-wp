@@ -32,7 +32,6 @@ module.exports = {
 			...coreLaunchArgs,
 			'--disable-gpu',
 			'--no-sandbox',
-			'--lang=en-US',
 			'--disable-setuid-sandbox',
 			'--disable-dev-shm-usage',
 		],
