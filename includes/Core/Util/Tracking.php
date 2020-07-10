@@ -29,7 +29,7 @@ final class Tracking {
 	/**
 	 * Screens instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @var Screens
 	 */
@@ -46,7 +46,7 @@ final class Tracking {
 	 * Constructor.
 	 *
 	 * @since 1.4.0
-	 * @since n.e.x.t Added `Screens` instance.
+	 * @since 1.11.0 Added `Screens` instance.
 	 *
 	 * @param Context      $context      Context instance.
 	 * @param User_Options $user_options Optional. User_Options instance. Default is a new instance.
