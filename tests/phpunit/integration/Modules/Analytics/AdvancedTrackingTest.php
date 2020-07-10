@@ -128,4 +128,30 @@ class AdvancedTrackingTest extends TestCase {
 			}
 		}
 	}
+
+	/**
+	 * Tests if the expected Javascript code is printed for a given sets of events.
+	 */
+	public function test_injected_code() {
+		$expected_script = <<<INJECT_SCRIPT
+let config;
+for ( config of eventConfigurations ) {
+	const thisConfig = config;
+	document.addEventListener( config.on, function( e ) {
+		if ( e.target.matches( thisConfig.selector ) ) {
+			alert( 'Got an event called: '.concat( thisConfig.action ) );
+			//record event with gtag here
+		} else if ( e.target.matches( thisConfig.selector.concat( ' *' ) ) ) {
+			alert( 'Got an event called: '.concat( thisConfig.action ) );
+			//record event with gtag here
+		}
+	}, true );
+}
+INJECT_SCRIPT;
+
+		$advanced_tracking = new Advanced_Tracking( $this->mock_plugin_detector );
+		$advanced_tracking->set_up_advanced_tracking( true );
+
+		$this->expectedOutputString($expected_script);
+	}
 }

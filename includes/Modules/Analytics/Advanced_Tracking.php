@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_Factory;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
+use Google\Site_Kit\Tests\Modules\MockMeasurementCodeInjector;
 
 // phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
@@ -54,9 +55,9 @@ final class Advanced_Tracking {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param Plugin_Detector $plugin_detector optional plugin detector used for testing.
+	 * @param Plugin_Detector $mock_plugin_detector optional plugin detector used for testing.
 	 */
-	public function __construct( $plugin_detector = null ) {
+	public function __construct( $mock_plugin_detector = null ) {
 		$this->supported_plugins = array(
 			array(
 				'name'       => 'Contact Form 7',
@@ -89,10 +90,10 @@ final class Advanced_Tracking {
 				'check_type' => Plugin_Detector::TYPE_CONSTANT,
 			),
 		);
-		if ( null === $plugin_detector ) {
+		if ( $mock_plugin_detector === null ) {
 			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
 		} else {
-			$this->plugin_detector   = $plugin_detector;
+			$this->plugin_detector = $mock_plugin_detector;
 		}
 	}
 
@@ -111,8 +112,10 @@ final class Advanced_Tracking {
 	 * Creates list of event configurations and injects javascript to track those events.
 	 *
 	 * @since n.e.x.t.
+	 *
+	 * @param Boolean $mock_code_injector_flag flag of deciding whether a mock measurement code injector is used for testing or not
 	 */
-	private function set_up_advanced_tracking() {
+	public function set_up_advanced_tracking( $mock_code_injector_flag = false ) {
 		if ( ! wp_script_is( 'google_gtagjs' ) ) {
 			return;
 		}
@@ -130,7 +133,11 @@ final class Advanced_Tracking {
 			}
 		}
 
-		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
+		if ($mock_code_injector_flag == false) {
+			( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
+		} else {
+			( new MockMeasurementCodeInjector( $this->event_configurations ) )->inject_event_tracking();
+		}
 	}
 
 	/**
