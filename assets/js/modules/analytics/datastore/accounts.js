@@ -32,7 +32,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { isValidAccountSelection, isValidAccountID } from '../util';
+import { isValidAccountSelection, isValidPropertyID } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
@@ -214,7 +214,7 @@ const baseResolvers = {
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
 			const { response } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
-				existingPropertyID: isValidAccountID( existingTag ) ? existingTag : undefined,
+				existingPropertyID: isValidPropertyID( existingTag ) ? existingTag : undefined,
 			} );
 
 			if ( response ) {

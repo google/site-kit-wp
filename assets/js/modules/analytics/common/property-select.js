@@ -61,7 +61,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ ( hasExistingTag && isValidAccountID( existingTag ) ) || ! isValidAccountID( accountID ) }
+			disabled={ ( hasExistingTag && ! isValidAccountID( existingTag ) ) || ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>
