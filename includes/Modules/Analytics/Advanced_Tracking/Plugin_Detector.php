@@ -37,7 +37,7 @@ class Plugin_Detector {
 	 * @since n.e.x.t.
 	 * @var string
 	 */
-	public static $TYPE_CONSTANT = 'CONSTANT';
+	const TYPE_CONSTANT = 'CONSTANT';
 
 	/**
 	 * The function check_type string for support_plugins array in the Advanced_Tracking class.
@@ -45,7 +45,7 @@ class Plugin_Detector {
 	 * @since n.e.x.t.
 	 * @var string
 	 */
-	public static $TYPE_FUNCTION = 'FUNCTION';
+	const TYPE_FUNCTION = 'FUNCTION';
 
 	/**
 	 * Plugin_Detector constructor.
