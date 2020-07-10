@@ -89,7 +89,7 @@ final class Advanced_Tracking {
 				'check_type' => Plugin_Detector::TYPE_CONSTANT,
 			),
 		);
-		if ( null === $this->plugin_detector ) {
+		if ( null === $plugin_detector ) {
 			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
 		} else {
 			$this->plugin_detector   = $plugin_detector;
@@ -102,7 +102,9 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	public function register() {
-		add_action( 'wp_enqueue_scripts', array( $this, 'set_up_advanced_tracking' ), 11 );
+		add_action( 'wp_enqueue_scripts', function() {
+			$this->set_up_advanced_tracking();
+		}, 11 );
 	}
 
 	/**
@@ -110,7 +112,7 @@ final class Advanced_Tracking {
 	 *
 	 * @since n.e.x.t.
 	 */
-	public function set_up_advanced_tracking() {
+	private function set_up_advanced_tracking() {
 		if ( ! wp_script_is( 'google_gtagjs' ) ) {
 			return;
 		}

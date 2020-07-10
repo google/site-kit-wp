@@ -58,13 +58,15 @@ class AdvancedTrackingTest extends TestCase {
 		$num_supported_plugins = count( $this->supported_plugins );
 		$num_permutations      = pow( 2, $num_supported_plugins );
 		for ( $permutation = 0; $permutation < $num_permutations; $permutation++ ) {
+			remove_all_actions( 'wp_enqueue_scripts' );
+			$advanced_tracking->register();
 			if ( 0 == $permutation ) {
-				$advanced_tracking->set_up_advanced_tracking();
+				do_action( 'wp_enqueue_scripts' );
 				$this->assertEmpty( $advanced_tracking->get_event_configurations() );
 			} else {
 				$this->update_plugin_detector( $permutation );
 
-				$advanced_tracking->set_up_advanced_tracking();
+				do_action( 'wp_enqueue_scripts' );
 				$actual_event_configurations = $advanced_tracking->get_event_configurations();
 
 				$this->compare_event_configurations( $actual_event_configurations );
