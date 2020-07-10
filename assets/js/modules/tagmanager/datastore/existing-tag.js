@@ -28,7 +28,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { getExistingTag } from '../../../util/tag';
-import { isValidContainerID, isValidContainerSelection } from '../util/validation';
+import { isValidContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
@@ -81,7 +81,7 @@ const baseResolvers = {
 	},
 
 	*getTagPermission( containerID ) {
-		if ( ! isValidContainerSelection( containerID ) ) {
+		if ( ! isValidContainerID( containerID ) ) {
 			return;
 		}
 		const { select } = yield Data.commonActions.getRegistry();

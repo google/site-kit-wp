@@ -159,7 +159,7 @@ final class Screens {
 	/**
 	 * Gets the Screen instance for a given hook suffix.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param string $hook_suffix The hook suffix associated with the screen to retrieve.
 	 * @return Screen|null Screen instance if available, otherwise null;

@@ -59,8 +59,6 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'https://www.googleapis.com/auth/tagmanager.readonly',
-				'https://www.googleapis.com/auth/tagmanager.edit.containers',
-				'https://www.googleapis.com/auth/tagmanager.manage.accounts',
 			),
 			$tagmanager->get_scopes()
 		);

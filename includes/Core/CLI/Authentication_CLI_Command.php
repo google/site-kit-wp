@@ -19,7 +19,7 @@ use WP_CLI;
 /**
  * Manages Site Kit user authentication for Google APIs.
  *
- * @since n.e.x.t
+ * @since 1.11.0
  * @access private
  * @ignore
  */
@@ -39,7 +39,7 @@ class Authentication_CLI_Command extends CLI_Command {
 	 *
 	 * @alias revoke
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param array $args Array of arguments.
 	 * @param array $assoc_args Array of associated arguments.

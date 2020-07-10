@@ -17,6 +17,26 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
+/**
  * Internal dependencies
  */
+import { fillFilterWithComponent } from '../../util';
 import './datastore';
+import { SetupMain } from './components/setup';
+import { SettingsMain } from './components/settings';
+
+addFilter(
+	'googlesitekit.ModuleSetup-tagmanager',
+	'googlesitekit.TagManagerModuleSetup',
+	fillFilterWithComponent( SetupMain )
+);
+
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-tagmanager',
+	'googlesitekit.TagManagerModuleSettings',
+	fillFilterWithComponent( SettingsMain )
+);
