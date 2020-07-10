@@ -33,8 +33,11 @@ import {
 
 describe( 'Analytics write scope requests', () => {
 	let scope;
-	let bypassCreatePropertyRequest;
-	let bypassCreateProfileRequest;
+	// These variables are used to determine whether or not we need to intercept requests to the server. By default the first request 
+	// won't be intercepted to reach the server and to trigger the insufficient scopes error on the server. The following requests will
+	// be intercepted and mocked to immediately return fake data to emulate property/profile creation.
+	let interceptCreatePropertyRequest;
+	let interceptCreateProfileRequest;
 
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
@@ -52,10 +55,7 @@ describe( 'Analytics write scope requests', () => {
 					body: JSON.stringify( { id: `${ Math.ceil( 1000 * Math.random() ) }` } ),
 				} );
 			} else if ( request.url().match( 'analytics/data/create-property' ) ) {
-				if ( bypassCreatePropertyRequest ) {
-					request.continue();
-					bypassCreatePropertyRequest = false;
-				} else {
+				if ( interceptCreatePropertyRequest ) {
 					request.respond( {
 						status: 200,
 						body: JSON.stringify( {
@@ -73,12 +73,12 @@ describe( 'Analytics write scope requests', () => {
 							},
 						} ),
 					} );
+				} else {
+					request.continue();
+					interceptCreatePropertyRequest = true;
 				}
 			} else if ( request.url().match( 'analytics/data/create-profile' ) ) {
-				if ( bypassCreateProfileRequest ) {
-					request.continue();
-					bypassCreateProfileRequest = false;
-				} else {
+				if ( interceptCreateProfileRequest ) {
 					request.respond( {
 						status: 200,
 						body: JSON.stringify( {
@@ -98,6 +98,9 @@ describe( 'Analytics write scope requests', () => {
 							},
 						} ),
 					} );
+				} else {
+					request.continue();
+					interceptCreateProfileRequest = true;
 				}
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( { status: 200 } );
@@ -111,8 +114,8 @@ describe( 'Analytics write scope requests', () => {
 
 	beforeEach( async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.provision';
-		bypassCreatePropertyRequest = true;
-		bypassCreateProfileRequest = true;
+		interceptCreatePropertyRequest = false;
+		interceptCreateProfileRequest = false;
 
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
@@ -124,7 +127,7 @@ describe( 'Analytics write scope requests', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'creating an analytics account when not having the https://www.googleapis.com/auth/analytics.provision scope yet.', async () => {
+	it( 'it prompts for additional permissions during a new Analytics account creation if the user has not granted the Analytics provisioning scope', async () => {
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
 		await setSearchConsoleProperty();
 
@@ -153,9 +156,9 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForRequest( ( req ) => req.url().match( 'analytics.google.com/analytics/web' ) );
 	} );
 
-	it( 'creating an analytics property when not having the https://www.googleapis.com/auth/analytics.edit scope yet.', async () => {
+	it( 'it prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
-		bypassCreateProfileRequest = false;
+		interceptCreateProfileRequest = true;
 
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
 		await setSearchConsoleProperty();
@@ -195,7 +198,7 @@ describe( 'Analytics write scope requests', () => {
 		] );
 	} );
 
-	it( 'creating an analytics view when not having the https://www.googleapis.com/auth/analytics.edit scope yet.', async () => {
+	it( 'it prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
 
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
@@ -218,7 +221,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.googlesitekit-analytics__select-property' );
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /test property x/i } );
 
-		// Select "create a new property" option.
+		// Select "Set up a new view" option.
 		await expect( page ).toClick( '.googlesitekit-analytics__select-profile' );
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new view/i } );
 
