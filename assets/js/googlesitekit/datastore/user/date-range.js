@@ -58,12 +58,10 @@ export function reducer( state, { type, payload } ) {
 				...state,
 				dateRange: payload.slug,
 			};
-		default:
-			// do nothing
-			break;
+		default: {
+			return { ...state };
+		}
 	}
-
-	return state;
 }
 
 export const resolvers = {};
