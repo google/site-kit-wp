@@ -152,6 +152,6 @@ INJECT_SCRIPT;
 		$advanced_tracking = new Advanced_Tracking( $this->mock_plugin_detector );
 		$advanced_tracking->set_up_advanced_tracking( true );
 
-		$this->expectedOutputString($expected_script);
+		$this->expectedOutputString( $expected_script );
 	}
 }

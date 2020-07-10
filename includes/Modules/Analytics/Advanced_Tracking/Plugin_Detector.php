@@ -68,9 +68,9 @@ class Plugin_Detector {
 	public function determine_active_plugins() {
 		$active_plugins = array();
 		foreach ( $this->supported_plugins as $current_plugin ) {
-			if ( ( $current_plugin['check_type'] == self::TYPE_CONSTANT &&
+			if ( ( self::TYPE_CONSTANT === $current_plugin['check_type'] &&
 					defined( $current_plugin['check_name'] ) ) ||
-					( $current_plugin['check_type'] == self::TYPE_FUNCTION &&
+					( self::TYPE_FUNCTION === $current_plugin['check_type'] &&
 					function_exists( $current_plugin['check_name'] ) ) ) {
 				array_push( $active_plugins, $current_plugin['name'] );
 			}

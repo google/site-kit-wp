@@ -90,7 +90,7 @@ final class Advanced_Tracking {
 				'check_type' => Plugin_Detector::TYPE_CONSTANT,
 			),
 		);
-		if ( $mock_plugin_detector === null ) {
+		if ( null === $mock_plugin_detector ) {
 			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
 		} else {
 			$this->plugin_detector = $mock_plugin_detector;
@@ -103,9 +103,13 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	public function register() {
-		add_action( 'wp_enqueue_scripts', function() {
-			$this->set_up_advanced_tracking();
-		}, 11 );
+		add_action(
+			'wp_enqueue_scripts',
+			function() {
+				$this->set_up_advanced_tracking();
+			},
+			11
+		);
 	}
 
 	/**
@@ -113,7 +117,7 @@ final class Advanced_Tracking {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param Boolean $mock_code_injector_flag flag of deciding whether a mock measurement code injector is used for testing or not
+	 * @param Boolean $mock_code_injector_flag flag of deciding whether a mock measurement code injector is used for testing or not.
 	 */
 	public function set_up_advanced_tracking( $mock_code_injector_flag = false ) {
 		if ( ! wp_script_is( 'google_gtagjs' ) ) {
@@ -133,7 +137,7 @@ final class Advanced_Tracking {
 			}
 		}
 
-		if ($mock_code_injector_flag == false) {
+		if ( false === $mock_code_injector_flag ) {
 			( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
 		} else {
 			( new MockMeasurementCodeInjector( $this->event_configurations ) )->inject_event_tracking();
