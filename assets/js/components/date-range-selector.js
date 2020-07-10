@@ -33,15 +33,14 @@ const { useSelect, useDispatch } = Data;
 
 function DateRangeSelector() {
 	const ranges = Object.values( getAvailableDateRanges() );
-
-	const [ context, setContext ] = useState( 'Dashboard' );
+	const [ context, setContext ] = useState();
 	const dateRange = useSelect( ( select ) => select( STORE_NAME ).getDateRange() );
 	const { setDateRange } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( id ) => {
 		if ( ranges.length > id && id >= 0 ) {
 			setDateRange( ranges[ id ].slug );
 		}
-	}, [] );
+	}, [ ranges ] );
 
 	useEffect( () => {
 		// Store the current context when the screen loads, so we can reuse it later.
@@ -59,10 +58,12 @@ function DateRangeSelector() {
 	}, [] );
 
 	useEffect( () => {
-		// Trigger a data refresh.
-		doAction( 'googlesitekit.moduleDataReset' );
-		doAction( 'googlesitekit.moduleLoaded', context );
-	}, [ dateRange ] );
+		if ( context ) {
+			// Trigger a data refresh.
+			doAction( 'googlesitekit.moduleDataReset' );
+			doAction( 'googlesitekit.moduleLoaded', context );
+		}
+	}, [ dateRange, context ] );
 
 	return (
 		<Select
