@@ -90,7 +90,18 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {};
+export const resolvers = {
+	/**
+	 * Fullfills user capabilities on initial request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(Object|undefined)} Capabilities object if it exists, otherwise undefined.
+	 */
+	getCapabilities() {
+		return global._googlesitekitUserData?.permissions;
+	},
+};
 
 export const selectors = {
 	/**
@@ -105,6 +116,33 @@ export const selectors = {
 	getPermissionScopeError( state ) {
 		const { permissionError } = state;
 		return permissionError;
+	},
+	/**
+	 * Gets capabilities of the current user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Capabilities object. Returns undefined if it is not loaded yet.
+	 */
+	getCapabilities( state ) {
+		const { capabilities } = state;
+		return capabilities;
+	},
+	/**
+	 * Checks if the current user has the specified capability or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} capability Capability name to check.
+	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
+	 */
+	hasCapability( state, capability ) {
+		const capabilities = selectors.getCapabilities( state );
+		if ( capabilities ) {
+			return !! capabilities[ capability ];
+		}
 	},
 };
 
