@@ -141,7 +141,7 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// The user sees a notice above the button that explains they will need to grant additional permissions.
-		await expect( page ).toMatchElement( 'p', { text: /You will need to give Site Kit permission to create an Analytics account /i } );
+		await expect( page ).toMatchElement( 'p', { text: /You will need to give Site Kit permission to create an Analytics account/i } );
 
 		// Upon clicking the button, they're redirected to OAuth (should be mocked).
 		await Promise.all( [
