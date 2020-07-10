@@ -52,8 +52,9 @@ final class Advanced_Tracking {
 	/**
 	 * Advanced_Tracking constructor.
 	 *
-	 * @param Plugin_Detector $plugin_detector optional plugin detector used for testing.
 	 * @since n.e.x.t.
+	 *
+	 * @param Plugin_Detector $plugin_detector optional plugin detector used for testing.
 	 */
 	public function __construct( $plugin_detector = null ) {
 		$this->supported_plugins = array(
