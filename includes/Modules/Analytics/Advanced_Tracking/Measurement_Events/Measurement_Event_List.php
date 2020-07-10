@@ -32,10 +32,10 @@ class Measurement_Event_List {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param Measurement_Event $e The measurement event object.
+	 * @param Measurement_Event $event The measurement event object.
 	 */
-	protected function add_event( Measurement_Event $e ) {
-		array_push( $this->measurement_events, $e );
+	protected function add_event( Measurement_Event $event ) {
+		array_push( $this->measurement_events, $event );
 	}
 
 	/**
