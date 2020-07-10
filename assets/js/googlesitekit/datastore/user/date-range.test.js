@@ -23,17 +23,21 @@ import { createTestRegistry } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user date-range', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+	} );
+
 	describe( 'actions', () => {
 		describe( 'setDateRange', () => {
 			it( 'should require the date range slug param', () => {
 				expect( () => {
-					const registry = createTestRegistry();
 					registry.dispatch( STORE_NAME ).setDateRange();
 				} ).toThrow( 'Date range slug is required.' );
 			} );
 
 			it( 'should set the date range', () => {
-				const registry = createTestRegistry();
 				const someDateRange = 'last-14-days';
 
 				registry.dispatch( STORE_NAME ).setDateRange( someDateRange );
@@ -45,7 +49,6 @@ describe( 'core/user date-range', () => {
 	describe( 'selectors', () => {
 		describe( 'getDateRange', () => {
 			it( 'should return the date range once set', () => {
-				const registry = createTestRegistry();
 				const someDateRange = 'last-7-days';
 
 				registry.dispatch( STORE_NAME ).setDateRange( someDateRange );
@@ -53,7 +56,6 @@ describe( 'core/user date-range', () => {
 			} );
 
 			it( 'should return "last-28-days" when no date range is set', () => {
-				const registry = createTestRegistry();
 				expect( registry.select( STORE_NAME ).getDateRange() ).toEqual( 'last-28-days' );
 			} );
 		} );
