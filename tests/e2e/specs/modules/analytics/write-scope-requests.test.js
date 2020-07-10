@@ -33,7 +33,7 @@ import {
 
 describe( 'Analytics write scope requests', () => {
 	let scope;
-	// These variables are used to determine whether or not we need to intercept requests to the server. By default the first request 
+	// These variables are used to determine whether or not we need to intercept requests to the server. By default the first request
 	// won't be intercepted to reach the server and to trigger the insufficient scopes error on the server. The following requests will
 	// be intercepted and mocked to immediately return fake data to emulate property/profile creation.
 	let interceptCreatePropertyRequest;
