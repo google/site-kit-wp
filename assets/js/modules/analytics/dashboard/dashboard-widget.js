@@ -162,7 +162,7 @@ class AnalyticsDashboardWidget extends Component {
 
 		// Hide Analytics data display when we don't have data.
 		const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
-		const currentRange = getCurrentDateRange( dateRange );
+		const currentDateRange = getCurrentDateRange( dateRange );
 
 		return (
 			<Fragment>
@@ -190,7 +190,7 @@ class AnalyticsDashboardWidget extends Component {
 								<Layout
 									header
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), currentRange ) }
+									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 									headerCtaLink="http://analytics.google.com"
 								>
@@ -217,7 +217,7 @@ class AnalyticsDashboardWidget extends Component {
 									header
 									footer
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentRange ) }
+									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
@@ -235,7 +235,7 @@ class AnalyticsDashboardWidget extends Component {
 									header
 									footer
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Top acquisition sources over the last %s', 'google-site-kit' ), currentRange ) }
+									title={ sprintf( __( 'Top acquisition sources over the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
