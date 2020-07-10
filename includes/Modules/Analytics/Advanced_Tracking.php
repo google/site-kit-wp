@@ -61,32 +61,32 @@ final class Advanced_Tracking {
 			array(
 				'name'       => 'Contact Form 7',
 				'check_name' => 'WPCF7_PLUGIN_DIR',
-				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+				'check_type' => Plugin_Detector::TYPE_CONSTANT,
 			),
 			array(
 				'name'       => 'Formidable Forms',
 				'check_name' => 'load_formidable_forms',
-				'check_type' => Plugin_Detector::$TYPE_FUNCTION,
+				'check_type' => Plugin_Detector::TYPE_FUNCTION,
 			),
 			array(
 				'name'       => 'Ninja Forms',
 				'check_name' => 'NF_PLUGIN_DIR',
-				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+				'check_type' => Plugin_Detector::TYPE_CONSTANT,
 			),
 			array(
 				'name'       => 'WooCommerce',
 				'check_name' => 'WC_PLUGIN_FILE',
-				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+				'check_type' => Plugin_Detector::TYPE_CONSTANT,
 			),
 			array(
 				'name'       => 'WPForms',
 				'check_name' => 'WPFORMS_PLUGIN_DIR',
-				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+				'check_type' => Plugin_Detector::TYPE_CONSTANT,
 			),
 			array(
 				'name'       => 'WPForms Lite',
 				'check_name' => 'WPFORMS_PLUGIN_DIR',
-				'check_type' => Plugin_Detector::$TYPE_CONSTANT,
+				'check_type' => Plugin_Detector::TYPE_CONSTANT,
 			),
 		);
 		$this->plugin_detector   = $plugin_detector;
