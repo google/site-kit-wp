@@ -94,6 +94,7 @@ final class Advanced_Tracking {
 		} else {
 			$this->plugin_detector   = $plugin_detector;
 		}
+		echo 'hiiiii';
 	}
 
 	/**
