@@ -30,14 +30,12 @@ import ProgressBar from '../../../components/progress-bar';
 import { Select, Option } from '../../../material-components';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 import { trackEvent } from '../../../util';
-import { isValidAccountID } from '../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 
 	const { selectAccount } = useDispatch( STORE_NAME );
@@ -59,7 +57,7 @@ export default function AccountSelect() {
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag && isValidAccountID( existingTag ) }
+			disabled={ hasExistingTag }
 			enhanced
 			outlined
 		>

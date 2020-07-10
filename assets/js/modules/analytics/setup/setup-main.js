@@ -62,15 +62,6 @@ export default function SetupMain( { finishSetup } ) {
 		if ( hasExistingTag ) {
 			const { accountID: existingTagAccountID } = parsePropertyID( existingTag );
 
-			// It's possible to have an invalid accountID saved by something like the
-			// AMP plugin (see: https://github.com/google/site-kit-wp/issues/1651).
-			// If the ID isn't valid, we can't set it because parsePropertyID() will
-			// return `undefined` for an invalid ID. In that case, we don't call
-			// `setAccountID()`.
-			if ( ! existingTagAccountID ) {
-				return;
-			}
-
 			setAccountID( existingTagAccountID );
 			selectProperty( existingTag );
 		}

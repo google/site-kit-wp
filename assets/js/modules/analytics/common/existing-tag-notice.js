@@ -19,16 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ErrorText from '../../../components/error-text';
 import { STORE_NAME } from '../datastore/constants';
-import { isValidPropertyID } from '../util';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
@@ -37,25 +34,6 @@ export default function ExistingTagNotice() {
 
 	if ( ! hasExistingTag ) {
 		return null;
-	}
-
-	if ( ! isValidPropertyID( propertyID ) ) {
-		return (
-			<Fragment>
-				<ErrorText message={
-					sprintf(
-						/* translators: %s: Analytics tag ID */
-						__( 'Invalid analytics tag with the ID "%s" found.', 'google-site-kit' ),
-						propertyID
-					)
-				} />
-				<p>
-					{
-						__( 'An existing analytics tag was found on your site, but its ID is invalid. If you previously used another plugin (like the official AMP plugin) to set up Analytics, remove the tag from that plugin so Site Kit can manage your analytics tag for you.', 'google-site-kit' )
-					}
-				</p>
-			</Fragment>
-		);
 	}
 
 	return (
