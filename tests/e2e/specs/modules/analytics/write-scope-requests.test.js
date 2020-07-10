@@ -117,9 +117,7 @@ describe( 'Analytics write scope requests', () => {
 		interceptCreatePropertyRequest = false;
 		interceptCreateProfileRequest = false;
 
-		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-
 		await setupSiteKit();
 	} );
 
