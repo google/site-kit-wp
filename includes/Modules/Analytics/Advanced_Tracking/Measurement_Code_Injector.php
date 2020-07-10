@@ -19,7 +19,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
  * @access private
  * @ignore
  */
-final class Measurement_Code_Injector {
+class Measurement_Code_Injector {
 
 	/**
 	 * Holds a list of event configurations to be injected
@@ -35,7 +35,7 @@ final class Measurement_Code_Injector {
 	 * @since n.e.x.t.
 	 * @var string
 	 */
-	private static $inject_script = <<<INJECT_SCRIPT
+	protected static $inject_script = <<<INJECT_SCRIPT
 let config;
 for ( config of eventConfigurations ) {
 	const thisConfig = config;
