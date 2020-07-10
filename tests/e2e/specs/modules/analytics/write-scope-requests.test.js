@@ -197,7 +197,7 @@ describe( 'Analytics write scope requests', () => {
 		] );
 	} );
 
-	it( 'it prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
+	it( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
 
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
