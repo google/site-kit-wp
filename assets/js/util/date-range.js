@@ -19,7 +19,7 @@
  * WordPress dependencies
  */
 import { applyFilters } from '@wordpress/hooks';
-import { _n, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Gets the current dateRange string.
@@ -53,4 +53,35 @@ export function getCurrentDateRange() {
  */
 export function getCurrentDateRangeSlug() {
 	return applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
+}
+
+/**
+ * Gets the hash of available date ranges.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} The object hash where every key is a date range slug, and the value is an object with the date range slug and its translation.
+ */
+export function getAvailableDateRanges() {
+	/* translators: %s: Number of days to request data. */
+	const format = __( 'Last %s days', 'google-site-kit' );
+
+	return {
+		'last-7-days': {
+			slug: 'last-7-days',
+			label: sprintf( format, 7 ),
+		},
+		'last-14-days': {
+			slug: 'last-14-days',
+			label: sprintf( format, 14 ),
+		},
+		'last-28-days': {
+			slug: 'last-28-days',
+			label: sprintf( format, 28 ),
+		},
+		'last-90-days': {
+			slug: 'last-90-days',
+			label: sprintf( format, 90 ),
+		},
+	};
 }
