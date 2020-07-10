@@ -93,7 +93,7 @@ final class Advanced_Tracking {
 		if ( $mock_plugin_detector === null ) {
 			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
 		} else {
-			$this->plugin_detector   = $mock_plugin_detector;
+			$this->plugin_detector = $mock_plugin_detector;
 		}
 	}
 
@@ -103,7 +103,9 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	public function register() {
-		add_action( 'wp_enqueue_scripts', array( $this, 'set_up_advanced_tracking' ), 11 );
+		add_action( 'wp_enqueue_scripts', function() {
+			$this->set_up_advanced_tracking();
+		}, 11 );
 	}
 
 	/**
