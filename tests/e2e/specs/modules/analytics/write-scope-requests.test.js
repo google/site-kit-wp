@@ -27,8 +27,8 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
-	setSearchConsoleProperty,
 	useRequestInterception,
+	setupSiteKit,
 } from '../../../utils';
 
 describe( 'Analytics write scope requests', () => {
@@ -117,9 +117,10 @@ describe( 'Analytics write scope requests', () => {
 		interceptCreatePropertyRequest = false;
 		interceptCreateProfileRequest = false;
 
-		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
+
+		await setupSiteKit();
 	} );
 
 	afterEach( async () => {
@@ -129,7 +130,6 @@ describe( 'Analytics write scope requests', () => {
 
 	it( 'it prompts for additional permissions during a new Analytics account creation if the user has not granted the Analytics provisioning scope', async () => {
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
-		await setSearchConsoleProperty();
 
 		// Go to the analytics setup page.
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
@@ -141,7 +141,7 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// The user sees a notice above the button that explains they will need to grant additional permissions.
-		await expect( page ).toMatchElement( '#googlesitekit_analytics_need_permissions_msg' );
+		await expect( page ).toMatchElement( 'p', { text: /You will need to give Site Kit permission to create an Analytics account /i } );
 
 		// Upon clicking the button, they're redirected to OAuth (should be mocked).
 		await Promise.all( [
@@ -161,7 +161,6 @@ describe( 'Analytics write scope requests', () => {
 		interceptCreateProfileRequest = true;
 
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
-		await setSearchConsoleProperty();
 
 		// Go to the analytics setup page.
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
@@ -176,7 +175,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.googlesitekit-analytics__select-account' );
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /test account a/i } );
 
-		// Select "create a new property" option.
+		// Select "Set up a new property" option.
 		await expect( page ).toClick( '.googlesitekit-analytics__select-property' );
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new property/i } );
 
@@ -202,7 +201,6 @@ describe( 'Analytics write scope requests', () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
 
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
-		await setSearchConsoleProperty();
 
 		// Go to the analytics setup page.
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
