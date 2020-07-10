@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -29,21 +29,22 @@ import Data from 'googlesitekit-data';
 /**
  * Gets the current dateRange string.
  *
+ * @param {string} [slug] Optinal. The date range slug.
  * @return {string} the date range string.
  */
-export function getCurrentDateRange() {
-	const dateRange = getCurrentDateRangeSlug();
+export function getCurrentDateRange( slug ) {
+	const dateRange = slug || getCurrentDateRangeSlug();
 	const daysMatch = dateRange.match( /last-(\d+)-days/ );
 
-	const range = daysMatch && daysMatch[ 1 ]
-		? getAvailableDateRanges()[ dateRange ]
-		: false;
-
-	if ( ! range ) {
-		throw new Error( 'Unrecognized date range slug.' );
+	if ( daysMatch && daysMatch[ 1 ] ) {
+		return sprintf(
+			/* translators: %s: Number of days matched. */
+			_n( '%s day', '%s days', +daysMatch[ 1 ], 'google-site-kit' ),
+			daysMatch[ 1 ]
+		);
 	}
 
-	return range.label;
+	throw new Error( 'Unrecognized date range slug.' );
 }
 
 /**
