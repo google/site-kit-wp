@@ -156,7 +156,7 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForRequest( ( req ) => req.url().match( 'analytics.google.com/analytics/web' ) );
 	} );
 
-	it( 'it prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
+	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
 		scope = 'https://www.googleapis.com/auth/analytics.edit';
 		interceptCreateProfileRequest = true;
 
