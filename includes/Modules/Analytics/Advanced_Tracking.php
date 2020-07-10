@@ -89,7 +89,11 @@ final class Advanced_Tracking {
 				'check_type' => Plugin_Detector::TYPE_CONSTANT,
 			),
 		);
-		$this->plugin_detector   = $plugin_detector;
+		if ( null === $this->plugin_detector ) {
+			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
+		} else {
+			$this->plugin_detector   = $plugin_detector;
+		}
 	}
 
 	/**
@@ -111,9 +115,6 @@ final class Advanced_Tracking {
 			return;
 		}
 
-		if ( null === $this->plugin_detector ) {
-			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
-		}
 		$active_plugins = $this->plugin_detector->determine_active_plugins();
 
 		$event_factory              = new Measurement_Event_Factory();
