@@ -128,7 +128,7 @@ describe( 'Analytics write scope requests', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'it prompts for additional permissions during a new Analytics account creation if the user has not granted the Analytics provisioning scope', async () => {
+	it( 'prompts for additional permissions during a new Analytics account creation if the user has not granted the Analytics provisioning scope', async () => {
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
 
 		// Go to the analytics setup page.
