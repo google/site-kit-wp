@@ -278,7 +278,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		actions[ `set${ pascalCaseSlug }` ] = ( value ) => {
-			invariant( typeof value !== 'undefined', 'value is required.' );
+			invariant( typeof value !== 'undefined', `value is required for calls to set${ pascalCaseSlug }()` );
 
 			return {
 				payload: { value },

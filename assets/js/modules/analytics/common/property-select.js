@@ -38,6 +38,7 @@ export default function PropertySelect() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const isLoadingAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
 
@@ -60,7 +61,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || ! isValidAccountID( accountID ) }
+			disabled={ ( hasExistingTag && isValidAccountID( existingTag ) ) || ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>

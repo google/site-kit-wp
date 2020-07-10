@@ -32,7 +32,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { isValidAccountSelection } from '../util';
+import { isValidAccountSelection, isValidAccountID } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
@@ -205,14 +205,16 @@ const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
 		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 
 		// Only fetch accounts if there are none in the store.
 		if ( existingAccounts === undefined ) {
 			yield tagActions.waitForExistingTag();
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
+
 			const { response } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
-				existingPropertyID: existingTag,
+				existingPropertyID: isValidAccountID( existingTag ) ? existingTag : undefined,
 			} );
 
 			if ( response ) {
