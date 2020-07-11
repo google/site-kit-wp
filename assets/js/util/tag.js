@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { memoize } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -135,12 +136,12 @@ export const extractExistingTag = ( html, tagMatchers = [] ) => {
  *
  * @since n.e.x.t
  *
- * @param {Object}  args         Arguments to use to get URLs.
- * @param {string}  args.homeURL The site's home URLs.
- * @param {string}  args.ampMode Optional. The site's AMP mode.
+ * @param {Object} args         Arguments to use to get URLs.
+ * @param {string} args.homeURL The site's home URLs.
+ * @param {string} args.ampMode Optional. The site's AMP mode.
  * @return {Array} An array of the existing tag URLs.
  */
-export const getExistingTagURLs = async ( { homeURL, ampMode } ) => {
+export const getExistingTagURLs = memoize( async ( { homeURL, ampMode } ) => {
 	invariant(
 		isURL( homeURL ),
 		'homeURL must be valid URL'
@@ -163,4 +164,4 @@ export const getExistingTagURLs = async ( { homeURL, ampMode } ) => {
 	}
 
 	return urls;
-};
+} );
