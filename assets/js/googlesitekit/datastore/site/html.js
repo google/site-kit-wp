@@ -169,7 +169,7 @@ export const baseResolvers = {
 
 		const existingHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 
-		if ( ! existingHTML ) {
+		if ( existingHTML === undefined ) {
 			yield fetchHTMLForURLStore.actions.fetchGetHTMLForURL( url );
 		}
 	},
@@ -185,13 +185,13 @@ export const baseSelectors = {
 	 *
 	 * @private
 	 * @since n.e.x.t
+	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} url URL for which to fetch HTML.
 	 * @return {(Object|undefined)} String representation of HTML for given URL.
 	 */
 	getHTMLForURL( state, url ) {
-		const { htmlForURL = {} } = state;
-		return htmlForURL[ url ];
+		return state.htmlForURL[ url ];
 	},
 };
 
