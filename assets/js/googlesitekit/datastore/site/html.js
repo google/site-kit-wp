@@ -120,24 +120,9 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl( ( registry ) => ( { payload: { url } } ) => {
-		// Select first to ensure resolution is always triggered.
-		registry.select( STORE_NAME ).getHTMLForURL( url );
-		const isHTMLForURLLoaded = () => ( registry.select( STORE_NAME ).hasFinishedResolution( 'getHTMLForURL', [ url ] ) );
-
-		if ( isHTMLForURLLoaded() ) {
-			return;
-		}
-
-		return new Promise( ( resolve ) => {
-			const unsubscribe = registry.subscribe( () => {
-				if ( isHTMLForURLLoaded() ) {
-					unsubscribe();
-					resolve();
-				}
-			} );
-		} );
-	} ),
+	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl( ( registry ) => ( { payload: { url } } ) => (
+		registry.__experimentalResolveSelect( STORE_NAME ).getHTMLForURL( url )
+	) ),
 };
 
 const baseReducer = ( state, { type, payload } ) => {
