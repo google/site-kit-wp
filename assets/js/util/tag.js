@@ -34,6 +34,7 @@ import { default as setupTagMatchers } from '../components/setup/tag-matchers';
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
+import { AMP_MODE_SECONDARY } from '../googlesitekit/datastore/site/constants';
 
 /**
  * Looks for existing tag requesting front end html, if no existing tag was found on server side
@@ -55,7 +56,7 @@ export const getExistingTag = async ( module ) => {
 	// Always check the homepage regardless of AMP mode.
 	let tagFound = await scrapeTag( addQueryArgs( homeURL, tagFetchQueryArgs ), module );
 
-	if ( ! tagFound && 'secondary' === ampMode ) {
+	if ( ! tagFound && AMP_MODE_SECONDARY === ampMode ) {
 		tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } ).then(
 			// Scrape the first post in AMP mode, if there is one.
 			( posts ) => posts.slice( 0, 1 ).map( async ( post ) => {
@@ -146,7 +147,7 @@ export const getExistingTagURLs = async ( homeURL, ampMode ) => {
 	const urls = [ homeURL ];
 
 	// Add first post in AMP mode if AMP mode is secondary.
-	if ( 'secondary' === ampMode ) {
+	if ( AMP_MODE_SECONDARY === ampMode ) {
 		const ampPostURL = await apiFetch( { path: '/wp/v2/posts?per_page=1' } )
 			.then(
 				( posts ) => posts.slice( 0, 1 ).map(

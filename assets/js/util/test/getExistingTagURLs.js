@@ -17,19 +17,20 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import { getExistingTagURLs } from '../tag';
+import fetchMock from 'fetch-mock';
 
 /**
  * Internal dependencies
  */
+import { getExistingTagURLs } from '../tag';
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
 } from '../../../../tests/js/utils';
-import fetchMock from 'fetch-mock';
+import { AMP_MODE_SECONDARY } from '../../googlesitekit/datastore/site/constants';
 
 describe( 'modules/tagmanager existing-tag', () => {
 	let registry;
@@ -92,7 +93,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				}
 			);
 
-			const existingTagURLs = await getExistingTagURLs( homeURL, 'secondary' );
+			const existingTagURLs = await getExistingTagURLs( homeURL, AMP_MODE_SECONDARY );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( existingTagURLs ).toEqual( expectedURLs );
