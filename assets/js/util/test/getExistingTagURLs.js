@@ -69,7 +69,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				}
 			);
 
-			const existingTagURLs = await getExistingTagURLs( homeURL, '' );
+			const existingTagURLs = await getExistingTagURLs( { homeURL } );
 
 			expect( fetchMock ).not.toHaveFetched();
 			expect( existingTagURLs ).toEqual( expectedURLs );
@@ -93,7 +93,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				}
 			);
 
-			const existingTagURLs = await getExistingTagURLs( homeURL, AMP_MODE_SECONDARY );
+			const existingTagURLs = await getExistingTagURLs( { homeURL, ampMode: AMP_MODE_SECONDARY } );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( existingTagURLs ).toEqual( expectedURLs );

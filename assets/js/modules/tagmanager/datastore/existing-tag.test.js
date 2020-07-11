@@ -54,12 +54,11 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 	describe( 'actions', () => {
 		describe( 'getExistingTag', () => {
-			it( 'supports asynchronous container resolution', async () => {
+			it( 'supports asynchronous existing tag resolution', async () => {
 				const expectedTag = 'GTM-S1T3K1T';
 
 				let resolveResponse;
 				const responsePromise = new Promise( ( resolve ) => {
-					// resolveResponse = () => resolve( { body: factories.generateHTMLWithTag( expectedTag ), status: 200 } );
 					resolveResponse = () => resolve( { body: factories.generateHTMLWithTag( expectedTag ), status: 200 } );
 				} );
 				fetchMock.getOnce(

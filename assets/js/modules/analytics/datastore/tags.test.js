@@ -213,10 +213,7 @@ describe( 'modules/analytics tags', () => {
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasExistingTag ).toEqual( true );
 			} );
@@ -227,10 +224,7 @@ describe( 'modules/analytics tags', () => {
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				// Ensure the proper parameters were sent.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasExistingTag ).toEqual( false );
 				expect( fetchMock ).not.toHaveFetched();
@@ -243,10 +237,7 @@ describe( 'modules/analytics tags', () => {
 
 				expect( hasExistingTag ).toEqual( undefined );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -335,10 +326,7 @@ describe( 'modules/analytics tags', () => {
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasPermission ).toEqual( true );
 			} );
@@ -352,10 +340,7 @@ describe( 'modules/analytics tags', () => {
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasPermission ).toEqual( false );
 			} );
@@ -365,10 +350,7 @@ describe( 'modules/analytics tags', () => {
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasPermission ).toEqual( null );
 				expect( fetchMock ).not.toHaveFetched();

@@ -24,6 +24,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from 'tests/js/utils';
 import { STORE_NAME } from './constants';
 
@@ -78,9 +79,7 @@ describe( 'core/site html', () => {
 				registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
 				registry.select( STORE_NAME ).getHTMLForURL( url );
 
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getHTMLForURL', [ url ] )
-				);
+				await untilResolved( registry, STORE_NAME ).getHTMLForURL( url );
 
 				registry.dispatch( STORE_NAME ).resetHTMLForURL( url );
 
@@ -124,10 +123,7 @@ describe( 'core/site html', () => {
 				const initialHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 				// The initialHTML info will be its initial value while the HTML is fetched.
 				expect( initialHTML ).toEqual( undefined );
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getHTMLForURL', [ url ] )
-				);
+				await untilResolved( registry, STORE_NAME ).getHTMLForURL( url );
 
 				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 
@@ -141,11 +137,6 @@ describe( 'core/site html', () => {
 				registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
 
 				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
-
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getHTMLForURL', [ url ] )
-				);
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( selectedHTML ).toEqual( html );
@@ -163,7 +154,6 @@ describe( 'core/site html', () => {
 					{ body: response, status: 500 }
 				);
 
-				// muteConsole( 'error' );
 				registry.select( STORE_NAME ).getHTMLForURL( url );
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) === false,

@@ -114,6 +114,7 @@ export const extractTag = ( string, module ) => {
  * Extracts a tag matched by a given matcher from the given HTML string.
  *
  * @since n.e.x.t
+ *
  * @param {string} html The string of html from which to extract the tag.
  * @param {Array} tagMatchers An array of the matchers to use.
  *
@@ -133,11 +134,13 @@ export const extractExistingTag = ( html, tagMatchers = [] ) => {
  * Gets the existing tag URLs.
  *
  * @since n.e.x.t
- * @param {string} homeURL The site's home URL.
- * @param {string} ampMode The site's AMP mode.
+ *
+ * @param {Object}  options         Optional. Options to pass to the request.
+ * @param {string}  options.homeURL The site's home URL.
+ * @param {string}  options.ampMode Optional. The site's AMP mode.
  * @return {Array} An array of the existing tag URLs.
  */
-export const getExistingTagURLs = async ( homeURL, ampMode ) => {
+export const getExistingTagURLs = async ( { homeURL, ampMode } ) => {
 	invariant(
 		isURL( homeURL ),
 		'homeURL must be valid URL'

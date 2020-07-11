@@ -97,7 +97,7 @@ const baseControls = {
 	[ GET_EXISTING_TAG ]: createRegistryControl( ( registry ) => async () => {
 		const homeURL = registry.select( CORE_SITE ).getHomeURL();
 		const ampMode = registry.select( CORE_SITE ).getAMPMode();
-		const existingTagURLs = await getExistingTagURLs( homeURL, ampMode );
+		const existingTagURLs = await getExistingTagURLs( { homeURL, ampMode } );
 
 		for ( const url of existingTagURLs ) {
 			await registry.dispatch( CORE_SITE ).waitForHTMLForURL( url );
@@ -111,19 +111,7 @@ const baseControls = {
 		return	null;
 	} ),
 	[ WAIT_FOR_EXISTING_TAG ]: createRegistryControl( ( registry ) => () => {
-		const isExistingTagLoaded = () => registry.select( STORE_NAME ).getExistingTag() !== undefined;
-		if ( isExistingTagLoaded() ) {
-			return true;
-		}
-
-		return new Promise( ( resolve ) => {
-			const unsubscribe = registry.subscribe( () => {
-				if ( isExistingTagLoaded() ) {
-					unsubscribe();
-					resolve();
-				}
-			} );
-		} );
+		return registry.__experimentalResolveSelect( STORE_NAME ).getExistingTag();
 	} ),
 };
 

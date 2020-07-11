@@ -91,7 +91,7 @@ const baseControls = {
 	[ GET_EXISTING_TAG ]: createRegistryControl( ( registry ) => async () => {
 		const homeURL = registry.select( CORE_SITE ).getHomeURL();
 		const ampMode = registry.select( CORE_SITE ).getAMPMode();
-		const existingTagURLs = await getExistingTagURLs( homeURL, ampMode );
+		const existingTagURLs = await getExistingTagURLs( { homeURL, ampMode } );
 
 		for ( const url of existingTagURLs ) {
 			await registry.dispatch( CORE_SITE ).waitForHTMLForURL( url );
