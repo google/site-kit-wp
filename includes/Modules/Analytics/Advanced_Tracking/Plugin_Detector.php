@@ -67,12 +67,12 @@ class Plugin_Detector {
 	 */
 	public function determine_active_plugins() {
 		$active_plugins = array();
-		foreach ( $this->supported_plugins as $current_plugin ) {
-			if ( ( self::TYPE_CONSTANT === $current_plugin['check_type'] &&
-					defined( $current_plugin['check_name'] ) ) ||
-					( self::TYPE_FUNCTION === $current_plugin['check_type'] &&
-					function_exists( $current_plugin['check_name'] ) ) ) {
-				array_push( $active_plugins, $current_plugin['name'] );
+		foreach ( $this->supported_plugins as $plugin_name => $plugin_config ) {
+			if ( ( self::TYPE_CONSTANT === $plugin_config['check_type'] &&
+					defined( $plugin_config['check_name'] ) ) ||
+					( self::TYPE_FUNCTION === $plugin_config['check_type'] &&
+					function_exists( $plugin_config['check_name'] ) ) ) {
+				array_push( $active_plugins, $plugin_name );
 			}
 		}
 		return $active_plugins;
