@@ -135,9 +135,9 @@ export const extractExistingTag = ( html, tagMatchers = [] ) => {
  *
  * @since n.e.x.t
  *
- * @param {Object}  options         Optional. Options to pass to the request.
- * @param {string}  options.homeURL The site's home URL.
- * @param {string}  options.ampMode Optional. The site's AMP mode.
+ * @param {Object}  args         Arguments to use to get URLs.
+ * @param {string}  args.homeURL The site's home URLs.
+ * @param {string}  args.ampMode Optional. The site's AMP mode.
  * @return {Array} An array of the existing tag URLs.
  */
 export const getExistingTagURLs = async ( { homeURL, ampMode } ) => {
