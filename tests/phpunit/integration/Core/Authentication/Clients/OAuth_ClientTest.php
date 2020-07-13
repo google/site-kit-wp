@@ -450,6 +450,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'analytics_redirect_uri=', $url );
 		$this->assertContains( 'user_roles=', $url );
 		$this->assertContains( 'application_name=', $url );
+		$this->assertContains( 'hl=', $url );
 		$this->assertNotContains( 'site_id=', $url );
 
 		// Otherwise, pass site ID and given temporary access code.
