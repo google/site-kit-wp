@@ -151,7 +151,7 @@ final class Advanced_Tracking {
 	/**
 	 * Returns list of event configurations.
 	 *
-	 * @return array
+	 * @return array The list of event configurations.
 	 */
 	public function get_event_configurations() {
 		return $this->event_configurations;

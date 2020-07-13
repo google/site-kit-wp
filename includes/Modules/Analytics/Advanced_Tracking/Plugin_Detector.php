@@ -63,7 +63,7 @@ class Plugin_Detector {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return array
+	 * @return array The list of active plugin names.
 	 */
 	public function determine_active_plugins() {
 		$active_plugins = array();

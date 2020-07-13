@@ -35,7 +35,7 @@ final class Measurement_Event implements \JsonSerializable {
 	 * @since n.e.x.t.
 	 *
 	 * @param array $config The event's configuration.
-	 * @throws Exception Thrown when config param is undefined.
+	 * @throws \Exception Thrown when config param is undefined.
 	 */
 	public function __construct( $config ) {
 		$this->validate_config_keys( $config );
@@ -95,7 +95,7 @@ final class Measurement_Event implements \JsonSerializable {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return array
+	 * @return array The configuration in JSON-serializable format.
 	 */
 	public function jsonSerialize() {
 		return $this->config;

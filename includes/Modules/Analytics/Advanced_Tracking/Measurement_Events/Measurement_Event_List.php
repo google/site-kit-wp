@@ -43,7 +43,7 @@ class Measurement_Event_List {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return Measurement_Event[]
+	 * @return Measurement_Event[] The list of Measurement_Events for this plugin's list.
 	 */
 	public function get_events() {
 		return $this->measurement_events;
