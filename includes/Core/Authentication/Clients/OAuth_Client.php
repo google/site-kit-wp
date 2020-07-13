@@ -633,7 +633,11 @@ final class OAuth_Client {
 		$scopes = array_merge( $this->get_required_scopes(), $additional_scopes );
 		$this->get_client()->setScopes( array_unique( $scopes ) );
 
-		return $this->get_client()->createAuthUrl();
+		$query_params = array(
+			'hl' => get_user_locale(),
+		);
+
+		return add_query_arg( $query_params, $this->get_client()->createAuthUrl() );
 	}
 
 	/**
