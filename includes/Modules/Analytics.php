@@ -997,13 +997,15 @@ final class Analytics extends Module
 						);
 					}
 					$property_id = $data['propertyID'];
-
 					return array_merge(
-						array( 'propertyID' => $property_id ),
+						array(
+							'accountID'  => '', // Set the accountID to be an empty string and let has_access_to_property handle determining actual ID.
+							'propertyID' => $property_id,
+						),
 						$this->has_access_to_property( $property_id )
 					);
 				};
-			case 'GET:tracking-disabled':
+			case 'GET:tracking-disabled': 
 				return function() {
 					$option = $this->get_settings()->get();
 
@@ -1323,52 +1325,64 @@ final class Analytics extends Module
 	 * @return array A string representing the accountID and a boolean representing if the user has access to the property.
 	 */
 	protected function has_access_to_property( $property_id ) {
-		$has_permission = false;
 		if ( empty( $property_id ) ) {
 			return array(
-				'permission' => $has_permission,
+				'permission' => false,
 			);
 		}
 
 		$account_id = $this->parse_account_id( $property_id );
 
+		/**
+		 * Helper method to check check if a passed response
+		 * contains the property_id
+		 */
+		$has_property = function ( $response ) use ( $property_id ) {
+			if ( is_wp_error( $response ) ) {
+				return false;
+			}
+			foreach ( $response['properties'] as $property ) {
+				if ( $property->getId() === $property_id ) {
+					return true;
+				}
+			}
+			return false;
+		};
+
 		// Try to get properties for that account.
 		$properties = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
-		if ( is_wp_error( $properties ) ) {
-			// No access to the account.
-			return array(
-				'permission' => $has_permission,
-			);
-		}
-
-		// Ensure there is access to the property.
-		foreach ( $properties['properties'] as $property ) {
-			if ( $property->getId() === $property_id ) {
-				$has_permission = true;
+		if ( ! is_wp_error( $properties ) ) {
+			// Ensure there is access to the property.
+			if ( $has_property( $properties ) ) {
+				return array(
+					'accountID'  => $account_id,
+					'permission' => true,
+				);
 			}
-		}
 
-		// If $has_permission is false at this point, it means that the the accountID cannot be inferred from the property id and we have to work a bit harder.
-		if ( false === $has_permission ) {
 			// Check all of the accounts for this user.
-			$user_account_ids = wp_list_pluck( $this->get_service( 'analytics' )->management_accounts->listManagementAccounts()->getItems(), 'id' );
-			foreach ( $user_account_ids as $user_account_id ) {
-				// Skip the inferred account id, that ship has sailed.
-				if ( $account_id !== $user_account_id ) {
+			$user_accounts_properties_profiles = $this->get_data( 'accounts-properties-profiles', array( 'existingAccountID' => $account_id ) );
+			if ( ! is_wp_error( $user_accounts_properties_profiles ) ) {
+				$user_account_ids = wp_list_pluck( $user_accounts_properties_profiles['accounts'], 'id' );
+				foreach ( $user_account_ids as $user_account_id ) {
+					// Skip the inferred account id, that ship has sailed.
+					if ( $account_id === $user_account_id ) {
+						continue;
+					}
 					$properties = $this->get_data( 'properties-profiles', array( 'accountID' => $user_account_id ) );
-					foreach ( $properties['properties'] as $property ) {
-						if ( $property->getId() === $property_id ) {
-							$has_permission = true;
-							break;
-						}
+					if ( $has_property( $properties ) ) {
+						return array(
+							'accountID'  => $account_id,
+							'permission' => true,
+						);
 					}
 				}
 			}
+		} else {
+			return array(
+				'permission' => false,
+			);
 		}
-		return array(
-			'accountID'  => $account_id,
-			'permission' => $has_permission,
-		);
 	}
 
 	/**
