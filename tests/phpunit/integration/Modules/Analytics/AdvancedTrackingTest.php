@@ -99,7 +99,7 @@ class AdvancedTrackingTest extends TestCase {
 	private function update_plugin_detector( $permutation ) {
 		foreach ( $this->supported_plugins as $plugin_name => $plugin_configuration ) {
 			if ( 1 == ( $permutation % 2 ) ) {
-				$this->mock_plugin_detector->add_active_plugin( $plugin_name );
+				$this->mock_plugin_detector->add_active_plugin( $plugin_name, $plugin_configuration );
 			} else {
 				$this->mock_plugin_detector->remove_active_plugin( $plugin_name );
 			}
@@ -113,26 +113,8 @@ class AdvancedTrackingTest extends TestCase {
 	 * @param array $actual_event_configs list of Measurement_Event objects returned by Advanced_Tracking.
 	 */
 	private function compare_event_configurations( $actual_event_configs ) {
-		foreach ( $this->mock_plugin_detector->determine_active_plugins() as $plugin_name ) {
-			$event_list = null;
-			switch ( $plugin_name ) {
-				case 'WooCommerce':
-					$event_list = new Woocommerce_Event_List();
-					break;
-				case 'WPForms Lite':
-				case 'WPForms':
-					$event_list = new WPForms_Event_List();
-					break;
-				case 'Contact Form 7':
-					$event_list = new CF7_Event_List();
-					break;
-				case 'Formidable Forms':
-					$event_list = new FormidableForms_Event_List();
-					break;
-				case 'Ninja Forms':
-					$event_list = new NinjaForms_Event_List();
-					break;
-			}
+		foreach ( $this->mock_plugin_detector->determine_active_plugins() as $plugin_name => $plugin_config ) {
+			$event_list = $plugin_config['event_config_list'];
 			foreach ( $event_list->get_events() as $expected_event_config ) {
 				$found = false;
 				foreach ( $actual_event_configs as $actual_event_config ) {

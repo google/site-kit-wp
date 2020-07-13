@@ -26,7 +26,7 @@ class MockPluginDetector extends Plugin_Detector {
 	/**
 	 * Returns the current list of active_plugins.
 	 *
-	 * @return array
+	 * @return array Current plugin configuration list.
 	 */
 	public function determine_active_plugins() {
 		return $this->mock_active_plugins;
@@ -37,11 +37,11 @@ class MockPluginDetector extends Plugin_Detector {
 	 *
 	 * @param string $plugin_name plugin to be added.
 	 */
-	public function add_active_plugin( $plugin_name ) {
-		if ( in_array( $plugin_name, $this->mock_active_plugins ) ) {
+	public function add_active_plugin( $plugin_name, $plugin_config ) {
+		if ( in_array( $plugin_config, $this->mock_active_plugins ) ) {
 			return;
 		}
-		array_push( $this->mock_active_plugins, $plugin_name );
+		$this->mock_active_plugins[ $plugin_name ] = $plugin_config;
 	}
 
 	/**
@@ -50,9 +50,6 @@ class MockPluginDetector extends Plugin_Detector {
 	 * @param string $plugin_name plugin to be removed.
 	 */
 	public function remove_active_plugin( $plugin_name ) {
-		$key = array_search( $plugin_name, $this->mock_active_plugins );
-		if ( false !== $key ) {
-			unset( $this->mock_active_plugins[ $key ] );
-		}
+		unset( $this->mock_active_plugins[ $plugin_name ] );
 	}
 }
