@@ -76,7 +76,7 @@ const fetchGetTagPermissionStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
-const WAIT_FOR_EXISTING_TAG_PERMISSION = 'WAIT_FOR_EXISTING_TAG_PERMISSION';
+const WAIT_FOR_TAG_PERMISSION = 'WAIT_FOR_TAG_PERMISSION';
 
 const BASE_INITIAL_STATE = {
 	existingTag: undefined,
@@ -90,10 +90,10 @@ const baseActions = {
 			type: WAIT_FOR_EXISTING_TAG,
 		};
 	},
-	waitForExistingTagPermission( existingTag ) {
+	waitForTagPermission( propertyID ) {
 		return {
-			payload: { existingTag },
-			type: WAIT_FOR_EXISTING_TAG_PERMISSION,
+			payload: { propertyID },
+			type: WAIT_FOR_TAG_PERMISSION,
 		};
 	},
 };
@@ -114,11 +114,11 @@ const baseControls = {
 			} );
 		} );
 	} ),
-	[ WAIT_FOR_EXISTING_TAG_PERMISSION ]: createRegistryControl( ( registry ) => ( { payload: { existingTag } } ) => {
+	[ WAIT_FOR_TAG_PERMISSION ]: createRegistryControl( ( registry ) => ( { payload: { propertyID } } ) => {
 		// Select first to ensure resolution is always triggered.
-		const analyticsStore = registry.select( STORE_NAME );
-		analyticsStore.getTagPermission( existingTag );
-		const isTagPermissionLoaded = () => analyticsStore.hasFinishedResolution( 'getTagPermission', [ existingTag ] );
+		const { getTagPermission, hasFinishedResolution } = registry.select( STORE_NAME );
+		getTagPermission( propertyID );
+		const isTagPermissionLoaded = () => hasFinishedResolution( 'getTagPermission', [ propertyID ] );
 		if ( isTagPermissionLoaded() ) {
 			return;
 		}
