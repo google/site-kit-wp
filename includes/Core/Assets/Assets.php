@@ -352,6 +352,7 @@ final class Assets {
 			'googlesitekit-datastore-forms',
 			'googlesitekit-datastore-site',
 			'googlesitekit-datastore-user',
+			'googlesitekit-widgets',
 		);
 
 		// Register plugin scripts.
