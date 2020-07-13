@@ -86,7 +86,7 @@ final class Advanced_Tracking {
 				'check_name'        => 'WPFORMS_PLUGIN_DIR',
 				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
 				'event_config_list' => new WPForms_Event_List(),
-			)
+			),
 		);
 		if ( null === $mock_plugin_detector ) {
 			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
