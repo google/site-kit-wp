@@ -204,8 +204,6 @@ describe( 'modules/analytics accounts', () => {
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
-				//console.log( profiles );
-
 				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
 				expect( properties ).toEqual( fixtures.accountsPropertiesProfiles.properties );
 				expect( profiles ).toEqual( fixtures.accountsPropertiesProfiles.profiles );
