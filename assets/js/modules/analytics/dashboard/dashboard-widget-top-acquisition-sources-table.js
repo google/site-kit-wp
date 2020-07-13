@@ -46,7 +46,10 @@ import { STORE_NAME } from '../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
-	const dateRange = useSelect( ( select ) => select( STORE_NAME ).getDateRange() );
+	const dateRange = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return store ? store.getDateRange() : undefined;
+	} );
 
 	if ( ! data || ! data.length ) {
 		return null;
