@@ -291,6 +291,10 @@ class OAuth_ClientTest extends TestCase {
 		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
 		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
+
+		// Verify that the user locale is included in the URL.
+		$this->assertStringEndsWith( '&hl=en_US', $authentication_url );
+
 		/**
 		 * The redirect URL passed to get_authentication_url is used locally, and the redirect URI here is always the same.
 		 * @see \Google\Site_Kit\Core\Authentication\Authentication::handle_oauth
