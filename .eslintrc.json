@@ -8,7 +8,8 @@
     "es6": true
   },
   "globals": {
-    "fetchMock": false
+    "fetchMock": false,
+    "featureFlags": false
   },
   "rules": {
     "no-restricted-globals": [
@@ -55,7 +56,7 @@
     },
     {
       "files": [
-        "**/components/**/*.js"
+        "**/modules/**/components/**/*.js"
       ],
       "rules": {
         "filenames/match-exported": [

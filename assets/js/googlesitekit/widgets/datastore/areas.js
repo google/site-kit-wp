@@ -159,8 +159,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
-};
+export const resolvers = {};
 
 export const selectors = {
 	/**
@@ -201,17 +200,7 @@ export const selectors = {
 
 		return Object.values( areas ).filter( ( area ) => {
 			return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
-		} ).sort( ( areaA, areaB ) => {
-			if ( areaA.priority > areaB.priority ) {
-				return 1;
-			}
-
-			if ( areaA.priority < areaB.priority ) {
-				return -1;
-			}
-
-			return 0;
-		} );
+		} ).sort( ( areaA, areaB ) => areaA.priority - areaB.priority );
 	},
 
 	/**

@@ -31,6 +31,10 @@ import { STORE_NAME } from './datastore/constants';
 // data store registry (eg. `googlesitekit.data`).
 import './datastore';
 
+export { registerDefaults } from './register-defaults';
+export { default as contexts } from './default-contexts';
+export { default as areas } from './default-areas';
+
 const Widgets = {
 	/**
 	 * Public Widget components for creating Site Kit widgets.
@@ -51,12 +55,12 @@ const Widgets = {
 	 * @param {number}             [settings.priority] Optional. Priority for this widget area. Default: 10.
 	 * @param {(string|undefined)} [settings.icon]     Optional. URL to SVG icon for this widget area.
 	 * @param {string}             [settings.style]    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
-	 * @param {(string|Array)}     [areaSlugs]         Optional. Widget area slug(s).
+	 * @param {(string|Array)}     [contextSlugs]      Optional. Widget context slug(s).
 	 */
-	registerWidgetArea( slug, settings, areaSlugs ) {
+	registerWidgetArea( slug, settings, contextSlugs ) {
 		dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
-		if ( areaSlugs ) {
-			dispatch( STORE_NAME ).assignWidget( slug, areaSlugs );
+		if ( contextSlugs ) {
+			Widgets.assignWidgetArea( slug, contextSlugs );
 		}
 	},
 
@@ -70,12 +74,12 @@ const Widgets = {
 	 * @param {React.Component} settings.component React component used to display the contents of this widget.
 	 * @param {number}          settings.priority  Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
 	 * @param {string}          settings.width     Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
-	 * @param {(string|Array)}  [contextSlugs]     Optional. Widget context slug(s).
+	 * @param {(string|Array)}  [widgetAreaSlugs]  Optional. Widget area slug(s).
 	 */
-	registerWidget( slug, settings, contextSlugs ) {
+	registerWidget( slug, settings, widgetAreaSlugs ) {
 		dispatch( STORE_NAME ).registerWidget( slug, settings );
-		if ( contextSlugs ) {
-			dispatch( STORE_NAME ).assignWidgetArea( slug, contextSlugs );
+		if ( widgetAreaSlugs ) {
+			Widgets.assignWidget( slug, widgetAreaSlugs );
 		}
 	},
 
