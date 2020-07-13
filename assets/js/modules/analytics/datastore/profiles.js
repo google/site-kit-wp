@@ -72,7 +72,7 @@ const fetchCreateProfileStore = createFetchStore( {
 			profiles: {
 				...state.profiles,
 				[ `${ accountID }::${ propertyID }` ]: [
-					...( state.profiles[ propertyID ] || [] ),
+					...( state.profiles[ `${ accountID }::${ propertyID }` ] || [] ),
 					profile,
 				],
 			},
