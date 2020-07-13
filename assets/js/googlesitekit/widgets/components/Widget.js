@@ -43,7 +43,7 @@ function Widget( { children, slug, width } ) {
 
 Widget.defaultProps = {
 	children: undefined,
-	width: WIDGET_WIDTHS.FULL,
+	width: WIDGET_WIDTHS.QUARTER,
 };
 
 Widget.propTypes = {

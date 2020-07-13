@@ -50,7 +50,12 @@ describe( 'WidgetRenderer', () => {
 	it( 'should wrap children when wrapWidget is true', () => {
 		const { container } = render( <WidgetRenderer slug="TestWidget" />, { setupRegistry: setupRegistry( { wrapWidget: true } ) } );
 
-		expect( Object.values( container.firstChild.classList ) ).toEqual( [ 'googlesitekit-widget', 'googlesitekit-widget--TestWidget' ] );
+		expect( Object.values( container.firstChild.classList ) ).toEqual( [
+			'googlesitekit-widget',
+			'googlesitekit-widget--TestWidget',
+			'mdc-layout-grid__cell--span-3',
+		] );
+
 		expect( container.firstChild ).toMatchSnapshot();
 	} );
 
