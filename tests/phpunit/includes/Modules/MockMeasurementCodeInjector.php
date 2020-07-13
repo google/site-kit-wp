@@ -17,6 +17,6 @@ class MockMeasurementCodeInjector extends Measurement_Code_Injector {
 	 * Prints out the injected JavaScript Code
 	 */
 	public function inject_event_tracking() {
-		echo self::$inject_script;
+		echo $this->inject_script;
 	}
 }

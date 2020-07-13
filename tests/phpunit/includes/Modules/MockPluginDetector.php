@@ -14,10 +14,18 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 
 class MockPluginDetector extends Plugin_Detector {
 
+	/**
+	 * The list of current active plugin configs.
+	 *
+	 * @since n.e.x.t.
+	 * @var array
+	 */
 	private $mock_active_plugins;
 
 	/**
 	 * MockPluginDetector constructor.
+	 *
+	 * @since n.e.x.t.
 	 */
 	public function __construct() {
 		$this->mock_active_plugins = array();
@@ -25,6 +33,8 @@ class MockPluginDetector extends Plugin_Detector {
 
 	/**
 	 * Returns the current list of active_plugins.
+	 *
+	 * @since n.e.x.t.
 	 *
 	 * @return array Current plugin configuration list.
 	 */
@@ -34,6 +44,8 @@ class MockPluginDetector extends Plugin_Detector {
 
 	/**
 	 * Adds the specified plugin to active plugin list if not already added.
+	 *
+	 * @since n.e.x.t.
 	 *
 	 * @param string $plugin_name plugin to be added.
 	 */
@@ -46,6 +58,8 @@ class MockPluginDetector extends Plugin_Detector {
 
 	/**
 	 * Removes the specified plugin from active plugin list.
+	 *
+	 * @since n.e.x.t.
 	 *
 	 * @param string $plugin_name plugin to be removed.
 	 */

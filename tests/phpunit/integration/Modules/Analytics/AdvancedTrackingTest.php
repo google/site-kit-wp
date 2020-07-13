@@ -20,6 +20,10 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Ninja
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Woocommerce_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
 
+/**
+ * Class AdvancedTrackingTest
+ * @package Google\Site_Kit\Tests\Modules\Analytics
+ */
 class AdvancedTrackingTest extends TestCase {
 
 	private $supported_plugins;
@@ -135,7 +139,7 @@ class AdvancedTrackingTest extends TestCase {
 		$this->enqueue_google_script();
 
 		$expected_script = <<<INJECT_SCRIPT
-let config;
+var config;
 for ( config of eventConfigurations ) {
 	const thisConfig = config;
 	document.addEventListener( config.on, function( e ) {
