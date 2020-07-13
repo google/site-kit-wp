@@ -112,10 +112,8 @@ final class Advanced_Tracking {
 	 * Creates list of event configurations and injects javascript to track those events.
 	 *
 	 * @since n.e.x.t.
-	 *
-	 * @param Boolean $mock_code_injector_flag flag of deciding whether a mock measurement code injector is used for testing or not
 	 */
-	public function set_up_advanced_tracking( $mock_code_injector_flag = false ) {
+	private function set_up_advanced_tracking() {
 		if ( ! wp_script_is( 'google_gtagjs' ) ) {
 			return;
 		}
@@ -133,11 +131,8 @@ final class Advanced_Tracking {
 			}
 		}
 
-		if ($mock_code_injector_flag == false) {
-			( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
-		} else {
-			( new MockMeasurementCodeInjector( $this->event_configurations ) )->inject_event_tracking();
-		}
+		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
+
 	}
 
 	/**
