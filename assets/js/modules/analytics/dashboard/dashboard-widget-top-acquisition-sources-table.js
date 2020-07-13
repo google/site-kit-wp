@@ -46,10 +46,7 @@ import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/c
 const { useSelect } = Data;
 
 function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
-	const dateRange = useSelect( ( select ) => {
-		const store = select( CORE_USER );
-		return store ? store.getDateRange() : undefined;
-	} );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
 	if ( ! data || ! data.length ) {
 		return null;
