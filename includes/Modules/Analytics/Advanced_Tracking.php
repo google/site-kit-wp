@@ -11,14 +11,12 @@
 namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_Factory;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Woocommerce_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
-use Google\Site_Kit\Tests\Modules\MockMeasurementCodeInjector;
 
 // phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
@@ -116,10 +114,8 @@ final class Advanced_Tracking {
 	 * Creates list of event configurations and injects javascript to track those events.
 	 *
 	 * @since n.e.x.t.
-	 *
-	 * @param Boolean $mock_code_injector_flag flag of deciding whether a mock measurement code injector is used for testing or not.
 	 */
-	public function set_up_advanced_tracking( $mock_code_injector_flag = false ) {
+	private function set_up_advanced_tracking() {
 		if ( ! wp_script_is( 'google_gtagjs' ) ) {
 			return;
 		}
@@ -135,12 +131,7 @@ final class Advanced_Tracking {
 				}
 			}
 		}
-
-		if ( false === $mock_code_injector_flag ) {
-			( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
-		} else {
-			( new MockMeasurementCodeInjector( $this->event_configurations ) )->inject_event_tracking();
-		}
+		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
 	}
 
 	/**
@@ -151,5 +142,4 @@ final class Advanced_Tracking {
 	public function get_event_configurations() {
 		return $this->event_configurations;
 	}
-
 }

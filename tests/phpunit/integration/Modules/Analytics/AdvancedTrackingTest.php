@@ -14,6 +14,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 use Google\Site_Kit\Tests\Modules\MockPluginDetector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
@@ -136,9 +137,9 @@ class AdvancedTrackingTest extends TestCase {
 	 * Tests if the expected Javascript code is printed for a given sets of events.
 	 */
 	public function test_injected_code() {
-		$this->enqueue_google_script();
 
 		$expected_script = <<<INJECT_SCRIPT
+var eventConfigurations = {$this->event_configurations};
 var config;
 for ( config of eventConfigurations ) {
 	const thisConfig = config;
@@ -155,9 +156,8 @@ for ( config of eventConfigurations ) {
 INJECT_SCRIPT;
 
 		$advanced_tracking = new Advanced_Tracking( $this->mock_plugin_detector );
-		$advanced_tracking->set_up_advanced_tracking( true );
-
-		$this->expectOutputString( $expected_script );
+		$measurement_code_injector = new Measurement_Code_Injector($advanced_tracking->get_event_configurations());
+		$this->assertSame($expected_script, $measurement_code_injector->get_injected_script());
 	}
 
 	/**
@@ -173,5 +173,6 @@ INJECT_SCRIPT;
 				false
 			);
 		}
+
 	}
 }

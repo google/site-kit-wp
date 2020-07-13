@@ -69,6 +69,17 @@ INJECT_SCRIPT;
 	}
 
 	/**
+	 * Returns the injected Javascript code.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @return string the injected JavaScript code
+	 */
+	public function get_injected_script() {
+		return $this->inject_script;
+	}
+
+	/**
 	 * Creates list of measurement event configurations and javascript to inject.
 	 *
 	 * @since n.e.x.t.
