@@ -20,8 +20,14 @@ import { STORE_NAME as USER_STORE } from '../../../googlesitekit/datastore/user/
 const { useSelect } = Data;
 
 function DashboardPageSpeedCTA() {
-	const { active, setupComplete } = useSelect( ( select ) => select( MODULES_STORE ).getModule( 'pagespeed-insights' ) );
-	const canManageOptions = useSelect( ( select ) => select( USER_STORE ).hasCapability( 'canManageOptions' ) );
+	const pagespeedInsightsModule = useSelect( ( select ) => select( MODULES_STORE ).getModule( 'pagespeed-insights' ) );
+	const canManageOptions = useSelect( ( select ) => select( USER_STORE ).hasCapability( 'googlesitekit_manage_options' ) );
+
+	if ( ! pagespeedInsightsModule ) {
+		return null;
+	}
+
+	const { active, setupComplete } = pagespeedInsightsModule;
 
 	if ( ! canManageOptions && ! setupComplete ) {
 		return null;

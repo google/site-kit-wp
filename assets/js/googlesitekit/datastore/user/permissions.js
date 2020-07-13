@@ -27,6 +27,7 @@ const SET_PERMISSION_SCOPE_ERROR = 'SET_PERMISSION_SCOPE_ERROR';
 
 export const INITIAL_STATE = {
 	permissionError: null,
+	capabilities: global._googlesitekitUserData?.permissions || {},
 };
 
 export const actions = {
@@ -90,18 +91,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
-	/**
-	 * Fullfills user capabilities on initial request.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {(Object|undefined)} Capabilities object if it exists, otherwise undefined.
-	 */
-	getCapabilities() {
-		return global._googlesitekitUserData?.permissions;
-	},
-};
+export const resolvers = {};
 
 export const selectors = {
 	/**
@@ -117,6 +107,7 @@ export const selectors = {
 		const { permissionError } = state;
 		return permissionError;
 	},
+
 	/**
 	 * Gets capabilities of the current user.
 	 *
@@ -129,6 +120,7 @@ export const selectors = {
 		const { capabilities } = state;
 		return capabilities;
 	},
+
 	/**
 	 * Checks if the current user has the specified capability or not.
 	 *
@@ -139,7 +131,7 @@ export const selectors = {
 	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
 	 */
 	hasCapability( state, capability ) {
-		const capabilities = selectors.getCapabilities( state );
+		const { capabilities } = state;
 		if ( capabilities ) {
 			return !! capabilities[ capability ];
 		}
