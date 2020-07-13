@@ -8,9 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName
-// phpcs:disable WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+// phpcs:ignore WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName
 
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 

@@ -18,7 +18,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_E
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
 
-// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 /**
  * Class for Advanced Tracking.
@@ -86,7 +86,7 @@ final class Advanced_Tracking {
 				'check_name'        => 'WPFORMS_PLUGIN_DIR',
 				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
 				'event_config_list' => new WPForms_Event_List(),
-			)
+			),
 		);
 		if ( null === $mock_plugin_detector ) {
 			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
