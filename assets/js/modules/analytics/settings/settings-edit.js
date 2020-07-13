@@ -43,7 +43,7 @@ export default function SettingsEdit() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const getExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
+	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
@@ -56,12 +56,12 @@ export default function SettingsEdit() {
 	// These selections will be rolled back by the above hook if the user exits the edit view.
 	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
 	useEffect( () => {
-		if ( hasExistingTag && getExistingTagPermission ) {
-			const { accountID: existingTagAccountID } = getExistingTagPermission;
+		if ( hasExistingTag && existingTagPermission ) {
+			const { accountID: existingTagAccountID } = existingTagPermission;
 			setAccountID( existingTagAccountID );
 			selectProperty( existingTag );
 		}
-	}, [ hasExistingTag, existingTag, getExistingTagPermission ] );
+	}, [ hasExistingTag, existingTag, existingTagPermission ] );
 
 	// Toggle disabled state of legacy confirm changes button.
 	useEffect( () => {

@@ -49,7 +49,7 @@ export default function SetupMain( { finishSetup } ) {
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const getExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
+	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
@@ -59,12 +59,12 @@ export default function SetupMain( { finishSetup } ) {
 	// Set the accountID and property if there is an existing tag.
 	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
 	useEffect( () => {
-		if ( hasExistingTag && getExistingTagPermission ) {
-			const { accountID: existingTagAccountID } = getExistingTagPermission;
+		if ( hasExistingTag && existingTagPermission ) {
+			const { accountID: existingTagAccountID } = existingTagPermission;
 			setAccountID( existingTagAccountID );
 			selectProperty( existingTag );
 		}
-	}, [ hasExistingTag, existingTag, getExistingTagPermission ] );
+	}, [ hasExistingTag, existingTag, existingTagPermission ] );
 
 	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
 	const [ isNavigating, setIsNavigating ] = useState( false );
