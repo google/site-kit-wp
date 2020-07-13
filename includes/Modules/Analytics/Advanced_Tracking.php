@@ -64,17 +64,17 @@ final class Advanced_Tracking {
 	 */
 	public function __construct( $mock_plugin_detector = null ) {
 		$this->supported_plugins = array(
-			'Contact_Form_7'   => array(
+			'Contact Form 7'   => array(
 				'check_name'        => 'WPCF7_PLUGIN_DIR',
 				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
 				'event_config_list' => new CF7_Event_List(),
 			),
-			'Formidable_Forms' => array(
+			'Formidable Forms' => array(
 				'check_name'        => 'load_formidable_forms',
 				'check_type'        => Plugin_Detector::TYPE_FUNCTION,
 				'event_config_list' => new FormidableForms_Event_List(),
 			),
-			'Ninja_Forms'      => array(
+			'Ninja Forms'      => array(
 				'check_name'        => 'NF_PLUGIN_DIR',
 				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
 				'event_config_list' => new NinjaForms_Event_List(),
@@ -89,7 +89,7 @@ final class Advanced_Tracking {
 				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
 				'event_config_list' => new WPForms_Event_List(),
 			),
-			'WPForms_Lite'     => array(
+			'WPForms Lite'     => array(
 				'check_name'        => 'WPFORMS_PLUGIN_DIR',
 				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
 				'event_config_list' => new WPForms_Event_List(),

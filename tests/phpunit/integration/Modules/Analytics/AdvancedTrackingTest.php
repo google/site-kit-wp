@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules\Analytics;
 
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 use Google\Site_Kit\Tests\Modules\MockPluginDetector;
@@ -28,23 +29,37 @@ class AdvancedTrackingTest extends TestCase {
 	public function setUp() {
 		parent::setUp();
 
-		if ( ! wp_script_is( 'google_gtagjs' ) ) {
-			wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-				'google_gtagjs',
-				'https://www.googletagmanager.com/gtag/js',
-				false,
-				null,
-				false
-			);
-		}
-
 		$this->supported_plugins    = array(
-			'Contact Form 7',
-			'Formidable Forms',
-			'Ninja Forms',
-			'WooCommerce',
-			'WPForms',
-			'WPForms Lite',
+			'Contact Form 7'   => array(
+				'check_name'        => 'WPCF7_PLUGIN_DIR',
+				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+				'event_config_list' => new CF7_Event_List(),
+			),
+			'Formidable Forms' => array(
+				'check_name'        => 'load_formidable_forms',
+				'check_type'        => Plugin_Detector::TYPE_FUNCTION,
+				'event_config_list' => new FormidableForms_Event_List(),
+			),
+			'Ninja Forms'      => array(
+				'check_name'        => 'NF_PLUGIN_DIR',
+				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+				'event_config_list' => new NinjaForms_Event_List(),
+			),
+			'WooCommerce'      => array(
+				'check_name'        => 'WC_PLUGIN_FILE',
+				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+				'event_config_list' => new Woocommerce_Event_List(),
+			),
+			'WPForms'          => array(
+				'check_name'        => 'WPFORMS_PLUGIN_DIR',
+				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+				'event_config_list' => new WPForms_Event_List(),
+			),
+			'WPForms Lite'     => array(
+				'check_name'        => 'WPFORMS_PLUGIN_DIR',
+				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+				'event_config_list' => new WPForms_Event_List(),
+			),
 		);
 		$this->mock_plugin_detector = new MockPluginDetector();
 	}
@@ -53,6 +68,8 @@ class AdvancedTrackingTest extends TestCase {
 	 * Tests if the sets of events in the active plugins are included in the tracking event configurations.
 	 */
 	public function test_event_configurations() {
+		$this->enqueue_google_script();
+
 		$advanced_tracking = new Advanced_Tracking( $this->mock_plugin_detector );
 
 		$num_supported_plugins = count( $this->supported_plugins );
@@ -80,7 +97,7 @@ class AdvancedTrackingTest extends TestCase {
 	 * @param number $permutation represents what permutation of supported plugins to enable.
 	 */
 	private function update_plugin_detector( $permutation ) {
-		foreach ( $this->supported_plugins as $plugin_name ) {
+		foreach ( $this->supported_plugins as $plugin_name => $plugin_configuration ) {
 			if ( 1 == ( $permutation % 2 ) ) {
 				$this->mock_plugin_detector->add_active_plugin( $plugin_name );
 			} else {
@@ -133,6 +150,8 @@ class AdvancedTrackingTest extends TestCase {
 	 * Tests if the expected Javascript code is printed for a given sets of events.
 	 */
 	public function test_injected_code() {
+		$this->enqueue_google_script();
+
 		$expected_script = <<<INJECT_SCRIPT
 let config;
 for ( config of eventConfigurations ) {
@@ -152,6 +171,21 @@ INJECT_SCRIPT;
 		$advanced_tracking = new Advanced_Tracking( $this->mock_plugin_detector );
 		$advanced_tracking->set_up_advanced_tracking( true );
 
-		$this->expectedOutputString( $expected_script );
+		$this->expectOutputString( $expected_script );
+	}
+
+	/**
+	 * Enqueue's the google gtag script.
+	 */
+	private function enqueue_google_script() {
+		if ( ! wp_script_is( 'google_gtagjs' ) ) {
+			wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+				'google_gtagjs',
+				'https://www.googletagmanager.com/gtag/js',
+				false,
+				null,
+				false
+			);
+		}
 	}
 }
