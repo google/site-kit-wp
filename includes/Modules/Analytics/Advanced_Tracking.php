@@ -11,8 +11,12 @@
 namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_Factory;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Woocommerce_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
 
 // phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
@@ -58,38 +62,33 @@ final class Advanced_Tracking {
 	 */
 	public function __construct( $mock_plugin_detector = null ) {
 		$this->supported_plugins = array(
-			array(
-				'name'       => 'Contact Form 7',
-				'check_name' => 'WPCF7_PLUGIN_DIR',
-				'check_type' => Plugin_Detector::TYPE_CONSTANT,
+			'Contact Form 7'   => array(
+				'check_name'        => 'WPCF7_PLUGIN_DIR',
+				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+				'event_config_list' => new CF7_Event_List(),
 			),
-			array(
-				'name'       => 'Formidable Forms',
-				'check_name' => 'load_formidable_forms',
-				'check_type' => Plugin_Detector::TYPE_FUNCTION,
+			'Formidable Forms' => array(
+				'check_name'        => 'load_formidable_forms',
+				'check_type'        => Plugin_Detector::TYPE_FUNCTION,
+				'event_config_list' => new FormidableForms_Event_List(),
 			),
-			array(
-				'name'       => 'Ninja Forms',
-				'check_name' => 'NF_PLUGIN_DIR',
-				'check_type' => Plugin_Detector::TYPE_CONSTANT,
+			'Ninja Forms'      => array(
+				'check_name'        => 'NF_PLUGIN_DIR',
+				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+				'event_config_list' => new NinjaForms_Event_List(),
 			),
-			array(
-				'name'       => 'WooCommerce',
-				'check_name' => 'WC_PLUGIN_FILE',
-				'check_type' => Plugin_Detector::TYPE_CONSTANT,
+			'WooCommerce'      => array(
+				'check_name'        => 'WC_PLUGIN_FILE',
+				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+				'event_config_list' => new Woocommerce_Event_List(),
 			),
-			array(
-				'name'       => 'WPForms',
-				'check_name' => 'WPFORMS_PLUGIN_DIR',
-				'check_type' => Plugin_Detector::TYPE_CONSTANT,
-			),
-			array(
-				'name'       => 'WPForms Lite',
-				'check_name' => 'WPFORMS_PLUGIN_DIR',
-				'check_type' => Plugin_Detector::TYPE_CONSTANT,
-			),
+			'WPForms'          => array(
+				'check_name'        => 'WPFORMS_PLUGIN_DIR',
+				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+				'event_config_list' => new WPForms_Event_List(),
+			)
 		);
-		if ( $mock_plugin_detector === null ) {
+		if ( null === $mock_plugin_detector ) {
 			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
 		} else {
 			$this->plugin_detector = $mock_plugin_detector;
@@ -102,9 +101,13 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	public function register() {
-		add_action( 'wp_enqueue_scripts', function() {
-			$this->set_up_advanced_tracking();
-		}, 11 );
+		add_action(
+			'wp_enqueue_scripts',
+			function() {
+				$this->set_up_advanced_tracking();
+			},
+			11
+		);
 	}
 
 	/**
@@ -119,27 +122,24 @@ final class Advanced_Tracking {
 
 		$active_plugins = $this->plugin_detector->determine_active_plugins();
 
-		$event_factory              = new Measurement_Event_Factory();
 		$this->event_configurations = array();
-		foreach ( $active_plugins as $plugin_name ) {
-			$measurement_event_list = $event_factory->create_measurement_event_list( $plugin_name );
+		foreach ( $active_plugins as $plugin_config ) {
+			$measurement_event_list = $plugin_config['event_config_list'];
 			if ( null !== $measurement_event_list ) {
 				foreach ( $measurement_event_list->get_events() as $measurement_event ) {
 					array_push( $this->event_configurations, $measurement_event );
 				}
 			}
 		}
-
 		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
 	}
 
 	/**
 	 * Returns list of event configurations.
 	 *
-	 * @return array
+	 * @return array The list of event configurations.
 	 */
 	public function get_event_configurations() {
 		return $this->event_configurations;
 	}
-
 }

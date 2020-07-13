@@ -14,10 +14,18 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 
 class MockPluginDetector extends Plugin_Detector {
 
+	/**
+	 * The list of current active plugin configs.
+	 *
+	 * @since n.e.x.t.
+	 * @var array
+	 */
 	private $mock_active_plugins;
 
 	/**
 	 * MockPluginDetector constructor.
+	 *
+	 * @since n.e.x.t.
 	 */
 	public function __construct() {
 		$this->mock_active_plugins = array();
@@ -26,7 +34,9 @@ class MockPluginDetector extends Plugin_Detector {
 	/**
 	 * Returns the current list of active_plugins.
 	 *
-	 * @return array
+	 * @since n.e.x.t.
+	 *
+	 * @return array Current plugin configuration list.
 	 */
 	public function determine_active_plugins() {
 		return $this->mock_active_plugins;
@@ -35,24 +45,25 @@ class MockPluginDetector extends Plugin_Detector {
 	/**
 	 * Adds the specified plugin to active plugin list if not already added.
 	 *
+	 * @since n.e.x.t.
+	 *
 	 * @param string $plugin_name plugin to be added.
 	 */
-	public function add_active_plugin( $plugin_name ) {
-		if ( in_array( $plugin_name, $this->mock_active_plugins ) ) {
+	public function add_active_plugin( $plugin_name, $plugin_config ) {
+		if ( in_array( $plugin_config, $this->mock_active_plugins ) ) {
 			return;
 		}
-		array_push( $this->mock_active_plugins, $plugin_name );
+		$this->mock_active_plugins[ $plugin_name ] = $plugin_config;
 	}
 
 	/**
 	 * Removes the specified plugin from active plugin list.
 	 *
+	 * @since n.e.x.t.
+	 *
 	 * @param string $plugin_name plugin to be removed.
 	 */
 	public function remove_active_plugin( $plugin_name ) {
-		$key = array_search( $plugin_name, $this->mock_active_plugins );
-		if ( false !== $key ) {
-			unset( $this->mock_active_plugins[ $key ] );
-		}
+		unset( $this->mock_active_plugins[ $plugin_name ] );
 	}
 }

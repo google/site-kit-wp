@@ -8,9 +8,9 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
-
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events;
+
+use \Exception;
 
 /**
  * Class for representing a single tracking event that Advanced_Tracking tracks.
@@ -35,9 +35,59 @@ final class Measurement_Event implements \JsonSerializable {
 	 * @since n.e.x.t.
 	 *
 	 * @param array $config The event's configuration.
+	 * @throws \Exception Thrown when config param is undefined.
 	 */
 	public function __construct( $config ) {
+		$this->validate_config_keys( $config );
+		$this->validate_config_value_types( $config );
+
 		$this->config = $config;
+	}
+
+	/**
+	 * Validates configuration keys.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param array $config The event's configuration.
+	 * @throws \Exception Thrown when duplicate keys or invalid keys.
+	 */
+	private function validate_config_keys( $config ) {
+		$valid_keys = array(
+			'pluginName' => false,
+			'category'   => false,
+			'action'     => false,
+			'selector'   => false,
+			'on'         => false,
+		);
+		foreach ( $config as $key => $value ) {
+			if ( array_key_exists( $key, $valid_keys ) ) {
+				if ( $valid_keys[ $key ] ) {
+					throw new \Exception( 'Duplicate configuration parameter: ' . $key );
+				} else {
+					$valid_keys[ $key ] = true;
+				}
+			} else {
+				throw new \Exception( 'Invalid configuration parameter: ' . $key );
+			}
+		}
+	}
+
+	/**
+	 * Validates configuration value types.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param array $config The event's configuration.
+	 * @throws \Exception Thrown when configuration value type is invalid.
+	 */
+	private function validate_config_value_types( $config ) {
+		foreach ( $config as $key => $value ) {
+			$value_type = gettype( $value );
+			if ( 'string' !== $value_type ) {
+				throw new \Exception( 'Invalid type [' . $value_type . '] for configuration paramter: ' . $key );
+			}
+		}
 	}
 
 	/**
@@ -45,7 +95,7 @@ final class Measurement_Event implements \JsonSerializable {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return array
+	 * @return array The configuration in JSON-serializable format.
 	 */
 	public function jsonSerialize() {
 		return $this->config;

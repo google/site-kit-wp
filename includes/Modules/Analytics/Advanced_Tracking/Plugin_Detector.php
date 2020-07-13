@@ -59,22 +59,21 @@ class Plugin_Detector {
 	}
 
 	/**
-	 * Determines the user's current active plugins that AdvancedTracking supports.
+	 * Determines the user's current active plugins that Advanced_Tracking supports.
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return array
+	 * @return array $active_plugins The list of active plugin configurations.
 	 */
 	public function determine_active_plugins() {
-		$active_plugins = array();
-		foreach ( $this->supported_plugins as $current_plugin ) {
-			if ( ( $current_plugin['check_type'] == self::TYPE_CONSTANT &&
-					defined( $current_plugin['check_name'] ) ) ||
-					( $current_plugin['check_type'] == self::TYPE_FUNCTION &&
-					function_exists( $current_plugin['check_name'] ) ) ) {
-				array_push( $active_plugins, $current_plugin['name'] );
+		return array_filter(
+			$this->supported_plugins,
+			function( $plugin_config ) {
+				return ( self::TYPE_CONSTANT === $plugin_config['check_type'] &&
+					defined( $plugin_config['check_name'] ) ) ||
+				( self::TYPE_FUNCTION === $plugin_config['check_type'] &&
+					function_exists( $plugin_config['check_name'] ) );
 			}
-		}
-		return $active_plugins;
+		);
 	}
 }

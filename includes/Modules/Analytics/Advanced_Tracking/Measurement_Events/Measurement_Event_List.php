@@ -32,10 +32,10 @@ class Measurement_Event_List {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param Measurement_Event $e The measurement event object.
+	 * @param Measurement_Event $event The measurement event object.
 	 */
-	protected function add_event( Measurement_Event $e ) {
-		array_push( $this->measurement_events, $e );
+	protected function add_event( Measurement_Event $event ) {
+		array_push( $this->measurement_events, $event );
 	}
 
 	/**
@@ -43,7 +43,7 @@ class Measurement_Event_List {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return Measurement_Event[]
+	 * @return Measurement_Event[] The list of Measurement_Events for this plugin's list.
 	 */
 	public function get_events() {
 		return $this->measurement_events;

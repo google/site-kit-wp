@@ -35,8 +35,20 @@ class Measurement_Code_Injector {
 	 * @since n.e.x.t.
 	 * @var string
 	 */
-	protected static $inject_script = <<<INJECT_SCRIPT
-let config;
+	protected $inject_script;
+
+	/**
+	 * Injector constructor.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param array $event_configurations list of measurement events to track.
+	 */
+	public function __construct( $event_configurations ) {
+		$this->event_configurations = json_encode( $event_configurations );
+		$this->inject_script = <<<INJECT_SCRIPT
+var eventConfigurations = {$this->event_configurations};
+var config;
 for ( config of eventConfigurations ) {
 	const thisConfig = config;
 	document.addEventListener( config.on, function( e ) {
@@ -50,16 +62,6 @@ for ( config of eventConfigurations ) {
 	}, true );
 }
 INJECT_SCRIPT;
-
-	/**
-	 * Injector constructor.
-	 *
-	 * @since n.e.x.t.
-	 *
-	 * @param array $event_configurations list of measurement events to track.
-	 */
-	public function __construct( $event_configurations ) {
-		$this->event_configurations = $event_configurations;
 	}
 
 	/**
@@ -70,7 +72,7 @@ INJECT_SCRIPT;
 	 * @return string the injected JavaScript code
 	 */
 	public function get_injected_script() {
-		return self::$inject_script;
+		return $this->inject_script;
 	}
 
 	/**
@@ -79,12 +81,6 @@ INJECT_SCRIPT;
 	 * @since n.e.x.t.
 	 */
 	public function inject_event_tracking() {
-		wp_add_inline_script( 'google_gtagjs', self::$inject_script );
-
-		wp_localize_script(
-			'google_gtagjs',
-			'eventConfigurations',
-			$this->event_configurations
-		);
+		wp_add_inline_script( 'google_gtagjs', $this->inject_script );
 	}
 }
