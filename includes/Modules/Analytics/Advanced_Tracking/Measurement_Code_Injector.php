@@ -45,8 +45,8 @@ final class Measurement_Code_Injector {
 	 * @param array $event_configurations list of measurement events to track.
 	 */
 	public function __construct( $event_configurations ) {
-		$this->event_configurations = json_encode( $event_configurations );
-		$this->inject_script = <<<INJECT_SCRIPT
+		$this->event_configurations = wp_json_encode( $event_configurations );
+		$this->inject_script        = <<<INJECT_SCRIPT
 var eventConfigurations = {$this->event_configurations};
 var config;
 for ( config of eventConfigurations ) {

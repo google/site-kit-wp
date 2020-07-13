@@ -137,9 +137,11 @@ class AdvancedTrackingTest extends TestCase {
 	 * Tests if the expected Javascript code is printed for a given sets of events.
 	 */
 	public function test_injected_code() {
+		$advanced_tracking    = new Advanced_Tracking( $this->mock_plugin_detector );
+		$event_configurations = wp_json_encode( $advanced_tracking->get_event_configurations() );
 
 		$expected_script = <<<INJECT_SCRIPT
-var eventConfigurations = null;
+var eventConfigurations = {$event_configurations};
 var config;
 for ( config of eventConfigurations ) {
 	const thisConfig = config;
@@ -159,9 +161,8 @@ for ( config of eventConfigurations ) {
 }
 INJECT_SCRIPT;
 
-		$advanced_tracking = new Advanced_Tracking( $this->mock_plugin_detector );
-		$measurement_code_injector = new Measurement_Code_Injector($advanced_tracking->get_event_configurations());
-		$this->assertSame($expected_script, $measurement_code_injector->get_injected_script());
+		$measurement_code_injector = new Measurement_Code_Injector( $advanced_tracking->get_event_configurations() );
+		$this->assertSame( $expected_script, $measurement_code_injector->get_injected_script() );
 	}
 
 	/**
