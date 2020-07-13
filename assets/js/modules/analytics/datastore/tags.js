@@ -170,7 +170,7 @@ const baseSelectors = {
 		// It's possible to have an invalid accountID saved by something like the
 		// AMP plugin (see: https://github.com/google/site-kit-wp/issues/1651).
 		// Before returning a tag we should make sure it's valid.
-		return existingTag && isValidPropertyID( existingTag.propertyID ) ? existingTag : null;
+		return !! existingTag && isValidPropertyID( existingTag ) ? existingTag : null;
 	},
 
 	/**
