@@ -212,7 +212,7 @@ const baseResolvers = {
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
 			let existingTagPermission;
 			if ( existingTag ) {
-				yield tagActions.waitForExistingTagPermission( existingTag );
+				yield tagActions.waitForTagPermission( existingTag );
 				existingTagPermission = registry.select( STORE_NAME ).getTagPermission( existingTag );
 			}
 
