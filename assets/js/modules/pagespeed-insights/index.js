@@ -26,11 +26,10 @@ import domReady from '@wordpress/dom-ready';
  * Internal dependencies
  */
 import './datastore';
-import { getModulesData, fillFilterWithComponent, createAddToFilter } from '../../util';
+import { fillFilterWithComponent } from '../../util';
 import { WIDGET_WIDTHS } from '../../googlesitekit/widgets/datastore/constants';
 import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
 import { SettingsMain as PageSpeedInsightsSettings } from './settings';
-import DashboardSpeed from './dashboard/dashboard-widget-speed';
 import DashboardPageSpeedWidget from './components/DashboardPageSpeedWidget';
 
 /**
@@ -41,28 +40,6 @@ addFilter(
 	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
 	fillFilterWithComponent( PageSpeedInsightsSettings )
 );
-
-const {
-	active,
-	setupComplete,
-} = getModulesData()[ 'pagespeed-insights' ];
-
-if ( active && setupComplete ) {
-	// Add to main dashboard.
-	addFilter(
-		'googlesitekit.DashboardModule',
-		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <DashboardSpeed /> ),
-		45
-	);
-	// Add to dashboard-details view.
-	addFilter(
-		'googlesitekit.DashboardDetailsModule',
-		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <DashboardSpeed /> ),
-		45
-	);
-}
 
 domReady( () => {
 	global.googlesitekit.widgets.registerWidget( 'pagespeedInsightsWebVitals', {
