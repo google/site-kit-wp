@@ -25,7 +25,7 @@ import { addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { createAddToFilter } from '../../util/helpers';
-import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
+import DashboardPageSpeedCTA from './components/DashboardPageSpeedCTA';
 import { getModulesData } from '../../util';
 
 const {
@@ -37,7 +37,7 @@ if ( ! active || ! setupComplete ) {
 	addFilter(
 		'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <PageSpeedInsightsCTA /> ),
+		createAddToFilter( <DashboardPageSpeedCTA /> ),
 		45
 	);
 }
