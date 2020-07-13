@@ -67,7 +67,14 @@ class DashboardApp extends Component {
 								">
 									<DateRangeSelector />
 								</div>
-								{ featureFlags.widgets.dashboard.enabled && <WidgetContextRenderer slug="dashboard" /> }
+								{ featureFlags.widgets.dashboard.enabled && (
+									<div className="
+										mdc-layout-grid__cell
+										mdc-layout-grid__cell--span-12
+									">
+										<WidgetContextRenderer slug="dashboard" />
+									</div>
+								) }
 								<DashboardMain />
 							</div>
 						</div>
