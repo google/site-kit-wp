@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { keyBy } from 'lodash';
+import { keyBy, sortBy } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -308,9 +308,8 @@ const baseSelectors = {
 		}
 
 		const registryKey = select( CORE_SITE ).getRegistryKey();
-		const sortedModules = modules.sort( ( a, b ) => {
-			return a.object > b.object ? 1 : -1;
-		} );
+		// Sorting the modules object by order property.
+		const sortedModules = sortBy( modules, [ ( { order } ) => order ] );
 		const mappedModules = Object.values( sortedModules ).map( ( module ) => {
 			const moduleWithComponent = { ...module };
 			if ( ModuleComponents[ registryKey ] ) {

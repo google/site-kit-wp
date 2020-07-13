@@ -233,9 +233,9 @@ export const selectors = {
 
 				return widgetWithComponent;
 			} ),
-			[ ( widget ) => widget.priorty ]
+			[ ( widget ) => widget.priority ]
 		);
-		return sorted.value();
+		return sorted;
 	} ),
 
 	/**
