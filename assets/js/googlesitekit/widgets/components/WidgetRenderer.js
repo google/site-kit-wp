@@ -38,12 +38,17 @@ const WidgetRenderer = ( { slug } ) => {
 	}
 
 	// Capitalize the "component" variable, as it is required by JSX.
-	const { component: Component, wrapWidget } = widget;
-	const widgetComponent = <Component slug={ slug } />;
+	const { component: Component, wrapWidget, width } = widget;
 
-	return widgetComponent && wrapWidget
-		? <Widget slug={ slug }>{ widgetComponent }</Widget>
-		: widgetComponent;
+	if ( ! wrapWidget ) {
+		return <Component slug={ slug } width={ width } />;
+	}
+
+	return (
+		<Widget slug={ slug } width={ width }>
+			<Component />
+		</Widget>
+	);
 };
 
 WidgetRenderer.propTypes = {
