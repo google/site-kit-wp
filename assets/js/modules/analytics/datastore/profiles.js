@@ -176,7 +176,8 @@ const baseSelectors = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param {Object} state     Data store's state.
+	 * @param {Object} state      Data store's state.
+	 * @param {string} accountID  The Analytics Account ID to fetch profiles for.
 	 * @param {string} propertyID The Analytics Property ID to check for profile fetching.
 	 * @return {boolean} `true` if fetching a profiles, `false` if not.
 	 */
