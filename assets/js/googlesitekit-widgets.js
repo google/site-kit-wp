@@ -17,9 +17,15 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import domReady from '@wordpress/dom-ready';
+
+/**
  * Internal dependencies
  */
 import Widgets, { registerDefaults } from './googlesitekit/widgets';
+import { loadTranslations } from './util';
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
@@ -30,7 +36,8 @@ if ( global.googlesitekit.widgets === undefined ) {
 }
 
 // register default widget areas
-document.addEventListener( 'DOMContentLoaded', () => {
+domReady( () => {
+	loadTranslations();
 	registerDefaults( Widgets );
 } );
 
