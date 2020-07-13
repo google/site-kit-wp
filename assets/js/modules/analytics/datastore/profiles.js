@@ -106,7 +106,7 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createProfile( accountID, propertyID, { profileName } ) {
-		invariant( isValidAccountID( accountID ), 'a valid account ID is required to create a profiles.' );
+		invariant( isValidAccountID( accountID ), 'a valid account ID is required to create a profile.' );
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
 		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
 
