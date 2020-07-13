@@ -88,12 +88,7 @@ final class Advanced_Tracking {
 				'check_name'        => 'WPFORMS_PLUGIN_DIR',
 				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
 				'event_config_list' => new WPForms_Event_List(),
-			),
-			'WPForms Lite'     => array(
-				'check_name'        => 'WPFORMS_PLUGIN_DIR',
-				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
-				'event_config_list' => new WPForms_Event_List(),
-			),
+			)
 		);
 		if ( null === $mock_plugin_detector ) {
 			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
@@ -132,8 +127,8 @@ final class Advanced_Tracking {
 		$active_plugins = $this->plugin_detector->determine_active_plugins();
 
 		$this->event_configurations = array();
-		foreach ( $active_plugins as $plugin_name ) {
-			$measurement_event_list = $this->supported_plugins[ $plugin_name ]['event_config_list'];
+		foreach ( $active_plugins as $plugin_config ) {
+			$measurement_event_list = $plugin_config['event_config_list'];
 			if ( null !== $measurement_event_list ) {
 				foreach ( $measurement_event_list->get_events() as $measurement_event ) {
 					array_push( $this->event_configurations, $measurement_event );
