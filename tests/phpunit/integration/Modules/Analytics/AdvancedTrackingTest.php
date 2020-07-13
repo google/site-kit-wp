@@ -139,7 +139,7 @@ class AdvancedTrackingTest extends TestCase {
 	public function test_injected_code() {
 
 		$expected_script = <<<INJECT_SCRIPT
-var eventConfigurations = {$this->event_configurations};
+var eventConfigurations = null;
 var config;
 for ( config of eventConfigurations ) {
 	const thisConfig = config;
