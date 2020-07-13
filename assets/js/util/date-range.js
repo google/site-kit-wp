@@ -25,21 +25,21 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 /**
  * Gets the current dateRange string.
  *
- * @param {string} [slug] Optinal. The date range slug.
+ * @param {string} [dateRange] Optional. The date range slug.
  * @return {string} the date range string.
  */
-export function getCurrentDateRange( slug ) {
-	const dateRange = slug || getCurrentDateRangeSlug();
+export function getCurrentDateRange( dateRange = getCurrentDateRangeSlug() ) {
 	const daysMatch = dateRange.match( /last-(\d+)-days/ );
 
 	if ( daysMatch && daysMatch[ 1 ] ) {
 		return sprintf(
 			/* translators: %s: Number of days matched. */
-			_n( '%s day', '%s days', +daysMatch[ 1 ], 'google-site-kit' ),
+			_n( '%s day', '%s days', parseInt( daysMatch[ 1 ], 10 ), 'google-site-kit' ),
 			daysMatch[ 1 ]
 		);
 	}
@@ -53,7 +53,7 @@ export function getCurrentDateRange( slug ) {
  * @return {string} the date range slug.
  */
 export function getCurrentDateRangeSlug() {
-	return Data.select( 'core/user' ).getDateRange();
+	return Data.select( CORE_USER ).getDateRange();
 }
 
 /**

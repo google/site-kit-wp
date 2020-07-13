@@ -44,7 +44,7 @@ import getDataErrorComponent from '../../../components/notifications/data-error'
 import { getCurrentDateRange } from '../../../util/date-range';
 import HelpLink from '../../../components/help-link';
 import { getModulesData } from '../../../util';
-import { STORE_NAME } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 const { withSelect } = Data;
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {
@@ -243,4 +243,8 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	}
 }
 
-export default withSelect( ( select ) => ( { dateRange: select( STORE_NAME ).getDateRange() } ) )( GoogleSitekitSearchConsoleDashboardWidget );
+export default withSelect(
+	( select ) => ( {
+		dateRange: select( CORE_USER ).getDateRange(),
+	} ),
+)( GoogleSitekitSearchConsoleDashboardWidget );

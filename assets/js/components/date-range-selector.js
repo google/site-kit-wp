@@ -28,18 +28,16 @@ import { doAction, addAction, removeAction } from '@wordpress/hooks';
 import Data from 'googlesitekit-data';
 import { Option, Select } from '../material-components';
 import { getAvailableDateRanges } from '../util/date-range';
-import { STORE_NAME } from '../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 function DateRangeSelector() {
 	const ranges = Object.values( getAvailableDateRanges() );
 	const [ context, setContext ] = useState();
-	const dateRange = useSelect( ( select ) => select( STORE_NAME ).getDateRange() );
-	const { setDateRange } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( id ) => {
-		if ( ranges.length > id && id >= 0 ) {
-			setDateRange( ranges[ id ].slug );
-		}
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const { setDateRange } = useDispatch( CORE_USER );
+	const onChange = useCallback( ( index, item ) => {
+		setDateRange( item.dataset.value );
 	}, [ ranges ] );
 
 	useEffect( () => {

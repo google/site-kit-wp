@@ -42,12 +42,12 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../component
 import PreviewTable from '../../../components/preview-table';
 import MiniChart from '../../../components/mini-chart';
 import { trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../util';
-import { STORE_NAME } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 	const dateRange = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+		const store = select( CORE_USER );
 		return store ? store.getDateRange() : undefined;
 	} );
 
