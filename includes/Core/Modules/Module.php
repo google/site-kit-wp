@@ -12,7 +12,9 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Closure;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
+use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Contracts\WP_Errorable;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -801,9 +803,10 @@ abstract class Module {
 
 		$code = $e->getCode();
 
-		$message = $e->getMessage();
-		$status  = is_numeric( $code ) && $code ? (int) $code : 500;
-		$reason  = '';
+		$message       = $e->getMessage();
+		$status        = is_numeric( $code ) && $code ? (int) $code : 500;
+		$reason        = '';
+		$reconnect_url = '';
 
 		if ( empty( $code ) ) {
 			$code = 'unknown';
@@ -817,15 +820,36 @@ abstract class Module {
 			if ( isset( $errors[0]['reason'] ) ) {
 				$reason = $errors[0]['reason'];
 			}
+		} elseif ( $e instanceof Google_Proxy_Code_Exception ) {
+			$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+			$error_code  = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+
+			if ( ! $error_code ) {
+				$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
+			}
+
+			if ( $error_code ) {
+				// Delete error code from database to prevent future notice.
+				$this->user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
+			} else {
+				$error_code = $code;
+			}
+
+			$auth_client   = $this->authentication->get_oauth_client();
+			$message       = $auth_client->get_error_message( $error_code );
+			$status        = 401;
+			$reconnect_url = $auth_client->get_proxy_setup_url( $access_code, $error_code );
 		}
 
-		return new WP_Error(
-			$code,
-			$message,
-			array(
-				'status' => $status,
-				'reason' => $reason,
-			)
+		$data = array(
+			'status' => $status,
+			'reason' => $reason,
 		);
+
+		if ( ! empty( $reconnect_url ) ) {
+			$data['reconnectURL'] = $reconnect_url;
+		}
+
+		return new WP_Error( $code, $message, $data );
 	}
 }
