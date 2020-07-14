@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render, fireEvent, wait } from '../../../../../tests/js/test-utils';
+import { render, fireEvent, waitFor } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../datastore/__fixtures__';
@@ -55,7 +55,7 @@ describe( 'SettingsMain', () => {
 
 		rerender( <SettingsMain isOpen={ true } isEditing={ true } /> );
 
-		await wait( () => container.querySelector( '.googlesitekit-analytics-usesnippet' ) );
+		await waitFor( () => container.querySelector( '.googlesitekit-analytics-usesnippet' ) );
 		fireEvent.click( container.querySelector( '.googlesitekit-analytics-usesnippet [role="switch"]' ) );
 		expect( select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
 
@@ -83,9 +83,9 @@ describe( 'SettingsMain', () => {
 
 		rerender( <SettingsMain isOpen={ true } isEditing={ true } /> );
 
-		await wait( () => container.querySelector( '.googlesitekit-analytics-usesnippet' ) );
+		await waitFor( () => container.querySelector( '.googlesitekit-analytics-usesnippet' ) );
 		fireEvent.click( container.querySelector( '.googlesitekit-analytics-usesnippet [role="switch"]' ) );
-		await wait( () => select( STORE_NAME ).haveSettingsChanged() === true );
+		await waitFor( () => select( STORE_NAME ).haveSettingsChanged() === true );
 
 		// Rendering with isOpen: false and isEditing: true is possible by clicking the module header.
 		// Rerendering here manually for clarity.
