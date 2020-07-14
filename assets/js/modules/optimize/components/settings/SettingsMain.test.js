@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render, fireEvent, wait } from '../../../../../../tests/js/test-utils';
+import { render, fireEvent, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import SettingsMain from './SettingsMain';
 
@@ -44,7 +44,7 @@ describe( 'SettingsMain', () => {
 
 		rerender( <SettingsMain isOpen={ true } isEditing={ true } /> );
 
-		await wait( () => container.querySelector( '.mdc-text-field__input' ) );
+		await waitFor( () => container.querySelector( '.mdc-text-field__input' ) );
 		fireEvent.change( container.querySelector( '.mdc-text-field__input' ), { target: { value: 'OPT-2222222' } } );
 		expect( select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
 
@@ -65,7 +65,7 @@ describe( 'SettingsMain', () => {
 
 		rerender( <SettingsMain isOpen={ true } isEditing={ true } /> );
 
-		await wait( () => container.querySelector( '.mdc-text-field__input' ) );
+		await waitFor( () => container.querySelector( '.mdc-text-field__input' ) );
 		fireEvent.change( container.querySelector( '.mdc-text-field__input' ), { target: { value: 'OPT-2222222' } } );
 		expect( select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
 

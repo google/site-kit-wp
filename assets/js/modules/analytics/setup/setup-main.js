@@ -61,6 +61,7 @@ export default function SetupMain( { finishSetup } ) {
 	useEffect( () => {
 		if ( hasExistingTag ) {
 			const { accountID: existingTagAccountID } = parsePropertyID( existingTag );
+
 			setAccountID( existingTagAccountID );
 			selectProperty( existingTag );
 		}
