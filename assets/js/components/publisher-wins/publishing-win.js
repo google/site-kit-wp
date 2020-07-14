@@ -33,6 +33,10 @@ const publishingWin = ( data, id ) => {
 		return false;
 	}
 
+	if ( ! data ) {
+		return false;
+	}
+
 	let message = __( 'That’s out of this world.', 'google-site-kit' );
 	let dataBlocks = [];
 
