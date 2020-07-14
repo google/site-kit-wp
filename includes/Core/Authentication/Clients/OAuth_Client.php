@@ -937,11 +937,11 @@ final class OAuth_Client {
 			case 'invalid_request':
 				return __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
 			case 'missing_delegation_consent':
-				return __( 'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard. To fix this, redo the plugin setup.', 'google-site-kit' );
+				return __( 'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard.', 'google-site-kit' );
 			case 'missing_search_console_property':
-				return __( 'Looks like there is no Search Console property for your site. To fix this, redo the plugin setup.', 'google-site-kit' );
+				return __( 'Looks like there is no Search Console property for your site.', 'google-site-kit' );
 			case 'missing_verification':
-				return __( 'Looks like the verification token for your site is missing. To fix this, redo the plugin setup.', 'google-site-kit' );
+				return __( 'Looks like the verification token for your site is missing.', 'google-site-kit' );
 			case 'oauth_credentials_not_exist':
 				return __( 'Unable to authenticate Site Kit, as no client credentials exist.', 'google-site-kit' );
 			case 'refresh_token_not_exist':
