@@ -227,13 +227,13 @@ describe( 'createSettingsStore store', () => {
 			it( 'requires the value param', () => {
 				expect( () => {
 					dispatch.setIsSkyBlue();
-				} ).toThrow( 'value is required.' );
+				} ).toThrow( 'value is required for calls to setIsSkyBlue().' );
 			} );
 
 			it( 'supports setting falsy values', () => {
 				expect( () => {
 					dispatch.setIsSkyBlue( false );
-				} ).not.toThrow( 'value is required.' );
+				} ).not.toThrow( 'value is required for calls to setIsSkyBlue().' );
 			} );
 
 			it( 'updates the respective setting', () => {
