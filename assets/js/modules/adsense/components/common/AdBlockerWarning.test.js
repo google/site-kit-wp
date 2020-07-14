@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import AdBlockerWarning from './AdBlockerWarning';
-import { render } from '../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../datastore/constants';
+import { render } from '../../../../../../tests/js/test-utils';
+import { STORE_NAME } from '../../datastore/constants';
 
 const setupAdBlockerRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );

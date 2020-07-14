@@ -25,9 +25,9 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import UseSnippetSwitch from './UseSnippetSwitch';
-import { fireEvent, render, act } from '../../../../../tests/js/test-utils';
-import { subscribeUntil } from '../../../../../tests/js/utils';
-import { STORE_NAME } from '../datastore/constants';
+import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
+import { subscribeUntil } from '../../../../../../tests/js/utils';
+import { STORE_NAME } from '../../datastore/constants';
 
 // Mock apiFetch so we know if it's called.
 jest.mock( '@wordpress/api-fetch' );
