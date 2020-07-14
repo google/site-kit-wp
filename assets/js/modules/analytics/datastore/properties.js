@@ -278,10 +278,8 @@ const baseResolvers = {
 		// Only fetch properties if there are none in the store for the given account.
 		if ( properties === undefined ) {
 			const { response, error } = yield fetchGetPropertiesProfilesStore.actions.fetchGetPropertiesProfiles( accountID );
-
+			const { dispatch } = registry;
 			if ( response ) {
-				const { dispatch } = registry;
-
 				dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 
 				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
@@ -293,11 +291,10 @@ const baseResolvers = {
 					dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
 				}
 
-				dispatch( STORE_NAME ).receivePropertiesProfilesCompletion( accountID );
-
 				( { properties } = response );
 			}
 
+			dispatch( STORE_NAME ).receivePropertiesProfilesCompletion( accountID );
 			if ( error ) {
 				return;
 			}

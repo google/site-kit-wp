@@ -221,9 +221,8 @@ const baseResolvers = {
 				existingAccountID: existingTagPermission?.accountID,
 			} );
 
+			const { dispatch } = registry;
 			if ( response ) {
-				const { dispatch } = registry;
-
 				dispatch( STORE_NAME ).receiveGetAccounts( response.accounts );
 
 				if ( response.properties?.[ 0 ]?.accountId ) {
@@ -241,10 +240,10 @@ const baseResolvers = {
 					dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
 				}
 
-				dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
-
 				( { matchedProperty } = response );
 			}
+
+			dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
 		}
 
 		const accountID = registry.select( STORE_NAME ).getAccountID();
