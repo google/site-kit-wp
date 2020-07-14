@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { extractSearchConsoleDashboardData } from '../../modules/search-console/dashboard/util';
-import { readableLargeNumber, getModulesData } from '../../util';
+import { getModulesData } from '../../util';
 
 const publishingWin = ( data, id ) => {
 	const showNotification = 5 === parseInt( global._googlesitekitLegacyData.admin.newSitePosts, 10 );
@@ -50,12 +50,12 @@ const publishingWin = ( data, id ) => {
 		dataBlocks = [
 			{
 				title: __( 'Total Impressions', 'google-site-kit' ),
-				datapoint: readableLargeNumber( totalImpressions ),
+				datapoint: totalImpressions,
 				datapointUnit: '',
 			},
 			{
 				title: __( 'Total Clicks', 'google-site-kit' ),
-				datapoint: readableLargeNumber( totalClicks ),
+				datapoint: totalClicks,
 				datapointUnit: '',
 			},
 			{
