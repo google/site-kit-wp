@@ -41,7 +41,7 @@ const setupRegistry = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).setAccountID( accountId );
 	dispatch( STORE_NAME ).setPropertyID( webPropertyId );
 	dispatch( STORE_NAME ).setProfileID( id );
-	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { propertyID: webPropertyId } );
+	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID: accountId, propertyID: webPropertyId } );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
@@ -53,7 +53,7 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).setAccountID( existingTag.accountID );
 	dispatch( STORE_NAME ).setPropertyID( existingTag.propertyID );
 	dispatch( STORE_NAME ).setProfileID( id );
-	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { propertyID: existingTag.propertyID } );
+	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID: existingTag.accountID, propertyID: existingTag.propertyID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
 };
 
