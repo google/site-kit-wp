@@ -30,6 +30,9 @@ module.exports = {
 		args: [
 			// https://peter.sh/experiments/chromium-command-line-switches/
 			...coreLaunchArgs,
+			'--disable-gpu',
+			'--no-sandbox',
+			'--disable-setuid-sandbox',
 			'--disable-dev-shm-usage',
 		],
 	},
