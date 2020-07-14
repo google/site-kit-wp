@@ -45,21 +45,16 @@ export const extractAnalyticsDataForTrafficChart = ( reports ) => {
 	const data = reports[ 0 ].data;
 	const rows = data.rows;
 
-	const totalSessions = data.totals[ 0 ].values[ 0 ];
+	const totalUsers = data.totals[ 0 ].values[ 1 ];
 	const dataMap = [
 		[ 'Source', 'Percent' ],
 	];
 
 	each( rows, ( row ) => {
-		const sessions = row.metrics[ 0 ].values[ 0 ];
-		const percent = ( sessions / totalSessions );
+		const users = row.metrics[ 0 ].values[ 1 ];
+		const percent = ( users / totalUsers );
 
-		// Exclude sources below 1%.
-		if ( 1 > ( percent * 100 ) ) {
-			return false;
-		}
-
-		const source = row.dimensions[ 0 ].replace( /\(none\)/gi, 'direct' );
+		const source = row.dimensions[ 0 ];
 
 		dataMap.push( [ source, percent ] );
 	} );
@@ -409,7 +404,7 @@ export const userReportDataDefaults = {
  * @type {Object}
  */
 export const trafficSourcesReportDataDefaults = {
-	dimensions: 'ga:medium',
+	dimensions: 'ga:channelGrouping',
 	metrics: [
 		{
 			expression: 'ga:sessions',

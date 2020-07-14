@@ -236,7 +236,7 @@ storiesOf( 'Analytics Module', module )
 			<Layout
 				header
 				footer
-				title={ __( 'Top acquisition sources over the last 28 days', 'google-site-kit' ) }
+				title={ __( 'Top acquisition channels over the last 28 days', 'google-site-kit' ) }
 				headerCtaLink="https://analytics.google.com"
 				headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 				footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }

@@ -55,15 +55,11 @@ class AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component 
 			},
 		];
 
-		const totalSessions = data[ 0 ].data.totals[ 0 ].values[ 0 ];
+		const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
 
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
-			const percent = ( row.metrics[ 0 ].values[ 0 ] / totalSessions * 100 );
+			const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
 
-			// Exclude sources below 1%.
-			if ( 1 > percent ) {
-				return false;
-			}
 			return [
 				row.dimensions[ 0 ],
 				<Fragment key={ 'minichart-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ `${ percent.toFixed( 2 ) }%` } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
