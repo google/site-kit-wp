@@ -26,26 +26,47 @@ import PropTypes from 'prop-types';
  */
 import { sprintf, __ } from '@wordpress/i18n';
 
-export default function ErrorText( { message } ) {
+function ErrorText( { message, reconnectURL } ) {
 	if ( ! message ) {
 		return null;
 	}
 
+	let error = sprintf(
+		/* translators: %s: Error message */
+		__( 'Error: %s', 'google-site-kit' ),
+		message
+	);
+
+	try {
+		if ( reconnectURL ) {
+			// reconnectURL must be a valid URI, if it is not, "new URL" will
+			// trigger an error and we jump over "error" variable change
+			new URL( reconnectURL );
+
+			error = error + ' ' + sprintf(
+				/* translators: %s: Reconnect URL */
+				__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
+				reconnectURL
+			);
+		}
+	} catch ( err ) {
+		// do nothing
+	}
+
 	return (
 		<div className="googlesitekit-error-text">
-			<p>
-				{
-					sprintf(
-						/* translators: %s: Error message */
-						__( 'Error: %s', 'google-site-kit' ),
-						message
-					)
-				}
-			</p>
+			<p dangerouslySetInnerHTML={ { __html: error } } />
 		</div>
 	);
 }
 
 ErrorText.propTypes = {
 	message: PropTypes.string.isRequired,
+	reconnectURL: PropTypes.string,
 };
+
+ErrorText.defaultProps = {
+	reconnectURL: '',
+};
+
+export default ErrorText;

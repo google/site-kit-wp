@@ -28,12 +28,13 @@ const { useSelect } = Data;
 
 export default function ErrorNotice() {
 	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
+	const { code, message, reconnectURL } = error || {};
 
 	// Do not display if no error, or if the error is for missing scopes, or if
 	// it yields an account status, in which case it is an "expected" error.
-	if ( ! error || error.code === PERMISSION_SCOPE_ERROR_CODE || undefined !== errorToStatus( error ) ) {
+	if ( ! error || code === PERMISSION_SCOPE_ERROR_CODE || undefined !== errorToStatus( error ) ) {
 		return null;
 	}
 
-	return <ErrorText message={ error.message } />;
+	return <ErrorText message={ message } reconnectURL={ reconnectURL } />;
 }
