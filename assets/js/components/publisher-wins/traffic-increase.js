@@ -27,18 +27,18 @@ import { __ } from '@wordpress/i18n';
 import { getTimeInSeconds, readableLargeNumber, getModulesData } from '../../util';
 import { calculateOverviewData } from '../../modules/analytics/util';
 
-const trafficIncrease = ( data, id ) => {
+const trafficIncrease = ( reports, id ) => {
 	const modulesData = getModulesData();
 
 	if ( ! modulesData.analytics || ! modulesData.analytics.active ) {
 		return false;
 	}
 
-	if ( ! data || ! data[ 0 ] ) {
+	if ( ! reports ) {
 		return false;
 	}
 
-	const overviewData = calculateOverviewData( data );
+	const overviewData = calculateOverviewData( reports );
 
 	if ( ! overviewData ) {
 		return false;
