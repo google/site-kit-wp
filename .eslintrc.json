@@ -56,7 +56,7 @@
     },
     {
       "files": [
-        "**/modules/**/components/**/*.js"
+        "**/modules/adsense/components/**/*.js"
       ],
       "rules": {
         "filenames/match-exported": [
