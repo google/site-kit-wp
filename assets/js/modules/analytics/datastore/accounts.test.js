@@ -262,11 +262,11 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'passes existing tag ID when fetching accounts', async () => {
-				const existingPropertyID = 'UA-12345-1';
+				const existingPropertyID = 'UA-1234567-1';
 
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingPropertyID );
 				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-					accountID: '12345',
+					accountID: '1234567',
 					permission: true,
 				}, { propertyID: existingPropertyID } );
 

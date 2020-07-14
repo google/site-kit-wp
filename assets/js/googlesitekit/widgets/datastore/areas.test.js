@@ -42,21 +42,21 @@ describe( 'core/widgets Widget areas', () => {
 	describe( 'actions', () => {
 		describe( 'assignWidgetArea', () => {
 			it( 'should implicitly create a context when assigning a widget area, if one does not exist', () => {
-				// Assign this widget area to the dashboard context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( 'header', 'dashboard' );
+				// Assign this widget area to the testarea context.
+				registry.dispatch( STORE_NAME ).assignWidgetArea( 'header', 'testarea' );
 
 				const { contextAssignments } = store.getState();
 
-				expect( contextAssignments.dashboard ).toEqual( [ 'header' ] );
+				expect( contextAssignments.testarea ).toEqual( [ 'header' ] );
 			} );
 
 			it( 'should re-use a context if one is already created', () => {
-				registry.dispatch( STORE_NAME ).assignWidgetArea( 'header', 'dashboard' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( 'footer', 'dashboard' );
+				registry.dispatch( STORE_NAME ).assignWidgetArea( 'header', 'testarea' );
+				registry.dispatch( STORE_NAME ).assignWidgetArea( 'footer', 'testarea' );
 
 				const { contextAssignments } = store.getState();
 
-				expect( contextAssignments.dashboard ).toEqual( [ 'header', 'footer' ] );
+				expect( contextAssignments.testarea ).toEqual( [ 'header', 'footer' ] );
 			} );
 
 			it( 'should assign a registered widget area to a context', () => {
@@ -71,14 +71,14 @@ describe( 'core/widgets Widget areas', () => {
 				};
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
 
-				// Assign this widget area to the dashboard context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slug, 'dashboard' );
+				// Assign this widget area to the testarea context.
+				registry.dispatch( STORE_NAME ).assignWidgetArea( slug, 'testarea' );
 
-				// Get all assigned widget areas for the dashboard context.
-				const dashboardAreas = registry.select( STORE_NAME ).getWidgetAreas( 'dashboard' );
+				// Get all assigned widget areas for the testarea context.
+				const testareaAreas = registry.select( STORE_NAME ).getWidgetAreas( 'testarea' );
 
-				expect( dashboardAreas ).toHaveLength( 1 );
-				expect( dashboardAreas.some( ( area ) => area.slug === slug ) ).toEqual( true );
+				expect( testareaAreas ).toHaveLength( 1 );
+				expect( testareaAreas.some( ( area ) => area.slug === slug ) ).toEqual( true );
 			} );
 		} );
 
@@ -260,37 +260,37 @@ describe( 'core/widgets Widget areas', () => {
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slugOne, settings );
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slugTwo, settings );
 
-				// Assign this widget area to the dashboard context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugOne, 'dashboard' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugTwo, 'dashboard' );
+				// Assign this widget area to the testarea context.
+				registry.dispatch( STORE_NAME ).assignWidgetArea( slugOne, 'testarea' );
+				registry.dispatch( STORE_NAME ).assignWidgetArea( slugTwo, 'testarea' );
 
-				// Get all assigned widget areas for the dashboard context.
-				const dashboardAreas = registry.select( STORE_NAME ).getWidgetAreas( 'dashboard' );
+				// Get all assigned widget areas for the testarea context.
+				const testareaAreas = registry.select( STORE_NAME ).getWidgetAreas( 'testarea' );
 
-				expect( dashboardAreas ).toMatchObject( [
+				expect( testareaAreas ).toMatchObject( [
 					{ ...settings, slug: slugOne },
 					{ ...settings, slug: slugTwo },
 				] );
 			} );
 
 			it( 'does not return unregistered widget areas', () => {
-				// Assign this widget area to the dashboard context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( 'area-one', 'dashboard' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( 'area-two', 'dashboard' );
+				// Assign this widget area to the testarea context.
+				registry.dispatch( STORE_NAME ).assignWidgetArea( 'area-one', 'testarea' );
+				registry.dispatch( STORE_NAME ).assignWidgetArea( 'area-two', 'testarea' );
 
-				// Get all assigned widget areas for the dashboard context.
-				const dashboardAreas = registry.select( STORE_NAME ).getWidgetAreas( 'dashboard' );
+				// Get all assigned widget areas for the testarea context.
+				const testareaAreas = registry.select( STORE_NAME ).getWidgetAreas( 'testarea' );
 
-				expect( dashboardAreas ).toHaveLength( 0 );
+				expect( testareaAreas ).toHaveLength( 0 );
 			} );
 
 			it( 'returns widget areas that were registered after they were assigned', () => {
 				const slugOne = 'header';
 				const slugTwo = 'subheader';
 
-				// Assign this widget area to the dashboard context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugOne, 'dashboard' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugTwo, 'dashboard' );
+				// Assign this widget area to the testarea context.
+				registry.dispatch( STORE_NAME ).assignWidgetArea( slugOne, 'testarea' );
+				registry.dispatch( STORE_NAME ).assignWidgetArea( slugTwo, 'testarea' );
 
 				// Register the widget areas.
 				const settings = {
@@ -303,10 +303,10 @@ describe( 'core/widgets Widget areas', () => {
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slugOne, settings );
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slugTwo, settings );
 
-				// Get all assigned widget areas for the dashboard context.
-				const dashboardAreas = registry.select( STORE_NAME ).getWidgetAreas( 'dashboard' );
+				// Get all assigned widget areas for the testarea context.
+				const testareaAreas = registry.select( STORE_NAME ).getWidgetAreas( 'testarea' );
 
-				expect( dashboardAreas ).toMatchObject( [
+				expect( testareaAreas ).toMatchObject( [
 					{ ...settings, slug: slugOne },
 					{ ...settings, slug: slugTwo },
 				] );
@@ -329,21 +329,21 @@ describe( 'core/widgets Widget areas', () => {
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slugMediumTwo, { ...settings, priority: 10 } );
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slugHighest, { ...settings, priority: 15 } );
 
-				// Assign this widget area to the dashboard context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugLowest, 'dashboard' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugMedium, 'dashboard' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugMediumTwo, 'dashboard' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugHighest, 'dashboard' );
+				// Assign this widget area to the testarea context.
+				registry.dispatch( STORE_NAME ).assignWidgetArea( slugLowest, 'testarea' );
+				registry.dispatch( STORE_NAME ).assignWidgetArea( slugMedium, 'testarea' );
+				registry.dispatch( STORE_NAME ).assignWidgetArea( slugMediumTwo, 'testarea' );
+				registry.dispatch( STORE_NAME ).assignWidgetArea( slugHighest, 'testarea' );
 
-				// Get all assigned widget areas for the dashboard context.
-				const dashboardAreas = registry.select( STORE_NAME ).getWidgetAreas( 'dashboard' );
+				// Get all assigned widget areas for the testarea context.
+				const testareaAreas = registry.select( STORE_NAME ).getWidgetAreas( 'testarea' );
 
 				// The lowest priority appears first.
-				expect( dashboardAreas[ 0 ] ).toMatchObject( { ...settings, slug: slugLowest } );
+				expect( testareaAreas[ 0 ] ).toMatchObject( { ...settings, slug: slugLowest } );
 				// Widgets assigned with the same priority should be last-in, last-out.
-				expect( dashboardAreas[ 1 ] ).toMatchObject( { ...settings, slug: slugMedium } );
-				expect( dashboardAreas[ 2 ] ).toMatchObject( { ...settings, slug: slugMediumTwo } );
-				expect( dashboardAreas[ 3 ] ).toMatchObject( { ...settings, slug: slugHighest } );
+				expect( testareaAreas[ 1 ] ).toMatchObject( { ...settings, slug: slugMedium } );
+				expect( testareaAreas[ 2 ] ).toMatchObject( { ...settings, slug: slugMediumTwo } );
+				expect( testareaAreas[ 3 ] ).toMatchObject( { ...settings, slug: slugHighest } );
 			} );
 		} );
 
