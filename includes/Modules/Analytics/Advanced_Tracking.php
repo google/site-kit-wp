@@ -127,7 +127,7 @@ final class Advanced_Tracking {
 			$measurement_event_list = $plugin_config['event_config_list'];
 			if ( null !== $measurement_event_list ) {
 				foreach ( $measurement_event_list->get_events() as $measurement_event ) {
-					array_push( $this->event_configurations, $measurement_event );
+					$this->event_configurations[] = $measurement_event;
 				}
 			}
 		}

@@ -35,7 +35,7 @@ class Measurement_Event_List {
 	 * @param Measurement_Event $event The measurement event object.
 	 */
 	protected function add_event( Measurement_Event $event ) {
-		array_push( $this->measurement_events, $event );
+		$this->measurement_events[] = $event;
 	}
 
 	/**
