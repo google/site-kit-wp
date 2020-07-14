@@ -33,7 +33,7 @@ export const actions = {
 	 * Sets the registryKey in the data store.
 	 *
 	 * @since n.e.x.t
-
+	 *
 	 * @param {(number|undefined)} registryKey The registryKey for a given store.
 	 * @return {Object} Redux-style action.
 	 */

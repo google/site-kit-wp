@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPElement } from '@wordpress/element';
+
+/**
  * External dependencies
  */
 import invariant from 'invariant';
@@ -182,8 +187,8 @@ const baseActions = {
 	 * @param {string}          [settings.icon]              Optional. Module icon. Default empty string.
 	 * @param {number}          [settings.order]             Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}          [settings.homepage]          Optional. Module homepage URL. Default empty string.
-	 * @param {React.Component} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
-	 * @return {Object} Redux-style action.
+	 * @param {WPElement}       [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
+	 * @return {Object}                                      Redux-style action.
 	 */
 	*registerModule( slug, { settingsComponent = DefaultModuleSettings, ...settings } = {} ) {
 		invariant( slug, 'module slug is required' );
