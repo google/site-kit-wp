@@ -55,7 +55,7 @@ final class Measurement_Code_Injector {
 		document.addEventListener( config.on, function( e ) {
 			var el = e.target;
 			var matcher = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector || el.oMatchesSelector;
-			if (matcher && (matcher.call(el, thisConfig.selector) || matcher.call(el, thisConfig.selector.concat( ' *' )))) {
+			if ( matcher && ( matcher.call( el, thisConfig.selector ) || matcher.call( el, thisConfig.selector.concat( ' *' ) ) ) ) {
 				alert( 'Got an event called: '.concat( thisConfig.action ) );
 				gtag( 'event', thisConfig.action, {
 				    'event_category': thisConfig.category
@@ -63,8 +63,7 @@ final class Measurement_Code_Injector {
 			}
 		}, true );
 	}
-  }
-)();
+} )();
 INJECT_SCRIPT;
 	}
 

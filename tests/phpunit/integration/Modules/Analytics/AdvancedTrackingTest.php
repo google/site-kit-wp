@@ -141,24 +141,23 @@ class AdvancedTrackingTest extends TestCase {
 		$event_configurations = wp_json_encode( $advanced_tracking->get_event_configurations() );
 
 		$expected_script = <<<INJECT_SCRIPT
-var eventConfigurations = {$event_configurations};
-var config;
-for ( config of eventConfigurations ) {
-	const thisConfig = config;
-	document.addEventListener( config.on, function( e ) {
-		if ( e.target.matches( thisConfig.selector ) ) {
-			alert( 'Got an event called: '.concat( thisConfig.action ) );
-			gtag( 'event', thisConfig.action, {
-			 	'event_category': thisConfig.category
-			 });
-		} else if ( e.target.matches( thisConfig.selector.concat( ' *' ) ) ) {
-			alert( 'Got an event called: '.concat( thisConfig.action ) );
-			gtag( 'event', thisConfig.action, {
-			 	'event_category': thisConfig.category
-			 });
-		}
-	}, true );
-}
+( function() {
+    var eventConfigurations = {$event_configurations};
+	var config;
+	for ( config of eventConfigurations ) {
+		const thisConfig = config;
+		document.addEventListener( config.on, function( e ) {
+			var el = e.target;
+			var matcher = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector || el.oMatchesSelector;
+			if ( matcher && ( matcher.call( el, thisConfig.selector ) || matcher.call( el, thisConfig.selector.concat( ' *' ) ) ) ) {
+				alert( 'Got an event called: '.concat( thisConfig.action ) );
+				gtag( 'event', thisConfig.action, {
+				    'event_category': thisConfig.category
+				 });
+			}
+		}, true );
+	}
+} )();
 INJECT_SCRIPT;
 
 		$measurement_code_injector = new Measurement_Code_Injector( $advanced_tracking->get_event_configurations() );

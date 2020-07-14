@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:ignore WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName
-
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
 /**
@@ -68,7 +66,7 @@ class Plugin_Detector {
 			$this->supported_plugins,
 			function( $plugin_config ) {
 				return ( self::TYPE_CONSTANT === $plugin_config['check_type'] &&
-					defined( $plugin_config['check_name'] ) ) ||
+					defined( $plugin_config['check_name'] ) ) || // phpcs:ignore WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName
 				( self::TYPE_FUNCTION === $plugin_config['check_type'] &&
 					function_exists( $plugin_config['check_name'] ) );
 			}
