@@ -150,7 +150,7 @@ describe( 'Analytics write scope requests', () => {
 		// When returning, their original action is automatically invoked, without requiring them to click the button again.
 		await page.waitForRequest( ( req ) => req.url().match( 'analytics/data/create-account-ticket' ) );
 
-		// They should be redirected to the Analytics TOS (can be mocked to an immediate success redirect to Site Kit (...?gatoscallback=1...)).
+		// They should be redirected to the Analytics TOS.
 		await page.waitForRequest( ( req ) => req.url().match( 'analytics.google.com/analytics/web' ) );
 	} );
 
@@ -183,16 +183,20 @@ describe( 'Analytics write scope requests', () => {
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [
-			page.waitForNavigation(),
 			expect( page ).toClick( '.mdc-dialog__actions .mdc-button', { text: /proceed/i } ),
 			page.waitForRequest( ( req ) => req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' ) ),
 		] );
+
+		// When returning, their original action is automatically invoked, without requiring them to click the button again.
+		await page.waitForRequest( ( req ) => req.url().match( 'analytics/data/create-property' ) );
+		await page.waitForRequest( ( req ) => req.url().match( 'analytics/data/create-profile' ) );
 
 		// They should end up on the dashboard.
 		await Promise.all( [
 			page.waitForNavigation(),
 			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
 		] );
+		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
@@ -227,15 +231,18 @@ describe( 'Analytics write scope requests', () => {
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [
-			page.waitForNavigation(),
 			expect( page ).toClick( '.mdc-dialog__actions .mdc-button', { text: /proceed/i } ),
 			page.waitForRequest( ( req ) => req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' ) ),
 		] );
+
+		// When returning, their original action is automatically invoked, without requiring them to click the button again.
+		await page.waitForRequest( ( req ) => req.url().match( 'analytics/data/create-profile' ) );
 
 		// They should end up on the dashboard.
 		await Promise.all( [
 			page.waitForNavigation(),
 			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
 		] );
+		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
 } );
