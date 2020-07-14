@@ -1334,10 +1334,11 @@ final class Analytics extends Module
 		$account_id = $this->parse_account_id( $property_id );
 
 		/**
-		 * Helper method to check check if a passed response
+		 * Helper method to check check if a given account
 		 * contains the property_id
 		 */
-		$has_property = function ( $response ) use ( $property_id ) {
+		$has_property = function ( $account_id ) use ( $property_id ) {
+			$response = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
 			if ( is_wp_error( $response ) ) {
 				return false;
 			}
@@ -1349,40 +1350,34 @@ final class Analytics extends Module
 			return false;
 		};
 
-		// Try to get properties for that account.
-		$properties = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
-		if ( ! is_wp_error( $properties ) ) {
-			// Ensure there is access to the property.
-			if ( $has_property( $properties ) ) {
+		// Ensure there is access to the property.
+		if ( $has_property( $account_id ) ) {
+			return array(
+				'accountID'  => $account_id,
+				'permission' => true,
+			);
+		}
+
+		// Check all of the accounts for this user.
+		$user_accounts_properties_profiles = $this->get_data( 'accounts-properties-profiles' );
+		$user_account_ids                  = is_wp_error( $user_accounts_properties_profiles ) ? array() : wp_list_pluck( $user_accounts_properties_profiles['accounts'], 'id' );
+		foreach ( $user_account_ids as $user_account_id ) {
+			// Skip the inferred account id, that ship has sailed.
+			if ( $account_id === $user_account_id ) {
+				continue;
+			}
+			if ( $has_property( $user_account_id ) ) {
 				return array(
-					'accountID'  => $account_id,
+					'accountID'  => $user_account_id,
 					'permission' => true,
 				);
 			}
-
-			// Check all of the accounts for this user.
-			$user_accounts_properties_profiles = $this->get_data( 'accounts-properties-profiles', array( 'existingAccountID' => $account_id ) );
-			if ( ! is_wp_error( $user_accounts_properties_profiles ) ) {
-				$user_account_ids = wp_list_pluck( $user_accounts_properties_profiles['accounts'], 'id' );
-				foreach ( $user_account_ids as $user_account_id ) {
-					// Skip the inferred account id, that ship has sailed.
-					if ( $account_id === $user_account_id ) {
-						continue;
-					}
-					$properties = $this->get_data( 'properties-profiles', array( 'accountID' => $user_account_id ) );
-					if ( $has_property( $properties ) ) {
-						return array(
-							'accountID'  => $account_id,
-							'permission' => true,
-						);
-					}
-				}
-			}
-		} else {
-			return array(
-				'permission' => false,
-			);
 		}
+	
+		// No property matched the account ID.
+		return array(
+			'permission' => false,
+		);
 	}
 
 	/**
