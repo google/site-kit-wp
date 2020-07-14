@@ -28,9 +28,8 @@ import { extractSearchConsoleDashboardData } from '../../modules/search-console/
 import { getModulesData } from '../../util';
 
 const publishingWin = ( data, id ) => {
-	const showNotification = 5 === parseInt( global._googlesitekitLegacyData.admin.newSitePosts, 10 );
-
-	if ( ! showNotification ) {
+	// Only display if site is considered new (determined during activation, based on post count).
+	if ( 5 !== parseInt( global._googlesitekitLegacyData.admin.newSitePosts, 10 ) ) {
 		return false;
 	}
 
