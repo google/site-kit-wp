@@ -12,7 +12,7 @@
     "build:storybook": "build-storybook -c .storybook -o dist && npm run build:static",
     "presvg": "rimraf dist/assets/svg",
     "svg": "svgo -q -f assets/svg -o dist/assets/svg --disable=removeViewBox",
-    "postsvg": "svgstore --inline -o dist/assets/svg/svg.svg dist/assets/svg/*.svg",
+    "postsvg": "svgstore -o dist/assets/svg/svg.svg dist/assets/svg/*.svg",
     "preimagemin": "rimraf dist/assets/images",
     "imagemin": "imagemin assets/images/* --out-dir=dist/assets/images",
     "remove-dist": "rimraf ./dist",
