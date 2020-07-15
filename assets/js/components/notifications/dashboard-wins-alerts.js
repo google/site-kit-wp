@@ -47,12 +47,12 @@ class DashboardWinsAlerts extends Component {
 		// Wait until data is fully loaded before requesting wins data.
 		addAction(
 			'googlesitekit.dataLoaded',
-			'googlesitekit.dataLoadedGetNotifications',
+			'googlesitekit.dataLoadedGetWinsNotifications',
 			() => {
 				// Only handle the first completed data load.
 				removeAction(
 					'googlesitekit.dataLoaded',
-					'googlesitekit.dataLoadedGetNotifications'
+					'googlesitekit.dataLoadedGetWinsNotifications'
 				);
 				const wins = winsNotificationsToRequest();
 
