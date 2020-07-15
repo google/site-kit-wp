@@ -20,7 +20,6 @@
  * WordPress dependencies.
  */
 import { getStablePath } from '@wordpress/api-fetch/build/middlewares/preloading';
-import { removeQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * createPreloadingMiddleware
@@ -31,26 +30,24 @@ import { removeQueryArgs, getQueryArg } from '@wordpress/url';
  * @since n.e.x.t
  *
  * @param {Object} preloadedData Preloaded data paths.
+ * @param {number} timeout       Timeout value.
  * @return {Function} Function.
  */
-function createPreloadingMiddleware( preloadedData ) {
+function createPreloadingMiddleware( preloadedData, timeout = 1000 ) {
 	const cache = Object.keys( preloadedData ).reduce( ( result, path ) => {
 		result[ getStablePath( path ) ] = preloadedData[ path ];
 		return result;
 	}, {} );
 
+	let middlewareHasRun = false;
 	return ( options, next ) => {
 		const { parse = true } = options;
-		let uri = options.path;
-		if ( typeof options.path === 'string' ) {
+		const uri = options.path;
+		setTimeout( () => {
+			middlewareHasRun = true;
+		}, timeout );
+		if ( typeof options.path === 'string' && ! middlewareHasRun ) {
 			const method = options.method?.toUpperCase() || 'GET';
-
-			// If the path contains the timestamp param, we remove the cache and return the next() call.
-			if ( getQueryArg( options.path, 'timestamp' ) ) {
-				uri = removeQueryArgs( options.path, 'timestamp' );
-				delete cache[ getStablePath( uri ) ];
-				return next( options );
-			}
 
 			const path = getStablePath( uri );
 			if ( parse && 'GET' === method && cache[ path ] ) {
