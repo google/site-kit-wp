@@ -59,7 +59,7 @@ export function getCurrentDateRangeSlug() {
 /**
  * Gets the hash of available date ranges.
  *
- * @since n.e.x.t
+ * @since 1.12.0
  *
  * @return {Object} The object hash where every key is a date range slug, and the value is an object with the date range slug and its translation.
  */

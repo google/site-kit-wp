@@ -28,18 +28,19 @@ import { extractSearchConsoleDashboardData } from '../../modules/search-console/
 import { getTimeInSeconds, getDaysBetweenDates } from '../../util';
 
 const totalStats = ( data, id ) => {
+	// Only display if site has more than 5 posts.
 	if ( 5 >= parseInt( global._googlesitekitLegacyData.admin.newSitePosts, 10 ) ) {
 		return false;
 	}
 
-	if ( ! data || ! data.rows ) {
+	if ( ! Array.isArray( data ) ) {
 		return false;
 	}
 
 	let dataBlocks = [];
 	let description = __( 'Here are some high level stats', 'google-site-kit' );
 
-	if ( data && data.rows ) {
+	if ( data ) {
 		const processedData = extractSearchConsoleDashboardData( data );
 
 		const {

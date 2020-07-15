@@ -28,6 +28,7 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -201,7 +202,7 @@ describe( 'modules/analytics accounts', () => {
 				// Properties and profiles should also have been received by
 				// this action.
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
 				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
 				expect( properties ).toEqual( fixtures.accountsPropertiesProfiles.properties );
@@ -251,9 +252,7 @@ describe( 'modules/analytics accounts', () => {
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingGetAccounts() === false,
-				);
+				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
@@ -262,11 +261,11 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'passes existing tag ID when fetching accounts', async () => {
-				const existingPropertyID = 'UA-12345-1';
+				const existingPropertyID = 'UA-1234567-1';
 
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingPropertyID );
 				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-					accountID: '12345',
+					accountID: '1234567',
 					permission: true,
 				}, { propertyID: existingPropertyID } );
 
