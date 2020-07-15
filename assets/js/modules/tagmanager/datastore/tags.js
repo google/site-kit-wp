@@ -29,6 +29,8 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { isValidContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
+import tagMatchers from '../util/tagMatchers';
 
 const { createRegistrySelector } = Data;
 
@@ -52,6 +54,11 @@ const fetchGetTagPermissionStore = createFetchStore( {
 			},
 		};
 	},
+} );
+
+const existingTagStore = createExistingTagStore( 'modules', 'tagmanager', {
+	tagMatchers,
+	isValidTag: isValidContainerID,
 } );
 
 const BASE_INITIAL_STATE = {
@@ -129,6 +136,7 @@ const baseSelectors = {
 };
 
 const store = Data.combineStores(
+	existingTagStore,
 	fetchGetTagPermissionStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,

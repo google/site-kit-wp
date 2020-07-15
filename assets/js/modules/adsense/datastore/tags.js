@@ -27,7 +27,10 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { isValidClientID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
+import tagMatchers from '../util/tagMatchers';
 
 const { commonActions, createRegistrySelector } = Data;
 
@@ -51,6 +54,11 @@ const fetchGetTagPermissionStore = createFetchStore( {
 		invariant( clientID, 'clientID is required.' );
 		return { clientID };
 	},
+} );
+
+const existingTagStore = createExistingTagStore( 'modules', 'adsense', {
+	tagMatchers,
+	isValidTag: isValidClientID,
 } );
 
 const BASE_INITIAL_STATE = {
@@ -139,6 +147,7 @@ const baseSelectors = {
 };
 
 const store = Data.combineStores(
+	existingTagStore,
 	fetchGetTagPermissionStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,

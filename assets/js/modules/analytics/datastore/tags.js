@@ -29,6 +29,8 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { isValidPropertyID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
+import tagMatchers from '../util/tagMatchers';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -52,6 +54,11 @@ const fetchGetTagPermissionStore = createFetchStore( {
 		invariant( propertyID, 'propertyID is required.' );
 		return { propertyID };
 	},
+} );
+
+const existingTagStore = createExistingTagStore( 'modules', 'analytics', {
+	tagMatchers,
+	isValidTag: isValidPropertyID,
 } );
 
 // Actions
@@ -172,6 +179,7 @@ const baseSelectors = {
 };
 
 const store = Data.combineStores(
+	existingTagStore,
 	fetchGetTagPermissionStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,

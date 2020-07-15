@@ -34,11 +34,6 @@ import urlchannels from './urlchannels';
 import settings from './settings';
 import adblocker from './adblocker';
 import error from './error';
-import {
-	createExistingTagStore,
-} from '../../../googlesitekit/data/create-existing-tag-store';
-import tagMatchers from '../util/tagMatchers';
-import { isValidClientID } from '../util';
 import { STORE_NAME } from './constants';
 
 export { STORE_NAME };
@@ -57,17 +52,11 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 	adminPage: 'googlesitekit-module-adsense',
 } );
 
-const existingTagStore = createExistingTagStore( 'modules', 'adsense', {
-	tagMatchers,
-	isValidTag: isValidClientID,
-} );
-
 const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
 	alerts,
 	clients,
-	existingTagStore,
 	report,
 	tags,
 	urlchannels,
