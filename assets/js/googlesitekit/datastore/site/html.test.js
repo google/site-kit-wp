@@ -22,7 +22,6 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
 } from 'tests/js/utils';
@@ -141,27 +140,22 @@ describe( 'core/site html', () => {
 				expect( selectedHTML ).toEqual( html );
 			} );
 
-			it( 'dispatches an error if the request fails', async () => {
+			it( 'returns null if request is blocked', async () => {
 				const url = 'https://example.com';
-				const response = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
+
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: response, status: 500 }
+					{ body: undefined, status: 500 }
 				);
 
 				registry.select( STORE_NAME ).getHTMLForURL( url );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) === false,
-				);
+
+				await untilResolved( registry, STORE_NAME ).getHTMLForURL( url );
 
 				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( selectedHTML ).toEqual( undefined );
+				expect( selectedHTML ).toEqual( null );
 			} );
 		} );
 	} );

@@ -48,16 +48,14 @@ const fetchHTMLForURLStore = createFetchStore( {
 			timestamp: Date.now(),
 		};
 		const response = await fetch( addQueryArgs( url, fetchHTMLQueryArgs ), fetchHTMLOptions );
-		if ( ! response.ok ) {
-			throw {
-				code: response.statusText,
-				message: response.statusText,
-				data: { status: response.status },
-			};
-		}
-		const html = await response.text();
 
-		return html;
+		// If response contains HTML, return that. Return null in other cases.
+		try {
+			const html = await response.text();
+			return html !== undefined ? html : null;
+		} catch {
+			return null;
+		}
 	},
 	reducerCallback: ( state, htmlForURL, { url } ) => {
 		return {
