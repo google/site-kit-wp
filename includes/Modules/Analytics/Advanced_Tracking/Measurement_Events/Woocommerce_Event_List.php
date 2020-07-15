@@ -32,6 +32,9 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 				'action'     => 'add_to_cart',
 				'selector'   => '.woocommerce-page .add_to_cart_button',
 				'on'         => 'click',
+				'metadata'   => 'function() {
+					alert("hello");
+				}',
 			)
 		);
 		$this->add_event( $event );

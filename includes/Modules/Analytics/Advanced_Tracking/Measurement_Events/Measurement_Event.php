@@ -59,6 +59,7 @@ final class Measurement_Event implements \JsonSerializable {
 			'action'     => false,
 			'selector'   => false,
 			'on'         => false,
+			'metadata'   => false,
 		);
 		foreach ( $config as $key => $value ) {
 			if ( array_key_exists( $key, $valid_keys ) ) {
@@ -132,4 +133,14 @@ final class Measurement_Event implements \JsonSerializable {
 		return $this->config;
 	}
 
+	/**
+	 * Returns the Measurment_Event configuration.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @return array The config.
+	 */
+	public function get_config() {
+		return $this->config;
+	}
 }
