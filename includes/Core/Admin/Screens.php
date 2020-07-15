@@ -107,6 +107,14 @@ final class Screens {
 			}
 		);
 
+		// Redirect dashboard to splash if no dashboard access (yet).
+		add_action(
+			'admin_page_access_denied',
+			function() {
+				$this->no_access_redirect_dashboard_to_splash();
+			}
+		);
+
 		// Ensure the menu icon always is rendered correctly, without enqueueing a global CSS file.
 		add_action(
 			'admin_head',
@@ -219,6 +227,36 @@ final class Screens {
 	}
 
 	/**
+	 * Redirects from the dashboard to the splash screen if permissions to access the dashboard are currently not met.
+	 *
+	 * Dashboard permission access is conditional based on whether the user has successfully authenticated. When
+	 * e.g. accessing the dashboard manually or having it open in a separate tab while disconnecting in the other tab,
+	 * it is a better user experience to redirect to the splash screen so that the user can re-authenticate.
+	 *
+	 * The only time the dashboard should fail with the regular WordPress permissions error is when the current user is
+	 * not eligible for accessing Site Kit entirely, i.e. if they are not allowed to authenticate.
+	 *
+	 * @since 1.12.0
+	 */
+	private function no_access_redirect_dashboard_to_splash() {
+		global $plugin_page;
+
+		// At this point, our preferred `$hook_suffix` is not set, and the dashboard page will not even be registered,
+		// so we need to rely on the `$plugin_page` global here.
+		if ( ! isset( $plugin_page ) || self::PREFIX . 'dashboard' !== $plugin_page ) {
+			return;
+		}
+
+		// Redirect to splash screen if user is allowed to authenticate.
+		if ( current_user_can( Permissions::AUTHENTICATE ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'splash' )
+			);
+			exit;
+		}
+	}
+
+	/**
 	 * Gets available admin screens.
 	 *
 	 * @since 1.0.0
@@ -311,28 +349,26 @@ final class Screens {
 						exit;
 					}
 
-					$notification = $context->input()->filter( INPUT_GET, 'notification' );
-					$error        = $context->input()->filter( INPUT_GET, 'error' );
-
-					// Bail if no success parameter indicator.
-					if ( 'authentication_success' !== $notification || ! empty( $error ) ) {
-						return;
-					}
-
-					// Bail if the current user cannot access the dashboard.
+					// Don't consider redirect if the current user cannot access the dashboard (yet).
 					if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 						return;
 					}
 
-					wp_safe_redirect(
-						$context->admin_url(
-							'dashboard',
-							array(
-								'notification' => 'authentication_success',
+					$notification = $context->input()->filter( INPUT_GET, 'notification' );
+					$error        = $context->input()->filter( INPUT_GET, 'error' );
+
+					// Redirect to dashboard if success parameter indicator.
+					if ( 'authentication_success' === $notification && empty( $error ) ) {
+						wp_safe_redirect(
+							$context->admin_url(
+								'dashboard',
+								array(
+									'notification' => 'authentication_success',
+								)
 							)
-						)
-					);
-					exit;
+						);
+						exit;
+					}
 				},
 				'enqueue_callback'    => function( Assets $assets ) {
 					$assets->enqueue_asset( 'googlesitekit-dashboard-splash' );

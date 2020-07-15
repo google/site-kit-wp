@@ -139,14 +139,18 @@ const baseActions = {
 		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
 
 		const registry = yield Data.commonActions.getRegistry();
+
+		const accountID = registry.select( STORE_NAME ).getAccountID();
+		if ( ! isValidAccountID( accountID ) ) {
+			return;
+		}
+
 		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
 
 		if ( PROPERTY_CREATE === propertyID ) {
 			registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
 			return;
 		}
-
-		const { accountID } = parsePropertyID( propertyID );
 
 		yield baseActions.waitForProperties( accountID );
 		const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
@@ -165,7 +169,7 @@ const baseActions = {
 		// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
 		registry.dispatch( STORE_NAME ).setProfileID( '' );
 
-		const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
+		const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 		if ( profiles === undefined ) {
 			return; // Selection will happen in in getProfiles resolver.
 		}
@@ -274,26 +278,23 @@ const baseResolvers = {
 		// Only fetch properties if there are none in the store for the given account.
 		if ( properties === undefined ) {
 			const { response, error } = yield fetchGetPropertiesProfilesStore.actions.fetchGetPropertiesProfiles( accountID );
-
+			const { dispatch } = registry;
 			if ( response ) {
-				const { dispatch } = registry;
-
 				dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 
 				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
 					const propertyID = response.profiles[ 0 ].webPropertyId;
-					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { propertyID } );
+					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
 				}
 
 				if ( response.matchedProperty ) {
 					dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
 				}
 
-				dispatch( STORE_NAME ).receivePropertiesProfilesCompletion( accountID );
-
 				( { properties } = response );
 			}
 
+			dispatch( STORE_NAME ).receivePropertiesProfilesCompletion( accountID );
 			if ( error ) {
 				return;
 			}
