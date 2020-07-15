@@ -34,7 +34,7 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {(number|undefined)} registryKey The registryKey for a given store.
+	 * @param {string} registryKey The registryKey for a given store.
 	 * @return {Object} Redux-style action.
 	 */
 	setRegistryKey( registryKey ) {
@@ -53,8 +53,6 @@ export const actions = {
  *
  * @param {Object}             state          Data store's state.
  * @param {Object}             action         Redux-style action.
- * @param {(number|undefined)} action.payload The registryKey for a given store.
- * @param {string}             action.type    The action type.
  * @return {Object} Data store's state
  */
 export const reducer = ( state, { payload, type } ) => {
@@ -80,7 +78,7 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(number|undefined)} The registryKey for a given store.
+	 * @return {(string|undefined)} The registryKey for a given store. Returns `undefined` if the key has not yet been set.
 	 */
 	getRegistryKey( state ) {
 		const { registryKey } = state;
