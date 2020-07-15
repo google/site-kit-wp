@@ -32,9 +32,9 @@ cp -r "$ROOT/includes"            "$PLUGIN/includes"
 cp -r "$ROOT/third-party"         "$PLUGIN/third-party"
 
 # Remove not needed files
-rm -f "$PLUGIN/dist/admin.js"
-rm -f "$PLUGIN/dist/adminbar.js"
-rm -f "$PLUGIN/dist/wpdashboard.js"
+rm -f "$PLUGIN/dist/admin.*"
+rm -f "$PLUGIN/dist/adminbar.*"
+rm -f "$PLUGIN/dist/wpdashboard.*"
 
 # Remove existing archive
 rm -f $ZIP
