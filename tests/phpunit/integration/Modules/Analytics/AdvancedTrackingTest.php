@@ -157,7 +157,8 @@ class AdvancedTrackingTest extends TestCase {
 			}
 		}, true );
 	}
-} )();
+	}
+)();
 INJECT_SCRIPT;
 
 		$measurement_code_injector = new Measurement_Code_Injector( $advanced_tracking->get_event_configurations() );

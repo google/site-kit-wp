@@ -63,7 +63,8 @@ final class Measurement_Code_Injector {
 			}
 		}, true );
 	}
-} )();
+	}
+)();
 INJECT_SCRIPT;
 	}
 

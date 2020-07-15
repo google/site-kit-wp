@@ -91,6 +91,37 @@ final class Measurement_Event implements \JsonSerializable {
 	}
 
 	/**
+	 * Returns event configuration selector as AMP trigger name.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @return string The event selector.
+	 */
+	public function get_amp_trigger_name() {
+		return $this->config['selector'];
+	}
+
+	/**
+	 * Converts the event configuration to an AMP configuration.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @return false|string JSON encoded string or false if it cannot be encoded.
+	 */
+	public function to_amp_config() {
+		$amp_config             = array();
+		$amp_config['selector'] = $this->config['selector'];
+		$amp_config['on']       = $this->config['on'];
+
+		$vars_config                   = array();
+		$vars_config['event_name']     = $this->config['action'];
+		$vars_config['event_category'] = $this->config['category'];
+
+		$amp_config['vars'] = $vars_config;
+		return wp_json_encode( $amp_config );
+	}
+
+	/**
 	 * Returns an associative event containing the event attributes.
 	 *
 	 * @since n.e.x.t.

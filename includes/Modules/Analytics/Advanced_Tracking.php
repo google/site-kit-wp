@@ -108,10 +108,16 @@ final class Advanced_Tracking {
 			},
 			11
 		);
+		add_filter(
+			'googlesitekit_amp_gtag_opt',
+			function( $gtag_amp_opt ) {
+				return $this->set_up_advanced_tracking_amp( $gtag_amp_opt );
+			}
+		);
 	}
 
 	/**
-	 * Creates list of event configurations and injects javascript to track those events.
+	 * Injects javascript to track active events.
 	 *
 	 * @since n.e.x.t.
 	 */
@@ -119,7 +125,32 @@ final class Advanced_Tracking {
 		if ( ! wp_script_is( 'google_gtagjs' ) ) {
 			return;
 		}
+		$this->configure_events();
+		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
+	}
 
+	/**
+	 * Adds triggers to AMP configuration.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param array $gtag_amp_opt gtag config options for AMP.
+	 * @return array $gtag_amp_opt gtag config options for AMP.
+	 */
+	private function set_up_advanced_tracking_amp( $gtag_amp_opt ) {
+		$this->configure_events();
+		foreach ( $this->event_configurations as $event_config ) {
+			$gtag_amp_opt['triggers'][ $event_config->get_amp_trigger_name() ] = $event_config->to_amp_config();
+		}
+		return $gtag_amp_opt;
+	}
+
+	/**
+	 * Creates list of event configurations.
+	 *
+	 * @since n.e.x.t.
+	 */
+	private function configure_events() {
 		$active_plugins = $this->plugin_detector->determine_active_plugins();
 
 		$this->event_configurations = array();
@@ -131,7 +162,6 @@ final class Advanced_Tracking {
 				}
 			}
 		}
-		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
 	}
 
 	/**
