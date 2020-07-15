@@ -30,7 +30,7 @@ import {
 	isValidContainerSelection,
 } from '../util/validation';
 import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from './constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -47,7 +47,7 @@ export const actions = {
 	/**
 	 * Submits all changes currently present in the client, persisting them on the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @return {Object} Empty object on success, object with `error` property on failure.
 	 */
@@ -145,7 +145,7 @@ export const selectors = {
 	/**
 	 * Checks if changes can be submitted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @return {boolean} `true` if can submit changes, otherwise false.
 	 */
@@ -162,7 +162,7 @@ export const selectors = {
 		} = select( STORE_NAME );
 		const {
 			isAMP,
-			getAMPMode,
+			isSecondaryAMP,
 		} = select( CORE_SITE );
 
 		if ( isDoingSubmitChanges() ) {
@@ -183,7 +183,7 @@ export const selectors = {
 			return false;
 		}
 		// If AMP is not active, or in a secondary mode, validate the web container IDs.
-		if ( ! isAMP() || getAMPMode() === AMP_MODE_SECONDARY ) {
+		if ( ! isAMP() || isSecondaryAMP() ) {
 			if ( ! isValidContainerSelection( getContainerID() ) ) {
 				return false;
 			}
@@ -203,7 +203,7 @@ export const selectors = {
 	/**
 	 * Checks whether changes are currently being submitted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if submitting, `false` if not.

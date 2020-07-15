@@ -16,6 +16,21 @@
  * limitations under the License.
  */
 
-export { default as accounts } from './accounts';
-export { default as createContainer } from './create-container';
+/**
+ * Internal dependencies
+ */
+import ContainersAMPOnly from './get-containers--amp.json';
+import ContainersWebOnly from './get-containers--web.json';
+
+export { default as accounts } from './accounts.json';
+export { default as createContainer } from './create-container.json';
 export { default as liveContainerVersion } from './live-container-version.json';
+
+export const getContainers = {
+	amp: ContainersAMPOnly,
+	web: ContainersWebOnly,
+	all: [
+		...ContainersAMPOnly,
+		...ContainersWebOnly,
+	],
+};

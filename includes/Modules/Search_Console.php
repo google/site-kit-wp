@@ -156,21 +156,18 @@ final class Search_Console extends Module
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
+	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since 1.0.0
+	 * @since 1.12.0
 	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
+	 * @return array Map of datapoints to their definitions.
 	 */
-	protected function get_datapoint_services() {
+	protected function get_datapoint_definitions() {
 		return array(
-			// GET.
-			'sites'           => 'webmasters',
-			'matched-sites'   => 'webmasters',
-			'searchanalytics' => 'webmasters',
-
-			// POST.
-			'site'            => 'webmasters',
+			'GET:matched-sites'   => array( 'service' => 'webmasters' ),
+			'GET:searchanalytics' => array( 'service' => 'webmasters' ),
+			'POST:site'           => array( 'service' => 'webmasters' ),
+			'GET:sites'           => array( 'service' => 'webmasters' ),
 		);
 	}
 

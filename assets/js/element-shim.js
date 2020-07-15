@@ -28,13 +28,13 @@ if ( global.googlesitekit === undefined ) {
 }
 
 const {
-	__experimentalCreateInterpolateElement,
 	Children,
 	cloneElement,
 	Component,
 	concatChildren,
 	createContext,
 	createElement,
+	createInterpolateElement,
 	createPortal,
 	createRef,
 	findDOMNode,
@@ -65,13 +65,13 @@ const {
 } = global.googlesitekit._element || element;
 
 export {
-	__experimentalCreateInterpolateElement,
 	Children,
 	cloneElement,
 	Component,
 	concatChildren,
 	createContext,
 	createElement,
+	createInterpolateElement,
 	createPortal,
 	createRef,
 	findDOMNode,
@@ -103,13 +103,13 @@ export {
 
 if ( global.googlesitekit._element === undefined ) {
 	global.googlesitekit._element = {
-		__experimentalCreateInterpolateElement,
 		Children,
 		cloneElement,
 		Component,
 		concatChildren,
 		createContext,
 		createElement,
+		createInterpolateElement,
 		createPortal,
 		createRef,
 		findDOMNode,
