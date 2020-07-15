@@ -26,9 +26,15 @@ import { STORE_NAME } from './constants';
 import accounts from './accounts';
 import containers from './containers';
 import error from './error';
-import existingTag from './existing-tag';
+import tags from './tags';
 import settings from './settings';
 import versions from './versions';
+import {
+	createExistingTagStore,
+} from '../../../googlesitekit/data/create-existing-tag-store';
+import { tagMatchers } from '../util';
+import { isValidContainerID } from '../util/validation';
+
 export { STORE_NAME };
 
 let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
@@ -61,12 +67,18 @@ baseModuleStore = ( ( { actions, selectors, ...store } ) => {
 	};
 } )( baseModuleStore );
 
+const existingTagStore = createExistingTagStore( 'modules', 'tagmanager', {
+	tagMatchers,
+	isValidTag: isValidContainerID,
+} );
+
 const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
 	containers,
 	error,
-	existingTag,
+	tags,
+	existingTagStore,
 	settings,
 	versions,
 	createSnapshotStore( STORE_NAME ),

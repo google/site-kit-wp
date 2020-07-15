@@ -27,18 +27,10 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { getExistingTagURLs, extractExistingTag } from '../../../util/tag';
-import { tagMatchers } from '../util';
 import { isValidContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-const { createRegistryControl, createRegistrySelector } = Data;
-
-// Actions
-const GET_EXISTING_TAG = 'FETCH_EXISTING_TAG';
-const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
+const { createRegistrySelector } = Data;
 
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
@@ -63,75 +55,10 @@ const fetchGetTagPermissionStore = createFetchStore( {
 } );
 
 const BASE_INITIAL_STATE = {
-	existingTag: undefined,
 	tagPermission: {},
 };
 
-const baseActions = {
-	getExistingTag() {
-		return {
-			payload: {},
-			type: GET_EXISTING_TAG,
-		};
-	},
-	receiveGetExistingTag( existingTag ) {
-		invariant(
-			existingTag === null || isValidContainerID( existingTag ),
-			'existingTag must be a valid container public ID or null.'
-		);
-
-		return {
-			payload: { existingTag },
-			type: RECEIVE_EXISTING_TAG,
-		};
-	},
-};
-
-const baseControls = {
-	[ GET_EXISTING_TAG ]: createRegistryControl( ( registry ) => async () => {
-		const homeURL = registry.select( CORE_SITE ).getHomeURL();
-		const ampMode = registry.select( CORE_SITE ).getAMPMode();
-		const existingTagURLs = await getExistingTagURLs( { homeURL, ampMode } );
-
-		for ( const url of existingTagURLs ) {
-			await registry.dispatch( CORE_SITE ).waitForHTMLForURL( url );
-			const html = registry.select( CORE_SITE ).getHTMLForURL( url );
-			const tagFound = extractExistingTag( html, tagMatchers );
-			if ( tagFound ) {
-				return tagFound;
-			}
-		}
-
-		return	null;
-	} ),
-};
-
-const baseReducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case RECEIVE_EXISTING_TAG: {
-			const { existingTag } = payload;
-
-			return {
-				...state,
-				existingTag,
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-};
-
 const baseResolvers = {
-	*getExistingTag() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		if ( registry.select( STORE_NAME ).getExistingTag() === undefined ) {
-			const existingTag = yield baseActions.getExistingTag();
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag );
-		}
-	},
 	*getTagPermission( containerID ) {
 		if ( ! isValidContainerID( containerID ) ) {
 			return;
@@ -146,18 +73,6 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets the existing tag (a container publicId), if any.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(string|null|undefined)} The existing container ID if present, `null` if not present, or `undefined` if not loaded yet.
-	 */
-	getExistingTag( state ) {
-		return state.existingTag;
-	},
-
-	/**
 	 * Checks permissions for an existing Google Tag Manager container.
 	 *
 	 * @since 1.11.0
@@ -169,23 +84,6 @@ const baseSelectors = {
 	getTagPermission( state, containerID ) {
 		return state.tagPermission[ containerID ];
 	},
-
-	/**
-	 * Checks whether or not an existing tag is present.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @return {(boolean|undefined)} Boolean if tag is present, `undefined` if tag presence has not been resolved yet.
-	 */
-	hasExistingTag: createRegistrySelector( ( select ) => () => {
-		const existingTag = select( STORE_NAME ).getExistingTag();
-
-		if ( existingTag === undefined ) {
-			return undefined;
-		}
-
-		return !! existingTag;
-	} ),
 
 	/**
 	 * Checks whether the user has access to the given tag.
@@ -234,10 +132,7 @@ const store = Data.combineStores(
 	fetchGetTagPermissionStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
-		actions: baseActions,
-		controls: baseControls,
 		resolvers: baseResolvers,
-		reducer: baseReducer,
 		selectors: baseSelectors,
 	}
 );

@@ -27,6 +27,11 @@ import properties from './properties';
 import profiles from './profiles';
 import settings from './settings';
 import tags from './tags';
+import {
+	createExistingTagStore,
+} from '../../../googlesitekit/data/create-existing-tag-store';
+import tagMatchers from '../util/tagMatchers';
+import { isValidPropertyID } from '../util';
 import { STORE_NAME } from './constants';
 
 export { STORE_NAME };
@@ -45,9 +50,15 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	adminPage: 'googlesitekit-module-analytics',
 } );
 
+const existingTagStore = createExistingTagStore( 'modules', 'analytics', {
+	tagMatchers,
+	isValidTag: isValidPropertyID,
+} );
+
 const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
+	existingTagStore,
 	properties,
 	profiles,
 	settings,

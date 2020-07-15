@@ -27,13 +27,9 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { getExistingTagURLs, extractExistingTag } from '../../../util/tag';
-import { isValidClientID } from '../util';
-import tagMatchers from '../util/tagMatchers';
 
-const { commonActions, createRegistryControl, createRegistrySelector } = Data;
+const { commonActions, createRegistrySelector } = Data;
 
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
@@ -57,103 +53,11 @@ const fetchGetTagPermissionStore = createFetchStore( {
 	},
 } );
 
-// Actions
-const GET_EXISTING_TAG = 'FETCH_EXISTING_TAG';
-const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
-const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
-
 const BASE_INITIAL_STATE = {
-	existingTag: undefined,
 	tagPermissions: {},
 };
 
-const baseActions = {
-	getExistingTag() {
-		return {
-			payload: {},
-			type: GET_EXISTING_TAG,
-		};
-	},
-	receiveGetExistingTag( existingTag ) {
-		invariant(
-			existingTag === null || isValidClientID( existingTag ),
-			'existingTag must be a valid property ID or null.'
-		);
-
-		return {
-			payload: { existingTag },
-			type: RECEIVE_EXISTING_TAG,
-		};
-	},
-	waitForExistingTag() {
-		return {
-			payload: {},
-			type: WAIT_FOR_EXISTING_TAG,
-		};
-	},
-};
-
-const baseControls = {
-	[ GET_EXISTING_TAG ]: createRegistryControl( ( registry ) => async () => {
-		const homeURL = registry.select( CORE_SITE ).getHomeURL();
-		const ampMode = registry.select( CORE_SITE ).getAMPMode();
-		const existingTagURLs = await getExistingTagURLs( { homeURL, ampMode } );
-
-		for ( const url of existingTagURLs ) {
-			await registry.dispatch( CORE_SITE ).waitForHTMLForURL( url );
-			const html = registry.select( CORE_SITE ).getHTMLForURL( url );
-			const tagFound = extractExistingTag( html, tagMatchers );
-			if ( tagFound ) {
-				return tagFound;
-			}
-		}
-
-		return	null;
-	} ),
-	[ WAIT_FOR_EXISTING_TAG ]: createRegistryControl( ( registry ) => () => {
-		const isExistingTagLoaded = () => registry.select( STORE_NAME ).getExistingTag() !== undefined;
-		if ( isExistingTagLoaded() ) {
-			return true;
-		}
-
-		return new Promise( ( resolve ) => {
-			const unsubscribe = registry.subscribe( () => {
-				if ( isExistingTagLoaded() ) {
-					unsubscribe();
-					resolve();
-				}
-			} );
-		} );
-	} ),
-};
-
-const baseReducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case RECEIVE_EXISTING_TAG: {
-			const { existingTag } = payload;
-
-			return {
-				...state,
-				existingTag,
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-};
-
 const baseResolvers = {
-	*getExistingTag() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		if ( registry.select( STORE_NAME ).getExistingTag() === undefined ) {
-			const existingTag = yield baseActions.getExistingTag();
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag );
-		}
-	},
-
 	*getTagPermission( clientID ) {
 		if ( undefined === clientID ) {
 			return;
@@ -170,33 +74,6 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
-	/**
-	 * Check to see if an existing tag is available on the site.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} True if a tag exists, false if not; undefined if not loaded.
-	 */
-	hasExistingTag: createRegistrySelector( ( select ) => () => {
-		const existingTag = select( STORE_NAME ).getExistingTag();
-
-		return existingTag !== undefined ? !! existingTag : undefined;
-	} ),
-
-	/**
-	 * Gets an existing tag on the site, if present.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(string|null|undefined)} Existing tag, or `null` if none.
-	 *                   Returns `undefined` if not resolved yet.
-	 */
-	getExistingTag( state ) {
-		return state.existingTag;
-	},
-
 	/**
 	 * Checks whether the user has access to the existing AdSense tag.
 	 *
@@ -265,9 +142,6 @@ const store = Data.combineStores(
 	fetchGetTagPermissionStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
-		actions: baseActions,
-		controls: baseControls,
-		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

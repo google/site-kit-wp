@@ -65,7 +65,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 					{ query: { tagverify: '1' } },
 					responsePromise
 				);
-				const promise = registry.dispatch( STORE_NAME ).getExistingTag();
+				const promise = registry.dispatch( STORE_NAME ).fetchGetExistingTag();
 
 				expect( registry.select( STORE_NAME ).getExistingTag() ).toBe( undefined );
 
