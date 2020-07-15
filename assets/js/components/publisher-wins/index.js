@@ -51,16 +51,29 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 			return wins;
 		}, 1 );
 
+	/*
+	 * IMPORTANT: The request definition within the withData objects below must
+	 * exactly match existing requests actually made from the dashboard. That
+	 * is because publisher wins at this point should not trigger any extra
+	 * requests, they should continue to retrieve their information from
+	 * existing API responses.
+	 *
+	 * TODO: As the dashboard requests are being migrated to the new API layer,
+	 * we will need to make sure the cache key lookup here works with cache
+	 * keys created by the new API layer too.
+	 */
 	addFilter( 'googlesitekit.WinsNotificationsRequest',
 		'googlesitekit.PublisherWinsNotification',
 		( wins ) => {
 			const data = {
 				identifier: 'publishing-win',
 				withData: {
+					// DO NOT just change this, see above comment.
 					type: TYPE_MODULES,
 					identifier: 'search-console',
 					datapoint: 'searchanalytics',
 					data: {
+						url: global._googlesitekitLegacyData.permaLink,
 						dimensions: 'date',
 						compareDateRanges: true,
 					},
@@ -79,10 +92,12 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 			const data = {
 				identifier: 'total-stats',
 				withData: {
+					// DO NOT just change this, see above comment.
 					type: TYPE_MODULES,
 					identifier: 'search-console',
 					datapoint: 'searchanalytics',
 					data: {
+						url: global._googlesitekitLegacyData.permaLink,
 						dimensions: 'date',
 						compareDateRanges: true,
 					},
@@ -103,10 +118,14 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 				const data = {
 					identifier: 'pageview-increase',
 					withData: {
+						// DO NOT just change this, see above comment.
 						type: TYPE_MODULES,
 						identifier: 'analytics',
-						datapoint: 'reports',
-						data: overviewReportDataDefaults,
+						datapoint: 'report',
+						data: {
+							...overviewReportDataDefaults,
+							url: global._googlesitekitLegacyData.permaLink,
+						},
 						priority: 1,
 						maxAge: getTimeInSeconds( 'day' ),
 						context: 'Dashboard',
@@ -122,10 +141,14 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 				const data = {
 					identifier: 'traffic-increase',
 					withData: {
+						// DO NOT just change this, see above comment.
 						type: TYPE_MODULES,
 						identifier: 'analytics',
 						datapoint: 'report',
-						data: overviewReportDataDefaults,
+						data: {
+							...overviewReportDataDefaults,
+							url: global._googlesitekitLegacyData.permaLink,
+						},
 						priority: 1,
 						maxAge: getTimeInSeconds( 'day' ),
 						context: 'Dashboard',

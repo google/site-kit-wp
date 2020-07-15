@@ -90,6 +90,13 @@ return array(
 			if ( preg_match( '#google/apiclient/src/Google/Http/REST\.php$#', $file_path ) ) {
 				$contents = str_replace( "\\$prefix\\intVal", '\\intval', $contents );
 			}
+			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) || false !== strpos( $file_path, 'vendor/google/auth/' ) ) {
+				$prefix   = str_replace( '\\', '\\\\', $prefix );
+				$contents = str_replace( "'\\\\GuzzleHttp\\\\ClientInterface", "'\\\\" . $prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
+				$contents = str_replace( '"\\\\GuzzleHttp\\\\ClientInterface', '"\\\\' . $prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
+				$contents = str_replace( "'GuzzleHttp\\\\ClientInterface", "'" . $prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
+				$contents = str_replace( '"GuzzleHttp\\\\ClientInterface', '"' . $prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
+			}
 			if ( false !== strpos( $file_path, 'vendor/google/apiclient-services/' ) ) {
 				$contents = str_replace( "'Google_Service_", "'" . $prefix . '\Google_Service_', $contents );
 				$contents = str_replace( '"Google_Service_', '"' . $prefix . '\Google_Service_', $contents );

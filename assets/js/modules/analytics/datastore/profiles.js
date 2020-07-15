@@ -26,15 +26,14 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { isValidPropertyID, parsePropertyID, isValidProfileName } from '../util';
+import { isValidPropertyID, isValidProfileName, isValidAccountID } from '../util';
 import { STORE_NAME, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector } = Data;
 
 const fetchGetProfilesStore = createFetchStore( {
 	baseName: 'getProfiles',
-	controlCallback: ( { propertyID } ) => {
-		const { accountID } = parsePropertyID( propertyID );
+	controlCallback: ( { accountID, propertyID } ) => {
 		return API.get( 'modules', 'analytics', 'profiles', {
 			accountID,
 			propertyID,
@@ -42,47 +41,48 @@ const fetchGetProfilesStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, profiles, { propertyID } ) => {
+	reducerCallback: ( state, profiles, { accountID, propertyID } ) => {
 		return {
 			...state,
 			profiles: {
 				...state.profiles,
-				[ propertyID ]: [ ...profiles ],
+				[ `${ accountID }::${ propertyID }` ]: [ ...profiles ],
 			},
 		};
 	},
-	argsToParams: ( propertyID ) => {
+	argsToParams: ( accountID, propertyID ) => {
+		invariant( isValidAccountID( accountID ), 'a valid account ID is required to fetch profiles for.' );
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to fetch profiles for.' );
-		return { propertyID };
+		return { accountID, propertyID };
 	},
 } );
 
 const fetchCreateProfileStore = createFetchStore( {
 	baseName: 'createProfile',
-	controlCallback: ( { propertyID, profileName } ) => {
-		const { accountID } = parsePropertyID( propertyID );
+	controlCallback: ( { accountID, propertyID, profileName } ) => {
 		return API.set( 'modules', 'analytics', 'create-profile', {
 			accountID,
 			propertyID,
 			profileName,
 		} );
 	},
-	reducerCallback: ( state, profile, { propertyID } ) => {
+	reducerCallback: ( state, profile, { accountID, propertyID } ) => {
 		return {
 			...state,
 			profiles: {
 				...state.profiles,
-				[ propertyID ]: [
-					...( state.profiles[ propertyID ] || [] ),
+				[ `${ accountID }::${ propertyID }` ]: [
+					...( state.profiles[ `${ accountID }::${ propertyID }` ] || [] ),
 					profile,
 				],
 			},
 		};
 	},
-	argsToParams: ( propertyID, { profileName } ) => {
+	argsToParams: ( accountID, propertyID, { profileName } ) => {
+		invariant( isValidAccountID( accountID ), 'a valid account ID is required to create a profiles.' );
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
 		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
-		return { propertyID, profileName };
+		return { accountID, propertyID, profileName };
 	},
 } );
 
@@ -99,33 +99,35 @@ const baseActions = {
 	 *
 	 * @since 1.8.0
 	 *
+	 * @param {string} accountID Google Analytics account ID.
 	 * @param {string} propertyID Google Analytics property ID.
 	 * @param {Object} args Profile arguments.
 	 * @param {string} args.profileName The name for a new profile.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createProfile( propertyID, { profileName } ) {
+	*createProfile( accountID, propertyID, { profileName } ) {
+		invariant( isValidAccountID( accountID ), 'a valid account ID is required to create a profile.' );
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
 		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
 
-		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( propertyID, { profileName } );
+		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( accountID, propertyID, { profileName } );
 		return { response, error };
 	},
 };
 
 const baseResolvers = {
-	*getProfiles( propertyID ) {
+	*getProfiles( accountID, propertyID ) {
 		if ( ! isValidPropertyID( propertyID ) ) {
 			return;
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
 
-		let profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
+		let profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
 		// Only fetch profiles if there are none received for the given account and property.
 		if ( ! profiles ) {
-			( { response: profiles } = yield fetchGetProfilesStore.actions.fetchGetProfiles( propertyID ) );
+			( { response: profiles } = yield fetchGetProfilesStore.actions.fetchGetProfiles( accountID, propertyID ) );
 		}
 
 		const profileID = registry.select( STORE_NAME ).getProfileID();
@@ -145,15 +147,14 @@ const baseSelectors = {
 	 * Returns `undefined` if accounts have not yet loaded.
 	 *
 	 * @since 1.8.0
-	 *
 	 * @param {Object} state      Data store's state.
+	 * @param {string} accountID  The Analytics Account ID to fetch profiles for.
 	 * @param {string} propertyID The Analytics Property ID to fetch profiles for.
 	 * @return {(Array.<Object>|undefined)} An array of Analytics profiles; `undefined` if not loaded.
 	 */
-	getProfiles( state, propertyID ) {
+	getProfiles( state, accountID, propertyID ) {
 		const { profiles } = state;
-
-		return profiles[ propertyID ];
+		return profiles[ `${ accountID }::${ propertyID }` ];
 	},
 
 	/**
@@ -175,12 +176,13 @@ const baseSelectors = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param {Object} state     Data store's state.
+	 * @param {Object} state      Data store's state.
+	 * @param {string} accountID  The Analytics Account ID to fetch profiles for.
 	 * @param {string} propertyID The Analytics Property ID to check for profile fetching.
 	 * @return {boolean} `true` if fetching a profiles, `false` if not.
 	 */
-	isDoingGetProfiles: createRegistrySelector( ( select ) => ( state, propertyID ) => {
-		return select( STORE_NAME ).isFetchingGetProfiles( propertyID );
+	isDoingGetProfiles: createRegistrySelector( ( select ) => ( state, accountID, propertyID ) => {
+		return select( STORE_NAME ).isFetchingGetProfiles( accountID, propertyID );
 	} ),
 };
 
