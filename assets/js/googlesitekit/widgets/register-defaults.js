@@ -40,7 +40,7 @@ import {
 /**
  * Defines default widget areas for a given context.
  *
- * @since n.e.x.t
+ * @since 1.12.0
  *
  * @param {Object} widgetsAPI Widgets API.
  */

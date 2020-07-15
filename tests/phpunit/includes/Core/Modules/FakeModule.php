@@ -104,7 +104,7 @@ class FakeModule extends Module {
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */

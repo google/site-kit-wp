@@ -112,7 +112,7 @@ const baseActions = {
 	 *
 	 * Supports selecting a container that has not been received yet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 * @private
 	 *
 	 * @param {string} containerID Tag Manager container `publicId` of container to select.
@@ -150,7 +150,7 @@ const baseActions = {
 	/**
 	 * Waits for containers to be resolved for the given account ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 * @private
 	 *
 	 * @param {string} accountID Google Tag Manager account ID to await containers for.
@@ -225,7 +225,7 @@ const baseSelectors = {
 	/**
 	 * Gets all web containers for the given account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID Account ID to get containers for.
@@ -246,7 +246,7 @@ const baseSelectors = {
 	/**
 	 * Gets all AMP containers for the given account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID Account ID to get containers for.
@@ -267,7 +267,7 @@ const baseSelectors = {
 	/**
 	 * Gets all containers for the given account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID Account ID to get containers for.
@@ -280,7 +280,7 @@ const baseSelectors = {
 	/**
 	 * Checks if containers are currently being fetched for the given account or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID Account ID to get containers for.
