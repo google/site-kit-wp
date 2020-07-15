@@ -20,8 +20,6 @@
  * External dependencies
  */
 const gulp = require( 'gulp' );
-const imagemin = require( 'gulp-imagemin' );
-const pump = require( 'pump' );
 const del = require( 'del' );
 
 /**
@@ -41,22 +39,6 @@ function cleanRelease( cb ) {
 	del.sync( './release/**' );
 	cb();
 }
-
-/**
- * Gulp task to minify images.
- *
- * @param {Function} cb The callback indicating the end of the task execution.
- */
-exports.imagemin = function( cb ) {
-	pump(
-		[
-			gulp.src( './assets/images/*' ),
-			imagemin(),
-			gulp.dest( './dist/assets/images' ),
-		],
-		cb
-	);
-};
 
 /**
  * Gulp task to minify and combine svg's.

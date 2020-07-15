@@ -31,6 +31,10 @@ const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
+
+/**
+ * Internal dependencies
+ */
 const flagsConfig = require( './webpack.feature-flags.config' );
 
 const projectPath = ( relativePath ) => {
