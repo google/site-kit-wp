@@ -40,6 +40,7 @@ function DateRangeSelector() {
 		setDateRange( item.dataset.value );
 	}, [ ranges ] );
 
+	// TODO: Remove this effect once legacy batch API calls have been phased out.
 	useEffect( () => {
 		// Store the current context when the screen loads, so we can reuse it later.
 		addAction(
@@ -55,6 +56,7 @@ function DateRangeSelector() {
 		);
 	}, [] );
 
+	// TODO: Remove this effect once legacy batch API calls have been phased out.
 	useEffect( () => {
 		if ( context ) {
 			// Trigger a data refresh.
