@@ -106,7 +106,7 @@ final class Measurement_Event implements \JsonSerializable {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return false|string JSON encoded string or false if it cannot be encoded.
+	 * @return array $amp_config The AMP configuration for this event.
 	 */
 	public function to_amp_config() {
 		$amp_config             = array();
