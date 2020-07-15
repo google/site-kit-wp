@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { addQueryArgs } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import createPreloadingMiddleware from './preloading';
@@ -72,7 +67,7 @@ describe( 'Preloading Middleware', () => {
 		expect( next ).not.toHaveBeenCalled();
 	} );
 
-	it( 'returns a preloaded reponse from multiple URIs', async () => {
+	it( 'returns a preloaded response from multiple URIs', async () => {
 		const firstRequestURI = 'google-site-kit/v1/core/user/authentication';
 		const secondRequestURI = 'google-site-kit/v1/core/site/data/connection';
 
@@ -131,25 +126,30 @@ describe( 'Preloading Middleware', () => {
 		expect( secondRequest ).toBeUndefined();
 		expect( next ).toHaveBeenCalled();
 	} );
-	it( 'deletes a preloaded response from the cache when requested with a timestamp query paramater', async () => {
+	it( 'returns an uncached response after the timeout has run', async () => {
 		const requestURI = 'google-site-kit/v1/core/user/authentication';
 		const preloadingMiddleware = createPreloadingMiddleware(
-			preloadedData
+			preloadedData,
+			10
 		);
-
 		const requestOptions = {
 			method: 'GET',
-			path: addQueryArgs( requestURI, { timestamp: Date.now() } ),
+			path: requestURI,
 		};
 		const next = jest.fn();
+		jest.useFakeTimers();
 
 		const firstResponse = await preloadingMiddleware( requestOptions, next );
-		expect( firstResponse ).toBeUndefined();
-		expect( next ).toHaveBeenCalled();
+		expect( firstResponse ).toEqual( preloadedData[ requestURI ].body );
+		expect( next ).not.toHaveBeenCalled();
 
-		// Confirm that the preloaded response was deleted
+		// Confirm that the setTimeout function was run.
+		expect( setTimeout ).toHaveBeenCalledTimes( 1 );
+		expect( setTimeout ).toHaveBeenLastCalledWith( expect.any( Function ), 10 );
+		// Confirm that responses after the timeout don't run hit the middleware.
 		const secondResponse = await preloadingMiddleware( { method: 'GET', path: requestURI }, next );
 		expect( secondResponse ).toBeUndefined();
+		expect( next ).toHaveBeenCalled();
 	} );
 
 	describe( 'apiFetch integration', () => {
@@ -174,20 +174,6 @@ describe( 'Preloading Middleware', () => {
 			} );
 			expect( response ).toEqual( preloadedData[ requestURI ].body );
 			expect( fetchMock ).not.toHaveFetched();
-		} );
-
-		it( 'returns an uncached response when a timestamp query parameter is present.', async () => {
-			const requestURI = 'google-site-kit/v1/core/user/authentication';
-			fetchMock.get(
-				/^\/google-site-kit\/v1\/core\/user\/authentication/,
-				{ body: { message: 'non-cached response' }, status: 200 }
-			);
-			const response = await apiFetch( {
-				method: 'GET',
-				path: addQueryArgs( requestURI, { timestamp: Date.now() } ),
-			} );
-			expect( response ).toEqual( { message: 'non-cached response' } );
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
 } );
