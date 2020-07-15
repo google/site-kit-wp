@@ -33,7 +33,7 @@ const publishingWin = ( data, id ) => {
 		return false;
 	}
 
-	if ( ! data ) {
+	if ( ! Array.isArray( data ) ) {
 		return false;
 	}
 
