@@ -30,7 +30,7 @@ import { STORE_NAME } from './constants';
 import { isValidPropertyID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-const { createRegistrySelector } = Data;
+const { createRegistrySelector, createRegistryControl } = Data;
 
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
@@ -54,8 +54,40 @@ const fetchGetTagPermissionStore = createFetchStore( {
 	},
 } );
 
+// Actions
+const WAIT_FOR_TAG_PERMISSION = 'WAIT_FOR_TAG_PERMISSION';
+
 const BASE_INITIAL_STATE = {
 	tagPermissions: {},
+};
+
+const baseActions = {
+	waitForTagPermission( propertyID ) {
+		return {
+			payload: { propertyID },
+			type: WAIT_FOR_TAG_PERMISSION,
+		};
+	},
+};
+
+const baseControls = {
+	[ WAIT_FOR_TAG_PERMISSION ]: createRegistryControl( ( registry ) => ( { payload: { propertyID } } ) => {
+		// Select first to ensure resolution is always triggered.
+		const { getTagPermission, hasFinishedResolution } = registry.select( STORE_NAME );
+		getTagPermission( propertyID );
+		const isTagPermissionLoaded = () => hasFinishedResolution( 'getTagPermission', [ propertyID ] );
+		if ( isTagPermissionLoaded() ) {
+			return;
+		}
+		return new Promise( ( resolve ) => {
+			const unsubscribe = registry.subscribe( () => {
+				if ( isTagPermissionLoaded() ) {
+					unsubscribe();
+					resolve();
+				}
+			} );
+		} );
+	} ),
 };
 
 const baseResolvers = {
@@ -143,6 +175,8 @@ const store = Data.combineStores(
 	fetchGetTagPermissionStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		controls: baseControls,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

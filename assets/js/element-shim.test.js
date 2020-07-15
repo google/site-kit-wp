@@ -1,5 +1,5 @@
 /**
- * Gulp copy task.
+ * Element Shim tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,25 +17,20 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-const gulp = require( 'gulp' );
+import * as wordpressElement from '@wordpress/element';
 
-module.exports = function() {
-	const globs = [
-		'readme.txt',
-		'google-site-kit.php',
-		'dist/*.js',
-		'dist/assets/**/*',
-		'includes/**/*',
-		'third-party/**/*',
-		'!third-party/**/**/{tests,Tests,doc?(s),examples}/**/*',
-		'!third-party/**/**/{*.md,*.yml,phpunit.*}',
-		'!**/*.map',
-		'!dist/admin.js',
-		'!dist/adminbar.js',
-		'!dist/wpdashboard.js',
-	];
+/**
+ * Internal dependencies
+ */
+import * as elementShim from './element-shim';
 
-	return gulp.src( globs, { base: '.' } ).pipe( gulp.dest( 'release/google-site-kit' ) );
-};
+describe( '@wordpress/element shim', () => {
+	it( 'mirrors all exports from the @wordpress/element package', () => {
+		const realExports = Object.keys( wordpressElement ).sort();
+		const shimExports = Object.keys( elementShim ).sort();
+
+		expect( shimExports ).toEqual( realExports );
+	} );
+} );

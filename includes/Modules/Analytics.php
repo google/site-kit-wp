@@ -997,21 +997,15 @@ final class Analytics extends Module
 						);
 					}
 					$property_id = $data['propertyID'];
-					$account_id  = $this->parse_account_id( $property_id );
-					if ( empty( $account_id ) ) {
-						return new WP_Error(
-							'invalid_param',
-							__( 'The propertyID parameter is not a valid Analytics property ID.', 'google-site-kit' ),
-							array( 'status' => 400 )
-						);
-					}
-					return array(
-						'accountID'  => $account_id,
-						'propertyID' => $property_id,
-						'permission' => $this->has_access_to_property( $property_id, $account_id ),
+					return array_merge(
+						array(
+							'accountID'  => '', // Set the accountID to be an empty string and let has_access_to_property handle determining actual ID.
+							'propertyID' => $property_id,
+						),
+						$this->has_access_to_property( $property_id )
 					);
 				};
-			case 'GET:tracking-disabled':
+			case 'GET:tracking-disabled': 
 				return function() {
 					$option = $this->get_settings()->get();
 
@@ -1066,12 +1060,12 @@ final class Analytics extends Module
 					return array_merge( compact( 'accounts' ), $properties_profiles );
 				}
 
-				if ( ! empty( $data['existingPropertyID'] ) ) {
+				if ( $data['existingAccountID'] && $data['existingPropertyID'] ) {
 					// If there is an existing tag, pass it through to ensure only the existing tag is matched.
 					$properties_profiles = $this->get_data(
 						'properties-profiles',
 						array(
-							'accountID'          => $this->parse_account_id( $data['existingPropertyID'] ),
+							'accountID'          => $data['existingAccountID'],
 							'existingPropertyID' => $data['existingPropertyID'],
 						)
 					);
@@ -1328,28 +1322,62 @@ final class Analytics extends Module
 	 * @since 1.8.0 Simplified to return a boolean and require account ID.
 	 *
 	 * @param string $property_id Property found in the existing tag.
-	 * @param string $account_id  Account ID the property belongs to.
-	 * @return bool True if the user has access, false otherwise.
+	 * @return array A string representing the accountID and a boolean representing if the user has access to the property.
 	 */
-	protected function has_access_to_property( $property_id, $account_id ) {
-		if ( empty( $property_id ) || empty( $account_id ) ) {
-			return false;
+	protected function has_access_to_property( $property_id ) {
+		if ( empty( $property_id ) ) {
+			return array(
+				'permission' => false,
+			);
 		}
 
-		// Try to get properties for that account.
-		$properties = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
-		if ( is_wp_error( $properties ) ) {
-			// No access to the account.
+		$account_id = $this->parse_account_id( $property_id );
+
+		/**
+		 * Helper method to check check if a given account
+		 * contains the property_id
+		 */
+		$has_property = function ( $account_id ) use ( $property_id ) {
+			$response = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
+			if ( is_wp_error( $response ) ) {
+				return false;
+			}
+			foreach ( $response['properties'] as $property ) {
+				if ( $property->getId() === $property_id ) {
+					return true;
+				}
+			}
 			return false;
-		}
+		};
 
 		// Ensure there is access to the property.
-		foreach ( $properties['properties'] as $property ) {
-			if ( $property->getId() === $property_id ) {
-				return true;
+		if ( $has_property( $account_id ) ) {
+			return array(
+				'accountID'  => $account_id,
+				'permission' => true,
+			);
+		}
+
+		// Check all of the accounts for this user.
+		$user_accounts_properties_profiles = $this->get_data( 'accounts-properties-profiles' );
+		$user_account_ids                  = is_wp_error( $user_accounts_properties_profiles ) ? array() : wp_list_pluck( $user_accounts_properties_profiles['accounts'], 'id' );
+		foreach ( $user_account_ids as $user_account_id ) {
+			// Skip the inferred account id, that ship has sailed.
+			if ( $account_id === $user_account_id ) {
+				continue;
+			}
+			if ( $has_property( $user_account_id ) ) {
+				return array(
+					'accountID'  => $user_account_id,
+					'permission' => true,
+				);
 			}
 		}
-		return false;
+	
+		// No property matched the account ID.
+		return array(
+			'permission' => false,
+		);
 	}
 
 	/**

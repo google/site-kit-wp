@@ -30,6 +30,8 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
+const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
+const flagsConfig = require( './webpack.feature-flags.config' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -88,7 +90,7 @@ const resolve = {
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
-const webpackConfig = () => {
+const webpackConfig = ( mode ) => {
 	return [
 		// Build the settings js..
 		{
@@ -154,6 +156,13 @@ const webpackConfig = () => {
 					allowAsyncCycles: false,
 					cwd: process.cwd(),
 				} ),
+				new FeatureFlagsPlugin(
+					flagsConfig,
+					{
+						modes: [ 'development', 'production' ],
+						mode,
+					},
+				),
 			],
 			optimization: {
 				minimizer: [
@@ -270,7 +279,7 @@ module.exports = {
 
 module.exports.default = ( ...args ) => {
 	const { includeTests, mode } = args[ 1 ];
-	const config = webpackConfig();
+	const config = webpackConfig( mode );
 
 	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.
