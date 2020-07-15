@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-function tagBodyHTML( adsenseID ) {
+function tagHeadHTML( adsenseID ) {
 	return `<script data-ad-client="${ adsenseID }" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>`;
 }
 
@@ -30,16 +30,16 @@ function tagBodyHTML( adsenseID ) {
  */
 export function generateHTMLWithTag( adsenseID ) {
 	return `
-	<!DOCTYPE html>
-	<html>
-	<head>
-	<title>Test Title</title>
-	</head>
-	<body>
-	${ adsenseID && tagBodyHTML( adsenseID ) }
-	<h1>Test Title</h1>
-	</body>
-	</html>
+		<!DOCTYPE html>
+		<html>
+			<head>
+				<title>Test Title</title>
+				${ adsenseID && tagHeadHTML( adsenseID ) }
+			</head>
+			<body>
+				<h1>Test Title</h1>
+			</body>
+		</html>
 	`;
 }
 

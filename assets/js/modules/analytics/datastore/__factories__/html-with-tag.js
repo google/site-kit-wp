@@ -17,7 +17,15 @@
  */
 
 function tagHeadHTML( analyticsID ) {
-	return `<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga('create', '${ analyticsID }', 'auto'); ga('send', 'pageview'); </script><script async src='https://www.google-analytics.com/analytics.js'></script>`;
+	return `<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=${ analyticsID }"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+	
+	  gtag('config', 'UA-17734987-1');
+	</script>`;
 }
 
 /**
@@ -30,16 +38,16 @@ function tagHeadHTML( analyticsID ) {
  */
 export function generateHTMLWithTag( analyticsID ) {
 	return `
-<!DOCTYPE html>
-<html>
-<head>
-<title>Test Title</title>
-${ analyticsID && tagHeadHTML( analyticsID ) }
-</head>
-<body>
-<h1>Test Title</h1>
-</body>
-</html>
-`;
+		<!DOCTYPE html>
+		<html>
+			<head>
+				${ analyticsID && tagHeadHTML( analyticsID ) }
+				<title>Test Title</title>
+			</head>
+			<body>
+				<h1>Test Title</h1>
+			</body>
+		</html>
+	`;
 }
 
