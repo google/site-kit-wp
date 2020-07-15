@@ -46,15 +46,6 @@ export const actions = {
 	},
 };
 
-/**
- * Registry reducer.
- *
- * @since n.e.x.t
- *
- * @param {Object}             state          Data store's state.
- * @param {Object}             action         Redux-style action.
- * @return {Object} Data store's state
- */
 export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
 		case SET_REGISTRY_KEY: {
