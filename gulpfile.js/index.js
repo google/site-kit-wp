@@ -26,8 +26,6 @@ const del = require( 'del' );
  * Gulp tasks
  */
 const copy = require( './copy' );
-const svgmin = require( './svgmin' );
-const svgstore = require( './svgstore' );
 const zip = require( './zip' );
 
 /**
@@ -39,14 +37,6 @@ function cleanRelease( cb ) {
 	del.sync( './release/**' );
 	cb();
 }
-
-/**
- * Gulp task to minify and combine svg's.
- */
-exports.svg = gulp.series(
-	svgstore,
-	svgmin,
-);
 
 /**
  * Gulp task to run the default release processes in a sequential order.
