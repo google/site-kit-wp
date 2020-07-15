@@ -118,7 +118,7 @@ final class Measurement_Event implements \JsonSerializable {
 		$vars_config['event_category'] = $this->config['category'];
 
 		$amp_config['vars'] = $vars_config;
-		return wp_json_encode( $amp_config );
+		return $amp_config;
 	}
 
 	/**
