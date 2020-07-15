@@ -34,7 +34,7 @@ const trafficIncrease = ( reports, id ) => {
 		return false;
 	}
 
-	if ( ! reports ) {
+	if ( ! Array.isArray( reports ) ) {
 		return false;
 	}
 
