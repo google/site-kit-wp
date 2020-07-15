@@ -1,5 +1,5 @@
 /**
- * Utility to have the page wait for a given length.
+ * Element Shim tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,18 +16,21 @@
  * limitations under the License.
  */
 
-export const E2E_PAGE_WAIT = 250;
+/**
+ * WordPress dependencies
+ */
+import * as wordpressElement from '@wordpress/element';
 
 /**
- * Set the page to wait for the passed time. Defaults to 250 milliseconds.
- *
- * @since 1.10.0
- *
- * @param {number} [delay] Optional. The amount of milliseconds to wait.
+ * Internal dependencies
  */
-export const pageWait = async ( delay = E2E_PAGE_WAIT ) => {
-	if ( typeof delay !== 'number' ) {
-		throw new Error( 'pageWait requires a number to be passed.' );
-	}
-	await page.waitFor( delay );
-};
+import * as elementShim from './element-shim';
+
+describe( '@wordpress/element shim', () => {
+	it( 'mirrors all exports from the @wordpress/element package', () => {
+		const realExports = Object.keys( wordpressElement ).sort();
+		const shimExports = Object.keys( elementShim ).sort();
+
+		expect( shimExports ).toEqual( realExports );
+	} );
+} );

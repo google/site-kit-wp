@@ -23,6 +23,8 @@ import { createTestRegistry } from './utils';
  *
  * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
  *
+ * @private
+ *
  * @param {*} ui Any valid React child element.
  * @param {Object} options Render options.
  * @param {Function} options.setupRegistry A function which accepts the registry instance to configure it.
@@ -57,7 +59,8 @@ const customRender = ( ui, options = {} ) => {
 /**
  * Renders a test component that will call the provided callback, including any hooks it calls, every time it renders.
  *
- * @since n.e.x.t
+ * @since 1.12.0
+ * @private
  *
  * @param {Function} callback           The function that is called each render of the test component. This function should call one or more hooks for testing.
  *                                      The props passed into the callback will be the initialProps provided in the options to renderHook,

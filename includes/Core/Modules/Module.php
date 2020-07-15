@@ -409,12 +409,12 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 * @since 1.9.0 No longer abstract.
-	 * @deprecated n.e.x.t
+	 * @deprecated 1.12.0
 	 *
 	 * @return array Associative array of $datapoint => $service_identifier pairs.
 	 */
 	protected function get_datapoint_services() {
-		_deprecated_function( __METHOD__, 'n.e.x.t', static::class . '::get_datapoint_definitions' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		_deprecated_function( __METHOD__, '1.12.0', static::class . '::get_datapoint_definitions' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		return array();
 	}
 

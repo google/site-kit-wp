@@ -236,7 +236,7 @@ final class Screens {
 	 * The only time the dashboard should fail with the regular WordPress permissions error is when the current user is
 	 * not eligible for accessing Site Kit entirely, i.e. if they are not allowed to authenticate.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 */
 	private function no_access_redirect_dashboard_to_splash() {
 		global $plugin_page;
