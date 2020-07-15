@@ -808,10 +808,6 @@ abstract class Module {
 		$reason        = '';
 		$reconnect_url = '';
 
-		if ( empty( $code ) ) {
-			$code = 'unknown';
-		}
-
 		if ( $e instanceof Google_Service_Exception ) {
 			$errors = $e->getErrors();
 			if ( isset( $errors[0]['message'] ) ) {
@@ -831,8 +827,10 @@ abstract class Module {
 			if ( $error_code ) {
 				// Delete error code from database to prevent future notice.
 				$this->user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
-			} else {
+			} elseif ( ! empty( $code ) ) {
 				$error_code = $code;
+			} else {
+				$error_code = $message;
 			}
 
 			$auth_client   = $this->authentication->get_oauth_client();
