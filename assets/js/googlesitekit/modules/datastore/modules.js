@@ -27,18 +27,24 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
-const { createRegistrySelector } = Data;
+const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions.
 const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
-	controlCallback: () => {
+	argsToParams: ( { useCache = true } = {} ) => {
+		return {
+			options: { useCache },
+		};
+	},
+	controlCallback: ( { options: { useCache } } ) => {
 		return API.get( 'core', 'modules', 'list', null, {
-			useCache: false,
+			useCache,
 		} );
 	},
 	reducerCallback: ( state, modules ) => {
@@ -100,11 +106,6 @@ const baseActions = {
 	*activateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, true );
 
-		yield {
-			payload: {},
-			type: REFETCH_AUTHENICATION,
-		};
-
 		return { response, error };
 	},
 
@@ -120,11 +121,6 @@ const baseActions = {
 	 */
 	*deactivateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, false );
-
-		yield {
-			payload: {},
-			type: REFETCH_AUTHENICATION,
-		};
 
 		return { response, error };
 	},
@@ -149,7 +145,11 @@ const baseActions = {
 		const { response, error } = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation( slug, active );
 		if ( response?.success === true ) {
 			// Fetch (or re-fetch) all modules, with their updated status.
-			yield fetchGetModulesStore.actions.fetchGetModules();
+			yield fetchGetModulesStore.actions.fetchGetModules( { useCache: false } );
+			yield {
+				payload: {},
+				type: REFETCH_AUTHENICATION,
+			};
 		}
 
 		return { response, error };
@@ -157,9 +157,9 @@ const baseActions = {
 };
 
 export const baseControls = {
-	[ REFETCH_AUTHENICATION ]: () => {
-		return API.get( 'core', 'user', 'authentication', { timestamp: Date.now() }, { useCache: false } );
-	},
+	[ REFETCH_AUTHENICATION ]: createRegistryControl( ( { dispatch } ) => () => {
+		return dispatch( CORE_USER ).fetchGetAuthentication( { useCache: false } );
+	} ),
 };
 
 const baseResolvers = {
