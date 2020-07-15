@@ -44,7 +44,7 @@ const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
  * @param {string}   identifier          The data identifier, eg. a module slug like 'analytics'.
  * @param {Object}   options             Options to consider for the store.
  * @param {Array}    options.tagMatchers The tag matchers used to extract tags from HTML.
- * @param {Function} options.isValidTag  Function to detect whether a tag is valid or not.
+ * @param {Function} options.isValidTag  Optional. Function to detect whether a tag is valid or not.
  * @param {string}   options.storeName   Optional. Store name to use. Default is '{type}/{identifier}'.
  * @return {Object} The existing tag store object, with additional `STORE_NAME` and
  * INITIAL_STATE` properties.
@@ -74,7 +74,7 @@ export const createExistingTagStore = ( type, identifier, {
 		receiveGetExistingTag( existingTag ) {
 			invariant(
 				existingTag === null || isValidTag( existingTag ),
-				'existingTag must be a valid tag or null'
+				'existingTag must be a valid tag or null.'
 			);
 
 			return {
