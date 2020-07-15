@@ -17,16 +17,16 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { WPElement } from '@wordpress/element';
-
-/**
  * External dependencies
  */
 import invariant from 'invariant';
 import { keyBy, sortBy } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+
+/**
+ * WordPress dependencies
+ */
+import { WPElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
