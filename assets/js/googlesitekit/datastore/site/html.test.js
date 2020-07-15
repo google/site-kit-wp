@@ -58,12 +58,11 @@ describe( 'core/site html', () => {
 					{ body: html, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).fetchGetHTMLForURL( url );
+				const promise = registry.dispatch( STORE_NAME ).fetchGetHTMLForURL( url );
+
 				expect( registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) ).toEqual( true );
 
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) === false,
-				);
+				await promise;
 
 				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
