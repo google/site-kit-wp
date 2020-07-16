@@ -179,7 +179,7 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {string}          slug                         Module slug.
-	 * @param {Object}          settings                     Module settings.
+	 * @param {Object}          [settings]                   Optional. Module settings.
 	 * @param {string}          [settings.name]              Optional. Module name. Default is the slug.
 	 * @param {string}          [settings.description]       Optional. Module description. Default empty string.
 	 * @param {string}          [settings.icon]              Optional. Module icon. Default empty string.
