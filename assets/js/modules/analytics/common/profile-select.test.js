@@ -58,9 +58,10 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
+	const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId;
 	const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId;
 	dispatch( STORE_NAME ).setSettings( {} );
-	dispatch( STORE_NAME ).receiveGetProfiles( [], { propertyID } );
+	dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID, propertyID } );
 };
 
 describe( 'ProfileSelect', () => {
