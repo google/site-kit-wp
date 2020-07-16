@@ -14,7 +14,7 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
 import SvgIcon from '../assets/js/util/svg-icon';
 import WPDashboardMain from '../assets/js/components/wp-dashboard/wp-dashboard-main';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
-import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
+import WpSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WpSearchConsoleDashboardWidget';
 import { createAddToFilter } from '../assets/js/util/helpers';
 import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
 import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
@@ -24,7 +24,7 @@ storiesOf( 'WordPress', module )
 		global._googlesitekitLegacyData = wpDashboardData;
 		global._googlesitekitLegacyData.admin.assetsRoot = '/assets/';
 		global._googlesitekitLegacyData.canAdsRun = true;
-		const addWPSearchConsoleDashboardWidget = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
+		const addWpSearchConsoleDashboardWidget = createAddToFilter( <WpSearchConsoleDashboardWidget /> );
 		const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
 		const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
 
@@ -33,7 +33,7 @@ storiesOf( 'WordPress', module )
 
 		addFilter( 'googlesitekit.WPDashboardHeader',
 			'googlesitekit.SearchConsole',
-			addWPSearchConsoleDashboardWidget, 11 );
+			addWpSearchConsoleDashboardWidget, 11 );
 
 		addFilter( 'googlesitekit.WPDashboardHeader',
 			'googlesitekit.Analytics',
