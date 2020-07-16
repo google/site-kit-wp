@@ -27,18 +27,18 @@ import { __ } from '@wordpress/i18n';
 import { numberFormat, getTimeInSeconds, getModulesData } from '../../util';
 import { calculateOverviewData } from '../../modules/analytics/util';
 
-const pageviewIncrease = ( data, id ) => {
+const pageviewIncrease = ( reports, id ) => {
 	const modulesData = getModulesData();
 
 	if ( ! modulesData.analytics || ! modulesData.analytics.active ) {
 		return false;
 	}
 
-	if ( ! data || ! data.reports ) {
+	if ( ! Array.isArray( reports ) ) {
 		return false;
 	}
 
-	const overviewData = calculateOverviewData( data );
+	const overviewData = calculateOverviewData( reports );
 
 	if ( ! overviewData ) {
 		return false;

@@ -33,7 +33,7 @@ import SettingsModule from '../assets/js/components/settings/settings-module';
 import {
 	SettingsMain,
 	SettingsSetupIncomplete,
-} from '../assets/js/modules/adsense/settings';
+} from '../assets/js/modules/adsense/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 

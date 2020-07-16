@@ -232,37 +232,40 @@ storiesOf( 'Analytics Module', module )
 				'Single'
 			);
 		}, 250 );
+
 		return (
-			<Layout
-				header
-				footer
-				title={ __( 'Top acquisition sources over the last 28 days', 'google-site-kit' ) }
-				headerCtaLink="https://analytics.google.com"
-				headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-				footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-				footerCtaLink="https://analytics.google.com"
-			>
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-4-desktop
-							mdc-layout-grid__cell--span-8-tablet
-							mdc-layout-grid__cell--span-4-phone
-						">
-							<DashboardAcquisitionPieChart />
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-8-desktop
-							mdc-layout-grid__cell--span-8-tablet
-							mdc-layout-grid__cell--span-4-phone
-						">
-							<AnalyticsDashboardWidgetTopAcquisitionSources />
+			<WithTestRegistry>
+				<Layout
+					header
+					footer
+					title={ __( 'Top acquisition sources over the last 28 days', 'google-site-kit' ) }
+					headerCtaLink="https://analytics.google.com"
+					headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					footerCtaLink="https://analytics.google.com"
+				>
+					<div className="mdc-layout-grid">
+						<div className="mdc-layout-grid__inner">
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-4-desktop
+								mdc-layout-grid__cell--span-8-tablet
+								mdc-layout-grid__cell--span-4-phone
+							">
+								<DashboardAcquisitionPieChart />
+							</div>
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-8-desktop
+								mdc-layout-grid__cell--span-8-tablet
+								mdc-layout-grid__cell--span-4-phone
+							">
+								<AnalyticsDashboardWidgetTopAcquisitionSources />
+							</div>
 						</div>
 					</div>
-				</div>
-			</Layout>
+				</Layout>
+			</WithTestRegistry>
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } );

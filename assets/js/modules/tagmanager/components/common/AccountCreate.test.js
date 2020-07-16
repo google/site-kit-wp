@@ -20,11 +20,10 @@
  * Internal dependencies
  */
 import AccountCreate from './AccountCreate';
-import { fireEvent, render, waitFor } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render, waitFor, createTestRegistry, freezeFetch, muteFetch } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { createTestRegistry, freezeFetch, muteFetch } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'AccountCreate', () => {
