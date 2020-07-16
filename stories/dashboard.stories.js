@@ -17,7 +17,7 @@ import { createAddToFilter } from '../assets/js/util/helpers';
 import Layout from '../assets/js/components/layout/layout';
 import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/DashboardAcquisitionPieChart';
 import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
-import DashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/DashboardSearchFunnel';
+import DashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/DashboardSearchFunnelInner';
 import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopLevel';
 import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetTopLevel';
 import PostSearcher from '../assets/js/components/post-searcher';
