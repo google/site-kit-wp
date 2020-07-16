@@ -108,7 +108,7 @@ const baseActions = {
 	},
 
 	/**
-	 * Selects the given container, including its internal ID.
+	 * Sets selected container settings for the given container ID of the current account.
 	 *
 	 * Supports selecting a container that has not been received yet.
 	 *
@@ -117,11 +117,11 @@ const baseActions = {
 	 *
 	 * @param {string} containerID Tag Manager container `publicId` of container to select.
 	 */
-	*selectContainer( containerID ) {
+	*selectContainerByID( containerID ) {
 		// This action relies on looking up the container in state to know what
 		// settings to set the container IDs for. For this reason we cannot use this
 		// for selecting the option to "set up a new container"
-		invariant( isValidContainerID( containerID ), 'A valid container ID is required to select a container.' );
+		invariant( isValidContainerID( containerID ), 'A valid container ID is required to select a container by ID.' );
 
 		const { select, dispatch } = yield Data.commonActions.getRegistry();
 		const accountID = select( STORE_NAME ).getAccountID();
