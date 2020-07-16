@@ -52,6 +52,9 @@ final class Measurement_Event_Pipe {
 	 * @return false|string List of events in JSON format.
 	 */
 	public static function encode_measurement_event_list( $event_configurations ) {
+		if ( null === $event_configurations ) {
+			return null;
+		}
 		$result = '[';
 		foreach ( $event_configurations as $event ) {
 			$result = $result . self::encode_measurement_event( $event ) . ',';

@@ -15,6 +15,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 use Google\Site_Kit\Tests\Modules\MockPluginDetector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event_Pipe;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
@@ -138,7 +139,7 @@ class AdvancedTrackingTest extends TestCase {
 	 */
 	public function test_injected_code() {
 		$advanced_tracking    = new Advanced_Tracking( $this->mock_plugin_detector );
-		$event_configurations = wp_json_encode( $advanced_tracking->get_event_configurations() );
+		$event_configurations = Measurement_Event_Pipe::encode_measurement_event_list( $advanced_tracking->get_event_configurations() );
 
 		$expected_script = <<<INJECT_SCRIPT
 ( function() {
