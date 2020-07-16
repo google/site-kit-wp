@@ -26,13 +26,13 @@ import { addFilter } from '@wordpress/hooks';
  */
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
-import { SetupMain } from './setup';
+import { SetupMain } from './components/setup';
 import {
 	SettingsMain,
 	SettingsSetupIncomplete,
-} from './settings';
-import { AdBlockerWarning } from './common';
-import { DashboardZeroData } from './dashboard';
+} from './components/settings';
+import { AdBlockerWarning } from './components/common';
+import { DashboardZeroData } from './components/dashboard';
 
 addFilter(
 	'googlesitekit.ModuleSetup-adsense',

@@ -97,7 +97,7 @@ export const containerBuilder = build( 'Tag Manager Container', {
 /**
  * Generates multiple containers.
  *
- * @since n.e.x.t
+ * @since 1.12.0
  * @private
  *
  * @param {number} count       Number of containers to generate.
