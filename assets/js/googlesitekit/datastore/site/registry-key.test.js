@@ -47,10 +47,10 @@ describe( 'core/site registryKey', () => {
 	} );
 
 	describe( 'selectors', () => {
-		it( 'returns undefined initially', async () => {
-			expect(
-				registry.select( STORE_NAME ).getRegistryKey()
-			).toBeUndefined();
+		it( 'generates a registryKey if undefined', async () => {
+			const firstCall = registry.select( STORE_NAME ).getRegistryKey();
+			expect( firstCall ).not.toBeUndefined();
+			expect( registry.select( STORE_NAME ).getRegistryKey() ).toEqual( firstCall );
 		} );
 
 		it( 'receives and sets registryKey', async () => {

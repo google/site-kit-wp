@@ -20,6 +20,13 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { v4 as uuidv4 } from 'uuid';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
 
 // Actions
 const SET_REGISTRY_KEY = 'SET_REGISTRY_KEY';
@@ -61,6 +68,16 @@ export const reducer = ( state, { payload, type } ) => {
 	}
 };
 
+const resolvers = {
+	*getRegistryKey() {
+		const { select } = yield Data.commonActions.getRegistry();
+
+		if ( ! select( STORE_NAME ).getRegistryKey() ) {
+			yield actions.setRegistryKey( uuidv4() );
+		}
+	},
+};
+
 export const selectors = {
 	/**
 	 * Returns the registry key being used for a given store.
@@ -73,7 +90,6 @@ export const selectors = {
 	 */
 	getRegistryKey( state ) {
 		const { registryKey } = state;
-
 		return registryKey;
 	},
 };
@@ -81,6 +97,7 @@ export const selectors = {
 export default {
 	INITIAL_STATE,
 	actions,
+	resolvers,
 	reducer,
 	selectors,
 };

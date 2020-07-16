@@ -21,7 +21,6 @@
  */
 import invariant from 'invariant';
 import { keyBy, sortBy } from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
 
 /**
  * WordPress dependencies
@@ -193,11 +192,7 @@ const baseActions = {
 		invariant( slug, 'module slug is required' );
 
 		const registry = yield commonActions.getRegistry();
-		let registryKey = yield registry.select( CORE_SITE ).getRegistryKey();
-		if ( registryKey === undefined ) {
-			registryKey = uuidv4();
-			yield registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
-		}
+		const registryKey = yield registry.select( CORE_SITE ).getRegistryKey();
 
 		// We do this assignment in the action rather than the reducer because we can't send a
 		// payload that includes a React component to the reducer; we'll get an error about
