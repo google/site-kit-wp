@@ -30,10 +30,10 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Ninja
 final class Advanced_Tracking {
 
 	/**
-	 * List of plugins SiteKit supports for event tracking.
+	 * List of plugins Site Kit supports for event tracking.
 	 *
 	 * @since n.e.x.t.
-	 * @var array of strings
+	 * @var array
 	 */
 	private $supported_plugins;
 
@@ -56,11 +56,12 @@ final class Advanced_Tracking {
 	/**
 	 * Advanced_Tracking constructor.
 	 *
-	 * @since n.e.x.t.
+	 * @param Plugin_Detector $plugin_detector Optional plugin detector used for testing. Default is a new instance.
 	 *
-	 * @param Plugin_Detector $mock_plugin_detector optional plugin detector used for testing.
+	 *@since n.e.x.t.
+	 *
 	 */
-	public function __construct( $mock_plugin_detector = null ) {
+	public function __construct( $plugin_detector = null ) {
 		$this->supported_plugins = array(
 			'Contact Form 7'   => array(
 				'check_name'        => 'WPCF7_PLUGIN_DIR',
@@ -88,10 +89,10 @@ final class Advanced_Tracking {
 				'event_config_list' => new WPForms_Event_List(),
 			),
 		);
-		if ( null === $mock_plugin_detector ) {
+		if ( null === $plugin_detector ) {
 			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
 		} else {
-			$this->plugin_detector = $mock_plugin_detector;
+			$this->plugin_detector = $plugin_detector;
 		}
 	}
 
