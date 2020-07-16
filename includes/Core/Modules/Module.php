@@ -839,6 +839,10 @@ abstract class Module {
 			$reconnect_url = $auth_client->get_proxy_setup_url( $access_code, $error_code );
 		}
 
+		if ( empty( $code ) ) {
+			$code = 'unknown';
+		}
+
 		$data = array(
 			'status' => $status,
 			'reason' => $reason,
