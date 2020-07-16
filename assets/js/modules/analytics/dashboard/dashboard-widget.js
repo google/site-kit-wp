@@ -30,6 +30,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Header from '../../../components/header';
 import AnalyticsDashboardWidgetSiteStats from './dashboard-widget-sitestats';
 import AnalyticsDashboardWidgetTopPagesTable from './dashboard-widget-top-pages-table';
@@ -42,10 +43,12 @@ import Alert from '../../../components/alert';
 import ProgressBar from '../../../components/progress-bar';
 import getNoDataComponent from '../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../components/notifications/data-error';
-import AdSenseDashboardOutro from '../../../modules/adsense/dashboard/dashboard-outro';
+import AdSenseDashboardOutro from '../../adsense/components/dashboard/AdSenseDashboardOutro';
 import { isAdsenseConnectedAnalytics } from '../../../modules/adsense/util';
-import { getCurrentDateRange, getCurrentDateRangeSlug } from '../../../util/date-range';
+import { getCurrentDateRange } from '../../../util/date-range';
 import HelpLink from '../../../components/help-link';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+const { withSelect } = Data;
 
 class AnalyticsDashboardWidget extends Component {
 	constructor( props ) {
@@ -150,12 +153,16 @@ class AnalyticsDashboardWidget extends Component {
 			isAdSenseConnected,
 		} = this.state;
 
+		const {
+			dateRange,
+		} = this.props;
+
 		const series = this.buildSeries();
 		const vAxes = null;
 
 		// Hide Analytics data display when we don't have data.
 		const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
-		const dateRange = getCurrentDateRange();
+		const currentDateRange = getCurrentDateRange( dateRange );
 
 		return (
 			<Fragment>
@@ -183,7 +190,7 @@ class AnalyticsDashboardWidget extends Component {
 								<Layout
 									header
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), dateRange ) }
+									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 									headerCtaLink="http://analytics.google.com"
 								>
@@ -197,7 +204,7 @@ class AnalyticsDashboardWidget extends Component {
 										selectedStats={ selectedStats }
 										series={ series }
 										vAxes={ vAxes }
-										dateRangeSlug={ getCurrentDateRangeSlug() }
+										dateRangeSlug={ dateRange }
 									/>
 								</Layout>
 							</div>
@@ -210,7 +217,7 @@ class AnalyticsDashboardWidget extends Component {
 									header
 									footer
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), dateRange ) }
+									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
@@ -228,7 +235,7 @@ class AnalyticsDashboardWidget extends Component {
 									header
 									footer
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Top acquisition sources over the last %s', 'google-site-kit' ), dateRange ) }
+									title={ sprintf( __( 'Top acquisition sources over the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
@@ -274,4 +281,8 @@ class AnalyticsDashboardWidget extends Component {
 	}
 }
 
-export default AnalyticsDashboardWidget;
+export default withSelect(
+	( select ) => ( {
+		dateRange: select( CORE_USER ).getDateRange(),
+	} ),
+)( AnalyticsDashboardWidget );
