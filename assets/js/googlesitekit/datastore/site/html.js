@@ -37,6 +37,10 @@ const { createRegistryControl } = Data;
 
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',
+	argsToParams: ( url ) => {
+		invariant( isURL( url ), 'a valid url is required to fetch HTML.' );
+		return { url };
+	},
 	controlCallback: async ( { url } ) => {
 		const fetchHTMLOptions = {
 			credentials: 'omit',
@@ -65,10 +69,6 @@ const fetchHTMLForURLStore = createFetchStore( {
 				[ url ]: htmlForURL,
 			},
 		};
-	},
-	argsToParams: ( url ) => {
-		invariant( isURL( url ), 'a valid url is required to fetch HTML.' );
-		return { url };
 	},
 } );
 
@@ -100,8 +100,9 @@ const baseActions = {
 
 		return dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getHTMLForURL' );
 	},
+
 	/**
-	 * Waits for HTML for to be resolved for the given account URL.
+	 * Waits for HTML for to be resolved for the given URL.
 	 *
 	 * @since n.e.x.t
 	 * @private
@@ -132,10 +133,6 @@ const baseReducer = ( state, { type, payload } ) => {
 				htmlForURL: {
 					...state.htmlForURL,
 					[ url ]: undefined,
-				},
-				isFetchingHTMLForURL: {
-					...state.isFetchingHTMLForURL,
-					[ url ]: false,
 				},
 			};
 		}
@@ -171,7 +168,7 @@ export const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} url URL for which to fetch HTML.
-	 * @return {(Object|undefined)} String representation of HTML for given URL.
+	 * @return {(string|undefined)} String representation of HTML for given URL, or `undefined` if not loaded yet.
 	 */
 	getHTMLForURL( state, url ) {
 		return state.htmlForURL[ url ];

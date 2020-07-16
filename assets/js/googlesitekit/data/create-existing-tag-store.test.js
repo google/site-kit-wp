@@ -140,7 +140,6 @@ describe( 'createExistingTagStore store', () => {
 
 				const hasExistingTag = select.hasExistingTag();
 
-				// Ensure the proper parameters were sent.
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasExistingTag ).toEqual( false );
@@ -148,7 +147,7 @@ describe( 'createExistingTagStore store', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
+				muteFetch( { query: { tagverify: '1' } } );
 
 				const hasExistingTag = select.hasExistingTag();
 

@@ -40,6 +40,7 @@ const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
  *
  * @since n.e.x.t
  * @private
+ *
  * @param {string}   type                The data to access. One of 'core' or 'modules'.
  * @param {string}   identifier          The data identifier, eg. a module slug like 'analytics'.
  * @param {Object}   options             Options to consider for the store.
@@ -142,12 +143,12 @@ export const createExistingTagStore = ( type, identifier, {
 
 	const selectors = {
 		/**
-		 * Gets the existing tag (a container publicId), if any.
+		 * Gets the existing tag, if any.
 		 *
 		 * @since n.e.x.t
 		 *
 		 * @param {Object} state Data store's state.
-		 * @return {(string|null|undefined)} The existing container ID if present, `null` if not present, or `undefined` if not loaded yet.
+		 * @return {(string|null|undefined)} The existing tag `string` if present, `null` if not present, or `undefined` if not loaded yet.
 		 */
 		getExistingTag( state ) {
 			return state.existingTag;

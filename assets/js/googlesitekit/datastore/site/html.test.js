@@ -140,7 +140,7 @@ describe( 'core/site html', () => {
 				expect( selectedHTML ).toEqual( html );
 			} );
 
-			it( 'returns null if request is blocked', async () => {
+			it( 'returns null if request fails', async () => {
 				const url = 'https://example.com';
 
 				fetchMock.getOnce(
