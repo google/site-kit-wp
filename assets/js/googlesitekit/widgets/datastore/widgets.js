@@ -43,7 +43,6 @@ export const WidgetComponents = {};
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';
-const SET_WIDGET_COMPONENT_KEY = 'SET_WIDGET_COMPONENT_KEY';
 
 const WidgetWidthKeys = Object.keys( WIDGET_WIDTHS ).map( ( ( key ) => `WIDGET_WIDTHS.${ key }` ) ).join( ', ' );
 
@@ -162,15 +161,6 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.widgets,
 					[ slug ]: { ...settings, slug },
 				},
-			};
-		}
-
-		case SET_WIDGET_COMPONENT_KEY: {
-			const { registryKey } = payload;
-
-			return {
-				...state,
-				registryKey,
 			};
 		}
 
