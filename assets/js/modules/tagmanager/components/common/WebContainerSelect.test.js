@@ -178,6 +178,6 @@ describe( 'WebContainerSelect', () => {
 
 		expect( queryByRole( 'progressbar' ) ).not.toBeInTheDocument();
 		expect( queryByRole( 'menu', { hidden: true } ) ).not.toBeInTheDocument();
-		expect( container ).toBeEmpty();
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );
