@@ -117,6 +117,10 @@ const baseActions = {
 
 const baseResolvers = {
 	*getProfiles( accountID, propertyID ) {
+		if ( ! isValidAccountID( accountID ) ) {
+			return;
+		}
+
 		if ( ! isValidPropertyID( propertyID ) ) {
 			return;
 		}
