@@ -135,7 +135,7 @@ describe( 'modules/analytics accounts', () => {
 				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID } );
 
 				registry.dispatch( STORE_NAME ).resetAccounts();
 
