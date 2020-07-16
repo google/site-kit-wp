@@ -13,10 +13,10 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Layout from '../assets/js/components/layout/layout';
-import AnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/dashboard-widget-overview';
-import AnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/components/dashboard/dashboard-widget-sitestats';
-import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/dashboard-widget-acquisition-piechart';
-import AnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/dashboard-widget-top-acquisition-sources-table';
+import AnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetOverview';
+import AnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetSiteStats';
+import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/DashboardAcquisitionPieChart';
+import AnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopAcquisitionSources';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import {
 	AccountSelect,

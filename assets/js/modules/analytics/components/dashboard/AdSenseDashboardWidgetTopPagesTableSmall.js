@@ -36,11 +36,11 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../../compon
 import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
 import AdSenseLinkCta from '../common/AdSenseLinkCta';
+import { getTimeInSeconds } from '../../../../util';
 import {
 	analyticsAdsenseReportDataDefaults,
-	getTimeInSeconds,
 	isDataZeroForReporting,
-} from '../../../../util';
+} from '../../util';
 
 class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 	static renderLayout( component ) {

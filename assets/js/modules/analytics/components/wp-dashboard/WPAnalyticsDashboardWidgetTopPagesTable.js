@@ -37,9 +37,11 @@ import PreviewTable from '../../../../components/preview-table';
 import {
 	getTimeInSeconds,
 	numberFormat,
+} from '../../../../util';
+import {
 	isDataZeroForReporting,
 	getTopPagesReportDataDefaults,
-} from '../../../../util';
+} from '../../util';
 
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {

@@ -13,7 +13,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Layout from '../assets/js/components/layout/layout';
-import AnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/dashboard/dashboard-widget-top-pages-table';
+import AnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopPagesTable';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 
 storiesOf( 'Global', module )

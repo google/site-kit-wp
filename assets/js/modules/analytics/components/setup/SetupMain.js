@@ -31,7 +31,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import SetupForm from './setup-form';
+import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/progress-bar';
 import { SvgIcon, trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
