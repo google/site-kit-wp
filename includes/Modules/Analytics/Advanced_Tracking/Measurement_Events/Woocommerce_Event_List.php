@@ -65,7 +65,7 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
-				'action'     => 'checkout',
+				'action'     => 'begin_checkout',
 				'selector'   => 'div.wc-proceed-to-checkout .checkout-button',
 				'on'         => 'click',
 			)
@@ -76,7 +76,7 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
-				'action'     => 'review_cart',
+				'action'     => 'view_cart',
 				'selector'   => 'a.added_to_cart.wc-forward',
 				'on'         => 'click',
 			)
@@ -87,7 +87,7 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
-				'action'     => 'review_cart',
+				'action'     => 'view_cart',
 				'selector'   => 'div.woocommerce-message a.wc-forward',
 				'on'         => 'click',
 			)
@@ -98,7 +98,7 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
-				'action'     => 'cart_contents',
+				'action'     => 'view_cart',
 				'selector'   => 'a.cart-contents',
 				'on'         => 'click',
 			)
@@ -120,7 +120,7 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
-				'action'     => 'product_details',
+				'action'     => 'view_item',
 				'selector'   => '.content-area a.woocommerce-LoopProduct-link',
 				'on'         => 'click',
 			)
@@ -131,7 +131,7 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
-				'action'     => 'place_order',
+				'action'     => 'purchase',
 				'selector'   => '.woocommerce-page form.woocommerce-checkout',
 				'on'         => 'submit',
 			)
@@ -142,7 +142,7 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
-				'action'     => 'product_details',
+				'action'     => 'view_item',
 				'selector'   => '.woocommerce-page .woocommerce-cart-form .product-name a',
 				'on'         => 'click',
 			)
