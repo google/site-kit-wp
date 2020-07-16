@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { getQueryArg } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -117,11 +112,6 @@ describe( 'core/modules modules', () => {
 						},
 					}
 				);
-
-				// Ensure the request to re-fetch authentication has a timestamp parameter.
-				expect(
-					getQueryArg( fetchMock.calls()[ 3 ][ 0 ], 'timestamp' )
-				).not.toBe( undefined );
 
 				// Optimize should be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
@@ -242,11 +232,6 @@ describe( 'core/modules modules', () => {
 						},
 					}
 				);
-
-				// Ensure the request to re-fetch authentication has a timestamp parameter.
-				expect(
-					getQueryArg( fetchMock.calls()[ 3 ][ 0 ], 'timestamp' )
-				).not.toBe( undefined );
 
 				// Analytics should no longer be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
