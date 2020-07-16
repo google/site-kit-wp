@@ -209,11 +209,6 @@ const baseActions = {
 		const mergedModuleSettings = {
 			slug,
 			name: slug,
-			description: null,
-			icon: null,
-			order: 10,
-			homepage: null,
-			internal: false,
 			...settings,
 		};
 
@@ -233,6 +228,15 @@ export const baseControls = {
 const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case REGISTER_MODULE: {
+			const defaults = {
+				description: null,
+				icon: null,
+				order: 10,
+				homepage: null,
+				internal: false,
+				active: false,
+				connected: false,
+			};
 			const { modules: existingModules } = state;
 			const { slug, settings } = payload;
 			return {
@@ -240,8 +244,8 @@ const baseReducer = ( state, { type, payload } ) => {
 				modules: {
 					...existingModules,
 					[ slug ]: {
-						active: false,
-						connected: false,
+						...defaults,
+						...( existingModules?.[ slug ] || {} ),
 						...settings,
 					},
 				},
