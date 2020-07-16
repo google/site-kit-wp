@@ -32,14 +32,15 @@ final class CF7_Event_List extends Measurement_Event_List {
 				'action'     => 'form_submit',
 				'selector'   => '.wpcf7-form .wpcf7-submit',
 				'on'         => 'click',
-				'metadata' => <<<CALLBACK
+				'metadata'   => <<<CALLBACK
 function( params ) {
 	var labelValue = document.querySelectorAll('.wpcf7-form input[name="_wpcf7"]')[0].value;
 	console.log(labelValue);
 	params['event_label'] = labelValue;
 	return params;
 }
-CALLBACK,
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );
