@@ -15,10 +15,10 @@ import DashboardModuleHeader from '../assets/js/components/dashboard/dashboard-m
 import CTA from '../assets/js/components/notifications/cta';
 import { createAddToFilter } from '../assets/js/util/helpers';
 import Layout from '../assets/js/components/layout/layout';
-import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/dashboard/dashboard-widget-acquisition-piechart';
-import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/dashboard/dashboard-alltraffic-widget-top-acquisition-sources-table';
+import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/dashboard-widget-acquisition-piechart';
+import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/dashboard-alltraffic-widget-top-acquisition-sources-table';
 import DashboardSearchFunnelInner from '../assets/js/modules/search-console/dashboard/dashboard-widget-search-funnel-inner';
-import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/dashboard/dashboard-widget-top-level';
+import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/dashboard-widget-top-level';
 import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/dashboard/dashboard-widget-top-level';
 import PostSearcher from '../assets/js/components/post-searcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';

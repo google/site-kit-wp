@@ -16,8 +16,8 @@ import WPDashboardMain from '../assets/js/components/wp-dashboard/wp-dashboard-m
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
 import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/wp-dashboard/wp-dashboard-widget';
 import { createAddToFilter } from '../assets/js/util/helpers';
-import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/wp-dashboard/wp-dashboard-widget-overview';
-import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/wp-dashboard/wp-dashboard-widget-top-pages-table';
+import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/wp-dashboard/wp-dashboard-widget-overview';
+import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/wp-dashboard/wp-dashboard-widget-top-pages-table';
 
 storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {

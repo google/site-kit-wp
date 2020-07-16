@@ -26,16 +26,16 @@ import { addFilter } from '@wordpress/hooks';
  */
 import { getSiteKitAdminURL, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
-import AnalyticsDashboardWidget from './dashboard/dashboard-widget';
-import AnalyticsAdminbarWidget from './adminbar/adminbar-widget';
-import AnalyticsAllTraffic from './dashboard/dashboard-widget-all-traffic';
-import AnalyticsDashboardWidgetTopLevel from './dashboard/dashboard-widget-top-level';
-import WPAnalyticsDashboardWidgetOverview from './wp-dashboard/wp-dashboard-widget-overview';
-import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './dashboard-details/dashboard-details-widget-top-acquisition-sources';
-import WPAnalyticsDashboardWidgetTopPagesTable from './wp-dashboard/wp-dashboard-widget-top-pages-table';
-import AnalyticsAdSenseDashboardWidgetTopPagesTable from './dashboard/dashboard-widget-analytics-adsense-top-pages';
-import AnalyticsDashboardWidgetPopularPagesTable from './dashboard/dashboard-widget-popular-pages-table';
-import AdSenseDashboardWidgetTopPagesTableSmall from './dashboard/dashboard-widget-top-earning-pages-small';
+import AnalyticsDashboardWidget from './components/dashboard/dashboard-widget';
+import AnalyticsAdminbarWidget from './components/adminbar/adminbar-widget';
+import AnalyticsAllTraffic from './components/dashboard/dashboard-widget-all-traffic';
+import AnalyticsDashboardWidgetTopLevel from './components/dashboard/dashboard-widget-top-level';
+import WPAnalyticsDashboardWidgetOverview from './components/wp-dashboard/wp-dashboard-widget-overview';
+import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/dashboard-details/dashboard-details-widget-top-acquisition-sources';
+import WPAnalyticsDashboardWidgetTopPagesTable from './components/wp-dashboard/wp-dashboard-widget-top-pages-table';
+import AnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/dashboard-widget-analytics-adsense-top-pages';
+import AnalyticsDashboardWidgetPopularPagesTable from './components/dashboard/dashboard-widget-popular-pages-table';
+import AdSenseDashboardWidgetTopPagesTableSmall from './components/dashboard/dashboard-widget-top-earning-pages-small';
 
 const slug = 'analytics';
 

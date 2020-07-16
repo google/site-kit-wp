@@ -30,7 +30,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
-import { SetupMain as AnalyticsSetup } from '../assets/js/modules/analytics/setup/index';
+import { SetupMain as AnalyticsSetup } from '../assets/js/modules/analytics/components/setup/index';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 
