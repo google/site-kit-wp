@@ -46,7 +46,7 @@ class CTA extends Component {
 		let message = null;
 		if ( description ) {
 			message = typeof description === 'string'
-				? <p className="googlesitekit-cta__description">{ message }</p>
+				? <p className="googlesitekit-cta__description">{ description }</p>
 				: description;
 		}
 
