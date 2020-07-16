@@ -30,14 +30,17 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
 import AdSenseLinkCTA from '../common/adsense-link-cta';
-import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../../../util';
+import {
+	analyticsAdsenseReportDataDefaults,
+	getTimeInSeconds,
+	isDataZeroForReporting,
+} from '../../../../util';
 
 class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 	static renderLayout( component ) {
