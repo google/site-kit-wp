@@ -19,6 +19,7 @@
 export { default as AccountCreateLegacy } from './AccountCreateLegacy';
 export { default as AccountCreate } from './AccountCreate';
 export { default as AccountSelect } from './AccountSelect';
+export { default as AdSenseLinkCta } from './AdSenseLinkCta';
 export { default as AnonymizeIpSwitch } from './AnonymizeIpSwitch';
 export { default as ErrorNotice } from './ErrorNotice';
 export { default as ExistingTagError } from './ExistingTagError';
