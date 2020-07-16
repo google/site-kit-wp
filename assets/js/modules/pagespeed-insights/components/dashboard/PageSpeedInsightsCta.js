@@ -11,12 +11,12 @@ import {
 	getReAuthURL,
 	showErrorNotification,
 	getModulesData,
-} from '../../../util';
-import CTA from '../../../components/notifications/cta';
-import data from '../../../components/data';
-import GenericError from '../../../components/notifications/generic-error';
+} from '../../../../util';
+import CTA from '../../../../components/notifications/cta';
+import data from '../../../../components/data';
+import GenericError from '../../../../components/notifications/generic-error';
 
-const PageSpeedInsightsCTA = () => {
+const PageSpeedInsightsCta = () => {
 	const {
 		active,
 		setupComplete,
@@ -65,4 +65,4 @@ const PageSpeedInsightsCTA = () => {
 	);
 };
 
-export default PageSpeedInsightsCTA;
+export default PageSpeedInsightsCta;

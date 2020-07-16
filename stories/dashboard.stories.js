@@ -17,9 +17,9 @@ import { createAddToFilter } from '../assets/js/util/helpers';
 import Layout from '../assets/js/components/layout/layout';
 import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/DashboardAcquisitionPieChart';
 import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
-import DashboardSearchFunnelInner from '../assets/js/modules/search-console/dashboard/dashboard-widget-search-funnel-inner';
+import DashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/DashboardSearchFunnel';
 import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopLevel';
-import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/dashboard/dashboard-widget-top-level';
+import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetTopLevel';
 import PostSearcher from '../assets/js/components/post-searcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 

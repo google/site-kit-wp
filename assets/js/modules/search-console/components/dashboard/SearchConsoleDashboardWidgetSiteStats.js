@@ -25,11 +25,11 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { decodeHtmlEntity, getTimeInSeconds } from '../../../util';
-import withData from '../../../components/higherorder/withdata';
-import { TYPE_MODULES } from '../../../components/data';
-import GoogleChart from '../../../components/google-chart.js';
-import PreviewBlock from '../../../components/preview-block';
+import { decodeHtmlEntity, getTimeInSeconds } from '../../../../util';
+import withData from '../../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../../components/data';
+import GoogleChart from '../../../../components/google-chart.js';
+import PreviewBlock from '../../../../components/preview-block';
 import { extractSearchConsoleDashboardData } from './util';
 
 class SearchConsoleDashboardWidgetSiteStats extends Component {

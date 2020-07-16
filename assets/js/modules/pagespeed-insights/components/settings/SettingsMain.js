@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights Settings components.
+ * PageSpeed Insights Settings Main component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,4 +16,15 @@
  * limitations under the License.
  */
 
-export { default as SettingsMain } from './settings-main';
+/**
+ * Internal dependencies
+ */
+import SettingsView from './SettingsView';
+
+export default function SettingsMain( { isOpen } ) {
+	if ( ! isOpen ) {
+		return null;
+	}
+
+	return <SettingsView />;
+}

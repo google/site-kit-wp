@@ -25,22 +25,22 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import DataBlock from '../../../components/data-block';
-import withData from '../../../components/higherorder/withdata';
-import { TYPE_MODULES } from '../../../components/data';
+import DataBlock from '../../../../components/data-block';
+import withData from '../../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../../components/data';
 import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
 } from './util';
-import Sparkline from '../../../components/sparkline';
-import PreviewBlock from '../../../components/preview-block';
+import Sparkline from '../../../../components/sparkline';
+import PreviewBlock from '../../../../components/preview-block';
 import {
 	getTimeInSeconds,
 	extractForSparkline,
 	getSiteKitAdminURL,
 	trackEvent,
-} from '../../../util';
-import CTA from '../../../components/notifications/cta';
+} from '../../../../util';
+import CTA from '../../../../components/notifications/cta';
 
 class SearchConsoleDashboardWidgetTopLevel extends Component {
 	render() {

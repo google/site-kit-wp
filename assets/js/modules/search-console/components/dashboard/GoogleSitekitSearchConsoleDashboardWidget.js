@@ -31,20 +31,20 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Header from '../../../components/header';
-import SearchConsoleDashboardWidgetSiteStats from './dashboard-widget-sitestats';
-import SearchConsoleDashboardWidgetKeywordTable from './dashboard-widget-keyword-table';
-import SearchConsoleDashboardWidgetOverview from './dashboard-widget-overview';
-import PageHeader from '../../../components/page-header';
-import Layout from '../../../components/layout/layout';
-import Alert from '../../../components/alert';
-import ProgressBar from '../../../components/progress-bar';
-import getNoDataComponent from '../../../components/notifications/nodata';
-import getDataErrorComponent from '../../../components/notifications/data-error';
-import { getCurrentDateRange } from '../../../util/date-range';
-import HelpLink from '../../../components/help-link';
-import { getModulesData } from '../../../util';
-import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import Header from '../../../../components/header';
+import SearchConsoleDashboardWidgetSiteStats from './SearchConsoleDashboardWidgetSiteStats';
+import SearchConsoleDashboardWidgetKeywordTable from './SearchConsoleDashboardWidgetKeywordTable';
+import SearchConsoleDashboardWidgetOverview from './SearchConsoleDashboardWidgetOverview';
+import PageHeader from '../../../../components/page-header';
+import Layout from '../../../../components/layout/layout';
+import Alert from '../../../../components/alert';
+import ProgressBar from '../../../../components/progress-bar';
+import getNoDataComponent from '../../../../components/notifications/nodata';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import { getCurrentDateRange } from '../../../../util/date-range';
+import HelpLink from '../../../../components/help-link';
+import { getModulesData } from '../../../../util';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { withSelect } = Data;
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {
