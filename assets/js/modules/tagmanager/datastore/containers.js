@@ -27,7 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
-import { isValidAccountID, isValidUsageContext, isValidContainerSelection } from '../util/validation';
+import { isValidAccountID, isValidContainerID, isValidUsageContext } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -118,7 +118,10 @@ const baseActions = {
 	 * @param {string} containerID Tag Manager container `publicId` of container to select.
 	 */
 	*selectContainer( containerID ) {
-		invariant( isValidContainerSelection( containerID ), 'A valid container selection is required to select a container.' );
+		// This action relies on looking up the container in state to know what
+		// settings to set the container IDs for. For this reason we cannot use this
+		// for selecting the option to "set up a new container"
+		invariant( isValidContainerID( containerID ), 'A valid container ID is required to select a container.' );
 
 		const { select, dispatch } = yield Data.commonActions.getRegistry();
 		const accountID = select( STORE_NAME ).getAccountID();
