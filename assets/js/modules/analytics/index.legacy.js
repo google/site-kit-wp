@@ -27,7 +27,7 @@ import { addFilter } from '@wordpress/hooks';
 import { getSiteKitAdminURL, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import AnalyticsDashboardWidget from './components/dashboard/dashboard-widget';
-import AnalyticsAdminbarWidget from './components/adminbar/adminbar-widget';
+import AnalyticsAdminbarWidget from './components/adminbar/AnalyticsAdminbarWidget';
 import AnalyticsAllTraffic from './components/dashboard/dashboard-widget-all-traffic';
 import AnalyticsDashboardWidgetTopLevel from './components/dashboard/dashboard-widget-top-level';
 import WPAnalyticsDashboardWidgetOverview from './components/wp-dashboard/wp-dashboard-widget-overview';

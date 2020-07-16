@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import CTA from '../../../../components/notifications/cta';
 
-export default function AdSenseLinkCTA() {
+export default function AdSenseLinkCta() {
 	return (
 		<CTA
 			title={ __( 'Link Analytics and AdSense', 'google-site-kit' ) }

@@ -45,7 +45,7 @@ const addPostSearcher = createAddToFilter( <PostSearcher /> );
  */
 import PostSearcher from '../../components/post-searcher';
 import GoogleSitekitSearchConsoleDashboardWidget from './dashboard/dashboard-widget';
-import GoogleSitekitSearchConsoleAdminbarWidget from './adminbar/adminbar-widget';
+import GoogleSitekitSearchConsoleAdminbarWidget from './adminbar/AnalyticsAdminbarWidget';
 import WPSearchConsoleDashboardWidget from './wp-dashboard/wp-dashboard-widget';
 import DashboardSearchFunnel from './dashboard/dashboard-widget-search-funnel.js';
 import SearchConsoleDashboardWidgetTopLevel from './dashboard/dashboard-widget-top-level';

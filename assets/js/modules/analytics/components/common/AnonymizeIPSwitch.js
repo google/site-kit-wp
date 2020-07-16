@@ -34,7 +34,7 @@ import { sanitizeHTML } from '../../../../util';
 
 const { useSelect, useDispatch } = Data;
 
-export default function AnonymizeIPSwitch() {
+export default function AnonymizeIpSwitch() {
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );

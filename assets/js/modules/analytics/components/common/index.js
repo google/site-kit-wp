@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-export { default as AccountCreateLegacy } from './account-create-legacy';
-export { default as AccountCreate } from './account-create';
-export { default as AccountSelect } from './account-select';
-export { default as AnonymizeIPSwitch } from './anonymize-ip-switch';
-export { default as ErrorNotice } from './error-notice';
-export { default as ExistingTagError } from './existing-tag-error';
-export { default as ExistingTagNotice } from './existing-tag-notice';
+export { default as AccountCreateLegacy } from './AccountCreateLegacy';
+export { default as AccountCreate } from './AccountCreate';
+export { default as AccountSelect } from './AccountSelect';
+export { default as AnonymizeIpSwitch } from './AnonymizeIpSwitch';
+export { default as ErrorNotice } from './ErrorNotice';
+export { default as ExistingTagError } from './ExistingTagError';
+export { default as ExistingTagNotice } from './ExistingTagNotice';
 export { default as ProfileNameTextField } from './ProfileNameTextField';
-export { default as ProfileSelect } from './profile-select';
-export { default as PropertySelect } from './property-select';
-export { default as TrackingExclusionSwitches } from './tracking-exclusion-switches';
-export { default as UseSnippetSwitch } from './use-snippet-switch';
+export { default as ProfileSelect } from './ProfileSelect';
+export { default as PropertySelect } from './PropertySelect';
+export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitches';
+export { default as UseSnippetSwitch } from './UseSnippetSwitch';

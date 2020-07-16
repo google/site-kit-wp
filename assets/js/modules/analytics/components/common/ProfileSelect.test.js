@@ -24,7 +24,7 @@ import apiFetchMock from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import ProfileSelect from './profile-select';
+import ProfileSelect from './ProfileSelect';
 import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';

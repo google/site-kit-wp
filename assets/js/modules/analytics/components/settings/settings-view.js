@@ -30,7 +30,7 @@ import { escapeURI } from '../../../../util/escape-uri';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { trackingExclusionLabels } from '../common/tracking-exclusion-switches';
+import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { ExistingTagError, ExistingTagNotice, ErrorNotice } from '../common';
 const { useSelect } = Data;
 

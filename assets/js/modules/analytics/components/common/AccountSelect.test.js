@@ -24,7 +24,7 @@ import apiFetchMock from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import AccountSelect from './account-select';
+import AccountSelect from './AccountSelect';
 import { fireEvent, muteConsole, render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';

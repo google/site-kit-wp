@@ -22,7 +22,7 @@ import {
 	AccountSelect,
 	PropertySelect,
 	ProfileSelect,
-	AnonymizeIPSwitch,
+	AnonymizeIpSwitch,
 	UseSnippetSwitch,
 	TrackingExclusionSwitches,
 } from '../assets/js/modules/analytics/components/common';
@@ -100,7 +100,7 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<AnonymizeIPSwitch />
+					<AnonymizeIpSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
@@ -114,7 +114,7 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<AnonymizeIPSwitch />
+					<AnonymizeIpSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);

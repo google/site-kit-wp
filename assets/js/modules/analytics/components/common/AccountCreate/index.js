@@ -25,21 +25,21 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Button from '../../../../components/button';
-import Link from '../../../../components/link';
-import ProgressBar from '../../../../components/progress-bar';
-import { trackEvent } from '../../../../util';
-import TimezoneSelect from './account-create/timezone-select';
-import AccountField from './account-create/account-field';
-import PropertyField from './account-create/property-field';
-import ProfileField from './account-create/profile-field';
-import CountrySelect from './account-create/country-select';
-import ErrorNotice from './error-notice';
-import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER, PERMISSION_SCOPE_ERROR_CODE } from '../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { countryCodesByTimezone } from '../../util/countries-timezones';
+import Button from '../../../../../components/button';
+import Link from '../../../../../components/link';
+import ProgressBar from '../../../../../components/progress-bar';
+import { trackEvent } from '../../../../../util';
+import TimezoneSelect from './TimezoneSelect';
+import AccountField from './AccountField';
+import PropertyField from './PropertyField';
+import ProfileField from './ProfileField';
+import CountrySelect from './CountrySelect';
+import ErrorNotice from './ErrorNotice';
+import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER, PERMISSION_SCOPE_ERROR_CODE } from '../../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { countryCodesByTimezone } from '../../../util/countries-timezones';
 import Data from 'googlesitekit-data';
 
 const { useDispatch, useSelect } = Data;

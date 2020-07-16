@@ -24,7 +24,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import AnalyticsAdminbarWidgetOverview from './adminbar-widget-overview';
+import AnalyticsAdminbarWidgetOverview from './AnalyticsAdminbarWidgetOverview';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
 import { getModulesData } from '../../../../util';
 

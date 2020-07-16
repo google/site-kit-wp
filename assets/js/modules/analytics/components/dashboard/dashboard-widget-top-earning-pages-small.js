@@ -35,7 +35,7 @@ import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
-import AdSenseLinkCTA from '../common/adsense-link-cta';
+import AdSenseLinkCta from '../common/AdSenseLinkCta';
 import {
 	analyticsAdsenseReportDataDefaults,
 	getTimeInSeconds,
@@ -131,7 +131,7 @@ const getDataError = ( data ) => {
 						className="googlesitekit-top-earnings-pages"
 						fill
 					>
-						<AdSenseLinkCTA />
+						<AdSenseLinkCta />
 					</Layout>
 				</div>
 			);
