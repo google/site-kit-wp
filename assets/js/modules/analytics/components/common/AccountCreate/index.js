@@ -34,7 +34,7 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
-import ErrorNotice from './ErrorNotice';
+import ErrorNotice from '../ErrorNotice';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER, PERMISSION_SCOPE_ERROR_CODE } from '../../../../../googlesitekit/datastore/user/constants';

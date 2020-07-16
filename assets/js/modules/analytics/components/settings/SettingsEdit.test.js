@@ -27,7 +27,7 @@ import apiFetchMock from '@wordpress/api-fetch';
 import { render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import SettingsEdit from './settings-edit';
+import SettingsEdit from './SettingsEdit';
 import * as fixtures from '../../datastore/__fixtures__';
 
 // Mock apiFetch so we know if it's called.

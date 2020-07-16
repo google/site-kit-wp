@@ -42,7 +42,7 @@ import {
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
-} from '../common/';
+} from '../common';
 import { trackEvent } from '../../../../util';
 import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 const { useSelect, useDispatch } = Data;

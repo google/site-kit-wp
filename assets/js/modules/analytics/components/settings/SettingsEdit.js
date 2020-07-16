@@ -28,7 +28,7 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import SettingsForm from './settings-form';
+import SettingsForm from './SettingsForm';
 import ProgressBar from '../../../../components/progress-bar';
 import {
 	AccountCreate,

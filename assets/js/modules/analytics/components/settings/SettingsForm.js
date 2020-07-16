@@ -29,7 +29,7 @@ import {
 	TrackingExclusionSwitches,
 	UseSnippetSwitch,
 	ProfileNameTextField,
-} from '../common/';
+} from '../common';
 
 export default function SettingsForm() {
 	return (

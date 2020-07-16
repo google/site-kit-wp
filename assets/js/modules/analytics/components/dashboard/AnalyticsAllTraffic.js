@@ -35,8 +35,8 @@ import DashboardModuleHeader from '../../../../components/dashboard/dashboard-mo
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getSetupIncompleteComponent from '../../../../components/notifications/setup-incomplete';
-import DashboardAcquisitionPieChart from './dashboard-widget-acquisition-piechart';
-import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './dashboard-alltraffic-widget-top-acquisition-sources-table';
+import DashboardAcquisitionPieChart from './DashboardAcquisitionPieChart';
+import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 import { getModulesData } from '../../../../util';
 
 class AnalyticsAllTraffic extends Component {

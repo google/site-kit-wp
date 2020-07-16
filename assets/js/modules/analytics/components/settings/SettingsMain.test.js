@@ -23,7 +23,7 @@ import { render, fireEvent, waitFor } from '../../../../../../tests/js/test-util
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import SettingsMain from './settings-main';
+import SettingsMain from './SettingsMain';
 
 describe( 'SettingsMain', () => {
 	const initialSettings = {
