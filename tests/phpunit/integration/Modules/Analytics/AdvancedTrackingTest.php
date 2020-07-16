@@ -119,7 +119,7 @@ class AdvancedTrackingTest extends TestCase {
 	 * @param array $actual_event_configs list of Measurement_Event objects returned by Advanced_Tracking.
 	 */
 	private function compare_event_configurations( $actual_event_configs ) {
-		foreach ( $this->mock_plugin_detector->determine_active_plugins() as $plugin_name => $plugin_config ) {
+		foreach ( $this->mock_plugin_detector->determine_active_plugins( null ) as $plugin_name => $plugin_config ) {
 			$event_list = $plugin_config['event_config_list'];
 			foreach ( $event_list->get_events() as $expected_event_config ) {
 				$found = false;
