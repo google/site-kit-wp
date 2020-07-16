@@ -20,14 +20,6 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 class Plugin_Detector {
 
 	/**
-	 * A list of AdvancedTracking supported plugins.
-	 *
-	 * @since n.e.x.t.
-	 * @var array
-	 */
-	private $supported_plugins = array();
-
-	/**
 	 * The constant check_type string for support_plugins array in the Advanced_Tracking class.
 	 *
 	 * @since n.e.x.t.
@@ -43,27 +35,18 @@ class Plugin_Detector {
 	 */
 	const TYPE_FUNCTION = 'FUNCTION';
 
-	/**
-	 * Plugin_Detector constructor.
-	 *
-	 * @since n.e.x.t.
-	 *
-	 * @param array $supported_plugins list of supported plugins.
-	 */
-	public function __construct( $supported_plugins ) {
-		$this->supported_plugins = $supported_plugins;
-	}
 
 	/**
 	 * Determines the user's current active plugins that Advanced_Tracking supports.
 	 *
 	 * @since n.e.x.t.
 	 *
+	 * @param  array $supported_plugins The List of supported plugins.
 	 * @return array $active_plugins The list of active plugin configurations.
 	 */
-	public function determine_active_plugins() {
+	public function determine_active_plugins( $supported_plugins ) {
 		return array_filter(
-			$this->supported_plugins,
+			$supported_plugins,
 			function( $plugin_config ) {
 				return ( self::TYPE_CONSTANT === $plugin_config['check_type'] &&
 					defined( $plugin_config['check_name'] ) ) || // phpcs:ignore WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName

@@ -36,9 +36,10 @@ class MockPluginDetector extends Plugin_Detector {
 	 *
 	 * @since n.e.x.t.
 	 *
+	 * @param array The list of supported plugins.
 	 * @return array Current plugin configuration list.
 	 */
-	public function determine_active_plugins() {
+	public function determine_active_plugins( $supported_plugins ) {
 		return $this->mock_active_plugins;
 	}
 
@@ -47,7 +48,8 @@ class MockPluginDetector extends Plugin_Detector {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param string $plugin_name plugin to be added.
+	 * @param string $plugin_name Plugin to be added.
+	 * @param array $plugin_config The event tracking configuration information array for the plugin.
 	 */
 	public function add_active_plugin( $plugin_name, $plugin_config ) {
 		if ( in_array( $plugin_config, $this->mock_active_plugins ) ) {

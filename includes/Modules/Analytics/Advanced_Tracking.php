@@ -90,7 +90,7 @@ final class Advanced_Tracking {
 			),
 		);
 		if ( null === $plugin_detector ) {
-			$this->plugin_detector = new Plugin_Detector( $this->supported_plugins );
+			$this->plugin_detector = new Plugin_Detector();
 		} else {
 			$this->plugin_detector = $plugin_detector;
 		}
@@ -152,7 +152,7 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	private function configure_events() {
-		$active_plugins = $this->plugin_detector->determine_active_plugins();
+		$active_plugins = $this->plugin_detector->determine_active_plugins( $this->supported_plugins );
 
 		$this->event_configurations = array();
 		foreach ( $active_plugins as $plugin_config ) {
