@@ -49,12 +49,12 @@ class NotificationCounter extends Component {
 		// Wait until data is fully loaded before requesting notifications data.
 		addAction(
 			'googlesitekit.dataLoaded',
-			'googlesitekit.dataLoadedGetNotifications',
+			'googlesitekit.dataLoadedGetTotalNotifications',
 			() => {
 				// Only handle the first completed data load.
 				removeAction(
 					'googlesitekit.dataLoaded',
-					'googlesitekit.dataLoadedGetNotifications'
+					'googlesitekit.dataLoadedGetTotalNotifications'
 				);
 				getTotalNotifications().then( ( count ) => {
 					this.setState( { count } );
