@@ -98,5 +98,22 @@ describe( 'modules/tagmanager existing-tag', () => {
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( existingTagURLs ).toEqual( expectedURLs );
 		} );
+
+		it( 'returns urls if fetch throws an error', async () => {
+			const homeURL = 'http://example.com/';
+			const expectedURLs = [
+				homeURL,
+			];
+
+			// muteConsole( 'error' );
+			fetchMock.getOnce(
+				/^\/wp\/v2\/posts/,
+				{ throws: 'error' }
+			);
+
+			const existingTagURLs = await getExistingTagURLs( { homeURL } );
+
+			expect( existingTagURLs ).toEqual( expectedURLs );
+		} );
 	} );
 } );

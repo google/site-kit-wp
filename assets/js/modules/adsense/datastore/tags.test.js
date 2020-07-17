@@ -53,13 +53,9 @@ describe( 'modules/adsense tags', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {
-
-	} );
-
 	describe( 'selectors', () => {
 		describe( 'getExistingTag', () => {
-			it( 'uses a resolver to get tag', async () => {
+			it( 'gets the correct adsense tag', async () => {
 				const expectedTag = 'ca-pub-12345678';
 
 				fetchMock.getOnce(
@@ -67,18 +63,15 @@ describe( 'modules/adsense tags', () => {
 					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
 				);
 
-				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
-				expect( initialExistingTag ).toEqual( undefined );
+				registry.select( STORE_NAME ).getExistingTag();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
-				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( existingTag ).toEqual( expectedTag );
 			} );
 		} );
+
 		describe( 'getTagPermission', () => {
 			it( 'returns true if a user has access to this tag', async () => {
 				fetchMock.getOnce(

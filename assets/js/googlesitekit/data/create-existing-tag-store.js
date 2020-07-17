@@ -41,23 +41,24 @@ const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
  * @since n.e.x.t
  * @private
  *
- * @param {string}   type                The data to access. One of 'core' or 'modules'.
- * @param {string}   identifier          The data identifier, eg. a module slug like 'analytics'.
- * @param {Object}   options             Options to consider for the store.
- * @param {Array}    options.tagMatchers The tag matchers used to extract tags from HTML.
- * @param {Function} options.isValidTag  Optional. Function to detect whether a tag is valid or not.
- * @param {string}   options.storeName   Optional. Store name to use. Default is '{type}/{identifier}'.
+ * @param {string}   type                 The data to access. One of 'core' or 'modules'.
+ * @param {string}   identifier           The data identifier, eg. a module slug like 'analytics'.
+ * @param {Object}   options              Options to consider for the store.
+ * @param {Array}    options.tagMatchers  The tag matchers used to extract tags from HTML.
+ * @param {Function} [options.isValidTag] Optional. Function to detect whether a tag is valid or not.
+ * @param {string}   [options.storeName]  Optional. Store name to use. Default is '{type}/{identifier}'.
  * @return {Object} The existing tag store object, with additional `STORE_NAME` and
  * INITIAL_STATE` properties.
  */
 export const createExistingTagStore = ( type, identifier, {
-	tagMatchers = [],
+	tagMatchers,
 	isValidTag = () => true,
 	storeName = undefined,
 } = {} ) => {
 	invariant( type, 'type is required.' );
 	invariant( identifier, 'identifier is required.' );
-	invariant( tagMatchers, 'tagMatchers is required.' );
+	invariant( 'function' === typeof isValidTag, 'isValidTag must be a function.' );
+	invariant( Array.isArray( tagMatchers ), 'tagMatchers must be an Array.' );
 
 	const STORE_NAME = storeName || `${ type }/${ identifier }`;
 

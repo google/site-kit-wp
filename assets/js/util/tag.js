@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { memoize } from 'lodash';
+import memoize from 'lodash/memoize';
 
 /**
  * WordPress dependencies
@@ -32,8 +32,8 @@ import { addQueryArgs, isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import { default as setupTagMatchers } from '../components/setup/tag-matchers';
-import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
-import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
+import { default as adsenseTagMatchers } from '../modules/adsense/util/tag-matchers';
+import { default as analyticsTagMatchers } from '../modules/analytics/util/tag-matchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
 import { AMP_MODE_SECONDARY } from '../googlesitekit/datastore/site/constants';
 
@@ -112,16 +112,16 @@ export const extractTag = ( string, module ) => {
 };
 
 /**
- * Extracts a tag matched by a given matcher from the given HTML string.
+ * Extracts a tag from the given HTML string matched by given matchers.
  *
  * @since n.e.x.t
  *
- * @param {string} html The string of html from which to extract the tag.
- * @param {Array} tagMatchers An array of the matchers to use.
+ * @param {string} html       The string of html from which to extract the tag.
+ * @param {Array}  tagMatchers An array of the matchers to use.
  *
  * @return {(string|boolean)} The tag id if found, otherwise false.
  */
-export const extractExistingTag = ( html, tagMatchers = [] ) => {
+export const extractExistingTag = ( html, tagMatchers ) => {
 	const matchingPattern = tagMatchers.find( ( pattern ) => pattern.test( html ) );
 
 	if ( matchingPattern ) {
@@ -136,9 +136,9 @@ export const extractExistingTag = ( html, tagMatchers = [] ) => {
  *
  * @since n.e.x.t
  *
- * @param {Object} args         Arguments to use to get URLs.
- * @param {string} args.homeURL The site's home URLs.
- * @param {string} args.ampMode Optional. The site's AMP mode.
+ * @param {Object} args           Arguments to use to get URLs.
+ * @param {string} args.homeURL   The site's home URL.
+ * @param {string} [args.ampMode] Optional. The site's AMP mode.
  * @return {Array} An array of the existing tag URLs.
  */
 export const getExistingTagURLs = memoize( async ( { homeURL, ampMode } ) => {
@@ -152,14 +152,18 @@ export const getExistingTagURLs = memoize( async ( { homeURL, ampMode } ) => {
 
 	// Add first post in AMP mode if AMP mode is secondary.
 	if ( AMP_MODE_SECONDARY === ampMode ) {
-		const ampPostURL = await apiFetch( { path: '/wp/v2/posts?per_page=1' } )
-			.then(
-				( posts ) => posts.slice( 0, 1 ).map(
-					( post ) => addQueryArgs( post.link, { amp: 1 } )
-				).pop()
-			);
-		if ( ampPostURL ) {
-			urls.push( ampPostURL );
+		try {
+			const ampPostURL = await apiFetch( { path: '/wp/v2/posts?per_page=1' } )
+				.then(
+					( posts ) => posts.slice( 0, 1 ).map(
+						( post ) => addQueryArgs( post.link, { amp: 1 } )
+					).pop()
+				);
+			if ( ampPostURL ) {
+				urls.push( ampPostURL );
+			}
+		} catch {
+			return urls;
 		}
 	}
 

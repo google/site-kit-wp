@@ -55,7 +55,7 @@ describe( 'modules/analytics tags', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getExistingTag', () => {
-			it( 'uses a resolver to get tag', async () => {
+			it( 'gets the correct analytics tag', async () => {
 				const expectedTag = 'UA-12345678-1';
 
 				fetchMock.getOnce(
@@ -63,53 +63,12 @@ describe( 'modules/analytics tags', () => {
 					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
 				);
 
-				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
-				expect( initialExistingTag ).toEqual( undefined );
+				registry.select( STORE_NAME ).getExistingTag();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
-				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( existingTag ).toEqual( expectedTag );
-			} );
-			it( 'returns true if a user has access to this tag', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsAccess, status: 200 }
-				);
-
-				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
-				const accountID = fixtures.getTagPermissionsAccess.accountID;
-				const permission = fixtures.getTagPermissionsAccess.permission;
-
-				const initialSelect = registry.select( STORE_NAME ).getTagPermission( propertyID );
-
-				// Ensure the proper parameters were sent.
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{
-						query: { propertyID },
-					}
-				);
-
-				// The connection info will be its initial value while the connection
-				// info is fetched.
-				expect( initialSelect ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined
-					),
-				);
-
-				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID );
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-				expect( permissionForTag ).toEqual( {
-					accountID,
-					permission,
-				} );
 			} );
 		} );
 

@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { extractExistingTag } from '../tag';
-import { default as adsenseTagMatchers } from '../../modules/adsense/util/tagMatchers';
-import { default as analyticsTagMatchers } from '../../modules/analytics/util/tagMatchers';
+import { default as adsenseTagMatchers } from '../../modules/adsense/util/tag-matchers';
+import { default as analyticsTagMatchers } from '../../modules/analytics/util/tag-matchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../../modules/tagmanager/util';
 
 const valuesToTest = [

@@ -24,7 +24,7 @@ function tagHeadHTML( analyticsID ) {
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
 	
-	  gtag('config', 'UA-17734987-1');
+	  gtag('config', '${ analyticsID }');
 	</script>`;
 }
 

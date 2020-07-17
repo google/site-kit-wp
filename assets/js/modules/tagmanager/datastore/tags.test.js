@@ -52,37 +52,9 @@ describe( 'modules/tagmanager existing-tag', () => {
 		API.setUsingCache( true );
 	} );
 
-	describe( 'actions', () => {
-		describe( 'getExistingTag', () => {
-			it( 'supports asynchronous existing tag resolution', async () => {
-				const expectedTag = 'GTM-S1T3K1T';
-
-				let resolveResponse;
-				const responsePromise = new Promise( ( resolve ) => {
-					resolveResponse = () => resolve( { body: factories.generateHTMLWithTag( expectedTag ), status: 200 } );
-				} );
-				fetchMock.getOnce(
-					{ query: { tagverify: '1' } },
-					responsePromise
-				);
-				const promise = registry.dispatch( STORE_NAME ).fetchGetExistingTag();
-
-				expect( registry.select( STORE_NAME ).getExistingTag() ).toBe( undefined );
-
-				resolveResponse();
-				await promise;
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-				expect( registry.select( STORE_NAME ).getExistingTag() ).toBe( expectedTag );
-			} );
-		} );
-	} );
-
 	describe( 'selectors', () => {
 		describe( 'getExistingTag', () => {
-			it( 'uses a resolver to make a network request', async () => {
+			it( 'gets the correct tagmanager tag', async () => {
 				const expectedTag = 'GTM-S1T3K1T';
 
 				fetchMock.getOnce(
@@ -90,15 +62,11 @@ describe( 'modules/tagmanager existing-tag', () => {
 					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
 				);
 
-				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
-				expect( initialExistingTag ).toEqual( undefined );
+				registry.select( STORE_NAME ).getExistingTag();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
-				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( existingTag ).toEqual( expectedTag );
 			} );
 
@@ -223,17 +191,10 @@ describe( 'modules/tagmanager existing-tag', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				const expectedTag = 'GTM-S1T3K1T';
-
-				fetchMock.getOnce(
-					{ query: { tagverify: '1' } },
-					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
-				);
+				muteFetch();
 				expect( registry.select( STORE_NAME ).hasExistingTag() ).toEqual( undefined );
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( registry.select( STORE_NAME ).hasExistingTag() ).not.toEqual( undefined );
 			} );

@@ -47,29 +47,6 @@ describe( 'core/site html', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'fetchGetHTMLForURL', () => {
-			it( 'sets isFetchingGetHTMLForURL while fetching HTML then sets back to false', async () => {
-				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
-				const url = 'https://example.com';
-
-				fetchMock.getOnce(
-					{ query: { tagverify: '1' } },
-					{ body: html, status: 200 }
-				);
-
-				const promise = registry.dispatch( STORE_NAME ).fetchGetHTMLForURL( url );
-
-				expect( registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) ).toEqual( true );
-
-				await promise;
-
-				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( selectedHTML ).toEqual( html );
-				expect( registry.select( STORE_NAME ).isFetchingGetHTMLForURL( url ) ).toEqual( false );
-			} );
-		} );
-
 		describe( 'resetHTMLForURL', () => {
 			it( 'invalidates the resolver for getHTMLForURL', async () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
@@ -98,11 +75,11 @@ describe( 'core/site html', () => {
 				} ).toThrow( 'params is required.' );
 			} );
 
-			it( 'receives and sets HTML for a URL ', async () => {
+			it( 'receives and sets HTML for a URL ', () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
-				await registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
-				expect( registry.select( STORE_NAME ).getHTMLForURL( url ) ).toBe( html );
+				registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
+				expect( registry.stores[ STORE_NAME ].store.getState().htmlForURL[ url ] ).toBe( html );
 			} );
 		} );
 	} );
@@ -129,7 +106,7 @@ describe( 'core/site html', () => {
 				expect( selectedHTML ).toEqual( html );
 			} );
 
-			it( 'does not make a network request if data is already in state', async () => {
+			it( 'does not make a network request if data is already in state', () => {
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
 				registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
@@ -148,6 +125,7 @@ describe( 'core/site html', () => {
 					{ body: undefined, status: 500 }
 				);
 
+				// `muteConsole` is not needed since `fetchGetHTMLForURL` uses `fetch` internally instead of `apiFetch`.
 				registry.select( STORE_NAME ).getHTMLForURL( url );
 
 				await untilResolved( registry, STORE_NAME ).getHTMLForURL( url );

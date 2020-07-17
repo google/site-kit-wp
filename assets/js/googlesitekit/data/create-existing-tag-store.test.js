@@ -27,14 +27,9 @@ import {
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../tests/js/utils';
-import { createExistingTagStore } from './create-existing-tag-store';
-import { isValidPropertyID } from '../../modules/analytics/util';
-import { tagMatchers } from '../../modules/analytics/util/tagMatchers';
 import * as factories from '../../modules/analytics/datastore/__factories__';
 import { STORE_NAME } from '../../modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../datastore/site/constants';
-
-const STORE_ARGS = [ 'modules', 'analytics' ]; // Using Analytics store for testing.
 
 describe( 'createExistingTagStore store', () => {
 	let registry;
@@ -42,7 +37,6 @@ describe( 'createExistingTagStore store', () => {
 
 	let dispatch;
 	let select;
-	let storeDefinition;
 	let store;
 
 	beforeAll( () => {
@@ -51,10 +45,6 @@ describe( 'createExistingTagStore store', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		storeDefinition = createExistingTagStore( ...STORE_ARGS, {
-			tagMatchers,
-			isValidTag: isValidPropertyID,
-		} );
 		dispatch = registry.dispatch( STORE_NAME );
 		store = registry.stores[ STORE_NAME ].store;
 		select = registry.select( STORE_NAME );
@@ -67,12 +57,6 @@ describe( 'createExistingTagStore store', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-	} );
-
-	describe( 'name', () => {
-		it( 'returns the correct default store name', () => {
-			expect( storeDefinition.STORE_NAME ).toEqual( `${ STORE_ARGS[ 0 ] }/${ STORE_ARGS[ 1 ] }` );
-		} );
 	} );
 
 	describe( 'actions', () => {
