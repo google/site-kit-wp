@@ -82,6 +82,32 @@ describe( 'core/site html', () => {
 				expect( registry.stores[ STORE_NAME ].store.getState().htmlForURL[ url ] ).toBe( html );
 			} );
 		} );
+
+		describe( 'waitForHTMLForURL', () => {
+			it( 'supports asynchronous waiting for HTML', async () => {
+				const url = 'https://example.com';
+				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
+
+				let resolveResponse;
+				const responsePromise = new Promise( ( resolve ) => {
+					resolveResponse = () => resolve( { body: html, status: 200 } );
+				} );
+				fetchMock.getOnce(
+					{ query: { tagverify: '1' } },
+					responsePromise
+				);
+				const promise = registry.dispatch( STORE_NAME ).waitForHTMLForURL( url );
+
+				expect( registry.select( STORE_NAME ).getHTMLForURL( url ) ).toBe( undefined );
+
+				resolveResponse();
+				await promise;
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				expect( registry.select( STORE_NAME ).getHTMLForURL( url ) ).toBe( html );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
