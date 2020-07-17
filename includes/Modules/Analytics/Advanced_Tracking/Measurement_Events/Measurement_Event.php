@@ -38,21 +38,20 @@ final class Measurement_Event implements \JsonSerializable {
 	 * @throws \Exception Thrown when config param is undefined.
 	 */
 	public function __construct( $config ) {
-		$this->validate_config_keys( $config );
-		$this->validate_config_value_types( $config );
+		$this->validate_config( $config );
 
 		$this->config = $config;
 	}
 
 	/**
-	 * Validates configuration keys.
+	 * Validates the configuration keys and value types.
 	 *
 	 * @since n.e.x.t.
 	 *
 	 * @param array $config The event's configuration.
-	 * @throws \Exception Thrown when duplicate keys or invalid keys.
+	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
-	private function validate_config_keys( $config ) {
+	private function validate_config( $config ) {
 		$valid_keys = array(
 			'pluginName' => false,
 			'category'   => false,
@@ -62,28 +61,9 @@ final class Measurement_Event implements \JsonSerializable {
 			'metadata'   => false,
 		);
 		foreach ( $config as $key => $value ) {
-			if ( array_key_exists( $key, $valid_keys ) ) {
-				if ( $valid_keys[ $key ] ) {
-					throw new \Exception( 'Duplicate configuration parameter: ' . $key );
-				} else {
-					$valid_keys[ $key ] = true;
-				}
-			} else {
+			if ( ! array_key_exists( $key, $valid_keys ) ) {
 				throw new \Exception( 'Invalid configuration parameter: ' . $key );
 			}
-		}
-	}
-
-	/**
-	 * Validates configuration value types.
-	 *
-	 * @since n.e.x.t.
-	 *
-	 * @param array $config The event's configuration.
-	 * @throws \Exception Thrown when configuration value type is invalid.
-	 */
-	private function validate_config_value_types( $config ) {
-		foreach ( $config as $key => $value ) {
 			$value_type = gettype( $value );
 			if ( 'string' !== $value_type ) {
 				throw new \Exception( 'Invalid type [' . $value_type . '] for configuration paramter: ' . $key );

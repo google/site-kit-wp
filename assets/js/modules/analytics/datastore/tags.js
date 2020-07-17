@@ -76,6 +76,7 @@ const fetchGetTagPermissionStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
+const WAIT_FOR_TAG_PERMISSION = 'WAIT_FOR_TAG_PERMISSION';
 
 const BASE_INITIAL_STATE = {
 	existingTag: undefined,
@@ -87,6 +88,12 @@ const baseActions = {
 		return {
 			payload: {},
 			type: WAIT_FOR_EXISTING_TAG,
+		};
+	},
+	waitForTagPermission( propertyID ) {
+		return {
+			payload: { propertyID },
+			type: WAIT_FOR_TAG_PERMISSION,
 		};
 	},
 };
@@ -101,6 +108,23 @@ const baseControls = {
 		return new Promise( ( resolve ) => {
 			const unsubscribe = registry.subscribe( () => {
 				if ( isExistingTagLoaded() ) {
+					unsubscribe();
+					resolve();
+				}
+			} );
+		} );
+	} ),
+	[ WAIT_FOR_TAG_PERMISSION ]: createRegistryControl( ( registry ) => ( { payload: { propertyID } } ) => {
+		// Select first to ensure resolution is always triggered.
+		const { getTagPermission, hasFinishedResolution } = registry.select( STORE_NAME );
+		getTagPermission( propertyID );
+		const isTagPermissionLoaded = () => hasFinishedResolution( 'getTagPermission', [ propertyID ] );
+		if ( isTagPermissionLoaded() ) {
+			return;
+		}
+		return new Promise( ( resolve ) => {
+			const unsubscribe = registry.subscribe( () => {
+				if ( isTagPermissionLoaded() ) {
 					unsubscribe();
 					resolve();
 				}
@@ -163,7 +187,14 @@ const baseSelectors = {
 	getExistingTag( state ) {
 		const { existingTag } = state;
 
-		return existingTag;
+		if ( existingTag === undefined ) {
+			return undefined;
+		}
+
+		// It's possible to have an invalid accountID saved by something like the
+		// AMP plugin (see: https://github.com/google/site-kit-wp/issues/1651).
+		// Before returning a tag we should make sure it's valid.
+		return !! existingTag && isValidPropertyID( existingTag ) ? existingTag : null;
 	},
 
 	/**

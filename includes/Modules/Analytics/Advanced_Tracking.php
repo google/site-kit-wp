@@ -56,10 +56,9 @@ final class Advanced_Tracking {
 	/**
 	 * Advanced_Tracking constructor.
 	 *
+	 * @since n.e.x.t.
+	 *
 	 * @param Plugin_Detector $plugin_detector Optional plugin detector used for testing. Default is a new instance.
-	 *
-	 *@since n.e.x.t.
-	 *
 	 */
 	public function __construct( $plugin_detector = null ) {
 		$this->supported_plugins = array(
@@ -140,6 +139,10 @@ final class Advanced_Tracking {
 	 */
 	private function set_up_advanced_tracking_amp( $gtag_amp_opt ) {
 		$this->configure_events();
+
+		if ( ! array_key_exists( 'triggers', $gtag_amp_opt ) ) {
+			$gtag_amp_opt['triggers'] = array();
+		}
 		foreach ( $this->event_configurations as $event_config ) {
 			$gtag_amp_opt['triggers'][ $event_config->get_amp_trigger_name() ] = $event_config->to_amp_config();
 		}

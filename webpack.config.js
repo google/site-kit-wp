@@ -30,6 +30,8 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
+const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
+const flagsConfig = require( './webpack.feature-flags.config' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -54,11 +56,14 @@ const rules = [
 		use: [
 			{
 				loader: 'babel-loader',
-				query: {
-					presets: [ [ '@babel/env', {
-						useBuiltIns: 'entry',
-						corejs: 2,
-					} ], '@babel/preset-react' ],
+				options: {
+					babelrc: false,
+					configFile: false,
+					cacheDirectory: true,
+					presets: [
+						'@wordpress/default',
+						'@babel/preset-react',
+					],
 				},
 			},
 			{
@@ -151,6 +156,13 @@ const webpackConfig = ( mode ) => {
 					allowAsyncCycles: false,
 					cwd: process.cwd(),
 				} ),
+				new FeatureFlagsPlugin(
+					flagsConfig,
+					{
+						modes: [ 'development', 'production' ],
+						mode,
+					},
+				),
 			],
 			optimization: {
 				minimizer: [
@@ -199,17 +211,14 @@ const webpackConfig = ( mode ) => {
 						test: /\.scss$/,
 						use: [
 							MiniCssExtractPlugin.loader,
-							{
-								loader: 'css-loader',
-								options: {
-									minimize: ( 'production' === mode ),
-								},
-							},
+							'css-loader',
 							'postcss-loader',
 							{
 								loader: 'sass-loader',
 								options: {
-									includePaths: [ 'node_modules' ],
+									sassOptions: {
+										includePaths: [ 'node_modules' ],
+									},
 								},
 							},
 						],

@@ -21,6 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import authentication from './authentication';
+import dateRange from './date-range';
 import disconnect from './disconnect';
 import error from './error';
 import notifications from './notifications';
@@ -33,6 +34,7 @@ export { STORE_NAME };
 const store = Data.combineStores(
 	Data.commonStore,
 	authentication,
+	dateRange,
 	disconnect,
 	error,
 	notifications,

@@ -41,7 +41,6 @@ import {
 	AccountCreateLegacy,
 	ExistingTagError,
 } from '../common';
-import { parsePropertyID } from '../util';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -49,7 +48,8 @@ export default function SetupMain( { finishSetup } ) {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
+	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
@@ -59,12 +59,12 @@ export default function SetupMain( { finishSetup } ) {
 	// Set the accountID and property if there is an existing tag.
 	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
 	useEffect( () => {
-		if ( hasExistingTag ) {
-			const { accountID: existingTagAccountID } = parsePropertyID( existingTag );
+		if ( hasExistingTag && existingTagPermission ) {
+			const { accountID: existingTagAccountID } = existingTagPermission;
 			setAccountID( existingTagAccountID );
 			selectProperty( existingTag );
 		}
-	}, [ hasExistingTag, existingTag ] );
+	}, [ hasExistingTag, existingTag, existingTagPermission ] );
 
 	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -82,7 +82,7 @@ export default function SetupMain( { finishSetup } ) {
 	// when the component initially loads and has yet to start fetching accounts.
 	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating ) {
 		viewComponent = <ProgressBar />;
-	} else if ( hasExistingTag && existingTagPermission === false ) {
+	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ( Array.isArray( accounts ) && ! accounts.length ) ) {
 		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;

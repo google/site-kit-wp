@@ -119,7 +119,7 @@ class AdvancedTrackingTest extends TestCase {
 	 * @param array $actual_event_configs list of Measurement_Event objects returned by Advanced_Tracking.
 	 */
 	private function compare_event_configurations( $actual_event_configs ) {
-		foreach ( $this->mock_plugin_detector->determine_active_plugins() as $plugin_name => $plugin_config ) {
+		foreach ( $this->mock_plugin_detector->determine_active_plugins( null ) as $plugin_name => $plugin_config ) {
 			$event_list = $plugin_config['event_config_list'];
 			foreach ( $event_list->get_events() as $expected_event_config ) {
 				$found = false;
@@ -152,9 +152,14 @@ class AdvancedTrackingTest extends TestCase {
 			var matcher = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector || el.oMatchesSelector;
 			if ( matcher && ( matcher.call( el, thisConfig.selector ) || matcher.call( el, thisConfig.selector.concat( ' *' ) ) ) ) {
 				alert( 'Got an event called: '.concat( thisConfig.action ) );
-				gtag( 'event', thisConfig.action, {
-				    'event_category': thisConfig.category
-				 });
+
+				var params = {};
+				if (null !== thisConfig.metadata) {
+					params = thisConfig.metadata( params );
+				}
+				params['event_category'] = thisConfig.category;
+
+				gtag( 'event', thisConfig.action, params);
 			}
 		}, true );
 	}

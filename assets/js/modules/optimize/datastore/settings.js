@@ -128,9 +128,9 @@ export const selectors = {
 		if ( ! haveSettingsChanged() ) {
 			return false;
 		}
-		// Require an ampExperimentJSON to be present.
+		// Require an ampExperimentJSON to be valid JSON if set.
 		const ampExperimentJSON = getAMPExperimentJSON();
-		if ( '' !== ampExperimentJSON && ! isValidAMPExperimentJSON( ampExperimentJSON ) ) {
+		if ( ! isValidAMPExperimentJSON( ampExperimentJSON ) ) {
 			return false;
 		}
 		// Require optimize ID to be either empty (if impossible to determine)
