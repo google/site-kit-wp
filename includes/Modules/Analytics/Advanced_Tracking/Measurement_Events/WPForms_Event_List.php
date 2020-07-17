@@ -32,6 +32,15 @@ final class WPForms_Event_List extends Measurement_Event_List {
 				'action'     => 'form_submit',
 				'selector'   => '.wpforms-submit-container button',
 				'on'         => 'click',
+				'metadata'   => <<<CALLBACK
+function( params, element ) {
+	var formId = document.querySelector('.wpforms-submit-container input[name="wpforms[id]"]').value;
+	console.log(formId);
+	params['event_label'] = formId;
+	return params;
+}
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );

@@ -32,9 +32,22 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 				'action'     => 'add_to_cart',
 				'selector'   => '.woocommerce-page .add_to_cart_button',
 				'on'         => 'click',
-				'metadata'   => 'function() {
-					alert("hello");
-				}',
+				'metadata'   => <<<CALLBACK
+function( params, element ) {
+	var value = element.closest('li').querySelector('span.woocommerce-Price-amount').lastChild.textContent;
+	var currency = element.closest('li').querySelector('span.woocommerce-Price-currencySymbol').innerText;
+	console.log(parseFloat(value));
+	console.log(typeof parseFloat(value));
+	console.log(currency);
+
+	params['value'] = parseFloat(value);
+	params['currency'] = currency;
+
+
+	return params;
+}
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );

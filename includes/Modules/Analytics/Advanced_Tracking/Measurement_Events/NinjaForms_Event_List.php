@@ -32,6 +32,15 @@ final class NinjaForms_Event_List extends Measurement_Event_List {
 				'action'     => 'form_submit',
 				'selector'   => 'div.nf-field-container.submit-container [type="button"]',
 				'on'         => 'click',
+				'metadata'   => <<<CALLBACK
+function( params, element ) {
+	var formName = document.querySelector('.nf-form-title').innerText;
+	console.log(formName);
+	params['event_label'] = formName;
+	return params;
+}
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );

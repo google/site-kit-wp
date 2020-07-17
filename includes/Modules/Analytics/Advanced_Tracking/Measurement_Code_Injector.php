@@ -60,7 +60,7 @@ final class Measurement_Code_Injector {
 
 				var params = {};
 				if (null !== thisConfig.metadata) {
-					params = thisConfig.metadata( params );
+					params = thisConfig.metadata( params, el );
 				}
 				params['event_category'] = thisConfig.category;
 

@@ -32,6 +32,15 @@ final class FormidableForms_Event_List extends Measurement_Event_List {
 				'action'     => 'form_submit',
 				'selector'   => '.frm_fields_container .frm_button_submit',
 				'on'         => 'click',
+				'metadata'   => <<<CALLBACK
+function( params, element ) {
+	var formId = document.querySelector('.frm_fields_container input[name="form_id"]').value;
+	console.log(formId);
+	params['event_label'] = formId;
+	return params;
+}
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );
