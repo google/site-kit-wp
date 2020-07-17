@@ -96,7 +96,7 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Get additional information to determine account and site status.
 	const alerts = useSelect( ( select ) => select( STORE_NAME ).getAlerts( accountID ) );
-	const urlChannels = useSelect( ( select ) => select( STORE_NAME ).getURLChannels( clientID ) );
+	const urlChannels = useSelect( ( select ) => select( STORE_NAME ).getURLChannels( accountID, clientID ) );
 	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
 
 	// Determine account and site status.
