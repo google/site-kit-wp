@@ -60,7 +60,7 @@ describe( 'modules/adsense URL channels', () => {
 					{ body: fixtures.urlchannels, status: 200 }
 				);
 
-				const accountID = '12345';
+				const accountID = 'pub-12345';
 				const clientID = fixtures.clients[ 0 ].id;
 
 				const initialURLChannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
@@ -75,7 +75,7 @@ describe( 'modules/adsense URL channels', () => {
 			} );
 
 			it( 'does not make a network request if urlchannels for this account + client are already present', async () => {
-				const accountID = '12345';
+				const accountID = 'pub-12345';
 				const clientID = fixtures.clients[ 0 ].id;
 
 				// Load data into this store so there are matches for the data we're about to select,
@@ -101,7 +101,7 @@ describe( 'modules/adsense URL channels', () => {
 					{ body: response, status: 500 }
 				);
 
-				const fakeAccountID = '777888999';
+				const fakeAccountID = 'pub-777888999';
 				const fakeClientID = 'ca-pub-777888999';
 
 				muteConsole( 'error' );
