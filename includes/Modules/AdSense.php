@@ -560,19 +560,10 @@ tag_partner: "site_kit"
 							array( 'status' => 400 )
 						);
 					}
-					$client_id  = $data['clientID'];
-					$account_id = $this->parse_account_id( $client_id );
-					if ( empty( $account_id ) ) {
-						return new WP_Error(
-							'invalid_param',
-							__( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
-							array( 'status' => 400 )
-						);
-					}
-					return array(
-						'accountID'  => $account_id,
-						'clientID'   => $client_id,
-						'permission' => $this->has_access_to_client( $client_id, $account_id ),
+
+					return array_merge(
+						array( 'clientID' => $data['clientID'] ),
+						$this->has_access_to_client( $data['clientID'] )
 					);
 				};
 			case 'GET:reports-url':
