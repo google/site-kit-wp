@@ -38,8 +38,6 @@ final class Advanced_Tracking {
 	 */
 	private $supported_plugins;
 
-	private $active_plugins;
-
 	/**
 	 * List of event configurations to be tracked.
 	 *
@@ -108,7 +106,7 @@ final class Advanced_Tracking {
 			'wp_enqueue_scripts',
 			function() {
 				$this->set_up_advanced_tracking();
-				( new Metadata_Collector( $this->active_plugins ) )->register();
+				( new Metadata_Collector() )->register();
 			},
 			11
 		);
@@ -159,10 +157,10 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	private function configure_events() {
-		$this->active_plugins = $this->plugin_detector->determine_active_plugins( $this->supported_plugins );
+		$active_plugins = $this->plugin_detector->determine_active_plugins( $this->supported_plugins );
 
 		$this->event_configurations = array();
-		foreach ( $this->active_plugins as $plugin_config ) {
+		foreach ( $active_plugins as $plugin_config ) {
 			$measurement_event_list = $plugin_config['event_config_list'];
 			if ( null !== $measurement_event_list ) {
 				foreach ( $measurement_event_list->get_events() as $measurement_event ) {
