@@ -186,17 +186,26 @@ final class Search_Console extends Module
 			case 'GET:matched-sites':
 				return $this->get_webmasters_service()->sites->listSites();
 			case 'GET:searchanalytics':
-				list ( $start_date, $end_date ) = $this->parse_date_range(
-					$data['dateRange'] ?: 'last-28-days',
-					$data['compareDateRanges'] ? 2 : 1,
-					3
-				);
+				$start_date = $data['startDate'];
+				$end_date   = $data['endDate'];
+				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
+					list ( $start_date, $end_date ) = $this->parse_date_range(
+						$data['dateRange'] ?: 'last-28-days',
+						$data['compareDateRanges'] ? 2 : 1,
+						3
+					);
+				}
+
+				$dimensions = $data['dimensions'];
+				$dimensions = is_array( $dimensions )
+					? $dimensions
+					: explode( ',', $dimensions );
 
 				$data_request = array(
 					'page'       => $data['url'],
 					'start_date' => $start_date,
 					'end_date'   => $end_date,
-					'dimensions' => array_filter( explode( ',', $data['dimensions'] ) ),
+					'dimensions' => array_filter( $dimensions ),
 				);
 
 				if ( isset( $data['limit'] ) ) {
