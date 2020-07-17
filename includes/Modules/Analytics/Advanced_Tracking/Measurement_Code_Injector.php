@@ -59,7 +59,7 @@ final class Measurement_Code_Injector {
 				alert( 'Got an event called: '.concat( thisConfig.action ) );
 
 				var params = {};
-				if (null !== thisConfig.metadata) {
+				if ( "metadata" in thisConfig && null !== thisConfig.metadata ) {
 					params = thisConfig.metadata( params, el );
 				}
 				params['event_category'] = thisConfig.category;
