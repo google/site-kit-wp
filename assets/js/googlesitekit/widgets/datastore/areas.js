@@ -20,12 +20,12 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { sortBy } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { WIDGET_STYLES } from './constants';
+import { sortObjectMapByKey } from '../../../util/sort-object-map-by-key';
 
 /**
  * Store our widget components by registry, then by widget `slug`. We do this because
@@ -199,11 +199,11 @@ export const selectors = {
 
 		const { areas, contextAssignments } = state;
 
-		return sortBy(
+		return sortObjectMapByKey(
 			Object.values( areas ).filter( ( area ) => {
 				return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
 			} ),
-			[ ( area ) => area.priority ]
+			'priority'
 		);
 	},
 

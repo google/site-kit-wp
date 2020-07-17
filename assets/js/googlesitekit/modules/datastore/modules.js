@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { keyBy, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -36,6 +35,8 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
+import { sortObjectMapByKey } from '../../../util/sort-object-map-by-key';
+import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 
 const { commonActions, createRegistrySelector } = Data;
 
@@ -312,7 +313,7 @@ const baseSelectors = {
 
 		const registryKey = select( CORE_SITE ).getRegistryKey();
 		// Sorting the modules object by order property.
-		const sortedModules = sortBy( modules, [ ( { order } ) => order ] );
+		const sortedModules = sortObjectMapByKey( modules, 'order' );
 		const mappedModules = Object.values( sortedModules ).map( ( module ) => {
 			const moduleWithComponent = { ...module };
 			if ( ModuleComponents[ registryKey ] ) {
@@ -326,7 +327,7 @@ const baseSelectors = {
 
 			return moduleWithComponent;
 		} );
-		return keyBy( mappedModules, 'slug' );
+		return convertArrayListToKeyedObjectMap( mappedModules, 'slug' );
 	} ),
 
 	/**

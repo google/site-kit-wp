@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { sortBy } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -28,6 +27,7 @@ import { v4 as uuidv4 } from 'uuid';
  */
 import Data from 'googlesitekit-data';
 import { WIDGET_WIDTHS } from './constants';
+import { sortObjectMapByKey } from '../../../util/sort-object-map-by-key';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 const { commonActions, createRegistrySelector } = Data;
@@ -212,7 +212,7 @@ export const selectors = {
 
 		const registryKey = select( CORE_SITE ).getRegistryKey();
 
-		const sorted = sortBy(
+		const sorted = sortObjectMapByKey(
 			Object.values( widgets ).filter( ( widget ) => {
 				return areaAssignments[ widgetAreaSlug ] && areaAssignments[ widgetAreaSlug ].includes( widget.slug );
 			} ).map( ( widget ) => {
@@ -223,7 +223,7 @@ export const selectors = {
 
 				return widgetWithComponent;
 			} ),
-			[ ( widget ) => widget.priority ]
+			'priority'
 		);
 		return sorted;
 	} ),
