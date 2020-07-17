@@ -138,8 +138,6 @@ final class Tag_Manager extends Module
 	public function get_scopes() {
 		return array(
 			'https://www.googleapis.com/auth/tagmanager.readonly',
-			'https://www.googleapis.com/auth/tagmanager.edit.containers',
-			'https://www.googleapis.com/auth/tagmanager.manage.accounts',
 		);
 	}
 
@@ -413,30 +411,6 @@ final class Tag_Manager extends Module
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
-	 */
-	protected function get_datapoint_services() {
-		return array(
-			// GET / POST.
-			'connection'             => '',
-			'account-id'             => '',
-			'container-id'           => '',
-			// GET.
-			'accounts'               => 'tagmanager',
-			'accounts-containers'    => 'tagmanager',
-			'containers'             => 'tagmanager',
-			'live-container-version' => 'tagmanager',
-			'tag-permission'         => 'tagmanager',
-			// POST.
-			'create-container'       => 'tagmanager',
-		);
-	}
-
-	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
 	 * @since 1.9.0
@@ -444,17 +418,24 @@ final class Tag_Manager extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$map = parent::get_datapoint_definitions();
-
-		$map['POST:create-container'] = array_merge(
-			$map['POST:create-container'],
-			array(
+		return array(
+			'GET:account-id'             => array( 'service' => '' ),
+			'POST:account-id'            => array( 'service' => '' ),
+			'GET:accounts'               => array( 'service' => 'tagmanager' ),
+			'GET:accounts-containers'    => array( 'service' => 'tagmanager' ),
+			'GET:connection'             => array( 'service' => '' ),
+			'POST:connection'            => array( 'service' => '' ),
+			'GET:container-id'           => array( 'service' => '' ),
+			'POST:container-id'          => array( 'service' => '' ),
+			'GET:containers'             => array( 'service' => 'tagmanager' ),
+			'POST:create-container'      => array(
+				'service'                => 'tagmanager',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
 				'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container on your behalf.', 'google-site-kit' ),
-			)
+			),
+			'GET:live-container-version' => array( 'service' => 'tagmanager' ),
+			'GET:tag-permission'         => array( 'service' => 'tagmanager' ),
 		);
-
-		return $map;
 	}
 
 	/**
@@ -890,7 +871,7 @@ final class Tag_Manager extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.11.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

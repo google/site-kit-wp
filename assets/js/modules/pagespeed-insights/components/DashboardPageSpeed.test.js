@@ -25,6 +25,7 @@ import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../datastore/cons
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../datastore/__fixtures__';
 import fetchMock from 'fetch-mock';
+import { freezeFetch } from '../../../../../tests/js/utils';
 
 const activeClass = 'mdc-tab--active';
 const url = fixtures.pagespeedMobile.loadingExperience.id;
@@ -55,10 +56,8 @@ describe( 'DashboardPageSpeed', () => {
 	afterEach( fetchMock.mockClear );
 
 	it( 'renders a progress bar while reports are requested', () => {
-		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
-			new Promise( () => {} ), // Don't return a response.
-		);
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/ );
+
 		const { queryByRole } = render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoReports } );
 
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
