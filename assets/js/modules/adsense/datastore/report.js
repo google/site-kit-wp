@@ -83,9 +83,13 @@ const baseSelectors = {
 	 *
 	 * @param {Object}         state              Data store's state.
 	 * @param {Object}         options            Optional. Options for generating the report.
-	 * @param {string}         options.dateRange  Date range slug. Default 'last-28-days'.
-	 * @param {Array.<string>} options.dimensions Dimensions to use.
-	 * @param {number}         options.limit      Maximum number of rows to include.
+	 * @param {string}         options.startDate  Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate    Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.dateRange  Required, alternatively to startDate and endDate. A date range string. Default 'last-28-days'.
+	 * @param {Array.<string>} options.metrics    Required. List of metrics to query.
+	 * @param {Array.<string>} options.dimensions Optional. List of dimensions to group results by.
+	 * @param {Array.<Object>} options.orderby    Optional. Order definition objects containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default null.
+	 * @param {number}         options.limit      Optional. Maximum number of entries to return. Default 1000.
 	 * @return {(Array.<Object>|undefined)} An AdSense report; `undefined` if not loaded.
 	 */
 	getReport( state, options = {} ) {

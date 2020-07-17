@@ -495,22 +495,37 @@ tag_partner: "site_kit"
 					return true;
 				};
 			case 'GET:earnings':
-				$dates = $this->date_range_to_dates( $data['dateRange'] ?: 'last-28-days' );
+				$start_date = $data['startDate'];
+				$end_date   = $data['endDate'];
+				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
+					$dates = $this->date_range_to_dates( $data['dateRange'] ?: 'last-28-days' );
+					if ( is_wp_error( $dates ) ) {
+						return $dates;
+					}
 
-				if ( is_wp_error( $dates ) ) {
-					return $dates;
+					list ( $start_date, $end_date ) = $dates;
 				}
 
-				list ( $start_date, $end_date ) = $dates;
+				$dimensions = $data['dimensions'];
+				$dimensions = is_array( $dimensions )
+					? $dimensions
+					: explode( ',', $dimensions );
 
-				$dimensions = (array) $data['dimensions'];
-				$args       = compact( 'start_date', 'end_date', 'dimensions' );
+				$metrics = $data['metrics'];
+				$metrics = is_array( $metrics )
+					? $metrics
+					: explode( ',', $metrics );
 
-				if ( isset( $data['limit'] ) ) {
-					$args['row_limit'] = $data['limit'];
-				}
+				$args = array(
+					'start_date' => $start_date,
+					'end_date'   => $end_date,
+					'dimensions' => array_filter( $dimensions ),
+					'metrics'    => array_filter( $metrics ),
+					'sort'       => $data['orderby'],
+					'maxResults' => $data['limit'],
+				);
 
-				return $this->create_adsense_earning_data_request( $args );
+				return $this->create_adsense_earning_data_request( array_filter( $args ) );
 			case 'GET:notifications':
 				return function() {
 					$alerts = $this->get_data( 'alerts' );
