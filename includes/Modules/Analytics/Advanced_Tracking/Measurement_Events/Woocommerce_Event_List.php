@@ -36,14 +36,10 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 function( params, element ) {
 	var value = element.closest('li').querySelector('span.woocommerce-Price-amount').lastChild.textContent;
 	var currency = element.closest('li').querySelector('span.woocommerce-Price-currencySymbol').innerText;
-	console.log(parseFloat(value));
-	console.log(typeof parseFloat(value));
+	console.log(parseFloat(value.replace(/,/g, '')));
 	console.log(currency);
-
-	params['value'] = parseFloat(value);
+	params['value'] = parseFloat(value.replace(/,/g, ''));
 	params['currency'] = currency;
-
-
 	return params;
 }
 CALLBACK
@@ -59,6 +55,18 @@ CALLBACK
 				'action'     => 'add_to_cart',
 				'selector'   => '.woocommerce-page .single_add_to_cart_button',
 				'on'         => 'click',
+				'metadata'   => <<<CALLBACK
+function( params, element ) {
+	var value = document.querySelector('.price span.woocommerce-Price-amount').lastChild.textContent;
+	var currency = document.querySelector('.price span.woocommerce-Price-currencySymbol').innerText;
+	console.log(parseFloat(value.replace(/,/g, '')));
+	console.log(currency);
+	params['value'] = parseFloat(value.replace(/,/g, ''));
+	params['currency'] = currency;
+	return params;
+}
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );
@@ -70,6 +78,18 @@ CALLBACK
 				'action'     => 'remove_from_cart',
 				'selector'   => '.woocommerce-page .remove',
 				'on'         => 'click',
+				'metadata'   => <<<CALLBACK
+function( params, element ) {
+	var value = element.closest('tr').querySelector('.product-price span.woocommerce-Price-amount').lastChild.textContent;
+	var currency = element.closest('tr').querySelector('.product-price span.woocommerce-Price-currencySymbol').innerText;
+	console.log(parseFloat(value.replace(/,/g, '')));
+	console.log(currency);
+	params['value'] = parseFloat(value.replace(/,/g, ''));
+	params['currency'] = currency;
+	return params;
+}
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );
@@ -81,6 +101,19 @@ CALLBACK
 				'action'     => 'begin_checkout',
 				'selector'   => 'div.wc-proceed-to-checkout .checkout-button',
 				'on'         => 'click',
+				'metadata'   => <<<CALLBACK
+function( params, element ) {
+	var value = document.querySelector('.order-total span.woocommerce-Price-amount').lastChild.textContent;
+	var currency = document.querySelector('.order-total span.woocommerce-Price-currencySymbol').innerText;
+	console.log(value);
+	console.log(parseFloat(value.replace(/,/g, '')));
+	console.log(currency);
+	params['value'] = parseFloat(value.replace(/,/g, ''));
+	params['currency'] = currency;
+	return params;
+}
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );
@@ -147,6 +180,24 @@ CALLBACK
 				'action'     => 'purchase',
 				'selector'   => '.woocommerce-page form.woocommerce-checkout',
 				'on'         => 'submit',
+				'metadata'   => <<<CALLBACK
+function( params, element ) {
+	var value = document.querySelector('.order-total span.woocommerce-Price-amount').lastChild.textContent;
+	var currency = document.querySelector('.order-total span.woocommerce-Price-currencySymbol').innerText;
+	var tax = document.querySelector('.tax-total span.woocommerce-Price-amount').lastChild.textContent;
+	var shipping = document.querySelector('.woocommerce-shipping-methods span.woocommerce-Price-amount').lastChild.textContent;
+	console.log(parseFloat(value.replace(/,/g, '')));
+	console.log(currency);
+	console.log(tax);
+	console.log(shipping);
+	params['value'] = parseFloat(value.replace(/,/g, ''));
+	params['currency'] = currency;
+	params['tax'] = tax;
+	params['shipping'] = shipping;
+	return params;
+}
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );
