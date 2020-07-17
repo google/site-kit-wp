@@ -31,7 +31,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  */
 import SettingsModule from '../assets/js/components/settings/settings-module';
 import {
-	SettingsMain,
+	SettingsMain as AdSenseSettings,
 	SettingsSetupIncomplete,
 } from '../assets/js/modules/adsense/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
@@ -98,54 +98,7 @@ const completeSettings = {
 	siteSetupComplete: true,
 };
 
-function Settings( props ) {
-	const {
-		callback,
-		module = global._googlesitekitLegacyData.modules.adsense,
-		isEditing = false,
-		isOpen = true,
-		isSaving = false,
-		error = false,
-		// eslint-disable-next-line no-console
-		handleAccordion = ( ...args ) => console.log( 'handleAccordion', ...args ),
-		// eslint-disable-next-line no-console
-		handleDialog = ( ...args ) => console.log( 'handleDialog', ...args ),
-		// eslint-disable-next-line no-console
-		updateModulesList = ( ...args ) => console.log( 'updateModulesList', ...args ),
-		// eslint-disable-next-line no-console
-		handleButtonAction = ( ...args ) => console.log( 'handleButtonAction', ...args ),
-	} = props;
-
-	return (
-		<WithTestRegistry callback={ callback }>
-			<div style={ { background: 'white' } }>
-				<SettingsModule
-					key={ module.slug + '-module' }
-					slug={ module.slug }
-					name={ module.name }
-					description={ module.description }
-					homepage={ module.homepage }
-					learnmore={ module.learnMore }
-					active={ module.active }
-					setupComplete={ module.setupComplete }
-					hasSettings={ true }
-					autoActivate={ module.autoActivate }
-					updateModulesList={ updateModulesList }
-					handleEdit={ handleButtonAction }
-					handleConfirm
-					isEditing={ isEditing ? { 'adsense-module': true } : {} }
-					isOpen={ isOpen }
-					handleAccordion={ handleAccordion }
-					handleDialog={ handleDialog }
-					provides={ module.provides }
-					isSaving={ isSaving }
-					screenID={ module.screenID }
-					error={ error }
-				/>
-			</div>
-		</WithTestRegistry>
-	);
-}
+const Settings = createLegacySettingsWrapper( 'adsense', AdSenseSettings );
 
 storiesOf( 'AdSense Module/Settings', module )
 	.add( 'View, closed', () => {

@@ -52,54 +52,7 @@ const completeModuleData = {
 	setupComplete: true,
 };
 
-function Settings( props ) {
-	const {
-		callback,
-		module = global._googlesitekitLegacyData.modules.analytics,
-		isEditing = false,
-		isOpen = true,
-		isSaving = false,
-		error = false,
-		// eslint-disable-next-line no-console
-		handleAccordion = ( ...args ) => console.log( 'handleAccordion', ...args ),
-		// eslint-disable-next-line no-console
-		handleDialog = ( ...args ) => console.log( 'handleDialog', ...args ),
-		// eslint-disable-next-line no-console
-		updateModulesList = ( ...args ) => console.log( 'updateModulesList', ...args ),
-		// eslint-disable-next-line no-console
-		handleButtonAction = ( ...args ) => console.log( 'handleButtonAction', ...args ),
-	} = props;
-
-	return (
-		<WithTestRegistry callback={ callback }>
-			<div style={ { background: 'white' } }>
-				<SettingsModule
-					key={ module.slug + '-module' }
-					slug={ module.slug }
-					name={ module.name }
-					description={ module.description }
-					homepage={ module.homepage }
-					learnmore={ module.learnMore }
-					active={ module.active }
-					setupComplete={ module.setupComplete }
-					hasSettings={ true }
-					autoActivate={ module.autoActivate }
-					updateModulesList={ updateModulesList }
-					handleEdit={ handleButtonAction }
-					handleConfirm
-					isEditing={ isEditing ? { 'analytics-module': true } : {} }
-					isOpen={ isOpen }
-					handleAccordion={ handleAccordion }
-					handleDialog={ handleDialog }
-					provides={ module.provides }
-					isSaving={ isSaving }
-					screenID={ module.screenID }
-					error={ error }
-				/>
-			</div>
-		</WithTestRegistry>
-	);
-}
+const Settings = createLegacySettingsWrapper( 'analytics', AnalyticsSettings );
 
 storiesOf( 'Analytics Module/Settings', module )
 	.add( 'View, closed', () => {
