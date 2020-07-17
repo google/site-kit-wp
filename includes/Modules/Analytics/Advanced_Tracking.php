@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Metadata_Collector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Woocommerce_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
@@ -36,6 +37,8 @@ final class Advanced_Tracking {
 	 * @var array
 	 */
 	private $supported_plugins;
+
+	private $active_plugins;
 
 	/**
 	 * List of event configurations to be tracked.
@@ -105,6 +108,7 @@ final class Advanced_Tracking {
 			'wp_enqueue_scripts',
 			function() {
 				$this->set_up_advanced_tracking();
+				( new Metadata_Collector( $this->active_plugins ) )->register();
 			},
 			11
 		);
@@ -155,10 +159,10 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	private function configure_events() {
-		$active_plugins = $this->plugin_detector->determine_active_plugins( $this->supported_plugins );
+		$this->active_plugins = $this->plugin_detector->determine_active_plugins( $this->supported_plugins );
 
 		$this->event_configurations = array();
-		foreach ( $active_plugins as $plugin_config ) {
+		foreach ( $this->active_plugins as $plugin_config ) {
 			$measurement_event_list = $plugin_config['event_config_list'];
 			if ( null !== $measurement_event_list ) {
 				foreach ( $measurement_event_list->get_events() as $measurement_event ) {
