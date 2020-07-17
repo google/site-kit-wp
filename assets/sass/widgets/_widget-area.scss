@@ -20,6 +20,14 @@
 
 	@include shadow;
 	background: $c-base;
+
+	.mdc-layout-grid__inner {
+
+		@extend .mdc-layout-grid__cell;
+		@extend .mdc-layout-grid__cell--span-12;
+		@extend .mdc-layout-grid;
+		@extend .mdc-layout-grid__inner;
+	}
 }
 
 .googlesitekit-widget-area-header {
@@ -38,5 +46,73 @@
 		font-weight: 400;
 		line-height: 1.2;
 		margin: 0;
+	}
+}
+
+.googlesitekit-widget-area--boxes {
+	// Grid
+	.googlesitekit-widget {
+
+		@extend .mdc-layout-grid;
+	}
+
+	.googlesitekit-widget__inner {
+
+		@extend .mdc-layout-grid__inner;
+	}
+
+	.googlesitekit-widget__cell {
+
+		@extend .mdc-layout-grid__cell;
+	}
+
+	.googlesitekit-widget__cell--span-2 {
+
+		@extend .mdc-layout-grid__cell--span-2;
+	}
+
+	.googlesitekit-widget__cell--span-2-tablet {
+
+		@extend .mdc-layout-grid__cell--span-2-tablet;
+	}
+
+	.googlesitekit-widget__cell--span-3 {
+
+		@extend .mdc-layout-grid__cell--span-3;
+	}
+
+	.googlesitekit-widget__cell--span-3-desktop {
+
+		@extend .mdc-layout-grid__cell--span-3-desktop;
+	}
+
+	.googlesitekit-widget__cell--span-4 {
+
+		@extend .mdc-layout-grid__cell--span-4;
+	}
+
+	.googlesitekit-widget__cell--span-4-tablet {
+
+		@extend .mdc-layout-grid__cell--span-4-tablet;
+	}
+
+	.googlesitekit-widget__cell--span-6-desktop {
+
+		@extend .mdc-layout-grid__cell--span-6-desktop;
+	}
+
+	.googlesitekit-widget__cell--span-7 {
+
+		@extend .mdc-layout-grid__cell--span-7;
+	}
+
+	.googlesitekit-widget__cell--span-7-desktop {
+
+		@extend .mdc-layout-grid__cell--span-7-desktop;
+	}
+
+	.googlesitekit-widget__cell--span-8-tablet {
+
+		@extend .mdc-layout-grid__cell--span-8-tablet;
 	}
 }
