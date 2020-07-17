@@ -30,6 +30,11 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import {
+	isValidMetrics,
+	isValidDateRange,
+	isValidOrders,
+} from '../../../util/validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -46,7 +51,31 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
-		invariant( isPlainObject( options ), 'options must be an object.' );
+		const {
+			startDate,
+			endDate,
+			dateRange,
+			metrics,
+			orders,
+		} = options;
+
+		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
+		invariant( isValidDateRange( dateRange, startDate, endDate ), 'Either date range or start/end dates must be provided for Analytics report.' );
+
+		if ( metrics ) {
+			invariant(
+				isValidMetrics( metrics ),
+				'Metrics for Analytics report must be either a string, an array of strings, an array of objects or a mix of strings and objects. If object is used, it must have "expression" and "alias" properties.',
+			);
+		}
+
+		if ( orders ) {
+			invariant(
+				isValidOrders( orders ),
+				'Orders for Analytics report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.',
+			);
+		}
+
 		return { options };
 	},
 } );
