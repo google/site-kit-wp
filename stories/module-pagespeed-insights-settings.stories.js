@@ -29,10 +29,8 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import SettingsModule from '../assets/js/components/settings/settings-module';
 import { SettingsMain as PageSpeedInsightsSettings } from '../assets/js/modules/pagespeed-insights/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
-import { WithTestRegistry } from '../tests/js/utils';
 
 function filterPageSpeedInsightsSettings() {
 	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-pagespeed-insights' );
