@@ -19,6 +19,7 @@ jobs:
           git add .
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
+          git pull --no-edit --quiet
           git commit -m "Prune refs/pull/${{ github.event.pull_request.number }}"
           git push origin master
         env:
