@@ -33,6 +33,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 import { SettingsMain as SearchConsoleSettings } from '../assets/js/modules/search-console/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import { STORE_NAME } from '../assets/js/modules/search-console/datastore';
+import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 function filterSearchConsoleSettings() {
 	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-search-console' );

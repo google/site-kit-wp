@@ -35,8 +35,8 @@ import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/d
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore';
-import { WithTestRegistry } from '../tests/js/utils';
 import fixtures from '../assets/js/googlesitekit/modules/datastore/fixtures.json';
+import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 const analyticsFixture = fixtures.filter( ( fixture ) => fixture.slug === 'analytics' );
 

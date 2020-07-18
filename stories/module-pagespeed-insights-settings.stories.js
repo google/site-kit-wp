@@ -31,7 +31,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  */
 import { SettingsMain as PageSpeedInsightsSettings } from '../assets/js/modules/pagespeed-insights/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
-
+import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 function filterPageSpeedInsightsSettings() {
 	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-pagespeed-insights' );
 	addFilter(

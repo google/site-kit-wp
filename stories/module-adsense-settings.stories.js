@@ -29,9 +29,9 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import SettingsModule from '../assets/js/components/settings/settings-module';
+
 import {
-	SettingsMain as AdSenseSettings,
+	SettingsMain,
 	SettingsSetupIncomplete,
 } from '../assets/js/modules/adsense/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
@@ -43,7 +43,7 @@ import {
 	ACCOUNT_STATUS_APPROVED,
 	SITE_STATUS_ADDED,
 } from '../assets/js/modules/adsense/util/status';
-import { WithTestRegistry } from '../tests/js/utils';
+import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 function filterAdSenseSettings() {
 	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-adsense' );
