@@ -31,7 +31,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  */
 
 import {
-	SettingsMain,
+	SettingsMain as AdSenseSettings,
 	SettingsSetupIncomplete,
 } from '../assets/js/modules/adsense/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
