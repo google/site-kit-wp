@@ -29,7 +29,6 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import SettingsModule from '../assets/js/components/settings/settings-module';
 import { SettingsMain as OptimizeSettings } from '../assets/js/modules/optimize/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
