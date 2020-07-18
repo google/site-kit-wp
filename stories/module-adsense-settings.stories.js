@@ -50,7 +50,7 @@ function filterAdSenseSettings() {
 	addFilter(
 		'googlesitekit.ModuleSettingsDetails-adsense',
 		'googlesitekit.AdSenseModuleSettings',
-		fillFilterWithComponent( SettingsMain )
+		fillFilterWithComponent( AdSenseSettings )
 	);
 }
 
