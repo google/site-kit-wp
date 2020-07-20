@@ -61,8 +61,8 @@ export default function createLegacySettingsWrapper( moduleSlug, moduleComponent
 		useEffect( () => {
 			removeAllFilters( `googlesitekit.ModuleSettingsDetails-${ moduleSlug }` );
 			addFilter(
-				'googlesitekit.ModuleSettingsDetails-tagmanager',
-				'googlesitekit.TagManagerModuleSettings',
+				`googlesitekit.ModuleSettingsDetails-${ moduleSlug }`,
+				'googlesitekit.SettingsLegacy',
 				fillFilterWithComponent( moduleComponent )
 			);
 			return () => removeAllFilters( `googlesitekit.ModuleSettingsDetails-${ moduleSlug }` );
