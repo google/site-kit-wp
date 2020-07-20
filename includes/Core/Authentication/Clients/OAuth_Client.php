@@ -714,7 +714,7 @@ final class OAuth_Client {
 		);
 		$this->set_granted_scopes( $scopes );
 
-		$this->refresh_profile_data();
+		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
 		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
 		// For now the below action should only fire for the proxy despite not clarifying that in the hook name.
