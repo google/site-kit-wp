@@ -42,7 +42,7 @@ import InvalidCredentialsWarning from './invalid-credentials-warning';
  * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.
  * @param {boolean} fullWidth  Creates layout with 'cell--span-12' to be full width. Default: false.
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
- * @param {Object}  errorObj  Error related data.
+ * @param {Object}  errorObj   Error related data.
  *
  * @return {WPElement} CTA component with data error message.
  */
