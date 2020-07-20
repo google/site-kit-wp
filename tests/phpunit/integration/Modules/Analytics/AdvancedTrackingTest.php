@@ -154,8 +154,8 @@ class AdvancedTrackingTest extends TestCase {
 				alert( 'Got an event called: '.concat( thisConfig.action ) );
 
 				var params = {};
-				if (null !== thisConfig.metadata) {
-					params = thisConfig.metadata( params );
+				if ( "metadata" in thisConfig && null !== thisConfig.metadata ) {
+					params = thisConfig.metadata( params, el );
 				}
 				params['event_category'] = thisConfig.category;
 
