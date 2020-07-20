@@ -88,8 +88,8 @@ jobs:
           git add .
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
-          git commit -m "Deploy storybook for ${TARGET_DIR}."
           git pull --no-edit --quiet
+          git commit -m "Deploy storybook for ${TARGET_DIR}."
           git push origin gh-pages
         env:
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
@@ -115,6 +115,6 @@ jobs:
           git rm -rf storybook/pull/${PULL_REQUEST_NUMBER}
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
-          git commit -m "Remove storybook for pull/${PULL_REQUEST_NUMBER}."
           git pull --no-edit --quiet
+          git commit -m "Remove storybook for pull/${PULL_REQUEST_NUMBER}."
           git push origin gh-pages
