@@ -183,12 +183,12 @@ const withData = (
 
 					// If the Component included a `handleDataError` helper, pass it the error message.
 					if ( handleDataError ) {
-						handleDataError( error );
+						handleDataError( error, returnedData );
 					}
 				} else if ( isDataZero( returnedData, datapoint, requestData ) ) { // No data error, next check for zero data.
 					// If we have a `handleDataError` call it without any parameters (indicating empty data).
 					if ( handleDataError ) {
-						handleDataError( error );
+						handleDataError( error, returnedData );
 					}
 
 					// Set a zeroData state on the Component.
