@@ -43,13 +43,6 @@ class CTA extends Component {
 			onClick,
 		} = this.props;
 
-		let message = null;
-		if ( description ) {
-			message = typeof description === 'string'
-				? <p className="googlesitekit-cta__description">{ description }</p>
-				: description;
-		}
-
 		return (
 			<div
 				className={ classnames(
@@ -62,7 +55,12 @@ class CTA extends Component {
 						{ title }
 					</h3>
 				}
-				{ message }
+				{ ( description && typeof description === 'string' ) && (
+					<p className="googlesitekit-cta__description">{ description }</p>
+				) }
+				{ ( description && typeof description !== 'string' ) && (
+					<div className="googlesitekit-cta__description">{ description }</div>
+				) }
 				{ ctaLabel &&
 					<Link
 						href={ ctaLink }

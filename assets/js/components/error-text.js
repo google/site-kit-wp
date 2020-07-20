@@ -20,11 +20,17 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { isURL } from '@wordpress/url';
 
 /**
  * WordPress dependencies
  */
 import { sprintf, __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { sanitizeHTML } from '../util';
 
 function ErrorText( { message, reconnectURL } ) {
 	if ( ! message ) {
@@ -37,25 +43,22 @@ function ErrorText( { message, reconnectURL } ) {
 		message
 	);
 
-	try {
-		if ( reconnectURL ) {
-			// reconnectURL must be a valid URI, if it is not, "new URL" will
-			// trigger an error and we jump over "error" variable change
-			new URL( reconnectURL );
-
-			error = error + ' ' + sprintf(
-				/* translators: %s: Reconnect URL */
-				__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
-				reconnectURL
-			);
-		}
-	} catch ( err ) {
-		// do nothing
+	if ( reconnectURL && isURL( reconnectURL ) ) {
+		error = error + ' ' + sprintf(
+			/* translators: %s: Reconnect URL */
+			__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
+			reconnectURL
+		);
 	}
+
+	const sanitizeArgs = {
+		ALLOWED_TAGS: [ 'a' ],
+		ALLOWED_ATTR: [ 'href' ],
+	};
 
 	return (
 		<div className="googlesitekit-error-text">
-			<p dangerouslySetInnerHTML={ { __html: error } } />
+			<p dangerouslySetInnerHTML={ sanitizeHTML( error, sanitizeArgs ) } />
 		</div>
 	);
 }
