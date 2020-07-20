@@ -296,6 +296,13 @@ final class Authentication {
 		add_action( 'update_option_siteurl', $option_updated );
 		add_action( 'update_option_blogname', $option_updated );
 		add_action( 'update_option_googlesitekit_db_version', $option_updated );
+
+		add_action(
+			OAuth_Client::CRON_REFRESH_PROFILE_DATA,
+			function ( $user_id ) {
+				$this->cron_refresh_profile_data( $user_id );
+			}
+		);
 	}
 
 	/**
@@ -477,6 +484,24 @@ final class Authentication {
 		 * @param bool $complete Whether the setup is completed.
 		 */
 		return (bool) apply_filters( 'googlesitekit_setup_complete', true );
+	}
+
+	/**
+	 * Refreshes user profile data in the background.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID to refresh profile data for.
+	 */
+	private function cron_refresh_profile_data( $user_id ) {
+		$original_user_id = $this->user_options->get_user_id();
+		$this->user_options->switch_user( $user_id );
+
+		if ( $this->is_authenticated() ) {
+			$this->get_oauth_client()->refresh_profile_data( 30 * MINUTE_IN_SECONDS );
+		}
+
+		$this->user_options->switch_user( $original_user_id );
 	}
 
 	/**
