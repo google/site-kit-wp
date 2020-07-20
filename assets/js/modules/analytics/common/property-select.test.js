@@ -46,7 +46,7 @@ const setupRegistry = ( { dispatch } ) => {
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
 	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
-	dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.getTagPermissionsAccess );
+	dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.getTagPermissionsAccess.propertyID );
 	// Existing tag IDs are set in the resolver so we have to fill those here.
 	dispatch( STORE_NAME ).setAccountID( fixtures.getTagPermissionsAccess.accountID );
 	dispatch( STORE_NAME ).setPropertyID( fixtures.getTagPermissionsAccess.propertyID );

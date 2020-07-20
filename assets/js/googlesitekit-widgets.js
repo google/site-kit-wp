@@ -17,9 +17,15 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import domReady from '@wordpress/dom-ready';
+
+/**
  * Internal dependencies
  */
-import Widgets from './googlesitekit/widgets';
+import Widgets, { registerDefaults } from './googlesitekit/widgets';
+import { loadTranslations } from './util';
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
@@ -28,6 +34,12 @@ if ( typeof global.googlesitekit === 'undefined' ) {
 if ( global.googlesitekit.widgets === undefined ) {
 	global.googlesitekit.widgets = Widgets;
 }
+
+// register default widget areas
+domReady( () => {
+	loadTranslations();
+	registerDefaults( Widgets );
+} );
 
 // This is only exported for Jest and is not used in production.
 export default Widgets;

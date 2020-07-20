@@ -25,11 +25,12 @@ import { map } from 'lodash';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import {
 	getTimeInSeconds,
 	numberFormat,
@@ -41,17 +42,44 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../component
 import PreviewTable from '../../../components/preview-table';
 import MiniChart from '../../../components/mini-chart';
 import { trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../util';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
-class AnalyticsDashboardWidgetTopAcquisitionSources extends Component {
-	render() {
-		const { data } = this.props;
-		if ( ! data || ! data.length ) {
-			return null;
-		}
+function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-		const dateRange = getCurrentDateRange();
+	if ( ! data || ! data.length ) {
+		return null;
+	}
 
-		const headers = [
+	const currentRange = getCurrentDateRange( dateRange );
+	const headers = [
+		{
+			title: __( 'Medium', 'google-site-kit' ),
+			tooltip: __( 'Medium refers to where your traffic originated from', 'google-site-kit' ),
+		},
+		{
+			title: __( 'Users', 'google-site-kit' ),
+			tooltip: __( 'Number of users that originated from that traffic', 'google-site-kit' ),
+		},
+		{
+			title: __( 'New Users', 'google-site-kit' ),
+			/* translators: %s: date range */
+			tooltip: sprintf( __( 'Number of new users to visit your page over last %s', 'google-site-kit' ), currentRange ),
+		},
+		{
+			title: __( 'Sessions', 'google-site-kit' ),
+			/* translators: %s: date range */
+			tooltip: sprintf( __( 'Number of sessions users had on your website over last %s', 'google-site-kit' ), currentRange ),
+		},
+		{
+			title: __( 'Percentage', 'google-site-kit' ),
+			tooltip: __( 'Percentage of sessions', 'google-site-kit' ),
+		},
+	];
+	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
+
+	const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
 			{
 				title: __( 'Channel', 'google-site-kit' ),
 				tooltip: __( 'Channel refers to traffic source grouping', 'google-site-kit' ),
@@ -75,35 +103,31 @@ class AnalyticsDashboardWidgetTopAcquisitionSources extends Component {
 				tooltip: __( 'Percentage of sessions', 'google-site-kit' ),
 			},
 		];
-		const totalSessions = data[ 0 ].data.totals[ 0 ].values[ 1 ];
+		const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
 
-		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
-			const percent = ( row.metrics[ 0 ].values[ 1 ] / totalSessions * 100 );
+		return [
+			row.dimensions[ 0 ],
+			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
+			numberFormat( row.metrics[ 0 ].values[ 1 ] ),
+			numberFormat( row.metrics[ 0 ].values[ 2 ] ),
+			<Fragment key={ 'minichart-analytics-top-as-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ `${ percent.toFixed( 2 ) }%` } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
+		];
+	} );
 
-			return [
-				row.dimensions[ 0 ],
-				numberFormat( row.metrics[ 0 ].values[ 0 ] ),
-				numberFormat( row.metrics[ 0 ].values[ 1 ] ),
-				numberFormat( row.metrics[ 0 ].values[ 2 ] ),
-				<Fragment key={ 'minichart-analytics-top-as-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ `${ percent.toFixed( 2 ) }%` } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
-			];
-		} );
+	const options = {
+		hideHeader: false,
+		chartsEnabled: false,
+	};
 
-		const options = {
-			hideHeader: false,
-			chartsEnabled: false,
-		};
+	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
-		const dataTable = getDataTableFromData( dataMapped, headers, options );
-
-		return (
-			<div className="googlesitekit-details-widget">
-				<TableOverflowContainer>
-					{ dataTable }
-				</TableOverflowContainer>
-			</div>
-		);
-	}
+	return (
+		<div className="googlesitekit-details-widget">
+			<TableOverflowContainer>
+				{ dataTable }
+			</TableOverflowContainer>
+		</div>
+	);
 }
 
 export default withData(
