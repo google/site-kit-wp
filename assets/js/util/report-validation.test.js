@@ -21,6 +21,7 @@
  */
 import {
 	isValidDateRange,
+	isValidDimensions,
 	isValidMetrics,
 	isValidOrders,
 } from './report-validation';
@@ -37,6 +38,48 @@ describe( 'Reporting API validation', () => {
 
 		it( 'should return FALSE if neither dateRange nor start/end dates are valid', () => {
 			expect( isValidDateRange( 'xxx', '2020', '2020-01' ) ).toBeFalsy();
+		} );
+	} );
+
+	describe( 'isValidDimensions', () => {
+		it( 'should return TRUE if a non empty string is passed', () => {
+			expect( isValidDimensions( 'test' ) ).toBeTruthy();
+		} );
+
+		it( 'should return TRUE if a valid object is passed', () => {
+			expect( isValidDimensions( {
+				name: 'test',
+			} ) ).toBeTruthy();
+		} );
+
+		it( 'should return TRUE if a valid array of objects/strings is passed', () => {
+			expect( isValidDimensions( [
+				{
+					name: 'test',
+				},
+				'test2',
+				'test3',
+				{
+					name: 'test4',
+				},
+			] ) ).toBeTruthy();
+		} );
+
+		it( 'should return FALSE if neither string nor array is passed', () => {
+			expect( isValidDimensions( 5.2 ) ).toBeFalsy();
+		} );
+
+		it( 'should return FALSE if not a valid array of objects/strings is passed', () => {
+			expect( isValidDimensions( [
+				{
+					name: 'test',
+				},
+				'test2',
+				5,
+				{
+					name: 'test4',
+				},
+			] ) ).toBeFalsy();
 		} );
 	} );
 
