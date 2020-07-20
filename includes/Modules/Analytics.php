@@ -863,19 +863,32 @@ final class Analytics extends Module
 				if ( ! empty( $dimensions ) && ( is_string( $dimensions ) || is_array( $dimensions ) ) ) {
 					if ( is_string( $dimensions ) ) {
 						$dimensions = explode( ',', $dimensions );
+					} elseif ( is_array( $dimensions ) && ! wp_is_numeric_array( $dimensions ) ) { // If single object is passed.
+						$dimensions = array( $dimensions );
 					}
 
-					$dimensions = array_map(
-						function ( $name ) {
-							$dimension = new Google_Service_AnalyticsReporting_Dimension();
-							$dimension->setName( $name );
-	
-							return $dimension;
-						},
-						array_filter( $dimensions )
+					$dimensions = array_filter(
+						array_map(
+							function ( $dimension_def ) {
+								$dimension = new Google_Service_AnalyticsReporting_Dimension();
+
+								if ( is_string( $dimension_def ) ) {
+									$dimension->setName( $dimension_def );
+								} elseif ( is_array( $dimension_def ) && ! empty( $dimension_def['name'] ) ) {
+									$dimension->setName( $dimension_def['name'] );
+								} else {
+									return null;
+								}
+
+								return $dimension;
+							},
+							array_filter( $dimensions )
+						)
 					);
 
-					$request_args['dimensions'] = $dimensions;
+					if ( ! empty( $dimension ) ) {
+						$request_args['dimensions'] = $dimensions;
+					}
 				}
 
 				$request = $this->create_analytics_site_data_request( $request_args );
@@ -920,25 +933,29 @@ final class Analytics extends Module
 				if ( ! empty( $metrics ) && ( is_string( $metrics ) || is_array( $metrics ) ) ) {
 					if ( is_string( $metrics ) ) {
 						$metrics = explode( ',', $data['metrics'] );
-					} elseif ( is_array( $metrics ) && count( $metrics ) <= 2 && ! wp_is_numeric_array( $metrics ) ) { // If single object is passed.
+					} elseif ( is_array( $metrics ) && ! wp_is_numeric_array( $metrics ) ) { // If single object is passed.
 						$metrics = array( $metrics );
 					}
 
-					$metrics = array_map(
-						function ( $metric_def ) {
-							$metric = new Google_Service_AnalyticsReporting_Metric();
+					$metrics = array_filter(
+						array_map(
+							function ( $metric_def ) {
+								$metric = new Google_Service_AnalyticsReporting_Metric();
 
-							if ( is_string( $metric_def ) ) {
-								$metric->setAlias( $metric_def );
-								$metric->setExpression( $metric_def );
-							} else {
-								$metric->setAlias( $metric_def['alias'] );
-								$metric->setExpression( $metric_def['expression'] );
-							}
+								if ( is_string( $metric_def ) ) {
+									$metric->setAlias( $metric_def );
+									$metric->setExpression( $metric_def );
+								} elseif ( is_array( $metric_def ) && ! empty( $metric_def['expression'] ) ) {
+									$metric->setExpression( $metric_def['expression'] );
+									$metric->setAlias( ! empty( $metric_def['alias'] ) ? $metric_def['alias'] : $metric_def['expression'] );
+								} else {
+									return null;
+								}
 
-							return $metric;
-						},
-						array_filter( $metrics )
+								return $metric;
+							},
+							array_filter( $metrics )
+						)
 					);
 
 					if ( ! empty( $metrics ) ) {
