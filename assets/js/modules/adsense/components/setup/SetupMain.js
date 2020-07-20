@@ -61,6 +61,7 @@ import SetupSiteAdd from './SetupSiteAdd';
 import SetupSiteAdded from './SetupSiteAdded';
 import {
 	AdBlockerWarning,
+	ErrorNotice,
 } from '../common';
 const { useSelect, useDispatch } = Data;
 
@@ -274,7 +275,7 @@ export default function SetupMain( { finishSetup } ) {
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
 	let viewComponent;
-	if ( undefined === accountStatus || undefined === existingTag || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {
+	if ( ( undefined === accountStatus && ! error ) || undefined === existingTag || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {
 		// Show loading indicator if account status not determined yet or if
 		// a submission is in progress that is not happening in background.
 		viewComponent = <ProgressBar />;
@@ -301,11 +302,15 @@ export default function SetupMain( { finishSetup } ) {
 				viewComponent = <SetupAccountApproved />;
 				break;
 			default:
-				viewComponent = <ErrorText message={ sprintf(
-					/* translators: %s: invalid account status identifier */
-					__( 'Invalid account status: %s', 'google-site-kit' ),
-					accountStatus
-				) } />;
+				if ( error ) {
+					viewComponent = <ErrorNotice />;
+				} else {
+					viewComponent = <ErrorText message={ sprintf(
+						/* translators: %s: invalid account status identifier */
+						__( 'Invalid account status: %s', 'google-site-kit' ),
+						accountStatus
+					) } />;
+				}
 		}
 	} else if ( undefined === siteStatus ) {
 		// Show loading indicator if site status not determined yet.
@@ -320,11 +325,15 @@ export default function SetupMain( { finishSetup } ) {
 				viewComponent = <SetupSiteAdded finishSetup={ finishSetupAndNavigate } />;
 				break;
 			default:
-				viewComponent = <ErrorText message={ sprintf(
-					/* translators: %s: invalid site status identifier */
-					__( 'Invalid site status: %s', 'google-site-kit' ),
-					siteStatus
-				) } />;
+				if ( error ) {
+					viewComponent = <ErrorNotice />;
+				} else {
+					viewComponent = <ErrorText message={ sprintf(
+						/* translators: %s: invalid site status identifier */
+						__( 'Invalid site status: %s', 'google-site-kit' ),
+						siteStatus
+					) } />;
+				}
 		}
 	} else {
 		// This should never be reached because the setup is not accessible
