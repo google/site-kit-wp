@@ -195,6 +195,21 @@ function( params, element ) {
 	params['currency'] = currency;
 	params['tax'] = tax;
 	params['shipping'] = shipping;
+
+
+	//mock params
+	params['transaction_id'] = "123456";
+	params['affiliation'] = "Google Online Store";
+	var items = [];
+	var item_one = {};
+	item_one['id'] = "P12345";
+	item_one['name'] = "Basketball Shoe";
+
+	items.push(item_one);
+
+	params['items'] = items;
+
+	console.log(params);
 	return params;
 }
 CALLBACK

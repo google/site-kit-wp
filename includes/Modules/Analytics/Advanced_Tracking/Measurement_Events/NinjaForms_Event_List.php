@@ -34,9 +34,9 @@ final class NinjaForms_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var formName = document.querySelector('.nf-form-title').innerText;
-	console.log(formName);
-	params['event_label'] = formName;
+	var formId = element.closest('.nf-form-cont').querySelector('.nf-form-title').id.substring(14);
+	console.log(formId);
+	params['event_label'] = formId;
 	return params;
 }
 CALLBACK
