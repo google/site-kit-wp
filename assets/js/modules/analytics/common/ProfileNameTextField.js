@@ -32,8 +32,9 @@ import { STORE_NAME, PROFILE_CREATE, FORM_SETUP } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function ProfileNameTextField() {
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( propertyID ) );
+	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const profileName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' ) );
 
