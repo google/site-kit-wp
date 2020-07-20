@@ -355,7 +355,7 @@ final class Search_Console extends Module
 				'start_date' => '',
 				'end_date'   => '',
 				'page'       => '',
-				'row_limit'  => 500,
+				'row_limit'  => 1000,
 			)
 		);
 

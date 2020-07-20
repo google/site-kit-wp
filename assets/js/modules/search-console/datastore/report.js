@@ -30,6 +30,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { isValidDateRange } from '../../../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -46,7 +47,15 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
-		invariant( isPlainObject( options ), 'options must be an object.' );
+		const {
+			startDate,
+			endDate,
+			dateRange,
+		} = options;
+
+		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
+		invariant( isValidDateRange( dateRange, startDate, endDate ), 'Either date range or start/end dates must be provided for Analytics report.' );
+
 		return { options };
 	},
 } );
