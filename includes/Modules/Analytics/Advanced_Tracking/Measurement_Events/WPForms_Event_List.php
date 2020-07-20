@@ -34,7 +34,7 @@ final class WPForms_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var formId = document.querySelector('.wpforms-submit-container input[name="wpforms[id]"]').value;
+	var formId = element.closest('.wpforms-submit-container').querySelector('input[name="wpforms[id]"]').value;
 	console.log(formId);
 	params['event_label'] = formId;
 	return params;

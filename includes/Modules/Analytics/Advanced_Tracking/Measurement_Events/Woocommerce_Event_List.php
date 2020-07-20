@@ -34,10 +34,13 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
+	var items = [];
+	items[0] = woocommerceProducts[element.closest('li').querySelector('h2').innerHTML];
 	var value = element.closest('li').querySelector('span.woocommerce-Price-amount').lastChild.textContent;
 	var currency = element.closest('li').querySelector('span.woocommerce-Price-currencySymbol').innerText;
 	console.log(parseFloat(value.replace(/,/g, '')));
 	console.log(currency);
+	params['items'] = items;
 	params['value'] = parseFloat(value.replace(/,/g, ''));
 	params['currency'] = currency;
 	return params;
