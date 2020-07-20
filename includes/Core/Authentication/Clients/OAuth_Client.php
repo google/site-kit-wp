@@ -42,6 +42,7 @@ final class OAuth_Client {
 	const OPTION_ADDITIONAL_AUTH_SCOPES  = 'googlesitekit_additional_auth_scopes';
 	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
 	const OPTION_PROXY_ACCESS_CODE       = 'googlesitekit_proxy_access_code';
+	const CRON_REFRESH_PROFILE_DATA      = 'googlesitekit_cron_refresh_profile_data';
 
 	/**
 	 * Plugin context.
@@ -755,8 +756,11 @@ final class OAuth_Client {
 	 * Fetches and updates the user profile data for the currently authenticated Google account.
 	 *
 	 * @since 1.1.4
+	 * @since n.e.x.t Added $retry_after param, also made public.
+	 *
+	 * @param int $retry_after Optional. Number of seconds to retry data fetch if unsuccessful.
 	 */
-	private function refresh_profile_data() {
+	public function refresh_profile_data( $retry_after = 0 ) {
 		try {
 			$people_service = new Google_Service_PeopleService( $this->get_client() );
 			$response       = $people_service->people->get( 'people/me', array( 'personFields' => 'emailAddresses,photos' ) );
@@ -769,9 +773,16 @@ final class OAuth_Client {
 					)
 				);
 			}
-		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// This request is unlikely to fail and isn't critical as Site Kit will fallback to the current WP user
-			// if no Profile data exists. Don't do anything for now.
+		} catch ( Exception $e ) {
+			$retry_after = absint( $retry_after );
+			if ( $retry_after < 1 ) {
+				return;
+			}
+			wp_schedule_single_event(
+				time() + $retry_after,
+				self::CRON_REFRESH_PROFILE_DATA,
+				array( $this->user_options->get_user_id() )
+			);
 		}
 	}
 
