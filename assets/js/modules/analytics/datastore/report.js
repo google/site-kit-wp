@@ -58,7 +58,7 @@ const fetchGetReportStore = createFetchStore( {
 			dateRange,
 			metrics,
 			dimensions,
-			orders,
+			orderby,
 		} = options;
 
 		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
@@ -78,9 +78,9 @@ const fetchGetReportStore = createFetchStore( {
 			);
 		}
 
-		if ( orders ) {
+		if ( orderby ) {
 			invariant(
-				isValidOrders( orders ),
+				isValidOrders( orderby ),
 				'Orders for an Analytics report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.',
 			);
 		}
