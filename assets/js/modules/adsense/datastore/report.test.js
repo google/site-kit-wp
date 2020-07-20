@@ -60,16 +60,16 @@ describe( 'modules/adsense report', () => {
 					{ body: fixtures.report, status: 200 }
 				);
 
-				const initialReport = registry.select( STORE_NAME ).getReport( {} );
+				const initialReport = registry.select( STORE_NAME ).getReport( { dateRange: 'last-90-days' } );
 
 				expect( initialReport ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getReport( {} ) !== undefined
+						registry.select( STORE_NAME ).getReport( { dateRange: 'last-90-days' } ) !== undefined
 					),
 				);
 
-				const report = registry.select( STORE_NAME ).getReport( {} );
+				const report = registry.select( STORE_NAME ).getReport( { dateRange: 'last-90-days' } );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
