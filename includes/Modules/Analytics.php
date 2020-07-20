@@ -854,23 +854,28 @@ final class Analytics extends Module
 					return true;
 				};
 			case 'GET:report':
-				$date_range = $data['dateRange'] ?: 'last-28-days';
-
-				$dimensions = array_map(
-					function ( $name ) {
-						$dimension = new Google_Service_AnalyticsReporting_Dimension();
-						$dimension->setName( $name );
-
-						return $dimension;
-					},
-					array_filter( explode( ',', $data['dimensions'] ) )
-				);
-
-				$request_args         = compact( 'dimensions' );
-				$request_args['page'] = $data['url'];
-
+				$request_args = array( 'page' => $data['url'] );
 				if ( ! empty( $data['limit'] ) ) {
 					$request_args['row_limit'] = $data['limit'];
+				}
+
+				$dimensions = $data['dimensions'];
+				if ( ! empty( $dimensions ) && ( is_string( $dimensions ) || is_array( $dimensions ) ) ) {
+					if ( is_string( $dimensions ) ) {
+						$dimensions = explode( ',', $dimensions );
+					}
+
+					$dimensions = array_map(
+						function ( $name ) {
+							$dimension = new Google_Service_AnalyticsReporting_Dimension();
+							$dimension->setName( $name );
+	
+							return $dimension;
+						},
+						array_filter( $dimensions )
+					);
+
+					$request_args['dimensions'] = $dimensions;
 				}
 
 				$request = $this->create_analytics_site_data_request( $request_args );
@@ -879,11 +884,17 @@ final class Analytics extends Module
 					return $request;
 				}
 
-				$date_ranges = array(
-					$this->parse_date_range(
-						$date_range,
+				$start_date = $data['startDate'];
+				$end_date   = $data['endDate'];
+				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
+					list( $start_date, $end_date ) = $this->parse_date_range(
+						$data['dateRange'] ?: 'last-28-days',
 						$data['compareDateRanges'] ? 2 : 1
-					),
+					);
+				}
+
+				$date_ranges = array(
+					array( $start_date, $end_date ),
 				);
 
 				// When using multiple date ranges, it changes the structure of the response,
@@ -905,44 +916,64 @@ final class Analytics extends Module
 				);
 				$request->setDateRanges( $date_ranges );
 
-				$metrics = array_map(
-					function ( $metric_def ) {
-						$metric_def = array_merge(
-							array(
-								'alias'      => '',
-								'expression' => '',
-							),
-							(array) $metric_def
-						);
-						$metric     = new Google_Service_AnalyticsReporting_Metric();
-						$metric->setAlias( $metric_def['alias'] );
-						$metric->setExpression( $metric_def['expression'] );
+				$metrics = $data['metrics'];
+				if ( ! empty( $metrics ) && ( is_string( $metrics ) || is_array( $metrics ) ) ) {
+					if ( is_string( $metrics ) ) {
+						$metrics = explode( ',', $data['metrics'] );
+					} elseif ( is_array( $metrics ) && count( $metrics ) <= 2 && ! wp_is_numeric_array( $metrics ) ) { // If single object is passed.
+						$metrics = array( $metrics );
+					}
 
-						return $metric;
-					},
-					(array) $data['metrics']
-				);
-				$request->setMetrics( $metrics );
+					$metrics = array_map(
+						function ( $metric_def ) {
+							$metric = new Google_Service_AnalyticsReporting_Metric();
+
+							if ( is_string( $metric_def ) ) {
+								$metric->setAlias( $metric_def );
+								$metric->setExpression( $metric_def );
+							} else {
+								$metric->setAlias( $metric_def['alias'] );
+								$metric->setExpression( $metric_def['expression'] );
+							}
+
+							return $metric;
+						},
+						array_filter( $metrics )
+					);
+
+					if ( ! empty( $metrics ) ) {
+						$request->setMetrics( $metrics );
+					}
+				}
 
 				// Order by.
-				$orderby = array_map(
-					function ( $order_def ) {
-						$order_def = array_merge(
-							array(
-								'fieldName' => '',
-								'sortOrder' => '',
-							),
-							(array) $order_def
-						);
-						$order_by  = new Google_Service_AnalyticsReporting_OrderBy();
-						$order_by->setFieldName( $order_def['fieldName'] );
-						$order_by->setSortOrder( $order_def['sortOrder'] );
+				$orderby = $data['orderby'];
+				if ( ! empty( $orderby ) && is_array( $orderby ) ) {
+					// When just object is passed we need to convert it to an array of objects.
+					if ( ! is_array( $orderby[0] ) ) {
+						$orderby = array( $orderby );
+					}
 
-						return $order_by;
-					},
-					(array) $data['orderby']
-				);
-				$request->setOrderBys( $orderby );
+					$orderby = array_map(
+						function ( $order_def ) {
+							$order_def = array_merge(
+								array(
+									'fieldName' => '',
+									'sortOrder' => '',
+								),
+								(array) $order_def
+							);
+							$order_by  = new Google_Service_AnalyticsReporting_OrderBy();
+							$order_by->setFieldName( $order_def['fieldName'] );
+							$order_by->setSortOrder( $order_def['sortOrder'] );
+	
+							return $order_by;
+						},
+						$orderby
+					);
+
+					$request->setOrderBys( $orderby );
+				}
 
 				// Batch reports requests.
 				$body = new Google_Service_AnalyticsReporting_GetReportsRequest();
