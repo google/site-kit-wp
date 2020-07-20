@@ -34,14 +34,11 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var items = [];
-	items[0] = woocommerceProducts[element.closest('li').querySelector('h2').innerHTML];
-	var value = element.closest('li').querySelector('span.woocommerce-Price-amount').lastChild.textContent;
+	var valueString = element.closest('li').querySelector('span.woocommerce-Price-amount').lastChild.textContent;
 	var currency = element.closest('li').querySelector('span.woocommerce-Price-currencySymbol').innerText;
-	console.log(parseFloat(value.replace(/,/g, '')));
+	console.log(valueString);
 	console.log(currency);
-	params['items'] = items;
-	params['value'] = parseFloat(value.replace(/,/g, ''));
+	params['value'] = parseFloat(valueString.replace(/,/g, ''));
 	params['currency'] = currency;
 	return params;
 }
@@ -60,11 +57,12 @@ CALLBACK
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var value = document.querySelector('.price span.woocommerce-Price-amount').lastChild.textContent;
+	var quantity = document.querySelector('div.quantity input').valueAsNumber;
+	var value = quantity * parseFloat(document.querySelector('.price span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
 	var currency = document.querySelector('.price span.woocommerce-Price-currencySymbol').innerText;
-	console.log(parseFloat(value.replace(/,/g, '')));
+	console.log(value);
 	console.log(currency);
-	params['value'] = parseFloat(value.replace(/,/g, ''));
+	params['value'] = value;
 	params['currency'] = currency;
 	return params;
 }
@@ -83,11 +81,12 @@ CALLBACK
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var value = element.closest('tr').querySelector('.product-price span.woocommerce-Price-amount').lastChild.textContent;
+	var quantity = document.querySelector('div.quantity input').valueAsNumber;
+	var value = quantity * parseFloat(element.closest('tr').querySelector('.product-price span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
 	var currency = element.closest('tr').querySelector('.product-price span.woocommerce-Price-currencySymbol').innerText;
-	console.log(parseFloat(value.replace(/,/g, '')));
+	console.log(value);
 	console.log(currency);
-	params['value'] = parseFloat(value.replace(/,/g, ''));
+	params['value'] = value;
 	params['currency'] = currency;
 	return params;
 }
@@ -106,12 +105,11 @@ CALLBACK
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var value = document.querySelector('.order-total span.woocommerce-Price-amount').lastChild.textContent;
+	var value = parseFloat(document.querySelector('.order-total span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
 	var currency = document.querySelector('.order-total span.woocommerce-Price-currencySymbol').innerText;
 	console.log(value);
-	console.log(parseFloat(value.replace(/,/g, '')));
 	console.log(currency);
-	params['value'] = parseFloat(value.replace(/,/g, ''));
+	params['value'] = value;
 	params['currency'] = currency;
 	return params;
 }
@@ -185,18 +183,33 @@ CALLBACK
 				'on'         => 'submit',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var value = document.querySelector('.order-total span.woocommerce-Price-amount').lastChild.textContent;
+	var value = parseFloat(document.querySelector('.order-total span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
 	var currency = document.querySelector('.order-total span.woocommerce-Price-currencySymbol').innerText;
-	var tax = document.querySelector('.tax-total span.woocommerce-Price-amount').lastChild.textContent;
-	var shipping = document.querySelector('.woocommerce-shipping-methods span.woocommerce-Price-amount').lastChild.textContent;
-	console.log(parseFloat(value.replace(/,/g, '')));
+	var tax = parseFloat(document.querySelector('.tax-total span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
+	var shipping = parseFloat(document.querySelector('.woocommerce-shipping-methods span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
+	console.log(value);
 	console.log(currency);
 	console.log(tax);
 	console.log(shipping);
-	params['value'] = parseFloat(value.replace(/,/g, ''));
+	params['value'] = value;
 	params['currency'] = currency;
 	params['tax'] = tax;
 	params['shipping'] = shipping;
+
+
+	//mock params
+	params['transaction_id'] = "123456";
+	params['affiliation'] = "Google Online Store";
+	var items = [];
+	var item_one = {};
+	item_one['id'] = "P12345";
+	item_one['name'] = "Basketball Shoe";
+
+	items.push(item_one);
+
+	params['items'] = items;
+
+	console.log(params);
 	return params;
 }
 CALLBACK
