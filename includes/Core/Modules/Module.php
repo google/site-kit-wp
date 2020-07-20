@@ -341,9 +341,14 @@ abstract class Module {
 			} catch ( Exception $e ) {
 				// Set every result of this batch to the exception.
 				foreach ( $results as $key => $definition_key ) {
-					$datapoint_service = ! empty( $datapoint_definitions[ $definition_key ] ) ? $datapoint_definitions[ $definition_key ]['service'] : null;
-					if ( is_string( $definition_key ) && $service_identifier === $datapoint_service ) {
-						$results[ $key ] = $this->exception_to_error( $e, explode( ':', $definition_key, 2 )[1] );
+					if ( ! is_wp_error( $definition_key ) ) {
+						$datapoint_service = ! empty( $datapoint_definitions[ $definition_key ] )
+							? $datapoint_definitions[ $definition_key ]['service']
+							: null;
+
+						if ( is_string( $definition_key ) && $service_identifier === $datapoint_service ) {
+							$results[ $key ] = $this->exception_to_error( $e, explode( ':', $definition_key, 2 )[1] );
+						}
 					}
 				}
 				continue;
@@ -817,26 +822,13 @@ abstract class Module {
 				$reason = $errors[0]['reason'];
 			}
 		} elseif ( $e instanceof Google_Proxy_Code_Exception ) {
-			$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-			$error_code  = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
-
-			if ( ! $error_code ) {
-				$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
-			}
-
-			if ( $error_code ) {
-				// Delete error code from database to prevent future notice.
-				$this->user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
-			} elseif ( ! empty( $code ) ) {
-				$error_code = $code;
-			} else {
-				$error_code = $message;
-			}
-
-			$auth_client   = $this->authentication->get_oauth_client();
-			$message       = $auth_client->get_error_message( $error_code );
 			$status        = 401;
-			$reconnect_url = $auth_client->get_proxy_setup_url( $access_code, $error_code );
+			$auth_client   = $this->authentication->get_oauth_client();
+			$message       = $auth_client->get_error_message( $message );
+			$reconnect_url = $auth_client->get_proxy_setup_url(
+				$e->getAccessCode(),
+				$message
+			);
 		}
 
 		if ( empty( $code ) ) {
