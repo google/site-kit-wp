@@ -773,6 +773,11 @@ final class OAuth_Client {
 					)
 				);
 			}
+			// Clear any scheduled job to refresh this data later, if any.
+			wp_clear_scheduled_hook(
+				self::CRON_REFRESH_PROFILE_DATA,
+				array( $this->user_options->get_user_id() )
+			);
 		} catch ( Exception $e ) {
 			$retry_after = absint( $retry_after );
 			if ( $retry_after < 1 ) {
