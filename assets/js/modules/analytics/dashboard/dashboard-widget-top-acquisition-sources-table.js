@@ -55,8 +55,8 @@ function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 	const currentRange = getCurrentDateRange( dateRange );
 	const headers = [
 		{
-			title: __( 'Medium', 'google-site-kit' ),
-			tooltip: __( 'Medium refers to where your traffic originated from', 'google-site-kit' ),
+			title: __( 'Channel', 'google-site-kit' ),
+			tooltip: __( 'Channel refers to where your traffic originated from', 'google-site-kit' ),
 		},
 		{
 			title: __( 'Users', 'google-site-kit' ),
@@ -80,29 +80,6 @@ function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
 
 	const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
-			{
-				title: __( 'Channel', 'google-site-kit' ),
-				tooltip: __( 'Channel refers to traffic source grouping', 'google-site-kit' ),
-			},
-			{
-				title: __( 'Users', 'google-site-kit' ),
-				tooltip: __( 'Number of users that originated from that traffic', 'google-site-kit' ),
-			},
-			{
-				title: __( 'New Users', 'google-site-kit' ),
-				/* translators: %s: date range */
-				tooltip: sprintf( __( 'Number of new users to visit your page over last %s', 'google-site-kit' ), dateRange ),
-			},
-			{
-				title: __( 'Sessions', 'google-site-kit' ),
-				/* translators: %s: date range */
-				tooltip: sprintf( __( 'Number of sessions users had on your website over last %s', 'google-site-kit' ), dateRange ),
-			},
-			{
-				title: __( 'Percentage', 'google-site-kit' ),
-				tooltip: __( 'Percentage of sessions', 'google-site-kit' ),
-			},
-		];
 		const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
 
 		return [
