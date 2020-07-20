@@ -920,6 +920,8 @@ final class Analytics extends Module
 				if ( ! empty( $metrics ) && ( is_string( $metrics ) || is_array( $metrics ) ) ) {
 					if ( is_string( $metrics ) ) {
 						$metrics = explode( ',', $data['metrics'] );
+					} elseif ( is_array( $metrics ) && count( $metrics ) <= 2 && ! wp_is_numeric_array( $metrics ) ) { // If single object is passed.
+						$metrics = array( $metrics );
 					}
 
 					$metrics = array_map(

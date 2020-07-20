@@ -34,7 +34,7 @@ import {
 	isValidMetrics,
 	isValidDateRange,
 	isValidOrders,
-} from '../../../util/validation';
+} from '../../../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',

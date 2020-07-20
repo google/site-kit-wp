@@ -1,5 +1,5 @@
 /**
- * Validation utilities.
+ * Reporting API validation utilities.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -21,29 +21,30 @@
  * an array of string, an array of objects or mix of strings and objects. Objects
  * must have "expression" and "alias" properties in order to be considered as valid.
  *
- * @param {string|string[]|Object[]} metrics The metrics to check.
+ * @param {string|string[]|Object|Object[]} metrics The metrics to check.
  * @return {boolean} TRUE if the metrics are valid, otherwise FALSE.
  */
 export function isValidMetrics( metrics ) {
+	const isValidObject = ( metric ) => {
+		const validExpression = metric.hasOwnProperty( 'expression' ) && typeof metric.expression === 'string';
+		const validAlias = metric.hasOwnProperty( 'alias' ) && typeof metric.alias === 'string';
+		return validExpression && validAlias;
+	};
+
 	if ( typeof metrics === 'string' ) {
+		return true;
+	}
+
+	if ( typeof metrics === 'object' && isValidObject( metrics ) ) {
 		return true;
 	}
 
 	if ( Array.isArray( metrics ) ) {
 		for ( let i = 0; i < metrics.length; i++ ) {
-			if ( typeof metrics[ i ] === 'string' ) {
-				continue;
+			const type = typeof metrics[ i ];
+			if ( type !== 'string' && ( type !== 'object' || ! isValidObject( metrics[ i ] ) ) ) {
+				return false;
 			}
-
-			if ( typeof metrics[ i ] === 'object' ) {
-				const validExpression = metrics[ i ].hasOwnProperty( 'expression' ) && typeof metrics[ i ].expression === 'string';
-				const validAlias = metrics[ i ].hasOwnProperty( 'alias' ) && typeof metrics[ i ].alias === 'string';
-				if ( validAlias && validExpression ) {
-					continue;
-				}
-			}
-
-			return false;
 		}
 
 		return true;
