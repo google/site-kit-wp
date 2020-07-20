@@ -17,13 +17,10 @@
  */
 
 /**
- * WordPress dependencies
- */
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 import { createTestRegistry } from 'tests/js/utils';
 import {
 	muteConsole,
@@ -51,18 +48,18 @@ describe( 'createExistingTagStore store', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
 		storeDefinition = createExistingTagStore( ...STORE_ARGS, {
 			tagMatchers,
 			isValidTag: isValidPropertyID,
 		} );
-
-		// Register store to test
-		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
-
+		registry.registerStore( storeDefinition.STORE_NAME, Data.combineStores(
+			Data.commonStore,
+			createExistingTagStore( ...STORE_ARGS, {
+				tagMatchers,
+				isValidTag: isValidPropertyID,
+			} )
+		) );
 		store = registry.stores[ storeDefinition.STORE_NAME ].store;
-
-		// Set homeURL
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 	} );
 
@@ -107,25 +104,19 @@ describe( 'createExistingTagStore store', () => {
 
 		describe( 'waitForExistingTag', () => {
 			it( 'supports asynchronous waiting for tag', async () => {
-				const expectedTag = 'GTM-S1T3K1T';
+				const expectedTag = 'UA-12345678-1';
 
-				let resolveResponse;
-				const responsePromise = new Promise( ( resolve ) => {
-					resolveResponse = () => resolve( { body: factories.generateHTMLWithTag( expectedTag ), status: 200 } );
-				} );
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					responsePromise
+					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
 				);
-				const promise = registry.dispatch( storeDefinition.STORE_NAME ).waitForExistingTag();
 
+				const promise = registry.dispatch( storeDefinition.STORE_NAME ).waitForExistingTag();
 				expect( registry.select( storeDefinition.STORE_NAME ).getExistingTag() ).toBe( undefined );
 
-				resolveResponse();
 				await promise;
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
 				expect( registry.select( storeDefinition.STORE_NAME ).getExistingTag() ).toBe( expectedTag );
 			} );
 		} );
@@ -146,7 +137,6 @@ describe( 'createExistingTagStore store', () => {
 
 				await untilResolved( registry, storeDefinition.STORE_NAME ).getExistingTag();
 
-				expect( registry.select( storeDefinition.STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( storeDefinition.STORE_NAME ).getExistingTag();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
