@@ -30,7 +30,10 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidDateRange } from '../../../util/report-validation';
+import {
+	isValidDateRange,
+	isValidOrders,
+} from '../../../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -51,10 +54,18 @@ const fetchGetReportStore = createFetchStore( {
 			startDate,
 			endDate,
 			dateRange,
+			orderby,
 		} = options;
 
 		invariant( isPlainObject( options ), 'options must be an object.' );
 		invariant( isValidDateRange( dateRange, startDate, endDate ), 'Either date range or start/end dates must be provided for AdSense report.' );
+
+		if ( orderby ) {
+			invariant(
+				isValidOrders( orderby ),
+				'Orders for an AdSense report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.',
+			);
+		}
 
 		return { options };
 	},
