@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import isPlainObject from 'lodash/isPlainObject';
+
+/**
  * Checks if the provided object is an instance of WP_Error class.
  *
  * @since n.e.x.t
@@ -25,7 +30,7 @@
  * @return {boolean} TRUE if the object has "code", "data" and "message" properties, otherwise FALSE.
  */
 export function isWPError( obj ) {
-	return typeof obj === 'object' &&
+	return isPlainObject( obj ) &&
 		obj.hasOwnProperty( 'code' ) && ( typeof obj.code === 'string' || typeof obj.code === 'number' ) &&
 		obj.hasOwnProperty( 'message' ) && typeof obj.message === 'string' &&
 		obj.hasOwnProperty( 'data' ); // We don't check "obj.data" type because it can be anything.
