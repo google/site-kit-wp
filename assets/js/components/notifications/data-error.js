@@ -47,10 +47,13 @@ import InvalidCredentialsWarning from './invalid-credentials-warning';
  * @return {WPElement} CTA component with data error message.
  */
 const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = false, createGrid = false, errorObj = {} ) => {
+	const reconnectUrl = errorObj?.data?.reconnectURL;
+	const description = reconnectUrl ? <ErrorText message={ error } reconnectURL={ reconnectUrl } /> : error;
+
 	const cta = <CTA
 		/* translators: %s: module name */
 		title={ sprintf( __( 'Data error in %s', 'google-site-kit' ), moduleName ) }
-		description={ <ErrorText message={ error } { ...( errorObj?.data || {} ) } /> }
+		description={ description }
 		error
 	/>;
 

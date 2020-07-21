@@ -35,5 +35,5 @@ export default function ErrorNotice() {
 		return null;
 	}
 
-	return <ErrorText message={ error.message } reconnectURL={ error.reconnectURL } />;
+	return <ErrorText message={ error.message } reconnectURL={ error.data.reconnectURL } />;
 }

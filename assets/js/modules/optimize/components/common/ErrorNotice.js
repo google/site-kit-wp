@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { PERMISSION_SCOPE_ERROR_CODE } from '../../../../googlesitekit/datastore/user/constants';
+import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 import ErrorText from '../../../../components/error-text';
 const { useSelect } = Data;
 
@@ -29,9 +29,9 @@ export default function ErrorNotice() {
 	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
 
 	// Do not display if no error, or if the error is for missing scopes.
-	if ( ! error || error.code === PERMISSION_SCOPE_ERROR_CODE ) {
+	if ( ! error || isPermissionScopeError( error ) ) {
 		return null;
 	}
 
-	return <ErrorText message={ error.message } />;
+	return <ErrorText message={ error.message } reconnectURL={ error.data.reconnectURL } />;
 }
