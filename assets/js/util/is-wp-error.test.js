@@ -26,8 +26,16 @@ describe( 'isWPError', () => {
 	const message = '';
 	const data = {};
 
-	it( 'should return TRUE if correct error is passed', () => {
+	it( 'should return TRUE if a correct error is passed', () => {
 		expect( isWPError( { code, message, data } ) ).toBeTruthy();
+	} );
+
+	it( 'should return TRUE even if an error with numeric code is passed', () => {
+		expect( isWPError( { code: 401, message, data } ) ).toBeTruthy();
+	} );
+
+	it( 'should return TRUE even if an error with non-object data is passed', () => {
+		expect( isWPError( { code, message, data: '' } ) ).toBeTruthy();
 	} );
 
 	it( 'should return FALSE if the passed object does not have needed properties', () => {
@@ -35,6 +43,6 @@ describe( 'isWPError', () => {
 	} );
 
 	it( 'should return FALSE if the provided object has wrong property types', () => {
-		expect( isWPError( { code, message, data: '' } ) ).toBeFalsy();
+		expect( isWPError( { code, message: [], data } ) ).toBeFalsy();
 	} );
 } );

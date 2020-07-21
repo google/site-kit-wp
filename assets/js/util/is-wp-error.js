@@ -26,7 +26,7 @@
  */
 export function isWPError( obj ) {
 	return typeof obj === 'object' &&
-		obj.hasOwnProperty( 'code' ) && typeof obj.code === 'string' &&
-		obj.hasOwnProperty( 'data' ) && typeof obj.data === 'object' &&
-		obj.hasOwnProperty( 'message' ) && typeof obj.message === 'string';
+		obj.hasOwnProperty( 'code' ) && ( typeof obj.code === 'string' || typeof obj.code === 'number' ) &&
+		obj.hasOwnProperty( 'message' ) && typeof obj.message === 'string' &&
+		obj.hasOwnProperty( 'data' ); // We don't check "obj.data" type because it can be anything.
 }
