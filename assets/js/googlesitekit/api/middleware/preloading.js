@@ -39,14 +39,14 @@ function createPreloadingMiddleware( preloadedData, timeout = 1000 ) {
 		return result;
 	}, {} );
 
-	let middlewareHasRun = false;
+	let cacheHasExpired = false;
 	return ( options, next ) => {
 		const { parse = true } = options;
 		const uri = options.path;
 		setTimeout( () => {
-			middlewareHasRun = true;
+			cacheHasExpired = true;
 		}, timeout );
-		if ( typeof options.path === 'string' && ! middlewareHasRun ) {
+		if ( typeof options.path === 'string' && ! cacheHasExpired ) {
 			const method = options.method?.toUpperCase() || 'GET';
 
 			const path = getStablePath( uri );
