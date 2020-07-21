@@ -30,7 +30,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
-import { SetupMain as AdSenseSetup } from '../assets/js/modules/adsense/setup/index';
+import { SetupMain as AdSenseSetup } from '../assets/js/modules/adsense/components/setup/index';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 

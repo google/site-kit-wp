@@ -145,7 +145,7 @@ const baseActions = {
 		const { response, error } = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation( slug, active );
 		if ( response?.success === true ) {
 			// Fetch (or re-fetch) all modules, with their updated status.
-			yield fetchGetModulesStore.actions.fetchGetModules( { useCache: false } );
+			yield fetchGetModulesStore.actions.fetchGetModules();
 			yield {
 				payload: {},
 				type: REFETCH_AUTHENICATION,
@@ -158,7 +158,7 @@ const baseActions = {
 
 export const baseControls = {
 	[ REFETCH_AUTHENICATION ]: createRegistryControl( ( { dispatch } ) => () => {
-		return dispatch( CORE_USER ).fetchGetAuthentication( { useCache: false } );
+		return dispatch( CORE_USER ).fetchGetAuthentication();
 	} ),
 };
 

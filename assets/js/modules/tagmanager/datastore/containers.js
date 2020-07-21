@@ -27,7 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
-import { isValidAccountID, isValidUsageContext, isValidContainerSelection } from '../util/validation';
+import { isValidAccountID, isValidContainerID, isValidUsageContext } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -108,17 +108,20 @@ const baseActions = {
 	},
 
 	/**
-	 * Selects the given container, including its internal ID.
+	 * Sets selected container settings for the given container ID of the current account.
 	 *
 	 * Supports selecting a container that has not been received yet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 * @private
 	 *
 	 * @param {string} containerID Tag Manager container `publicId` of container to select.
 	 */
-	*selectContainer( containerID ) {
-		invariant( isValidContainerSelection( containerID ), 'A valid container selection is required to select a container.' );
+	*selectContainerByID( containerID ) {
+		// This action relies on looking up the container in state to know what
+		// settings to set the container IDs for. For this reason we cannot use this
+		// for selecting the option to "set up a new container"
+		invariant( isValidContainerID( containerID ), 'A valid container ID is required to select a container by ID.' );
 
 		const { select, dispatch } = yield Data.commonActions.getRegistry();
 		const accountID = select( STORE_NAME ).getAccountID();
@@ -150,7 +153,7 @@ const baseActions = {
 	/**
 	 * Waits for containers to be resolved for the given account ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 * @private
 	 *
 	 * @param {string} accountID Google Tag Manager account ID to await containers for.
@@ -225,7 +228,7 @@ const baseSelectors = {
 	/**
 	 * Gets all web containers for the given account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID Account ID to get containers for.
@@ -246,7 +249,7 @@ const baseSelectors = {
 	/**
 	 * Gets all AMP containers for the given account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID Account ID to get containers for.
@@ -267,7 +270,7 @@ const baseSelectors = {
 	/**
 	 * Gets all containers for the given account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID Account ID to get containers for.
@@ -280,7 +283,7 @@ const baseSelectors = {
 	/**
 	 * Checks if containers are currently being fetched for the given account or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID Account ID to get containers for.

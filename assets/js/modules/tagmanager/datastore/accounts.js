@@ -58,7 +58,7 @@ export const baseActions = {
 	 *
 	 * The `getAccounts` selector will be invalidated to allow accounts to be re-fetched from the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 * @private
 	 */
 	*resetAccounts() {
@@ -75,7 +75,7 @@ export const baseActions = {
 	/**
 	 * Selects the given account and makes related selections.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 * @private
 	 *
 	 * @param {string} accountID Tag Manager account ID to select.

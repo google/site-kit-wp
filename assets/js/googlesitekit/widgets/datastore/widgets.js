@@ -74,7 +74,7 @@ export const actions = {
 	 * Register a widget with a given slug and settings.
 	 *
 	 * @since 1.9.0
-	 * @since n.e.x.t Added wrapWidget setting.
+	 * @since 1.12.0 Added wrapWidget setting.
 	 *
 	 * @param {string}      slug                Widget's slug.
 	 * @param {Object}      settings            Widget's settings.

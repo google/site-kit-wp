@@ -15,24 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * WordPress dependencies
  */
-import { applyFilters } from '@wordpress/hooks';
 import { __, _n, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 /**
  * Gets the current dateRange string.
  *
+ * @param {string} [dateRange] Optional. The date range slug.
  * @return {string} the date range string.
  */
-export function getCurrentDateRange() {
-	/**
-	 * Filter the date range used for queries.
-	 *
-	 * @param String The selected date range. Default 'Last 28 days'.
-	 */
-	const dateRange = applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
+export function getCurrentDateRange( dateRange = getCurrentDateRangeSlug() ) {
 	const daysMatch = dateRange.match( /last-(\d+)-days/ );
 
 	if ( daysMatch && daysMatch[ 1 ] ) {
@@ -43,7 +44,7 @@ export function getCurrentDateRange() {
 		);
 	}
 
-	throw new Error( 'Unrecognized date range slug used in `googlesitekit.dateRange`.' );
+	throw new Error( 'Unrecognized date range slug.' );
 }
 
 /**
@@ -52,13 +53,13 @@ export function getCurrentDateRange() {
  * @return {string} the date range slug.
  */
 export function getCurrentDateRangeSlug() {
-	return applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
+	return Data.select( CORE_USER ).getDateRange();
 }
 
 /**
  * Gets the hash of available date ranges.
  *
- * @since n.e.x.t
+ * @since 1.12.0
  *
  * @return {Object} The object hash where every key is a date range slug, and the value is an object with the date range slug and its translation.
  */

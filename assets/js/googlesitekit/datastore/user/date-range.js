@@ -32,7 +32,7 @@ export const actions = {
 	/**
 	 * Sets a new date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @param {string} slug Date range slug.
 	 * @return {Object} Redux-style action.
@@ -70,7 +70,7 @@ export const selectors = {
 	/**
 	 * Returns the current date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @param {Object} state The current data store's state.
 	 * @return {string} The current date range slug.
