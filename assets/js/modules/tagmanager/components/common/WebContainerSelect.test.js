@@ -77,6 +77,23 @@ describe( 'WebContainerSelect', () => {
 		expect( listItems.pop() ).toHaveTextContent( /set up a new container/i );
 	} );
 
+	it( 'can select the "Set up a new container" option', async () => {
+		const { account, containers } = factories.buildAccountWithContainers(
+			{ container: { usageContext: [ CONTEXT_WEB ] } }
+		);
+		const accountID = account.accountId;
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
+		const { container, getByText } = render( <WebContainerSelect />, { registry } );
+
+		fireEvent.click( container.querySelector( '.mdc-select__selected-text' ) );
+		fireEvent.click( getByText( /set up a new container/i ) );
+
+		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( /set up a new container/i );
+	} );
+
 	it( 'should update the container ID and internal container ID when selected', async () => {
 		const { account, containers } = factories.buildAccountWithContainers(
 			{ container: { usageContext: [ CONTEXT_WEB ] } }
@@ -161,6 +178,6 @@ describe( 'WebContainerSelect', () => {
 
 		expect( queryByRole( 'progressbar' ) ).not.toBeInTheDocument();
 		expect( queryByRole( 'menu', { hidden: true } ) ).not.toBeInTheDocument();
-		expect( container ).toBeEmpty();
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );

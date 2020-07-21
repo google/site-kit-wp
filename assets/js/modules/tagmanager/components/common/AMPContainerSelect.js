@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,7 +29,7 @@ import Data from 'googlesitekit-data';
 import ContainerSelect from './ContainerSelect';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function AMPContainerSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
@@ -36,6 +37,18 @@ export default function AMPContainerSelect() {
 	const ampContainers = useSelect( ( select ) => select( STORE_NAME ).getAMPContainers( accountID ) );
 	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
+
+	const { setAMPContainerID, setInternalAMPContainerID } = useDispatch( STORE_NAME );
+	const onSelect = useCallback( ( index, item ) => {
+		const {
+			value: newContainerID,
+			internalId: newInternalContainerID,
+		} = item.dataset;
+		if ( ampContainerID !== newContainerID ) {
+			setAMPContainerID( newContainerID );
+			setInternalAMPContainerID( newInternalContainerID || '' );
+		}
+	}, [ ampContainerID ] );
 
 	if ( ! isAMP ) {
 		return null;
@@ -51,6 +64,7 @@ export default function AMPContainerSelect() {
 			label={ label }
 			value={ ampContainerID }
 			containers={ ampContainers }
+			onEnhancedChange={ onSelect }
 		/>
 	);
 }
