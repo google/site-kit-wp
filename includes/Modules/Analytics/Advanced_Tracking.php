@@ -106,7 +106,6 @@ final class Advanced_Tracking {
 			'wp_enqueue_scripts',
 			function() {
 				$this->set_up_advanced_tracking();
-				( new Metadata_Collector() )->register();
 			},
 			11
 		);
@@ -128,6 +127,7 @@ final class Advanced_Tracking {
 			return;
 		}
 		$this->configure_events();
+		( new Metadata_Collector() )->register();
 		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
 	}
 

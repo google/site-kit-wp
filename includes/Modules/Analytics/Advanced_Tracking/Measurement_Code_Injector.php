@@ -63,8 +63,9 @@ final class Measurement_Code_Injector {
 					params = thisConfig.metadata( params, el );
 				}
 				params['event_category'] = thisConfig.category;
+				console.log(params);
 
-				gtag( 'event', thisConfig.action, params);
+				gtag( 'event', thisConfig.action, params );
 			}
 		}, true );
 	}

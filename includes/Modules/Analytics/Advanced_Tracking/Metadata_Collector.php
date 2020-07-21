@@ -91,7 +91,6 @@ final class Metadata_Collector {
 			function( $args, $product ) {
 				$product_name                                = $product->get_name();
 				$this->cart_item_quantities[ $product_name ] = $args['input_value'];
-				$this->inject_metadata();
 				return $args;
 			},
 			10,

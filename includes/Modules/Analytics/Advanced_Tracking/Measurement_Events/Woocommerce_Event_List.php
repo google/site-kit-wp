@@ -129,12 +129,25 @@ CALLBACK
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var value = parseFloat(document.querySelector('.order-total span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
 	var currency = document.querySelector('.order-total span.woocommerce-Price-currencySymbol').innerText;
-	console.log(value);
-	console.log(currency);
-	params['value'] = value;
 	params['currency'] = currency;
+
+	var value = 0.0;
+	items = [];
+	cartItems = document.querySelectorAll( '.woocommerce-cart-form__cart-item' );
+	for ( cartItem of cartItems ) {
+		var productName = cartItem.querySelector( '.product-name a' ).innerText;
+
+		var item = woocommerceProducts[ productName ];
+		item['quantity'] = woocommerceCartQuantities[ productName ];
+		items.push( item );
+
+		var productQuantity = woocommerceCartQuantities[ productName ];
+		value += productQuantity * parseFloat( item['price'] );
+	}
+	params['value'] = value;
+	params['items'] = items;
+
 	return params;
 }
 CALLBACK
