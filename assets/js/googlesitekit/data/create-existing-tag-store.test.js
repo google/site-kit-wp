@@ -21,8 +21,8 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { createTestRegistry } from 'tests/js/utils';
 import {
+	createTestRegistry,
 	muteConsole,
 	muteFetch,
 	unsubscribeFromAll,
