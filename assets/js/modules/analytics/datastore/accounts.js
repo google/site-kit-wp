@@ -37,6 +37,7 @@ import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as tagActions } from './tags';
 const { createRegistrySelector } = Data;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
@@ -207,11 +208,11 @@ const baseResolvers = {
 		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 		// Only fetch accounts if there are none in the store.
 		if ( existingAccounts === undefined ) {
-			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).waitForExistingTag() );
+			yield tagActions.waitForExistingTag();
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
 			let existingTagPermission;
 			if ( existingTag ) {
-				yield Data.commonActions.await( registry.dispatch( STORE_NAME ).waitForTagPermission( existingTag ) );
+				yield tagActions.waitForTagPermission( existingTag );
 				existingTagPermission = registry.select( STORE_NAME ).getTagPermission( existingTag );
 			}
 
