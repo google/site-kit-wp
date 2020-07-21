@@ -29,6 +29,8 @@ final class Metadata_Collector {
 	 */
 	private $items;
 
+	private $cart_item_quantities;
+
 	/**
 	 * Metadata_Collector constructor.
 	 *
@@ -36,6 +38,7 @@ final class Metadata_Collector {
 	 */
 	public function __construct() {
 		$this->items = array();
+		$this->cart_item_quantities = array();
 	}
 
 	/**
@@ -77,6 +80,17 @@ final class Metadata_Collector {
 			10,
 			1
 		);
+		add_filter(
+			'woocommerce_quantity_input_args', // Fires when a cart item quantity is evaluated.
+			function( $args, $product ) {
+				$product_name = $product->get_name();
+				$this->cart_item_quantities[ $product_name ] = $args['input_value'];
+				$this->inject_metadata();;
+				return $args;
+			},
+			10,
+			2
+		);
 	}
 
 	/**
@@ -88,6 +102,7 @@ final class Metadata_Collector {
 		?>
 			<script>
 				var woocommerceProducts = <?php echo wp_json_encode( $this->items ); ?>;
+				var woocommerceCartQuantities = <?php echo wp_json_encode( $this->cart_item_quantities ); ?>;
 			</script>
 		<?php
 	}

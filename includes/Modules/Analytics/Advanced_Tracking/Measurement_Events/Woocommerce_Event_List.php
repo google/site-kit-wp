@@ -40,6 +40,14 @@ function( params, element ) {
 	console.log(currency);
 	params['value'] = parseFloat(valueString.replace(/,/g, ''));
 	params['currency'] = currency;
+
+	var items = [];
+	var itemName = element.closest('li').querySelector('.woocommerce-loop-product__title').innerText;
+	var item = woocommerceProducts[ itemName ];
+	item['quantity'] = 1;
+	items.push(item);
+	params['items'] = items;
+
 	return params;
 }
 CALLBACK
@@ -57,13 +65,21 @@ CALLBACK
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var quantity = document.querySelector('div.quantity input').valueAsNumber;
+	var quantity = document.querySelector('.woocommerce-page .product form.cart div.quantity input').valueAsNumber;
 	var value = quantity * parseFloat(document.querySelector('.price span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
 	var currency = document.querySelector('.price span.woocommerce-Price-currencySymbol').innerText;
 	console.log(value);
 	console.log(currency);
 	params['value'] = value;
 	params['currency'] = currency;
+
+	var items = [];
+	var itemName = document.querySelector('.woocommerce-page .product .product_title').innerText;
+	var item = woocommerceProducts[ itemName ];
+	item['quantity'] = quantity;
+	items.push(item);
+	params['items'] = items;
+
 	return params;
 }
 CALLBACK
@@ -81,13 +97,21 @@ CALLBACK
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var quantity = document.querySelector('div.quantity input').valueAsNumber;
+	var itemName = element.closest('tr').querySelector('td.product-name a').innerText;
+	var quantity = woocommerceCartQuantities[ itemName ];
 	var value = quantity * parseFloat(element.closest('tr').querySelector('.product-price span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
 	var currency = element.closest('tr').querySelector('.product-price span.woocommerce-Price-currencySymbol').innerText;
 	console.log(value);
 	console.log(currency);
 	params['value'] = value;
 	params['currency'] = currency;
+
+	var items = [];
+	var item = woocommerceProducts[ itemName ];
+	item['quantity'] = quantity;
+	items.push(item);
+	params['items'] = items;
+
 	return params;
 }
 CALLBACK
@@ -159,6 +183,18 @@ CALLBACK
 				'action'     => 'update_cart',
 				'selector'   => '.woocommerce-cart-form__contents .coupon ~ .button',
 				'on'         => 'click',
+				'metadata'   => <<<CALLBACK
+function( params, element ) {
+	cartItems = document.querySelectorAll( '.woocommerce-cart-form__cart-item' );
+	for ( cartItem of cartItems ) {
+		var productName = cartItem.querySelector( '.product-name a' ).innerText;
+		var newQuantity = cartItem.querySelector( '.product-quantity input' ).valueAsNumber;
+		woocommerceCartQuantities[ productName ] = newQuantity;
+	}
+	return params;
+}
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );
