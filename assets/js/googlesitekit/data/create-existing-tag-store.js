@@ -107,7 +107,7 @@ export const createExistingTagStore = ( type, identifier, {
 				}
 			}
 
-			return	null;
+			return null;
 		} ),
 		[ WAIT_FOR_EXISTING_TAG ]: createRegistryControl( ( registry ) => () => (
 			registry.__experimentalResolveSelect( STORE_NAME ).getExistingTag()
@@ -180,8 +180,8 @@ export const createExistingTagStore = ( type, identifier, {
 		reducer,
 		resolvers,
 		selectors,
-
 	};
+
 	return {
 		...store,
 		STORE_NAME,
