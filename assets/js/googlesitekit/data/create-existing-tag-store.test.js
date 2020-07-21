@@ -29,12 +29,13 @@ import {
 	untilResolved,
 } from '../../../../tests/js/utils';
 import { createExistingTagStore } from './create-existing-tag-store';
-import { isValidPropertyID } from '../../modules/analytics/util';
-import tagMatchers from '../../modules/analytics/util/tag-matchers';
-import * as factories from '../../modules/analytics/datastore/__factories__';
 import { STORE_NAME as CORE_SITE } from '../datastore/site/constants';
 
 const STORE_NAME = 'test/store';
+const tagMatchers = [
+	/<test-store-tag value="([^\"]+)" \/>/,
+];
+const generateHTMLWithTag = ( tag ) => `<html><body><test-store-tag value="${ tag }" \/></body></html>`;
 
 describe( 'createExistingTagStore store', () => {
 	let registry;
@@ -51,7 +52,6 @@ describe( 'createExistingTagStore store', () => {
 			Data.commonStore,
 			createExistingTagStore( 'test', 'store', {
 				tagMatchers,
-				isValidTag: isValidPropertyID,
 				storeName: STORE_NAME,
 			} )
 		) );
@@ -107,11 +107,10 @@ describe( 'createExistingTagStore store', () => {
 
 		describe( 'waitForExistingTag', () => {
 			it( 'supports asynchronous waiting for tag', async () => {
-				const expectedTag = 'UA-12345678-1';
-
+				const expectedTag = 'test-tag-value';
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
+					{ body: generateHTMLWithTag( expectedTag ), status: 200 }
 				);
 
 				const promise = registry.dispatch( STORE_NAME ).waitForExistingTag();
@@ -128,11 +127,11 @@ describe( 'createExistingTagStore store', () => {
 	describe( 'selectors', () => {
 		describe( 'getExistingTag', () => {
 			it( 'uses a resolver to get tag', async () => {
-				const expectedTag = 'UA-12345678-1';
+				const expectedTag = 'test-tag-value';
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
+					{ body: generateHTMLWithTag( expectedTag ), status: 200 }
 				);
 
 				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
