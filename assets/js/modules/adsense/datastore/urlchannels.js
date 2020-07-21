@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -33,16 +32,6 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 const fetchGetURLChannelsStore = createFetchStore( {
 	baseName: 'getURLChannels',
 	controlCallback: ( { accountID, clientID } ) => {
-		if ( undefined === accountID ) {
-			// Mirror the API response that would happen for an invalid client ID.
-			return new Promise( () => {
-				throw {
-					code: 'invalid_param',
-					message: __( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
-					data: { status: 400 },
-				};
-			} );
-		}
 		return API.get( 'modules', 'adsense', 'urlchannels', { accountID, clientID }, {
 			useCache: false,
 		} );
