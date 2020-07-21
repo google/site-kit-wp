@@ -40,7 +40,6 @@ const generateHTMLWithTag = ( tag ) => `<html><body><test-store-tag value="${ ta
 describe( 'createExistingTagStore store', () => {
 	let registry;
 	let store;
-	const homeURL = 'http://example.com/';
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -55,7 +54,7 @@ describe( 'createExistingTagStore store', () => {
 				storeName: STORE_NAME,
 			} )
 		) );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
 	} );
 
 	afterAll( () => {
