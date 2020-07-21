@@ -29,6 +29,12 @@ final class Metadata_Collector {
 	 */
 	private $items;
 
+	/**
+	 * List of quantities for each product in the cart.
+	 *
+	 * @since n.e.x.t.
+	 * @var array
+	 */
 	private $cart_item_quantities;
 
 	/**
@@ -37,7 +43,7 @@ final class Metadata_Collector {
 	 * @since n.e.x.t.
 	 */
 	public function __construct() {
-		$this->items = array();
+		$this->items                = array();
 		$this->cart_item_quantities = array();
 	}
 
@@ -83,9 +89,9 @@ final class Metadata_Collector {
 		add_filter(
 			'woocommerce_quantity_input_args', // Fires when a cart item quantity is evaluated.
 			function( $args, $product ) {
-				$product_name = $product->get_name();
+				$product_name                                = $product->get_name();
 				$this->cart_item_quantities[ $product_name ] = $args['input_value'];
-				$this->inject_metadata();;
+				$this->inject_metadata();
 				return $args;
 			},
 			10,
