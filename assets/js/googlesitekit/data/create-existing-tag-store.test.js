@@ -99,7 +99,7 @@ describe( 'createExistingTagStore store', () => {
 			} );
 
 			it( 'receives and sets value', () => {
-				const existingTag = 'UA-12345678-1';
+				const existingTag = 'test-existing-tag';
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag );
 				expect( store.getState().existingTag ).toBe( existingTag );
 			} );
@@ -148,7 +148,7 @@ describe( 'createExistingTagStore store', () => {
 
 		describe( 'hasExistingTag', () => {
 			it( 'returns true if an existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'UA-12345678-1' );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'test-existing-tag' );
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
