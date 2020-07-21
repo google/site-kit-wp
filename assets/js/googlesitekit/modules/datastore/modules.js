@@ -33,18 +33,13 @@ import { createFetchStore } from '../../data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions.
-const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
+const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
-	argsToParams: ( { useCache = true } = {} ) => {
-		return {
-			options: { useCache },
-		};
-	},
-	controlCallback: ( { options: { useCache } } ) => {
+	controlCallback: () => {
 		return API.get( 'core', 'modules', 'list', null, {
-			useCache,
+			useCache: false,
 		} );
 	},
 	reducerCallback: ( state, modules ) => {
@@ -148,7 +143,7 @@ const baseActions = {
 			yield fetchGetModulesStore.actions.fetchGetModules();
 			yield {
 				payload: {},
-				type: REFETCH_AUTHENICATION,
+				type: REFETCH_AUTHENTICATION,
 			};
 		}
 
@@ -157,7 +152,7 @@ const baseActions = {
 };
 
 export const baseControls = {
-	[ REFETCH_AUTHENICATION ]: createRegistryControl( ( { dispatch } ) => () => {
+	[ REFETCH_AUTHENTICATION ]: createRegistryControl( ( { dispatch } ) => () => {
 		return dispatch( CORE_USER ).fetchGetAuthentication();
 	} ),
 };
