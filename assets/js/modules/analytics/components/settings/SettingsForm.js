@@ -21,7 +21,7 @@
  */
 import {
 	AccountSelect,
-	AnonymizeIpSwitch,
+	AnonymizeIPSwitch,
 	ErrorNotice,
 	ExistingTagNotice,
 	ProfileSelect,
@@ -51,7 +51,7 @@ export default function SettingsForm() {
 
 				<UseSnippetSwitch />
 
-				<AnonymizeIpSwitch />
+				<AnonymizeIPSwitch />
 
 				<TrackingExclusionSwitches />
 			</div>
