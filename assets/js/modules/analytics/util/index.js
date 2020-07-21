@@ -257,7 +257,7 @@ export const getAnalyticsErrorMessageFromData = ( data ) => {
 	}
 
 	// Regular WP error handling.
-	if ( data.code && data.message && data.data && data.data.status ) {
+	if ( data.code && data.message && data.data?.status ) {
 		return data.message;
 	}
 
