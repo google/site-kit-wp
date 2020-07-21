@@ -52,7 +52,7 @@ const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
  */
 export const createExistingTagStore = ( type, identifier, {
 	tagMatchers,
-	isValidTag = () => true,
+	isValidTag = ( tag ) => typeof tag === 'string' && tag.length > 0,
 	storeName = undefined,
 } = {} ) => {
 	invariant( type, 'type is required.' );

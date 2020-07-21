@@ -97,6 +97,37 @@ describe( 'createExistingTagStore store', () => {
 				} ).toThrow( 'existingTag must be a valid tag or null.' );
 			} );
 
+			it( 'requires a non-zero length string tag by default', () => {
+				expect( () => {
+					muteConsole( 'error' );
+					registry.dispatch( STORE_NAME ).receiveGetExistingTag( '' );
+				} ).toThrow( 'existingTag must be a valid tag or null.' );
+
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'a' );
+				} ).not.toThrow();
+			} );
+
+			it( 'allows custom validation for tags', () => {
+				const isValidTag = ( tag ) => tag === 'valid-tag';
+				const storeDefinition = createExistingTagStore( 'foo', 'store', {
+					tagMatchers: [ /(\w+)/ ],
+					isValidTag,
+				} );
+				registry.registerStore( 'is-valid-tag/store', storeDefinition );
+
+				expect( isValidTag( 'invalid-tag' ) ).toBe( false );
+				expect( () => {
+					muteConsole( 'error' );
+					registry.dispatch( 'is-valid-tag/store' ).receiveGetExistingTag( 'invalid-tag' );
+				} ).toThrow( 'existingTag must be a valid tag or null.' );
+
+				expect( isValidTag( 'valid-tag' ) ).toBe( true );
+				expect( () => {
+					registry.dispatch( 'is-valid-tag/store' ).receiveGetExistingTag( 'valid-tag' );
+				} ).not.toThrow();
+			} );
+
 			it( 'receives and sets value', () => {
 				const existingTag = 'test-existing-tag';
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag );
