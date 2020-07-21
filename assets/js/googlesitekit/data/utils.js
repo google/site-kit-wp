@@ -26,7 +26,6 @@ import invariant from 'invariant';
  */
 import { createRegistryControl } from '@wordpress/data';
 
-const AWAIT = 'AWAIT';
 const GET_REGISTRY = 'GET_REGISTRY';
 
 /**
@@ -209,22 +208,6 @@ export const combineStores = ( ...stores ) => {
  */
 export const commonActions = {
 	/**
-	 * Awaits the given promise to be resolved.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Promise} promise A promise to await.
-	 * @return {Object} FSA-compatible action.
-	 */
-	await( promise ) {
-		return {
-			payload: { promise },
-			type: AWAIT,
-		};
-	},
-
-	/**
 	 * Dispatches an action and calls a control to get the current data registry.
 	 *
 	 * Useful for controls and resolvers that wish to dispatch actions/use selectors
@@ -250,19 +233,6 @@ export const commonActions = {
  * @return {Object} key/value list of common controls most stores will want.
  */
 export const commonControls = {
-	/**
-	 * Awaits the given promise.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object}  action                 FSA-compatible action.
-	 * @param {Object}  action.payload         Payload object.
-	 * @param {Promise} action.payload.promise Promise to await.
-	 *
-	 * @return {Promise} The given promise.
-	 */
-	[ AWAIT ]: ( { payload: { promise } } ) => promise,
-
 	/**
 	 * Returns the current registry.
 	 *
