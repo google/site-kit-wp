@@ -88,19 +88,14 @@ describe( 'core/site html', () => {
 				const url = 'https://example.com';
 				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 
-				let resolveResponse;
-				const responsePromise = new Promise( ( resolve ) => {
-					resolveResponse = () => resolve( { body: html, status: 200 } );
-				} );
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					responsePromise
+					{ body: html, status: 200 }
 				);
 				const promise = registry.dispatch( STORE_NAME ).waitForHTMLForURL( url );
 
 				expect( registry.select( STORE_NAME ).getHTMLForURL( url ) ).toBe( undefined );
 
-				resolveResponse();
 				await promise;
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
