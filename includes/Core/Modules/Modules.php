@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
-use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
@@ -807,71 +806,68 @@ final class Modules {
 	 * Gets the REST schema for a module.
 	 *
 	 * @since 1.3.0
-	 * @since n.e.x.t Returns a function that returns the schema when invoked.
 	 *
-	 * @return Closure Function which returns the Module REST schema.
+	 * @return array Module REST schema.
 	 */
 	private function get_module_schema() {
-		return function () {
-			array(
-				'$schema'    => 'http://json-schema.org/draft-04/schema#',
-				'title'      => 'module',
-				'type'       => 'object',
-				'properties' => array(
-					'slug'         => array(
-						'type'        => 'string',
-						'description' => __( 'Identifier for the module.', 'google-site-kit' ),
-						'readonly'    => true,
-					),
-					'name'         => array(
-						'type'        => 'string',
-						'description' => __( 'Name of the module.', 'google-site-kit' ),
-						'readonly'    => true,
-					),
-					'description'  => array(
-						'type'        => 'string',
-						'description' => __( 'Description of the module.', 'google-site-kit' ),
-						'readonly'    => true,
-					),
-					'homepage'     => array(
-						'type'        => 'string',
-						'description' => __( 'The module homepage.', 'google-site-kit' ),
-						'format'      => 'uri',
-						'readonly'    => true,
-					),
-					'internal'     => array(
-						'type'        => 'boolean',
-						'description' => __( 'Whether the module is internal, thus without any UI.', 'google-site-kit' ),
-						'readonly'    => true,
-					),
-					'active'       => array(
-						'type'        => 'boolean',
-						'description' => __( 'Whether the module is active.', 'google-site-kit' ),
-					),
-					'connected'    => array(
-						'type'        => 'boolean',
-						'description' => __( 'Whether the module setup has been completed.', 'google-site-kit' ),
-						'readonly'    => true,
-					),
-					'dependencies' => array(
-						'type'        => 'array',
-						'description' => __( 'List of slugs of other modules that the module depends on.', 'google-site-kit' ),
-						'items'       => array(
-							'type' => 'string',
-						),
-						'readonly'    => true,
-					),
-					'dependants'   => array(
-						'type'        => 'array',
-						'description' => __( 'List of slugs of other modules depending on the module.', 'google-site-kit' ),
-						'items'       => array(
-							'type' => 'string',
-						),
-						'readonly'    => true,
-					),
+		return array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'module',
+			'type'       => 'object',
+			'properties' => array(
+				'slug'         => array(
+					'type'        => 'string',
+					'description' => __( 'Identifier for the module.', 'google-site-kit' ),
+					'readonly'    => true,
 				),
-			);
-		};
+				'name'         => array(
+					'type'        => 'string',
+					'description' => __( 'Name of the module.', 'google-site-kit' ),
+					'readonly'    => true,
+				),
+				'description'  => array(
+					'type'        => 'string',
+					'description' => __( 'Description of the module.', 'google-site-kit' ),
+					'readonly'    => true,
+				),
+				'homepage'     => array(
+					'type'        => 'string',
+					'description' => __( 'The module homepage.', 'google-site-kit' ),
+					'format'      => 'uri',
+					'readonly'    => true,
+				),
+				'internal'     => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the module is internal, thus without any UI.', 'google-site-kit' ),
+					'readonly'    => true,
+				),
+				'active'       => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the module is active.', 'google-site-kit' ),
+				),
+				'connected'    => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the module setup has been completed.', 'google-site-kit' ),
+					'readonly'    => true,
+				),
+				'dependencies' => array(
+					'type'        => 'array',
+					'description' => __( 'List of slugs of other modules that the module depends on.', 'google-site-kit' ),
+					'items'       => array(
+						'type' => 'string',
+					),
+					'readonly'    => true,
+				),
+				'dependants'   => array(
+					'type'        => 'array',
+					'description' => __( 'List of slugs of other modules depending on the module.', 'google-site-kit' ),
+					'items'       => array(
+						'type' => 'string',
+					),
+					'readonly'    => true,
+				),
+			),
+		);
 	}
 
 	/**
