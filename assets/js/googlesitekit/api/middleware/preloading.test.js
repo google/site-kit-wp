@@ -22,37 +22,22 @@
 import createPreloadingMiddleware from './preloading';
 
 const preloadedData = {
-	'google-site-kit/v1/core/site/data/connection': {
+	'test/path/a': {
 		headers: [],
 		body: {
-			connected: true,
-			resettable: true,
-			setupCompleted: true,
+			body: { keyName: 'value' },
 		},
 	},
 
-	'google-site-kit/v1/core/user/authentication': {
+	'test/path/b': {
 		headers: [],
-		body: {
-			authenticated: true,
-			grantedScopes: [],
-			requiredScopes: [
-				'openid',
-				'https://www.googleapis.com/auth/userinfo.profile',
-				'https://www.googleapis.com/auth/userinfo.email',
-				'https://www.googleapis.com/auth/siteverification',
-				'https://www.googleapis.com/auth/webmasters',
-				'https://www.googleapis.com/auth/adsense.readonly',
-				'https://www.googleapis.com/auth/analytics.readonly',
-			],
-			unsatisfiedScopes: [],
-		},
+		body: { keyName: 'value' },
 	},
 };
 
 describe( 'Preloading Middleware', () => {
 	it( 'returns a preloaded response when present', async () => {
-		const requestURI = 'google-site-kit/v1/core/user/authentication';
+		const requestURI = 'test/path/a';
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
 		);
@@ -68,8 +53,8 @@ describe( 'Preloading Middleware', () => {
 	} );
 
 	it( 'returns a preloaded response from multiple URIs', async () => {
-		const firstRequestURI = 'google-site-kit/v1/core/user/authentication';
-		const secondRequestURI = 'google-site-kit/v1/core/site/data/connection';
+		const firstRequestURI = 'test/path/a';
+		const secondRequestURI = 'test/path/b';
 
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
@@ -96,7 +81,7 @@ describe( 'Preloading Middleware', () => {
 	} );
 
 	it( 'does nothing and calls next middleware when no preloaded response exists for the request', async () => {
-		const requestURI = 'google-site-kit/v1/core/user/authentication';
+		const requestURI = 'test/path/a';
 		const next = jest.fn();
 		const preloadingMiddleware = createPreloadingMiddleware( {} );
 		const requestOptions = {
@@ -108,7 +93,7 @@ describe( 'Preloading Middleware', () => {
 	} );
 
 	it( 'returns a preloaded response only once for each preloaded request', async () => {
-		const requestURI = 'google-site-kit/v1/core/user/authentication';
+		const requestURI = 'test/path/a';
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData
 		);
@@ -128,27 +113,25 @@ describe( 'Preloading Middleware', () => {
 	} );
 
 	it( 'calls the next middleware', async () => {
-		const requestURI = 'google-site-kit/v1/core/user/authentication';
+		const firstRequestURI = 'test/path/a';
+		const secondRequestURI = 'test/path/b';
 		const preloadingMiddleware = createPreloadingMiddleware(
 			preloadedData,
 			10
 		);
 		const requestOptions = {
 			method: 'GET',
-			path: requestURI,
+			path: firstRequestURI,
 		};
 		const next = jest.fn();
-		jest.useFakeTimers();
 
 		const firstResponse = await preloadingMiddleware( requestOptions, next );
-		expect( firstResponse ).toEqual( preloadedData[ requestURI ].body );
+		expect( firstResponse ).toEqual( preloadedData[ firstRequestURI ].body );
 		expect( next ).not.toHaveBeenCalled();
 
-		// Confirm that the setTimeout function was run.
-		expect( setTimeout ).toHaveBeenCalledTimes( 1 );
-		expect( setTimeout ).toHaveBeenLastCalledWith( expect.any( Function ), 10 );
+		jest.runAllTimers();
 		// Confirm that responses after the timeout don't run hit the middleware.
-		const secondResponse = await preloadingMiddleware( { method: 'GET', path: requestURI }, next );
+		const secondResponse = await preloadingMiddleware( { method: 'GET', path: secondRequestURI }, next );
 		expect( secondResponse ).toBeUndefined();
 		expect( next ).toHaveBeenCalled();
 	} );
@@ -166,7 +149,7 @@ describe( 'Preloading Middleware', () => {
 		} );
 
 		it( 'returns a preloaded response when present.', async () => {
-			const requestURI = 'google-site-kit/v1/core/user/authentication';
+			const requestURI = 'test/path/a';
 			// This mock is set up but the expectation is that it should never be run.
 			fetchMock.any( '*', 200 );
 			const response = await apiFetch( {
