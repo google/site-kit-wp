@@ -28,14 +28,12 @@ import { node, string } from 'prop-types';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 
 function Widget( { children, slug, width } ) {
-	const classes = classnames( `googlesitekit-widget googlesitekit-widget--${ slug }`, {
-		'mdc-layout-grid__cell--span-12': width === WIDGET_WIDTHS.FULL,
-		'mdc-layout-grid__cell--span-6': width === WIDGET_WIDTHS.HALF,
-		'mdc-layout-grid__cell--span-3': width === WIDGET_WIDTHS.QUARTER,
-	} );
-
 	return (
-		<div className={ classes }>
+		<div className={ classnames( `googlesitekit-widget googlesitekit-widget--${ slug }`, {
+			'mdc-layout-grid__cell--span-12': width === WIDGET_WIDTHS.FULL,
+			'mdc-layout-grid__cell--span-6': width === WIDGET_WIDTHS.HALF,
+			'mdc-layout-grid__cell--span-3': width === WIDGET_WIDTHS.QUARTER,
+		} ) }>
 			{ children }
 		</div>
 	);

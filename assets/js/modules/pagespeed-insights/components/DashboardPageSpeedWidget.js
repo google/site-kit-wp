@@ -26,6 +26,7 @@ import { string } from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as MODULES_STORE } from '../../../googlesitekit/modules/datastore/constants';
+import Widget from '../../../googlesitekit/widgets/components/Widget';
 import DashboardPageSpeedCTA from './DashboardPageSpeedCTA';
 import DashboardPageSpeed from './DashboardPageSpeed';
 const { useSelect } = Data;
@@ -41,8 +42,6 @@ function DashboardPageSpeedWidget( { width, slug } ) {
 		return <DashboardPageSpeedCTA />;
 	}
 
-	const { Widget } = global.googlesitekit.widgets.components;
-
 	return (
 		<Widget slug={ slug } width={ width }>
 			<DashboardPageSpeed />
@@ -51,13 +50,8 @@ function DashboardPageSpeedWidget( { width, slug } ) {
 }
 
 DashboardPageSpeedWidget.propTypes = {
-	width: string,
-	slug: string,
-};
-
-DashboardPageSpeedWidget.defaultProps = {
-	width: '',
-	slug: '',
+	width: string.isRequired,
+	slug: string.isRequired,
 };
 
 export default DashboardPageSpeedWidget;

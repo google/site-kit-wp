@@ -27,7 +27,7 @@ const SET_PERMISSION_SCOPE_ERROR = 'SET_PERMISSION_SCOPE_ERROR';
 
 export const INITIAL_STATE = {
 	permissionError: null,
-	capabilities: global._googlesitekitUserData?.permissions || {},
+	capabilities: global._googlesitekitUserData?.permissions,
 };
 
 export const actions = {
@@ -135,6 +135,8 @@ export const selectors = {
 		if ( capabilities ) {
 			return !! capabilities[ capability ];
 		}
+
+		return undefined;
 	},
 };
 
