@@ -26,7 +26,7 @@
  */
 export const STORAGE_KEY_PREFIX = 'googlesitekit_';
 
-const defaultOrder = [ 'localStorage', 'sessionStorage' ];
+const defaultOrder = [ 'sessionStorage', 'localStorage' ];
 let storageBackend;
 let storageOrder = [ ...defaultOrder	];
 /**
