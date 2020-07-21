@@ -99,18 +99,18 @@ describe( 'modules/tagmanager existing-tag', () => {
 			expect( existingTagURLs ).toEqual( expectedURLs );
 		} );
 
-		it( 'returns urls if fetch throws an error', async () => {
+		it( 'returns urls if posts API request fails', async () => {
 			const homeURL = 'http://example.com/';
 			const expectedURLs = [
 				homeURL,
 			];
 
-			// muteConsole( 'error' );
 			fetchMock.getOnce(
 				/^\/wp\/v2\/posts/,
 				{ throws: 'error' }
 			);
 
+			// No muteConsole needed as the error is caught internally.
 			const existingTagURLs = await getExistingTagURLs( { homeURL } );
 
 			expect( existingTagURLs ).toEqual( expectedURLs );
