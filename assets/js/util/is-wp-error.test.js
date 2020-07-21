@@ -17,7 +17,7 @@
  */
 
 /**
- * Internal dependecies.
+ * Internal dependencies
  */
 import { isWPError } from './is-wp-error';
 
