@@ -24,7 +24,7 @@ import { map } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -35,7 +35,8 @@ import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
 import PreviewTable from '../../../components/preview-table';
-import { STORE_NAME } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME } from '../datastore/constants';
+
 const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const { data } = props;
 	const { useSelect } = Data;
@@ -55,16 +56,19 @@ const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 		},
 	];
 	const domain = getModulesData()[ 'search-console' ].settings.propertyID;
-	const userEmail = useSelect( ( select ) => select( STORE_NAME ).getEmail() );
 	const links = [];
+
 	const dataMapped = map( data, ( row, i ) => {
 		const query = row.keys[ 0 ];
-		links[ i ] = sprintf(
-			'https://search.google.com/search-console/performance/search-analytics?resource_id=%1$s&query=!%2$s&num_of_days=28&authuser=%3$s',
-			domain,
-			query,
-			userEmail
-		);
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		links[ i ] = useSelect( ( select ) => select( STORE_NAME ).getServiceBaseURL(
+			{
+				path: 'performance/search-analytics',
+				query: {
+					resource_id: domain,
+					num_of_days: 28 },
+			}
+		) );
 		return [
 			query,
 			numberFormat( row.clicks ),

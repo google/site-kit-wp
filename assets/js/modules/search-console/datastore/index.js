@@ -17,12 +17,19 @@
  */
 
 /**
+ * Wordpress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 export { STORE_NAME };
+const { createRegistrySelector } = Data;
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	storeName: STORE_NAME,
@@ -33,23 +40,42 @@ const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	requiresSetup: false,
 } );
 
-const {
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-} = baseModuleStore;
-
-export {
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
+const baseSelectors = {
+	/**
+	 * Return the service base url.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} [args]
+	 * @param {string} [args.path]
+	 * @param {Object} [args.query]
+	 * @return {string}
+	 */
+	getServiceBaseURL: createRegistrySelector( ( select ) => ( state, args = {} ) => {
+		const { path, query } = args;
+		const userEmail = select( CORE_USER ).getEmail();
+		const baseURI = `https://search.google.com/search-console`;
+		const sanitizedPath = ( path && ! path.match( /^\// ) ) ? `/${ path }` : '';
+		const queryArgs = { ...query, authuser: userEmail };
+		return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryArgs );
+	} ),
 };
 
+const store = Data.combineStores(
+	baseModuleStore,
+	{
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
 // Register this baseModuleStore on the global registry.
-Data.registerStore( STORE_NAME, baseModuleStore );
+Data.registerStore( STORE_NAME, store );
 
 export default baseModuleStore;
