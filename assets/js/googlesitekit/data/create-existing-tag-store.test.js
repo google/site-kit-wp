@@ -66,11 +66,17 @@ describe( 'createExistingTagStore store', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'name', () => {
+	describe( 'STORE_NAME', () => {
 		it( 'returns the correct default store name', () => {
 			const storeDefinition = createExistingTagStore( 'foo', 'store', { tagMatchers: [] } );
 
 			expect( storeDefinition.STORE_NAME ).toEqual( 'foo/store' );
+		} );
+
+		it( 'returns the given storeName when provided', () => {
+			const storeDefinition = createExistingTagStore( 'foo', 'store', { storeName: 'bar/store', tagMatchers: [] } );
+
+			expect( storeDefinition.STORE_NAME ).toEqual( 'bar/store' );
 		} );
 	} );
 
