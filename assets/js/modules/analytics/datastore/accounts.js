@@ -207,11 +207,11 @@ const baseResolvers = {
 		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 		// Only fetch accounts if there are none in the store.
 		if ( existingAccounts === undefined ) {
-			registry.dispatch( STORE_NAME ).waitForExistingTag();
+			yield Data.commonActions.await( registry.dispatch( STORE_NAME ).waitForExistingTag() );
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
 			let existingTagPermission;
 			if ( existingTag ) {
-				registry.dispatch( STORE_NAME ).waitForTagPermission( existingTag );
+				yield Data.commonActions.await( registry.dispatch( STORE_NAME ).waitForTagPermission( existingTag ) );
 				existingTagPermission = registry.select( STORE_NAME ).getTagPermission( existingTag );
 			}
 
