@@ -53,14 +53,13 @@ describe( 'createExistingTagStore store', () => {
 			tagMatchers,
 			isValidTag: isValidPropertyID,
 		} );
-		registry.registerStore( STORE_NAME, Data.combineStores(
+		store = registry.registerStore( STORE_NAME, Data.combineStores(
 			Data.commonStore,
 			createExistingTagStore( ...STORE_ARGS, {
 				tagMatchers,
 				isValidTag: isValidPropertyID,
 			} )
 		) );
-		store = registry.stores[ STORE_NAME ].store;
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 	} );
 
