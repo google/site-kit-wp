@@ -30,10 +30,9 @@ import { getStablePath } from '@wordpress/api-fetch/build/middlewares/preloading
  * @since n.e.x.t
  *
  * @param {Object} preloadedData Preloaded data paths.
- * @param {number} timeout       Timeout value.
  * @return {Function} Function.
  */
-function createPreloadingMiddleware( preloadedData, timeout = 1000 ) {
+function createPreloadingMiddleware( preloadedData ) {
 	const cache = Object.keys( preloadedData ).reduce( ( result, path ) => {
 		result[ getStablePath( path ) ] = preloadedData[ path ];
 		return result;
@@ -43,10 +42,13 @@ function createPreloadingMiddleware( preloadedData, timeout = 1000 ) {
 	return ( options, next ) => {
 		const { parse = true } = options;
 		const uri = options.path;
+		if ( cacheHasExpired ) {
+			return next( options );
+		}
 		setTimeout( () => {
 			cacheHasExpired = true;
-		}, timeout );
-		if ( typeof options.path === 'string' && ! cacheHasExpired ) {
+		}, 1000 );
+		if ( typeof options.path === 'string' ) {
 			const method = options.method?.toUpperCase() || 'GET';
 
 			const path = getStablePath( uri );
