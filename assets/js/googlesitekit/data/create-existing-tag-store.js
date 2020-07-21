@@ -75,7 +75,7 @@ export const createExistingTagStore = ( type, identifier, {
 		},
 		receiveGetExistingTag( existingTag ) {
 			invariant(
-				existingTag === null || isValidTag( existingTag ),
+				existingTag !== undefined && ( existingTag === null || isValidTag( existingTag ) ),
 				'existingTag must be a valid tag or null.'
 			);
 
