@@ -35,11 +35,9 @@ import * as factories from '../../modules/analytics/datastore/__factories__';
 import { STORE_NAME as CORE_SITE } from '../datastore/site/constants';
 
 const STORE_NAME = 'test/store';
-const STORE_ARGS = [ 'test', 'store' ];
 
 describe( 'createExistingTagStore store', () => {
 	let registry;
-	let storeDefinition;
 	let store;
 	const homeURL = 'http://example.com/';
 
@@ -49,15 +47,12 @@ describe( 'createExistingTagStore store', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		storeDefinition = createExistingTagStore( ...STORE_ARGS, {
-			tagMatchers,
-			isValidTag: isValidPropertyID,
-		} );
 		store = registry.registerStore( STORE_NAME, Data.combineStores(
 			Data.commonStore,
-			createExistingTagStore( ...STORE_ARGS, {
+			createExistingTagStore( 'test', 'store', {
 				tagMatchers,
 				isValidTag: isValidPropertyID,
+				storeName: STORE_NAME,
 			} )
 		) );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
@@ -73,7 +68,9 @@ describe( 'createExistingTagStore store', () => {
 
 	describe( 'name', () => {
 		it( 'returns the correct default store name', () => {
-			expect( STORE_NAME ).toEqual( `${ STORE_ARGS[ 0 ] }/${ STORE_ARGS[ 1 ] }` );
+			const storeDefinition = createExistingTagStore( 'foo', 'store', { tagMatchers: [] } );
+
+			expect( storeDefinition.STORE_NAME ).toEqual( 'foo/store' );
 		} );
 	} );
 
