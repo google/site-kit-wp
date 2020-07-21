@@ -26,25 +26,11 @@ import fetchMock from 'fetch-mock';
  */
 import { getExistingTagURLs } from '../tag';
 import API from 'googlesitekit-api';
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../tests/js/utils';
 import { AMP_MODE_SECONDARY } from '../../googlesitekit/datastore/site/constants';
 
 describe( 'modules/tagmanager existing-tag', () => {
-	let registry;
-
 	beforeAll( () => {
 		API.setUsingCache( false );
-	} );
-
-	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	afterAll( () => {
