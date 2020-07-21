@@ -126,6 +126,7 @@ describe( 'Preloading Middleware', () => {
 		expect( secondRequest ).toBeUndefined();
 		expect( next ).toHaveBeenCalled();
 	} );
+
 	it( 'returns an uncached response after the timeout has run', async () => {
 		const requestURI = 'google-site-kit/v1/core/user/authentication';
 		const preloadingMiddleware = createPreloadingMiddleware(
