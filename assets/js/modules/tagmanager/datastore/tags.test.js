@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -32,6 +33,7 @@ import * as factories from './__factories__';
 
 describe( 'modules/tagmanager existing-tag', () => {
 	let registry;
+	const homeURL = 'http://example.com/';
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -39,6 +41,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 	} );
 
 	afterEach( () => {
@@ -49,28 +52,21 @@ describe( 'modules/tagmanager existing-tag', () => {
 		API.setUsingCache( true );
 	} );
 
-	describe( 'actions', () => {
-		// No non-fetch actions to test yet.
-		// Fetch actions are tested implicitly by their selectors.
-	} );
-
 	describe( 'selectors', () => {
 		describe( 'getExistingTag', () => {
-			it( 'uses a resolver to make a network request', async () => {
+			it( 'gets the correct tagmanager tag', async () => {
 				const expectedTag = 'GTM-S1T3K1T';
+
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
 					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
 				);
 
-				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
+				registry.select( STORE_NAME ).getExistingTag();
 
-				expect( initialExistingTag ).toEqual( undefined );
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
-				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( existingTag ).toEqual( expectedTag );
 			} );
 
@@ -195,10 +191,8 @@ describe( 'modules/tagmanager existing-tag', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				muteFetch( { query: { tagverify: '1' } } );
+				muteFetch();
 				expect( registry.select( STORE_NAME ).hasExistingTag() ).toEqual( undefined );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
