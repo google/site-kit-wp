@@ -175,19 +175,20 @@ const baseActions = {
 	},
 
 	/**
-		* Registers a module.
+	 * Registers a module.
 	 *
-		* @since n.e.x.t
-		* @param {string} slug                         Module slug.
-		* @param {Object} [settings]                   Optional. Module settings.
-		* @param {string} [settings.name]              Optional. Module name. Default is the slug.
-		* @param {string} [settings.description]       Optional. Module description. Default empty string.
-		* @param {string} [settings.icon]              Optional. Module icon. Default empty string.
-		* @param {number} [settings.order]             Optional. Numeric indicator for module order. Default 10.
-		* @param {string} [settings.homepage]          Optional. Module homepage URL. Default empty string.
-		* @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
-		* @return {Object} Redux-style action.
-		*/
+	 * @since n.e.x.t
+	 *
+	 * @param {string}    slug                         Module slug.
+	 * @param {Object}    [settings]                   Optional. Module settings.
+	 * @param {string}    [settings.name]              Optional. Module name. Default is the slug.
+	 * @param {string}    [settings.description]       Optional. Module description. Default empty string.
+	 * @param {string}    [settings.icon]              Optional. Module icon. Default empty string.
+	 * @param {number}    [settings.order]             Optional. Numeric indicator for module order. Default 10.
+	 * @param {string}    [settings.homepage]          Optional. Module homepage URL. Default empty string.
+	 * @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
+	 * @return {Object} Redux-style action.
+	 */
 	*registerModule( slug, { settingsComponent = DefaultModuleSettings, ...settings } = {} ) {
 		invariant( slug, 'module slug is required' );
 
