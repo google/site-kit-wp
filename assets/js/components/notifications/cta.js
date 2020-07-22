@@ -55,11 +55,12 @@ class CTA extends Component {
 						{ title }
 					</h3>
 				}
-				{ description &&
-					<p className="googlesitekit-cta__description">
-						{ description }
-					</p>
-				}
+				{ ( description && typeof description === 'string' ) && (
+					<p className="googlesitekit-cta__description">{ description }</p>
+				) }
+				{ ( description && typeof description !== 'string' ) && (
+					<div className="googlesitekit-cta__description">{ description }</div>
+				) }
 				{ ctaLabel &&
 					<Link
 						href={ ctaLink }
@@ -78,7 +79,7 @@ class CTA extends Component {
 
 CTA.propTypes = {
 	title: PropTypes.string.isRequired,
-	description: PropTypes.string,
+	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
 	error: PropTypes.bool,

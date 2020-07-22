@@ -58,12 +58,14 @@ class AnalyticsAllTraffic extends Component {
 	 * If this component's API data calls returns an error or empty results, this callback is invoke,
 	 * resulting the hiding of this panel.
 	 *
-	 * @param {string} error A potential error string.
+	 * @param {string} error    A potential error string.
+	 * @param {Object} errorObj Full error object.
 	 */
-	handleDataError( error ) {
+	handleDataError( error, errorObj ) {
 		this.setState( {
 			receivingData: false,
 			error,
+			errorObj,
 		} );
 	}
 
@@ -81,6 +83,7 @@ class AnalyticsAllTraffic extends Component {
 
 		const {
 			error,
+			errorObj,
 			receivingData,
 		} = this.state;
 
@@ -89,7 +92,7 @@ class AnalyticsAllTraffic extends Component {
 		}
 
 		if ( ! receivingData ) {
-			return error ? getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true );
+			return error ? getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true );
 		}
 
 		return null;

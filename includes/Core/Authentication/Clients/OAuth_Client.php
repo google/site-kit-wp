@@ -943,25 +943,30 @@ final class OAuth_Client {
 	 */
 	public function get_error_message( $error_code ) {
 		switch ( $error_code ) {
+			case 'access_denied':
+				return __( 'The Site Kit setup was interrupted because you did not grant the necessary permissions.', 'google-site-kit' );
+			case 'access_token_not_received':
+				return __( 'Unable to receive access token because of an unknown error.', 'google-site-kit' );
+			case 'cannot_log_in':
+				return __( 'Internal error that the Google login redirect failed.', 'google-site-kit' );
+			case 'invalid_client':
+				return __( 'Unable to receive access token because of an invalid client.', 'google-site-kit' );
+			case 'invalid_code':
+				return __( 'Unable to receive access token because of an empty authorization code.', 'google-site-kit' );
+			case 'invalid_grant':
+				return __( 'Unable to receive access token because of an invalid authorization code or refresh token.', 'google-site-kit' );
+			case 'invalid_request':
+				return __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
+			case 'missing_delegation_consent':
+				return __( 'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard.', 'google-site-kit' );
+			case 'missing_search_console_property':
+				return __( 'Looks like there is no Search Console property for your site.', 'google-site-kit' );
+			case 'missing_verification':
+				return __( 'Looks like the verification token for your site is missing.', 'google-site-kit' );
 			case 'oauth_credentials_not_exist':
 				return __( 'Unable to authenticate Site Kit, as no client credentials exist.', 'google-site-kit' );
 			case 'refresh_token_not_exist':
 				return __( 'Unable to refresh access token, as no refresh token exists.', 'google-site-kit' );
-			case 'cannot_log_in':
-				return __( 'Internal error that the Google login redirect failed.', 'google-site-kit' );
-			case 'invalid_code':
-				return __( 'Unable to receive access token because of an empty authorization code.', 'google-site-kit' );
-			case 'access_token_not_received':
-				return __( 'Unable to receive access token because of an unknown error.', 'google-site-kit' );
-			case 'access_denied':
-				return __( 'The Site Kit setup was interrupted because you did not grant the necessary permissions.', 'google-site-kit' );
-			// The following messages are based on https://tools.ietf.org/html/rfc6749#section-5.2.
-			case 'invalid_request':
-				return __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
-			case 'invalid_client':
-				return __( 'Unable to receive access token because of an invalid client.', 'google-site-kit' );
-			case 'invalid_grant':
-				return __( 'Unable to receive access token because of an invalid authorization code or refresh token.', 'google-site-kit' );
 			case 'unauthorized_client':
 				return __( 'Unable to receive access token because of an unauthorized client.', 'google-site-kit' );
 			case 'unsupported_grant_type':
