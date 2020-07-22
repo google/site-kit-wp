@@ -30,6 +30,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Header from '../../../components/header';
 import SearchConsoleDashboardWidgetSiteStats from './dashboard-widget-sitestats';
 import SearchConsoleDashboardWidgetKeywordTable from './dashboard-widget-keyword-table';
@@ -43,6 +44,8 @@ import getDataErrorComponent from '../../../components/notifications/data-error'
 import { getCurrentDateRange } from '../../../util/date-range';
 import HelpLink from '../../../components/help-link';
 import { getModulesData } from '../../../util';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+const { withSelect } = Data;
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	constructor( props ) {
@@ -72,12 +75,14 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	 * If the component detects no data - in this case all 0s - the callback is called without an error message,
 	 * resulting in the display of a CTA.
 	 *
-	 * @param {string} error A potential error string.
+	 * @param {string} error    A potential error string.
+	 * @param {Object} errorObj Full error object.
 	 */
-	handleDataError( error ) {
+	handleDataError( error, errorObj ) {
 		this.setState( {
 			receivingData: false,
 			error,
+			errorObj,
 			loading: false,
 		} );
 	}
@@ -152,15 +157,20 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 			selectedStats,
 			receivingData,
 			error,
+			errorObj,
 			loading,
 		} = this.state;
+
+		const {
+			dateRange,
+		} = this.props;
 
 		const series = this.buildSeries();
 		const vAxes = this.buildVAxes();
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
-		const dateRange = getCurrentDateRange();
+		const currentDateRange = getCurrentDateRange( dateRange );
 
 		const searchConsoleDeepLink = sprintf( 'https://search.google.com/search-console?resource_id=%s', getModulesData()[ 'search-console' ].settings.propertyID );
 
@@ -180,7 +190,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 							{ ! receivingData && (
-								error ? getDataErrorComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
+								error ? getDataErrorComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
 							<div className={ classnames(
 								'mdc-layout-grid__cell',
@@ -190,7 +200,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 								<Layout
 									header
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), dateRange ) }
+									title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
 									headerCtaLink={ searchConsoleDeepLink }
 								>
@@ -210,7 +220,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 							) }>
 								<Layout
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), dateRange ) }
+									title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), currentDateRange ) }
 									header
 									footer
 									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
@@ -236,4 +246,8 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	}
 }
 
-export default GoogleSitekitSearchConsoleDashboardWidget;
+export default withSelect(
+	( select ) => ( {
+		dateRange: select( CORE_USER ).getDateRange(),
+	} ),
+)( GoogleSitekitSearchConsoleDashboardWidget );

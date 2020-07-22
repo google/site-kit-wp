@@ -33,12 +33,13 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 
-const { commonActions, createRegistrySelector } = Data;
+const { commonActions, createRegistrySelector, createRegistryControl } = Data;
 
 /**
  * Store our module components by registry, then by module `slug`. We do this because
@@ -169,6 +170,10 @@ const baseActions = {
 		if ( response?.success === true ) {
 			// Fetch (or re-fetch) all modules, with their updated status.
 			yield fetchGetModulesStore.actions.fetchGetModules();
+			yield {
+				payload: {},
+				type: REFETCH_AUTHENTICATION,
+			};
 		}
 
 		return { response, error };
@@ -221,9 +226,9 @@ const baseActions = {
 };
 
 export const baseControls = {
-	[ REFETCH_AUTHENTICATION ]: () => {
-		return API.get( 'core', 'user', 'authentication', { timestamp: Date.now() }, { useCache: false } );
-	},
+	[ REFETCH_AUTHENTICATION ]: createRegistryControl( ( { dispatch } ) => () => {
+		return dispatch( CORE_USER ).fetchGetAuthentication();
+	} ),
 };
 
 const baseReducer = ( state, { type, payload } ) => {

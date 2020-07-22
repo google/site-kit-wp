@@ -364,7 +364,7 @@ export const selectors = {
 	/**
 	 * Checks if the site is in the primary AMP mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @return {(boolean|undefined)} `true` or `false` if the site is in the primary AMP mode. Returns `undefined` if not loaded.
 	 */
@@ -381,7 +381,7 @@ export const selectors = {
 	/**
 	 * Checks if the site is in a secondary AMP mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.12.0
 	 *
 	 * @return {(boolean|undefined)} `true` or `false` if the site is in a secondary AMP mode. Returns `undefined` if not loaded.
 	 */

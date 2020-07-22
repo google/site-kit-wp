@@ -29,6 +29,7 @@ import modulesOptimizeStore, { STORE_NAME as modulesOptimizeStoreName } from '..
  * Create a registry with all available stores.
  *
  * @since 1.5.0
+ * @private
  *
  * @return {wp.data.registry} Registry with all available stores registered.
  */
@@ -46,6 +47,7 @@ export const createTestRegistry = () => {
  * which can be configured by its callback prop.
  *
  * @since 1.7.1
+ * @private
  *
  * @param {?Object}   props          Component props.
  * @param {?Function} props.callback Function which receives the registry instance.
@@ -80,6 +82,7 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
  * want appearing in the jest output.
  *
  * @since 1.5.0
+ * @private
  *
  * @param {string} type  Type of console to mute (one of: `'error'`, `'warn'`, `'log'`, `'info'`, or `'debug'`)
  * @param {number} times Number of times to mute console output perform resuming.
@@ -99,6 +102,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * but for anything else, a full mock should be used.
  *
  * @since 1.10.0
+ * @private
  *
  * @param {(string|RegExp|Function|URL|Object)} matcher   Criteria for deciding which requests to mock.
  *                                                        (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
@@ -113,7 +117,8 @@ export const muteFetch = ( matcher, response = {} ) => {
  *
  * Useful for simulating a loading state.
  *
- * @since n.e.x.t
+ * @since 1.12.0
+ * @private
  *
  * @param {(string|RegExp|Function|URL|Object)} matcher Criteria for deciding which requests to mock.
  *                                                      (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
@@ -130,6 +135,7 @@ export const freezeFetch = ( matcher ) => {
  * available for connected components and data store tests to use.
  *
  * @since 1.5.0
+ * @private
  *
  * @param {wp.data.registry} registry Registry to register each store on.
  */
@@ -162,6 +168,7 @@ export const subscribeWithUnsubscribe = ( registry, ...args ) => {
  * await untilResolved( registry, STORE_NAME ).selectorWithResolver( arg1, arg2, arg3 );
  *
  * @since 1.11.0
+ * @private
  *
  * @param {Object} registry  WP data registry instance.
  * @param {string} storeName Store name the selector belongs to.
@@ -217,6 +224,7 @@ export const unsubscribeFromAll = () => {
  * silently succeed.
  *
  * @since 1.5.0
+ * @private
  *
  * @return {Promise} A rejected promise.
  */

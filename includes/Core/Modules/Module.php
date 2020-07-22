@@ -12,7 +12,9 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Closure;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
+use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Contracts\WP_Errorable;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -339,7 +341,14 @@ abstract class Module {
 			} catch ( Exception $e ) {
 				// Set every result of this batch to the exception.
 				foreach ( $results as $key => $definition_key ) {
-					$datapoint_service = ! empty( $datapoint_definitions[ $definition_key ] ) ? $datapoint_definitions[ $definition_key ]['service'] : null;
+					if ( is_wp_error( $definition_key ) ) {
+						continue;
+					}
+
+					$datapoint_service = ! empty( $datapoint_definitions[ $definition_key ] )
+						? $datapoint_definitions[ $definition_key ]['service']
+						: null;
+
 					if ( is_string( $definition_key ) && $service_identifier === $datapoint_service ) {
 						$results[ $key ] = $this->exception_to_error( $e, explode( ':', $definition_key, 2 )[1] );
 					}
@@ -407,12 +416,12 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 * @since 1.9.0 No longer abstract.
-	 * @deprecated n.e.x.t
+	 * @deprecated 1.12.0
 	 *
 	 * @return array Associative array of $datapoint => $service_identifier pairs.
 	 */
 	protected function get_datapoint_services() {
-		_deprecated_function( __METHOD__, 'n.e.x.t', static::class . '::get_datapoint_definitions' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		_deprecated_function( __METHOD__, '1.12.0', static::class . '::get_datapoint_definitions' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		return array();
 	}
 
@@ -801,13 +810,10 @@ abstract class Module {
 
 		$code = $e->getCode();
 
-		$message = $e->getMessage();
-		$status  = is_numeric( $code ) && $code ? (int) $code : 500;
-		$reason  = '';
-
-		if ( empty( $code ) ) {
-			$code = 'unknown';
-		}
+		$message       = $e->getMessage();
+		$status        = is_numeric( $code ) && $code ? (int) $code : 500;
+		$reason        = '';
+		$reconnect_url = '';
 
 		if ( $e instanceof Google_Service_Exception ) {
 			$errors = $e->getErrors();
@@ -817,15 +823,27 @@ abstract class Module {
 			if ( isset( $errors[0]['reason'] ) ) {
 				$reason = $errors[0]['reason'];
 			}
+		} elseif ( $e instanceof Google_Proxy_Code_Exception ) {
+			$status        = 401;
+			$code          = $message;
+			$auth_client   = $this->authentication->get_oauth_client();
+			$message       = $auth_client->get_error_message( $code );
+			$reconnect_url = $auth_client->get_proxy_setup_url( $e->getAccessCode(), $code );
 		}
 
-		return new WP_Error(
-			$code,
-			$message,
-			array(
-				'status' => $status,
-				'reason' => $reason,
-			)
+		if ( empty( $code ) ) {
+			$code = 'unknown';
+		}
+
+		$data = array(
+			'status' => $status,
+			'reason' => $reason,
 		);
+
+		if ( ! empty( $reconnect_url ) ) {
+			$data['reconnectURL'] = $reconnect_url;
+		}
+
+		return new WP_Error( $code, $message, $data );
 	}
 }
