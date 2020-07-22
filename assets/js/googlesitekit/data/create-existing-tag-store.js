@@ -109,9 +109,21 @@ export const createExistingTagStore = ( type, identifier, {
 
 			return null;
 		} ),
-		[ WAIT_FOR_EXISTING_TAG ]: createRegistryControl( ( registry ) => () => (
-			registry.__experimentalResolveSelect( STORE_NAME ).getExistingTag()
-		) ),
+		[ WAIT_FOR_EXISTING_TAG ]: createRegistryControl( ( registry ) => () => {
+			const isExistingTagLoaded = () => registry.select( STORE_NAME ).getExistingTag() !== undefined;
+			if ( isExistingTagLoaded() ) {
+				return true;
+			}
+
+			return new Promise( ( resolve ) => {
+				const unsubscribe = registry.subscribe( () => {
+					if ( isExistingTagLoaded() ) {
+						unsubscribe();
+						resolve();
+					}
+				} );
+			} );
+		} ),
 	};
 
 	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
