@@ -67,6 +67,7 @@ final class Metadata_Collector {
 		$this->wc_order_data['shipping']       = null;
 		$this->wc_order_data['shipping_tax']   = null;
 		$this->wc_order_data['items']          = null;
+		$this->wc_order_data['currency']       = null;
 	}
 
 	/**
@@ -164,6 +165,7 @@ final class Metadata_Collector {
 				$this->wc_order_data['subtotal_tax']   = $order_data['cart_tax'];
 				$this->wc_order_data['shipping']       = $order_data['shipping_total'];
 				$this->wc_order_data['shipping_tax']   = $order_data['shipping_tax'];
+				$this->wc_order_data['currency']       = $order_data['currency'];
 
 				$order_items = $order->get_items( apply_filters( 'woocommerce_purchase_order_item_types', 'line_item' ) );
 				foreach ( $order_items as $item_id => $item ) {
