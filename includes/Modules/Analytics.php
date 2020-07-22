@@ -897,11 +897,12 @@ final class Analytics extends Module
 					return $request;
 				}
 
+				$date_range = $data['dateRange'] ?: 'last-28-days';
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
 				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
 					list( $start_date, $end_date ) = $this->parse_date_range(
-						$data['dateRange'] ?: 'last-28-days',
+						$date_range,
 						$data['compareDateRanges'] ? 2 : 1
 					);
 				}
