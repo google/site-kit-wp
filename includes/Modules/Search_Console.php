@@ -197,15 +197,30 @@ final class Search_Console extends Module
 				}
 
 				$dimensions = $data['dimensions'];
-				$dimensions = is_array( $dimensions )
-					? $dimensions
-					: explode( ',', $dimensions );
+				$dimensions = array_map(
+					'trim',
+					array_filter(
+						function( $dimension ) {
+							if ( ! is_string( $dimension ) ) {
+								return false;
+							}
+
+							$dimension = trim( $dimension );
+							if ( empty( $dimension ) ) {
+								return false;
+							}
+
+							return $dimension;
+						},
+						is_array( $dimensions ) ? $dimensions : explode( ',', $dimensions )
+					)
+				);
 
 				$data_request = array(
 					'page'       => $data['url'],
 					'start_date' => $start_date,
 					'end_date'   => $end_date,
-					'dimensions' => array_filter( $dimensions ),
+					'dimensions' => $dimensions,
 				);
 
 				if ( isset( $data['limit'] ) ) {
@@ -343,7 +358,7 @@ final class Search_Console extends Module
 	 *     @type string $start_date Start date in 'Y-m-d' format. Default empty string.
 	 *     @type string $end_date   End date in 'Y-m-d' format. Default empty string.
 	 *     @type string $page       Specific page URL to filter by. Default empty string.
-	 *     @type int    $row_limit  Limit of rows to return. Default 500.
+	 *     @type int    $row_limit  Limit of rows to return. Default 1000.
 	 * }
 	 * @return RequestInterface Search Console analytics request instance.
 	 */
