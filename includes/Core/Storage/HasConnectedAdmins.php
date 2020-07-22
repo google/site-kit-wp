@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\HasConnectedAdmins
+ * Class Google\Site_Kit\Core\Storage\HasConnectedAdmins
  *
  * @package   Google\Site_Kit\Core\Storage
  * @copyright 2019 Google LLC
@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\HasConnectedAdmins;
+namespace Google\Site_Kit\Core\Storage;
 
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options_Interface;
