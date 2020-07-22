@@ -18,8 +18,10 @@
 /**
  * Converts an array of objects into an object map containing objects.
  *
+ * @since n.e.x.t
+ *
  * @param {Array} arrayData       Array data to be converted to an Object
- * @param {string} propertyKey  Object propert to be used for the property name in the main object.
+ * @param {string} propertyKey  Object property to be used for the property name in the main object.
  *
  * @return {Object} An object containing objects
  */
