@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -82,12 +83,19 @@ class ModulesTest extends TestCase {
 		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module->set_force_active( true );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
 		$this->assertFalse( $fake_module->is_registered() );
 		$modules->register();
 		$this->assertTrue( $fake_module->is_registered() );
+
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertContains(
+			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
+			apply_filters( 'googlesitekit_apifetch_preload_paths', array() )
+		);
 	}
 
 	public function test_get_module() {

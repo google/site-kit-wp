@@ -140,6 +140,17 @@ final class Modules {
 			}
 		);
 
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				$modules_routes = array(
+					'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
+				);
+
+				return array_merge( $paths, $modules_routes );
+			}
+		);
+
 		$available_modules = $this->get_available_modules();
 		array_walk(
 			$available_modules,
