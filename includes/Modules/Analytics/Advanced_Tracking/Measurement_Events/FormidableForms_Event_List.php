@@ -35,7 +35,6 @@ final class FormidableForms_Event_List extends Measurement_Event_List {
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
 	var formId = element.closest('.frm_fields_container').querySelector('input[name="form_id"]').value;
-	console.log(formId);
 	params['event_label'] = formId;
 	return params;
 }

@@ -35,7 +35,6 @@ final class CF7_Event_List extends Measurement_Event_List {
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
 	var formId = element.closest('form').querySelector('input[name="_wpcf7"]').value;
-	console.log(formId);
 	params['event_label'] = formId;
 	return params;
 }
