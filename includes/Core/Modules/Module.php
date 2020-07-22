@@ -583,9 +583,39 @@ abstract class Module {
 		$offset   = $previous ? $offset + $number_of_days : $offset;
 		$date_end = gmdate( 'Y-m-d', strtotime( $offset . ' days ago' ) );
 
+		// Align the end date of the previous period to the same day of the week as the current period ends.
+		$past_dayofweek = date( 'w', strtotime( $date_end ) );
+		$yesterday_dayofweek = date( 'w', strtotime( 'yesterday' ) );
+		$yesterday_dayname = jddayofweek( $yesterday_dayofweek - 1, 2 );
+
 		// Set the start date.
 		$start_date_offset = $offset + $number_of_days - 1;
 		$date_start        = gmdate( 'Y-m-d', strtotime( $start_date_offset . ' days ago' ) );
+
+		if ( $past_dayofweek !== $yesterday_dayofweek ) {
+
+			// If the past day of the week is earlier and less than 4 days away, move forward.
+			// Alternately, if the past day is later and more that 4 days away move forward.
+			// Otherwise, move backward.
+			if (
+				(
+					$past_dayofweek < $yesterday_dayofweek &&
+					$yesterday_dayofweek - $past_dayofweek < 4
+				) ||
+				(
+					$past_dayofweek > $yesterday_dayofweek &&
+					$past_dayofweek - $yesterday_dayofweek > 4
+				)
+			) {
+					// Move the past date forward to the same day of the week.
+					$date_end = gmdate( 'Y-m-d', strtotime( '+' . absint( $yesterday_dayofweek - $past_dayofweek ) . "days", strtotime( $date_end ) ) );
+					$date_start = gmdate( 'Y-m-d', strtotime( '+' . absint( $yesterday_dayofweek - $past_dayofweek ) . "days", strtotime( $date_start ) ) );
+				} else {
+					// Move the past date backwards to the same day of the week.
+					$date_end = gmdate( 'Y-m-d', strtotime( '-' . absint( $yesterday_dayofweek - $past_dayofweek ) . "days", strtotime( $date_end ) ) );
+					$date_start = gmdate( 'Y-m-d', strtotime( '-' . absint( $yesterday_dayofweek - $past_dayofweek ) . "days", strtotime( $date_start ) ) );
+				}
+		}
 
 		return array( $date_start, $date_end );
 	}
