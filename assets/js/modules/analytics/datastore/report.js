@@ -118,7 +118,7 @@ const baseSelectors = {
 	 * @param {Object}         options                   Optional. Options for generating the report.
 	 * @param {string}         options.startDate         Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
 	 * @param {string}         options.endDate           Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.dateRange         Required, alternatively to startDate and endDate. A date range string such as 'last-28-days'.
+	 * @param {string}         options.dateRange         Required, alternative to startDate and endDate. A date range string such as 'last-28-days'.
 	 * @param {boolean}        options.compareDateRanges Optional. Only relevant with dateRange. Default false.
 	 * @param {boolean}        options.multiDateRange    Optional. Only relevant with dateRange. Default false.
 	 * @param {Array.<string>} options.metrics           Required. List of metrics to query.
