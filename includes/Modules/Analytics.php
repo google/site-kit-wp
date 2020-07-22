@@ -882,14 +882,13 @@ final class Analytics extends Module
 				$date_ranges = array(
 					$this->parse_date_range(
 						$date_range,
-						$data['compareDateRanges'] ? 2 : 1
+						$data['compareDateRanges'] ? 2 : 1,
 					),
 				);
 
-				// When using multiple date ranges, it changes the structure of the response,
-				// where each date range becomes an item in a list.
+				// Add the previous period date range, aligned to the day of the week.
 				if ( ! empty( $data['multiDateRange'] ) ) {
-					$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
+					$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true, true );
 				}
 
 				$date_ranges = array_map(
@@ -1005,7 +1004,7 @@ final class Analytics extends Module
 						$this->has_access_to_property( $property_id )
 					);
 				};
-			case 'GET:tracking-disabled': 
+			case 'GET:tracking-disabled':
 				return function() {
 					$option = $this->get_settings()->get();
 
@@ -1373,7 +1372,7 @@ final class Analytics extends Module
 				);
 			}
 		}
-	
+
 		// No property matched the account ID.
 		return array(
 			'permission' => false,

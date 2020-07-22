@@ -570,11 +570,12 @@ abstract class Module {
 	 * @param int    $offset     Days the range should be offset by. Default 1. Used by Search Console where
 	 *                           data is delayed by two days.
 	 * @param bool   $previous   Whether to select the previous period. Default false.
+	 * @param bool   $day_align  Whether to align the previous period days of the week to current period. Default false.
 	 *
 	 * @return array List with two elements, the first with the start date and the second with the end date, both as
 	 *               'Y-m-d'.
 	 */
-	protected function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false ) {
+	protected function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false, $day_align = false ) {
 
 		preg_match( '*-(\d+)-*', $range, $matches );
 		$number_of_days = $multiplier * ( isset( $matches[1] ) ? $matches[1] : 28 );
@@ -586,6 +587,33 @@ abstract class Module {
 		// Set the start date.
 		$start_date_offset = $offset + $number_of_days - 1;
 		$date_start        = gmdate( 'Y-m-d', strtotime( $start_date_offset . ' days ago' ) );
+
+		// Check the day of the week alignment.
+		$previous_day_of_week = date( 'w', strtotime( $date_end ) );
+		$yesterday_day_of_week = date( 'w', strtotime( 'yesterday' ) );
+		if ( $day_align && $previous_day_of_week !== $yesterday_day_of_week ) {
+			// Adjust the date to closest period that matches the same days of the week.
+			if (
+				// Previous day of the week earlier and less than 4 days away: move forward.
+				(
+					$previous_day_of_week < $yesterday_day_of_week &&
+					$yesterday_day_of_week - $previous_day_of_week < 4
+				) ||
+				// Previous day of the week later and more than 4 days away: move forward.
+				(
+					$previous_day_of_week > $yesterday_day_of_week &&
+					$previous_day_of_week - $yesterday_day_of_week > 4
+				)
+			) {
+					// Move the past date forward to the same day of the week.
+					$date_end = gmdate( 'Y-m-d', strtotime( '+' . absint( $yesterday_day_of_week - $previous_day_of_week ) . "days", strtotime( $date_end ) ) );
+					$date_start = gmdate( 'Y-m-d', strtotime( '+' . absint( $yesterday_day_of_week - $previous_day_of_week ) . "days", strtotime( $date_start ) ) );
+				} else {
+					// Move the past date backwards to the same day of the week.
+					$date_end = gmdate( 'Y-m-d', strtotime( '-' . absint( $yesterday_dayofweek - $previous_day_of_week ) . "days", strtotime( $date_end ) ) );
+					$date_start = gmdate( 'Y-m-d', strtotime( '-' . absint( $yesterday_dayofweek - $previous_day_of_week ) . "days", strtotime( $date_start ) ) );
+				}
+		}
 
 		return array( $date_start, $date_end );
 	}
