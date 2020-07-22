@@ -487,6 +487,10 @@ final class Modules {
 			return current_user_can( Permissions::MANAGE_OPTIONS );
 		};
 
+		$get_module_schema = function () {
+			return $this->get_module_schema();
+		};
+
 		return array(
 			new REST_Route(
 				'core/modules/data/list',
@@ -504,7 +508,7 @@ final class Modules {
 					),
 				),
 				array(
-					'schema' => $this->get_module_schema(),
+					'schema' => $get_module_schema,
 				)
 			),
 			new REST_Route(
@@ -564,7 +568,7 @@ final class Modules {
 					),
 				),
 				array(
-					'schema' => $this->get_module_schema(),
+					'schema' => $get_module_schema,
 				)
 			),
 			new REST_Route(
@@ -592,7 +596,7 @@ final class Modules {
 					),
 				),
 				array(
-					'schema' => $this->get_module_schema(),
+					'schema' => $get_module_schema,
 				)
 			),
 			new REST_Route(
