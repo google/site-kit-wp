@@ -30,7 +30,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SettingsModule from '../assets/js/components/settings/settings-module';
-import { SettingsMain as PageSpeedInsightsSettings } from '../assets/js/modules/pagespeed-insights/settings';
+import { SettingsMain as PageSpeedInsightsSettings } from '../assets/js/modules/pagespeed-insights/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import { WithTestRegistry } from '../tests/js/utils';
 

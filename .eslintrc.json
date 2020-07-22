@@ -56,8 +56,8 @@
     },
     {
       "files": [
-        "**/modules/adsense/components/**/*.js",
-        "**/modules/analytics/components/**/*.js"
+        "**/modules/*/components/**/*.js",
+        "assets/js/googlesitekit/*/components/**/*.js"
       ],
       "rules": {
         "filenames/match-exported": [

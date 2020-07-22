@@ -30,15 +30,15 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../util';
-import withData from '../../../components/higherorder/withdata';
-import { TYPE_MODULES } from '../../../components/data';
-import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
-import PreviewTable from '../../../components/preview-table';
-import Layout from '../../../components/layout/layout';
+import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import withData from '../../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../../components/data';
+import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import PreviewTable from '../../../../components/preview-table';
+import Layout from '../../../../components/layout/layout';
 import {
 	isDataZeroSearchConsole,
-} from '../dashboard/util';
+} from '../../dashboard/util';
 
 class DashboardWidgetPopularKeywordsTable extends Component {
 	static renderLayout( component ) {
