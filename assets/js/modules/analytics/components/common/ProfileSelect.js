@@ -40,7 +40,7 @@ export default function ProfileSelect() {
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const isLoadingAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
-	const isLoadingProfiles = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProfiles( propertyID ) );
+	const isLoadingProfiles = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProfiles( accountID, propertyID ) );
 
 	const { setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {

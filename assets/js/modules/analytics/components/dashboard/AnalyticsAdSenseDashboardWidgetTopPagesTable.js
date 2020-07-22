@@ -37,7 +37,7 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../../compon
 import Layout from '../../../../components/layout/layout';
 import PreviewTable from '../../../../components/preview-table';
 import ctaWrapper from '../../../../components/notifications/cta-wrapper';
-import AdSenseLinkCta from '../common/AdSenseLinkCta';
+import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../util';
 
 class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
@@ -149,7 +149,7 @@ const getDataError = ( data ) => {
 		// Specifically looking for string "badRequest"
 		if ( 'badRequest' === data.data.reason ) {
 			return AnalyticsAdSenseDashboardWidgetTopPagesTable.renderLayout(
-				ctaWrapper( <AdSenseLinkCta />, false, false, true )
+				ctaWrapper( <AdSenseLinkCTA />, false, false, true )
 			);
 		}
 

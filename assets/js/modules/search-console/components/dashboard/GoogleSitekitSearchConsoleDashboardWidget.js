@@ -75,12 +75,14 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	 * If the component detects no data - in this case all 0s - the callback is called without an error message,
 	 * resulting in the display of a CTA.
 	 *
-	 * @param {string} error A potential error string.
+	 * @param {string} error    A potential error string.
+	 * @param {Object} errorObj Full error object.
 	 */
-	handleDataError( error ) {
+	handleDataError( error, errorObj ) {
 		this.setState( {
 			receivingData: false,
 			error,
+			errorObj,
 			loading: false,
 		} );
 	}
@@ -155,6 +157,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 			selectedStats,
 			receivingData,
 			error,
+			errorObj,
 			loading,
 		} = this.state;
 
@@ -187,7 +190,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 							{ ! receivingData && (
-								error ? getDataErrorComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
+								error ? getDataErrorComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
 							<div className={ classnames(
 								'mdc-layout-grid__cell',

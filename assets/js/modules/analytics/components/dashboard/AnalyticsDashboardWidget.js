@@ -100,13 +100,15 @@ class AnalyticsDashboardWidget extends Component {
 	 * If the component detects no data - in this case all 0s - the callback is called without an error message,
 	 * resulting in the display of a CTA.
 	 *
-	 * @param {string} error A potential error string.
+	 * @param {string} error    A potential error string.
+	 * @param {Object} errorObj Full error object.
 	 */
-	handleDataError( error ) {
+	handleDataError( error, errorObj ) {
 		this.setState( {
 			receivingData: false,
 			loading: false,
 			error,
+			errorObj,
 		} );
 	}
 
@@ -148,6 +150,7 @@ class AnalyticsDashboardWidget extends Component {
 		const {
 			selectedStats,
 			error,
+			errorObj,
 			receivingData,
 			loading,
 			isAdSenseConnected,
@@ -180,7 +183,7 @@ class AnalyticsDashboardWidget extends Component {
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 							{ ! receivingData && (
-								error ? getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true )
+								error ? getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
 							<div className={ classnames(
 								'mdc-layout-grid__cell',

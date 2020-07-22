@@ -51,7 +51,7 @@ describe( 'SettingsEdit', () => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
 			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveGetTagPermission( {
 				accountID: existingTag.accountID,

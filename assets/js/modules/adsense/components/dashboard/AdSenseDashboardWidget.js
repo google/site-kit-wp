@@ -93,12 +93,14 @@ class AdSenseDashboardWidget extends Component {
 	 * If the component detects no data - in this case all 0s - the callback is called without an error message,
 	 * resulting in the display of a CTA.
 	 *
-	 * @param {string} error A potential error string.
+	 * @param {string} error    A potential error string.
+	 * @param {Object} errorObj Full error object.
 	 */
-	handleDataError( error ) {
+	handleDataError( error, errorObj ) {
 		this.setState( {
 			receivingData: false,
 			error,
+			errorObj,
 			loading: false,
 		} );
 	}
@@ -129,6 +131,7 @@ class AdSenseDashboardWidget extends Component {
 		const {
 			receivingData,
 			error,
+			errorObj,
 			loading,
 			isAdSenseConnected,
 			zeroData,
@@ -171,7 +174,7 @@ class AdSenseDashboardWidget extends Component {
 								</div>
 							}
 							{ ! receivingData && (
-								error ? getDataErrorComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
+								error ? getDataErrorComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
 							<div className={ classnames(
 								'mdc-layout-grid__cell',
