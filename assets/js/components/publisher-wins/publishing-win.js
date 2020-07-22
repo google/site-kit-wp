@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { extractSearchConsoleDashboardData } from '../../modules/search-console/components/dashboard/util';
+import { extractSearchConsoleDashboardData } from '../../modules/search-console/dashboard/util';
 import { getModulesData } from '../../util';
 
 const publishingWin = ( data, id ) => {

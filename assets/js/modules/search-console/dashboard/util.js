@@ -24,7 +24,7 @@ import { each } from 'lodash';
 /**
  * Internal dependencies
  */
-import { changeToPercent, readableLargeNumber } from '../../../../util';
+import { changeToPercent, readableLargeNumber } from '../../../util';
 
 function reduceSearchConsoleData( rows ) {
 	const dataMap = [

@@ -31,7 +31,7 @@ import { TYPE_MODULES } from '../../../../components/data';
 import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
-} from './util';
+} from '../../dashboard/util';
 import Sparkline from '../../../../components/sparkline';
 import PreviewBlock from '../../../../components/preview-block';
 import {

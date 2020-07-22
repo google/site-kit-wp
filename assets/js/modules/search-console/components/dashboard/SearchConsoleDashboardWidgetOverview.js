@@ -33,7 +33,7 @@ import PreviewBlock from '../../../../components/preview-block';
 import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
-} from './util';
+} from '../../dashboard/util';
 import PropTypes from 'prop-types';
 class SearchConsoleDashboardWidgetOverview extends Component {
 	render() {
