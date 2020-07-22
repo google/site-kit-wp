@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { get } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -29,12 +34,14 @@ import {
 	getTimeInSeconds,
 	prepareSecondsForDisplay,
 	readableLargeNumber,
+	changeToPercent,
 } from '../../../../util';
 import {
 	calculateOverviewData,
 	getAnalyticsErrorMessageFromData,
 	isDataZeroForReporting,
 	overviewReportDataDefaults,
+	userReportDataDefaults,
 } from '../../util';
 import PreviewBlocks from '../../../../components/preview-blocks';
 import DataBlock from '../../../../components/data-block';
@@ -43,29 +50,59 @@ import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 
 class WPAnalyticsDashboardWidgetOverview extends Component {
-	render() {
-		const { data } = this.props;
+	constructor( props ) {
+		super( props );
+		this.state = {
+			overview: false,
+			directTotalUsers: false,
+			previousTotalUsers: false,
+		};
+	}
 
-		if ( ! data || ! data.length ) {
-			return null;
+	// When additional data is returned, componentDidUpdate will fire.
+	componentDidUpdate() {
+		this.processCallbackData();
+	}
+
+	componentDidMount() {
+		this.processCallbackData();
+	}
+
+	/**
+	 * Process callback data received from the API.
+	 */
+	processCallbackData() {
+		const {
+			data,
+			requestDataToState,
+		} = this.props;
+
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
+			this.setState( requestDataToState );
 		}
+	}
 
-		const overviewData = calculateOverviewData( data );
+	render() {
+		const {
+			overview,
+			directTotalUsers,
+			previousTotalUsers,
+		} = this.state;
 
-		if ( ! overviewData ) {
+		if ( ! overview || ! directTotalUsers ) {
 			return null;
 		}
 
 		const {
-			totalUsers,
 			averageSessionDuration,
-			totalUsersChange,
 			averageSessionDurationChange,
-		} = overviewData;
+		} = overview;
+
+		const totalUsersChange = changeToPercent( previousTotalUsers, directTotalUsers );
 
 		return (
 			<Fragment>
-				{ ! data.length
+				{ 0 === directTotalUsers
 					? <div className="googlesitekit-wp-dashboard-stats__cta">
 						<CTA
 							title={ __( 'Analytics Gathering Data', 'google-site-kit' ) }
@@ -78,7 +115,7 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 						<DataBlock
 							className="googlesitekit-wp-dashboard-stats__data-table overview-total-users"
 							title={ __( 'Total Unique Visitors', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( totalUsers ) }
+							datapoint={ readableLargeNumber( directTotalUsers ) }
 							change={ totalUsersChange }
 							changeDataUnit="%"
 						/>
@@ -106,7 +143,33 @@ export default withData(
 			data: overviewReportDataDefaults,
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'WPDashboard' ],
+			context: 'WPDashboard',
+			toState( state, { data } ) {
+				if ( ! state.overview ) {
+					return {
+						overview: calculateOverviewData( data ),
+					};
+				}
+			},
+		},
+		{
+			type: TYPE_MODULES,
+			identifier: 'analytics',
+			datapoint: 'report',
+			data: userReportDataDefaults,
+			priority: 1,
+			maxAge: getTimeInSeconds( 'day' ),
+			context: 'WPDashboard',
+			toState( state, { data } ) {
+				if ( ! state.directTotalUsers ) {
+					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
+					const previousTotalUsers = get( data, '[0].data.totals[1].values[0]' );
+					return {
+						directTotalUsers,
+						previousTotalUsers,
+					};
+				}
+			},
 		},
 	],
 	<PreviewBlocks
