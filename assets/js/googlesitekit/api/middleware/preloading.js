@@ -46,10 +46,10 @@ function createPreloadingMiddleware( preloadedData ) {
 		setTimeout( () => {
 			cacheHasExpired = true;
 		}, 1000 );
-		
+
 		const { parse = true } = options;
 		const uri = options.path;
-		
+
 		if ( typeof options.path === 'string' ) {
 			const method = options.method?.toUpperCase() || 'GET';
 
