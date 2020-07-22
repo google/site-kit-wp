@@ -56,7 +56,8 @@ const fetchGetTagPermissionStore = createFetchStore( {
 	},
 } );
 
-const existingTagStore = createExistingTagStore( 'modules', 'tagmanager', {
+const existingTagStore = createExistingTagStore( {
+	storeName: STORE_NAME,
 	tagMatchers,
 	isValidTag: isValidContainerID,
 } );

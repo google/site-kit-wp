@@ -56,7 +56,8 @@ const fetchGetTagPermissionStore = createFetchStore( {
 	},
 } );
 
-const existingTagStore = createExistingTagStore( 'modules', 'analytics', {
+const existingTagStore = createExistingTagStore( {
+	storeName: STORE_NAME,
 	tagMatchers,
 	isValidTag: isValidPropertyID,
 } );
