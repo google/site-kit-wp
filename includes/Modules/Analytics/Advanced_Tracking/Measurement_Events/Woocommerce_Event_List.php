@@ -228,10 +228,12 @@ CALLBACK
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
 				'action'     => 'purchase',
-				'selector'   => '.woocommerce-page form.woocommerce-checkout',
+				'selector'   => '', /*'.woocommerce-page form.woocommerce-checkout'*/
 				'on'         => 'submit',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
+	params['transaction_id'] = 'test_transaction_id';
+
 	params['value'] = woocommerceCartData.subtotal;
 
 	var currency = document.querySelector('.woocommerce-checkout-review-order .cart-subtotal span.woocommerce-Price-currencySymbol').innerText;

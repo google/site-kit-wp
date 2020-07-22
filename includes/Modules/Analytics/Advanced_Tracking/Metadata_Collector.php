@@ -38,18 +38,35 @@ final class Metadata_Collector {
 	private $wc_cart_data;
 
 	/**
+	 * Contains relevant metadata for a woocommerce order.
+	 *
+	 * @since n.e.x.t.
+	 * @var array
+	 */
+	private $wc_order_data;
+
+	/**
 	 * Metadata_Collector constructor.
 	 *
 	 * @since n.e.x.t.
 	 */
 	public function __construct() {
-		$this->items                           = array();
+		$this->items = array();
+
 		$this->wc_cart_data                    = array();
 		$this->wc_cart_data['item_quantities'] = array();
 		$this->wc_cart_data['subtotal']        = 0;
 		$this->wc_cart_data['subtotal_tax']    = null;
 		$this->wc_cart_data['shipping']        = null;
 		$this->wc_cart_data['shipping_tax']    = null;
+
+		$this->wc_order_data                   = array();
+		$this->wc_order_data['transaction_id'] = null;
+		$this->wc_order_data['subtotal']       = 0;
+		$this->wc_order_data['subtotal_tax']   = null;
+		$this->wc_order_data['shipping']       = null;
+		$this->wc_order_data['shipping_tax']   = null;
+		$this->wc_order_data['items']          = null;
 	}
 
 	/**
@@ -136,6 +153,28 @@ final class Metadata_Collector {
 			},
 			10
 		);
+		add_action(
+			'woocommerce_thankyou', // Fires when an order is received.
+			function( $order_id ) {
+				$order      = wc_get_order( $order_id );
+				$order_data = $order->get_data();
+
+				$this->wc_order_data['transaction_id'] = $order->get_transaction_id();
+				$this->wc_order_data['subtotal']       = $order->get_subtotal();
+				$this->wc_order_data['subtotal_tax']   = $order_data['cart_tax'];
+				$this->wc_order_data['shipping']       = $order_data['shipping_total'];
+				$this->wc_order_data['shipping_tax']   = $order_data['shipping_tax'];
+
+				$order_items = $order->get_items( apply_filters( 'woocommerce_purchase_order_item_types', 'line_item' ) );
+				foreach ( $order_items as $item_id => $item ) {
+					$product = $item->get_product();
+					$this->collect_woocommerce_product_metadata( $product );
+					$this->items[ $product->get_name() ]['quantity']      = $item->get_quantity();
+					$this->wc_order_data['items'][ $product->get_name() ] = $this->items[ $product->get_name() ];
+				}
+			},
+			10
+		);
 	}
 
 	/**
@@ -148,6 +187,7 @@ final class Metadata_Collector {
 			<script>
 				var woocommerceProducts = <?php echo wp_json_encode( $this->items ); ?>;
 				var woocommerceCartData = <?php echo wp_json_encode( $this->wc_cart_data ); ?>;
+				var woocommerceOrderData = <?php echo wp_json_encode( $this->wc_order_data ); ?>;
 			</script>
 		<?php
 	}

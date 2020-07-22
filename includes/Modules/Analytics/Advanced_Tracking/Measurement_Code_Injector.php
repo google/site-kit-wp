@@ -69,6 +69,34 @@ final class Measurement_Code_Injector {
 			}
 		}, true );
 	}
+	jQuery(document).ready(function(){
+		if( null !== woocommerceOrderData.transaction_id ) {
+			alert( 'Got an event called: purchase' );
+
+			var params = {};
+			var transaction_id = woocommerceOrderData.transaction_id;
+			if ( '' === transaction_id ) {
+				transaction_id = 'not_paid';
+			}
+			params['transaction_id'] = transaction_id;
+			params['value'] = woocommerceOrderData.subtotal;
+			//var currency = document.querySelector('.woocommerce-checkout-review-order .cart-subtotal span.woocommerce-Price-currencySymbol').innerText;
+			//params['currency'] = currency;
+			var taxFloat = parseFloat( woocommerceOrderData.subtotal_tax ) + parseFloat( woocommerceOrderData.shipping_tax );
+			params['tax'] = taxFloat.toString();
+			params['shipping'] = woocommerceOrderData.shipping;
+			var items = [];
+			for ( itemName in woocommerceOrderData.items ) {
+				items.push( woocommerceOrderData.items[ itemName ] );
+			}
+			params['items'] = items;
+
+			params['event_category'] = 'ecommerce';
+			console.log(params);
+
+			gtag( 'event', 'purchase', params );
+		}
+	});
 	}
 )();
 INJECT_SCRIPT;
