@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights Settings View component
+ * Search Console Settings View component
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,31 +19,28 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { sanitizeHTML } from '../../../util';
-import { STORE_NAME } from '../datastore/constants';
+import DisplaySetting from '../../../../components/display-setting';
+import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const dashboardPermalink = useSelect( ( select ) => select( STORE_NAME ).getAdminScreenURL() );
-
-	const content = sprintf(
-		/* translators: %s is the URL to the Site Kit dashboard. */
-		__( 'To view insights, <a href="%s">visit the dashboard</a>.', 'google-site-kit' ),
-		dashboardPermalink
-	);
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 
 	return (
-		<p
-			dangerouslySetInnerHTML={ sanitizeHTML( content, {
-				ALLOWED_TAGS: [ 'a' ],
-				ALLOWED_ATTR: [ 'href' ],
-			} ) }
-		/>
+		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+
+			<h5 className="googlesitekit-settings-module__meta-item-type">
+				{ __( 'Connected Property', 'google-site-kit' ) }
+			</h5>
+			<p className="googlesitekit-settings-module__meta-item-data">
+				<DisplaySetting value={ propertyID } />
+			</p>
+		</div>
 	);
 }

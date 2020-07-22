@@ -25,12 +25,12 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds } from '../../../util';
-import DataBlock from '../../../components/data-block';
-import withData from '../../../components/higherorder/withdata';
-import { TYPE_MODULES } from '../../../components/data';
-import { extractSearchConsoleDashboardData, isDataZeroSearchConsole } from '../dashboard/util';
-import PreviewBlock from '../../../components/preview-block';
+import { getTimeInSeconds } from '../../../../util';
+import DataBlock from '../../../../components/data-block';
+import withData from '../../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../../components/data';
+import { extractSearchConsoleDashboardData, isDataZeroSearchConsole } from '../../dashboard/util';
+import PreviewBlock from '../../../../components/preview-block';
 
 class SearchConsoleAdminbarWidgetOverview extends Component {
 	render() {
