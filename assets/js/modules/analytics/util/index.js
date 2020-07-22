@@ -251,8 +251,14 @@ export const translateAnalyticsError = ( status, message ) => {
 };
 
 export const getAnalyticsErrorMessageFromData = ( data ) => {
+	// Specific Analytics API errors (legacy?).
 	if ( data.error && data.error.status ) {
 		return translateAnalyticsError( data.error.status, data.error.message );
+	}
+
+	// Regular WP error handling.
+	if ( data.code && data.message && data.data?.status ) {
+		return data.message;
 	}
 
 	return false;

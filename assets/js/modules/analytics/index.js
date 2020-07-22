@@ -21,8 +21,8 @@
  */
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
-import { SetupMain as AnalyticsSetup } from './setup';
-import { SettingsMain as AnalyticsSettings } from './settings';
+import { SetupMain as AnalyticsSetup } from './components/setup';
+import { SettingsMain as AnalyticsSettings } from './components/settings';
 
 /**
  * WordPress dependencies

@@ -296,6 +296,13 @@ final class Authentication {
 		add_action( 'update_option_siteurl', $option_updated );
 		add_action( 'update_option_blogname', $option_updated );
 		add_action( 'update_option_googlesitekit_db_version', $option_updated );
+
+		add_action(
+			OAuth_Client::CRON_REFRESH_PROFILE_DATA,
+			function ( $user_id ) {
+				$this->cron_refresh_profile_data( $user_id );
+			}
+		);
 	}
 
 	/**
@@ -477,6 +484,24 @@ final class Authentication {
 		 * @param bool $complete Whether the setup is completed.
 		 */
 		return (bool) apply_filters( 'googlesitekit_setup_complete', true );
+	}
+
+	/**
+	 * Refreshes user profile data in the background.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID to refresh profile data for.
+	 */
+	private function cron_refresh_profile_data( $user_id ) {
+		$original_user_id = $this->user_options->get_user_id();
+		$this->user_options->switch_user( $user_id );
+
+		if ( $this->is_authenticated() ) {
+			$this->get_oauth_client()->refresh_profile_data( 30 * MINUTE_IN_SECONDS );
+		}
+
+		$this->user_options->switch_user( $original_user_id );
 	}
 
 	/**
@@ -857,21 +882,20 @@ final class Authentication {
 						return '';
 					}
 
+					$message     = $auth_client->get_error_message( $error_code );
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					if ( $this->credentials->using_proxy() && $access_code ) {
-						$message = sprintf(
-							/* translators: 1: error code from API, 2: URL to re-authenticate */
-							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
-							$error_code,
+						$message .= ' ' . sprintf(
+							/* translators: %s: URL to re-authenticate */
+							__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
 							esc_url( $auth_client->get_proxy_setup_url( $access_code, $error_code ) )
 						);
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					} else {
-						$message  = $auth_client->get_error_message( $error_code );
 						$message .= ' ' . sprintf(
 							/* translators: %s: setup screen URL */
-							__( 'To resume setup, <a href="%s">start here</a>.', 'google-site-kit' ),
-							$this->context->admin_url( 'splash' )
+							__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
+							esc_url( $this->context->admin_url( 'splash' ) )
 						);
 					}
 
