@@ -49,10 +49,10 @@ describe( 'createExistingTagStore store', () => {
 		registry = createTestRegistry();
 		store = registry.registerStore( STORE_NAME, Data.combineStores(
 			Data.commonStore,
-			createExistingTagStore( 'test', 'store', {
+			createExistingTagStore( {
+				storeName: STORE_NAME,
 				tagMatchers,
 				isValidTag: ( tag ) => !! tag,
-				storeName: STORE_NAME,
 			} )
 		) );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
@@ -64,20 +64,6 @@ describe( 'createExistingTagStore store', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-	} );
-
-	describe( 'STORE_NAME', () => {
-		it( 'returns the correct default store name', () => {
-			const storeDefinition = createExistingTagStore( 'foo', 'store', { tagMatchers: [], isValidTag: () => true } );
-
-			expect( storeDefinition.STORE_NAME ).toEqual( 'foo/store' );
-		} );
-
-		it( 'returns the given storeName when provided', () => {
-			const storeDefinition = createExistingTagStore( 'foo', 'store', { storeName: 'bar/store', tagMatchers: [], isValidTag: () => true } );
-
-			expect( storeDefinition.STORE_NAME ).toEqual( 'bar/store' );
-		} );
 	} );
 
 	describe( 'actions', () => {
@@ -110,22 +96,24 @@ describe( 'createExistingTagStore store', () => {
 			} );
 
 			it( 'allows custom validation for tags', () => {
+				const storeName = 'is-valid-tag/store';
 				const isValidTag = ( tag ) => tag === 'valid-tag';
-				const storeDefinition = createExistingTagStore( 'foo', 'store', {
+				const storeDefinition = createExistingTagStore( {
+					storeName,
 					tagMatchers: [ /(\w+)/ ],
 					isValidTag,
 				} );
-				registry.registerStore( 'is-valid-tag/store', storeDefinition );
+				registry.registerStore( storeName, storeDefinition );
 
 				expect( isValidTag( 'invalid-tag' ) ).toBe( false );
 				expect( () => {
 					muteConsole( 'error' );
-					registry.dispatch( 'is-valid-tag/store' ).receiveGetExistingTag( 'invalid-tag' );
+					registry.dispatch( storeName ).receiveGetExistingTag( 'invalid-tag' );
 				} ).toThrow( 'existingTag must be a valid tag or null.' );
 
 				expect( isValidTag( 'valid-tag' ) ).toBe( true );
 				expect( () => {
-					registry.dispatch( 'is-valid-tag/store' ).receiveGetExistingTag( 'valid-tag' );
+					registry.dispatch( storeName ).receiveGetExistingTag( 'valid-tag' );
 				} ).not.toThrow();
 			} );
 

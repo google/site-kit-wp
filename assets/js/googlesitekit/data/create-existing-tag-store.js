@@ -41,26 +41,21 @@ const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
  * @since n.e.x.t
  * @private
  *
- * @param {string}   type             The data to access. One of 'core' or 'modules'.
- * @param {string}   identifier       The data identifier, eg. a module slug like 'analytics'.
- * @param {Object}   args             Arguments to consider for the store.
+ * @param {Object}   args             Arguments for the store generation.
+ * @param {string}   args.storeName   Store name to use.
  * @param {Array}    args.tagMatchers The tag matchers used to extract tags from HTML.
  * @param {Function} args.isValidTag  Function to test whether a tag is valid or not.
- * @param {string}   [args.storeName] Optional. Store name to use. Default is '{type}/{identifier}'.
  * @return {Object} The existing tag store object, with additional `STORE_NAME` and
  * INITIAL_STATE` properties.
  */
-export const createExistingTagStore = ( type, identifier, {
-	tagMatchers,
+export const createExistingTagStore = ( {
+	storeName: STORE_NAME,
 	isValidTag,
-	storeName = undefined,
+	tagMatchers,
 } = {} ) => {
-	invariant( type, 'type is required.' );
-	invariant( identifier, 'identifier is required.' );
+	invariant( 'string' === typeof STORE_NAME && STORE_NAME, 'storeName is required.' );
 	invariant( 'function' === typeof isValidTag, 'isValidTag must be a function.' );
 	invariant( Array.isArray( tagMatchers ), 'tagMatchers must be an Array.' );
-
-	const STORE_NAME = storeName || `${ type }/${ identifier }`;
 
 	const INITIAL_STATE = {
 		existingTag: undefined,
@@ -126,7 +121,7 @@ export const createExistingTagStore = ( type, identifier, {
 		} ),
 	};
 
-	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
+	const reducer = ( state = INITIAL_STATE, { type, payload } ) => {
 		switch ( type ) {
 			case RECEIVE_GET_EXISTING_TAG: {
 				const { existingTag } = payload;
