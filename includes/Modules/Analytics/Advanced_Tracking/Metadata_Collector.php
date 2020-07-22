@@ -95,7 +95,7 @@ final class Metadata_Collector {
 			'woocommerce_cart_item_quantity', // Fires when a cart item quantity is evaluated.
 			function( $product_quantity, $cart_item_key, $cart_item ) {
 				$product_name = $cart_item['data']->get_name();
-				$this->wc_cart_data['item_quantities'][ $product_name ] = $product_quantity;
+				$this->wc_cart_data['item_quantities'][ $product_name ] = $cart_item['quantity'];
 				return $product_quantity;
 			},
 			10,
