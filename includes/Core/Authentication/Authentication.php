@@ -762,9 +762,10 @@ final class Authentication {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$data = array(
-								'connected'      => $this->credentials->has(),
-								'resettable'     => $this->options->has( Credentials::OPTION ),
-								'setupCompleted' => $this->is_setup_completed(),
+								'connected'          => $this->credentials->has(),
+								'resettable'         => $this->options->has( Credentials::OPTION ),
+								'setupCompleted'     => $this->is_setup_completed(),
+								'hasConnectedAdmins' => $this->connected_admins()->get(),
 							);
 
 							return new WP_REST_Response( $data );
