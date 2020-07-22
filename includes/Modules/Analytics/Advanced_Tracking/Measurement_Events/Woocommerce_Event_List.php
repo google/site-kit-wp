@@ -35,7 +35,7 @@ final class Woocommerce_Event_List extends Measurement_Event_List {
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
 	var valueString = element.closest('li').querySelector('span.woocommerce-Price-amount').lastChild.textContent;
-	var currency = element.closest('li').querySelector('span.woocommerce-Price-currencySymbol').innerText;
+	var currency = woocommerceStoreData.currency;
 	console.log(valueString);
 	console.log(currency);
 	params['value'] = parseFloat(valueString.replace(/,/g, ''));
@@ -67,7 +67,7 @@ CALLBACK
 function( params, element ) {
 	var quantity = document.querySelector('.woocommerce-page .product form.cart div.quantity input').valueAsNumber;
 	var value = quantity * parseFloat(document.querySelector('.price span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
-	var currency = document.querySelector('.price span.woocommerce-Price-currencySymbol').innerText;
+	var currency = woocommerceStoreData.currency;
 	console.log(value);
 	console.log(currency);
 	params['value'] = value;
@@ -100,7 +100,7 @@ function( params, element ) {
 	var itemName = element.closest('tr').querySelector('td.product-name a').innerText;
 	var quantity = woocommerceCartData.item_quantities[ itemName ];
 	var value = quantity * parseFloat(element.closest('tr').querySelector('.product-price span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
-	var currency = element.closest('tr').querySelector('.product-price span.woocommerce-Price-currencySymbol').innerText;
+	var currency = woocommerceStoreData.currency;
 	console.log(value);
 	console.log(currency);
 	params['value'] = value;
@@ -129,7 +129,7 @@ CALLBACK
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var currency = document.querySelector('.order-total span.woocommerce-Price-currencySymbol').innerText;
+	var currency = woocommerceStoreData.currency;
 	params['currency'] = currency;
 
 	var value = 0.0;
@@ -236,7 +236,7 @@ function( params, element ) {
 
 	params['value'] = woocommerceCartData.subtotal;
 
-	var currency = document.querySelector('.woocommerce-checkout-review-order .cart-subtotal span.woocommerce-Price-currencySymbol').innerText;
+	var currency = woocommerceStoreData.currency;
 	params['currency'] = currency;
 
 	params['tax'] = 0.0;

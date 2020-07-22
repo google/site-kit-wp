@@ -46,6 +46,14 @@ final class Metadata_Collector {
 	private $wc_order_data;
 
 	/**
+	 * Contains the store metadata for a woocommerce store.
+	 *
+	 * @since n.e.x.t.
+	 * @var array
+	 */
+	private $wc_store_data;
+
+	/**
 	 * Metadata_Collector constructor.
 	 *
 	 * @since n.e.x.t.
@@ -68,6 +76,8 @@ final class Metadata_Collector {
 		$this->wc_order_data['shipping_tax']   = null;
 		$this->wc_order_data['items']          = null;
 		$this->wc_order_data['currency']       = null;
+
+		$this->wc_store_data['currency'] = null;
 	}
 
 	/**
@@ -177,6 +187,7 @@ final class Metadata_Collector {
 			},
 			10
 		);
+		$this->wc_store_data['currency'] = get_woocommerce_currency();
 	}
 
 	/**
@@ -190,6 +201,7 @@ final class Metadata_Collector {
 				var woocommerceProducts = <?php echo wp_json_encode( $this->items ); ?>;
 				var woocommerceCartData = <?php echo wp_json_encode( $this->wc_cart_data ); ?>;
 				var woocommerceOrderData = <?php echo wp_json_encode( $this->wc_order_data ); ?>;
+				var woocommerceStoreData = <?php echo wp_json_encode( $this->wc_store_data ); ?>;
 			</script>
 		<?php
 	}
