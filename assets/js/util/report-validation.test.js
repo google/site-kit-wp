@@ -29,15 +29,26 @@ import {
 describe( 'Reporting API validation', () => {
 	describe( 'isValidDateRange', () => {
 		it( 'should return TRUE if dateRange is valid only', () => {
-			expect( isValidDateRange( 'last-14-days', '', null ) ).toBeTruthy();
+			expect( isValidDateRange( {
+				dateRange: 'last-14-days',
+				startDate: '',
+				endDate: null,
+			} ) ).toBeTruthy();
 		} );
 
 		it( 'should return TRUE if startDate and endDate are valid only', () => {
-			expect( isValidDateRange( '', '2020-01-01', '2020-04-05' ) ).toBeTruthy();
+			expect( isValidDateRange( {
+				startDate: '2020-01-01',
+				endDate: '2020-04-05',
+			} ) ).toBeTruthy();
 		} );
 
 		it( 'should return FALSE if neither dateRange nor start/end dates are valid', () => {
-			expect( isValidDateRange( 'xxx', '2020', '2020-01' ) ).toBeFalsy();
+			expect( isValidDateRange( {
+				dateRange: 'xxx',
+				startDate: '2020',
+				endDate: '2020-01-01',
+			} ) ).toBeFalsy();
 		} );
 	} );
 
