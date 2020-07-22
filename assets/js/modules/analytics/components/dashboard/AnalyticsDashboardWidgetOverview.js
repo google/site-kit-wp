@@ -35,6 +35,7 @@ import {
 	getTimeInSeconds,
 	prepareSecondsForDisplay,
 	readableLargeNumber,
+	changeToPercent,
 } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
@@ -54,6 +55,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 		this.state = {
 			report: false,
 			directTotalUsers: false,
+			previousTotalUsers: false,
 		};
 	}
 	// When additional data is returned, componentDidUpdate will fire.
@@ -76,7 +78,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 
 	render() {
 		const { selectedStats, handleStatSelection } = this.props;
-		const { report, directTotalUsers } = this.state;
+		const { report, directTotalUsers, previousTotalUsers } = this.state;
 
 		if ( ! report || ! report.length || ! directTotalUsers ) {
 			return null;
@@ -92,11 +94,12 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			totalSessions,
 			averageBounceRate,
 			averageSessionDuration,
-			totalUsersChange,
 			totalSessionsChange,
 			averageBounceRateChange,
 			averageSessionDurationChange,
 		} = overviewData;
+
+		const totalUsersChange = changeToPercent( previousTotalUsers, directTotalUsers );
 
 		const dataBlocks = [
 			{
@@ -214,8 +217,10 @@ export default withData(
 			toState( state, { data } ) {
 				if ( ! state.directTotalUsers ) {
 					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
+					const previousTotalUsers = get( data, '[0].data.totals[1].values[0]' );
 					return {
 						directTotalUsers,
+						previousTotalUsers,
 					};
 				}
 			},

@@ -401,6 +401,7 @@ export const overviewReportDataDefaults = {
  * @type {Object}
  */
 export const userReportDataDefaults = {
+	multiDateRange: 1,
 	metrics: [
 		{
 			expression: 'ga:users',
