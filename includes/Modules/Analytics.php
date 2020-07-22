@@ -886,7 +886,7 @@ final class Analytics extends Module
 						)
 					);
 
-					if ( ! empty( $dimension ) ) {
+					if ( ! empty( $dimensions ) ) {
 						$request_args['dimensions'] = $dimensions;
 					}
 				}
