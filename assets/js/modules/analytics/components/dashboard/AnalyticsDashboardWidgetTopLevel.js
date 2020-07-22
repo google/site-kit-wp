@@ -35,6 +35,7 @@ import {
 	readableLargeNumber,
 	extractForSparkline,
 	getSiteKitAdminURL,
+	changeToPercent,
 } from '../../../../util';
 import {
 	calculateOverviewData,
@@ -59,6 +60,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			accounts: false,
 			goals: false,
 			directTotalUsers: false,
+			previousTotalUsers: false,
 		};
 	}
 
@@ -91,6 +93,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			extractedAnalytics,
 			goals,
 			directTotalUsers,
+			previousTotalUsers,
 		} = this.state;
 
 		const { permaLink } = global._googlesitekitLegacyData;
@@ -98,19 +101,19 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		const href = getSiteKitAdminURL( 'googlesitekit-module-analytics', {} );
 		const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
 
-		let totalUsersChange = '',
-			goalCompletions = '',
+		let goalCompletions = '',
 			goalCompletionsChange = '',
 			averageBounceRate = '',
 			averageBounceRateChange = '';
 
 		if ( overview ) {
-			totalUsersChange = overview.totalUsersChange;
 			goalCompletions = overview.goalCompletions;
 			goalCompletionsChange = overview.goalCompletionsChange;
 			averageBounceRate = overview.averageBounceRate;
 			averageBounceRateChange = overview.averageBounceRateChange;
 		}
+
+		const totalUsersChange = changeToPercent( previousTotalUsers, directTotalUsers );
 
 		return (
 			<Fragment>
@@ -262,8 +265,10 @@ export default withData(
 			toState( state, { data } ) {
 				if ( ! state.directTotalUsers ) {
 					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
+					const previousTotalUsers = get( data, '[0].data.totals[1].values[0]' );
 					return {
 						directTotalUsers,
+						previousTotalUsers,
 					};
 				}
 			},
