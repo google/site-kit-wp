@@ -56,7 +56,8 @@
     },
     {
       "files": [
-        "**/modules/*/components/**/*.js"
+        "**/modules/*/components/**/*.js",
+        "assets/js/googlesitekit/*/components/**/*.js"
       ],
       "rules": {
         "filenames/match-exported": [
