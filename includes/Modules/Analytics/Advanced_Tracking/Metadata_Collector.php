@@ -30,12 +30,12 @@ final class Metadata_Collector {
 	private $items;
 
 	/**
-	 * List of quantities for each product in the cart.
+	 * Contains relevant values in or calculated from woocommerce's cart.
 	 *
 	 * @since n.e.x.t.
 	 * @var array
 	 */
-	private $cart_item_quantities;
+	private $wc_cart_data;
 
 	/**
 	 * Metadata_Collector constructor.
@@ -43,8 +43,13 @@ final class Metadata_Collector {
 	 * @since n.e.x.t.
 	 */
 	public function __construct() {
-		$this->items                = array();
-		$this->cart_item_quantities = array();
+		$this->items                           = array();
+		$this->wc_cart_data                    = array();
+		$this->wc_cart_data['item_quantities'] = array();
+		$this->wc_cart_data['subtotal']        = 0;
+		$this->wc_cart_data['subtotal_tax']    = null;
+		$this->wc_cart_data['shipping']        = null;
+		$this->wc_cart_data['shipping_tax']    = null;
 	}
 
 	/**
@@ -87,14 +92,49 @@ final class Metadata_Collector {
 			1
 		);
 		add_filter(
-			'woocommerce_quantity_input_args', // Fires when a cart item quantity is evaluated.
-			function( $args, $product ) {
-				$product_name                                = $product->get_name();
-				$this->cart_item_quantities[ $product_name ] = $args['input_value'];
-				return $args;
+			'woocommerce_cart_item_quantity', // Fires when a cart item quantity is evaluated.
+			function( $product_quantity, $cart_item_key, $cart_item ) {
+				$product_name = $cart_item['data']->get_name();
+				$this->wc_cart_data['item_quantities'][ $product_name ] = $product_quantity;
+				return $product_quantity;
+			},
+			10,
+			3
+		);
+		add_filter(
+			'woocommerce_checkout_cart_item_quantity', // Fires when a cart item quantity is evaluated during checkout.
+			function( $quantity_html, $cart_item ) {
+				$product_name = $cart_item['data']->get_name();
+				$this->wc_cart_data['item_quantities'][ $product_name ] = $cart_item['quantity'];
+				return $quantity_html;
 			},
 			10,
 			2
+		);
+		add_filter(
+			'woocommerce_cart_product_subtotal', // Fires when a cart item subtotal is evaluated.
+			function( $product_subtotal_html, $product, $quantity ) {
+				$new_subtotal                    = $product->get_price() * $quantity;
+				$this->wc_cart_data['subtotal'] += $new_subtotal;
+				return $product_subtotal_html;
+			},
+			10,
+			3
+		);
+		add_action(
+			'woocommerce_review_order_after_shipping', // Fires after the shipping costs are calculated.
+			function() {
+				$this->wc_cart_data['shipping'] = floatval( WC()->cart->get_shipping_total() );
+			},
+			10
+		);
+		add_action(
+			'woocommerce_review_order_after_order_total', // Fires after the review order total table is loaded.
+			function() {
+				$this->wc_cart_data['subtotal_tax'] = floatval( WC()->cart->get_subtotal_tax() );
+				$this->wc_cart_data['shipping_tax'] = floatval( WC()->cart->get_shipping_tax() );
+			},
+			10
 		);
 	}
 
@@ -107,7 +147,7 @@ final class Metadata_Collector {
 		?>
 			<script>
 				var woocommerceProducts = <?php echo wp_json_encode( $this->items ); ?>;
-				var woocommerceCartQuantities = <?php echo wp_json_encode( $this->cart_item_quantities ); ?>;
+				var woocommerceCartData = <?php echo wp_json_encode( $this->wc_cart_data ); ?>;
 			</script>
 		<?php
 	}

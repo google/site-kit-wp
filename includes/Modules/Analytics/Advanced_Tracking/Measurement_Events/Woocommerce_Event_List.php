@@ -98,7 +98,7 @@ CALLBACK
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
 	var itemName = element.closest('tr').querySelector('td.product-name a').innerText;
-	var quantity = woocommerceCartQuantities[ itemName ];
+	var quantity = woocommerceCartData.item_quantities[ itemName ];
 	var value = quantity * parseFloat(element.closest('tr').querySelector('.product-price span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
 	var currency = element.closest('tr').querySelector('.product-price span.woocommerce-Price-currencySymbol').innerText;
 	console.log(value);
@@ -139,10 +139,10 @@ function( params, element ) {
 		var productName = cartItem.querySelector( '.product-name a' ).innerText;
 
 		var item = woocommerceProducts[ productName ];
-		item['quantity'] = woocommerceCartQuantities[ productName ];
+		item['quantity'] = woocommerceCartData.item_quantities[ productName ];
 		items.push( item );
 
-		var productQuantity = woocommerceCartQuantities[ productName ];
+		var productQuantity = woocommerceCartData.item_quantities[ productName ];
 		value += productQuantity * parseFloat( item['price'] );
 	}
 	params['value'] = value;
@@ -202,7 +202,7 @@ function( params, element ) {
 	for ( cartItem of cartItems ) {
 		var productName = cartItem.querySelector( '.product-name a' ).innerText;
 		var newQuantity = cartItem.querySelector( '.product-quantity input' ).valueAsNumber;
-		woocommerceCartQuantities[ productName ] = newQuantity;
+		woocommerceCartData.item_quantities[ productName ] = newQuantity;
 	}
 	return params;
 }
@@ -232,33 +232,31 @@ CALLBACK
 				'on'         => 'submit',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
-	var value = parseFloat(document.querySelector('.order-total span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
-	var currency = document.querySelector('.order-total span.woocommerce-Price-currencySymbol').innerText;
-	var tax = parseFloat(document.querySelector('.tax-total span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
-	var shipping = parseFloat(document.querySelector('.woocommerce-shipping-methods span.woocommerce-Price-amount').lastChild.textContent.replace(/,/g, ''));
-	console.log(value);
-	console.log(currency);
-	console.log(tax);
-	console.log(shipping);
-	params['value'] = value;
+	params['value'] = woocommerceCartData.subtotal;
+
+	var currency = document.querySelector('.woocommerce-checkout-review-order .cart-subtotal span.woocommerce-Price-currencySymbol').innerText;
 	params['currency'] = currency;
-	params['tax'] = tax;
-	params['shipping'] = shipping;
 
+	params['tax'] = 0.0;
+	if ( null !== woocommerceCartData.subtotal_tax ) {
+		params['tax'] += woocommerceCartData.subtotal_tax;
+	}
+	if ( null !== woocommerceCartData.shipping_tax ) {
+		params['tax'] += woocommerceCartData.shipping_tax;
+	}
 
-	//mock params
-	params['transaction_id'] = "123456";
-	params['affiliation'] = "Google Online Store";
-	var items = [];
-	var item_one = {};
-	item_one['id'] = "P12345";
-	item_one['name'] = "Basketball Shoe";
+	if ( null !== woocommerceCartData.shipping ) {
+		params['shipping'] = woocommerceCartData.shipping;
+	}
 
-	items.push(item_one);
-
+	items = [];
+	for ( cartItemName in woocommerceCartData.item_quantities ) {
+		item = woocommerceProducts[ cartItemName ];
+		item['quantity'] = woocommerceCartData.item_quantities[ cartItemName ];
+		items.push( item );
+	}
 	params['items'] = items;
 
-	console.log(params);
 	return params;
 }
 CALLBACK

@@ -158,6 +158,7 @@ class AdvancedTrackingTest extends TestCase {
 					params = thisConfig.metadata( params, el );
 				}
 				params['event_category'] = thisConfig.category;
+				console.log(params);
 
 				gtag( 'event', thisConfig.action, params);
 			}
