@@ -24,7 +24,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import WPSearchConsoleDashboardWidgetOverview from './WPSearchConsoleDashboardWidgetOverviewtemp';
+import WPSearchConsoleDashboardWidgetOverview from './WPSearchConsoleDashboardWidgetOverview';
 
 class WPSearchConsoleDashboardWidget extends Component {
 	render() {
