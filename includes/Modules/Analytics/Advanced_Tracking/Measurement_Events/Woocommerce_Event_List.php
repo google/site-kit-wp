@@ -228,41 +228,8 @@ CALLBACK
 				'pluginName' => 'Woocommerce',
 				'category'   => 'ecommerce',
 				'action'     => 'purchase',
-				'selector'   => '', /*'.woocommerce-page form.woocommerce-checkout'*/
+				'selector'   => '.woocommerce-page form.woocommerce-checkout',
 				'on'         => 'submit',
-				'metadata'   => <<<CALLBACK
-function( params, element ) {
-	params['transaction_id'] = 'test_transaction_id';
-
-	params['value'] = woocommerceCartData.subtotal;
-
-	var currency = woocommerceStoreData.currency;
-	params['currency'] = currency;
-
-	params['tax'] = 0.0;
-	if ( null !== woocommerceCartData.subtotal_tax ) {
-		params['tax'] += woocommerceCartData.subtotal_tax;
-	}
-	if ( null !== woocommerceCartData.shipping_tax ) {
-		params['tax'] += woocommerceCartData.shipping_tax;
-	}
-
-	if ( null !== woocommerceCartData.shipping ) {
-		params['shipping'] = woocommerceCartData.shipping;
-	}
-
-	items = [];
-	for ( cartItemName in woocommerceCartData.item_quantities ) {
-		item = woocommerceProducts[ cartItemName ];
-		item['quantity'] = woocommerceCartData.item_quantities[ cartItemName ];
-		items.push( item );
-	}
-	params['items'] = items;
-
-	return params;
-}
-CALLBACK
-			,
 			)
 		);
 		$this->add_event( $event );

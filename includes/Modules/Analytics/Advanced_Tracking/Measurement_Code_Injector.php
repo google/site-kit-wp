@@ -68,33 +68,6 @@ final class Measurement_Code_Injector {
 				gtag( 'event', thisConfig.action, params );
 			}
 		}, true );
-	}
-	jQuery(document).ready(function(){
-		if( null !== woocommerceOrderData.transaction_id ) {
-			alert( 'Got an event called: purchase!!!' );
-
-			var params = {};
-			var transaction_id = woocommerceOrderData.transaction_id;
-			if ( '' === transaction_id ) {
-				transaction_id = 'not_paid';
-			}
-			params['transaction_id'] = transaction_id;
-			params['value'] = woocommerceOrderData.subtotal;
-			params['currency'] = woocommerceOrderData.currency;
-			params['tax'] = parseFloat( woocommerceOrderData.subtotal_tax ) + parseFloat( woocommerceOrderData.shipping_tax );
-			params['shipping'] = parseFloat( woocommerceOrderData.shipping );
-			var items = [];
-			for ( itemName in woocommerceOrderData.items ) {
-				items.push( woocommerceOrderData.items[ itemName ] );
-			}
-			params['items'] = items;
-			params['event_category'] = 'ecommerce';
-
-		    console.log(params);
-
-			gtag( 'event', 'purchase', params );
-		}
-	});
   }
 )();
 INJECT_SCRIPT;
