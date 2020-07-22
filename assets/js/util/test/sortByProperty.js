@@ -1,5 +1,5 @@
 /**
- * sortObjectMapByKey utility tests.
+ * sortByProperty utility tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
-import { sortObjectMapByKey } from '../sort-object-map-by-key';
+import { sortByProperty } from '../sort-by-property';
 
-const sortMe = {
-	objectOne: { slug: 'objectOne', name: 'First', order: 1 },
-	objectTwo: { slug: 'objectTwo', name: 'Fifth', order: 10 },
-	objectThree: { slug: 'objectThree', name: 'Fourth', order: 9 },
-	objectFour: { slug: 'objectFour', name: 'Second', order: 3 },
-	objectFive: { slug: 'objectFive', name: 'Third', order: 7 },
-};
+const sortMe = [
+	{ slug: 'objectOne', name: 'First', order: 1 },
+	{ slug: 'objectTwo', name: 'Fifth', order: 10 },
+	{ slug: 'objectThree', name: 'Fourth', order: 9 },
+	{ slug: 'objectFour', name: 'Second', order: 3 },
+	{ slug: 'objectFive', name: 'Third', order: 7 },
+];
 
-describe( 'sortObjectMapByKey', () => {
+describe( 'sortByProperty', () => {
 	it( 'returns an object correctly sorted passed key', () => {
 		const expectedResults = [
 			{ slug: 'objectOne', name: 'First', order: 1 },
@@ -39,17 +39,10 @@ describe( 'sortObjectMapByKey', () => {
 			{ slug: 'objectTwo', name: 'Fifth', order: 10 },
 		];
 
-		expect( sortObjectMapByKey( sortMe, 'order' ) ).toStrictEqual( expectedResults );
+		expect( sortByProperty( sortMe, 'order' ) ).toStrictEqual( expectedResults );
 	} );
 	it( 'returns an object with the same order if sort key is omitted or is not on the object', () => {
-		const expectedResults = [
-			{ slug: 'objectOne', name: 'First', order: 1 },
-			{ slug: 'objectTwo', name: 'Fifth', order: 10 },
-			{ slug: 'objectThree', name: 'Fourth', order: 9 },
-			{ slug: 'objectFour', name: 'Second', order: 3 },
-			{ slug: 'objectFive', name: 'Third', order: 7 },
-		];
-		expect( sortObjectMapByKey( sortMe ) ).toStrictEqual( expectedResults );
-		expect( sortObjectMapByKey( sortMe, 'undefinedSortKey' ) ).toStrictEqual( expectedResults );
+		expect( sortByProperty( sortMe ) ).toStrictEqual( sortMe );
+		expect( sortByProperty( sortMe, 'undefinedSortKey' ) ).toStrictEqual( sortMe );
 	} );
 } );

@@ -27,7 +27,7 @@ import { v4 as uuidv4 } from 'uuid';
  */
 import Data from 'googlesitekit-data';
 import { WIDGET_WIDTHS } from './constants';
-import { sortObjectMapByKey } from '../../../util/sort-object-map-by-key';
+import { sortByProperty } from '../../../util/sort-by-property';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 const { commonActions, createRegistrySelector } = Data;
@@ -212,7 +212,7 @@ export const selectors = {
 
 		const registryKey = select( CORE_SITE ).getRegistryKey();
 
-		const sorted = sortObjectMapByKey(
+		const sorted = sortByProperty(
 			Object.values( widgets ).filter( ( widget ) => {
 				return areaAssignments[ widgetAreaSlug ] && areaAssignments[ widgetAreaSlug ].includes( widget.slug );
 			} ).map( ( widget ) => {

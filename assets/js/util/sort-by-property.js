@@ -1,5 +1,5 @@
 /**
- * sortObjectMapByKey utility function.
+ * sortByProperty utility function.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,20 +17,20 @@
  */
 
 /**
- * Sorts an object map based on numeric order/priority key.
+ * Sorts an array of objects based on numeric order/priority key.
  *
  * @since n.e.x.t
  *
- * @param {Object} objectList  Object containing objects to be sorted
- * @param {string} priorityKey The object key to use for matching.
+ * @param {Array} arrayData  Array containing objects to be sorted
+ * @param {string} property The object key to use for matching.
  * @return {Array} An Array containing objects ordered by the priority key
  */
-export function sortObjectMapByKey( objectList, priorityKey ) {
-	return Object.values( objectList ).sort( ( objectA, objectB ) => {
-		if ( objectA[ priorityKey ] > objectB[ priorityKey ] ) {
+export function sortByProperty( arrayData, property ) {
+	return arrayData.sort( ( objectA, objectB ) => {
+		if ( objectA[ property ] > objectB[ property ] ) {
 			return 1;
 		}
-		if ( objectA[ priorityKey ] < objectB[ priorityKey ] ) {
+		if ( objectA[ property ] < objectB[ property ] ) {
 			return -1;
 		}
 		return 0;

@@ -32,13 +32,13 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { sortObjectMapByKey } from '../../../util/sort-object-map-by-key';
+import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
 
 describe( 'core/modules modules', () => {
-	const sortedFixtures = sortObjectMapByKey( FIXTURES, 'order' );
+	const sortedFixtures = sortByProperty( FIXTURES, 'order' );
 	const fixturesKeyValue = convertArrayListToKeyedObjectMap( sortedFixtures, 'slug' );
 	let registry;
 	let store;

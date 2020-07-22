@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { WIDGET_STYLES } from './constants';
-import { sortObjectMapByKey } from '../../../util/sort-object-map-by-key';
+import { sortByProperty } from '../../../util/sort-by-property';
 
 /**
  * Store our widget components by registry, then by widget `slug`. We do this because
@@ -199,7 +199,7 @@ export const selectors = {
 
 		const { areas, contextAssignments } = state;
 
-		return sortObjectMapByKey(
+		return sortByProperty(
 			Object.values( areas ).filter( ( area ) => {
 				return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
 			} ),
