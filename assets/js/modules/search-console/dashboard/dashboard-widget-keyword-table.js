@@ -25,6 +25,7 @@ import { map } from 'lodash';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -58,17 +59,10 @@ const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const domain = getModulesData()[ 'search-console' ].settings.propertyID;
 	const links = [];
 
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceBaseURL( { path: '/performance/search-analytics' } ) );
 	const dataMapped = map( data, ( row, i ) => {
 		const query = row.keys[ 0 ];
-		// eslint-disable-next-line react-hooks/rules-of-hooks
-		links[ i ] = useSelect( ( select ) => select( STORE_NAME ).getServiceBaseURL(
-			{
-				path: 'performance/search-analytics',
-				query: {
-					resource_id: domain,
-					num_of_days: 28 },
-			}
-		) );
+		links[ i ] = addQueryArgs( baseServiceURL, { query, resource_id: domain, num_of_days: 28 } );
 		return [
 			query,
 			numberFormat( row.clicks ),
