@@ -51,6 +51,7 @@ describe( 'createExistingTagStore store', () => {
 			Data.commonStore,
 			createExistingTagStore( 'test', 'store', {
 				tagMatchers,
+				isValidTag: ( tag ) => !! tag,
 				storeName: STORE_NAME,
 			} )
 		) );
@@ -67,13 +68,13 @@ describe( 'createExistingTagStore store', () => {
 
 	describe( 'STORE_NAME', () => {
 		it( 'returns the correct default store name', () => {
-			const storeDefinition = createExistingTagStore( 'foo', 'store', { tagMatchers: [] } );
+			const storeDefinition = createExistingTagStore( 'foo', 'store', { tagMatchers: [], isValidTag: () => true } );
 
 			expect( storeDefinition.STORE_NAME ).toEqual( 'foo/store' );
 		} );
 
 		it( 'returns the given storeName when provided', () => {
-			const storeDefinition = createExistingTagStore( 'foo', 'store', { storeName: 'bar/store', tagMatchers: [] } );
+			const storeDefinition = createExistingTagStore( 'foo', 'store', { storeName: 'bar/store', tagMatchers: [], isValidTag: () => true } );
 
 			expect( storeDefinition.STORE_NAME ).toEqual( 'bar/store' );
 		} );

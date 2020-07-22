@@ -41,18 +41,18 @@ const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
  * @since n.e.x.t
  * @private
  *
- * @param {string}   type                 The data to access. One of 'core' or 'modules'.
- * @param {string}   identifier           The data identifier, eg. a module slug like 'analytics'.
- * @param {Object}   options              Options to consider for the store.
- * @param {Array}    options.tagMatchers  The tag matchers used to extract tags from HTML.
- * @param {Function} [options.isValidTag] Optional. Function to detect whether a tag is valid or not.
- * @param {string}   [options.storeName]  Optional. Store name to use. Default is '{type}/{identifier}'.
+ * @param {string}   type             The data to access. One of 'core' or 'modules'.
+ * @param {string}   identifier       The data identifier, eg. a module slug like 'analytics'.
+ * @param {Object}   args             Arguments to consider for the store.
+ * @param {Array}    args.tagMatchers The tag matchers used to extract tags from HTML.
+ * @param {Function} args.isValidTag  Function to test whether a tag is valid or not.
+ * @param {string}   [args.storeName] Optional. Store name to use. Default is '{type}/{identifier}'.
  * @return {Object} The existing tag store object, with additional `STORE_NAME` and
  * INITIAL_STATE` properties.
  */
 export const createExistingTagStore = ( type, identifier, {
 	tagMatchers,
-	isValidTag = ( tag ) => typeof tag === 'string' && tag.length > 0,
+	isValidTag,
 	storeName = undefined,
 } = {} ) => {
 	invariant( type, 'type is required.' );
