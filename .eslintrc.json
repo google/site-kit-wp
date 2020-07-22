@@ -56,10 +56,7 @@
     },
     {
       "files": [
-        "**/modules/adsense/components/**/*.js",
-        "**/modules/analytics/components/**/*.js",
-        "**/modules/pagespeed-insights/components/**/*.js",
-        "**/modules/search-console/components/**/*.js"
+        "**/modules/*/components/**/*.js"
       ],
       "rules": {
         "filenames/match-exported": [
