@@ -53,16 +53,13 @@ const fetchGetReportStore = createFetchStore( {
 	},
 	argsToParams: ( options ) => {
 		const {
-			startDate,
-			endDate,
-			dateRange,
 			metrics,
 			dimensions,
 			orderby,
 		} = options;
 
 		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
-		invariant( isValidDateRange( dateRange, startDate, endDate ), 'Either date range or start/end dates must be provided for Analytics report.' );
+		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Analytics report.' );
 
 		if ( metrics ) {
 			invariant(
