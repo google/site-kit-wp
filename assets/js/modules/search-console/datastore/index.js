@@ -42,7 +42,7 @@ const baseModuleStore = Modules.createModuleStore( 'search-console', {
 
 const baseSelectors = {
 	/**
-	 * Return the service base url.
+	 * Return the services base url.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -55,9 +55,12 @@ const baseSelectors = {
 		const { path, query } = args;
 		const userEmail = select( CORE_USER ).getEmail();
 		const baseURI = `https://search.google.com/search-console`;
-		const sanitizedPath = ( path && ! path.match( /^\// ) ) ? `/${ path }` : '';
 		const queryArgs = { ...query, authuser: userEmail };
-		return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryArgs );
+		if ( path ) {
+			const sanitizedPath = ! path.match( /^\// ) ? `/${ path }` : path;
+			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryArgs );
+		}
+		return addQueryArgs( baseURI, queryArgs );
 	} ),
 };
 
