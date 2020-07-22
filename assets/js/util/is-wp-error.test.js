@@ -45,4 +45,18 @@ describe( 'isWPError', () => {
 	it( 'should return FALSE if the provided object has wrong property types', () => {
 		expect( isWPError( { code, message: [], data } ) ).toBe( false );
 	} );
+
+	it( 'should return FALSE for non-plain objects', () => {
+		expect( isWPError( new Error ) ).toBe( false );
+		expect( isWPError( new Date ) ).toBe( false );
+		expect( isWPError( [] ) ).toBe( false );
+		expect( isWPError( null ) ).toBe( false );
+	} );
+
+	it( 'should return FALSE for non-object values', () => {
+		expect( isWPError( undefined ) ).toBe( false );
+		expect( isWPError( true ) ).toBe( false );
+		expect( isWPError( 'error' ) ).toBe( false );
+		expect( isWPError( 123 ) ).toBe( false );
+	} );
 } );
