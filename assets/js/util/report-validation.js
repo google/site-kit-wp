@@ -22,29 +22,23 @@
  * @since n.e.x.t
  *
  * @param {string|string[]|Object|Object[]} data The data to check.
- * @param {Function} objectVerificationCallback The callback to verify an object.
+ * @param {Function} verifyFunction The callback to verify an object.
  * @return {boolean} TRUE if data is valid, otherwise FALSE.
  */
-function isValidStringsOrObjects( data, objectVerificationCallback ) {
+function isValidStringsOrObjects( data, verifyFunction ) {
 	if ( typeof data === 'string' ) {
 		return true;
 	}
 
-	if ( typeof data === 'object' && objectVerificationCallback.call( null, data ) ) {
+	if ( typeof data === 'object' && verifyFunction( data ) ) {
 		return true;
 	}
 
 	if ( Array.isArray( data ) ) {
-		for ( let i = 0; i < data.length; i++ ) {
-			const type = typeof data[ i ];
-			if ( type !== 'string' && ( type !== 'object' || ! objectVerificationCallback.call( null, data[ i ] ) ) ) {
-				return false;
-			}
-		}
-
-		return true;
+		return data.every( ( item ) => typeof item === 'string' || ( typeof item === 'object' && verifyFunction( item ) ) );
 	}
 
+	// Arguably this should fail/throw, because none of our allowed types were encountered.
 	return false;
 }
 
@@ -95,7 +89,7 @@ export function isValidDimensions( dimensions ) {
 export function isValidDateRange( dateRange, startDate, endDate ) {
 	const validStartDate = startDate && startDate.match( /^\d{4}-\d{2}-\d{2}$/ );
 	const validEndDate = endDate && endDate.match( /^\d{4}-\d{2}-\d{2}$/ );
-	const validDateRange = dateRange && dateRange.match( /^last-\d+-days$/i );
+	const validDateRange = dateRange && dateRange.match( /^last-\d+-days$/ );
 
 	return ( validStartDate && validEndDate ) || validDateRange;
 }
@@ -117,18 +111,13 @@ export function isValidOrders( orders ) {
 	};
 
 	if ( Array.isArray( orders ) ) {
-		for ( let i = 0; i < orders.length; i++ ) {
-			if ( typeof orders[ i ] !== 'object' || ! isValidOrder( orders[ i ] ) ) {
-				return false;
-			}
-		}
-
-		return true;
+		return orders.every( ( item ) => typeof item === 'object' && isValidOrder( item ) );
 	}
 
 	if ( typeof orders === 'object' ) {
 		return isValidOrder( orders );
 	}
 
+	// Arguably this should fail/throw, because none of our allowed types were encountered.
 	return false;
 }
