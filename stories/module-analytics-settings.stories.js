@@ -30,7 +30,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SettingsModule from '../assets/js/components/settings/settings-module';
-import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytics/settings';
+import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytics/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datastore/constants';
