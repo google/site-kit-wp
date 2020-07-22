@@ -1,5 +1,5 @@
 /**
- * WpSearchConsoleDashboardWidgetOverview component.
+ * WPSearchConsoleDashboardWidgetOverview component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -36,7 +36,7 @@ import {
 } from '../dashboard/util';
 import CTA from '../../../../components/notifications/cta';
 
-class WpSearchConsoleDashboardWidgetOverview extends Component {
+class WPSearchConsoleDashboardWidgetOverview extends Component {
 	render() {
 		const { data } = this.props;
 
@@ -86,7 +86,7 @@ class WpSearchConsoleDashboardWidgetOverview extends Component {
 }
 
 export default withData(
-	WpSearchConsoleDashboardWidgetOverview,
+	WPSearchConsoleDashboardWidgetOverview,
 	[
 		{
 			type: TYPE_MODULES,

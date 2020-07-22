@@ -1,5 +1,5 @@
 /**
- * WpSearchConsoleDashboardWidget component.
+ * WPSearchConsoleDashboardWidget component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -24,16 +24,16 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import WpSearchConsoleDashboardWidgetOverview from './WpSearchConsoleDashboardWidgetOverview';
+import WPSearchConsoleDashboardWidgetOverview from './WPSearchConsoleDashboardWidgetOverviewtemp';
 
-class WpSearchConsoleDashboardWidget extends Component {
+class WPSearchConsoleDashboardWidget extends Component {
 	render() {
 		return (
 			<Fragment>
-				<WpSearchConsoleDashboardWidgetOverview />
+				<WPSearchConsoleDashboardWidgetOverview />
 			</Fragment>
 		);
 	}
 }
 
-export default WpSearchConsoleDashboardWidget;
+export default WPSearchConsoleDashboardWidget;
