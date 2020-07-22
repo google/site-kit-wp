@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import ReportDetailsLink from './ReportDetailsLink';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
-import { getScoreCategory } from '../dashboard/util';
+import { getScoreCategory } from './dashboard/util';
 
 export default function LabReportMetrics( { data } ) {
 	const totalBlockingTime = data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];

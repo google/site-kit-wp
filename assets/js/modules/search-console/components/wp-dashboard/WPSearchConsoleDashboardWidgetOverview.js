@@ -25,16 +25,16 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds } from '../../../util';
-import PreviewBlocks from '../../../components/preview-block';
-import DataBlock from '../../../components/data-block';
-import withData from '../../../components/higherorder/withdata';
-import { TYPE_MODULES } from '../../../components/data';
+import { getTimeInSeconds } from '../../../../util';
+import PreviewBlocks from '../../../../components/preview-block';
+import DataBlock from '../../../../components/data-block';
+import withData from '../../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../../components/data';
 import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
-} from '../dashboard/util';
-import CTA from '../../../components/notifications/cta';
+} from '../../dashboard/util';
+import CTA from '../../../../components/notifications/cta';
 
 class WPSearchConsoleDashboardWidgetOverview extends Component {
 	render() {

@@ -1,5 +1,5 @@
 /**
- * DashboardSearchFunnel component.
+ * DashboardDetailsSearchFunnel component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
@@ -30,20 +25,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getModulesData } from '../../../util';
-import Layout from '../../../components/layout/layout';
-import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
-import AnalyticsInactiveCTA from '../../../components/analytics-inactive-cta';
-import DashboardSearchFunnelInner from './dashboard-widget-search-funnel-inner';
+import Layout from '../../../../components/layout/layout';
+import DashboardSearchFunnelInner from '../dashboard/DashboardSearchFunnelInner';
+import { getModulesData } from '../../../../util';
+import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
+import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 
-class DashboardSearchFunnel extends Component {
+class DashboardDetailsSearchFunnel extends Component {
 	render() {
-		const modulesData = getModulesData();
-		const { canManageOptions } = global._googlesitekitLegacyData.permissions;
-
-		// Users without manage options capability will not see Setup CTA.
-		const wrapperCols = ! modulesData.analytics.active && ! canManageOptions ? 6 : 12;
-
 		return (
 			<Fragment>
 				<div className="
@@ -51,20 +40,17 @@ class DashboardSearchFunnel extends Component {
 					mdc-layout-grid__cell--span-12
 				">
 					<DashboardModuleHeader
-						title={ __( 'Search Funnel', 'google-site-kit' ) }
 						description={ __( 'How your site appeared in Search results and how many visitors you got from Search.', 'google-site-kit' ) }
+						title={ __( 'Search Funnel', 'google-site-kit' ) }
 					/>
 				</div>
-				<div className={ classnames(
-					'mdc-layout-grid__cell',
-					`mdc-layout-grid__cell--span-${ wrapperCols }`
-				) }>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 					<Layout className="googlesitekit-analytics-search-funnel">
 						<div className="mdc-layout-grid">
 							<div className="mdc-layout-grid__inner">
 								<DashboardSearchFunnelInner />
 								{ // Show the Analytics CTA if analytics is not enabled.
-									( ! modulesData.analytics.active ) &&
+									( ! getModulesData().analytics.active ) &&
 									<div className="
 										mdc-layout-grid__cell
 										mdc-layout-grid__cell--span-4-phone
@@ -83,4 +69,4 @@ class DashboardSearchFunnel extends Component {
 	}
 }
 
-export default DashboardSearchFunnel;
+export default DashboardDetailsSearchFunnel;
