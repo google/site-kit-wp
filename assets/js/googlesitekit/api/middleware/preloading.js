@@ -40,14 +40,16 @@ function createPreloadingMiddleware( preloadedData ) {
 
 	let cacheHasExpired = false;
 	return ( options, next ) => {
-		const { parse = true } = options;
-		const uri = options.path;
 		if ( cacheHasExpired ) {
 			return next( options );
 		}
 		setTimeout( () => {
 			cacheHasExpired = true;
 		}, 1000 );
+		
+		const { parse = true } = options;
+		const uri = options.path;
+		
 		if ( typeof options.path === 'string' ) {
 			const method = options.method?.toUpperCase() || 'GET';
 

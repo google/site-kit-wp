@@ -130,7 +130,7 @@ describe( 'Preloading Middleware', () => {
 		expect( next ).not.toHaveBeenCalled();
 
 		jest.runAllTimers();
-		// Confirm that responses after the timeout don't run hit the middleware.
+		// Confirm that invocations after the timeout ignore preloaded response cache.
 		const secondResponse = await preloadingMiddleware( { method: 'GET', path: secondRequestURI }, next );
 		expect( secondResponse ).toBeUndefined();
 		expect( next ).toHaveBeenCalled();
