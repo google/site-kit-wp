@@ -187,7 +187,13 @@ final class Metadata_Collector {
 			},
 			10
 		);
-		$this->wc_store_data['currency'] = get_woocommerce_currency();
+		add_action(
+			'woocommerce_currency',
+			function() {
+				$this->wc_store_data['currency'] = get_option( 'woocommerce_currency' );
+			},
+			10
+		);
 	}
 
 	/**
