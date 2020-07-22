@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { get } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -24,8 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, readableLargeNumber, getModulesData } from '../../util';
-import { calculateOverviewData } from '../../modules/analytics/util';
+import { getTimeInSeconds, readableLargeNumber, getModulesData, changeToPercent } from '../../util';
 
 const trafficIncrease = ( reports, id ) => {
 	const modulesData = getModulesData();
@@ -38,13 +42,9 @@ const trafficIncrease = ( reports, id ) => {
 		return false;
 	}
 
-	const overviewData = calculateOverviewData( reports );
-
-	if ( ! overviewData ) {
-		return false;
-	}
-
-	const { totalUsersChange, totalUsers } = overviewData;
+	const totalUsers = get( reports, '[0].data.totals[0].values[0]' );
+	const previousTotalUsers = get( reports, '[0].data.totals[1].values[0]' );
+	const totalUsersChange = Number( changeToPercent( previousTotalUsers, totalUsers ) );
 
 	// Adds threshold to show data only between 10-100 percent change.
 	if ( 10 > totalUsersChange || 100 < totalUsersChange ) {
