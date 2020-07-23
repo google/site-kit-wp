@@ -32,6 +32,7 @@ import { createAddToFilter } from '../../util/helpers';
 import { SettingsMain as PageSpeedInsightsSettings } from './components/settings';
 import DashboardPageSpeedWidget from './components/DashboardPageSpeedWidget';
 import DashboardPageSpeedCTA from './components/DashboardPageSpeedCTA';
+import LegacyDashboardSpeed from './components/LegacyDashboardSpeed';
 
 /**
  * Add components to the settings page.
@@ -42,7 +43,30 @@ addFilter(
 	fillFilterWithComponent( PageSpeedInsightsSettings )
 );
 
-const { active, setupComplete } = getModulesData()[ 'pagespeed-insights' ];
+const {
+	active,
+	setupComplete,
+} = getModulesData()[ 'pagespeed-insights' ];
+
+// @TODO: remove LegacyDashboardSpeed once all widgets have been migrated.
+if ( active && setupComplete ) {
+	// Add to main dashboard.
+	addFilter(
+		'googlesitekit.DashboardModule',
+		'googlesitekit.PageSpeedInsights',
+		createAddToFilter( <LegacyDashboardSpeed /> ),
+		45
+	);
+
+	// Add to dashboard-details view.
+	addFilter(
+		'googlesitekit.DashboardDetailsModule',
+		'googlesitekit.PageSpeedInsights',
+		createAddToFilter( <LegacyDashboardSpeed /> ),
+		45
+	);
+}
+
 if ( ! active || ! setupComplete ) {
 	addFilter(
 		'googlesitekit.DashboardModule',
