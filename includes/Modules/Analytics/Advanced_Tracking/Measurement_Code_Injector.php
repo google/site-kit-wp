@@ -68,7 +68,8 @@ final class Measurement_Code_Injector {
 				gtag( 'event', thisConfig.action, params );
 			}
 		}, true );
-  }
+	}
+	}
 )();
 INJECT_SCRIPT;
 	}

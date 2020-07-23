@@ -206,7 +206,8 @@ final class Metadata_Collector {
 	private function collect_woocommerce_order_metadata( $order ) {
 		$order_data = $order->get_data();
 
-		$this->wc_order_data['transaction_id'] = $order->get_transaction_id();
+		$transaction_id                        = $order->get_transaction_id();
+		$this->wc_order_data['transaction_id'] = '' == $transaction_id ? 'not_paid' : $transaction_id;
 		$this->wc_order_data['subtotal']       = $order->get_subtotal();
 		$this->wc_order_data['subtotal_tax']   = $order_data['cart_tax'];
 		$this->wc_order_data['shipping']       = $order_data['shipping_total'];
