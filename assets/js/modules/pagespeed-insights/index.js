@@ -30,9 +30,9 @@ import './datastore';
 import { fillFilterWithComponent, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import { SettingsMain as PageSpeedInsightsSettings } from './components/settings';
-import DashboardPageSpeedWidget from './components/DashboardPageSpeedWidget';
-import DashboardPageSpeedCTA from './components/DashboardPageSpeedCTA';
-import LegacyDashboardSpeed from './components/LegacyDashboardSpeed';
+import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
+import DashboardPageSpeedCTA from './components/dashboard/DashboardPageSpeedCTA';
+import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
 
 /**
  * Add components to the settings page.
