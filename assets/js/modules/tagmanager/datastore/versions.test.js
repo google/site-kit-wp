@@ -80,6 +80,52 @@ describe( 'modules/tagmanager versions', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getLiveContainerAnalyticsTag', () => {
+			it( 'returns the Universal Analytics tag object from the live container object', () => {
+				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.gaWithVariable;
+				const accountID = liveContainerVersionFixture.accountId;
+				const internalContainerID = liveContainerVersionFixture.containerId;
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+
+				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
+
+				expect( tagObject ).toEqual( liveContainerVersionFixture.tag[ 0 ] );
+			} );
+
+			it( 'returns null if the live container version does not contain a Universal Analytics tag', () => {
+				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
+				const accountID = liveContainerVersionFixture.accountId;
+				const internalContainerID = liveContainerVersionFixture.containerId;
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+
+				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
+
+				expect( tagObject ).toStrictEqual( null );
+			} );
+
+			it( 'returns null if no live container version exists', () => {
+				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
+				const accountID = liveContainerVersionFixture.accountId;
+				const internalContainerID = liveContainerVersionFixture.containerId;
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( null, { accountID, internalContainerID } );
+
+				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
+
+				expect( tagObject ).toStrictEqual( null );
+			} );
+
+			it( 'returns undefined if the live container version is not loaded yet', () => {
+				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
+				const accountID = liveContainerVersionFixture.accountId;
+				const internalContainerID = liveContainerVersionFixture.containerId;
+
+				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
+				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
+
+				expect( tagObject ).toStrictEqual( undefined );
+			} );
+		} );
+
 		describe( 'getLiveContainerVariable', () => {
 			it( 'returns the variable object from the live container object by variable name', () => {
 				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;

@@ -82,6 +82,30 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
+	 * Gets the live container Universal Analytics tag object for the given account and container ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state               Data store's state.
+	 * @param {string} accountID           Account ID the container belongs to.
+	 * @param {string} internalContainerID Internal container ID to get the Analytics tag for.
+	 * @return {(Object|null|undefined)} Live container Universal Analytics tag object, `null` if none exists, or `undefined` if not loaded yet.
+	 */
+	getLiveContainerAnalyticsTag: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID ) => {
+		const liveContainerVersion = select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
+
+		if ( liveContainerVersion === undefined ) {
+			return undefined;
+		}
+
+		if ( liveContainerVersion?.tag ) {
+			return liveContainerVersion.tag.find( ( { type } ) => type === 'ua' ) || null;
+		}
+
+		return null;
+	} ),
+
+	/**
 	 * Gets the live container variable object by the given name for the given account and container ID.
 	 *
 	 * @since n.e.x.t
