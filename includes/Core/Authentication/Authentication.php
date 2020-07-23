@@ -381,7 +381,7 @@ final class Authentication {
 	 * @return HasConnectedAdmins ConnectedAdmins instance.
 	 */
 	public function connected_admins() {
-		return $htis->connected_admins;
+		return $this->connected_admins;
 	}
 
 	/**
