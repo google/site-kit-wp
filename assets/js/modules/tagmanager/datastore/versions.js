@@ -75,7 +75,7 @@ const baseResolvers = {
 
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ) {
+		if ( undefined === select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ) {
 			yield fetchGetLiveContainerVersionStore.actions.fetchGetLiveContainerVersion( accountID, internalContainerID );
 		}
 	},
