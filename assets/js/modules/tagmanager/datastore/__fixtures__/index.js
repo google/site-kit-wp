@@ -22,6 +22,7 @@
 import containersAMPOnly from './get-containers--amp.json';
 import containersWebOnly from './get-containers--web.json';
 import liveContainerVersionWebWithVariable from './live-container-version--web-with-variable.json';
+import liveContainerVersionWebGAWithOverride from './live-container-version--web-ga-with-override.json';
 import liveContainerVersionWebGAWithVariable from './live-container-version--web-ga-with-variable.json';
 
 export { default as accounts } from './accounts.json';
@@ -42,6 +43,7 @@ export const liveContainerVersions = {
 
 	},
 	web: {
+		gaWithOverride: liveContainerVersionWebGAWithOverride,
 		gaWithVariable: liveContainerVersionWebGAWithVariable,
 		withVariable: liveContainerVersionWebWithVariable,
 	},
