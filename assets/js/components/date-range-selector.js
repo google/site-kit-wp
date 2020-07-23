@@ -19,8 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState } from '@wordpress/element';
-import { doAction, addAction, removeAction } from '@wordpress/hooks';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,37 +32,11 @@ const { useSelect, useDispatch } = Data;
 
 function DateRangeSelector() {
 	const ranges = Object.values( getAvailableDateRanges() );
-	const [ context, setContext ] = useState();
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const { setDateRange } = useDispatch( CORE_USER );
 	const onChange = useCallback( ( index, item ) => {
 		setDateRange( item.dataset.value );
 	}, [ ranges ] );
-
-	// TODO: Remove this effect once legacy batch API calls have been phased out.
-	useEffect( () => {
-		// Store the current context when the screen loads, so we can reuse it later.
-		addAction(
-			'googlesitekit.moduleLoaded',
-			'googlesitekit.collectModuleListingDataForDateRangeSelector',
-			( newContext ) => {
-				setContext( newContext );
-				removeAction(
-					'googlesitekit.moduleLoaded',
-					'googlesitekit.collectModuleListingDataForDateRangeSelector'
-				);
-			}
-		);
-	}, [] );
-
-	// TODO: Remove this effect once legacy batch API calls have been phased out.
-	useEffect( () => {
-		if ( context ) {
-			// Trigger a data refresh.
-			doAction( 'googlesitekit.moduleDataReset' );
-			doAction( 'googlesitekit.moduleLoaded', context );
-		}
-	}, [ dateRange, context ] );
 
 	return (
 		<Select
