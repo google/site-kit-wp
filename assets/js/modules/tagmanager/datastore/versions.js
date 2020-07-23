@@ -82,6 +82,31 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
+	 * Gets the live container variable object by the given name for the given account and container ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state               Data store's state.
+	 * @param {string} accountID           Account ID the container belongs to.
+	 * @param {string} internalContainerID Internal container ID to get version for.
+	 * @param {string} variableName        Variable name to retrive.
+	 * @return {(Object|null|undefined)} Live container version object, `null` if none exists, or `undefined` if not loaded yet.
+	 */
+	getLiveContainerVariable: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID, variableName ) => {
+		const liveContainerVersion = select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
+
+		if ( liveContainerVersion === undefined ) {
+			return undefined;
+		}
+
+		if ( liveContainerVersion.variable ) {
+			return liveContainerVersion.variable.find( ( { name } ) => name === variableName ) || null;
+		}
+
+		return null;
+	} ),
+
+	/**
 	 * Gets the live container version for the given account and container IDs.
 	 *
 	 * @since 1.11.0

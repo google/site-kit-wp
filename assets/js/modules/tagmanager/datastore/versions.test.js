@@ -80,6 +80,44 @@ describe( 'modules/tagmanager versions', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getLiveContainerVariable', () => {
+			it( 'returns the variable object from the live container object by variable name', () => {
+				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
+				const accountID = liveContainerVersionFixture.accountId;
+				const internalContainerID = liveContainerVersionFixture.containerId;
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+
+				const variableName = 'Test Variable';
+				const variableObject = registry.select( STORE_NAME ).getLiveContainerVariable( accountID, internalContainerID, variableName );
+
+				expect( variableObject ).toEqual( liveContainerVersionFixture.variable[ 0 ] );
+			} );
+
+			it( 'returns null if no variable exists by the given name', () => {
+				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
+				const accountID = liveContainerVersionFixture.accountId;
+				const internalContainerID = liveContainerVersionFixture.containerId;
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+
+				const variableName = 'Non-existent Variable';
+				const variableObject = registry.select( STORE_NAME ).getLiveContainerVariable( accountID, internalContainerID, variableName );
+
+				expect( variableObject ).toStrictEqual( null );
+			} );
+
+			it( 'returns undefined if the live container version is not loaded yet', () => {
+				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
+				const accountID = liveContainerVersionFixture.accountId;
+				const internalContainerID = liveContainerVersionFixture.containerId;
+				const variableName = 'Test Variable';
+
+				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
+				const variableObject = registry.select( STORE_NAME ).getLiveContainerVariable( accountID, internalContainerID, variableName );
+
+				expect( variableObject ).toStrictEqual( undefined );
+			} );
+		} );
+
 		describe( 'getLiveContainerVersion', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const accountID = fixtures.liveContainerVersion.accountId;
