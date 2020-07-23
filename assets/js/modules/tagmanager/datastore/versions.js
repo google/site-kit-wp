@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, CONTEXT_WEB } from './constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { isValidAccountID, isValidInternalContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../../analytics/util';
@@ -82,6 +83,48 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
+	/**
+	 * Gets a unique list of Analytics property IDs for all effective containers based on current selections.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string[]|undefined)} Array of unique property IDs, or `undefined` if not fully loaded.
+	 */
+	getAnalyticsPropertyIDs: createRegistrySelector( ( select ) => () => {
+		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
+		const accountID = select( STORE_NAME ).getAccountID();
+
+		if ( ! isValidAccountID( accountID ) ) {
+			return [];
+		}
+
+		const propertyIDs = new Set;
+		const internalContainerID = select( STORE_NAME ).getInternalContainerID();
+		if ( ( ! isAMP() || isSecondaryAMP() ) && isValidInternalContainerID( internalContainerID ) ) {
+			propertyIDs.add(
+				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID )
+			);
+		}
+
+		const internalAMPContainerID = select( STORE_NAME ).getInternalAMPContainerID();
+		if ( isAMP() && isValidInternalContainerID( internalAMPContainerID ) ) {
+			propertyIDs.add(
+				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalAMPContainerID )
+			);
+		}
+
+		// If either selector returned undefined, return undefined here as well.
+		// We do this here to ensure resolvers are triggered for both.
+		if ( propertyIDs.has( undefined ) ) {
+			return undefined;
+		}
+		// At this point the set will only include valid property IDs or null,
+		// so we ensure it isn't included in the result.
+		propertyIDs.delete( null );
+
+		return Array.from( propertyIDs );
+	} ),
+
 	/**
 	 * Gets the live container Universal Analytics property ID for the given account and container ID.
 	 *
