@@ -56,7 +56,7 @@
         {
           "key": "trackingId",
           "type": "template",
-          "value": "UA-98765432-1"
+          "value": "UA-123456789-1"
         }
       ]
     }
