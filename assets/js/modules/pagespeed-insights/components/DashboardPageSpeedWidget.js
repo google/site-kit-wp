@@ -31,7 +31,7 @@ import DashboardPageSpeedCTA from './DashboardPageSpeedCTA';
 import DashboardPageSpeed from './DashboardPageSpeed';
 const { useSelect } = Data;
 
-function DashboardPageSpeedWidget( { width, slug } ) {
+function DashboardPageSpeedWidget( { slug } ) {
 	const pagespeedInsightsModule = useSelect( ( select ) => select( MODULES_STORE ).getModule( 'pagespeed-insights' ) );
 	if ( ! pagespeedInsightsModule ) {
 		return null;
@@ -45,14 +45,13 @@ function DashboardPageSpeedWidget( { width, slug } ) {
 	const { Widget } = Widgets.components;
 
 	return (
-		<Widget slug={ slug } width={ width }>
+		<Widget slug={ slug }>
 			<DashboardPageSpeed />
 		</Widget>
 	);
 }
 
 DashboardPageSpeedWidget.propTypes = {
-	width: string.isRequired,
 	slug: string.isRequired,
 };
 

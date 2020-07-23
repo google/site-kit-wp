@@ -19,21 +19,11 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { node, string } from 'prop-types';
 
-/**
- * Internal dependencies
- */
-import { WIDGET_WIDTHS } from '../datastore/constants';
-
-function Widget( { children, slug, width } ) {
+function Widget( { children, slug } ) {
 	return (
-		<div className={ classnames( `googlesitekit-widget googlesitekit-widget--${ slug }`, {
-			'mdc-layout-grid__cell--span-12': width === WIDGET_WIDTHS.FULL,
-			'mdc-layout-grid__cell--span-6': width === WIDGET_WIDTHS.HALF,
-			'mdc-layout-grid__cell--span-3': width === WIDGET_WIDTHS.QUARTER,
-		} ) }>
+		<div className={ `googlesitekit-widget googlesitekit-widget--${ slug }` }>
 			{ children }
 		</div>
 	);
@@ -41,13 +31,11 @@ function Widget( { children, slug, width } ) {
 
 Widget.defaultProps = {
 	children: undefined,
-	width: WIDGET_WIDTHS.QUARTER,
 };
 
 Widget.propTypes = {
 	children: node,
 	slug: string.isRequired,
-	width: string,
 };
 
 export default Widget;

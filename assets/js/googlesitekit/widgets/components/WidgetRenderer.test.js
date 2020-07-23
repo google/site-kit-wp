@@ -53,7 +53,6 @@ describe( 'WidgetRenderer', () => {
 		expect( Object.values( container.firstChild.classList ) ).toEqual( [
 			'googlesitekit-widget',
 			'googlesitekit-widget--TestWidget',
-			'mdc-layout-grid__cell--span-3',
 		] );
 
 		expect( container.firstChild ).toMatchSnapshot();

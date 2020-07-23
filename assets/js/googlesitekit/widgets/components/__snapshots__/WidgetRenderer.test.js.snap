@@ -8,7 +8,7 @@ exports[`WidgetRenderer should output children directly 1`] = `
 
 exports[`WidgetRenderer should wrap children when wrapWidget is true 1`] = `
 <div
-  class="googlesitekit-widget googlesitekit-widget--TestWidget mdc-layout-grid__cell--span-3"
+  class="googlesitekit-widget googlesitekit-widget--TestWidget"
 >
   <div>
     Test
