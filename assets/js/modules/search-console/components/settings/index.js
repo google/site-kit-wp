@@ -1,5 +1,5 @@
 /**
- * Search Console Settings Main component.
+ * Search Console Settings components.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,15 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import SettingsView from './settings-view';
-
-export default function SettingsMain( { isOpen } ) {
-	if ( ! isOpen ) {
-		return null;
-	}
-
-	return <SettingsView />;
-}
+export { default as SettingsMain } from './SettingsMain';

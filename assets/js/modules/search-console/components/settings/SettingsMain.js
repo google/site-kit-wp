@@ -1,7 +1,7 @@
 /**
- * WPSearchConsoleDashboardWidget component.
+ * Search Console Settings Main component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,14 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Component, Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import WPSearchConsoleDashboardWidgetOverview from './wp-dashboard-widget-overview';
+import SettingsView from './SettingsView';
 
-class WPSearchConsoleDashboardWidget extends Component {
-	render() {
-		return (
-			<Fragment>
-				<WPSearchConsoleDashboardWidgetOverview />
-			</Fragment>
-		);
+export default function SettingsMain( { isOpen } ) {
+	if ( ! isOpen ) {
+		return null;
 	}
-}
 
-export default WPSearchConsoleDashboardWidget;
+	return <SettingsView />;
+}

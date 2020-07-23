@@ -1,5 +1,5 @@
 /**
- * GoogleSitekitSearchConsoleAdminbarWidget component.
+ * PageSpeed Insights dashboard utility functions.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -17,25 +17,25 @@
  */
 
 /**
- * Internal dependencies
- */
-import SearchConsoleAdminbarWidgetOverview from './adminbar-widget-overview';
-
-/**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
+import { CATEGORY_FAST, CATEGORY_AVERAGE, CATEGORY_SLOW } from '../constants';
 
-class GoogleSitekitSearchConsoleAdminbarWidget extends Component {
-	render() {
-		if ( typeof global._googlesitekitLegacyData.permaLink !== typeof undefined && '' === global._googlesitekitLegacyData.permaLink ) {
-			return null;
-		}
-
-		return (
-			<SearchConsoleAdminbarWidgetOverview />
-		);
+/**
+ * Retrieve the score category slug based on the given score.
+ *
+ * @param {number} score Score between 1.0 and 0.0.
+ *
+ * @return {string} Either 'fast', 'average', or 'slow'.
+ */
+export function getScoreCategory( score ) {
+	if ( 0.9 <= score ) {
+		return CATEGORY_FAST;
 	}
-}
 
-export default GoogleSitekitSearchConsoleAdminbarWidget;
+	if ( 0.5 <= score ) {
+		return CATEGORY_AVERAGE;
+	}
+
+	return CATEGORY_SLOW;
+}

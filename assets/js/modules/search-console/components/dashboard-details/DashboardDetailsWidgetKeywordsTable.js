@@ -25,10 +25,10 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/dashboard-widget-keyword-table';
-import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
-import Layout from '../../../components/layout/layout';
-import { getModulesData } from '../../../util';
+import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/SearchConsoleDashboardWidgetKeywordTable';
+import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
+import Layout from '../../../../components/layout/layout';
+import { getModulesData } from '../../../../util';
 
 class DashboardDetailsWidgetKeywordsTable extends Component {
 	render() {

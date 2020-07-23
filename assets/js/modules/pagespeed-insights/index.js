@@ -26,8 +26,8 @@ import { addFilter } from '@wordpress/hooks';
  */
 import './datastore';
 import { getModulesData, fillFilterWithComponent, createAddToFilter } from '../../util';
-import { SettingsMain as PageSpeedInsightsSettings } from './settings';
-import DashboardSpeed from './dashboard/dashboard-widget-speed';
+import { SettingsMain as PageSpeedInsightsSettings } from './components/settings';
+import DashboardSpeed from './components/dashboard/DashboardSpeed';
 
 /**
  * Add components to the settings page.

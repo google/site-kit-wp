@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DashboardPopularityInner from './dashboard-widget-popularity-inner';
-import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
+import DashboardPopularityInner from './DashboardPopularityInner';
+import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 
 class DashboardPopularity extends Component {
 	render() {
