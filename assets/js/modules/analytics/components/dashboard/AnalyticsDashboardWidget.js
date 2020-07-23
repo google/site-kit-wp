@@ -238,7 +238,7 @@ class AnalyticsDashboardWidget extends Component {
 									header
 									footer
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Top acquisition sources over the last %s', 'google-site-kit' ), currentDateRange ) }
+									title={ sprintf( __( 'Top acquisition channels over the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
