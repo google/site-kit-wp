@@ -21,7 +21,6 @@
  */
 import {
 	createTestRegistry,
-	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import { STORE_NAME } from './constants';
@@ -49,14 +48,6 @@ describe( 'core/site registryKey', () => {
 
 	describe( 'selectors', () => {
 		it( 'generates a registryKey if undefined', async () => {
-			const firstCall = registry.select( STORE_NAME ).getRegistryKey();
-			expect( firstCall ).toBeUndefined();
-
-			await subscribeUntil( registry, () => registry
-				.select( STORE_NAME )
-				.hasFinishedResolution( 'getRegistryKey' )
-			);
-
 			expect( registry.select( STORE_NAME ).getRegistryKey() ).not.toBeUndefined();
 		} );
 
