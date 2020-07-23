@@ -27,9 +27,11 @@ import domReady from '@wordpress/dom-ready';
  */
 import Widgets from 'googlesitekit-widgets';
 import './datastore';
-import { fillFilterWithComponent } from '../../util';
+import { fillFilterWithComponent, getModulesData } from '../../util';
+import { createAddToFilter } from '../../util/helpers';
 import { SettingsMain as PageSpeedInsightsSettings } from './components/settings';
 import DashboardPageSpeedWidget from './components/DashboardPageSpeedWidget';
+import DashboardPageSpeedCTA from './components/DashboardPageSpeedCTA';
 
 /**
  * Add components to the settings page.
@@ -39,6 +41,16 @@ addFilter(
 	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
 	fillFilterWithComponent( PageSpeedInsightsSettings )
 );
+
+const { active, setupComplete } = getModulesData()[ 'pagespeed-insights' ];
+if ( ! active || ! setupComplete ) {
+	addFilter(
+		'googlesitekit.DashboardModule',
+		'googlesitekit.PageSpeedInsights',
+		createAddToFilter( <DashboardPageSpeedCTA /> ),
+		45
+	);
+}
 
 domReady( () => {
 	const { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } = Widgets.areas;
