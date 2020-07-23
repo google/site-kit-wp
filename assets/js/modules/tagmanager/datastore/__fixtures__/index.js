@@ -21,6 +21,7 @@
  */
 import containersAMPOnly from './get-containers--amp.json';
 import containersWebOnly from './get-containers--web.json';
+import liveContainerVersionAMPWithGA from './live-container-version--amp-ga.json';
 import liveContainerVersionWebWithVariable from './live-container-version--web-with-variable.json';
 import liveContainerVersionWebGAWithOverride from './live-container-version--web-ga-with-override.json';
 import liveContainerVersionWebGAWithVariable from './live-container-version--web-ga-with-variable.json';
@@ -40,7 +41,7 @@ export const getContainers = {
 
 export const liveContainerVersions = {
 	amp: {
-
+		ga: liveContainerVersionAMPWithGA,
 	},
 	web: {
 		gaWithOverride: liveContainerVersionWebGAWithOverride,
