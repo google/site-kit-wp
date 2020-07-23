@@ -56,12 +56,13 @@
     },
     {
       "files": [
-        "**/modules/adsense/components/**/*.js"
+        "**/modules/*/components/**/*.js",
+        "assets/js/googlesitekit/*/components/**/*.js"
       ],
       "rules": {
         "filenames/match-exported": [
           2,
-          "pascal"
+          "[A-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])[A-Za-z0-9]*"
         ]
       }
     }

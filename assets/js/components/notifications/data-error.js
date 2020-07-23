@@ -29,6 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { showErrorNotification } from '../../util';
+import ErrorText from '../error-text';
 import CTA from './cta';
 import ctaWrapper from './cta-wrapper';
 import InvalidCredentialsWarning from './invalid-credentials-warning';
@@ -41,14 +42,18 @@ import InvalidCredentialsWarning from './invalid-credentials-warning';
  * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.
  * @param {boolean} fullWidth  Creates layout with 'cell--span-12' to be full width. Default: false.
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
+ * @param {Object}  errorObj   Error related data.
  *
  * @return {WPElement} CTA component with data error message.
  */
-const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = false, createGrid = false ) => {
+const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = false, createGrid = false, errorObj = {} ) => {
+	const reconnectUrl = errorObj?.data?.reconnectURL;
+	const description = reconnectUrl ? <ErrorText message={ error } reconnectURL={ reconnectUrl } /> : error;
+
 	const cta = <CTA
 		/* translators: %s: module name */
 		title={ sprintf( __( 'Data error in %s', 'google-site-kit' ), moduleName ) }
-		description={ error }
+		description={ description }
 		error
 	/>;
 

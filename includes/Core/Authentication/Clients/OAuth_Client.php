@@ -42,6 +42,7 @@ final class OAuth_Client {
 	const OPTION_ADDITIONAL_AUTH_SCOPES  = 'googlesitekit_additional_auth_scopes';
 	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
 	const OPTION_PROXY_ACCESS_CODE       = 'googlesitekit_proxy_access_code';
+	const CRON_REFRESH_PROFILE_DATA      = 'googlesitekit_cron_refresh_profile_data';
 
 	/**
 	 * Plugin context.
@@ -713,7 +714,7 @@ final class OAuth_Client {
 		);
 		$this->set_granted_scopes( $scopes );
 
-		$this->refresh_profile_data();
+		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
 		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
 		// For now the below action should only fire for the proxy despite not clarifying that in the hook name.
@@ -755,8 +756,11 @@ final class OAuth_Client {
 	 * Fetches and updates the user profile data for the currently authenticated Google account.
 	 *
 	 * @since 1.1.4
+	 * @since n.e.x.t Added $retry_after param, also made public.
+	 *
+	 * @param int $retry_after Optional. Number of seconds to retry data fetch if unsuccessful.
 	 */
-	private function refresh_profile_data() {
+	public function refresh_profile_data( $retry_after = 0 ) {
 		try {
 			$people_service = new Google_Service_PeopleService( $this->get_client() );
 			$response       = $people_service->people->get( 'people/me', array( 'personFields' => 'emailAddresses,photos' ) );
@@ -769,9 +773,21 @@ final class OAuth_Client {
 					)
 				);
 			}
-		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// This request is unlikely to fail and isn't critical as Site Kit will fallback to the current WP user
-			// if no Profile data exists. Don't do anything for now.
+			// Clear any scheduled job to refresh this data later, if any.
+			wp_clear_scheduled_hook(
+				self::CRON_REFRESH_PROFILE_DATA,
+				array( $this->user_options->get_user_id() )
+			);
+		} catch ( Exception $e ) {
+			$retry_after = absint( $retry_after );
+			if ( $retry_after < 1 ) {
+				return;
+			}
+			wp_schedule_single_event(
+				time() + $retry_after,
+				self::CRON_REFRESH_PROFILE_DATA,
+				array( $this->user_options->get_user_id() )
+			);
 		}
 	}
 
@@ -927,25 +943,30 @@ final class OAuth_Client {
 	 */
 	public function get_error_message( $error_code ) {
 		switch ( $error_code ) {
+			case 'access_denied':
+				return __( 'The Site Kit setup was interrupted because you did not grant the necessary permissions.', 'google-site-kit' );
+			case 'access_token_not_received':
+				return __( 'Unable to receive access token because of an unknown error.', 'google-site-kit' );
+			case 'cannot_log_in':
+				return __( 'Internal error that the Google login redirect failed.', 'google-site-kit' );
+			case 'invalid_client':
+				return __( 'Unable to receive access token because of an invalid client.', 'google-site-kit' );
+			case 'invalid_code':
+				return __( 'Unable to receive access token because of an empty authorization code.', 'google-site-kit' );
+			case 'invalid_grant':
+				return __( 'Unable to receive access token because of an invalid authorization code or refresh token.', 'google-site-kit' );
+			case 'invalid_request':
+				return __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
+			case 'missing_delegation_consent':
+				return __( 'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard.', 'google-site-kit' );
+			case 'missing_search_console_property':
+				return __( 'Looks like there is no Search Console property for your site.', 'google-site-kit' );
+			case 'missing_verification':
+				return __( 'Looks like the verification token for your site is missing.', 'google-site-kit' );
 			case 'oauth_credentials_not_exist':
 				return __( 'Unable to authenticate Site Kit, as no client credentials exist.', 'google-site-kit' );
 			case 'refresh_token_not_exist':
 				return __( 'Unable to refresh access token, as no refresh token exists.', 'google-site-kit' );
-			case 'cannot_log_in':
-				return __( 'Internal error that the Google login redirect failed.', 'google-site-kit' );
-			case 'invalid_code':
-				return __( 'Unable to receive access token because of an empty authorization code.', 'google-site-kit' );
-			case 'access_token_not_received':
-				return __( 'Unable to receive access token because of an unknown error.', 'google-site-kit' );
-			case 'access_denied':
-				return __( 'The Site Kit setup was interrupted because you did not grant the necessary permissions.', 'google-site-kit' );
-			// The following messages are based on https://tools.ietf.org/html/rfc6749#section-5.2.
-			case 'invalid_request':
-				return __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
-			case 'invalid_client':
-				return __( 'Unable to receive access token because of an invalid client.', 'google-site-kit' );
-			case 'invalid_grant':
-				return __( 'Unable to receive access token because of an invalid authorization code or refresh token.', 'google-site-kit' );
 			case 'unauthorized_client':
 				return __( 'Unable to receive access token because of an unauthorized client.', 'google-site-kit' );
 			case 'unsupported_grant_type':
