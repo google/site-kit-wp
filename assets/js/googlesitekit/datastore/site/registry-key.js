@@ -106,10 +106,13 @@ export const reducer = ( state, { payload, type } ) => {
 
 const resolvers = {
 	*getRegistryKey() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const registry = yield Data.commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getRegistryKey() ) {
-			yield actions.setRegistryKey( uuidv4() );
+		let registryKey = registry.select( STORE_NAME ).getRegistryKey();
+
+		if ( ! registryKey ) {
+			registryKey = uuidv4();
+			yield registry.dispatch( STORE_NAME ).setRegistryKey( registryKey );
 		}
 	},
 };
@@ -126,6 +129,9 @@ export const selectors = {
 	 */
 	getRegistryKey( state ) {
 		const { registryKey } = state;
+		if ( registryKey === undefined ) {
+			return undefined;
+		}
 		return registryKey;
 	},
 };
