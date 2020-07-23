@@ -11,6 +11,8 @@
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
 use WC_Product;
+use WC_Cart;
+use WC_Order;
 
 /**
  * Class for collecting various event metadata.
@@ -20,6 +22,14 @@ use WC_Product;
  * @ignore
  */
 final class Metadata_Collector {
+
+	/**
+	 * List of active plugins.
+	 *
+	 * @since n.e.x.t.
+	 * @var array
+	 */
+	private $active_plugins;
 
 	/**
 	 * List of item metadata objects that could be an event parameter for the current page.
@@ -57,8 +67,12 @@ final class Metadata_Collector {
 	 * Metadata_Collector constructor.
 	 *
 	 * @since n.e.x.t.
+	 *
+	 * @param array $active_plugins The list of active plugins.
 	 */
-	public function __construct() {
+	public function __construct( $active_plugins ) {
+		$this->active_plugins = $active_plugins;
+
 		$this->items = array();
 
 		$this->wc_cart_data                    = array();
@@ -94,106 +108,33 @@ final class Metadata_Collector {
 			10
 		);
 		add_action(
-			'woocommerce_product_meta_start',  // Fires when a single product is loaded.
+			'woocommerce_after_single_product',  // Fires after a single product is loaded.
 			function() {
 				global $product;
 				$this->collect_woocommerce_product_metadata( $product );
 			},
-			10
+			15
 		);
-		add_filter(
-			'woocommerce_loop_product_link', // Fires when a non-single product is loaded.
-			function( $permalink, $product ) {
+		add_action(
+			'woocommerce_after_shop_loop_item', // Fires after a non-single product is loaded.
+			function() {
+				global $product;
 				$this->collect_woocommerce_product_metadata( $product );
-				return $permalink;
 			},
-			10,
-			2
-		);
-		add_filter(
-			'woocommerce_cart_item_product', // Fires when a cart item is loaded.
-			function( $cart_item_data ) {
-				$this->collect_woocommerce_product_metadata( $cart_item_data );
-				return $cart_item_data;
-			},
-			10,
-			1
-		);
-		add_filter(
-			'woocommerce_cart_item_quantity', // Fires when a cart item quantity is evaluated.
-			function( $product_quantity, $cart_item_key, $cart_item ) {
-				$product_name = $cart_item['data']->get_name();
-				$this->wc_cart_data['item_quantities'][ $product_name ] = $cart_item['quantity'];
-				return $product_quantity;
-			},
-			10,
-			3
-		);
-		add_filter(
-			'woocommerce_checkout_cart_item_quantity', // Fires when a cart item quantity is evaluated during checkout.
-			function( $quantity_html, $cart_item ) {
-				$product_name = $cart_item['data']->get_name();
-				$this->wc_cart_data['item_quantities'][ $product_name ] = $cart_item['quantity'];
-				return $quantity_html;
-			},
-			10,
-			2
-		);
-		add_filter(
-			'woocommerce_cart_product_subtotal', // Fires when a cart item subtotal is evaluated.
-			function( $product_subtotal_html, $product, $quantity ) {
-				$new_subtotal                    = $product->get_price() * $quantity;
-				$this->wc_cart_data['subtotal'] += $new_subtotal;
-				return $product_subtotal_html;
-			},
-			10,
-			3
-		);
-		add_action(
-			'woocommerce_review_order_after_shipping', // Fires after the shipping costs are calculated.
-			function() {
-				$this->wc_cart_data['shipping'] = floatval( WC()->cart->get_shipping_total() );
-			},
-			10
-		);
-		add_action(
-			'woocommerce_review_order_after_order_total', // Fires after the review order total table is loaded.
-			function() {
-				$this->wc_cart_data['subtotal_tax'] = floatval( WC()->cart->get_subtotal_tax() );
-				$this->wc_cart_data['shipping_tax'] = floatval( WC()->cart->get_shipping_tax() );
-			},
-			10
+			15
 		);
 		add_action(
 			'woocommerce_thankyou', // Fires when an order is received.
 			function( $order_id ) {
-				$order      = wc_get_order( $order_id );
-				$order_data = $order->get_data();
-
-				$this->wc_order_data['transaction_id'] = $order->get_transaction_id();
-				$this->wc_order_data['subtotal']       = $order->get_subtotal();
-				$this->wc_order_data['subtotal_tax']   = $order_data['cart_tax'];
-				$this->wc_order_data['shipping']       = $order_data['shipping_total'];
-				$this->wc_order_data['shipping_tax']   = $order_data['shipping_tax'];
-				$this->wc_order_data['currency']       = $order_data['currency'];
-
-				$order_items = $order->get_items( apply_filters( 'woocommerce_purchase_order_item_types', 'line_item' ) );
-				foreach ( $order_items as $item_id => $item ) {
-					$product = $item->get_product();
-					$this->collect_woocommerce_product_metadata( $product );
-					$this->items[ $product->get_name() ]['quantity']      = $item->get_quantity();
-					$this->wc_order_data['items'][ $product->get_name() ] = $this->items[ $product->get_name() ];
-				}
+				$order = wc_get_order( $order_id );
+				$this->collect_woocommerce_order_metadata( $order );
 			},
 			10
 		);
-		add_action(
-			'woocommerce_currency',
-			function() {
-				$this->wc_store_data['currency'] = get_option( 'woocommerce_currency' );
-			},
-			10
-		);
+		if ( array_key_exists( 'WooCommerce', $this->active_plugins ) ) {
+			$this->collect_woocommerce_cart_metadata( WC()->cart );
+			$this->collect_woocommerce_store_metadata();
+		}
 	}
 
 	/**
@@ -213,11 +154,11 @@ final class Metadata_Collector {
 	}
 
 	/**
-	 * Creates a new item metadata object and adds it to the list.
+	 * Collects relevant metadata from a given WooCommerce product and adds it to the list.
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param WC_Product $product The Woocommcerce product whose metadata we are collecting.
+	 * @param WC_Product $product The WooCommcerce product to collect metadata from.
 	 */
 	private function collect_woocommerce_product_metadata( $product ) {
 		$item_name = $product->get_name();
@@ -233,6 +174,61 @@ final class Metadata_Collector {
 		$new_item['price']    = $product->get_price();
 
 		$this->items[ $item_name ] = $new_item;
+	}
+
+	/**
+	 * Collects relevant metadata from a given WooCommerce cart.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param WC_Cart $cart The WooCommerce cart to collect metadata from.
+	 */
+	private function collect_woocommerce_cart_metadata( $cart ) {
+		$this->wc_cart_data['subtotal']     = floatval( $cart->get_subtotal() );
+		$this->wc_cart_data['subtotal_tax'] = floatval( $cart->get_subtotal_tax() );
+		$this->wc_cart_data['shipping']     = floatval( $cart->get_shipping_total() );
+		$this->wc_cart_data['shipping_tax'] = floatval( $cart->get_shipping_tax() );
+
+		foreach ( $cart->get_cart() as $cart_item ) {
+			$product = $cart_item['data'];
+			$this->collect_woocommerce_product_metadata( $product );
+			$this->wc_cart_data['item_quantities'][ $product->get_name() ] = $cart_item['quantity'];
+		}
+	}
+
+	/**
+	 * Collects relevant metadata from a given WooCommerce order.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param WC_Order $order The WooCommerce order to collect metadata from.
+	 */
+	private function collect_woocommerce_order_metadata( $order ) {
+		$order_data = $order->get_data();
+
+		$this->wc_order_data['transaction_id'] = $order->get_transaction_id();
+		$this->wc_order_data['subtotal']       = $order->get_subtotal();
+		$this->wc_order_data['subtotal_tax']   = $order_data['cart_tax'];
+		$this->wc_order_data['shipping']       = $order_data['shipping_total'];
+		$this->wc_order_data['shipping_tax']   = $order_data['shipping_tax'];
+		$this->wc_order_data['currency']       = $order_data['currency'];
+
+		$order_items = $order->get_items( apply_filters( 'woocommerce_purchase_order_item_types', 'line_item' ) );
+		foreach ( $order_items as $item_id => $item ) {
+			$product = $item->get_product();
+			$this->collect_woocommerce_product_metadata( $product );
+			$this->items[ $product->get_name() ]['quantity']      = $item->get_quantity();
+			$this->wc_order_data['items'][ $product->get_name() ] = $this->items[ $product->get_name() ];
+		}
+	}
+
+	/**
+	 * Collects relevant metadata from the general WooCommerce store.
+	 *
+	 * @since n.e.x.t.
+	 */
+	private function collect_woocommerce_store_metadata() {
+		$this->wc_store_data['currency'] = get_woocommerce_currency();
 	}
 
 }

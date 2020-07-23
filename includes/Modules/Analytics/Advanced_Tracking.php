@@ -39,6 +39,14 @@ final class Advanced_Tracking {
 	private $supported_plugins;
 
 	/**
+	 * Filtered list of supported plugins that only contain the active plugins.
+	 *
+	 * @since n.e.x.t.
+	 * @var array
+	 */
+	private $active_plugins;
+
+	/**
 	 * List of event configurations to be tracked.
 	 *
 	 * @since n.e.x.t.
@@ -127,7 +135,7 @@ final class Advanced_Tracking {
 			return;
 		}
 		$this->configure_events();
-		( new Metadata_Collector() )->register();
+		( new Metadata_Collector( $this->active_plugins ) )->register();
 		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
 	}
 
@@ -157,10 +165,10 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	private function configure_events() {
-		$active_plugins = $this->plugin_detector->determine_active_plugins( $this->supported_plugins );
+		$this->active_plugins = $this->plugin_detector->determine_active_plugins( $this->supported_plugins );
 
 		$this->event_configurations = array();
-		foreach ( $active_plugins as $plugin_config ) {
+		foreach ( $this->active_plugins as $plugin_config ) {
 			$measurement_event_list = $plugin_config['event_config_list'];
 			if ( null !== $measurement_event_list ) {
 				foreach ( $measurement_event_list->get_events() as $measurement_event ) {
