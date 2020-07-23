@@ -19,15 +19,16 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { node, string } from 'prop-types';
 
-function Widget( { children, slug } ) {
+const Widget = ( { children, slug } ) => {
 	return (
-		<div className={ `googlesitekit-widget googlesitekit-widget--${ slug }` }>
+		<div className={ classnames( 'googlesitekit-widget', `googlesitekit-widget--${ slug }` ) }>
 			{ children }
 		</div>
 	);
-}
+};
 
 Widget.defaultProps = {
 	children: undefined,
