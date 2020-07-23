@@ -214,7 +214,6 @@ const baseActions = {
 
 		const registry = yield commonActions.getRegistry();
 		yield actions.waitForModules();
-		registry.select( STORE_NAME ).getModules();
 		yield registryKeyActions.waitForRegistryKey();
 		const registryKey = registry.select( CORE_SITE ).getRegistryKey();
 
