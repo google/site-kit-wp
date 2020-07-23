@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Metadata_Collector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Woocommerce_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
@@ -108,7 +107,7 @@ final class Advanced_Tracking {
 			return;
 		}
 		$this->configure_events();
-		( new Metadata_Collector( $this->active_plugins ) )->register();
+		//TODO: Instantiate and register Metadata_Collector here.
 		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
 	}
 

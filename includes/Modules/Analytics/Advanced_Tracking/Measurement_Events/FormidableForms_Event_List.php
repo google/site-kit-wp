@@ -18,6 +18,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
  * @ignore
  */
 final class FormidableForms_Event_List extends Measurement_Event_List {
+	//TODO: Implement metadata callbacks.
 
 	/**
 	 * FormidableForms_Event_List constructor.
@@ -32,14 +33,6 @@ final class FormidableForms_Event_List extends Measurement_Event_List {
 				'action'     => 'form_submit',
 				'selector'   => '.frm_fields_container .frm_button_submit',
 				'on'         => 'click',
-				'metadata'   => <<<CALLBACK
-function( params, element ) {
-	var formId = element.closest('.frm_fields_container').querySelector('input[name="form_id"]').value;
-	params['event_label'] = formId;
-	return params;
-}
-CALLBACK
-			,
 			)
 		);
 		$this->add_event( $event );
