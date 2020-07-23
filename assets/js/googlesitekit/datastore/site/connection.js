@@ -84,12 +84,53 @@ const baseSelectors = {
 		return connection;
 	},
 
-	hasConnectedAdmins( state ) {
-		const { connection } = state;
+	/**
+	 * Gets proxy setup URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} Proxy setup URL if available, otherwise an empty string.
+	 */
+	getProxySetupURL() {
+		return global._googlesitekitBaseData?.proxySetupURL || '';
+	},
+
+	/**
+	 * Gets proxy permissions URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} Proxy permissions URL if available, otherwise an empty string.
+	 */
+	getProxyPermissionsURL() {
+		return global._googlesitekitBaseData?.proxyPermissionsURL || '';
+	},
+
+	/**
+	 * Gets reference site URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} Refererence site URL if available, otherwise an empty string.
+	 */
+	referenceSiteURL() {
+		return global._googlesitekitBaseData?.referenceSiteURL || '';
+	},
+
+	/**
+	 * Gets information about connected admins.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} TRUE if there are connected admins, otherwise FALSE or undefined if information is not available yet.
+	 */
+	hasConnectedAdmins: createRegistrySelector( ( select ) => () => {
+		const connection = select( STORE_NAME ).getConnection();
 		const { hasConnectedAdmins } = connection || {};
 
 		return hasConnectedAdmins;
-	},
+	} ),
 
 	/**
 	 * Gets the Site Kit connection status for this site.
