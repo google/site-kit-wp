@@ -31,8 +31,6 @@ describe( 'Reporting API validation', () => {
 		it( 'should return TRUE if dateRange is valid only', () => {
 			expect( isValidDateRange( {
 				dateRange: 'last-14-days',
-				startDate: '',
-				endDate: null,
 			} ) ).toBeTruthy();
 		} );
 
