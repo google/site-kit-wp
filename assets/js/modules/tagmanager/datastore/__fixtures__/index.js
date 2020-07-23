@@ -43,6 +43,19 @@ export const getContainers = {
 export const liveContainerVersions = {
 	amp: {
 		ga: liveContainerVersionAMPWithGA,
+		gaWithID( id ) {
+			return {
+				...liveContainerVersionAMPWithGA,
+				tag: [
+					{
+						...liveContainerVersionAMPWithGA.tag[ 0 ],
+						parameter: liveContainerVersionAMPWithGA.tag[ 0 ].parameter.map(
+							( param ) => param.key === 'trackingId' ? { ...param, value: id } : param
+						),
+					},
+				],
+			};
+		},
 		noGA: liveContainerVersionAMPNoGA,
 	},
 	web: {
