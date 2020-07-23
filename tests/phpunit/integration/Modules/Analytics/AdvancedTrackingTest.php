@@ -42,7 +42,7 @@ class AdvancedTrackingTest extends TestCase {
 	/**
 	 * Tests if the sets of events in the active plugins are included in the tracking event configurations.
 	 */
-	public function test_configure_events() {
+	public function test_get_event_configurations() {
 		$this->enqueue_google_script();
 
 		$advanced_tracking = new Advanced_Tracking( $this->mock_plugin_detector );
@@ -101,44 +101,6 @@ class AdvancedTrackingTest extends TestCase {
 				$this->assertTrue( $found );
 			}
 		}
-	}
-
-	/**
-	 * Tests if the expected Javascript code is printed for a given sets of events.
-	 */
-	public function test_inject_event_tracking() {
-		$advanced_tracking    = new Advanced_Tracking( $this->mock_plugin_detector );
-		$event_configurations = Measurement_Event_Pipe::encode_measurement_event_list( $advanced_tracking->get_event_configurations() );
-
-		$expected_script = <<<INJECT_SCRIPT
-( function() {
-    var eventConfigurations = {$event_configurations};
-	var config;
-	for ( config of eventConfigurations ) {
-		const thisConfig = config;
-		document.addEventListener( config.on, function( e ) {
-			var el = e.target;
-			var matcher = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector || el.oMatchesSelector;
-			if ( matcher && ( matcher.call( el, thisConfig.selector ) || matcher.call( el, thisConfig.selector.concat( ' *' ) ) ) ) {
-				alert( 'Got an event called: '.concat( thisConfig.action ) );
-
-				var params = {};
-				if ( "metadata" in thisConfig && null !== thisConfig.metadata ) {
-					params = thisConfig.metadata( params, el );
-				}
-				params['event_category'] = thisConfig.category;
-				console.log(params);
-
-				gtag( 'event', thisConfig.action, params);
-			}
-		}, true );
-	}
-	}
-)();
-INJECT_SCRIPT;
-
-		$measurement_code_injector = new Measurement_Code_Injector( $advanced_tracking->get_event_configurations() );
-		$this->assertSame( $expected_script, $measurement_code_injector->get_injected_script() );
 	}
 
 	/**
