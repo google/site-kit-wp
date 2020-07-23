@@ -25,8 +25,8 @@ import { string } from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME as MODULES_STORE } from '../../../googlesitekit/modules/datastore/constants';
-import Widget from '../../../googlesitekit/widgets/components/Widget';
 import DashboardPageSpeedCTA from './DashboardPageSpeedCTA';
 import DashboardPageSpeed from './DashboardPageSpeed';
 const { useSelect } = Data;
@@ -41,6 +41,8 @@ function DashboardPageSpeedWidget( { width, slug } ) {
 	if ( ! active && ! setupComplete ) {
 		return <DashboardPageSpeedCTA />;
 	}
+
+	const { Widget } = Widgets.components;
 
 	return (
 		<Widget slug={ slug } width={ width }>

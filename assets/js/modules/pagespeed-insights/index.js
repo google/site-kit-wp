@@ -25,11 +25,9 @@ import domReady from '@wordpress/dom-ready';
 /**
  * Internal dependencies
  */
+import Widgets from 'googlesitekit-widgets';
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
-import Widgets from '../../googlesitekit/widgets';
-import { WIDGET_WIDTHS } from '../../googlesitekit/widgets/datastore/constants';
-import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
 import { SettingsMain as PageSpeedInsightsSettings } from './components/settings';
 import DashboardPageSpeedWidget from './components/DashboardPageSpeedWidget';
 
@@ -43,9 +41,11 @@ addFilter(
 );
 
 domReady( () => {
+	const { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } = Widgets.areas;
+
 	Widgets.registerWidget( 'pagespeedInsightsWebVitals', {
 		component: DashboardPageSpeedWidget,
-		width: WIDGET_WIDTHS.FULL,
+		width: Widgets.widths.FULL,
 		wrapWidget: false,
 	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );
 } );
