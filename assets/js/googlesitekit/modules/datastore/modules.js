@@ -54,6 +54,7 @@ export const ModuleComponents = {};
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
 const REGISTER_MODULE = 'REGISTER_MODULE';
+const WAIT_FOR_MODULES = 'WAIT_FOR_MODULES';
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
@@ -108,6 +109,19 @@ const BASE_INITIAL_STATE = {
 };
 
 const baseActions = {
+	/**
+	 * Wait for the modules to be loaded
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	waitForModules() {
+		return {
+			payload: {},
+			type: WAIT_FOR_MODULES,
+		};
+	},
 	/**
 	 * Activates a module on the server.
 	 *
@@ -199,6 +213,8 @@ const baseActions = {
 		invariant( slug, 'module slug is required' );
 
 		const registry = yield commonActions.getRegistry();
+		yield actions.waitForModules();
+		registry.select( STORE_NAME ).getModules();
 		yield registryKeyActions.waitForRegistryKey();
 		const registryKey = registry.select( CORE_SITE ).getRegistryKey();
 
@@ -230,6 +246,23 @@ const baseActions = {
 export const baseControls = {
 	[ REFETCH_AUTHENTICATION ]: createRegistryControl( ( { dispatch } ) => () => {
 		return dispatch( CORE_USER ).fetchGetAuthentication();
+	} ),
+	[ WAIT_FOR_MODULES ]: createRegistryControl( ( registry ) => ( { payload: {} } ) => {
+		// Select first to ensure resolution is always triggered.
+		const { getModules, hasFinishedResolution } = registry.select( STORE_NAME );
+		getModules();
+		const modulesAreLoaded = () => hasFinishedResolution( 'getModules', [] );
+		if ( modulesAreLoaded() ) {
+			return;
+		}
+		return new Promise( ( resolve ) => {
+			const unsubscribe = registry.subscribe( () => {
+				if ( modulesAreLoaded() ) {
+					unsubscribe();
+					resolve();
+				}
+			} );
+		} );
 	} ),
 };
 
@@ -320,6 +353,9 @@ const baseSelectors = {
 		}
 
 		const registryKey = select( CORE_SITE ).getRegistryKey();
+		if ( registryKey === undefined ) {
+			return undefined;
+		}
 		// Sorting the modules object by order property.
 		const sortedModules = sortByProperty( Object.values( modules ), 'order' );
 		const mappedModules = sortedModules.map( ( module ) => {
