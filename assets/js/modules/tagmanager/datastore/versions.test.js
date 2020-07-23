@@ -137,6 +137,32 @@ describe( 'modules/tagmanager versions', () => {
 				expect( registry.select( STORE_NAME ).getError() ).toEqual( errorResponse );
 				expect( registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( undefined );
 			} );
+
+			it( 'receives null if the container has no published version', async () => {
+				const accountID = fixtures.liveContainerVersion.accountId;
+				const internalContainerID = fixtures.liveContainerVersion.containerId;
+				const notFoundResponse = {
+					code: 404,
+					message: 'Published container version not found',
+					data: {
+						status: 404,
+						reason: 'notFound',
+					},
+				};
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
+					{ body: notFoundResponse, status: 404 }
+				);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
+				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
+				expect( registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( null );
+			} );
 		} );
 
 		describe( 'isDoingGetLiveContainerVersion', () => {

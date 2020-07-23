@@ -39,15 +39,24 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 
 		return { accountID, internalContainerID };
 	},
-	controlCallback: ( { accountID, internalContainerID } ) => {
-		return API.get( 'modules', 'tagmanager', 'live-container-version', { accountID, internalContainerID }, { useCache: false } );
+	controlCallback: async ( { accountID, internalContainerID } ) => {
+		try {
+			return await API.get( 'modules', 'tagmanager', 'live-container-version', { accountID, internalContainerID }, { useCache: false } );
+		} catch ( err ) {
+			// If the container has no published version, it will error with a 404.
+			if ( 404 === err.code ) {
+				return null;
+			}
+			// Otherwise rethrow the error to be handled as usual.
+			throw err;
+		}
 	},
 	reducerCallback: ( state, liveContainerVersion, { accountID, internalContainerID } ) => {
 		return {
 			...state,
 			liveContainerVersions: {
 				...state.liveContainerVersions,
-				[ `${ accountID }::${ internalContainerID }` ]: { ...liveContainerVersion },
+				[ `${ accountID }::${ internalContainerID }` ]: liveContainerVersion,
 			},
 		};
 	},
@@ -80,7 +89,7 @@ const baseSelectors = {
 	 * @param {Object} state               Data store's state.
 	 * @param {string} accountID           Account ID the container belongs to.
 	 * @param {string} internalContainerID Internal container ID to get version for.
-	 * @return {(Object|undefined)} Live container version object, or `undefined` if not loaded yet.
+	 * @return {(Object|null|undefined)} Live container version object, `null` if none exists, or `undefined` if not loaded yet.
 	 */
 	getLiveContainerVersion( state, accountID, internalContainerID ) {
 		return state.liveContainerVersions[ `${ accountID }::${ internalContainerID }` ];
