@@ -1,4 +1,4 @@
-name: build-zips
+name: Plugin Zip Files
 
 on:
   push:
