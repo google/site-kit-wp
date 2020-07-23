@@ -261,7 +261,7 @@ export default withData(
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Dashboard' ],
+			context: 'Dashboard',
 			toState( state, { data } ) {
 				if ( ! state.directTotalUsers ) {
 					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );

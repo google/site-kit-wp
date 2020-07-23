@@ -58,6 +58,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			previousTotalUsers: false,
 		};
 	}
+
 	// When additional data is returned, componentDidUpdate will fire.
 	componentDidUpdate() {
 		this.processCallbackData();
