@@ -22,7 +22,7 @@
 import {
 	createTestRegistry,
 	muteConsole,
-	subscribeUntil,
+	untilResolved,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import { INITIAL_STATE } from './index';
@@ -148,11 +148,7 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
 
 				registry.select( STORE_NAME ).getSiteInfo();
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getSiteInfo() !== INITIAL_STATE
-					),
-				);
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
@@ -186,17 +182,17 @@ describe( 'core/site site info', () => {
 			[ 'getSiteName' ],
 			[ 'getTimezone' ],
 			[ 'isUsingProxy' ],
-		] )( `%i()`, ( selector ) => {
+			[ 'isAMP' ],
+			[ 'isPrimaryAMP' ],
+			[ 'isSecondaryAMP' ],
+		] )( `%s`, ( selector ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;
 				global[ entityInfoVar ] = entityInfo;
 
 				registry.select( STORE_NAME )[ selector ]();
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME )[ selector ]() !== undefined
-					),
-				);
+
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
@@ -214,21 +210,18 @@ describe( 'core/site site info', () => {
 			} );
 		} );
 
-		describe( 'isAmp', () => {
+		describe( 'isAMP', () => {
 			it( 'uses a resolver to load site info, then returns true if AMP mode is set', async () => {
 				global[ baseInfoVar ] = baseInfo;
 				global[ entityInfoVar ] = entityInfo;
 
-				registry.select( STORE_NAME ).isAmp();
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).isAmp() !== undefined
-					),
-				);
+				registry.select( STORE_NAME ).isAMP();
 
-				const isAmp = registry.select( STORE_NAME ).isAmp();
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 
-				expect( isAmp ).toEqual( true );
+				const isAMP = registry.select( STORE_NAME ).isAMP();
+
+				expect( isAMP ).toEqual( true );
 			} );
 
 			it( 'uses a resolver to load site info, then returns false if AMP mode is not set', async () => {
@@ -238,16 +231,12 @@ describe( 'core/site site info', () => {
 				};
 				global[ entityInfoVar ] = entityInfo;
 
-				registry.select( STORE_NAME ).isAmp();
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).isAmp() !== undefined
-					),
-				);
+				registry.select( STORE_NAME ).isAMP();
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 
-				const isAmp = registry.select( STORE_NAME ).isAmp();
+				const isAMP = registry.select( STORE_NAME ).isAMP();
 
-				expect( isAmp ).toEqual( false );
+				expect( isAMP ).toEqual( false );
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
@@ -255,7 +244,7 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				muteConsole( 'error' );
-				const result = registry.select( STORE_NAME ).isAmp();
+				const result = registry.select( STORE_NAME ).isAMP();
 
 				expect( result ).toEqual( undefined );
 			} );
@@ -267,9 +256,7 @@ describe( 'core/site site info', () => {
 				global[ entityInfoVar ] = entityInfo;
 
 				registry.select( STORE_NAME ).getCurrentReferenceURL();
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getSiteInfo' )
-				);
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 
 				const referenceURL = registry.select( STORE_NAME ).getCurrentReferenceURL();
 
@@ -287,9 +274,7 @@ describe( 'core/site site info', () => {
 				};
 
 				registry.select( STORE_NAME ).getCurrentReferenceURL();
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getSiteInfo' )
-				);
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 
 				const referenceURL = registry.select( STORE_NAME ).getCurrentReferenceURL();
 

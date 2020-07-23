@@ -21,8 +21,8 @@
  */
 import { createAddToFilter } from '../../util/helpers';
 import { getSiteKitAdminURL, getModulesData } from '../../util';
-import AdSenseDashboardWidget from './dashboard/dashboard-widget';
-import DashboardEarnings from './dashboard/dashboard-earnings';
+import AdSenseDashboardWidget from './components/dashboard/AdSenseDashboardWidget';
+import DashboardEarnings from './components/dashboard/DashboardEarnings';
 
 /**
  * WordPress dependencies

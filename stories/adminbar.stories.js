@@ -13,8 +13,8 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
  */
 import { GoogleSitekitAdminbar } from '../assets/js/googlesitekit-adminbar';
 import { googlesitekit as wpAdminBarData } from '../.storybook/data/blog---googlesitekit';
-import AnalyticsAdminbarWidget from '../assets/js/modules/analytics/adminbar/adminbar-widget';
-import GoogleSitekitSearchConsoleAdminbarWidget from '../assets/js/modules/search-console/adminbar/adminbar-widget';
+import AnalyticsAdminbarWidget from '../assets/js/modules/analytics/components/adminbar/AnalyticsAdminbarWidget';
+import GoogleSitekitSearchConsoleAdminbarWidget from '../assets/js/modules/search-console/components/adminbar/GoogleSitekitSearchConsoleAdminbarWidget';
 import { createAddToFilter } from '../assets/js/util/helpers';
 
 storiesOf( 'Global', module )

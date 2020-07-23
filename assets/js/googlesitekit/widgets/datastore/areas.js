@@ -159,8 +159,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
-};
+export const resolvers = {};
 
 export const selectors = {
 	/**
@@ -201,17 +200,24 @@ export const selectors = {
 
 		return Object.values( areas ).filter( ( area ) => {
 			return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
-		} ).sort( ( areaA, areaB ) => {
-			if ( areaA.priority > areaB.priority ) {
-				return 1;
-			}
+		} ).sort( ( areaA, areaB ) => areaA.priority - areaB.priority );
+	},
 
-			if ( areaA.priority < areaB.priority ) {
-				return -1;
-			}
+	/**
+	 * Returns a widget area based on slug.
+	 *
+	 * @since 1.11.0
+	 *
+	 * @param {Object} state  Data store's state.
+	 * @param {string} slug   Widget area to select.
+	 * @return {Object|null} A widget area if one is found with a matching slug.
+	 */
+	getWidgetArea( state, slug ) {
+		invariant( slug, 'slug is required.' );
 
-			return 0;
-		} );
+		const { areas } = state;
+
+		return areas[ slug ] || null;
 	},
 };
 

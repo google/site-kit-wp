@@ -1,0 +1,111 @@
+{
+  "accountId": "100",
+  "containerId": "299",
+  "containerVersionId": "2",
+  "deleted": null,
+  "description": null,
+  "fingerprint": "1571385760354",
+  "name": null,
+  "path": "accounts/100/containers/299/versions/2",
+  "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/100/containers/299/versions/2?apiLink=version",
+  "container": {
+    "accountId": "100",
+    "containerId": "299",
+    "domainName": null,
+    "fingerprint": "1571385760386",
+    "name": "Testing",
+    "notes": null,
+    "path": "accounts/100/containers/299",
+    "publicId": "GTM-G000GL3",
+    "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/100/containers/299/workspaces?apiLink=container",
+    "usageContext": [
+      "web"
+    ]
+  },
+  "tag": [
+    {
+      "accountId": "100",
+      "blockingRuleId": null,
+      "blockingTriggerId": null,
+      "containerId": "299",
+      "fingerprint": "1571385744218",
+      "firingRuleId": null,
+      "firingTriggerId": [
+        "2147479553"
+      ],
+      "liveOnly": null,
+      "monitoringMetadataTagNameKey": null,
+      "name": "Test Tag",
+      "notes": null,
+      "parentFolderId": null,
+      "path": null,
+      "paused": null,
+      "scheduleEndMs": null,
+      "scheduleStartMs": null,
+      "tagFiringOption": "oncePerEvent",
+      "tagId": "1",
+      "tagManagerUrl": null,
+      "type": "html",
+      "workspaceId": null,
+      "parameter": [
+        {
+          "key": "html",
+          "type": "template",
+          "value": "<script>\n  console.log( 'Hello world from Tag Manager!', 'GTM-G000GL3' );\n</script>"
+        },
+        {
+          "key": "supportDocumentWrite",
+          "type": "boolean",
+          "value": "false"
+        }
+      ],
+      "monitoringMetadata": {
+        "key": null,
+        "type": "map",
+        "value": null
+      }
+    }
+  ],
+  "builtInVariable": [
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "name": "Page URL",
+      "path": null,
+      "type": "pageUrl",
+      "workspaceId": null
+    },
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "name": "Page Hostname",
+      "path": null,
+      "type": "pageHostname",
+      "workspaceId": null
+    },
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "name": "Page Path",
+      "path": null,
+      "type": "pagePath",
+      "workspaceId": null
+    },
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "name": "Referrer",
+      "path": null,
+      "type": "referrer",
+      "workspaceId": null
+    },
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "name": "Event",
+      "path": null,
+      "type": "event",
+      "workspaceId": null
+    }
+  ]
+}

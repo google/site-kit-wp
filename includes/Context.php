@@ -232,7 +232,7 @@ final class Context {
 	 *
 	 * An entity may also have a type, a title, and an ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @param string $url URL to determine the entity from.
 	 * @return Entity|null The current entity, or null if none could be determined.
@@ -431,7 +431,7 @@ final class Context {
 	 * blog archive, i.e. is not technically a post itself. Otherwise, it
 	 * should be handled through {@see Context::create_entity_for_post()}.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @return Entity The entity for the home blog archive.
 	 */

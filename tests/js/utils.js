@@ -1,7 +1,9 @@
 /**
  * External dependencies
  */
-import { castArray } from 'lodash';
+import castArray from 'lodash/castArray';
+import mapValues from 'lodash/mapValues';
+import fetchMock from 'fetch-mock';
 
 /**
  * WordPress dependencies
@@ -20,12 +22,14 @@ import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../.
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
 import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
 import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
+import modulesTagManagerStore, { STORE_NAME as modulesTagManagerStoreName } from '../../assets/js/modules/tagmanager/datastore';
 import modulesOptimizeStore, { STORE_NAME as modulesOptimizeStoreName } from '../../assets/js/modules/optimize/datastore';
 
 /**
  * Create a registry with all available stores.
  *
  * @since 1.5.0
+ * @private
  *
  * @return {wp.data.registry} Registry with all available stores registered.
  */
@@ -43,6 +47,7 @@ export const createTestRegistry = () => {
  * which can be configured by its callback prop.
  *
  * @since 1.7.1
+ * @private
  *
  * @param {?Object}   props          Component props.
  * @param {?Function} props.callback Function which receives the registry instance.
@@ -77,6 +82,7 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
  * want appearing in the jest output.
  *
  * @since 1.5.0
+ * @private
  *
  * @param {string} type  Type of console to mute (one of: `'error'`, `'warn'`, `'log'`, `'info'`, or `'debug'`)
  * @param {number} times Number of times to mute console output perform resuming.
@@ -90,18 +96,35 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 /**
  * Mutes a fetch request to the given URL once.
  *
- * Useful for mocking the given URL for the purpose of preventing a fetch error
+ * Useful for mocking a request for the purpose of preventing a fetch error
  * where the response itself is not significant but the request should not fail.
  * Sometimes a different response may be required to match the expected type,
  * but for anything else, a full mock should be used.
  *
- * @since n.e.x.t
+ * @since 1.10.0
+ * @private
  *
- * @param {RegExp} urlMatcher Regular expression for matching the request URL.
- * @param {*}      [response] Optional. Response to return.
+ * @param {(string|RegExp|Function|URL|Object)} matcher   Criteria for deciding which requests to mock.
+ *                                                        (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ * @param {*}                                  [response] Optional. Response to return.
  */
-export const muteFetch = ( urlMatcher, response = {} ) => {
-	fetchMock.once( urlMatcher, { body: response, status: 200 } );
+export const muteFetch = ( matcher, response = {} ) => {
+	fetchMock.once( matcher, { body: response, status: 200 } );
+};
+
+/**
+ * Mocks a fetch request in a way so that a response is never returned.
+ *
+ * Useful for simulating a loading state.
+ *
+ * @since 1.12.0
+ * @private
+ *
+ * @param {(string|RegExp|Function|URL|Object)} matcher Criteria for deciding which requests to mock.
+ *                                                      (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ */
+export const freezeFetch = ( matcher ) => {
+	fetchMock.once( matcher, new Promise( () => {} ) );
 };
 
 /**
@@ -112,6 +135,7 @@ export const muteFetch = ( urlMatcher, response = {} ) => {
  * available for connected components and data store tests to use.
  *
  * @since 1.5.0
+ * @private
  *
  * @param {wp.data.registry} registry Registry to register each store on.
  */
@@ -125,6 +149,7 @@ export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
 	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
 	registry.registerStore( modulesSearchConsoleStoreName, modulesSearchConsoleStore );
+	registry.registerStore( modulesTagManagerStoreName, modulesTagManagerStore );
 	registry.registerStore( modulesOptimizeStoreName, modulesOptimizeStore );
 };
 
@@ -133,6 +158,32 @@ export const subscribeWithUnsubscribe = ( registry, ...args ) => {
 	const unsubscribe = registry.subscribe( ...args );
 	unsubscribes.push( unsubscribe );
 	return unsubscribe;
+};
+
+/**
+ * Returns an object that returns hasFinishedResolution selectors for each key
+ * that are bound to the given registry and store name.
+ *
+ * @example
+ * await untilResolved( registry, STORE_NAME ).selectorWithResolver( arg1, arg2, arg3 );
+ *
+ * @since 1.11.0
+ * @private
+ *
+ * @param {Object} registry  WP data registry instance.
+ * @param {string} storeName Store name the selector belongs to.
+ * @return {Object} Object with keys as functions for each resolver in the given store.
+ */
+export const untilResolved = ( registry, storeName ) => {
+	return mapValues(
+		registry.stores[ storeName ].resolvers || {},
+		( resolverFn, resolverName ) => ( ...args ) => {
+			return subscribeUntil(
+				registry,
+				() => registry.select( storeName ).hasFinishedResolution( resolverName, args )
+			);
+		}
+	);
 };
 
 export const subscribeUntil = ( registry, predicates ) => {
@@ -173,6 +224,7 @@ export const unsubscribeFromAll = () => {
  * silently succeed.
  *
  * @since 1.5.0
+ * @private
  *
  * @return {Promise} A rejected promise.
  */

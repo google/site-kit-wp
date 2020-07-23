@@ -27,7 +27,7 @@ import queryString from 'query-string';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 
 const { createRegistrySelector } = Data;
 
@@ -325,7 +325,7 @@ export const selectors = {
 	 * `getCurrentEntityURL` selector. Otherwise it will fall back to returning
 	 * the same value as the `getReferenceSiteURL` selector.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The current reference URL, or undefined if
@@ -346,14 +346,53 @@ export const selectors = {
 	 * Returns true if this site supports AMP.
 	 *
 	 * @since 1.7.0
+	 * @since 1.11.0 Renamed from isAmp to isAMP.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
-	isAmp: createRegistrySelector( ( select ) => () => {
+	isAMP: createRegistrySelector( ( select ) => () => {
 		const ampMode = select( STORE_NAME ).getAMPMode();
 
-		return ampMode !== undefined ? !! ampMode : ampMode;
+		if ( ampMode === undefined ) {
+			return undefined;
+		}
+
+		return !! ampMode;
+	} ),
+
+	/**
+	 * Checks if the site is in the primary AMP mode.
+	 *
+	 * @since 1.12.0
+	 *
+	 * @return {(boolean|undefined)} `true` or `false` if the site is in the primary AMP mode. Returns `undefined` if not loaded.
+	 */
+	isPrimaryAMP: createRegistrySelector( ( select ) => () => {
+		const ampMode = select( STORE_NAME ).getAMPMode();
+
+		if ( ampMode === undefined ) {
+			return undefined;
+		}
+
+		return ampMode === AMP_MODE_PRIMARY;
+	} ),
+
+	/**
+	 * Checks if the site is in a secondary AMP mode.
+	 *
+	 * @since 1.12.0
+	 *
+	 * @return {(boolean|undefined)} `true` or `false` if the site is in a secondary AMP mode. Returns `undefined` if not loaded.
+	 */
+	isSecondaryAMP: createRegistrySelector( ( select ) => () => {
+		const ampMode = select( STORE_NAME ).getAMPMode();
+
+		if ( ampMode === undefined ) {
+			return undefined;
+		}
+
+		return ampMode === AMP_MODE_SECONDARY;
 	} ),
 
 	/**

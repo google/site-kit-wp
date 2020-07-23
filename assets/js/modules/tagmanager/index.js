@@ -1,7 +1,7 @@
 /**
- * Tagmanager module initialization.
+ * Tag Manager module initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,26 +24,19 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import TagmanagerSetup from '../../modules/tagmanager/setup';
-import { fillFilterWithComponent, getModulesData } from '../../util';
+import { fillFilterWithComponent } from '../../util';
+import './datastore';
+import { SetupMain } from './components/setup';
+import { SettingsMain } from './components/settings';
 
-const slug = 'tagmanager';
-if ( getModulesData().tagmanager.active ) {
-	/**
-	 * Add components to the settings page.
-	 */
-	addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-		'googlesitekit.TagmanagerModuleSettingsDetails',
-		fillFilterWithComponent( TagmanagerSetup, {
-			onSettingsPage: true,
-		} ) );
+addFilter(
+	'googlesitekit.ModuleSetup-tagmanager',
+	'googlesitekit.TagManagerModuleSetup',
+	fillFilterWithComponent( SetupMain )
+);
 
-	/**
-	 * Add component to the setup wizard
-	 */
-	addFilter( `googlesitekit.ModuleSetup-${ slug }`,
-		'googlesitekit.TagmanagerModuleSetupWizard',
-		fillFilterWithComponent( TagmanagerSetup, {
-			onSettingsPage: false,
-		} ) );
-}
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-tagmanager',
+	'googlesitekit.TagManagerModuleSettings',
+	fillFilterWithComponent( SettingsMain )
+);

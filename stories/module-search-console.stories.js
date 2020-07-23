@@ -14,8 +14,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import Layout from '../assets/js/components/layout/layout';
-import SearchConsoleDashboardWidgetOverview from '../assets/js/modules/search-console/dashboard/dashboard-widget-overview';
-import SearchConsoleDashboardWidgetSiteStats from '../assets/js/modules/search-console/dashboard/dashboard-widget-sitestats';
+import SearchConsoleDashboardWidgetOverview from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetOverview';
+import SearchConsoleDashboardWidgetSiteStats from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetSiteStats';
 
 storiesOf( 'Search Console Module', module )
 	.add( 'Overview Chart', () => {

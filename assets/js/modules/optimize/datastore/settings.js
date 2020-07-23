@@ -44,7 +44,7 @@ export const actions = {
 	/**
 	 * Submits all changes currently present in the client, persisting them on the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @return {Object} Empty object on success, object with `error` property on failure.
 	 */
@@ -128,9 +128,9 @@ export const selectors = {
 		if ( ! haveSettingsChanged() ) {
 			return false;
 		}
-		// Require an ampExperimentJSON to be present.
+		// Require an ampExperimentJSON to be valid JSON if set.
 		const ampExperimentJSON = getAMPExperimentJSON();
-		if ( '' !== ampExperimentJSON && ! isValidAMPExperimentJSON( ampExperimentJSON ) ) {
+		if ( ! isValidAMPExperimentJSON( ampExperimentJSON ) ) {
 			return false;
 		}
 		// Require optimize ID to be either empty (if impossible to determine)
@@ -146,7 +146,7 @@ export const selectors = {
 	/**
 	 * Checks whether changes are currently being submitted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.10.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if submitting, `false` if not.

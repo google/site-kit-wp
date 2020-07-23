@@ -5,11 +5,13 @@ on:
     types: [closed]
 jobs:
   remove-pr:
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           repository: ${{ github.repository }}.wiki
+          ref: master
           token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
       - name: Prune PR files
         run: |
@@ -17,6 +19,7 @@ jobs:
           git add .
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
+          git pull --no-edit --quiet
           git commit -m "Prune refs/pull/${{ github.event.pull_request.number }}"
           git push origin master
         env:

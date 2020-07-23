@@ -81,6 +81,7 @@
 @import "components/global/googlesitekit-cta";
 @import "components/global/googlesitekit-cta-link";
 @import "components/global/googlesitekit-data-block";
+@import "components/global/googlesitekit-DeviceSizeTabBar";
 @import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-header";
 @import "components/global/googlesitekit-layout";
@@ -90,12 +91,12 @@
 @import "components/global/googlesitekit-module-outro";
 @import "components/global/googlesitekit-module-page";
 @import "components/global/googlesitekit-modules-list";
+@import "components/global/googlesitekit-noscript";
 @import "components/global/googlesitekit-notifications-counter";
 @import "components/global/googlesitekit-opt-in";
 @import "components/global/googlesitekit-overlay";
 @import "components/global/googlesitekit-page";
 @import "components/global/googlesitekit-pagespeed-dashboard-widget";
-@import "components/global/googlesitekit-pagespeed-report";
 @import "components/global/googlesitekit-page-header";
 @import "components/global/googlesitekit-percent-circle";
 @import "components/global/googlesitekit-post-searcher";
@@ -106,12 +107,14 @@
 @import "components/global/googlesitekit-source-link";
 @import "components/global/googlesitekit-table";
 @import "components/global/googlesitekit-table-overflow";
-@import "components/global/googlesitekit-noscript";
+@import "components/global/googlesitekit-text-field-icon";
 
 // Dashboard
 @import "components/dashboard/googlesitekit-signin-box";
 @import "components/dashboard/googlesitekit-dashboard-module-header";
 @import "components/dashboard/googlesitekit-dashboard-single-url";
+@import "components/dashboard/googlesitekit-DashboardPageSpeed";
+@import "components/dashboard/googlesitekit-ReportMetric";
 
 // Dashboard Splash
 @import "components/dashboard/splash/googlesitekit-splash";
@@ -142,5 +145,11 @@
 @import "components/settings/googlesitekit-settings-module-header";
 @import "components/settings/googlesitekit-settings-notice";
 
+// Widget Styles
+@import "widgets/widget-area";
+@import "widgets/widget-context";
+@import "widgets/widgets";
+
 // Utilities
 @import "utilities/margin";
+@import "utilities/text-align";

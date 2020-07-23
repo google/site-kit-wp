@@ -26,6 +26,7 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -55,50 +56,54 @@ describe( 'modules/analytics profiles', () => {
 			it( 'creates a profile and adds it to the store ', async () => {
 				const accountID = fixtures.createProfile.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const profileName = fixtures.createProfile.name;
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{ body: fixtures.createProfile, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProfile( propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{
 						body: {
-							data: { accountID, propertyID },
+							data: { accountID, propertyID, profileName },
 						},
 					}
 				);
 
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getProfiles( propertyID )
+						registry.select( STORE_NAME ).getProfiles( accountID, propertyID )
 					),
 				);
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 				expect( profiles ).toMatchObject( [ fixtures.createProfile ] );
 			} );
 
 			it( 'sets isDoingCreateProfile ', async () => {
+				const accountID = fixtures.createProfile.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const profileName = fixtures.createProfile.name;
 
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{ body: fixtures.createProfile, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProfile( propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( STORE_NAME ).isDoingCreateProfile( propertyID ) ).toEqual( true );
+				expect( registry.select( STORE_NAME ).isDoingCreateProfile() ).toEqual( true );
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
 				const accountID = fixtures.createProfile.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const profileName = fixtures.createProfile.name;
 
 				const response = {
 					code: 'internal_server_error',
@@ -112,7 +117,7 @@ describe( 'modules/analytics profiles', () => {
 				);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).createProfile( propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
 
 				await subscribeUntil( registry,
 					() => (
@@ -147,7 +152,7 @@ describe( 'modules/analytics profiles', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
-				const initialProfiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
+				const initialProfiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -163,11 +168,11 @@ describe( 'modules/analytics profiles', () => {
 				expect( initialProfiles ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getProfiles( testPropertyID ) !== undefined
+						registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID ) !== undefined
 					),
 				);
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( profiles ).toEqual( fixtures.profiles );
@@ -175,19 +180,18 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'does not make a network request if profiles for this account + property are already present', async () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const accountID = testAccountID;
 				const propertyID = testPropertyID;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.profiles, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.profiles, { accountID, propertyID } );
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getProfiles', [ testPropertyID ] )
-				);
+				await untilResolved( registry, STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( profiles ).toEqual( fixtures.profiles );
@@ -205,17 +209,18 @@ describe( 'modules/analytics profiles', () => {
 					{ body: response, status: 500 }
 				);
 
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				muteConsole( 'error' );
-				registry.select( STORE_NAME ).getProfiles( testPropertyID );
+				registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingGetProfiles( testPropertyID ) === false
+					() => registry.select( STORE_NAME ).isDoingGetProfiles( testAccountID, testPropertyID ) === false
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 				expect( profiles ).toEqual( undefined );
 			} );
 		} );

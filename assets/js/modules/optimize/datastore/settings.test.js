@@ -138,11 +138,11 @@ describe( 'modules/optimize settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 0 );
+				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 10 );
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 
 				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( null );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 				// An empty string is accepted (for when no ampExperimentJSON can be determined).
 				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( '' );

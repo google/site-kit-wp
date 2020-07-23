@@ -11,6 +11,8 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Admin\Screen;
+use Google\Site_Kit\Core\Admin\Screens;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
@@ -25,6 +27,15 @@ final class Tracking {
 	const TRACKING_ID = 'UA-130569087-3';
 
 	/**
+	 * Screens instance.
+	 *
+	 * @since 1.11.0
+	 *
+	 * @var Screens
+	 */
+	protected $screens;
+
+	/**
 	 * Tracking_Consent instance.
 	 *
 	 * @var Tracking_Consent
@@ -35,11 +46,19 @@ final class Tracking {
 	 * Constructor.
 	 *
 	 * @since 1.4.0
+	 * @since 1.11.0 Added `Screens` instance.
+	 *
 	 * @param Context      $context      Context instance.
 	 * @param User_Options $user_options Optional. User_Options instance. Default is a new instance.
+	 * @param Screens      $screens      Optional. Screens instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, User_Options $user_options = null ) {
+	public function __construct(
+		Context $context,
+		User_Options $user_options = null,
+		Screens $screens = null
+	) {
 		$user_options  = $user_options ?: new User_Options( $context );
+		$this->screens = $screens ?: new Screens( $context );
 		$this->consent = new Tracking_Consent( $user_options );
 	}
 
@@ -81,8 +100,7 @@ final class Tracking {
 	 */
 	private function inline_js_base_data( $data ) {
 		global $hook_suffix;
-		
-		$data['trackingAllowed'] = 0 === strpos( $hook_suffix, 'googlesitekit-' );
+		$data['trackingAllowed'] = $this->screens->get_screen( $hook_suffix ) instanceof Screen;
 		$data['trackingEnabled'] = $this->is_active();
 		$data['trackingID']      = self::TRACKING_ID;
 

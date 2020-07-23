@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
@@ -29,8 +30,9 @@ import {
 	isValidPropertySelection,
 	isValidProfileSelection,
 	isValidPropertyID,
+	isValidProfileName,
 } from '../util';
-import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -91,7 +93,9 @@ export const controls = {
 		const profileID = registry.select( STORE_NAME ).getProfileID();
 
 		if ( profileID === PROFILE_CREATE ) {
-			const { response: profile, error } = await registry.dispatch( STORE_NAME ).createProfile( propertyID );
+			const profileName = registry.select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' );
+			const accountID = registry.select( STORE_NAME ).getAccountID();
+			const { response: profile, error } = await registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
 
 			if ( error ) {
 				return { error };
@@ -167,6 +171,10 @@ export const selectors = {
 			return false;
 		}
 		if ( ! isValidProfileSelection( getProfileID() ) ) {
+			return false;
+		}
+		const { getValue } = select( CORE_FORMS );
+		if ( getProfileID() === PROFILE_CREATE && ! isValidProfileName( getValue( FORM_SETUP, 'profileName' ) ) ) {
 			return false;
 		}
 		// If the property ID is valid (non-create) the internal ID must be valid as well.

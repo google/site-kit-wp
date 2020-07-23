@@ -36,8 +36,8 @@ import { isValidAccountSelection } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { actions as tagActions } from './tags';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as tagActions } from './tags';
 const { createRegistrySelector } = Data;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
@@ -206,18 +206,23 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
 		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
-
 		// Only fetch accounts if there are none in the store.
 		if ( existingAccounts === undefined ) {
 			yield tagActions.waitForExistingTag();
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
+			let existingTagPermission;
+			if ( existingTag ) {
+				yield tagActions.waitForTagPermission( existingTag );
+				existingTagPermission = registry.select( STORE_NAME ).getTagPermission( existingTag );
+			}
+
 			const { response } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
 				existingPropertyID: existingTag,
+				existingAccountID: existingTagPermission?.accountID,
 			} );
 
+			const { dispatch } = registry;
 			if ( response ) {
-				const { dispatch } = registry;
-
 				dispatch( STORE_NAME ).receiveGetAccounts( response.accounts );
 
 				if ( response.properties?.[ 0 ]?.accountId ) {
@@ -227,17 +232,18 @@ const baseResolvers = {
 
 				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
 					const propertyID = response.profiles[ 0 ].webPropertyId;
-					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { propertyID } );
+					const accountID = response.profiles[ 0 ].accountId;
+					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
 				}
 
 				if ( response.matchedProperty ) {
 					dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
 				}
 
-				dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
-
 				( { matchedProperty } = response );
 			}
+
+			dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
 		}
 
 		const accountID = registry.select( STORE_NAME ).getAccountID();
@@ -355,7 +361,7 @@ const baseSelectors = {
 				authuser: email,
 				provisioningSignup: 'false',
 			}
-		) + `#management/TermsOfService/?api.accountTicketId=${ accountTicketID }`;
+		) + `#/termsofservice/${ accountTicketID }`;
 	} ),
 
 	/**

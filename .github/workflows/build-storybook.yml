@@ -5,10 +5,17 @@ on:
     branches:
       - develop
       - master
+  pull_request:
+    types:
+      - opened
+      - closed
+      - reopened
+      - synchronize
 
 jobs:
   build-storybook:
     runs-on: ubuntu-latest
+    if: ${{ ! ( github.event_name == 'pull_request' && github.event.action == 'closed' ) }}
     steps:
     - uses: actions/checkout@v2
     - name: Get Composer Cache Directory
@@ -41,7 +48,7 @@ jobs:
           ${{ runner.os }}-node-cache-
     - name: npm install
       run: |
-        npm install
+        npm ci
     - name: Build Storybook
       run: |
         npm run build:storybook
@@ -63,19 +70,51 @@ jobs:
         with:
           name: storybook-files
           path: dist
+      - name: Set branch environment variables
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "::set-env name=TARGET_DIR::${GITHUB_REF##*/}"
+      - name: Set PR environment variables
+        if: github.event_name == 'pull_request'
+        env:
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
+        run: |
+          echo "::set-env name=TARGET_DIR::pull/${PULL_REQUEST_NUMBER}"
       - name: Commit updates
         run: |
-          mkdir -p storybook
-          rm -rf storybook/${GITHUB_REF##*/}
-          mv dist storybook/${GITHUB_REF##*/}
+          mkdir -p storybook/${TARGET_DIR}
+          rm -rf storybook/${TARGET_DIR}
+          mv dist storybook/${TARGET_DIR}
           git add .
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
-          git commit -m "Deploy storybook for ${GITHUB_REF##*/}."
           git pull --no-edit --quiet
+          git commit -m "Deploy storybook for ${TARGET_DIR}."
           git push origin gh-pages
         env:
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
           GIT_AUTHOR_NAME: ${{ github.actor }}
           GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
           GIT_COMMITTER_NAME: ${{ github.actor }}
+
+  remove-storybook:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+      - name: Remove storybook
+        env:
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
+          GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
+          GIT_AUTHOR_NAME: ${{ github.actor }}
+          GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
+          GIT_COMMITTER_NAME: ${{ github.actor }}
+        run: |
+          git rm -rf storybook/pull/${PULL_REQUEST_NUMBER}
+          git status
+          git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
+          git pull --no-edit --quiet
+          git commit -m "Remove storybook for pull/${PULL_REQUEST_NUMBER}."
+          git push origin gh-pages

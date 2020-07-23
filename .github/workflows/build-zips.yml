@@ -43,7 +43,7 @@ jobs:
           ${{ runner.os }}-node-cache-
     - name: npm install
       run: |
-        npm install
+        npm ci
     - name: Create destination directory
       run: mkdir -p ${{ github.ref }}
     - name: Build develop version
@@ -67,6 +67,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: ${{ github.repository }}.wiki
+          ref: master
           token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
       - name: Download artifacts
         uses: actions/download-artifact@v1
@@ -78,8 +79,8 @@ jobs:
           git add .
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
-          git commit -m "Build and publish ${{ github.ref }}"
           git pull --no-edit --quiet
+          git commit -m "Build and publish ${{ github.ref }}"
           git push origin master
         env:
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com

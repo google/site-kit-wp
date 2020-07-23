@@ -66,12 +66,12 @@
 		font-weight: $fw-secondary-bold;
 	}
 
-	#google_dashboard_widget & .googlesitekit-cta__title {
+	#google_dashboard_widget & .googlesitekit-cta__title { // stylelint-disable-line selector-id-pattern
 		color: $c-base;
 		font-weight: 700;
 	}
 
-	#google_dashboard_widget &--error .googlesitekit-cta__title {
+	#google_dashboard_widget &--error .googlesitekit-cta__title { // stylelint-disable-line selector-id-pattern
 		color: $c-primary;
 	}
 
@@ -86,6 +86,7 @@
 		word-break: break-all;
 	}
 
+	/* stylelint-disable selector-id-pattern */
 	// Override WP link color.
 	#google_dashboard_widget .googlesitekit-wp-dashboard & a,
 	#google_dashboard_widget .googlesitekit-wp-dashboard & button {
@@ -98,6 +99,7 @@
 			text-decoration: underline;
 		}
 	}
+	/* stylelint-enable selector-id-pattern */
 
 	*:last-child {
 		margin-bottom: 0;

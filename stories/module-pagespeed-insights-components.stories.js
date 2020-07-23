@@ -24,13 +24,12 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Layout from '../assets/js/components/layout/layout';
 import DashboardPageSpeed from '../assets/js/modules/pagespeed-insights/components/DashboardPageSpeed';
 import { STORE_NAME } from '../assets/js/modules/pagespeed-insights/datastore';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';
 import { STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+import { WithTestRegistry, freezeFetch } from '../tests/js/utils';
 
 storiesOf( 'PageSpeed Insights Module/Components', module )
 	.add( 'Dashboard widget', () => {
@@ -38,13 +37,48 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
 			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
-			dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: url } );
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				referenceSiteURL: url,
+				currentEntityURL: null,
+			} );
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<Layout>
-					<DashboardPageSpeed />
-				</Layout>
+				<DashboardPageSpeed />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Dashboard widget (loading)', () => {
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/ );
+		const url = fixtures.pagespeedMobile.loadingExperience.id;
+		const setupRegistry = ( { dispatch } ) => {
+			// Component will be loading as long as both reports are not present.
+			// Omit receiving mobile here to trigger the request only once.
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				referenceSiteURL: url,
+				currentEntityURL: null,
+			} );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<DashboardPageSpeed />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Dashboard widget (Field Data Unavailable)', () => {
+		const url = fixtures.pagespeedMobile.loadingExperience.id;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobileNoFieldData, { url, strategy: STRATEGY_MOBILE } );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldData, { url, strategy: STRATEGY_DESKTOP } );
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				referenceSiteURL: url,
+				currentEntityURL: null,
+			} );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<DashboardPageSpeed />
 			</WithTestRegistry>
 		);
 	} )

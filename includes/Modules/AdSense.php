@@ -30,6 +30,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense;
+use Google\Site_Kit_Dependencies\Google_Service_AdSense_Account;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -347,32 +348,34 @@ tag_partner: "site_kit"
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
+	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since 1.0.0
+	 * @since 1.12.0
 	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
+	 * @return array Map of datapoints to their definitions.
 	 */
-	protected function get_datapoint_services() {
+	protected function get_datapoint_definitions() {
 		return array(
-			// GET / POST.
-			'connection'     => '',
-			'account-id'     => '',
-			'client-id'      => '',
-			'use-snippet'    => '',
-			'account-status' => '',
-			// GET.
-			'account-url'    => '',
-			'reports-url'    => '',
-			'notifications'  => '',
-			'tag-permission' => '',
-			'accounts'       => 'adsense',
-			'alerts'         => 'adsense',
-			'clients'        => 'adsense',
-			'urlchannels'    => 'adsense',
-			'earnings'       => 'adsense',
-			// POST.
-			'setup-complete' => '',
+			'GET:account-id'      => array( 'service' => '' ),
+			'POST:account-id'     => array( 'service' => '' ),
+			'GET:account-status'  => array( 'service' => '' ),
+			'POST:account-status' => array( 'service' => '' ),
+			'GET:account-url'     => array( 'service' => '' ),
+			'GET:accounts'        => array( 'service' => 'adsense' ),
+			'GET:alerts'          => array( 'service' => 'adsense' ),
+			'GET:client-id'       => array( 'service' => '' ),
+			'POST:client-id'      => array( 'service' => '' ),
+			'GET:clients'         => array( 'service' => 'adsense' ),
+			'GET:connection'      => array( 'service' => '' ),
+			'POST:connection'     => array( 'service' => '' ),
+			'GET:earnings'        => array( 'service' => 'adsense' ),
+			'GET:notifications'   => array( 'service' => '' ),
+			'GET:reports-url'     => array( 'service' => '' ),
+			'POST:setup-complete' => array( 'service' => '' ),
+			'GET:tag-permission'  => array( 'service' => '' ),
+			'GET:urlchannels'     => array( 'service' => 'adsense' ),
+			'GET:use-snippet'     => array( 'service' => '' ),
+			'POST:use-snippet'    => array( 'service' => '' ),
 		);
 	}
 
@@ -557,19 +560,10 @@ tag_partner: "site_kit"
 							array( 'status' => 400 )
 						);
 					}
-					$client_id  = $data['clientID'];
-					$account_id = $this->parse_account_id( $client_id );
-					if ( empty( $account_id ) ) {
-						return new WP_Error(
-							'invalid_param',
-							__( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
-							array( 'status' => 400 )
-						);
-					}
-					return array(
-						'accountID'  => $account_id,
-						'clientID'   => $client_id,
-						'permission' => $this->has_access_to_client( $client_id, $account_id ),
+
+					return array_merge(
+						array( 'clientID' => $data['clientID'] ),
+						$this->has_access_to_client( $data['clientID'] )
 					);
 				};
 			case 'GET:reports-url':
@@ -882,28 +876,68 @@ tag_partner: "site_kit"
 	 * @since 1.9.0
 	 *
 	 * @param string $client_id  Client found in the existing tag.
-	 * @param string $account_id Account ID the client belongs to.
-	 * @return bool True if the user has access, false otherwise.
+	 * @return array {
+	 *      AdSense account access data.
+	 *      @type string $account_id The AdSense account ID for the given client.
+	 *      @type bool   $permission Whether the user has access to this account and client.
+	 * }
 	 */
-	protected function has_access_to_client( $client_id, $account_id ) {
-		if ( empty( $client_id ) || empty( $account_id ) ) {
-			return false;
+	protected function has_access_to_client( $client_id ) {
+		if ( empty( $client_id ) ) {
+			return array(
+				'account_id' => '',
+				'permission' => false,
+			);
 		}
 
-		// Try to get clients for that account.
-		$clients = $this->get_data( 'clients', array( 'accountID' => $account_id ) );
-		if ( is_wp_error( $clients ) ) {
-			// No access to the account.
+		$account_has_client = function ( $account_id ) use ( $client_id ) {
+			// Try to get clients for that account.
+			$clients = $this->get_data( 'clients', array( 'accountID' => $account_id ) );
+			if ( is_wp_error( $clients ) ) {
+				// No access to the account.
+				return false;
+			}
+			// Ensure there is access to the client.
+			foreach ( $clients as $client ) {
+				if ( $client->getId() === $client_id ) {
+					return true;
+				}
+			}
+
 			return false;
+		};
+
+		$parsed_account_id = $this->parse_account_id( $client_id );
+
+		if ( $account_has_client( $parsed_account_id ) ) {
+			return array(
+				'account_id' => $parsed_account_id,
+				'permission' => true,
+			);
 		}
 
-		// Ensure there is access to the client.
-		foreach ( $clients as $client ) {
-			if ( $client->getId() === $client_id ) {
-				return true;
+		$accounts = $this->get_data( 'accounts' );
+		if ( is_wp_error( $accounts ) ) {
+			$accounts = array();
+		}
+
+		foreach ( $accounts as $account ) {
+			/* @var Google_Service_AdSense_Account $account AdSense account instance. */
+			if ( $account->getId() === $parsed_account_id ) {
+				continue;
+			}
+			if ( $account_has_client( $account->getId() ) ) {
+				return array(
+					'account_id' => $account->getId(),
+					'permission' => true,
+				);
 			}
 		}
-		return false;
+
+		return array(
+			'account_id' => $parsed_account_id,
+			'permission' => false,
+		);
 	}
 
 	/**

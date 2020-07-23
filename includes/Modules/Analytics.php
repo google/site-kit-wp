@@ -556,38 +556,6 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
-	 */
-	protected function get_datapoint_services() {
-		return array(
-			// GET / POST.
-			'connection'                   => '',
-			'account-id'                   => '',
-			'property-id'                  => '',
-			'profile-id'                   => '',
-			'internal-web-property-id'     => '',
-			'use-snippet'                  => '',
-			'tracking-disabled'            => '',
-			// GET.
-			'anonymize-ip'                 => '',
-			'goals'                        => 'analytics',
-			'accounts-properties-profiles' => 'analytics',
-			'properties-profiles'          => 'analytics',
-			'profiles'                     => 'analytics',
-			'tag-permission'               => '',
-			'report'                       => 'analyticsreporting',
-			// POST.
-			'create-property'              => 'analytics',
-			'create-profile'               => 'analytics',
-			'create-account-ticket'        => 'analyticsprovisioning',
-		);
-	}
-
-	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
 	 * @since 1.9.0
@@ -595,33 +563,43 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$map = parent::get_datapoint_definitions();
-
-		$map['POST:create-account-ticket'] = array_merge(
-			$map['POST:create-account-ticket'],
-			array(
+		return array(
+			'GET:account-id'                   => array( 'service' => '' ),
+			'POST:account-id'                  => array( 'service' => '' ),
+			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
+			'GET:anonymize-ip'                 => array( 'service' => '' ),
+			'GET:connection'                   => array( 'service' => '' ),
+			'POST:connection'                  => array( 'service' => '' ),
+			'POST:create-account-ticket'       => array(
+				'service'                => 'analyticsprovisioning',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
-			)
-		);
-
-		$map['POST:create-property'] = array_merge(
-			$map['POST:create-property'],
-			array(
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
-			)
-		);
-
-		$map['POST:create-profile'] = array_merge(
-			$map['POST:create-profile'],
-			array(
+			),
+			'POST:create-profile'              => array(
+				'service'                => 'analytics',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
-			)
+			),
+			'POST:create-property'             => array(
+				'service'                => 'analytics',
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
+			),
+			'GET:internal-web-property-id'     => array( 'service' => '' ),
+			'POST:internal-web-property-id'    => array( 'service' => '' ),
+			'GET:goals'                        => array( 'service' => 'analytics' ),
+			'GET:profile-id'                   => array( 'service' => '' ),
+			'POST:profile-id'                  => array( 'service' => '' ),
+			'GET:profiles'                     => array( 'service' => 'analytics' ),
+			'GET:properties-profiles'          => array( 'service' => 'analytics' ),
+			'GET:property-id'                  => array( 'service' => '' ),
+			'POST:property-id'                 => array( 'service' => '' ),
+			'GET:report'                       => array( 'service' => 'analyticsreporting' ),
+			'GET:tag-permission'               => array( 'service' => '' ),
+			'GET:tracking-disabled'            => array( 'service' => '' ),
+			'GET:use-snippet'                  => array( 'service' => '' ),
+			'POST:use-snippet'                 => array( 'service' => '' ),
 		);
-
-		return $map;
 	}
 
 	/**
@@ -971,19 +949,6 @@ final class Analytics extends Module
 				$body->setReportRequests( array( $request ) );
 
 				return $this->get_analyticsreporting_service()->reports->batchGet( $body );
-			case 'POST:create-property':
-				if ( ! isset( $data['accountID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
-						array( 'status' => 400 )
-					);
-				}
-				$property = new Google_Service_Analytics_Webproperty();
-				$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
-				return $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
 			case 'POST:create-profile':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -1001,9 +966,26 @@ final class Analytics extends Module
 						array( 'status' => 400 )
 					);
 				}
+				$profile_name = trim( $data['profileName'] );
+				if ( empty( $profile_name ) ) {
+					$profile_name = __( 'All Web Site Data', 'google-site-kit' );
+				}
 				$profile = new Google_Service_Analytics_Profile();
-				$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
+				$profile->setName( $profile_name );
 				return $profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
+			case 'POST:create-property':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				$property = new Google_Service_Analytics_Webproperty();
+				$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
+				return $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
 					if ( ! isset( $data['propertyID'] ) ) {
@@ -1015,21 +997,15 @@ final class Analytics extends Module
 						);
 					}
 					$property_id = $data['propertyID'];
-					$account_id  = $this->parse_account_id( $property_id );
-					if ( empty( $account_id ) ) {
-						return new WP_Error(
-							'invalid_param',
-							__( 'The propertyID parameter is not a valid Analytics property ID.', 'google-site-kit' ),
-							array( 'status' => 400 )
-						);
-					}
-					return array(
-						'accountID'  => $account_id,
-						'propertyID' => $property_id,
-						'permission' => $this->has_access_to_property( $property_id, $account_id ),
+					return array_merge(
+						array(
+							'accountID'  => '', // Set the accountID to be an empty string and let has_access_to_property handle determining actual ID.
+							'propertyID' => $property_id,
+						),
+						$this->has_access_to_property( $property_id )
 					);
 				};
-			case 'GET:tracking-disabled':
+			case 'GET:tracking-disabled': 
 				return function() {
 					$option = $this->get_settings()->get();
 
@@ -1084,12 +1060,12 @@ final class Analytics extends Module
 					return array_merge( compact( 'accounts' ), $properties_profiles );
 				}
 
-				if ( ! empty( $data['existingPropertyID'] ) ) {
+				if ( $data['existingAccountID'] && $data['existingPropertyID'] ) {
 					// If there is an existing tag, pass it through to ensure only the existing tag is matched.
 					$properties_profiles = $this->get_data(
 						'properties-profiles',
 						array(
-							'accountID'          => $this->parse_account_id( $data['existingPropertyID'] ),
+							'accountID'          => $data['existingAccountID'],
 							'existingPropertyID' => $data['existingPropertyID'],
 						)
 					);
@@ -1346,28 +1322,62 @@ final class Analytics extends Module
 	 * @since 1.8.0 Simplified to return a boolean and require account ID.
 	 *
 	 * @param string $property_id Property found in the existing tag.
-	 * @param string $account_id  Account ID the property belongs to.
-	 * @return bool True if the user has access, false otherwise.
+	 * @return array A string representing the accountID and a boolean representing if the user has access to the property.
 	 */
-	protected function has_access_to_property( $property_id, $account_id ) {
-		if ( empty( $property_id ) || empty( $account_id ) ) {
-			return false;
+	protected function has_access_to_property( $property_id ) {
+		if ( empty( $property_id ) ) {
+			return array(
+				'permission' => false,
+			);
 		}
 
-		// Try to get properties for that account.
-		$properties = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
-		if ( is_wp_error( $properties ) ) {
-			// No access to the account.
+		$account_id = $this->parse_account_id( $property_id );
+
+		/**
+		 * Helper method to check check if a given account
+		 * contains the property_id
+		 */
+		$has_property = function ( $account_id ) use ( $property_id ) {
+			$response = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
+			if ( is_wp_error( $response ) ) {
+				return false;
+			}
+			foreach ( $response['properties'] as $property ) {
+				if ( $property->getId() === $property_id ) {
+					return true;
+				}
+			}
 			return false;
-		}
+		};
 
 		// Ensure there is access to the property.
-		foreach ( $properties['properties'] as $property ) {
-			if ( $property->getId() === $property_id ) {
-				return true;
+		if ( $has_property( $account_id ) ) {
+			return array(
+				'accountID'  => $account_id,
+				'permission' => true,
+			);
+		}
+
+		// Check all of the accounts for this user.
+		$user_accounts_properties_profiles = $this->get_data( 'accounts-properties-profiles' );
+		$user_account_ids                  = is_wp_error( $user_accounts_properties_profiles ) ? array() : wp_list_pluck( $user_accounts_properties_profiles['accounts'], 'id' );
+		foreach ( $user_account_ids as $user_account_id ) {
+			// Skip the inferred account id, that ship has sailed.
+			if ( $account_id === $user_account_id ) {
+				continue;
+			}
+			if ( $has_property( $user_account_id ) ) {
+				return array(
+					'accountID'  => $user_account_id,
+					'permission' => true,
+				);
 			}
 		}
-		return false;
+	
+		// No property matched the account ID.
+		return array(
+			'permission' => false,
+		);
 	}
 
 	/**

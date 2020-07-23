@@ -21,14 +21,17 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME, FORM_ACCOUNT_CREATE } from './constants';
-import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from 'tests/js/utils';
+import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics accounts', () => {
@@ -134,7 +137,7 @@ describe( 'modules/analytics accounts', () => {
 				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { propertyID } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID } );
 
 				registry.dispatch( STORE_NAME ).resetAccounts();
 
@@ -201,7 +204,7 @@ describe( 'modules/analytics accounts', () => {
 				// Properties and profiles should also have been received by
 				// this action.
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
 				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
 				expect( properties ).toEqual( fixtures.accountsPropertiesProfiles.properties );
@@ -251,9 +254,7 @@ describe( 'modules/analytics accounts', () => {
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingGetAccounts() === false,
-				);
+				await untilResolved( registry, STORE_NAME ).getAccounts();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
@@ -262,11 +263,11 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'passes existing tag ID when fetching accounts', async () => {
-				const existingPropertyID = 'UA-12345-1';
+				const existingPropertyID = 'UA-1234567-1';
 
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingPropertyID );
 				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-					accountID: '12345',
+					accountID: '1234567',
 					permission: true,
 				}, { propertyID: existingPropertyID } );
 
@@ -290,6 +291,41 @@ describe( 'modules/analytics accounts', () => {
 					}
 				);
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'supports asynchronous tag resolution before fetching accounts', async () => {
+				const existingPropertyID = 'UA-1234567-1';
+				fetchMock.getOnce(
+					{ query: { tagverify: '1' } },
+					{ body: factories.generateHTMLWithTag( existingPropertyID ), status: 200 }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
+					{ body: { accountID: '1234567', permission: true }, status: 200 }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
+				);
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
+
+				registry.select( STORE_NAME ).getAccounts();
+
+				await untilResolved( registry, STORE_NAME ).getAccounts();
+
+				expect( fetchMock ).toHaveFetched( true, { query: { tagverify: '1' } } );
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
+					{ query: { propertyID: existingPropertyID } }
+				);
+				// Ensure the proper parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+					{
+						query: { existingPropertyID },
+					}
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 			} );
 
 			it( 'sets account, property, and profile IDs in the store, if a matchedProperty is received and an account is not selected yet', async () => {
@@ -347,7 +383,7 @@ describe( 'modules/analytics accounts', () => {
 
 				registry.dispatch( STORE_NAME ).receiveCreateAccount( { id: 'test-account-ticket-id' }, { data: {} } );
 
-				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( 'api.accountTicketId=test-account-ticket-id' );
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( '#/termsofservice/test-account-ticket-id' );
 			} );
 
 			it( 'requires the user’s email', () => {
@@ -363,7 +399,7 @@ describe( 'modules/analytics accounts', () => {
 					authuser: 'test@gmail.com',
 					provisioningSignup: 'false',
 				} );
-				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( 'api.accountTicketId=test-account-ticket-id' );
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( '#/termsofservice/test-account-ticket-id' );
 			} );
 		} );
 	} );

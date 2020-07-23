@@ -160,7 +160,7 @@ describe( 'modules/analytics properties', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				// Profiles should also have been received by this action.
-				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
 				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( properties ).toHaveLength( 17 );
