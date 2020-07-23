@@ -51,9 +51,12 @@ const baseSelectors = {
 	 * @param {Object} [args.query]
 	 * @return {string}
 	 */
-	getServiceBaseURL: createRegistrySelector( ( select ) => ( state, args = {} ) => {
+	getServiceURL: createRegistrySelector( ( select ) => ( state, args = {} ) => {
 		const { path, query } = args;
 		const userEmail = select( CORE_USER ).getEmail();
+		if ( userEmail === undefined ) {
+			return undefined;
+		}
 		const baseURI = `https://search.google.com/search-console`;
 		const queryArgs = { ...query, authuser: userEmail };
 		if ( path ) {
