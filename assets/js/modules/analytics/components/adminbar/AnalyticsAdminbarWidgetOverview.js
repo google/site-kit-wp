@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -32,6 +33,7 @@ import { Component, Fragment } from '@wordpress/element';
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
+	changeToPercent,
 } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
@@ -41,29 +43,56 @@ import {
 	isDataZeroForReporting,
 	getAnalyticsErrorMessageFromData,
 	overviewReportDataDefaults,
+	userReportDataDefaults,
 } from '../../util';
 import PreviewBlock from '../../../../components/preview-block';
 
 class AnalyticsAdminbarWidgetOverview extends Component {
-	render() {
-		const { data } = this.props;
+	constructor( props ) {
+		super( props );
+		this.state = {
+			overview: false,
+			totalUsers: false,
+			previousTotalUsers: false,
+		};
+	}
 
-		if ( ! data || data.error || ! data.length ) {
-			return null;
+	// When additional data is returned, componentDidUpdate will fire.
+	componentDidUpdate() {
+		this.processCallbackData();
+	}
+
+	componentDidMount() {
+		this.processCallbackData();
+	}
+
+	/**
+	 * Process callback data received from the API.
+	 */
+	processCallbackData() {
+		const {
+			data,
+			requestDataToState,
+		} = this.props;
+
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
+			this.setState( requestDataToState );
 		}
+	}
 
-		const overviewData = calculateOverviewData( data );
+	render() {
+		const { overview, totalUsers, previousTotalUsers } = this.state;
 
-		if ( ! overviewData ) {
+		if ( ! overview || ! totalUsers ) {
 			return null;
 		}
 
 		const {
-			totalUsers,
 			totalSessions,
-			totalUsersChange,
 			totalSessionsChange,
-		} = overviewData;
+		} = overview;
+
+		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
 
 		return (
 			<Fragment>
@@ -112,6 +141,35 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Adminbar',
+			toState( state, { data } ) {
+				if ( ! state.overview ) {
+					return {
+						overview: calculateOverviewData( data ),
+					};
+				}
+			},
+		},
+		{
+			type: TYPE_MODULES,
+			identifier: 'analytics',
+			datapoint: 'report',
+			data: {
+				...userReportDataDefaults,
+				url: global._googlesitekitLegacyData.permaLink,
+			},
+			priority: 1,
+			maxAge: getTimeInSeconds( 'day' ),
+			context: 'Adminbar',
+			toState( state, { data } ) {
+				if ( ! state.totalUsers ) {
+					const totalUsers = get( data, '[0].data.totals[0].values[0]' );
+					const previousTotalUsers = get( data, '[0].data.totals[1].values[0]' );
+					return {
+						totalUsers,
+						previousTotalUsers,
+					};
+				}
+			},
 		},
 	],
 	<Fragment>
