@@ -92,6 +92,17 @@ describe( 'modules/tagmanager versions', () => {
 				expect( tagObject ).toEqual( liveContainerVersionFixture.tag[ 0 ] );
 			} );
 
+			it( 'returns the Universal Analytics tag object from the live container object for an AMP container', () => {
+				const liveContainerVersionFixture = fixtures.liveContainerVersions.amp.ga;
+				const accountID = liveContainerVersionFixture.accountId;
+				const internalContainerID = liveContainerVersionFixture.containerId;
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+
+				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
+
+				expect( tagObject ).toEqual( liveContainerVersionFixture.tag[ 0 ] );
+			} );
+
 			it( 'returns null if the live container version does not contain a Universal Analytics tag', () => {
 				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
 				const accountID = liveContainerVersionFixture.accountId;
@@ -147,6 +158,17 @@ describe( 'modules/tagmanager versions', () => {
 				const propertyID = registry.select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID );
 
 				expect( propertyID ).toBe( 'UA-1234567-99' );
+			} );
+
+			it( 'gets the propertyID associated with the Universal Analytics tag for an AMP container', () => {
+				const liveContainerVersionFixture = fixtures.liveContainerVersions.amp.ga;
+				const accountID = liveContainerVersionFixture.accountId;
+				const internalContainerID = liveContainerVersionFixture.containerId;
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+
+				const propertyID = registry.select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID );
+
+				expect( propertyID ).toBe( 'UA-98765432-1' );
 			} );
 
 			it( 'returns null if no Analytics tag exists in the container', () => {

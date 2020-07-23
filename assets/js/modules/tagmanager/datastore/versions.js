@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, CONTEXT_WEB } from './constants';
 import { isValidAccountID, isValidInternalContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../../analytics/util';
@@ -139,7 +139,8 @@ const baseSelectors = {
 		}
 
 		if ( liveContainerVersion?.tag ) {
-			return liveContainerVersion.tag.find( ( { type } ) => type === 'ua' ) || null;
+			const tagType = liveContainerVersion.container.usageContext[ 0 ] === CONTEXT_WEB ? 'ua' : 'ua_amp';
+			return liveContainerVersion.tag.find( ( { type } ) => type === tagType ) || null;
 		}
 
 		return null;
