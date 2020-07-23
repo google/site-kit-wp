@@ -70,33 +70,6 @@ final class Advanced_Tracking {
 	 * @param Plugin_Detector $plugin_detector Optional plugin detector used for testing. Default is a new instance.
 	 */
 	public function __construct( $plugin_detector = null ) {
-		$this->supported_plugins = array(
-			'Contact Form 7'   => array(
-				'check_name'        => 'WPCF7_PLUGIN_DIR',
-				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
-				'event_config_list' => new CF7_Event_List(),
-			),
-			'Formidable Forms' => array(
-				'check_name'        => 'load_formidable_forms',
-				'check_type'        => Plugin_Detector::TYPE_FUNCTION,
-				'event_config_list' => new FormidableForms_Event_List(),
-			),
-			'Ninja Forms'      => array(
-				'check_name'        => 'NF_PLUGIN_DIR',
-				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
-				'event_config_list' => new NinjaForms_Event_List(),
-			),
-			'WooCommerce'      => array(
-				'check_name'        => 'WC_PLUGIN_FILE',
-				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
-				'event_config_list' => new Woocommerce_Event_List(),
-			),
-			'WPForms'          => array(
-				'check_name'        => 'WPFORMS_PLUGIN_DIR',
-				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
-				'event_config_list' => new WPForms_Event_List(),
-			),
-		);
 		if ( null === $plugin_detector ) {
 			$this->plugin_detector = new Plugin_Detector();
 		} else {
@@ -165,7 +138,7 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	private function configure_events() {
-		$this->active_plugins = $this->plugin_detector->determine_active_plugins( $this->supported_plugins );
+		$this->active_plugins = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
 
 		$this->event_configurations = array();
 		foreach ( $this->active_plugins as $plugin_config ) {
@@ -181,9 +154,52 @@ final class Advanced_Tracking {
 	/**
 	 * Returns list of event configurations.
 	 *
+	 * @since n.e.x.t.
+	 *
 	 * @return array The list of event configurations.
 	 */
 	public function get_event_configurations() {
 		return $this->event_configurations;
+	}
+
+
+	/**
+	 * Returns list of supported plugins.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @return array The list of supported plugins.
+	 */
+	public function get_supported_plugins() {
+		if ( $this->supported_plugins == null ) {
+			$this->supported_plugins = array(
+				'Contact Form 7'   => array(
+					'check_name'        => 'WPCF7_PLUGIN_DIR',
+					'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+					'event_config_list' => new CF7_Event_List(),
+				),
+				'Formidable Forms' => array(
+					'check_name'        => 'load_formidable_forms',
+					'check_type'        => Plugin_Detector::TYPE_FUNCTION,
+					'event_config_list' => new FormidableForms_Event_List(),
+				),
+				'Ninja Forms'      => array(
+					'check_name'        => 'NF_PLUGIN_DIR',
+					'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+					'event_config_list' => new NinjaForms_Event_List(),
+				),
+				'WooCommerce'      => array(
+					'check_name'        => 'WC_PLUGIN_FILE',
+					'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+					'event_config_list' => new Woocommerce_Event_List(),
+				),
+				'WPForms'          => array(
+					'check_name'        => 'WPFORMS_PLUGIN_DIR',
+					'check_type'        => Plugin_Detector::TYPE_CONSTANT,
+					'event_config_list' => new WPForms_Event_List(),
+				),
+			);
+		}
+		return $this->supported_plugins;
 	}
 }
