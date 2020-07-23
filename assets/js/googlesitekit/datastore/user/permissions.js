@@ -21,13 +21,21 @@
  */
 import invariant from 'invariant';
 
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
+const { createRegistrySelector } = Data;
+
 // Actions
 const CLEAR_PERMISSION_SCOPE_ERROR = 'CLEAR_PERMISSION_SCOPE_ERROR';
 const SET_PERMISSION_SCOPE_ERROR = 'SET_PERMISSION_SCOPE_ERROR';
+const SET_CAPABILITIES = 'SET_CAPABILITIES';
 
 export const INITIAL_STATE = {
 	permissionError: null,
-	capabilities: global._googlesitekitUserData?.permissions,
+	capabilities: {},
 };
 
 export const actions = {
@@ -63,6 +71,21 @@ export const actions = {
 			type: SET_PERMISSION_SCOPE_ERROR,
 		};
 	},
+
+	/**
+	 * Sets user capabilities.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} capabilities User capabilities.
+	 * @return {Object} Redux-style action.
+	 */
+	setCapabilities( capabilities ) {
+		return {
+			type: SET_CAPABILITIES,
+			payload: { capabilities },
+		};
+	},
 };
 
 export const controls = {};
@@ -85,13 +108,31 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case SET_CAPABILITIES: {
+			const { capabilities } = payload;
+
+			return {
+				...state,
+				capabilities,
+			};
+		}
+
 		default: {
 			return { ...state };
 		}
 	}
 };
 
-export const resolvers = {};
+export const resolvers = {
+	/**
+	 * Fullfills user capabilities on initial request.
+	 *
+	 * @since n.e.x.t
+	 */
+	*getCapabilities() {
+		yield actions.setCapabilities( global._googlesitekitUserData?.permissions );
+	},
+};
 
 export const selectors = {
 	/**
@@ -130,14 +171,14 @@ export const selectors = {
 	 * @param {string} capability Capability name to check.
 	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
 	 */
-	hasCapability( state, capability ) {
-		const { capabilities } = state;
+	hasCapability: createRegistrySelector( ( select ) => ( state, capability ) => {
+		const capabilities = select( STORE_NAME ).getCapabilities();
 		if ( capabilities ) {
 			return !! capabilities[ capability ];
 		}
 
 		return undefined;
-	},
+	} ),
 };
 
 export default {
