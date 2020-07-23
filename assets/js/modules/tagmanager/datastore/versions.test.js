@@ -168,7 +168,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				const propertyID = registry.select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID );
 
-				expect( propertyID ).toBe( 'UA-98765432-1' );
+				expect( propertyID ).toBe( 'UA-123456789-1' );
 			} );
 
 			it( 'returns null if no Analytics tag exists in the container', () => {
