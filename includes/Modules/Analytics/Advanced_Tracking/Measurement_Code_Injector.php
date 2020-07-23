@@ -73,7 +73,6 @@ final class Measurement_Code_Injector {
 )();
 INJECT_SCRIPT;
 	}
-	//TODO: Add support for events that happen on page load or in other non-selector cases.
 
 	/**
 	 * Returns the injected Javascript code.
