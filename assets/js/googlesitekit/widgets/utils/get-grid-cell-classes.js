@@ -25,6 +25,12 @@ const resizeClasses = ( classNamesMap, counter ) => {
 	[ ...classNamesMap ].reverse().some( ( _classNames, index ) => {
 		const originalIndex = classNamesMap.length - 1 - index;
 
+		// Skip any classNames that are `null`; this happens when the component itself
+		// renders `null`.
+		if ( ! _classNames ) {
+			return false;
+		}
+
 		if ( _classNames.includes( 'mdc-layout-grid__cell--span-3-desktop' ) ) {
 			// Replace the 3-column class with a 4-column class so this element goes from 1/4
 			// to 1/3 on desktop.
@@ -65,7 +71,8 @@ export const getGridCellClasses = ( widgets ) => {
 
 		// If this widget output `null`, there's no sense in outputting classes for it.
 		if ( widgetOutput === null ) {
-			return null;
+			classNamesMap[ i ] = null;
+			return;
 		}
 
 		const classNames = [ 'mdc-layout-grid__cell' ];
@@ -102,20 +109,16 @@ export const getGridCellClasses = ( widgets ) => {
 			counter -= WIDTH_GRID_MAP[ widget.width ];
 
 			if ( counter === 9 ) {
-				while ( counter !== 0 ) {
-					[ classNamesMap, counter ] = resizeClasses( classNamesMap, counter );
-				}
+				[ classNamesMap, counter ] = resizeClasses( classNamesMap, counter );
 			}
 
 			counter = WIDTH_GRID_MAP[ widget.width ];
 		}
-
-		if ( counter === 9 ) {
-			while ( counter !== 0 ) {
-				[ classNamesMap, counter ] = resizeClasses( classNamesMap, counter );
-			}
-		}
 	} );
+
+	if ( counter === 9 ) {
+		[ classNamesMap, counter ] = resizeClasses( classNamesMap, counter );
+	}
 
 	return classNamesMap;
 };

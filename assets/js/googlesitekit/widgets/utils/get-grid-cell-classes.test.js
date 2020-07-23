@@ -30,8 +30,25 @@ import { STORE_NAME, WIDGET_WIDTHS } from '../datastore/constants';
 // import { WIDTH_GRID_MAP, WIDGET_WIDTHS } from '../datastore/constants';
 import { getGridCellClasses } from './get-grid-cell-classes';
 
+const createTestRegistryWithArea = ( name = 'gridcell-test' ) => {
+	const registry = createTestRegistry();
+
+	registry.dispatch( STORE_NAME ).registerWidgetArea( name, {
+		title: 'Dashboard Header',
+		subtitle: 'Cool stuff for yoursite.com',
+		style: 'boxes',
+	} );
+	registry.dispatch( STORE_NAME ).assignWidgetArea( name, 'dashboard' );
+
+	return registry;
+};
+
 const WidgetComponent = () => {
 	return ( <div>Foo bar!</div> );
+};
+
+const WidgetComponentEmpty = () => {
+	return null;
 };
 
 const createWidgets = ( registry, widgets ) => {
@@ -49,15 +66,7 @@ describe( 'getGridCellClasses', () => {
 	// let store;
 
 	beforeEach( () => {
-		registry = createTestRegistry();
-
-		registry.dispatch( STORE_NAME ).registerWidgetArea( 'gridcell-test', {
-			title: 'Dashboard Header',
-			subtitle: 'Cool stuff for yoursite.com',
-			style: 'boxes',
-		} );
-		registry.dispatch( STORE_NAME ).assignWidgetArea( 'gridcell-test', 'dashboard' );
-		// store = registry.stores[ STORE_NAME ].store;
+		registry = createTestRegistryWithArea();
 	} );
 
 	afterEach( () => {
@@ -89,11 +98,135 @@ describe( 'getGridCellClasses', () => {
 		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
 	} );
 
-	it( 'should return appropriate classNames for each width', () => {
+	it( 'should resize desktop-sized widgets so they fill a row', () => {
+		registry = createTestRegistryWithArea( 'gridcell-test' );
 		createWidgets( registry, [
 			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
 			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
 			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
+		] );
+
+		let widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+
+		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.QUARTER },
+		] );
+
+		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+
+		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.HALF },
+			{ component: WidgetComponent, slug: 'five', width: WIDGET_WIDTHS.HALF },
+		] );
+
+		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+
+		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
+		] );
+
+		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+
+		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.HALF },
+		] );
+
+		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+
+		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
+		] );
+
+		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+
+		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
+			{ component: WidgetComponent, slug: 'five', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'six', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'seven', width: WIDGET_WIDTHS.QUARTER },
+		] );
+
+		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+
+		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+	} );
+
+	it( 'should not resize widgets that fit into a 12-column grid', () => {
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.QUARTER },
+		] );
+
+		let widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+
+		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.HALF },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
+		] );
+
+		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+
+		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+		] );
+
+		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+
+		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+	} );
+
+	it.skip( 'should treat widgets that render no content as zero-width (ignoring them)', () => {
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponentEmpty, slug: 'two', width: WIDGET_WIDTHS.HALF },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
 		] );
 
 		const widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
