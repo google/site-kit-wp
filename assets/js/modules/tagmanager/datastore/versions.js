@@ -99,7 +99,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		if ( liveContainerVersion.variable ) {
+		if ( liveContainerVersion?.variable ) {
 			return liveContainerVersion.variable.find( ( { name } ) => name === variableName ) || null;
 		}
 

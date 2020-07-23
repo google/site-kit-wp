@@ -105,6 +105,18 @@ describe( 'modules/tagmanager versions', () => {
 				expect( variableObject ).toStrictEqual( null );
 			} );
 
+			it( 'returns null if no live container version exists', () => {
+				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
+				const accountID = liveContainerVersionFixture.accountId;
+				const internalContainerID = liveContainerVersionFixture.containerId;
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( null, { accountID, internalContainerID } );
+
+				const variableName = 'Test Variable';
+				const variableObject = registry.select( STORE_NAME ).getLiveContainerVariable( accountID, internalContainerID, variableName );
+
+				expect( variableObject ).toStrictEqual( null );
+			} );
+
 			it( 'returns undefined if the live container version is not loaded yet', () => {
 				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
 				const accountID = liveContainerVersionFixture.accountId;
