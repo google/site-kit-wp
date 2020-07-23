@@ -107,7 +107,7 @@ final class Advanced_Tracking {
 			return;
 		}
 		$this->configure_events();
-		//TODO: Instantiate and register Metadata_Collector here.
+		// TODO: Instantiate and register Metadata_Collector here.
 		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
 	}
 
@@ -170,7 +170,7 @@ final class Advanced_Tracking {
 	 * @return array The list of supported plugins.
 	 */
 	public function get_supported_plugins() {
-		if ( $this->supported_plugins == null ) {
+		if ( null == $this->supported_plugins ) {
 			$this->supported_plugins = array(
 				'Contact Form 7'   => array(
 					'check_name'        => 'WPCF7_PLUGIN_DIR',

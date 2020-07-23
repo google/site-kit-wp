@@ -48,12 +48,10 @@ class Plugin_Detector {
 		return array_filter(
 			$supported_plugins,
 			function( $plugin_config ) {
-				if ( self::TYPE_CONSTANT === $plugin_config['check_type'] &&
-				     defined( $plugin_config['check_name'] ) ) { // phpcs:ignore WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName
+				if ( self::TYPE_CONSTANT === $plugin_config['check_type'] && defined( $plugin_config['check_name'] ) ) { // phpcs:ignore WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName
 					return true;
 				}
-				if ( self::TYPE_FUNCTION === $plugin_config['check_type'] &&
-				     function_exists( $plugin_config['check_name'] ) ) {
+				if ( self::TYPE_FUNCTION === $plugin_config['check_type'] && function_exists( $plugin_config['check_name'] ) ) {
 					return true;
 				}
 				return false;
