@@ -84,6 +84,13 @@ const baseSelectors = {
 		return connection;
 	},
 
+	hasConnectedAdmins( state ) {
+		const { connection } = state;
+		const { hasConnectedAdmins } = connection || {};
+
+		return hasConnectedAdmins;
+	},
+
 	/**
 	 * Gets the Site Kit connection status for this site.
 	 *
