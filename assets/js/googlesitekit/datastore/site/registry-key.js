@@ -28,14 +28,30 @@ import { v4 as uuidv4 } from 'uuid';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 
+const { createRegistryControl } = Data;
+
 // Actions
 const SET_REGISTRY_KEY = 'SET_REGISTRY_KEY';
+const WAIT_FOR_REGISTRY_KEY = 'WAIT_FOR_REGISTRY_KEY';
 
 const INITIAL_STATE = {
 	registryKey: undefined,
 };
 
 export const actions = {
+	/**
+	 * Wait for the registryKey to be resolved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	waitForRegistryKey() {
+		return {
+			payload: {},
+			type: WAIT_FOR_REGISTRY_KEY,
+		};
+	},
 	/**
 	 * Sets the registryKey in the data store.
 	 *
@@ -51,6 +67,26 @@ export const actions = {
 			type: SET_REGISTRY_KEY,
 		};
 	},
+};
+
+export const controls = {
+	[ WAIT_FOR_REGISTRY_KEY ]: createRegistryControl( ( registry ) => ( { payload: {} } ) => {
+		// Select first to ensure resolution is always triggered.
+		const { getRegistryKey, hasFinishedResolution } = registry.select( STORE_NAME );
+		getRegistryKey();
+		const isRegistryKeyLoaded = () => hasFinishedResolution( 'getRegistryKey', [] );
+		if ( isRegistryKeyLoaded() ) {
+			return;
+		}
+		return new Promise( ( resolve ) => {
+			const unsubscribe = registry.subscribe( () => {
+				if ( isRegistryKeyLoaded() ) {
+					unsubscribe();
+					resolve();
+				}
+			} );
+		} );
+	} ),
 };
 
 export const reducer = ( state, { payload, type } ) => {

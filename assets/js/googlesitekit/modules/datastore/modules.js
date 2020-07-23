@@ -34,6 +34,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
+import { actions as registryKeyActions } from '../../datastore/site/registry-key';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
 import { sortByProperty } from '../../../util/sort-by-property';
@@ -198,7 +199,8 @@ const baseActions = {
 		invariant( slug, 'module slug is required' );
 
 		const registry = yield commonActions.getRegistry();
-		const registryKey = yield registry.select( CORE_SITE ).getRegistryKey();
+		yield registryKeyActions.waitForRegistryKey();
+		const registryKey = registry.select( CORE_SITE ).getRegistryKey();
 
 		// We do this assignment in the action rather than the reducer because we can't send a
 		// payload that includes a React component to the reducer; we'll get an error about
