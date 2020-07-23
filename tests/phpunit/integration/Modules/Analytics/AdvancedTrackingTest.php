@@ -42,7 +42,7 @@ class AdvancedTrackingTest extends TestCase {
 	/**
 	 * Tests if the sets of events in the active plugins are included in the tracking event configurations.
 	 */
-	public function test_event_configurations() {
+	public function test_configure_events() {
 		$this->enqueue_google_script();
 
 		$advanced_tracking = new Advanced_Tracking( $this->mock_plugin_detector );
@@ -106,7 +106,7 @@ class AdvancedTrackingTest extends TestCase {
 	/**
 	 * Tests if the expected Javascript code is printed for a given sets of events.
 	 */
-	public function test_injected_code() {
+	public function test_inject_event_tracking() {
 		$advanced_tracking    = new Advanced_Tracking( $this->mock_plugin_detector );
 		$event_configurations = Measurement_Event_Pipe::encode_measurement_event_list( $advanced_tracking->get_event_configurations() );
 
