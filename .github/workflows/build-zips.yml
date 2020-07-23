@@ -11,54 +11,55 @@ on:
 jobs:
   build-zips:
     runs-on: ubuntu-latest
+    if: success() && github.event.pull_request.head.repo.fork == false
     steps:
-    - uses: actions/checkout@v2
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
-    - name: Composer Install
-      uses: php-actions/composer@v1
-      with:
-        args: install
-    - name: Read .nvmrc
-      run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-      id: nvm
-    - name: Setup Node.js (.nvmrc)
-      uses: actions/setup-node@v1
-      with:
-        node-version: "${{ steps.nvm.outputs.NVMRC }}"
-    - name: Cache Node - npm
-      uses: actions/cache@v1
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-cache-
-    - name: npm install
-      run: |
-        npm ci
-    - name: Create destination directory
-      run: mkdir -p ${{ github.ref }}
-    - name: Build develop version
-      run: |
-        npm run dev-zip
-        mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
-    - name: Build release version
-      run: |
-        npm run release-zip
-        mv *.zip ${{ github.ref }}/google-site-kit.zip
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v1
-      with:
-        name: zip-files
-        path: ${{ github.ref }}
+      - uses: actions/checkout@v2
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+      - name: Composer Install
+        uses: php-actions/composer@v1
+        with:
+          args: install
+      - name: Read .nvmrc
+        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+        id: nvm
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v1
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+      - name: Cache Node - npm
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-cache-
+      - name: npm install
+        run: |
+          npm ci
+      - name: Create destination directory
+        run: mkdir -p ${{ github.ref }}
+      - name: Build develop version
+        run: |
+          npm run dev-zip
+          mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
+      - name: Build release version
+        run: |
+          npm run release-zip
+          mv *.zip ${{ github.ref }}/google-site-kit.zip
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: zip-files
+          path: ${{ github.ref }}
 
   deploy-to-wiki:
     runs-on: ubuntu-latest

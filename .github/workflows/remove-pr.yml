@@ -2,10 +2,12 @@ name: remove-pr
 
 on:
   pull_request:
-    types: [closed]
+    types:
+      - closed
+
 jobs:
   remove-pr:
-    if: ${{ always() }}
+    if: always() && github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
