@@ -21,6 +21,32 @@
  */
 import { WIDTH_GRID_MAP, WIDGET_WIDTHS } from '../datastore/constants';
 
+const resizeClasses = ( classNamesMap, counter ) => {
+	[ ...classNamesMap ].reverse().some( ( _classNames, index ) => {
+		const originalIndex = classNamesMap.length - 1 - index;
+
+		if ( _classNames.includes( 'mdc-layout-grid__cell--span-3-desktop' ) ) {
+			// Replace the 3-column class with a 4-column class so this element goes from 1/4
+			// to 1/3 on desktop.
+			classNamesMap[ originalIndex ][ _classNames.indexOf( 'mdc-layout-grid__cell--span-3-desktop' ) ] = 'mdc-layout-grid__cell--span-4-desktop';
+
+			counter -= 3;
+		}
+
+		if ( _classNames.includes( 'mdc-layout-grid__cell--span-6-desktop' ) ) {
+			// Replace the 6-column class with a 8-column class so this element goes from 1/2
+			// to 2/3 on desktop.
+			classNamesMap[ originalIndex ][ _classNames.indexOf( 'mdc-layout-grid__cell--span-6-desktop' ) ] = 'mdc-layout-grid__cell--span-8-desktop';
+
+			counter -= 6;
+		}
+
+		return counter === 0;
+	} );
+
+	return [ classNamesMap, counter ];
+};
+
 /**
  * Returns an array of `classNames` to assign to a Widget wrapper.
  *
@@ -31,7 +57,7 @@ import { WIDTH_GRID_MAP, WIDGET_WIDTHS } from '../datastore/constants';
  */
 export const getGridCellClasses = ( widgets ) => {
 	let counter = 0;
-	const classNamesMap = [];
+	let classNamesMap = [];
 
 	widgets.forEach( ( widget, i ) => {
 		const WidgetComponent = widget.component;
@@ -64,6 +90,8 @@ export const getGridCellClasses = ( widgets ) => {
 			);
 		}
 
+		classNamesMap[ i ] = classNames;
+
 		counter += WIDTH_GRID_MAP[ widget.width ];
 
 		if ( counter % 12 === 0 ) {
@@ -74,25 +102,8 @@ export const getGridCellClasses = ( widgets ) => {
 			counter -= WIDTH_GRID_MAP[ widget.width ];
 
 			if ( counter === 9 ) {
-				let previousIndexOffset = 1;
 				while ( counter !== 0 ) {
-					if ( classNamesMap[ i - previousIndexOffset ].includes( 'mdc-layout-grid__cell--span-3-desktop' ) ) {
-						// Replace the 3-column class with a 4-column class so this element goes from 1/4
-						// to 1/3 on desktop.
-						classNamesMap[ i - previousIndexOffset ][ classNamesMap[ i - previousIndexOffset ].indexOf( 'mdc-layout-grid__cell--span-3-desktop' ) ] = 'mdc-layout-grid__cell--span-4-desktop';
-
-						counter -= 3;
-					}
-
-					if ( classNamesMap[ i - previousIndexOffset ].includes( 'mdc-layout-grid__cell--span-6-desktop' ) ) {
-					// Replace the 6-column class with a 8-column class so this element goes from 1/2
-					// to 2/3 on desktop.
-						classNamesMap[ i - previousIndexOffset ][ classNamesMap[ i - previousIndexOffset ].indexOf( 'mdc-layout-grid__cell--span-6-desktop' ) ] = 'mdc-layout-grid__cell--span-8-desktop';
-
-						counter -= 6;
-					}
-
-					previousIndexOffset += 1;
+					[ classNamesMap, counter ] = resizeClasses( classNamesMap, counter );
 				}
 			}
 
@@ -100,29 +111,10 @@ export const getGridCellClasses = ( widgets ) => {
 		}
 
 		if ( counter === 9 ) {
-			let previousIndexOffset = 1;
 			while ( counter !== 0 ) {
-				if ( classNamesMap[ i - previousIndexOffset ].includes( 'mdc-layout-grid__cell--span-3-desktop' ) ) {
-					// Replace the 3-column class with a 4-column class so this element goes from 1/4
-					// to 1/3 on desktop.
-					classNamesMap[ i - previousIndexOffset ][ classNamesMap[ i - previousIndexOffset ].indexOf( 'mdc-layout-grid__cell--span-3-desktop' ) ] = 'mdc-layout-grid__cell--span-4-desktop';
-
-					counter -= 3;
-				}
-
-				if ( classNamesMap[ i - previousIndexOffset ].includes( 'mdc-layout-grid__cell--span-6-desktop' ) ) {
-					// Replace the 6-column class with a 8-column class so this element goes from 1/2
-					// to 2/3 on desktop.
-					classNamesMap[ i - previousIndexOffset ][ classNamesMap[ i - previousIndexOffset ].indexOf( 'mdc-layout-grid__cell--span-6-desktop' ) ] = 'mdc-layout-grid__cell--span-8-desktop';
-
-					counter -= 6;
-				}
-
-				previousIndexOffset += 1;
+				[ classNamesMap, counter ] = resizeClasses( classNamesMap, counter );
 			}
 		}
-
-		classNamesMap[ i ] = classNames;
 	} );
 
 	return classNamesMap;

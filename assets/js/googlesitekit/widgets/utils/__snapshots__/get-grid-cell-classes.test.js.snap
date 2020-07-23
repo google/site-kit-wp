@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getGridCellClasses should return all full classNames when all widgets are full-width 1`] = `
+Array [
+  Array [
+    "mdc-layout-grid__cell",
+    "mdc-layout-grid__cell--span-12",
+  ],
+  Array [
+    "mdc-layout-grid__cell",
+    "mdc-layout-grid__cell--span-12",
+  ],
+  Array [
+    "mdc-layout-grid__cell",
+    "mdc-layout-grid__cell--span-12",
+  ],
+]
+`;
+
+exports[`getGridCellClasses should return appropriate classNames for each width 1`] = `
+Array [
+  Array [
+    "mdc-layout-grid__cell",
+    "mdc-layout-grid__cell--span-12",
+  ],
+  Array [
+    "mdc-layout-grid__cell",
+    "mdc-layout-grid__cell--span-4-desktop",
+    "mdc-layout-grid__cell--span-4-tablet",
+  ],
+  Array [
+    "mdc-layout-grid__cell",
+    "mdc-layout-grid__cell--span-8-desktop",
+    "mdc-layout-grid__cell--span-8-tablet",
+  ],
+]
+`;
