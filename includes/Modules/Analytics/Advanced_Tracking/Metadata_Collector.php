@@ -131,7 +131,7 @@ final class Metadata_Collector {
 			},
 			10
 		);
-		if ( array_key_exists( 'WooCommerce', $this->active_plugins ) ) {
+		if ( array_key_exists( 'WooCommerce', $this->active_plugins ) && function_exists( 'WC' ) ) {
 			$this->collect_woocommerce_cart_metadata( WC()->cart );
 			$this->collect_woocommerce_store_metadata();
 		}
