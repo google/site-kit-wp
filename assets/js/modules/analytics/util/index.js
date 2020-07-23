@@ -427,7 +427,7 @@ export const trafficSourcesReportDataDefaults = {
 	],
 	orderby: [
 		{
-			fieldName: 'ga:sessions',
+			fieldName: 'ga:users',
 			sortOrder: 'DESCENDING',
 		},
 	],
