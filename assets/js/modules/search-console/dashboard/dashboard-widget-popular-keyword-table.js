@@ -25,6 +25,7 @@ import { map } from 'lodash';
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -39,12 +40,12 @@ import Layout from '../../../components/layout/layout';
 import {
 	isDataZeroSearchConsole,
 } from '../dashboard/util';
-import { STORE_NAME } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME } from '../datastore/constants';
 
 const DashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;
 	const { useSelect } = Data;
-	const userEmail = useSelect( ( select ) => select( STORE_NAME ).getEmail() );
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics' } ) );
 	if ( ! data || ! data.length ) {
 		return null;
 	}
@@ -66,14 +67,10 @@ const DashboardWidgetPopularKeywordsTable = ( props ) => {
 	];
 	const domain = getModulesData()[ 'search-console' ].settings.propertyID;
 	const links = [];
+
 	const dataMapped = map( data, ( row, i ) => {
 		const query = row.keys[ 0 ];
-		links[ i ] = sprintf(
-			'https://search.google.com/search-console/performance/search-analytics?resource_id=%1$s&query=!%2$s&num_of_days=28&authuser=%3$s',
-			domain,
-			query,
-			userEmail
-		);
+		links[ i ] = addQueryArgs( baseServiceURL, { query, resource_id: domain, num_of_days: 28 } );
 		return [
 			query,
 			numberFormat( row.clicks ),
