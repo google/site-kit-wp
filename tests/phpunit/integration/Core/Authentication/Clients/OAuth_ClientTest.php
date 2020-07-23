@@ -414,6 +414,93 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( 'https://example.com/fresh.jpg', $profile['photo'] );
 	}
 
+	public function test_refresh_profile_data() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_id_a = $this->factory()->user->create();
+		wp_set_current_user( $user_id_a );
+		$user_options = new User_Options( $context, $user_id_a );
+		$profile      = new Profile( $user_options );
+		// Need to instantiate after current user is set so that User_Options inherits.
+		$client = new OAuth_Client( $context, null, $user_options, null, null, $profile );
+
+		// No other way around this but to mock the Google_Site_Kit_Client
+		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+								->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+		$http_client        = new FakeHttpClient();
+		$http_client->set_request_handler(
+			function ( Request $request ) {
+				$url = parse_url( $request->getUrl() );
+				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
+					return new Response( 200 );
+				}
+				// Return a failing response
+				return new Response( 500 );
+			}
+		);
+		$google_client_mock->setHttpClient( $http_client );
+		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
+		$this->force_set_property( $client, 'google_client', $google_client_mock );
+
+		$this->assertFalse( $profile->has() );
+		$this->assertFalse(
+			wp_next_scheduled( OAuth_Client::CRON_REFRESH_PROFILE_DATA, array( $user_id_a ) )
+		);
+
+		$current_time = time();
+		$client->refresh_profile_data( MINUTE_IN_SECONDS );
+
+		$this->assertFalse( $profile->has() );
+		$this->assertGreaterThanOrEqual(
+			$current_time,
+			wp_next_scheduled( OAuth_Client::CRON_REFRESH_PROFILE_DATA, array( $user_id_a ) )
+		);
+
+		// A successful refresh call should clear any scheduled refresh event for the same user.
+		$user_id_b = $this->factory()->user->create();
+		$user_options->switch_user( $user_id_b );
+		$client->refresh_profile_data( MINUTE_IN_SECONDS );
+		$this->assertGreaterThanOrEqual(
+			$current_time,
+			wp_next_scheduled( OAuth_Client::CRON_REFRESH_PROFILE_DATA, array( $user_id_b ) )
+		);
+		$http_client->set_request_handler(
+			function ( Request $request ) {
+				$url = parse_url( $request->getUrl() );
+				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
+					return new Response( 200 );
+				}
+				return new Response(
+					200,
+					array(),
+					Stream::factory(
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'fresh@foo.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+							)
+						)
+					)
+				);
+			}
+		);
+		// Call refresh again for the second user, which will succeed.
+		$client->refresh_profile_data( MINUTE_IN_SECONDS );
+		// The scheduled event for the second user should now be cleared.
+		$this->assertFalse(
+			wp_next_scheduled( OAuth_Client::CRON_REFRESH_PROFILE_DATA, array( $user_id_b ) )
+		);
+		$this->assertTrue( $profile->has() );
+		// The scheduled event for the first user should still be present.
+		$this->assertGreaterThanOrEqual(
+			$current_time,
+			wp_next_scheduled( OAuth_Client::CRON_REFRESH_PROFILE_DATA, array( $user_id_a ) )
+		);
+	}
+
 	public function test_using_proxy() {
 		$this->setExpectedDeprecated( OAuth_Client::class . '::using_proxy' );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );

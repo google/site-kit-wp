@@ -21,16 +21,20 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
+import * as factories from './__factories__';
 
 describe( 'modules/analytics tags', () => {
 	let registry;
+	const homeURL = 'http://example.com/';
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -38,6 +42,7 @@ describe( 'modules/analytics tags', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL } );
 	} );
 
 	afterAll( () => {
@@ -48,11 +53,25 @@ describe( 'modules/analytics tags', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {
-
-	} );
-
 	describe( 'selectors', () => {
+		describe( 'getExistingTag', () => {
+			it( 'gets the correct analytics tag', async () => {
+				const expectedTag = 'UA-12345678-1';
+
+				fetchMock.getOnce(
+					{ query: { tagverify: '1' } },
+					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 }
+				);
+
+				registry.select( STORE_NAME ).getExistingTag();
+
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
+
+				const existingTag = registry.select( STORE_NAME ).getExistingTag();
+				expect( existingTag ).toEqual( expectedTag );
+			} );
+		} );
+
 		describe( 'getTagPermission', () => {
 			it( 'returns true if a user has access to this tag', async () => {
 				fetchMock.getOnce(
@@ -153,10 +172,7 @@ describe( 'modules/analytics tags', () => {
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasExistingTag ).toEqual( true );
 			} );
@@ -167,10 +183,7 @@ describe( 'modules/analytics tags', () => {
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				// Ensure the proper parameters were sent.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasExistingTag ).toEqual( false );
 				expect( fetchMock ).not.toHaveFetched();
@@ -183,10 +196,7 @@ describe( 'modules/analytics tags', () => {
 
 				expect( hasExistingTag ).toEqual( undefined );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -275,10 +285,7 @@ describe( 'modules/analytics tags', () => {
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasPermission ).toEqual( true );
 			} );
@@ -292,10 +299,7 @@ describe( 'modules/analytics tags', () => {
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasPermission ).toEqual( false );
 			} );
@@ -305,10 +309,7 @@ describe( 'modules/analytics tags', () => {
 
 				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getExistingTag' )
-				);
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
 				expect( hasPermission ).toEqual( null );
 				expect( fetchMock ).not.toHaveFetched();
