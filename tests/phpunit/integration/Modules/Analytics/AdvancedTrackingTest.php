@@ -35,38 +35,7 @@ class AdvancedTrackingTest extends TestCase {
 	public function setUp() {
 		parent::setUp();
 
-		$this->supported_plugins    = array(
-			'Contact Form 7'   => array(
-				'check_name'        => 'WPCF7_PLUGIN_DIR',
-				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
-				'event_config_list' => new CF7_Event_List(),
-			),
-			'Formidable Forms' => array(
-				'check_name'        => 'load_formidable_forms',
-				'check_type'        => Plugin_Detector::TYPE_FUNCTION,
-				'event_config_list' => new FormidableForms_Event_List(),
-			),
-			'Ninja Forms'      => array(
-				'check_name'        => 'NF_PLUGIN_DIR',
-				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
-				'event_config_list' => new NinjaForms_Event_List(),
-			),
-			'WooCommerce'      => array(
-				'check_name'        => 'WC_PLUGIN_FILE',
-				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
-				'event_config_list' => new Woocommerce_Event_List(),
-			),
-			'WPForms'          => array(
-				'check_name'        => 'WPFORMS_PLUGIN_DIR',
-				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
-				'event_config_list' => new WPForms_Event_List(),
-			),
-			'WPForms Lite'     => array(
-				'check_name'        => 'WPFORMS_PLUGIN_DIR',
-				'check_type'        => Plugin_Detector::TYPE_CONSTANT,
-				'event_config_list' => new WPForms_Event_List(),
-			),
-		);
+		$this->supported_plugins    = ( new Advanced_Tracking() )->get_supported_plugins();
 		$this->mock_plugin_detector = new MockPluginDetector();
 	}
 
