@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { PERMISSION_SCOPE_ERROR_CODE } from '../constants';
+import { ERROR_MISSING_REQUIRED_SCOPE } from '../constants';
 
 /**
  * Checks if the given error is a permission scope error.
@@ -31,5 +31,5 @@ import { PERMISSION_SCOPE_ERROR_CODE } from '../constants';
  * @return {boolean} True if permission scope error, otherwise false.
  */
 export function isPermissionScopeError( error ) {
-	return error?.code === PERMISSION_SCOPE_ERROR_CODE;
+	return error?.code === ERROR_MISSING_REQUIRED_SCOPE;
 }
