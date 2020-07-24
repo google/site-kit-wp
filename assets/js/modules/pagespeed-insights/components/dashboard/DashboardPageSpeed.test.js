@@ -17,15 +17,19 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import DashboardPageSpeed from './DashboardPageSpeed';
-import { fireEvent, render } from '../../../../../tests/js/test-utils';
-import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import * as fixtures from '../datastore/__fixtures__';
-import fetchMock from 'fetch-mock';
-import { freezeFetch } from '../../../../../tests/js/utils';
+import { fireEvent, render } from '../../../../../../tests/js/test-utils';
+import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import * as fixtures from '../../datastore/__fixtures__';
+import { freezeFetch } from '../../../../../../tests/js/utils';
 
 const activeClass = 'mdc-tab--active';
 const url = fixtures.pagespeedMobile.loadingExperience.id;

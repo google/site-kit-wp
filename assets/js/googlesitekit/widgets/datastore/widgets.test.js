@@ -26,6 +26,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_SITE_STORE_NAME } from '../../../googlesitekit/datastore/site';
 import { WidgetComponents } from './widgets';
 
 describe( 'core/widgets Widgets', () => {
@@ -146,7 +147,7 @@ describe( 'core/widgets Widgets', () => {
 				registry.dispatch( STORE_NAME ).registerWidget( slug, {
 					component: WidgetSpinner,
 				} );
-				const registryKey = registry.select( STORE_NAME ).getWidgetRegistryKey();
+				const registryKey = registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
 
 				// A registry key should have been created.
 				expect( Object.keys( WidgetComponents ) ).toHaveLength( 1 );
@@ -171,7 +172,7 @@ describe( 'core/widgets Widgets', () => {
 						return ( <span>Hello again!</span> );
 					},
 				} );
-				const registryKey = registry.select( STORE_NAME ).getWidgetRegistryKey();
+				const registryKey = registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
 
 				expect( Object.keys( WidgetComponents[ registryKey ] ) ).toHaveLength( 2 );
 				// Another registry key should not have been created.
@@ -201,7 +202,7 @@ describe( 'core/widgets Widgets', () => {
 				expect( consoleWarnSpy ).toHaveBeenCalledWith( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
 				consoleWarnSpy.mockClear();
 
-				const registryKey = registry.select( STORE_NAME ).getWidgetRegistryKey();
+				const registryKey = registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
 
 				// Ensure original widget's component is registered.
 				expect( Object.keys( WidgetComponents[ registryKey ] ) ).toHaveLength( 1 );
