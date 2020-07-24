@@ -30,8 +30,8 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidMetrics, isValidOrders } from '../../../util/report-validation';
-import { isValidDimensions, isValidDateRange } from '../util/report-validation';
+import { isValidDateRange, isValidOrders } from '../../../util/report-validation';
+import { isValidDimensions, isValidMetrics } from '../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',

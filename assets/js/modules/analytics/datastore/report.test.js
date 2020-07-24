@@ -50,15 +50,19 @@ describe( 'modules/analytics report', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
+			const options = {
+				dateRange: 'last-90-days',
+				metrics: {
+					expression: 'testExpression',
+					alias: 'testAlias',
+				},
+			};
+
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
 					{ body: fixtures.report, status: 200 }
 				);
-
-				const options = {
-					dateRange: 'last-90-days',
-				};
 
 				const initialReport = registry.select( STORE_NAME ).getReport( options );
 
@@ -74,10 +78,6 @@ describe( 'modules/analytics report', () => {
 			} );
 
 			it( 'does not make a network request if report for given options is already present', async () => {
-				const options = {
-					dateRange: 'last-90-days',
-				};
-
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.report, { options } );
@@ -104,10 +104,6 @@ describe( 'modules/analytics report', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
 					{ body: response, status: 500 }
 				);
-
-				const options = {
-					dateRange: 'last-90-days',
-				};
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getReport( options );
