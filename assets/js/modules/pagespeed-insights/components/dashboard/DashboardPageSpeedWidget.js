@@ -40,7 +40,7 @@ function DashboardPageSpeedWidget() {
 	const { Widget } = Widgets.components;
 
 	return (
-		<Widget slug="pagespeedInsightsWebVitals">
+		<Widget slug="pagespeedInsightsWebVitals" className="googlesitekit-widget--no-padding">
 			<DashboardPageSpeed />
 		</Widget>
 	);

@@ -20,4 +20,11 @@
 
 	@include shadow;
 	background: $c-base;
+
+	// Use grid style only to get correct margin and padding, not actual grid.
+	@extend .mdc-layout-grid;
+
+	&.googlesitekit-widget--no-padding {
+		padding: 0;
+	}
 }
