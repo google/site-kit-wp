@@ -132,7 +132,7 @@ describe( 'modules/tagmanager containers', () => {
 			} );
 		} );
 
-		describe( 'selectContainer', () => {
+		describe( 'selectContainerByID', () => {
 			it( 'sets the containerID and internalContainerID for a web container', async () => {
 				const { account, containers } = factories.buildAccountWithContainers( {
 					container: { usageContext: [ CONTEXT_WEB ] },
@@ -144,7 +144,7 @@ describe( 'modules/tagmanager containers', () => {
 				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
 
-				await registry.dispatch( STORE_NAME ).selectContainer( container.publicId );
+				await registry.dispatch( STORE_NAME ).selectContainerByID( container.publicId );
 
 				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( container.publicId );
 				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( container.containerId );
@@ -161,7 +161,7 @@ describe( 'modules/tagmanager containers', () => {
 				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
 
-				await registry.dispatch( STORE_NAME ).selectContainer( container.publicId );
+				await registry.dispatch( STORE_NAME ).selectContainerByID( container.publicId );
 
 				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( container.publicId );
 				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( container.containerId );
@@ -175,7 +175,7 @@ describe( 'modules/tagmanager containers', () => {
 				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
 
 				muteFetch( 'path:/google-site-kit/v1/modules/tagmanager/data/containers', [] );
-				await registry.dispatch( STORE_NAME ).selectContainer( 'GTM-GXXXXGL3' );
+				await registry.dispatch( STORE_NAME ).selectContainerByID( 'GTM-GXXXXGL3' );
 
 				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );

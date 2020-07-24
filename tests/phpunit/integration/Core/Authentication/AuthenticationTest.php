@@ -41,6 +41,7 @@ class AuthenticationTest extends TestCase {
 		remove_all_filters( 'googlesitekit_admin_data' );
 		remove_all_filters( 'googlesitekit_setup_data' );
 		remove_all_filters( 'googlesitekit_admin_notices' );
+		remove_all_actions( OAuth_Client::CRON_REFRESH_PROFILE_DATA );
 
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -50,6 +51,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( has_action( 'init' ) );
 
 		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_SETUP ) );
+		$this->assertTrue( has_action( OAuth_Client::CRON_REFRESH_PROFILE_DATA ) );
 
 		$this->assertAdminDataExtended();
 		$this->assertSetupDataExtended();
