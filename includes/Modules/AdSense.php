@@ -507,24 +507,39 @@ tag_partner: "site_kit"
 					list ( $start_date, $end_date ) = $dates;
 				}
 
-				$dimensions = $data['dimensions'];
-				$dimensions = is_array( $dimensions )
-					? $dimensions
-					: explode( ',', $dimensions );
-
-				$metrics = $data['metrics'];
-				$metrics = is_array( $metrics )
-					? $metrics
-					: explode( ',', $metrics );
-
 				$args = array(
 					'start_date' => $start_date,
 					'end_date'   => $end_date,
-					'dimensions' => array_filter( $dimensions ),
-					'metrics'    => array_filter( $metrics ),
-					'sort'       => $data['orderby'],
-					'maxResults' => $data['limit'],
 				);
+
+				$metrics = $data['metrics'];
+				$metrics = is_array( $metrics ) ? $metrics : explode( ',', $metrics );
+				$metrics = array_filter( array_map( 'trim', $metrics ) );
+				if ( empty( $metrics ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ),
+						array( 'status' => 400 )
+					);
+				} else {
+					$args['metrics'] = $metrics;
+				}
+
+				$dimensions = $data['dimensions'];
+				$dimensions = is_array( $dimensions ) ? $dimensions : explode( ',', $dimensions );
+				$dimensions = array_filter( array_map( 'trim', $dimensions ) );
+				if ( ! empty( $dimensions ) ) {
+					$args['dimensions'] = $dimensions;
+				}
+
+				if ( ! empty( $data['orderby'] ) ) {
+					$args['sort'] = $data['orderby'];
+				}
+
+				if ( ! empty( $data['limit'] ) ) {
+					$args['maxResults'] = $ata['limit'];
+				}
 
 				return $this->create_adsense_earning_data_request( array_filter( $args ) );
 			case 'GET:notifications':
