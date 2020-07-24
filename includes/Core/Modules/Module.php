@@ -589,8 +589,8 @@ abstract class Module {
 		$date_start        = gmdate( 'Y-m-d', strtotime( $start_date_offset . ' days ago' ) );
 
 		// Check the day of the week alignment.
-		$previous_day_of_week = date( 'w', strtotime( $date_end ) );
-		$yesterday_day_of_week = date( 'w', strtotime( 'yesterday' ) );
+		$previous_day_of_week  = gmdate( 'w', strtotime( $date_end ) );
+		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
 		if ( $day_align && $previous_day_of_week !== $yesterday_day_of_week ) {
 			// Adjust the date to closest period that matches the same days of the week.
 			if (
@@ -606,13 +606,13 @@ abstract class Module {
 				)
 			) {
 					// Move the past date forward to the same day of the week.
-					$date_end = gmdate( 'Y-m-d', strtotime( '+' . absint( $yesterday_day_of_week - $previous_day_of_week ) . "days", strtotime( $date_end ) ) );
-					$date_start = gmdate( 'Y-m-d', strtotime( '+' . absint( $yesterday_day_of_week - $previous_day_of_week ) . "days", strtotime( $date_start ) ) );
-				} else {
-					// Move the past date backwards to the same day of the week.
-					$date_end = gmdate( 'Y-m-d', strtotime( '-' . absint( $yesterday_dayofweek - $previous_day_of_week ) . "days", strtotime( $date_end ) ) );
-					$date_start = gmdate( 'Y-m-d', strtotime( '-' . absint( $yesterday_dayofweek - $previous_day_of_week ) . "days", strtotime( $date_start ) ) );
-				}
+					$date_end   = gmdate( 'Y-m-d', strtotime( '+' . absint( $yesterday_day_of_week - $previous_day_of_week ) . 'days', strtotime( $date_end ) ) );
+					$date_start = gmdate( 'Y-m-d', strtotime( '+' . absint( $yesterday_day_of_week - $previous_day_of_week ) . 'days', strtotime( $date_start ) ) );
+			} else {
+				// Move the past date backwards to the same day of the week.
+				$date_end   = gmdate( 'Y-m-d', strtotime( '-' . absint( $yesterday_dayofweek - $previous_day_of_week ) . 'days', strtotime( $date_end ) ) );
+				$date_start = gmdate( 'Y-m-d', strtotime( '-' . absint( $yesterday_dayofweek - $previous_day_of_week ) . 'days', strtotime( $date_start ) ) );
+			}
 		}
 
 		return array( $date_start, $date_end );

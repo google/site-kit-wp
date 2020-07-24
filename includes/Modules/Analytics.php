@@ -882,7 +882,7 @@ final class Analytics extends Module
 				$date_ranges = array(
 					$this->parse_date_range(
 						$date_range,
-						$data['compareDateRanges'] ? 2 : 1,
+						$data['compareDateRanges'] ? 2 : 1
 					),
 				);
 
