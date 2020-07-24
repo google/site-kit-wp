@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * External dependencies
@@ -31,6 +31,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { sanitizeHTML } from '../../util/sanitize';
 import { getExistingTag } from '../../util/tag';
 import Link from '../link';
 import Warning from '../notifications/warning';
@@ -53,11 +54,7 @@ const checks = [
 	},
 	// Generate and check for a Site Kit specific meta tag on the page to test for agressive caching.
 	async () => {
-		// TODO convert to use googlesitekit-api
-		// const { token } = await data.set( TYPE_CORE, 'site', 'setup-tag' );
-		const response = await API.set( 'core', 'site', 'setup-tag' );
-		console.log( 'response1', response ); //eslint-disable-line
-		const { token } = response;
+		const { token } = await API.set( 'core', 'site', 'setup-tag' );
 
 		const scrapedTag = await getExistingTag( 'setup' ).catch( () => {
 			throw ERROR_FETCH_FAIL;
@@ -73,14 +70,11 @@ const checks = [
 			const response = await API.get( 'core', 'site', 'health-checks', undefined, {
 				useCache: false,
 			} );
-			console.log( 'response2', response ); // eslint-disable-line
-			const body = await response.text();
 
-			if ( ! body.checks?.googleAPI?.pass ) {
+			if ( ! response?.checks?.googleAPI?.pass ) {
 				throw ERROR_GOOGLE_API_CONNECTION_FAIL;
 			}
 		} catch ( error ) {
-			console.error( error ); //eslint-disable-line
 			throw ERROR_GOOGLE_API_CONNECTION_FAIL;
 		}
 	},
@@ -88,12 +82,10 @@ const checks = [
 	async () => {
 		try {
 			const response = await fetch( 'https://cdn.ampproject.org/v0.js' );
-			console.log( 'response3', response ); // eslint-disable-line
 			if ( ! response.ok ) {
 				throw ERROR_AMP_CDN_RESTRICTED;
 			}
 		} catch ( error ) {
-			console.error( error ); // eslint-disable-line
 			throw ERROR_AMP_CDN_RESTRICTED;
 		}
 	},
@@ -164,7 +156,7 @@ export default class CompatibilityChecks extends Component {
 		switch ( error ) {
 			case ERROR_INVALID_HOSTNAME:
 			case ERROR_FETCH_FAIL:
-				return <Fragment>
+				return <p>
 					{ ! installed && __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }
 					{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
 					{ ' ' }
@@ -174,9 +166,45 @@ export default class CompatibilityChecks extends Component {
 						external={ external }
 						inherit
 					/>
-				</Fragment>;
+				</p>;
 			case ERROR_TOKEN_MISMATCH:
-				return __( 'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.', 'google-site-kit' );
+				return <p>{ __( 'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.', 'google-site-kit' ) }</p>;
+			case ERROR_GOOGLE_API_CONNECTION_FAIL:
+				return <Fragment>
+					<p
+						dangerouslySetInnerHTML={ sanitizeHTML(
+							sprintf(
+							/* translators: %s: Support Forum URL */
+								__( 'Looks like your site is having a technical issue with requesting data from Google services.<br/>To get more help, ask a question on our <a href="%s">support forum</a> and include the text of the original error message:<br/>', 'google-site-kit' ),
+								'https://wordpress.org/support/plugin/google-site-kit/'
+							),
+							{
+								ALLOWED_TAGS: [ 'a', 'br' ],
+								ALLOWED_ATTR: [ 'href' ],
+							}
+						) }
+
+					/>
+					<p>{ error }</p>
+				</Fragment>;
+			case ERROR_AMP_CDN_RESTRICTED:
+				return <Fragment>
+					<p
+						dangerouslySetInnerHTML={ sanitizeHTML(
+							sprintf(
+							/* translators: %s: Support Forum URL */
+								__( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.<br/>To get more help, ask a question on our <a href="%s">support forum</a> and include the text of the original error message:<br/>', 'google-site-kit' ),
+								'https://wordpress.org/support/plugin/google-site-kit/'
+							),
+							{
+								ALLOWED_TAGS: [ 'a', 'br' ],
+								ALLOWED_ATTR: [ 'href' ],
+							}
+						) }
+
+					/>
+					<p>{ error }</p>
+				</Fragment>;
 		}
 	}
 
@@ -196,7 +224,7 @@ export default class CompatibilityChecks extends Component {
 							{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
 						</div>
 					</div>
-					<p>{ this.renderError( error ) }</p>
+					{ this.renderError( error ) }
 				</div>
 			</Fragment>;
 		}
