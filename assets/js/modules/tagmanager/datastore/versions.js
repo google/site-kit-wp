@@ -229,6 +229,23 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Checks if there are multiple unique Analytics property IDs for all effective containers based on current selections.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)}
+	 */
+	hasMultipleAnalyticsPropertyIDs: createRegistrySelector( ( select ) => () => {
+		const propertyIDs = select( STORE_NAME ).getAnalyticsPropertyIDs();
+
+		if ( propertyIDs === undefined ) {
+			return undefined;
+		}
+
+		return propertyIDs.length > 1;
+	} ),
+
+	/**
 	 * Checks whether or not the live container version is being fetched for the given account and container IDs.
 	 *
 	 * @since 1.11.0
