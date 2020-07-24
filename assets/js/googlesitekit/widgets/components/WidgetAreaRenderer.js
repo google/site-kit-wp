@@ -21,7 +21,11 @@
  */
 import classnames from 'classnames';
 import { string } from 'prop-types';
-import useDynamicRefs from 'use-dynamic-refs';
+
+/**
+ * WordPress dependencies
+ */
+import { useMemo, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -68,68 +72,68 @@ const WidgetAreaRenderer = ( { slug } ) => {
 	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
 	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
 
-	const [ getRef, setRef ] = useDynamicRefs();
+	// State handled by WidgetRenderer instances, based on whether the widget
+	// renders content or `null`.
+	const [ activeWidgets, setActiveWidgets ] = useState( {} );
 
-	let widgetClassNames = [];
-	let counter = 0;
-	widgets.forEach( ( widget, i ) => {
-		widgetClassNames[ i ] = [];
-
-		const widgetOutput = (
-			<WidgetRenderer key={ widget.slug } slug={ widget.slug } />
-		);
-
-		// If this widget output `null`, there's no sense in outputting classes for it.
-		if ( ! getRef( widget.slug )?.current ) {
-			widgetClassNames[ i ] = null;
-			return widgetOutput;
-		}
-
-		const width = widget.width;
-		const classNamesForWidget = [ 'mdc-layout-grid__cell' ];
-
-		if ( width === WIDGET_WIDTHS.FULL ) {
-			classNamesForWidget.push(
-				'mdc-layout-grid__cell--span-12',
-			);
-		}
-
-		if ( width === WIDGET_WIDTHS.HALF ) {
-			classNamesForWidget.push(
-				'mdc-layout-grid__cell--span-6-desktop',
-				'mdc-layout-grid__cell--span-8-tablet',
-			);
-		}
-
-		if ( width === WIDGET_WIDTHS.QUARTER ) {
-			classNamesForWidget.push(
-				'mdc-layout-grid__cell--span-3-desktop',
-				'mdc-layout-grid__cell--span-4-tablet',
-			);
-		}
-
-		widgetClassNames[ i ] = classNamesForWidget;
-
-		counter += WIDTH_GRID_MAP[ width ];
-
-		if ( counter % 12 === 0 ) {
-			counter = 0;
-		}
-
-		if ( counter > 12 ) {
-			counter -= WIDTH_GRID_MAP[ width ];
-
-			if ( counter === 9 ) {
-				[ widgetClassNames, counter ] = resizeClasses( widgetClassNames, counter );
+	const widgetClassNames = useMemo( () => {
+		let classNames = [];
+		let counter = 0;
+		widgets.forEach( ( widget, i ) => {
+			// If this widget is not active (outputs `null`), there's no sense in outputting classes for it.
+			if ( ! activeWidgets[ widget.slug ] ) {
+				classNames[ i ] = null;
+				return;
 			}
 
-			counter = WIDTH_GRID_MAP[ width ];
-		}
-	} );
+			const width = widget.width;
+			const classNamesForWidget = [ 'mdc-layout-grid__cell' ];
 
-	if ( counter === 9 ) {
-		[ widgetClassNames, counter ] = resizeClasses( widgetClassNames, counter );
-	}
+			if ( width === WIDGET_WIDTHS.FULL ) {
+				classNamesForWidget.push(
+					'mdc-layout-grid__cell--span-12',
+				);
+			}
+
+			if ( width === WIDGET_WIDTHS.HALF ) {
+				classNamesForWidget.push(
+					'mdc-layout-grid__cell--span-6-desktop',
+					'mdc-layout-grid__cell--span-8-tablet',
+				);
+			}
+
+			if ( width === WIDGET_WIDTHS.QUARTER ) {
+				classNamesForWidget.push(
+					'mdc-layout-grid__cell--span-3-desktop',
+					'mdc-layout-grid__cell--span-4-tablet',
+				);
+			}
+
+			classNames[ i ] = classNamesForWidget;
+
+			counter += WIDTH_GRID_MAP[ width ];
+
+			if ( counter % 12 === 0 ) {
+				counter = 0;
+			}
+
+			if ( counter > 12 ) {
+				counter -= WIDTH_GRID_MAP[ width ];
+
+				if ( counter === 9 ) {
+					[ classNames, counter ] = resizeClasses( classNames, counter );
+				}
+
+				counter = WIDTH_GRID_MAP[ width ];
+			}
+		} );
+
+		if ( counter === 9 ) {
+			[ classNames, counter ] = resizeClasses( classNames, counter );
+		}
+
+		return classNames;
+	}, [ widgets, activeWidgets ] );
 
 	return (
 		<div className={ classnames( 'mdc-layout-grid', 'googlesitekit-widget-area', `googlesitekit-widget-area--${ widgetArea.slug }`, `googlesitekit-widget-area--${ widgetArea.style }` ) }>
@@ -156,10 +160,11 @@ const WidgetAreaRenderer = ( { slug } ) => {
 					{ widgets.map( ( widget, i ) => {
 						return (
 							<WidgetRenderer
-								className={ widgetClassNames[ i ] !== null ? classnames( widgetClassNames[ i ] ) : 'googlesitekit-widget-area--hidden' }
+								gridClassName={ widgetClassNames[ i ] !== null ? classnames( widgetClassNames[ i ] ) : 'googlesitekit-widget-area--hidden' }
 								key={ widget.slug }
-								ref={ setRef( widget.slug ) }
 								slug={ widget.slug }
+								activeWidgets={ activeWidgets }
+								setActiveWidgets={ setActiveWidgets }
 							/>
 						);
 					} ) }
