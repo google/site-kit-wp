@@ -55,8 +55,8 @@ function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 	const currentRange = getCurrentDateRange( dateRange );
 	const headers = [
 		{
-			title: __( 'Medium', 'google-site-kit' ),
-			tooltip: __( 'Medium refers to where your traffic originated from', 'google-site-kit' ),
+			title: __( 'Channel', 'google-site-kit' ),
+			tooltip: __( 'Channel refers to where your traffic originated from', 'google-site-kit' ),
 		},
 		{
 			title: __( 'Users', 'google-site-kit' ),
@@ -77,15 +77,10 @@ function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 			tooltip: __( 'Percentage of sessions', 'google-site-kit' ),
 		},
 	];
-	const totalSessions = data[ 0 ].data.totals[ 0 ].values[ 0 ];
+	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
 
 	const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
-		const percent = ( row.metrics[ 0 ].values[ 0 ] / totalSessions * 100 );
-
-		// Exclude sources below 1%.
-		if ( 1 > percent ) {
-			return false;
-		}
+		const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
 
 		return [
 			row.dimensions[ 0 ],
