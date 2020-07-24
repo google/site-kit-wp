@@ -44,15 +44,15 @@ const addPostSearcher = createAddToFilter( <PostSearcher /> );
  * Internal dependencies
  */
 import PostSearcher from '../../components/post-searcher';
-import GoogleSitekitSearchConsoleDashboardWidget from './dashboard/dashboard-widget';
-import GoogleSitekitSearchConsoleAdminbarWidget from './adminbar/adminbar-widget';
-import WPSearchConsoleDashboardWidget from './wp-dashboard/wp-dashboard-widget';
-import DashboardSearchFunnel from './dashboard/dashboard-widget-search-funnel.js';
-import SearchConsoleDashboardWidgetTopLevel from './dashboard/dashboard-widget-top-level';
-import DashboardDetailsWidgetKeywordsTable from './dashboard-details/dashboard-details-widget-keyword-table';
-import DashboardWidgetPopularKeywordsTable from './dashboard/dashboard-widget-popular-keyword-table';
-import DashboardDetailsWidgetSearchFunnel from './dashboard-details/dashboard-details-widget-search-funnel';
-import DashboardPopularity from './dashboard/dashboard-widget-popularity';
+import GoogleSitekitSearchConsoleDashboardWidget from './components/dashboard/GoogleSitekitSearchConsoleDashboardWidget';
+import GoogleSitekitSearchConsoleAdminbarWidget from './components/adminbar/GoogleSitekitSearchConsoleAdminbarWidget';
+import WPSearchConsoleDashboardWidget from './components/wp-dashboard/WPSearchConsoleDashboardWidget';
+import DashboardSearchFunnel from './components/dashboard/DashboardSearchFunnel.js';
+import SearchConsoleDashboardWidgetTopLevel from './components/dashboard/SearchConsoleDashboardWidgetTopLevel';
+import DashboardDetailsWidgetKeywordsTable from './components/dashboard-details/DashboardDetailsWidgetKeywordsTable';
+import DashboardWidgetPopularKeywordsTable from './components/dashboard/DashboardWidgetPopularKeywordsTable';
+import DashboardDetailsWidgetSearchFunnel from './components/dashboard-details/DashboardDetailsSearchFunnel';
+import DashboardPopularity from './components/dashboard/DashboardPopularity';
 
 /**
  * Add components to the Site Kit Dashboard.
