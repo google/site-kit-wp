@@ -44,7 +44,7 @@ const WidgetRenderer = forwardRef( ( { className, slug }, ref ) => {
 
 	// Capitalize the "component" variable, as it is required by JSX.
 	const { component: Component, wrapWidget } = widget;
-	const widgetComponent = <Component className={ wrapWidget ? className : undefined } ref={ ref } slug={ slug } />;
+	const widgetComponent = <Component className={ wrapWidget ? className : undefined } ref={ ref } />;
 
 	return wrapWidget
 		? <Widget className={ className } slug={ slug }>{ widgetComponent }</Widget>

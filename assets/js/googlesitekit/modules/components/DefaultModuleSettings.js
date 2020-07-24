@@ -1,7 +1,7 @@
 /**
- * PageSpeed Insights dashboard utility functions.
+ * DefaultModuleSettings component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,8 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { CATEGORY_FAST, CATEGORY_AVERAGE, CATEGORY_SLOW } from '../constants';
+const DefaultModuleSettings = () => {
+	return null;
+};
 
-/**
- * Retrieve the score category slug based on the given score.
- *
- * @param {number} score Score between 1.0 and 0.0.
- *
- * @return {string} Either 'fast', 'average', or 'slow'.
- */
-export function getScoreCategory( score ) {
-	if ( 0.9 <= score ) {
-		return CATEGORY_FAST;
-	}
-
-	if ( 0.5 <= score ) {
-		return CATEGORY_AVERAGE;
-	}
-
-	return CATEGORY_SLOW;
-}
+export default DefaultModuleSettings;
