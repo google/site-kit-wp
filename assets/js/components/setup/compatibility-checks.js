@@ -30,19 +30,17 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
+import { getExistingTag } from '../../util/tag';
+import Link from '../link';
 import Warning from '../notifications/warning';
 import ProgressBar from '../../components/progress-bar';
-
-/**
- * Internal dependencies
- */
-import { getExistingTag } from '../../util/tag';
-import data, { TYPE_CORE } from '../data';
-import Link from '../link';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'tag_fetch_failed';
 const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
+const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
+const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
 
 const checks = [
 	// Check for a known non-public/reserved domain.
@@ -55,7 +53,11 @@ const checks = [
 	},
 	// Generate and check for a Site Kit specific meta tag on the page to test for agressive caching.
 	async () => {
-		const { token } = await data.set( TYPE_CORE, 'site', 'setup-tag' );
+		// TODO convert to use googlesitekit-api
+		// const { token } = await data.set( TYPE_CORE, 'site', 'setup-tag' );
+		const response = await API.set( 'core', 'site', 'setup-tag' );
+		console.log( 'response1', response ); //eslint-disable-line
+		const { token } = response;
 
 		const scrapedTag = await getExistingTag( 'setup' ).catch( () => {
 			throw ERROR_FETCH_FAIL;
@@ -63,6 +65,36 @@ const checks = [
 
 		if ( token !== scrapedTag ) {
 			throw ERROR_TOKEN_MISMATCH;
+		}
+	},
+	// Check that server can connect to Google's APIs via the core/site/data/health-checks endpoint.
+	async () => {
+		try {
+			const response = await API.get( 'core', 'site', 'health-checks', undefined, {
+				useCache: false,
+			} );
+			console.log( 'response2', response ); // eslint-disable-line
+			const body = await response.text();
+
+			if ( ! body.checks?.googleAPI?.pass ) {
+				throw ERROR_GOOGLE_API_CONNECTION_FAIL;
+			}
+		} catch ( error ) {
+			console.error( error ); //eslint-disable-line
+			throw ERROR_GOOGLE_API_CONNECTION_FAIL;
+		}
+	},
+	// Check that client can connect to AMP Project.
+	async () => {
+		try {
+			const response = await fetch( 'https://cdn.ampproject.org/v0.js' );
+			console.log( 'response3', response ); // eslint-disable-line
+			if ( ! response.ok ) {
+				throw ERROR_AMP_CDN_RESTRICTED;
+			}
+		} catch ( error ) {
+			console.error( error ); // eslint-disable-line
+			throw ERROR_AMP_CDN_RESTRICTED;
 		}
 	},
 ];
@@ -87,7 +119,7 @@ export default class CompatibilityChecks extends Component {
 				await testCallback();
 			}
 		} catch ( error ) {
-			const developerPlugin = await data.get( TYPE_CORE, 'site', 'developer-plugin' );
+			const developerPlugin = await API.get( 'core', 'site', 'developer-plugin' );
 			this.setState( { error, developerPlugin } );
 		}
 
