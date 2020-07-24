@@ -107,7 +107,7 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets a Search Console report for the given options.
+	 * Gets an Analytics report for the given options.
 	 *
 	 * @since n.e.x.t
 	 *
