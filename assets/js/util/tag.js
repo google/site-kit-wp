@@ -17,18 +17,25 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import memoize from 'lodash/memoize';
+
+/**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
-import { addQueryArgs } from '@wordpress/url';
+import { addQueryArgs, isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import { default as setupTagMatchers } from '../components/setup/tag-matchers';
-import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
-import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
+import { default as adsenseTagMatchers } from '../modules/adsense/util/tag-matchers';
+import { default as analyticsTagMatchers } from '../modules/analytics/util/tag-matchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
+import { AMP_MODE_SECONDARY } from '../googlesitekit/datastore/site/constants';
 
 /**
  * Looks for existing tag requesting front end html, if no existing tag was found on server side
@@ -50,7 +57,7 @@ export const getExistingTag = async ( module ) => {
 	// Always check the homepage regardless of AMP mode.
 	let tagFound = await scrapeTag( addQueryArgs( homeURL, tagFetchQueryArgs ), module );
 
-	if ( ! tagFound && 'secondary' === ampMode ) {
+	if ( ! tagFound && AMP_MODE_SECONDARY === ampMode ) {
 		tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } ).then(
 			// Scrape the first post in AMP mode, if there is one.
 			( posts ) => posts.slice( 0, 1 ).map( async ( post ) => {
@@ -103,3 +110,62 @@ export const extractTag = ( string, module ) => {
 
 	return false;
 };
+
+/**
+ * Extracts a tag from the given HTML string matched by given matchers.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} html       The string of html from which to extract the tag.
+ * @param {Array}  tagMatchers An array of the matchers to use.
+ *
+ * @return {(string|boolean)} The tag id if found, otherwise false.
+ */
+export const extractExistingTag = ( html, tagMatchers ) => {
+	const matchingPattern = tagMatchers.find( ( pattern ) => pattern.test( html ) );
+
+	if ( matchingPattern ) {
+		return matchingPattern.exec( html )[ 1 ];
+	}
+
+	return false;
+};
+
+/**
+ * Gets the existing tag URLs.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} args           Arguments to use to get URLs.
+ * @param {string} args.homeURL   The site's home URL.
+ * @param {string} [args.ampMode] Optional. The site's AMP mode.
+ * @return {Array} An array of the existing tag URLs.
+ */
+export const getExistingTagURLs = memoize( async ( { homeURL, ampMode } ) => {
+	invariant(
+		isURL( homeURL ),
+		'homeURL must be valid URL'
+	);
+
+	// Initialize urls with home URL
+	const urls = [ homeURL ];
+
+	// Add first post in AMP mode if AMP mode is secondary.
+	if ( AMP_MODE_SECONDARY === ampMode ) {
+		try {
+			const ampPostURL = await apiFetch( { path: '/wp/v2/posts?per_page=1' } )
+				.then(
+					( posts ) => posts.slice( 0, 1 ).map(
+						( post ) => addQueryArgs( post.link, { amp: 1 } )
+					).pop()
+				);
+			if ( ampPostURL ) {
+				urls.push( ampPostURL );
+			}
+		} catch {
+			return urls;
+		}
+	}
+
+	return urls;
+} );

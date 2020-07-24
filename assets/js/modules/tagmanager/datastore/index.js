@@ -26,9 +26,10 @@ import { STORE_NAME } from './constants';
 import accounts from './accounts';
 import containers from './containers';
 import error from './error';
-import existingTag from './existing-tag';
+import tags from './tags';
 import settings from './settings';
 import versions from './versions';
+
 export { STORE_NAME };
 
 let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
@@ -66,7 +67,7 @@ const store = Data.combineStores(
 	accounts,
 	containers,
 	error,
-	existingTag,
+	tags,
 	settings,
 	versions,
 	createSnapshotStore( STORE_NAME ),
