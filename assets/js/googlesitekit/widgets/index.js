@@ -26,7 +26,7 @@ import { React } from '@wordpress/element';
  */
 import { dispatch, select } from 'googlesitekit-data';
 import Widget from './components/Widget';
-import { STORE_NAME, WIDGET_WIDTHS, WIDGET_STYLES } from './datastore/constants';
+import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from './datastore/constants';
 // This import has side-effects; it registers the Widgets datastore on the default
 // data store registry (eg. `googlesitekit.data`).
 import './datastore';
@@ -42,11 +42,11 @@ const Widgets = {
 	components: { Widget },
 
 	/**
-	 * Supported styles for Site Kit widgets.
+	 * Supported styles for Site Kit widget areas.
 	 *
 	 * @since n.e.x.t
 	 */
-	WIDGET_STYLES,
+	WIDGET_AREA_STYLES,
 
 	/**
 	 * Supported widths for Site Kit widgets.
