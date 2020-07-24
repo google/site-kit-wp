@@ -30,7 +30,7 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CATEGORY_FAST, CATEGORY_AVERAGE, CATEGORY_SLOW } from './constants';
+import { CATEGORY_FAST, CATEGORY_AVERAGE, CATEGORY_SLOW } from '../../util/constants';
 
 export default function ReportMetric( {
 	title,
