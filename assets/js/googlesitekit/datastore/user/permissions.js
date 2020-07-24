@@ -125,11 +125,6 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
-	/**
-	 * Fullfills user capabilities on initial request.
-	 *
-	 * @since n.e.x.t
-	 */
 	*getCapabilities() {
 		if ( ! global._googlesitekitUserData?.permissions ) {
 			global.console.error( 'Could not load core/user permissions.' );
