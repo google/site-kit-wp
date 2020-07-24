@@ -37,7 +37,7 @@ import CountrySelect from './CountrySelect';
 import ErrorNotice from '../ErrorNotice';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER, PERMISSION_SCOPE_ERROR_CODE } from '../../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_USER, ERROR_MISSING_REQUIRED_SCOPE } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { countryCodesByTimezone } from '../../../util/countries-timezones';
 import Data from 'googlesitekit-data';
@@ -94,7 +94,7 @@ export default function AccountCreate() {
 				// When state is restored, auto-submit the request again.
 				setValues( FORM_ACCOUNT_CREATE, { autoSubmit: true } );
 				setPermissionScopeError( {
-					code: PERMISSION_SCOPE_ERROR_CODE,
+					code: ERROR_MISSING_REQUIRED_SCOPE,
 					message: __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
 					data: {
 						status: 403,
