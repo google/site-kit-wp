@@ -29,6 +29,7 @@ import {
 	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/tagmanager versions', () => {
@@ -49,6 +50,38 @@ describe( 'modules/tagmanager versions', () => {
 	afterEach( () => {
 		unsubscribeFromAll( registry );
 	} );
+
+	const parseIDs = ( { accountId, containerId, container: { publicId } }, callback ) => {
+		const ids = {
+			accountID: accountId,
+			containerID: publicId,
+			ampContainerID: publicId,
+			internalContainerID: containerId,
+			internalAMPContainerID: containerId,
+		};
+		if ( callback ) {
+			callback( ids );
+		}
+		return ids;
+	};
+
+	const buildAndReceiveWebAndAMP = ( { webPropertyID, ampPropertyID } = {} ) => {
+		const accountID = '12345';
+		const liveContainerVersionWeb = factories.buildLiveContainerVersionWeb( { accountID, propertyID: webPropertyID } );
+		const liveContainerVersionAMP = factories.buildLiveContainerVersionAMP( { accountID, propertyID: ampPropertyID } );
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		parseIDs( liveContainerVersionWeb, ( { containerID, internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).setContainerID( containerID );
+			registry.dispatch( STORE_NAME ).setInternalContainerID( internalContainerID );
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionWeb, { accountID, internalContainerID } );
+		} );
+		parseIDs( liveContainerVersionAMP, ( { containerID, internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).setAMPContainerID( containerID );
+			registry.dispatch( STORE_NAME ).setInternalAMPContainerID( internalContainerID );
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionAMP, { accountID, internalContainerID } );
+		} );
+		return { accountID, liveContainerVersionWeb, liveContainerVersionAMP };
+	};
 
 	describe( 'actions', () => {
 		describe( 'receiveGetLiveContainerVersion', () => {
@@ -86,27 +119,25 @@ describe( 'modules/tagmanager versions', () => {
 				beforeEach( () => registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } ) );
 
 				it( 'returns an array including the property ID found in the current web container', () => {
-					const liveContainerVersionFixture = fixtures.liveContainerVersions.web.gaWithVariable;
-					const accountID = liveContainerVersionFixture.accountId;
-					const internalContainerID = liveContainerVersionFixture.containerId;
+					const liveContainerVersion = factories.buildLiveContainerVersionWeb( { propertyID: 'UA-12345-1' } );
+					const { accountID, containerID, internalContainerID } = parseIDs( liveContainerVersion );
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).setContainerID( liveContainerVersionFixture.container.publicId );
+					registry.dispatch( STORE_NAME ).setContainerID( containerID );
 					registry.dispatch( STORE_NAME ).setInternalContainerID( internalContainerID );
-					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
 
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
-					expect( propertyIDs ).toEqual( [ 'UA-123456789-1' ] );
+					expect( propertyIDs ).toEqual( [ 'UA-12345-1' ] );
 				} );
 
 				it( 'returns an array of `null` if the selected container has no Analytics property tags', () => {
-					const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
-					const accountID = liveContainerVersionFixture.accountId;
-					const internalContainerID = liveContainerVersionFixture.containerId;
+					const liveContainerVersion = factories.buildLiveContainerVersionWeb();
+					const { accountID, containerID, internalContainerID } = parseIDs( liveContainerVersion );
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).setContainerID( liveContainerVersionFixture.container.publicId );
+					registry.dispatch( STORE_NAME ).setContainerID( containerID );
 					registry.dispatch( STORE_NAME ).setInternalContainerID( internalContainerID );
-					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
 					expect( registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID ) ).toEqual( null );
 
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
@@ -130,27 +161,25 @@ describe( 'modules/tagmanager versions', () => {
 				beforeEach( () => registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } ) );
 
 				it( 'returns an array including the property ID found in the current AMP container', () => {
-					const liveContainerVersionFixture = fixtures.liveContainerVersions.amp.ga;
-					const accountID = liveContainerVersionFixture.accountId;
-					const internalContainerID = liveContainerVersionFixture.containerId;
+					const liveContainerVersion = factories.buildLiveContainerVersionAMP( { propertyID: 'UA-12345-1' } );
+					const { accountID, containerID, internalContainerID } = parseIDs( liveContainerVersion );
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).setAMPContainerID( liveContainerVersionFixture.container.publicId );
+					registry.dispatch( STORE_NAME ).setAMPContainerID( containerID );
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( internalContainerID );
-					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
 
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
-					expect( propertyIDs ).toEqual( [ 'UA-123456789-1' ] );
+					expect( propertyIDs ).toEqual( [ 'UA-12345-1' ] );
 				} );
 
 				it( 'returns an array of `null` if the selected container has no Analytics property tags', () => {
-					const liveContainerVersionFixture = fixtures.liveContainerVersions.amp.noGA;
-					const accountID = liveContainerVersionFixture.accountId;
-					const internalContainerID = liveContainerVersionFixture.containerId;
+					const liveContainerVersion = factories.buildLiveContainerVersionAMP();
+					const { accountID, containerID, internalContainerID } = parseIDs( liveContainerVersion );
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).setAMPContainerID( liveContainerVersionFixture.container.publicId );
+					registry.dispatch( STORE_NAME ).setAMPContainerID( containerID );
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( internalContainerID );
-					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
 					expect( registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID ) ).toEqual( null );
 
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
@@ -174,37 +203,20 @@ describe( 'modules/tagmanager versions', () => {
 				beforeEach( () => registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } ) );
 
 				it( 'returns an array including property IDs found in both the web and AMP containers', () => {
-					const liveContainerVersionWeb = fixtures.liveContainerVersions.web.gaWithVariable;
-					const liveContainerVersionAMP = fixtures.liveContainerVersions.amp.gaWithID( 'UA-9999999-9' );
-					const accountID = liveContainerVersionWeb.accountId;
-					const internalContainerID = liveContainerVersionWeb.containerId;
-					const internalAMPContainerID = liveContainerVersionAMP.containerId;
-					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).setContainerID( liveContainerVersionWeb.container.publicId );
-					registry.dispatch( STORE_NAME ).setInternalContainerID( internalContainerID );
-					registry.dispatch( STORE_NAME ).setAMPContainerID( liveContainerVersionAMP.container.publicId );
-					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( internalAMPContainerID );
-					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionWeb, { accountID, internalContainerID } );
-					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionAMP, { accountID, internalContainerID: internalAMPContainerID } );
-
+					buildAndReceiveWebAndAMP( {
+						webPropertyID: 'UA-123456789-1',
+						ampPropertyID: 'UA-9999999-9',
+					} );
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toEqual( [ 'UA-123456789-1', 'UA-9999999-9' ] );
 				} );
 
 				it( 'returns an array of unique property IDs of both the web and AMP containers', () => {
-					const liveContainerVersionWeb = fixtures.liveContainerVersions.web.gaWithVariable;
-					const liveContainerVersionAMP = fixtures.liveContainerVersions.amp.ga;
-					const accountID = liveContainerVersionWeb.accountId;
-					const internalContainerID = liveContainerVersionWeb.containerId;
-					const internalAMPContainerID = liveContainerVersionAMP.containerId;
-					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).setContainerID( liveContainerVersionWeb.container.publicId );
-					registry.dispatch( STORE_NAME ).setInternalContainerID( internalContainerID );
-					registry.dispatch( STORE_NAME ).setAMPContainerID( liveContainerVersionAMP.container.publicId );
-					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( internalAMPContainerID );
-					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionWeb, { accountID, internalContainerID } );
-					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionAMP, { accountID, internalContainerID: internalAMPContainerID } );
+					buildAndReceiveWebAndAMP( {
+						webPropertyID: 'UA-123456789-1',
+						ampPropertyID: 'UA-123456789-1',
+					} );
 
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
@@ -212,18 +224,7 @@ describe( 'modules/tagmanager versions', () => {
 				} );
 
 				it( 'returns an array of `null` if the selected containers have no Analytics property tags', () => {
-					const liveContainerVersionWeb = fixtures.liveContainerVersions.web.withVariable;
-					const liveContainerVersionAMP = fixtures.liveContainerVersions.amp.noGA;
-					const accountID = liveContainerVersionWeb.accountId;
-					const internalContainerID = liveContainerVersionWeb.containerId;
-					const internalAMPContainerID = liveContainerVersionAMP.containerId;
-					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).setContainerID( liveContainerVersionWeb.container.publicId );
-					registry.dispatch( STORE_NAME ).setInternalContainerID( internalContainerID );
-					registry.dispatch( STORE_NAME ).setAMPContainerID( liveContainerVersionAMP.container.publicId );
-					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( internalAMPContainerID );
-					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionWeb, { accountID, internalContainerID } );
-					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionAMP, { accountID, internalContainerID: internalAMPContainerID } );
+					buildAndReceiveWebAndAMP();
 
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
@@ -231,18 +232,17 @@ describe( 'modules/tagmanager versions', () => {
 				} );
 
 				it( 'returns undefined if the live container data is not loaded yet for either container', () => {
-					const liveContainerVersionWeb = fixtures.liveContainerVersions.web.withVariable;
-					const liveContainerVersionAMP = fixtures.liveContainerVersions.amp.ga;
-					const accountID = liveContainerVersionWeb.accountId;
-					const internalContainerID = liveContainerVersionWeb.containerId;
-					const internalAMPContainerID = liveContainerVersionAMP.containerId;
+					const liveContainerVersionWeb = factories.buildLiveContainerVersionWeb();
+					const { accountID, containerID, internalContainerID } = parseIDs( liveContainerVersionWeb );
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).setContainerID( liveContainerVersionWeb.container.publicId );
+					registry.dispatch( STORE_NAME ).setContainerID( containerID );
 					registry.dispatch( STORE_NAME ).setInternalContainerID( internalContainerID );
-					registry.dispatch( STORE_NAME ).setAMPContainerID( liveContainerVersionAMP.container.publicId );
-					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( internalAMPContainerID );
-					// Receive the live container data for the web container but not the AMP container.
 					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionWeb, { accountID, internalContainerID } );
+					const liveContainerVersionAMP = factories.buildLiveContainerVersionWeb();
+					const { ampContainerID, internalAMPContainerID } = parseIDs( liveContainerVersionAMP );
+					registry.dispatch( STORE_NAME ).setAMPContainerID( ampContainerID );
+					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( internalAMPContainerID );
+					// Received the live container data for the web container but not the AMP container.
 
 					muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
