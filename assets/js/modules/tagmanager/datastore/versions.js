@@ -226,6 +226,30 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Gets the single property ID used by all selected containers.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string|null|boolean|undefined)} String property ID used by all containers,
+	 *                                           `null` if no property ID was found in either container,
+	 *                                           `false` if a single property ID could not be determined,
+	 *                                           or `undefined` if live container data is not loaded yet.
+	 */
+	getSingleAnalyticsPropertyID: createRegistrySelector( ( select ) => () => {
+		const propertyIDs = select( STORE_NAME ).getAnalyticsPropertyIDs();
+
+		if ( propertyIDs === undefined ) {
+			return undefined;
+		}
+
+		if ( propertyIDs.length === 1 ) {
+			return propertyIDs[ 0 ]; // (string|null)
+		}
+
+		return false;
+	} ),
+
+	/**
 	 * Checks if there are multiple unique Analytics property IDs for all effective containers based on current selections.
 	 *
 	 * @since n.e.x.t
