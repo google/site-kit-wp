@@ -254,32 +254,31 @@ describe( 'modules/tagmanager versions', () => {
 
 		describe( 'getLiveContainerAnalyticsTag', () => {
 			it( 'returns the Universal Analytics tag object from the live container object', () => {
-				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.gaWithVariable;
-				const accountID = liveContainerVersionFixture.accountId;
-				const internalContainerID = liveContainerVersionFixture.containerId;
-				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+				const liveContainerVersion = factories.buildLiveContainerVersionWeb( { propertyID: 'UA-12345-1' } );
+				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
 
 				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
 
-				expect( tagObject ).toEqual( liveContainerVersionFixture.tag[ 0 ] );
+				expect( tagObject ).toMatchObject( { type: 'ua' } );
+				expect( tagObject ).toEqual( liveContainerVersion.tag.find( ( { type } ) => type === 'ua' ) );
 			} );
 
 			it( 'returns the Universal Analytics tag object from the live container object for an AMP container', () => {
-				const liveContainerVersionFixture = fixtures.liveContainerVersions.amp.ga;
-				const accountID = liveContainerVersionFixture.accountId;
-				const internalContainerID = liveContainerVersionFixture.containerId;
-				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+				const liveContainerVersion = factories.buildLiveContainerVersionAMP( { propertyID: 'UA-12345-1' } );
+				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
 
 				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
 
-				expect( tagObject ).toEqual( liveContainerVersionFixture.tag[ 0 ] );
+				expect( tagObject ).toMatchObject( { type: 'ua_amp' } );
+				expect( tagObject ).toEqual( liveContainerVersion.tag.find( ( { type } ) => type === 'ua_amp' ) );
 			} );
 
 			it( 'returns null if the live container version does not contain a Universal Analytics tag', () => {
-				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
-				const accountID = liveContainerVersionFixture.accountId;
-				const internalContainerID = liveContainerVersionFixture.containerId;
-				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionFixture, { accountID, internalContainerID } );
+				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
+				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
 
 				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
 
@@ -287,9 +286,8 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'returns null if no live container version exists', () => {
-				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
-				const accountID = liveContainerVersionFixture.accountId;
-				const internalContainerID = liveContainerVersionFixture.containerId;
+				const accountID = '12345';
+				const internalContainerID = '98765';
 				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( null, { accountID, internalContainerID } );
 
 				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
@@ -298,9 +296,8 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'returns undefined if the live container version is not loaded yet', () => {
-				const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
-				const accountID = liveContainerVersionFixture.accountId;
-				const internalContainerID = liveContainerVersionFixture.containerId;
+				const accountID = '12345';
+				const internalContainerID = '98765';
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
 				const tagObject = registry.select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
