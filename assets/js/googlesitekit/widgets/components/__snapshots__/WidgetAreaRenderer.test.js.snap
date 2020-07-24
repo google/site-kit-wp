@@ -383,38 +383,6 @@ exports[`WidgetAreaRenderer should resize widgets so they fill a row 7`] = `
 </div>
 `;
 
-exports[`WidgetAreaRenderer should return the same number of elements as widgets from a selector 1`] = `
-<div
-  class="googlesitekit-widget-area-widgets"
->
-  <div
-    class="mdc-layout-grid__inner"
-  >
-    <div
-      class="googlesitekit-widget googlesitekit-widget--one mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
-    >
-      <div>
-        Foo bar!
-      </div>
-    </div>
-    <div
-      class="googlesitekit-widget googlesitekit-widget--two mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
-    >
-      <div>
-        Foo bar!
-      </div>
-    </div>
-    <div
-      class="googlesitekit-widget googlesitekit-widget--three mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
-    >
-      <div>
-        Foo bar!
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
 exports[`WidgetAreaRenderer should treat widgets that render no content as zero-width (ignoring them) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"

@@ -83,12 +83,10 @@ describe( 'WidgetAreaRenderer', () => {
 		] );
 
 		const widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-		expect( widgets ).toHaveLength( 3 );
-
 		const { container } = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } );
 
-		// expect( Object.values( container.firstChild.querySelectorAll('.googlesitekit-widget-area-widgets')[0].classList ) ).toEqual( [] );
-		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+		expect( widgets ).toHaveLength( 3 );
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget' ) ).toHaveLength( 3 );
 	} );
 
 	it( 'should resize widgets so they fill a row', () => {
