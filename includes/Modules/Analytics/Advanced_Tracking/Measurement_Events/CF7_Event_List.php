@@ -18,7 +18,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
  * @ignore
  */
 final class CF7_Event_List extends Measurement_Event_List {
-	//TODO: Implement metadata callbacks.
+	// TODO: Implement metadata callbacks.
 
 	/**
 	 * CF7_Event_List constructor.

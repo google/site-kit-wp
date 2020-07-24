@@ -56,7 +56,7 @@ class MockMeasurementEventListFactory extends Measurement_Event_List_Factory {
 	 * @param string $plugin_name Name of plugin to be added.
 	 */
 	public function add_active_plugin( $plugin_name ) {
-		if ( array_key_exists( $plugin_name, $this->mock_active_plugins) ) {
+		if ( array_key_exists( $plugin_name, $this->mock_active_plugins ) ) {
 			return;
 		}
 		$event_list = null;
@@ -79,7 +79,7 @@ class MockMeasurementEventListFactory extends Measurement_Event_List_Factory {
 				break;
 		}
 		if ( null !== $event_list ) {
-			$this->mock_active_plugins[$plugin_name] = $event_list;
+			$this->mock_active_plugins[ $plugin_name ] = $event_list;
 		}
 	}
 

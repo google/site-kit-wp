@@ -47,6 +47,18 @@ final class Measurement_Code_Injector {
 	public function __construct( $event_configurations ) {
 		$this->event_configurations = Measurement_Event_Pipe::encode_measurement_event_list( $event_configurations );
 		$this->inject_script        = <<<INJECT_SCRIPT
+function matches(el, selector) {
+    const matcher =
+	    el.matches ||
+	    el.webkitMatchesSelector ||
+	    el.mozMatchesSelector ||
+	    el.msMatchesSelector ||
+	    el.oMatchesSelector;
+    if (matcher) {
+        return matcher.call(el, selector);
+    }
+    return false;
+}
 ( function() {
     var eventConfigurations = {$this->event_configurations};
 	var config;
@@ -54,8 +66,7 @@ final class Measurement_Code_Injector {
 		const thisConfig = config;
 		document.addEventListener( config.on, function( e ) {
 			var el = e.target;
-			var matcher = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector || el.oMatchesSelector;
-			if ( matcher && ( matcher.call( el, thisConfig.selector ) || matcher.call( el, thisConfig.selector.concat( ' *' ) ) ) ) {
+			if ( matches(el, thisConfig.selector) || matches(el, thisConfig.selector.concat( ' *' )) ) {
 				alert( 'Got an event called: '.concat( thisConfig.action ) );
 
 				var params = {};

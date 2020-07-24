@@ -54,18 +54,16 @@ class Measurement_Event_List_Factory {
 		$active_plugins = array_filter(
 			$supported_plugins,
 			function( $plugin_config ) {
-				if ( self::TYPE_CONSTANT === $plugin_config['check_type'] &&
-				     defined( $plugin_config['check_name'] ) ) { // phpcs:ignore WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName
+				if ( self::TYPE_CONSTANT === $plugin_config['check_type'] && defined( $plugin_config['check_name'] ) ) { // phpcs:ignore WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName
 					return true;
 				}
-				if ( self::TYPE_FUNCTION === $plugin_config['check_type'] &&
-				     function_exists( $plugin_config['check_name'] ) ) {
+				if ( self::TYPE_FUNCTION === $plugin_config['check_type'] && function_exists( $plugin_config['check_name'] ) ) {
 					return true;
 				}
 				return false;
 			}
 		);
-		$plugin_names = array_keys( $active_plugins );
+		$plugin_names   = array_keys( $active_plugins );
 		foreach ( $plugin_names as $plugin_name ) {
 			$active_plugins[ $plugin_name ] = $this->produce_plugin_event_list( $plugin_name );
 		}
