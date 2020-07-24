@@ -30,7 +30,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SettingsModule from '../assets/js/components/settings/settings-module';
-import { SettingsMain as SearchConsoleSettings } from '../assets/js/modules/search-console/settings';
+import { SettingsMain as SearchConsoleSettings } from '../assets/js/modules/search-console/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 
 import { STORE_NAME } from '../assets/js/modules/search-console/datastore';
