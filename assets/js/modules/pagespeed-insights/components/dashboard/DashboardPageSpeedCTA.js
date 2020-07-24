@@ -47,7 +47,7 @@ function DashboardPageSpeedCTA() {
 
 	const { active, setupComplete } = pagespeedInsightsModule;
 
-	if ( ! canManageOptions && ! setupComplete ) {
+	if ( ! canManageOptions || ( active && setupComplete ) ) {
 		return null;
 	}
 
