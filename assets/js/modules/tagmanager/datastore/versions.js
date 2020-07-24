@@ -250,6 +250,23 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Checks whether any Analytics property ID is present in either selected container.
+	 *
+	 * @return {(boolean|undefined)} `true` if an Analytics property ID is present in either container,
+	 *                               `false` if no Analytics property ID is present in either container,
+	 *                               `undefined` if live container version data is not loaded yet.
+	 */
+	hasAnyAnalyticsPropertyID: createRegistrySelector( ( select ) => () => {
+		const propertyIDs = select( STORE_NAME ).getAnalyticsPropertyIDs();
+
+		if ( propertyIDs === undefined ) {
+			return undefined;
+		}
+
+		return propertyIDs.some( ( propertyID ) => propertyID !== null );
+	} ),
+
+	/**
 	 * Checks if there are multiple unique Analytics property IDs for all effective containers based on current selections.
 	 *
 	 * @since n.e.x.t
