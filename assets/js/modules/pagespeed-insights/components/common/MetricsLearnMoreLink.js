@@ -24,8 +24,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../components/link';
-import { sanitizeHTML } from '../../../util';
+import Link from '../../../../components/link';
+import { sanitizeHTML } from '../../../../util';
 
 export default function MetricsLearnMoreLink() {
 	return (
