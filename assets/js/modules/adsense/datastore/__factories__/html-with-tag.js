@@ -1,5 +1,5 @@
 /**
- * isPermissionScopeError utility.
+ * Adsense datastore test factory: html-with-tag.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,20 +16,30 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { ERROR_MISSING_REQUIRED_SCOPE } from '../constants';
+function tagHeadHTML( adsenseID ) {
+	return `<script data-ad-client="${ adsenseID }" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>`;
+}
 
 /**
- * Checks if the given error is a permission scope error.
+ * Generates valid HTML with an Adsense tag.
  *
- * @since 1.9.0
- * @private
+ * @since n.e.x.t
  *
- * @param {*} error Input to test as a possible permission scope error.
- * @return {boolean} True if permission scope error, otherwise false.
+ * @param {string} adsenseID Adsense Client ID to generate tag with.
+ * @return {string} HTML.
  */
-export function isPermissionScopeError( error ) {
-	return error?.code === ERROR_MISSING_REQUIRED_SCOPE;
+export function generateHTMLWithTag( adsenseID ) {
+	return `
+		<!DOCTYPE html>
+		<html>
+			<head>
+				<title>Test Title</title>
+				${ adsenseID && tagHeadHTML( adsenseID ) }
+			</head>
+			<body>
+				<h1>Test Title</h1>
+			</body>
+		</html>
+	`;
 }
+

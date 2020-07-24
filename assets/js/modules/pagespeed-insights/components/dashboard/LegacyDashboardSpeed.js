@@ -27,11 +27,11 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
-import DashboardPageSpeed from '../DashboardPageSpeed';
+import DashboardPageSpeed from './DashboardPageSpeed';
 import { STORE_NAME } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
-function DashboardSpeed() {
+function LegacyDashboardSpeed() {
 	const currentReferenceURL = useSelect( ( select ) => select( STORE_NAME ).getCurrentReferenceURL() );
 	const currentEntityURL = useSelect( ( select ) => select( STORE_NAME ).getCurrentEntityURL() );
 	const description = currentEntityURL === currentReferenceURL
@@ -59,4 +59,4 @@ function DashboardSpeed() {
 	);
 }
 
-export default DashboardSpeed;
+export default LegacyDashboardSpeed;
