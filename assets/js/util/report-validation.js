@@ -25,7 +25,7 @@
  * @param {Function} verifyFunction The callback to verify an object.
  * @return {boolean} TRUE if data is valid, otherwise FALSE.
  */
-function isValidStringsOrObjects( data, verifyFunction ) {
+export function isValidStringsOrObjects( data, verifyFunction ) {
 	if ( typeof data === 'string' ) {
 		return true;
 	}
@@ -40,40 +40,6 @@ function isValidStringsOrObjects( data, verifyFunction ) {
 
 	// Arguably this should fail/throw, because none of our allowed types were encountered.
 	return false;
-}
-
-/**
- * Verifies that provided metrics match allowed values. Metrics can be a string,
- * an array of string, an array of objects or mix of strings and objects. Objects
- * must have "expression" and "alias" properties in order to be considered as valid.
- *
- * @since n.e.x.t
- *
- * @param {string|string[]|Object|Object[]} metrics The metrics to check.
- * @return {boolean} TRUE if metrics are valid, otherwise FALSE.
- */
-export function isValidMetrics( metrics ) {
-	return isValidStringsOrObjects( metrics, ( metric ) => {
-		const validExpression = metric.hasOwnProperty( 'expression' ) && typeof metric.expression === 'string';
-		const validAlias = metric.hasOwnProperty( 'alias' ) && typeof metric.alias === 'string';
-		return validExpression && validAlias;
-	} );
-}
-
-/**
- * Verifies provided dimensions to make sure it matches allowed values. It can be a string,
- * array of strings, an object with "name" field, array of such objects or an array of strings
- * and objects.
- *
- * @since n.e.x.t
- *
- * @param {string|string[]|Object|Object[]} dimensions The dimensions to check.
- * @return {boolean} TRUE if dimensions are valid, otherwise FALSE.
- */
-export function isValidDimensions( dimensions ) {
-	return isValidStringsOrObjects( dimensions, ( dimension ) => {
-		return dimension.hasOwnProperty( 'name' ) && typeof dimension.name === 'string';
-	} );
 }
 
 /**

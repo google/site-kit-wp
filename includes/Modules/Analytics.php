@@ -854,7 +854,17 @@ final class Analytics extends Module
 					return true;
 				};
 			case 'GET:report':
-				$request_args = array( 'page' => $data['url'] );
+				$request_args = array();
+
+				if ( empty( $data['metrics'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ), array( 'status' => 400 ) );
+				}
+
+				if ( ! empty( $data['url'] ) ) {
+					$request_args['page'] = $data['url'];
+				}
+
 				if ( ! empty( $data['limit'] ) ) {
 					$request_args['row_limit'] = $data['limit'];
 				}
@@ -931,7 +941,7 @@ final class Analytics extends Module
 				$request->setDateRanges( $date_ranges );
 
 				$metrics = $data['metrics'];
-				if ( ! empty( $metrics ) && ( is_string( $metrics ) || is_array( $metrics ) ) ) {
+				if ( is_string( $metrics ) || is_array( $metrics ) ) {
 					if ( is_string( $metrics ) ) {
 						$metrics = explode( ',', $data['metrics'] );
 					} elseif ( is_array( $metrics ) && ! wp_is_numeric_array( $metrics ) ) { // If single object is passed.
@@ -968,29 +978,38 @@ final class Analytics extends Module
 				$orderby = $data['orderby'];
 				if ( ! empty( $orderby ) && is_array( $orderby ) ) {
 					// When just object is passed we need to convert it to an array of objects.
-					if ( ! is_array( $orderby[0] ) ) {
+					if ( ! wp_is_numeric_array( $orderby[0] ) ) {
 						$orderby = array( $orderby );
 					}
 
-					$orderby = array_map(
-						function ( $order_def ) {
-							$order_def = array_merge(
-								array(
-									'fieldName' => '',
-									'sortOrder' => '',
-								),
-								(array) $order_def
-							);
-							$order_by  = new Google_Service_AnalyticsReporting_OrderBy();
-							$order_by->setFieldName( $order_def['fieldName'] );
-							$order_by->setSortOrder( $order_def['sortOrder'] );
-	
-							return $order_by;
-						},
-						$orderby
+					$orderby = array_filter(
+						array_map(
+							function ( $order_def ) {
+								$order_def = array_merge(
+									array(
+										'fieldName' => '',
+										'sortOrder' => 'DESCENDING',
+									),
+									(array) $order_def
+								);
+
+								if ( empty( $order_def['fieldName'] ) ) {
+									return null;
+								}
+
+								$order_by = new Google_Service_AnalyticsReporting_OrderBy();
+								$order_by->setFieldName( $order_def['fieldName'] );
+								$order_by->setSortOrder( $order_def['sortOrder'] );
+		
+								return $order_by;
+							},
+							$orderby
+						)
 					);
 
-					$request->setOrderBys( $orderby );
+					if ( ! empty( $orderby ) ) {
+						$request->setOrderBys( $orderby );
+					}
 				}
 
 				// Batch reports requests.

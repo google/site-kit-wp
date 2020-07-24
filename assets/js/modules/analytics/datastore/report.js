@@ -30,12 +30,8 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import {
-	isValidMetrics,
-	isValidDimensions,
-	isValidDateRange,
-	isValidOrders,
-} from '../../../util/report-validation';
+import { isValidDateRange, isValidOrders } from '../../../util/report-validation';
+import { isValidDimensions, isValidMetrics } from '../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -60,13 +56,10 @@ const fetchGetReportStore = createFetchStore( {
 
 		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
 		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Analytics report.' );
-
-		if ( metrics ) {
-			invariant(
-				isValidMetrics( metrics ),
-				'Metrics for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" and "alias" properties.',
-			);
-		}
+		invariant(
+			isValidMetrics( metrics ),
+			'Metrics for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" and "alias" properties.',
+		);
 
 		if ( dimensions ) {
 			invariant(
@@ -107,25 +100,25 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets a Search Console report for the given options.
+	 * Gets an Analytics report for the given options.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}         state                     Data store's state.
-	 * @param {Object}         options                   Optional. Options for generating the report.
-	 * @param {string}         options.startDate         Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate           Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.dateRange         Required, alternative to startDate and endDate. A date range string such as 'last-28-days'.
-	 * @param {boolean}        options.compareDateRanges Optional. Only relevant with dateRange. Default false.
-	 * @param {boolean}        options.multiDateRange    Optional. Only relevant with dateRange. Default false.
-	 * @param {Array.<string>} options.metrics           Required. List of metrics to query.
-	 * @param {Array.<string>} options.dimensions        Optional. List of dimensions to group results by. Default an empty array.
-	 * @param {Array.<Object>} options.orderby           Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
-	 * @param {string}         options.url               Optional. URL to get a report for only this URL. Default an empty string.
-	 * @param {number}         options.limit             Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         state                       Data store's state.
+	 * @param {Object}         options                     Options for generating the report.
+	 * @param {string}         options.startDate           Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate             Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.dateRange           Required, alternative to startDate and endDate. A date range string such as 'last-28-days'.
+	 * @param {boolean}        [options.compareDateRanges] Optional. Only relevant with dateRange. Default false.
+	 * @param {boolean}        [options.multiDateRange]    Optional. Only relevant with dateRange. Default false.
+	 * @param {Array.<string>} options.metrics             Required. List of metrics to query.
+	 * @param {Array.<string>} [options.dimensions]        Optional. List of dimensions to group results by. Default an empty array.
+	 * @param {Array.<Object>} [options.orderby]           Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
+	 * @param {string}         [options.url]               Optional. URL to get a report for only this URL. Default an empty string.
+	 * @param {number}         [options.limit]             Optional. Maximum number of entries to return. Default 1000.
 	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
 	 */
-	getReport( state, options = {} ) {
+	getReport( state, options ) {
 		const { reports } = state;
 
 		return reports[ stringifyObject( options ) ];
