@@ -196,6 +196,19 @@ final class Search_Console extends Module
 					);
 				}
 
+				$data_request = array(
+					'start_date' => $start_date,
+					'end_date'   => $end_date,
+				);
+
+				if ( ! empty( $data['url'] ) ) {
+					$data_request['page'] = $data['url'];
+				}
+
+				if ( isset( $data['limit'] ) ) {
+					$data_request['row_limit'] = $data['limit'];
+				}
+
 				$dimensions = $data['dimensions'];
 				$dimensions = array_map(
 					'trim',
@@ -216,15 +229,8 @@ final class Search_Console extends Module
 					)
 				);
 
-				$data_request = array(
-					'page'       => $data['url'],
-					'start_date' => $start_date,
-					'end_date'   => $end_date,
-					'dimensions' => $dimensions,
-				);
-
-				if ( isset( $data['limit'] ) ) {
-					$data_request['row_limit'] = $data['limit'];
+				if ( ! empty( $dimensions ) ) {
+					$data_request['dimensions'] = $dimensions;
 				}
 
 				return $this->create_search_analytics_data_request( $data_request );

@@ -79,15 +79,15 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}         state                     Data store's state.
-	 * @param {Object}         options                   Optional. Options for generating the report.
-	 * @param {string}         options.startDate         Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate           Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.dateRange         Required, alternatively to startDate and endDate. A date range string such as 'last-28-days'.
-	 * @param {boolean}        options.compareDateRanges Optional. Only relevant with dateRange. Default false.
-	 * @param {Array.<string>} options.dimensions        Optional. List of dimensions to group results by. Default an empty array.
-	 * @param {string}         options.url               Optional. URL to get a report for only this URL. Default an empty string.
-	 * @param {number}         options.limit             Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         state                       Data store's state.
+	 * @param {Object}         options                     Optional. Options for generating the report.
+	 * @param {string}         options.startDate           Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate             Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.dateRange           Required, alternatively to startDate and endDate. A date range string such as 'last-28-days'.
+	 * @param {boolean}        [options.compareDateRanges] Optional. Only relevant with dateRange. Default false.
+	 * @param {Array.<string>} [options.dimensions]        Optional. List of dimensions to group results by. Default an empty array.
+	 * @param {string}         [options.url]               Optional. URL to get a report for only this URL. Default an empty string.
+	 * @param {number}         [options.limit]             Optional. Maximum number of entries to return. Default 1000.
 	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
 	 */
 	getReport( state, options = {} ) {
