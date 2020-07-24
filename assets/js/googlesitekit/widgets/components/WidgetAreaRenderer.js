@@ -29,7 +29,6 @@ import useDynamicRefs from 'use-dynamic-refs';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, WIDTH_GRID_MAP, WIDGET_WIDTHS } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
-// import { getGridCellClasses } from '../utils/get-grid-cell-classes';
 
 const { useSelect } = Data;
 
