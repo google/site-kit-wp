@@ -1,5 +1,101 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column grid 1`] = `
+<div
+  class="googlesitekit-widget-area-widgets"
+>
+  <div
+    class="mdc-layout-grid__inner"
+  >
+    <div
+      class="googlesitekit-widget googlesitekit-widget--one mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet"
+    >
+      <div>
+        Foo bar!
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget googlesitekit-widget--two mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet"
+    >
+      <div>
+        Foo bar!
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget googlesitekit-widget--three mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet"
+    >
+      <div>
+        Foo bar!
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget googlesitekit-widget--four mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet"
+    >
+      <div>
+        Foo bar!
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column grid 2`] = `
+<div
+  class="googlesitekit-widget-area-widgets"
+>
+  <div
+    class="mdc-layout-grid__inner"
+  >
+    <div
+      class="googlesitekit-widget googlesitekit-widget--one mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet"
+    >
+      <div>
+        Foo bar!
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget googlesitekit-widget--two mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet"
+    >
+      <div>
+        Foo bar!
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column grid 3`] = `
+<div
+  class="googlesitekit-widget-area-widgets"
+>
+  <div
+    class="mdc-layout-grid__inner"
+  >
+    <div
+      class="googlesitekit-widget googlesitekit-widget--one mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet"
+    >
+      <div>
+        Foo bar!
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget googlesitekit-widget--two mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet"
+    >
+      <div>
+        Foo bar!
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget googlesitekit-widget--three mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet"
+    >
+      <div>
+        Foo bar!
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`WidgetAreaRenderer should resize widgets so they fill a row 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"

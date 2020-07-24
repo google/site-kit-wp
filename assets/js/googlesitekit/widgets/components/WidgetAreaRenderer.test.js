@@ -180,4 +180,34 @@ describe( 'WidgetAreaRenderer', () => {
 
 		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
 	} );
+
+	it( 'should not resize widgets that fit into a 12-column grid', () => {
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.QUARTER },
+		] );
+
+		let container = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } ).container;
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.HALF },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
+		] );
+		container = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } ).container;
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+
+		registry = createTestRegistryWithArea( 'gridcell-test' );
+		createWidgets( registry, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+		] );
+		container = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } ).container;
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+	} );
 } );
