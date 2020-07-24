@@ -22,9 +22,18 @@
 import classnames from 'classnames';
 import { node, string } from 'prop-types';
 
-const Widget = ( { children, slug } ) => {
+/**
+ * WordPress dependencies
+ */
+import { Children } from '@wordpress/element';
+
+const Widget = ( { children, className, slug } ) => {
+	if ( ! Children.count( children ) ) {
+		return null;
+	}
+
 	return (
-		<div className={ classnames( 'googlesitekit-widget', `googlesitekit-widget--${ slug }` ) }>
+		<div className={ classnames( 'googlesitekit-widget', `googlesitekit-widget--${ slug }`, className ) }>
 			{ children }
 		</div>
 	);

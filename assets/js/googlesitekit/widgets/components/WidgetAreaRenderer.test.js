@@ -1,5 +1,5 @@
 /**
- * Widgets: Grid Cell Layout utility tests.
+ * WidgetAreaRenderer component tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,18 +17,21 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
+import WidgetAreaRenderer from './WidgetAreaRenderer';
+import { STORE_NAME, WIDGET_WIDTHS } from '../datastore/constants';
 import {
 	createTestRegistry,
+	muteConsole,
+	render,
 	unsubscribeFromAll,
-	// muteConsole,
-} from '../../../../../tests/js/utils';
-// import { render } from '../../../../../tests/js/test-utils';
-import { STORE_NAME, WIDGET_WIDTHS } from '../datastore/constants';
-// import { WidgetComponents } from './widgets';
-// import { WIDTH_GRID_MAP, WIDGET_WIDTHS } from '../datastore/constants';
-import { getGridCellClasses } from './get-grid-cell-classes';
+} from '../../../../../tests/js/test-utils';
 
 const createTestRegistryWithArea = ( name = 'gridcell-test' ) => {
 	const registry = createTestRegistry();
@@ -43,9 +46,9 @@ const createTestRegistryWithArea = ( name = 'gridcell-test' ) => {
 	return registry;
 };
 
-const WidgetComponent = () => {
-	return ( <div>Foo bar!</div> );
-};
+const WidgetComponent = forwardRef( ( _props, ref ) => {
+	return ( <div ref={ ref }>Foo bar!</div> );
+} );
 
 const WidgetComponentEmpty = () => {
 	return null;
@@ -61,9 +64,8 @@ const createWidgets = ( registry, widgets ) => {
 	} );
 };
 
-describe( 'getGridCellClasses', () => {
+describe( 'WidgetAreaRenderer', () => {
 	let registry;
-	// let store;
 
 	beforeEach( () => {
 		registry = createTestRegistryWithArea();
@@ -73,7 +75,7 @@ describe( 'getGridCellClasses', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	it( 'should return the same number of elements as widgets from a selector', () => {
+	it( 'should return the same number of elements as widgets from a selector', async () => {
 		createWidgets( registry, [
 			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
 			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
@@ -81,24 +83,15 @@ describe( 'getGridCellClasses', () => {
 		] );
 
 		const widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
 		expect( widgets ).toHaveLength( 3 );
-		expect( getGridCellClasses( widgets ) ).toHaveLength( 3 );
+
+		const { container } = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } );
+
+		// expect( Object.values( container.firstChild.querySelectorAll('.googlesitekit-widget-area-widgets')[0].classList ) ).toEqual( [] );
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
 	} );
 
-	it( 'should return all full classNames when all widgets are full-width', () => {
-		createWidgets( registry, [
-			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
-			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
-			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.FULL },
-		] );
-
-		const widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
-	} );
-
-	it( 'should resize desktop-sized widgets so they fill a row', () => {
+	it( 'should resize widgets so they fill a row', () => {
 		registry = createTestRegistryWithArea( 'gridcell-test' );
 		createWidgets( registry, [
 			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
@@ -106,9 +99,8 @@ describe( 'getGridCellClasses', () => {
 			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
 		] );
 
-		let widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+		let container = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } ).container;
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
 
 		registry = createTestRegistryWithArea( 'gridcell-test' );
 		createWidgets( registry, [
@@ -117,10 +109,8 @@ describe( 'getGridCellClasses', () => {
 			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
 			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.QUARTER },
 		] );
-
-		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+		container = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } ).container;
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
 
 		registry = createTestRegistryWithArea( 'gridcell-test' );
 		createWidgets( registry, [
@@ -130,10 +120,8 @@ describe( 'getGridCellClasses', () => {
 			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.HALF },
 			{ component: WidgetComponent, slug: 'five', width: WIDGET_WIDTHS.HALF },
 		] );
-
-		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+		container = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } ).container;
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
 
 		registry = createTestRegistryWithArea( 'gridcell-test' );
 		createWidgets( registry, [
@@ -141,10 +129,8 @@ describe( 'getGridCellClasses', () => {
 			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
 			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
 		] );
-
-		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+		container = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } ).container;
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
 
 		registry = createTestRegistryWithArea( 'gridcell-test' );
 		createWidgets( registry, [
@@ -153,10 +139,8 @@ describe( 'getGridCellClasses', () => {
 			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
 			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.HALF },
 		] );
-
-		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+		container = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } ).container;
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
 
 		registry = createTestRegistryWithArea( 'gridcell-test' );
 		createWidgets( registry, [
@@ -165,10 +149,8 @@ describe( 'getGridCellClasses', () => {
 			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
 			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
 		] );
-
-		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+		container = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } ).container;
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
 
 		registry = createTestRegistryWithArea( 'gridcell-test' );
 		createWidgets( registry, [
@@ -180,57 +162,22 @@ describe( 'getGridCellClasses', () => {
 			{ component: WidgetComponent, slug: 'six', width: WIDGET_WIDTHS.QUARTER },
 			{ component: WidgetComponent, slug: 'seven', width: WIDGET_WIDTHS.QUARTER },
 		] );
-
-		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+		container = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } ).container;
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
 	} );
 
-	it( 'should not resize widgets that fit into a 12-column grid', () => {
+	it( 'should treat widgets that render no content as zero-width (ignoring them)', () => {
 		registry = createTestRegistryWithArea( 'gridcell-test' );
 		createWidgets( registry, [
 			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-			{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.QUARTER },
-		] );
-
-		let widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
-
-		registry = createTestRegistryWithArea( 'gridcell-test' );
-		createWidgets( registry, [
-			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.HALF },
-			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
-		] );
-
-		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
-
-		registry = createTestRegistryWithArea( 'gridcell-test' );
-		createWidgets( registry, [
-			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
+			{ component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
 			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
 		] );
 
-		widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
+		// Used to mute the forwardRef error React will throw here.
+		muteConsole( 'error', 1 );
+		const { container } = render( <WidgetAreaRenderer slug="gridcell-test" />, { registry } );
 
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
-	} );
-
-	it.skip( 'should treat widgets that render no content as zero-width (ignoring them)', () => {
-		registry = createTestRegistryWithArea( 'gridcell-test' );
-		createWidgets( registry, [
-			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-			{ component: WidgetComponentEmpty, slug: 'two', width: WIDGET_WIDTHS.HALF },
-			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-		] );
-
-		const widgets = registry.select( STORE_NAME ).getWidgets( 'gridcell-test' );
-
-		expect( getGridCellClasses( widgets ) ).toMatchSnapshot();
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
 	} );
 } );

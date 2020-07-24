@@ -22,6 +22,11 @@
 import { string } from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -30,7 +35,7 @@ import Widget from './Widget';
 
 const { useSelect } = Data;
 
-const WidgetRenderer = ( { slug } ) => {
+const WidgetRenderer = forwardRef( ( { className, slug }, ref ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
 
 	if ( ! widget ) {
@@ -39,14 +44,15 @@ const WidgetRenderer = ( { slug } ) => {
 
 	// Capitalize the "component" variable, as it is required by JSX.
 	const { component: Component, wrapWidget } = widget;
-	const widgetComponent = <Component slug={ slug } />;
+	const widgetComponent = <Component className={ wrapWidget ? className : undefined } ref={ ref } slug={ slug } />;
 
-	return widgetComponent && wrapWidget
-		? <Widget slug={ slug }>{ widgetComponent }</Widget>
+	return wrapWidget
+		? <Widget className={ className } slug={ slug }>{ widgetComponent }</Widget>
 		: widgetComponent;
-};
+} );
 
 WidgetRenderer.propTypes = {
+	className: string,
 	slug: string.isRequired,
 };
 

@@ -21,19 +21,116 @@
  */
 import classnames from 'classnames';
 import { string } from 'prop-types';
+import useDynamicRefs from 'use-dynamic-refs';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore';
-import Widget from './WidgetRenderer';
+import { STORE_NAME, WIDTH_GRID_MAP, WIDGET_WIDTHS } from '../datastore/constants';
+import WidgetRenderer from './WidgetRenderer';
+// import { getGridCellClasses } from '../utils/get-grid-cell-classes';
 
 const { useSelect } = Data;
+
+const resizeClasses = ( classNames, counter ) => {
+	[ ...classNames ].reverse().some( ( _classNames, index ) => {
+		const originalIndex = classNames.length - 1 - index;
+
+		// Skip any classNames that are `null`; this happens when the component itself
+		// renders `null`.
+		if ( ! _classNames || ! Array.isArray( _classNames ) ) {
+			return false;
+		}
+
+		if ( _classNames.includes( 'mdc-layout-grid__cell--span-3-desktop' ) ) {
+			// Replace the 3-column class with a 4-column class so this element goes from 1/4
+			// to 1/3 on desktop.
+			classNames[ originalIndex ][ _classNames.indexOf( 'mdc-layout-grid__cell--span-3-desktop' ) ] = 'mdc-layout-grid__cell--span-4-desktop';
+
+			counter -= 3;
+		}
+
+		if ( _classNames.includes( 'mdc-layout-grid__cell--span-6-desktop' ) ) {
+			// Replace the 6-column class with a 8-column class so this element goes from 1/2
+			// to 2/3 on desktop.
+			classNames[ originalIndex ][ _classNames.indexOf( 'mdc-layout-grid__cell--span-6-desktop' ) ] = 'mdc-layout-grid__cell--span-8-desktop';
+
+			counter -= 6;
+		}
+
+		return counter === 0;
+	} );
+
+	return [ classNames, counter ];
+};
 
 const WidgetAreaRenderer = ( { slug } ) => {
 	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
 	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
+
+	const [ getRef, setRef ] = useDynamicRefs();
+
+	let widgetClassNames = [];
+	let counter = 0;
+	widgets.forEach( ( widget, i ) => {
+		widgetClassNames[ i ] = [];
+
+		const widgetOutput = (
+			<WidgetRenderer key={ widget.slug } slug={ widget.slug } />
+		);
+
+		// If this widget output `null`, there's no sense in outputting classes for it.
+		if ( ! getRef( widget.slug )?.current ) {
+			widgetClassNames[ i ] = null;
+			return widgetOutput;
+		}
+
+		const width = widget.width;
+		const classNamesForWidget = [ 'mdc-layout-grid__cell' ];
+
+		if ( width === WIDGET_WIDTHS.FULL ) {
+			classNamesForWidget.push(
+				'mdc-layout-grid__cell--span-12',
+			);
+		}
+
+		if ( width === WIDGET_WIDTHS.HALF ) {
+			classNamesForWidget.push(
+				'mdc-layout-grid__cell--span-6-desktop',
+				'mdc-layout-grid__cell--span-8-tablet',
+			);
+		}
+
+		if ( width === WIDGET_WIDTHS.QUARTER ) {
+			classNamesForWidget.push(
+				'mdc-layout-grid__cell--span-3-desktop',
+				'mdc-layout-grid__cell--span-4-tablet',
+			);
+		}
+
+		widgetClassNames[ i ] = classNamesForWidget;
+
+		counter += WIDTH_GRID_MAP[ width ];
+
+		if ( counter % 12 === 0 ) {
+			counter = 0;
+		}
+
+		if ( counter > 12 ) {
+			counter -= WIDTH_GRID_MAP[ width ];
+
+			if ( counter === 9 ) {
+				[ widgetClassNames, counter ] = resizeClasses( widgetClassNames, counter );
+			}
+
+			counter = WIDTH_GRID_MAP[ width ];
+		}
+	} );
+
+	if ( counter === 9 ) {
+		[ widgetClassNames, counter ] = resizeClasses( widgetClassNames, counter );
+	}
 
 	return (
 		<div className={ classnames( 'mdc-layout-grid', 'googlesitekit-widget-area', `googlesitekit-widget-area--${ widgetArea.slug }`, `googlesitekit-widget-area--${ widgetArea.style }` ) }>
@@ -57,9 +154,14 @@ const WidgetAreaRenderer = ( { slug } ) => {
 			</div>
 			<div className="googlesitekit-widget-area-widgets">
 				<div className="mdc-layout-grid__inner">
-					{ widgets.map( ( widget ) => {
+					{ widgets.map( ( widget, i ) => {
 						return (
-							<Widget key={ widget.slug } slug={ widget.slug } />
+							<WidgetRenderer
+								className={ widgetClassNames[ i ] !== null ? classnames( widgetClassNames[ i ] ) : 'googlesitekit-widget-area--hidden' }
+								key={ widget.slug }
+								ref={ setRef( widget.slug ) }
+								slug={ widget.slug }
+							/>
 						);
 					} ) }
 				</div>
