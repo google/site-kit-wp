@@ -99,7 +99,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ 'UA-123456789-1' ] );
 				} );
 
-				it( 'returns an empty array if the selected container has no Analytics property tags', () => {
+				it( 'returns an array of `null` if the selected container has no Analytics property tags', () => {
 					const liveContainerVersionFixture = fixtures.liveContainerVersions.web.withVariable;
 					const accountID = liveContainerVersionFixture.accountId;
 					const internalContainerID = liveContainerVersionFixture.containerId;
@@ -111,7 +111,7 @@ describe( 'modules/tagmanager versions', () => {
 
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
-					expect( propertyIDs ).toEqual( [] );
+					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
 				it( 'returns undefined if the live container data is not loaded yet', () => {
@@ -143,7 +143,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ 'UA-123456789-1' ] );
 				} );
 
-				it( 'returns an empty array if the selected container has no Analytics property tags', () => {
+				it( 'returns an array of `null` if the selected container has no Analytics property tags', () => {
 					const liveContainerVersionFixture = fixtures.liveContainerVersions.amp.noGA;
 					const accountID = liveContainerVersionFixture.accountId;
 					const internalContainerID = liveContainerVersionFixture.containerId;
@@ -155,7 +155,7 @@ describe( 'modules/tagmanager versions', () => {
 
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
-					expect( propertyIDs ).toEqual( [] );
+					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
 				it( 'returns undefined if the live container data is not loaded yet', () => {
@@ -211,7 +211,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ 'UA-123456789-1' ] );
 				} );
 
-				it( 'returns an empty array if the selected containers have no Analytics property tags', () => {
+				it( 'returns an array of `null` if the selected containers have no Analytics property tags', () => {
 					const liveContainerVersionWeb = fixtures.liveContainerVersions.web.withVariable;
 					const liveContainerVersionAMP = fixtures.liveContainerVersions.amp.noGA;
 					const accountID = liveContainerVersionWeb.accountId;
@@ -227,7 +227,7 @@ describe( 'modules/tagmanager versions', () => {
 
 					const propertyIDs = registry.select( STORE_NAME ).getAnalyticsPropertyIDs();
 
-					expect( propertyIDs ).toEqual( [] );
+					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
 				it( 'returns undefined if the live container data is not loaded yet for either container', () => {
@@ -524,9 +524,9 @@ describe( 'modules/tagmanager versions', () => {
 				expect( registry.select( STORE_NAME ).hasMultipleAnalyticsPropertyIDs() ).toBe( true );
 			} );
 
-			it( 'returns false if both containers reference the same propertyID', () => {
+			it( 'returns true if one container has a property ID and the other does not', () => {
 				const liveContainerVersionWeb = fixtures.liveContainerVersions.web.gaWithVariable;
-				const liveContainerVersionAMP = fixtures.liveContainerVersions.amp.ga;
+				const liveContainerVersionAMP = fixtures.liveContainerVersions.amp.noGA;
 				const accountID = liveContainerVersionWeb.accountId;
 				const internalContainerID = liveContainerVersionWeb.containerId;
 				const internalAMPContainerID = liveContainerVersionAMP.containerId;
@@ -538,13 +538,13 @@ describe( 'modules/tagmanager versions', () => {
 				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionWeb, { accountID, internalContainerID } );
 				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionAMP, { accountID, internalContainerID: internalAMPContainerID } );
 
-				expect( registry.select( STORE_NAME ).getAnalyticsPropertyIDs() ).toHaveLength( 1 );
-				expect( registry.select( STORE_NAME ).hasMultipleAnalyticsPropertyIDs() ).toBe( false );
+				expect( registry.select( STORE_NAME ).getAnalyticsPropertyIDs() ).toHaveLength( 2 );
+				expect( registry.select( STORE_NAME ).hasMultipleAnalyticsPropertyIDs() ).toBe( true );
 			} );
 
-			it( 'returns false if both containers do not have property IDs', () => {
+			it( 'returns false if both containers reference the same propertyID', () => {
 				const liveContainerVersionWeb = fixtures.liveContainerVersions.web.gaWithVariable;
-				const liveContainerVersionAMP = fixtures.liveContainerVersions.amp.noGA;
+				const liveContainerVersionAMP = fixtures.liveContainerVersions.amp.ga;
 				const accountID = liveContainerVersionWeb.accountId;
 				const internalContainerID = liveContainerVersionWeb.containerId;
 				const internalAMPContainerID = liveContainerVersionAMP.containerId;

@@ -88,7 +88,7 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(string[]|undefined)} Array of unique property IDs, or `undefined` if not fully loaded.
+	 * @return {(Array.<string|null>|undefined)} Array of unique property IDs, including `null` if none, or `undefined` if not fully loaded.
 	 */
 	getAnalyticsPropertyIDs: createRegistrySelector( ( select ) => () => {
 		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
@@ -118,9 +118,6 @@ const baseSelectors = {
 		if ( propertyIDs.has( undefined ) ) {
 			return undefined;
 		}
-		// At this point the set will only include valid property IDs or null,
-		// so we ensure it isn't included in the result.
-		propertyIDs.delete( null );
 
 		return Array.from( propertyIDs );
 	} ),
