@@ -31,7 +31,7 @@ const { createRegistrySelector } = Data;
 // Actions
 const CLEAR_PERMISSION_SCOPE_ERROR = 'CLEAR_PERMISSION_SCOPE_ERROR';
 const SET_PERMISSION_SCOPE_ERROR = 'SET_PERMISSION_SCOPE_ERROR';
-const SET_CAPABILITIES = 'SET_CAPABILITIES';
+const RECEIVE_CAPABILITIES = 'RECEIVE_CAPABILITIES';
 
 export const INITIAL_STATE = {
 	permissionError: null,
@@ -76,13 +76,14 @@ export const actions = {
 	 * Sets user capabilities.
 	 *
 	 * @since n.e.x.t
+	 * @private
 	 *
 	 * @param {Object} capabilities User capabilities.
 	 * @return {Object} Redux-style action.
 	 */
-	setCapabilities( capabilities ) {
+	receiveCapabilities( capabilities ) {
 		return {
-			type: SET_CAPABILITIES,
+			type: RECEIVE_CAPABILITIES,
 			payload: { capabilities },
 		};
 	},
@@ -108,7 +109,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case SET_CAPABILITIES: {
+		case RECEIVE_CAPABILITIES: {
 			const { capabilities } = payload;
 
 			return {
@@ -130,7 +131,11 @@ export const resolvers = {
 	 * @since n.e.x.t
 	 */
 	*getCapabilities() {
-		yield actions.setCapabilities( global._googlesitekitUserData?.permissions );
+		if ( ! global._googlesitekitUserData?.permissions ) {
+			global.console.error( 'Could not load core/user permissions.' );
+		}
+
+		yield actions.receiveCapabilities( global._googlesitekitUserData?.permissions );
 	},
 };
 

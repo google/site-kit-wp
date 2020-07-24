@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { string } from 'prop-types';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -31,7 +26,7 @@ import DashboardPageSpeedCTA from './DashboardPageSpeedCTA';
 import DashboardPageSpeed from './DashboardPageSpeed';
 const { useSelect } = Data;
 
-function DashboardPageSpeedWidget( { slug } ) {
+function DashboardPageSpeedWidget() {
 	const pagespeedInsightsModule = useSelect( ( select ) => select( MODULES_STORE ).getModule( 'pagespeed-insights' ) );
 	if ( ! pagespeedInsightsModule ) {
 		return null;
@@ -45,14 +40,10 @@ function DashboardPageSpeedWidget( { slug } ) {
 	const { Widget } = Widgets.components;
 
 	return (
-		<Widget slug={ slug }>
+		<Widget slug="pagespeedInsightsWebVitals">
 			<DashboardPageSpeed />
 		</Widget>
 	);
 }
-
-DashboardPageSpeedWidget.propTypes = {
-	slug: string.isRequired,
-};
 
 export default DashboardPageSpeedWidget;

@@ -41,7 +41,7 @@ const WidgetRenderer = ( { slug } ) => {
 	const { component: Component, wrapWidget } = widget;
 
 	if ( ! wrapWidget ) {
-		return <Component slug={ slug } />;
+		return <Component />;
 	}
 
 	return (

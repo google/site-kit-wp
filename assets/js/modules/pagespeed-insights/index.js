@@ -26,6 +26,7 @@ import domReady from '@wordpress/dom-ready';
  * Internal dependencies
  */
 import Widgets from 'googlesitekit-widgets';
+import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
 import './datastore';
 import { fillFilterWithComponent, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
@@ -77,11 +78,9 @@ if ( ! active || ! setupComplete ) {
 }
 
 domReady( () => {
-	const { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } = Widgets.areas;
-
 	Widgets.registerWidget( 'pagespeedInsightsWebVitals', {
 		component: DashboardPageSpeedWidget,
-		width: Widgets.widths.FULL,
+		width: Widgets.WIDGET_WIDTHS.FULL,
 		wrapWidget: false,
 	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );
 } );
