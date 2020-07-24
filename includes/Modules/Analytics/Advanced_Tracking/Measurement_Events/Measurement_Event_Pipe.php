@@ -28,19 +28,7 @@ final class Measurement_Event_Pipe {
 	 * @return false|string|string[] Event configuration in JSON format.
 	 */
 	private static function encode_measurement_event( $measurement_event ) {
-		$config       = $measurement_event->get_config();
-		$value_arr    = array();
-		$replace_keys = array();
-		foreach ( $config as $key => &$value ) {
-			if ( strpos( $value, 'function(' ) === 0 ) {
-				$value_arr[]    = $value;
-				$value          = '%' . $key . '%';
-				$replace_keys[] = '"' . $value . '"';
-			}
-		}
-		$json_config = wp_json_encode( $config );
-		$json_config = str_replace( $replace_keys, $value_arr, $json_config );
-		return $json_config;
+		return wp_json_encode( $measurement_event );
 	}
 
 	/**
