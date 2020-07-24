@@ -66,9 +66,7 @@ if ( active && setupComplete ) {
 		createAddToFilter( <LegacyDashboardSpeed /> ),
 		45
 	);
-}
-
-if ( ! active || ! setupComplete ) {
+} else {
 	addFilter(
 		'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
