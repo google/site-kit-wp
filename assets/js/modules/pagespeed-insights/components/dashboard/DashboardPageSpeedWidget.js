@@ -33,7 +33,7 @@ function DashboardPageSpeedWidget() {
 	}
 
 	const { active, connected } = pagespeedInsightsModule;
-	if ( ! active && ! connected ) {
+	if ( ! active || ! connected ) {
 		return <DashboardPageSpeedCTA />;
 	}
 

@@ -35,7 +35,7 @@ const RECEIVE_CAPABILITIES = 'RECEIVE_CAPABILITIES';
 
 export const INITIAL_STATE = {
 	permissionError: null,
-	capabilities: {},
+	capabilities: undefined,
 };
 
 export const actions = {
