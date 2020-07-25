@@ -19,10 +19,4 @@
 export const WIDGET_AREA_STYLES = { BOXES: 'boxes', COMPOSITE: 'composite' };
 export const WIDGET_WIDTHS = { QUARTER: 'quarter', HALF: 'half', FULL: 'full' };
 
-export const WIDTH_GRID_MAP = {
-	[ WIDGET_WIDTHS.QUARTER ]: 3,
-	[ WIDGET_WIDTHS.HALF ]: 6,
-	[ WIDGET_WIDTHS.FULL ]: 12,
-};
-
 export const STORE_NAME = 'core/widgets';

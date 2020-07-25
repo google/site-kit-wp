@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { string } from 'prop-types';
+import { string, object, func } from 'prop-types';
 
 /**
  * Internal dependencies
@@ -84,6 +84,13 @@ const WidgetRenderer = ( { slug, gridClassName, activeWidgets, setActiveWidgets 
 WidgetRenderer.propTypes = {
 	slug: string.isRequired,
 	gridClassName: string,
+	activeWidgets: object,
+	setActiveWidgets: func,
+};
+
+WidgetRenderer.defaultProps = {
+	activeWidgets: {},
+	setActiveWidgets: () => {},
 };
 
 export default WidgetRenderer;
