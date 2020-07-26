@@ -575,7 +575,7 @@ abstract class Module {
 	 * @return array List with two elements, the first with the start date and the second with the end date, both as
 	 *               'Y-m-d'.
 	 */
-	protected function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false, $day_align = false ) {
+	public function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false, $day_align = false ) {
 
 		preg_match( '*-(\d+)-*', $range, $matches );
 		$number_of_days = $multiplier * ( isset( $matches[1] ) ? $matches[1] : 28 );
@@ -591,28 +591,16 @@ abstract class Module {
 		// Check the day of the week alignment.
 		$previous_day_of_week  = gmdate( 'w', strtotime( $date_end ) );
 		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
-		if ( $day_align && $previous_day_of_week !== $yesterday_day_of_week ) {
+		if ( $day_align && $previous && $previous_day_of_week !== $yesterday_day_of_week ) {
 			// Adjust the date to closest period that matches the same days of the week.
-			if (
-				// Previous day of the week earlier and less than 4 days away: move forward.
-				(
-					$previous_day_of_week < $yesterday_day_of_week &&
-					$yesterday_day_of_week - $previous_day_of_week < 4
-				) ||
-				// Previous day of the week later and more than 4 days away: move forward.
-				(
-					$previous_day_of_week > $yesterday_day_of_week &&
-					$previous_day_of_week - $yesterday_day_of_week > 4
-				)
-			) {
-					// Move the past date forward to the same day of the week.
-					$date_end   = gmdate( 'Y-m-d', strtotime( '+' . absint( $yesterday_day_of_week - $previous_day_of_week ) . 'days', strtotime( $date_end ) ) );
-					$date_start = gmdate( 'Y-m-d', strtotime( '+' . absint( $yesterday_day_of_week - $previous_day_of_week ) . 'days', strtotime( $date_start ) ) );
-			} else {
-				// Move the past date backwards to the same day of the week.
-				$date_end   = gmdate( 'Y-m-d', strtotime( '-' . absint( $yesterday_dayofweek - $previous_day_of_week ) . 'days', strtotime( $date_end ) ) );
-				$date_start = gmdate( 'Y-m-d', strtotime( '-' . absint( $yesterday_dayofweek - $previous_day_of_week ) . 'days', strtotime( $date_start ) ) );
+			$off_by = $number_of_days % 7;
+			if ( $off_by > 3 ) {
+				$off_by = $off_by - 7;
 			}
+
+			// Move the past date to match the same day of the week.
+			$date_end   = gmdate( 'Y-m-d', strtotime( $off_by . ' days', strtotime( $date_end ) ) );
+			$date_start = gmdate( 'Y-m-d', strtotime( $off_by . ' days', strtotime( $date_start ) ) );
 		}
 
 		return array( $date_start, $date_end );
