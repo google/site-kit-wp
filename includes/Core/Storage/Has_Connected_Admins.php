@@ -82,7 +82,12 @@ class Has_Connected_Admins extends Setting {
 	public function get() {
 		// If the option doesn't exist, query the fresh value, set it and return it.
 		if ( ! $this->has() ) {
-			return $this->query_connected_admins();
+			$users                = $this->query_connected_admins();
+			$has_connected_admins = count( $users ) > 0;
+
+			$this->set( $has_connected_admins );
+	
+			return $has_connected_admins;
 		}
 
 		return (bool) parent::get();
@@ -95,8 +100,8 @@ class Has_Connected_Admins extends Setting {
 	 *
 	 * @return boolean TRUE if the site kit already has connected admins, otherwise FALSE.
 	 */
-	private function query_connected_admins() {
-		$users = get_users(
+	protected function query_connected_admins() {
+		return get_users(
 			array(
 				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.VIP.SlowDBQuery.slow_db_query_meta_key
 				'meta_compare' => 'EXISTS',
@@ -105,11 +110,6 @@ class Has_Connected_Admins extends Setting {
 				'fields'       => 'ID',
 			)
 		);
-
-		$has_connected_admins = count( $users ) > 0;
-		$this->set( $has_connected_admins );
-
-		return $has_connected_admins;
 	}
 
 	/**
