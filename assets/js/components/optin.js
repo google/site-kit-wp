@@ -58,13 +58,10 @@ class OptIn extends Component {
 		toggleTracking( checked );
 
 		if ( checked ) {
-			global.console.warn( 'trackEvent:before', 'tracking_plugin', this.props.optinAction );
 			await trackEvent( 'tracking_plugin', this.props.optinAction );
-			global.console.warn( 'trackEvent:after', 'tracking_plugin', this.props.optinAction );
 		}
 
 		try {
-			global.console.warn( 'apiFetch:before', 'wp/v2/users/me', JSON.stringify( { checked } ) );
 			await apiFetch( {
 				path: '/wp/v2/users/me',
 				method: 'POST',
@@ -74,13 +71,11 @@ class OptIn extends Component {
 					},
 				},
 			} );
-			global.console.warn( 'apiFetch:after', 'wp/v2/users/me', JSON.stringify( { checked } ) );
 			this.setState( {
 				optIn: checked,
 				error: false,
 			} );
 		} catch ( err ) {
-			global.console.warn( 'apiFetch:catch', 'wp/v2/users/me', JSON.stringify( err ) );
 			this.setState( {
 				optIn: ! checked,
 				error: {
