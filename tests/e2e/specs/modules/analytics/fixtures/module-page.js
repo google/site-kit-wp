@@ -1567,12 +1567,12 @@ export const last28Days = {
 			},
 		},
 	],
-	'modules::analytics::report::1cc2cfc3218eab9aa0d167f96fe944ea': [
+	'modules::analytics::report::e1dc86c3ddb8cd2b65e797eb4b126b9a': [
 		{
 			nextPageToken: null,
 			columnHeader: {
 				dimensions: [
-					'ga:medium',
+					'ga:channelGrouping',
 				],
 				metricHeader: {
 					metricHeaderEntries: [
@@ -2849,12 +2849,12 @@ export const last14Days = {
 			},
 		},
 	],
-	'modules::analytics::report::2ba82485cb6bd7d4646707c8ab292a5b': [
+	'modules::analytics::report::e54ff2cbd79c08e767fbf3260cc933bb': [
 		{
 			nextPageToken: null,
 			columnHeader: {
 				dimensions: [
-					'ga:medium',
+					'ga:channelGrouping',
 				],
 				metricHeader: {
 					metricHeaderEntries: [

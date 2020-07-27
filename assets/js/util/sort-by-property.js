@@ -1,5 +1,5 @@
 /**
- * isPermissionScopeError utility.
+ * sortByProperty utility function.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,19 +17,22 @@
  */
 
 /**
- * Internal dependencies
- */
-import { ERROR_MISSING_REQUIRED_SCOPE } from '../constants';
-
-/**
- * Checks if the given error is a permission scope error.
+ * Sorts an array of objects based on numeric order/priority key.
  *
- * @since 1.9.0
- * @private
+ * @since n.e.x.t
  *
- * @param {*} error Input to test as a possible permission scope error.
- * @return {boolean} True if permission scope error, otherwise false.
+ * @param {Array} arrayData  Array containing objects to be sorted
+ * @param {string} property The object key to use for matching.
+ * @return {Array} An Array containing objects ordered by the priority key
  */
-export function isPermissionScopeError( error ) {
-	return error?.code === ERROR_MISSING_REQUIRED_SCOPE;
+export function sortByProperty( arrayData, property ) {
+	return arrayData.sort( ( objectA, objectB ) => {
+		if ( objectA[ property ] > objectB[ property ] ) {
+			return 1;
+		}
+		if ( objectA[ property ] < objectB[ property ] ) {
+			return -1;
+		}
+		return 0;
+	} );
 }

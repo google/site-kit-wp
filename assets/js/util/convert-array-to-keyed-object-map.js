@@ -1,5 +1,5 @@
 /**
- * isPermissionScopeError utility.
+ * convertArrayListToKeyedObjectMap utility function.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -15,21 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
- * Internal dependencies
- */
-import { ERROR_MISSING_REQUIRED_SCOPE } from '../constants';
-
-/**
- * Checks if the given error is a permission scope error.
+ * Converts an array of objects into an object map containing objects.
  *
- * @since 1.9.0
- * @private
+ * @since n.e.x.t
  *
- * @param {*} error Input to test as a possible permission scope error.
- * @return {boolean} True if permission scope error, otherwise false.
+ * @param {Array} arrayData       Array data to be converted to an Object
+ * @param {string} propertyKey  Object property to be used for the property name in the main object.
+ *
+ * @return {Object} An object containing objects
  */
-export function isPermissionScopeError( error ) {
-	return error?.code === ERROR_MISSING_REQUIRED_SCOPE;
+export function convertArrayListToKeyedObjectMap( arrayData, propertyKey ) {
+	return arrayData.reduce( ( acc, item ) => {
+		return { ...acc, [ item[ propertyKey ] ]: item };
+	}, {} );
 }
+

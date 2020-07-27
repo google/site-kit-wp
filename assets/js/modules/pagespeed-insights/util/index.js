@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights module initialization.
+ * PageSpeed Insights dashboard utility functions.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -19,25 +19,23 @@
 /**
  * WordPress dependencies
  */
-import { addFilter } from '@wordpress/hooks';
+import { CATEGORY_FAST, CATEGORY_AVERAGE, CATEGORY_SLOW } from './constants';
 
 /**
- * Internal dependencies
+ * Retrieve the score category slug based on the given score.
+ *
+ * @param {number} score Score between 1.0 and 0.0.
+ *
+ * @return {string} Either 'fast', 'average', or 'slow'.
  */
-import { createAddToFilter } from '../../util/helpers';
-import PageSpeedInsightsCTA from './components/dashboard/PageSpeedInsightsCTA';
-import { getModulesData } from '../../util';
+export function getScoreCategory( score ) {
+	if ( 0.9 <= score ) {
+		return CATEGORY_FAST;
+	}
 
-const {
-	active,
-	setupComplete,
-} = getModulesData()[ 'pagespeed-insights' ];
+	if ( 0.5 <= score ) {
+		return CATEGORY_AVERAGE;
+	}
 
-if ( ! active || ! setupComplete ) {
-	addFilter(
-		'googlesitekit.DashboardModule',
-		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <PageSpeedInsightsCTA /> ),
-		45
-	);
+	return CATEGORY_SLOW;
 }

@@ -40,7 +40,7 @@ const WidgetAreaRenderer = ( { slug } ) => {
 			<div className="mdc-layout-grid__inner">
 				<header className={ classnames(
 					'googlesitekit-widget-area-header',
-					'mdc-layout-grid__cell--span-12-desktop'
+					'mdc-layout-grid__cell--span-12'
 				) }>
 					<img alt="" src={ widgetArea.icon } />
 					{ widgetArea.title &&

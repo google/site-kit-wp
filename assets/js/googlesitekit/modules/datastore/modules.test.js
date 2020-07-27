@@ -27,13 +27,14 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import { sortByProperty } from '../../../util/sort-by-property';
+import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
 
 describe( 'core/modules modules', () => {
-	const fixturesKeyValue = FIXTURES.reduce( ( acc, module ) => {
-		return { ...acc, [ module.slug ]: module };
-	}, {} );
+	const sortedFixtures = sortByProperty( FIXTURES, 'order' );
+	const fixturesKeyValue = convertArrayListToKeyedObjectMap( sortedFixtures, 'slug' );
 	let registry;
 	let store;
 
@@ -287,6 +288,31 @@ describe( 'core/modules modules', () => {
 			} );
 		} );
 
+		describe( 'registerModule', () => {
+			const moduleSlug = 'test-module';
+			const moduleSettings = {
+				name: 'Test Module',
+				order: 1,
+				description: 'A module for testing',
+				homepage: 'https://sitekit.withgoogle.com/',
+				icon: 'icon-name',
+			};
+
+			it( 'registers a module', async () => {
+				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, moduleSettings );
+				const modules = await registry.select( STORE_NAME ).getModules();
+				expect( modules[ moduleSlug ] ).not.toBeUndefined();
+				expect( modules[ moduleSlug ] ).toEqual( expect.objectContaining( moduleSettings ) );
+			} );
+
+			it( 'does not allow active or connected properties to be set to true', async () => {
+				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, { active: true, connected: true, ...moduleSettings } );
+				const modules = await registry.select( STORE_NAME ).getModules();
+				expect( modules[ moduleSlug ].active ).toBe( false );
+				expect( modules[ moduleSlug ].connected ).toBe( false );
+			} );
+		} );
+
 		describe( 'fetchGetModules', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
@@ -386,6 +412,7 @@ describe( 'core/modules modules', () => {
 				);
 				const slug = 'analytics';
 				const module = registry.select( STORE_NAME ).getModule( slug );
+
 				// The modules will be undefined whilst loading.
 				expect( module ).toEqual( undefined );
 
