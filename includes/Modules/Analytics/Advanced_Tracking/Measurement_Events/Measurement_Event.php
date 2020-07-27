@@ -39,6 +39,11 @@ final class Measurement_Event implements \JsonSerializable {
 	 */
 	public function __construct( $config ) {
 		$this->validate_config( $config );
+
+		if ( ! array_key_exists( 'metadata', $config ) ) {
+			$config['metadata'] = null;
+		}
+
 		$this->config = $config;
 	}
 
@@ -57,6 +62,7 @@ final class Measurement_Event implements \JsonSerializable {
 			'action'     => false,
 			'selector'   => false,
 			'on'         => false,
+			'metadata'   => false,
 		);
 		foreach ( $config as $key => $value ) {
 			if ( ! array_key_exists( $key, $valid_keys ) ) {

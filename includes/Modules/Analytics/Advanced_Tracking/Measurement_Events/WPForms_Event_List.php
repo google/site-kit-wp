@@ -18,7 +18,6 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
  * @ignore
  */
 final class WPForms_Event_List extends Measurement_Event_List {
-	// TODO: Implement metadata callbacks.
 
 	/**
 	 * WPForms_Event_List constructor.
@@ -33,6 +32,14 @@ final class WPForms_Event_List extends Measurement_Event_List {
 				'action'     => 'form_submit',
 				'selector'   => '.wpforms-submit-container button',
 				'on'         => 'click',
+				'metadata'   => <<<CALLBACK
+function( params, element ) {
+	var formId = element.closest('.wpforms-submit-container').querySelector('input[name="wpforms[id]"]').value;
+	params['event_label'] = formId;
+	return params;
+}
+CALLBACK
+			,
 			)
 		);
 		$this->add_event( $event );

@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_List_Factory;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Metadata_Collector;
 
 // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
@@ -31,6 +32,8 @@ final class Advanced_Tracking {
 	 * @var array
 	 */
 	private $supported_plugins;
+
+	private $active_plugin_event_lists;
 
 	/**
 	 * List of event configurations to be tracked.
@@ -94,7 +97,7 @@ final class Advanced_Tracking {
 			return;
 		}
 		$this->configure_events();
-		// TODO: Instantiate and register Metadata_Collector here.
+		( new Metadata_Collector( $this->active_plugin_event_lists ) )->register();
 		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
 	}
 
@@ -124,10 +127,10 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	private function configure_events() {
-		$active_plugin_event_lists = $this->event_list_factory->get_active_plugin_event_lists( $this->get_supported_plugins() );
+		$this->active_plugin_event_lists = $this->event_list_factory->get_active_plugin_event_lists( $this->get_supported_plugins() );
 
 		$this->event_configurations = array();
-		foreach ( $active_plugin_event_lists as $event_list ) {
+		foreach ( $this->active_plugin_event_lists as $event_list ) {
 			if ( null !== $event_list ) {
 				foreach ( $event_list->get_events() as $measurement_event ) {
 					$this->event_configurations[] = $measurement_event;
