@@ -34,6 +34,7 @@ import {
 
 async function toggleOptIn() {
 	await page.waitForSelector( '#googlesitekit-opt-in' );
+	await pageWait();
 	await Promise.all( [
 		page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) ),
 		expect( page ).toClick( '#googlesitekit-opt-in' ),
