@@ -31,6 +31,13 @@ import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 
 const { createRegistrySelector } = Data;
 
+function getSiteInfoProperty( propName ) {
+	return createRegistrySelector( ( select ) => () => {
+		const siteInfo = select( STORE_NAME ).getSiteInfo() || {};
+		return siteInfo[ propName ];
+	} );
+}
+
 // Actions
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 
@@ -221,11 +228,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} AMP Mode.
 	 */
-	getAMPMode: createRegistrySelector( ( select ) => () => {
-		const { ampMode } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return ampMode;
-	} ),
+	getAMPMode: getSiteInfoProperty( 'ampMode' ),
 
 	/**
 	 * Gets the current entity's ID.
@@ -236,11 +239,7 @@ export const selectors = {
 	 * @return {(number|null|undefined)} Current entity's ID, null if there is
 	 *                                   none, undefined if not loaded yet.
 	 */
-	getCurrentEntityID: createRegistrySelector( ( select ) => () => {
-		const { currentEntityID } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return currentEntityID;
-	} ),
+	getCurrentEntityID: getSiteInfoProperty( 'currentEntityID' ),
 
 	/**
 	 * Gets the current entity's title.
@@ -251,11 +250,7 @@ export const selectors = {
 	 * @return {(string|null|undefined)} Current entity's title, null if there
 	 *                                   is none, undefined if not loaded yet.
 	 */
-	getCurrentEntityTitle: createRegistrySelector( ( select ) => () => {
-		const { currentEntityTitle } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return currentEntityTitle;
-	} ),
+	getCurrentEntityTitle: getSiteInfoProperty( 'currentEntityTitle' ),
 
 	/**
 	 * Gets the current entity's title.
@@ -266,11 +261,7 @@ export const selectors = {
 	 * @return {(string|null|undefined)} Current entity's type, null if there
 	 *                                   is none, undefined if not loaded yet.
 	 */
-	getCurrentEntityType: createRegistrySelector( ( select ) => () => {
-		const { currentEntityType } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return currentEntityType;
-	} ),
+	getCurrentEntityType: getSiteInfoProperty( 'currentEntityType' ),
 
 	/**
 	 * Gets the current entity's reference URL.
@@ -281,11 +272,7 @@ export const selectors = {
 	 * @return {(string|null|undefined)} Current entity's URL, null if there is
 	 *                                   none, undefined if not loaded yet.
 	 */
-	getCurrentEntityURL: createRegistrySelector( ( select ) => () => {
-		const { currentEntityURL } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return currentEntityURL;
-	} ),
+	getCurrentEntityURL: getSiteInfoProperty( 'currentEntityURL' ),
 
 	/**
 	 * Gets a site's homepage URL.
@@ -295,11 +282,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} This site's home URL.
 	 */
-	getHomeURL: createRegistrySelector( ( select ) => () => {
-		const { homeURL } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return homeURL;
-	} ),
+	getHomeURL: getSiteInfoProperty( 'homeURL' ),
 
 	/**
 	 * Gets a site's reference site URL.
@@ -309,11 +292,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The reference site URL.
 	 */
-	getReferenceSiteURL: createRegistrySelector( ( select ) => () => {
-		const { referenceSiteURL } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return referenceSiteURL;
-	} ),
+	getReferenceSiteURL: getSiteInfoProperty( 'referenceSiteURL' ),
 
 	/**
 	 * Gets proxy setup URL.
@@ -322,11 +301,7 @@ export const selectors = {
 	 *
 	 * @return {string} Proxy setup URL if available, otherwise an empty string.
 	 */
-	getProxySetupURL: createRegistrySelector( ( select ) => () => {
-		const { proxySetupURL } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return proxySetupURL;
-	} ),
+	getProxySetupURL: getSiteInfoProperty( 'proxySetupURL' ),
 
 	/**
 	 * Gets proxy permissions URL.
@@ -335,11 +310,7 @@ export const selectors = {
 	 *
 	 * @return {string} Proxy permissions URL if available, otherwise an empty string.
 	 */
-	getProxyPermissionsURL: createRegistrySelector( ( select ) => () => {
-		const { proxyPermissionsURL } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return proxyPermissionsURL;
-	} ),
+	getProxyPermissionsURL: getSiteInfoProperty( 'proxyPermissionsURL' ),
 
 	/**
 	 * Gets the current reference URL to use.
@@ -429,11 +400,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The timezone.
 	 */
-	getTimezone: createRegistrySelector( ( select ) => () => {
-		const { timezone } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return timezone;
-	} ),
+	getTimezone: getSiteInfoProperty( 'timezone' ),
 
 	/**
 	 * Returns true if this site is using the proxy service.
@@ -443,10 +410,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if the proxy service is in use, `false` if not. Returns `undefined` if not loaded.
 	 */
-	isUsingProxy: createRegistrySelector( ( select ) => () => {
-		const { usingProxy } = select( STORE_NAME ).getSiteInfo() || {};
-		return usingProxy;
-	} ),
+	isUsingProxy: getSiteInfoProperty( 'usingProxy' ),
 
 	/**
 	 * Gets a site's name.
@@ -456,11 +420,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The site name.
 	 */
-	getSiteName: createRegistrySelector( ( select ) => () => {
-		const { siteName } = select( STORE_NAME ).getSiteInfo() || {};
-
-		return siteName;
-	} ),
+	getSiteName: getSiteInfoProperty( 'siteName' ),
 
 };
 
