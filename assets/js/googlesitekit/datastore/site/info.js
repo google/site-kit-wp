@@ -325,7 +325,7 @@ export const selectors = {
 	getProxySetupURL: createRegistrySelector( ( select ) => () => {
 		const { proxySetupURL } = select( STORE_NAME ).getSiteInfo() || {};
 
-		return proxySetupURL || '';
+		return proxySetupURL;
 	} ),
 
 	/**
@@ -338,7 +338,7 @@ export const selectors = {
 	getProxyPermissionsURL: createRegistrySelector( ( select ) => () => {
 		const { proxyPermissionsURL } = select( STORE_NAME ).getSiteInfo() || {};
 
-		return proxyPermissionsURL || '';
+		return proxyPermissionsURL;
 	} ),
 
 	/**

@@ -93,8 +93,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} TRUE if there are connected admins, otherwise FALSE or undefined if information is not available yet.
 	 */
 	hasConnectedAdmins: createRegistrySelector( ( select ) => () => {
-		const connection = select( STORE_NAME ).getConnection();
-		const { hasConnectedAdmins } = connection || {};
+		const { hasConnectedAdmins } = select( STORE_NAME ).getConnection() || {};
 
 		return hasConnectedAdmins;
 	} ),
