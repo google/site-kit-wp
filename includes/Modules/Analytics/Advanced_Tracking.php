@@ -16,7 +16,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injecto
 // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 /**
- * Class for Advanced Tracking.
+ * Class for Google Analytics Advanced Event Tracking.
  *
  * @since n.e.x.t.
  * @access private

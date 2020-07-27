@@ -24,7 +24,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Ninja
  * @access private
  * @ignore
  */
-class Measurement_Event_List_Factory {
+final class Measurement_Event_List_Factory {
 
 	/**
 	 * The constant check_type string for support_plugins array in the Advanced_Tracking class.

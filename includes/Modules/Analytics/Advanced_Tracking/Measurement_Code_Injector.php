@@ -22,7 +22,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measu
 final class Measurement_Code_Injector {
 
 	/**
-	 * Holds a list of event configurations to be injected
+	 * Holds a list of event configurations to be injected.
 	 *
 	 * @since n.e.x.t.
 	 * @var array
@@ -48,15 +48,15 @@ final class Measurement_Code_Injector {
 		$this->event_configurations = wp_json_encode( $event_configurations );
 		$this->inject_script        = <<<INJECT_SCRIPT
 ( function() {
-	function matches(el, selector) {
+	function matches( el, selector ) {
 	    const matcher =
 		    el.matches ||
 		    el.webkitMatchesSelector ||
 		    el.mozMatchesSelector ||
 		    el.msMatchesSelector ||
 		    el.oMatchesSelector;
-	    if (matcher) {
-	        return matcher.call(el, selector);
+	    if ( matcher ) {
+	        return matcher.call( el, selector );
 	    }
 	    return false;
 	}
@@ -66,7 +66,7 @@ final class Measurement_Code_Injector {
 		const thisConfig = config;
 		document.addEventListener( config.on, function( e ) {
 			var el = e.target;
-			if ( matches(el, thisConfig.selector) || matches(el, thisConfig.selector.concat( ' *' )) ) {
+			if ( matches(el, thisConfig.selector) || matches(el, thisConfig.selector.concat( ' *' ) ) ) {
 				var params = {};
 				params['event_category'] = thisConfig.category;
 				gtag( 'event', thisConfig.action, params );
