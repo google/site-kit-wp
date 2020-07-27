@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
-import { STORE_NAME, WIDGET_WIDTHS } from '../datastore/constants';
+import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
@@ -31,13 +31,13 @@ import {
 
 const { useSelect } = Data;
 
-const createTestRegistryWithArea = ( areaName ) => {
+const createTestRegistryWithArea = ( areaName, style = WIDGET_AREA_STYLES.BOXES ) => {
 	const registry = createTestRegistry();
 
 	registry.dispatch( STORE_NAME ).registerWidgetArea( areaName, {
 		title: 'Dashboard Header',
 		subtitle: 'Cool stuff for yoursite.com',
-		style: 'boxes',
+		style,
 	} );
 	registry.dispatch( STORE_NAME ).assignWidgetArea( areaName, 'dashboard' );
 
@@ -233,5 +233,30 @@ describe( 'WidgetAreaRenderer', () => {
 
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
 		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+	} );
+
+	it( 'should output boxes style without extra grid markup', async () => {
+		createWidgets( registry, areaName, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.FULL },
+		] );
+
+		const { container } = render( <WidgetAreaRenderer slug={ areaName } style={ WIDGET_AREA_STYLES.BOXES } />, { registry } );
+
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner' ) ).toHaveLength( 0 );
+	} );
+
+	it( 'should output composite style with extra grid markup', async () => {
+		registry = createTestRegistryWithArea( areaName, WIDGET_AREA_STYLES.COMPOSITE );
+		createWidgets( registry, areaName, [
+			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
+			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
+			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.FULL },
+		] );
+
+		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
+
+		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner' ) ).toHaveLength( 1 );
 	} );
 } );

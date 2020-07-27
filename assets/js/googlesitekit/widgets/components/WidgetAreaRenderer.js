@@ -31,7 +31,7 @@ import { useMemo, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, WIDGET_WIDTHS } from '../datastore/constants';
+import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
 const { useSelect } = Data;
 
@@ -157,6 +157,18 @@ const WidgetAreaRenderer = ( { slug } ) => {
 		return classNames;
 	}, [ widgets, activeWidgets ] );
 
+	const widgetsOutput = widgets.map( ( widget, i ) => {
+		return (
+			<WidgetRenderer
+				gridClassName={ widgetClassNames[ i ] !== null ? classnames( widgetClassNames[ i ] ) : 'googlesitekit-widget-area--hidden' }
+				key={ widget.slug }
+				slug={ widget.slug }
+				activeWidgets={ activeWidgets }
+				setActiveWidgets={ setActiveWidgets }
+			/>
+		);
+	} );
+
 	return (
 		<div className={ classnames( 'mdc-layout-grid', 'googlesitekit-widget-area', `googlesitekit-widget-area--${ widgetArea.slug }`, `googlesitekit-widget-area--${ widgetArea.style }` ) }>
 			<div className="mdc-layout-grid__inner">
@@ -179,17 +191,16 @@ const WidgetAreaRenderer = ( { slug } ) => {
 			</div>
 			<div className="googlesitekit-widget-area-widgets">
 				<div className="mdc-layout-grid__inner">
-					{ widgets.map( ( widget, i ) => {
-						return (
-							<WidgetRenderer
-								gridClassName={ widgetClassNames[ i ] !== null ? classnames( widgetClassNames[ i ] ) : 'googlesitekit-widget-area--hidden' }
-								key={ widget.slug }
-								slug={ widget.slug }
-								activeWidgets={ activeWidgets }
-								setActiveWidgets={ setActiveWidgets }
-							/>
-						);
-					} ) }
+					{ widgetArea.style === WIDGET_AREA_STYLES.BOXES && widgetsOutput }
+					{ widgetArea.style === WIDGET_AREA_STYLES.COMPOSITE && (
+						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+							<div className="mdc-layout-grid">
+								<div className="mdc-layout-grid__inner">
+									{ widgetsOutput }
+								</div>
+							</div>
+						</div>
+					) }
 				</div>
 			</div>
 		</div>
