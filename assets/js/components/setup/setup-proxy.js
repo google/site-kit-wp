@@ -41,7 +41,7 @@ import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import OptIn from '../optin';
 import CompatibilityChecks from './compatibility-checks';
-import { STORE_NAME as SITE_STORE } from '../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { withSelect } = Data;
 
 class SetupUsingProxy extends Component {
@@ -95,28 +95,32 @@ class SetupUsingProxy extends Component {
 			siteURL,
 		} = this.props;
 
-		const siteHostname = siteURL
-			? punycode.toUnicode( ( new URL( siteURL ) ).hostname )
-			: '';
-
 		const isRevoked = 'revoked' === context;
 		const isSecondAdmin = hasConnectedAdmins;
 
 		let title;
 		let description;
 		let startSetupText;
+		let siteHostname = global.location?.hostname;
+
+		try {
+			// "new URL" will throw an exception if it can't parse site URL.
+			siteHostname = ( new URL( siteURL ) ).hostname;
+		} catch ( e ) {
+			// Do nothing.
+		}
 
 		if ( isRevoked ) {
 			title = sprintf(
 				/* translators: %s is the site's hostname. (e.g. example.com) */
 				__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
-				siteHostname
+				punycode.toUnicode( siteHostname )
 			);
 			description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Start Setup" below to generate new credentials.', 'google-site-kit' );
 			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
 		} else if ( isSecondAdmin ) {
 			title = __( 'Connect your Google account to Site Kit', 'google-site-kit' );
-			description = __( 'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you\'ll see stats from all already activated Google products.', 'google-site-kit' );
+			description = __( 'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.', 'google-site-kit' );
 			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
 		} else {
 			title = __( 'Sign in with Google to set up Site Kit', 'google-site-kit' );
@@ -210,13 +214,13 @@ class SetupUsingProxy extends Component {
 }
 
 export default withSelect( ( select ) => {
-	const store = select( SITE_STORE );
+	const store = select( CORE_SITE );
 
 	return {
 		hasConnectedAdmins: store.hasConnectedAdmins(),
 		isConnected: store.isConnected(),
 		isResettable: store.isResettable(),
-		siteURL: store.referenceSiteURL(),
+		siteURL: store.getReferenceSiteURL(),
 		proxySetupURL: store.getProxySetupURL(),
 	};
 } )( SetupUsingProxy );

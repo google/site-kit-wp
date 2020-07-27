@@ -316,6 +316,32 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Gets proxy setup URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} Proxy setup URL if available, otherwise an empty string.
+	 */
+	getProxySetupURL: createRegistrySelector( ( select ) => () => {
+		const { proxySetupURL } = select( STORE_NAME ).getSiteInfo() || {};
+
+		return proxySetupURL || '';
+	} ),
+
+	/**
+	 * Gets proxy permissions URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} Proxy permissions URL if available, otherwise an empty string.
+	 */
+	getProxyPermissionsURL: createRegistrySelector( ( select ) => () => {
+		const { proxyPermissionsURL } = select( STORE_NAME ).getSiteInfo() || {};
+
+		return proxyPermissionsURL || '';
+	} ),
+
+	/**
 	 * Gets the current reference URL to use.
 	 *
 	 * This selector should be used to get the contextual URL for requesting

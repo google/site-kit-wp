@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
-use Google\Site_Kit\Core\Storage\HasConnectedAdmins;
+use Google\Site_Kit\Core\Storage\Has_Connected_Admins;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -128,12 +128,12 @@ final class Authentication {
 	protected $first_admin;
 
 	/**
-	 * HasConnectedAdmins instance.
+	 * Has_Connected_Admins instance.
 	 *
 	 * @since n.e.x.t
-	 * @var HasConnectedAdmins
+	 * @var Has_Connected_Admins
 	 */
-	protected $connected_admins;
+	protected $has_connected_admins;
 
 	/**
 	 * Google_Proxy instance.
@@ -166,18 +166,18 @@ final class Authentication {
 		User_Options $user_options = null,
 		Transients $transients = null
 	) {
-		$this->context           = $context;
-		$this->options           = $options ?: new Options( $this->context );
-		$this->user_options      = $user_options ?: new User_Options( $this->context );
-		$this->transients        = $transients ?: new Transients( $this->context );
-		$this->google_proxy      = new Google_Proxy( $this->context );
-		$this->credentials       = new Credentials( new Encrypted_Options( $this->options ) );
-		$this->verification      = new Verification( $this->user_options );
-		$this->verification_meta = new Verification_Meta( $this->user_options );
-		$this->verification_file = new Verification_File( $this->user_options );
-		$this->profile           = new Profile( $this->user_options );
-		$this->first_admin       = new First_Admin( $this->options );
-		$this->connected_admins  = new HasConnectedAdmins( $this->options, $this->user_options );
+		$this->context              = $context;
+		$this->options              = $options ?: new Options( $this->context );
+		$this->user_options         = $user_options ?: new User_Options( $this->context );
+		$this->transients           = $transients ?: new Transients( $this->context );
+		$this->google_proxy         = new Google_Proxy( $this->context );
+		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
+		$this->verification         = new Verification( $this->user_options );
+		$this->verification_meta    = new Verification_Meta( $this->user_options );
+		$this->verification_file    = new Verification_File( $this->user_options );
+		$this->profile              = new Profile( $this->user_options );
+		$this->first_admin          = new First_Admin( $this->options );
+		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
 	}
 
 	/**
@@ -190,7 +190,7 @@ final class Authentication {
 		$this->verification()->register();
 		$this->verification_file()->register();
 		$this->verification_meta()->register();
-		$this->connected_admins()->register();
+		$this->has_connected_admins->register();
 
 		add_action(
 			'init',
@@ -371,17 +371,6 @@ final class Authentication {
 	 */
 	public function verification_file() {
 		return $this->verification_file;
-	}
-
-	/**
-	 * Gets the connected_admins instance.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return HasConnectedAdmins ConnectedAdmins instance.
-	 */
-	public function connected_admins() {
-		return $this->connected_admins;
 	}
 
 	/**
@@ -765,7 +754,7 @@ final class Authentication {
 								'connected'          => $this->credentials->has(),
 								'resettable'         => $this->options->has( Credentials::OPTION ),
 								'setupCompleted'     => $this->is_setup_completed(),
-								'hasConnectedAdmins' => $this->connected_admins()->get(),
+								'hasConnectedAdmins' => $this->has_connected_admins->get(),
 							);
 
 							return new WP_REST_Response( $data );

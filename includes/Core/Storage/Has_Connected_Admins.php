@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Storage\HasConnectedAdmins
+ * Class Google\Site_Kit\Core\Storage\Has_Connected_Admins
  *
  * @package   Google\Site_Kit\Core\Storage
  * @copyright 2019 Google LLC
@@ -22,7 +22,7 @@ use Google\Site_Kit\Core\Storage\User_Options_Interface;
  * @access private
  * @ignore
  */
-class HasConnectedAdmins extends Setting {
+class Has_Connected_Admins extends Setting {
 
 	/**
 	 * The option_name for this setting.
@@ -110,6 +110,17 @@ class HasConnectedAdmins extends Setting {
 		$this->set( $has_connected_admins );
 
 		return $has_connected_admins;
+	}
+
+	/**
+	 * Gets the expected value type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The type name.
+	 */
+	protected function get_type() {
+		return 'boolean';
 	}
 
 }
