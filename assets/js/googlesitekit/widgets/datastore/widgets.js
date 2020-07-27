@@ -20,12 +20,15 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, WIDGET_WIDTHS } from './constants';
+import { WIDGET_WIDTHS } from './constants';
+import { sortByProperty } from '../../../util/sort-by-property';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 const { commonActions, createRegistrySelector } = Data;
 
@@ -40,7 +43,6 @@ export const WidgetComponents = {};
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';
-const SET_WIDGET_COMPONENT_KEY = 'SET_WIDGET_COMPONENT_KEY';
 
 const WidgetWidthKeys = Object.keys( WIDGET_WIDTHS ).map( ( ( key ) => `WIDGET_WIDTHS.${ key }` ) ).join( ', ' );
 
@@ -94,14 +96,11 @@ export const actions = {
 		invariant( Object.values( WIDGET_WIDTHS ).includes( width ), `Widget width should be one of: ${ WidgetWidthKeys }, but "${ width }" was provided.` );
 
 		const registry = yield commonActions.getRegistry();
-		let registryKey = yield registry.select( STORE_NAME ).getWidgetRegistryKey();
+		let registryKey = yield registry.select( CORE_SITE ).getRegistryKey();
 
 		if ( registryKey === undefined ) {
-			registryKey = Object.keys( WidgetComponents ).length + 1;
-			yield {
-				payload: { registryKey },
-				type: SET_WIDGET_COMPONENT_KEY,
-			};
+			registryKey = uuidv4();
+			yield registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
 		}
 
 		// We do this assignment in the action rather than the reducer because we can't send a
@@ -165,15 +164,6 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case SET_WIDGET_COMPONENT_KEY: {
-			const { registryKey } = payload;
-
-			return {
-				...state,
-				registryKey,
-			};
-		}
-
 		default: {
 			return { ...state };
 		}
@@ -220,28 +210,22 @@ export const selectors = {
 
 		const { areaAssignments, widgets } = state;
 
-		const registryKey = select( STORE_NAME ).getWidgetRegistryKey();
+		const registryKey = select( CORE_SITE ).getRegistryKey();
 
-		return Object.values( widgets ).filter( ( widget ) => {
-			return areaAssignments[ widgetAreaSlug ] && areaAssignments[ widgetAreaSlug ].includes( widget.slug );
-		} ).sort( ( widgetA, widgetB ) => {
-			if ( widgetA.priority > widgetB.priority ) {
-				return 1;
-			}
+		const sorted = sortByProperty(
+			Object.values( widgets ).filter( ( widget ) => {
+				return areaAssignments[ widgetAreaSlug ] && areaAssignments[ widgetAreaSlug ].includes( widget.slug );
+			} ).map( ( widget ) => {
+				const widgetWithComponent = { ...widget };
+				if ( WidgetComponents[ registryKey ] ) {
+					widgetWithComponent.component = WidgetComponents[ registryKey ][ widget.slug ];
+				}
 
-			if ( widgetA.priority < widgetB.priority ) {
-				return -1;
-			}
-
-			return 0;
-		} ).map( ( widget ) => {
-			const widgetWithComponent = { ...widget };
-			if ( WidgetComponents[ registryKey ] ) {
-				widgetWithComponent.component = WidgetComponents[ registryKey ][ widget.slug ];
-			}
-
-			return widgetWithComponent;
-		} );
+				return widgetWithComponent;
+			} ),
+			'priority'
+		);
+		return sorted;
 	} ),
 
 	/**
@@ -258,7 +242,7 @@ export const selectors = {
 
 		const { widgets } = state;
 
-		const registryKey = select( STORE_NAME ).getWidgetRegistryKey();
+		const registryKey = select( CORE_SITE ).getRegistryKey();
 
 		const widget = widgets[ slug ];
 		if ( widget && WidgetComponents[ registryKey ] ) {
@@ -267,25 +251,6 @@ export const selectors = {
 
 		return widget || null;
 	} ),
-
-	/**
-	 * Returns the registry key being used for this registry's widgets.
-	 *
-	 * We key each registry with an Integer, so we don't share registered widgets
-	 * between registries. This allows us to access the appropriate registry global
-	 * from inside selectors.
-	 *
-	 * @since 1.9.0
-	 * @private
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(number|undefined)} An ordered array of widgets for this area.
-	 */
-	getWidgetRegistryKey( state ) {
-		const { registryKey } = state;
-
-		return registryKey;
-	},
 };
 
 export default {

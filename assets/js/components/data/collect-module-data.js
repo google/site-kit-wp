@@ -26,11 +26,22 @@ import { doAction } from '@wordpress/hooks';
  * Internal dependencies
  */
 import './index'; // Ensure dataAPI is loaded.
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
 export default function CollectModuleData( { context, args } ) {
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+
+	// Reset module data when the date range changes, but not on mount.
+	useEffect( () => {
+		return () => doAction( 'googlesitekit.moduleDataReset' );
+	}, [ dateRange ] );
+
+	// Load data whenever the context, args, or dateRange changes.
 	useEffect( () => {
 		doAction( 'googlesitekit.moduleLoaded', context, args );
-	}, [ context, args ] );
+	}, [ context, args, dateRange ] );
 
 	return null;
 }
