@@ -25,7 +25,7 @@ import { addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { createAddToFilter } from '../../util/helpers';
-import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
+import PageSpeedInsightsCTA from './components/dashboard/PageSpeedInsightsCTA';
 import { getModulesData } from '../../util';
 
 const {

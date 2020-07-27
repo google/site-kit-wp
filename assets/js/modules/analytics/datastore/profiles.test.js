@@ -215,7 +215,7 @@ describe( 'modules/analytics profiles', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingGetProfiles( testPropertyID ) === false
+					() => registry.select( STORE_NAME ).isDoingGetProfiles( testAccountID, testPropertyID ) === false
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );

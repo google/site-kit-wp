@@ -191,7 +191,7 @@ final class Analytics extends Module
 		$info['provides'] = array(
 			__( 'Audience overview', 'google-site-kit' ),
 			__( 'Top pages', 'google-site-kit' ),
-			__( 'Top acquisition sources', 'google-site-kit' ),
+			__( 'Top acquisition channels', 'google-site-kit' ),
 		);
 
 		return $info;

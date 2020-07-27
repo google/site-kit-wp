@@ -13,10 +13,10 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Layout from '../assets/js/components/layout/layout';
-import AnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/dashboard/dashboard-widget-overview';
-import AnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/dashboard/dashboard-widget-sitestats';
-import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/dashboard/dashboard-widget-acquisition-piechart';
-import AnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/dashboard/dashboard-widget-top-acquisition-sources-table';
+import AnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetOverview';
+import AnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetSiteStats';
+import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/DashboardAcquisitionPieChart';
+import AnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopAcquisitionSources';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import {
 	AccountSelect,
@@ -25,7 +25,7 @@ import {
 	AnonymizeIPSwitch,
 	UseSnippetSwitch,
 	TrackingExclusionSwitches,
-} from '../assets/js/modules/analytics/common';
+} from '../assets/js/modules/analytics/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
@@ -50,7 +50,10 @@ storiesOf( 'Analytics Module', module )
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				accountID: properties[ 0 ].accountId,
+				propertyID: profiles[ 0 ].webPropertyId,
+			} );
 		};
 
 		return (
@@ -70,7 +73,10 @@ storiesOf( 'Analytics Module', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				accountID: properties[ 0 ].accountId,
+				propertyID: profiles[ 0 ].webPropertyId,
+			} );
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: profiles[ 0 ].accountId,
 				propertyID: profiles[ 0 ].webPropertyId,
@@ -232,37 +238,40 @@ storiesOf( 'Analytics Module', module )
 				'Single'
 			);
 		}, 250 );
+
 		return (
-			<Layout
-				header
-				footer
-				title={ __( 'Top acquisition sources over the last 28 days', 'google-site-kit' ) }
-				headerCtaLink="https://analytics.google.com"
-				headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-				footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-				footerCtaLink="https://analytics.google.com"
-			>
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-4-desktop
-							mdc-layout-grid__cell--span-8-tablet
-							mdc-layout-grid__cell--span-4-phone
-						">
-							<DashboardAcquisitionPieChart />
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-8-desktop
-							mdc-layout-grid__cell--span-8-tablet
-							mdc-layout-grid__cell--span-4-phone
-						">
-							<AnalyticsDashboardWidgetTopAcquisitionSources />
+			<WithTestRegistry>
+				<Layout
+					header
+					footer
+					title={ __( 'Top acquisition channels over the last 28 days', 'google-site-kit' ) }
+					headerCtaLink="https://analytics.google.com"
+					headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					footerCtaLink="https://analytics.google.com"
+				>
+					<div className="mdc-layout-grid">
+						<div className="mdc-layout-grid__inner">
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-4-desktop
+								mdc-layout-grid__cell--span-8-tablet
+								mdc-layout-grid__cell--span-4-phone
+							">
+								<DashboardAcquisitionPieChart />
+							</div>
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-8-desktop
+								mdc-layout-grid__cell--span-8-tablet
+								mdc-layout-grid__cell--span-4-phone
+							">
+								<AnalyticsDashboardWidgetTopAcquisitionSources />
+							</div>
 						</div>
 					</div>
-				</div>
-			</Layout>
+				</Layout>
+			</WithTestRegistry>
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } );

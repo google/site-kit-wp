@@ -79,8 +79,8 @@ jobs:
           git add .
           git status
           git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
-          git commit -m "Build and publish ${{ github.ref }}"
           git pull --no-edit --quiet
+          git commit -m "Build and publish ${{ github.ref }}"
           git push origin master
         env:
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
