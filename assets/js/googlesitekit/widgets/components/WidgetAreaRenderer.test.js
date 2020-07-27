@@ -19,13 +19,17 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
 import { STORE_NAME, WIDGET_WIDTHS } from '../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	render,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/test-utils';
+
+const { useSelect } = Data;
 
 const createTestRegistryWithArea = ( areaName ) => {
 	const registry = createTestRegistry();
@@ -41,7 +45,9 @@ const createTestRegistryWithArea = ( areaName ) => {
 };
 
 const WidgetComponent = () => {
-	return ( <div>Foo bar!</div> );
+	const isConnected = useSelect( ( select ) => select( CORE_SITE ).isConnected() );
+
+	return ( <div>Foo bar! Connected: { isConnected ? ' yes' : 'no' }.</div> );
 };
 
 const WidgetComponentEmpty = () => {
@@ -62,8 +68,10 @@ describe( 'WidgetAreaRenderer', () => {
 	const areaName = 'gridcell-test';
 	let registry;
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistryWithArea( areaName );
+		const connection = { connected: true };
+		await registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
 	} );
 
 	afterEach( () => {

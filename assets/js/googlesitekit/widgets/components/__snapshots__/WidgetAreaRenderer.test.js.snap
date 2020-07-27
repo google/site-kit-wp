@@ -14,7 +14,9 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -25,7 +27,9 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -36,7 +40,9 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
         class="googlesitekit-widget googlesitekit-widget--three"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -47,7 +53,9 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
         class="googlesitekit-widget googlesitekit-widget--four"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -69,7 +77,9 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -80,7 +90,9 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -102,7 +114,9 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -124,7 +138,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -135,7 +151,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -146,7 +164,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--three"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -157,7 +177,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--four"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -179,7 +201,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -190,7 +214,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -201,7 +227,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--three"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -223,7 +251,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -234,7 +264,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -245,7 +277,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--three"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -267,7 +301,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -278,7 +314,9 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -300,7 +338,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -311,7 +351,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -322,7 +364,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--three"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -333,7 +377,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--four"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -344,7 +390,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--five"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -366,7 +414,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -377,7 +427,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -388,7 +440,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--three"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -399,7 +453,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--four"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -421,7 +477,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -432,7 +490,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -443,7 +503,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--three"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -454,7 +516,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--four"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -476,7 +540,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -487,7 +553,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -498,7 +566,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--three"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -509,7 +579,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--four"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -520,7 +592,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--five"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -531,7 +605,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--six"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -542,7 +618,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--seven"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -564,7 +642,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -575,7 +655,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--two"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -586,7 +668,9 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
         class="googlesitekit-widget googlesitekit-widget--three"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -608,7 +692,9 @@ exports[`WidgetAreaRenderer should treat widgets that render no content as zero-
         class="googlesitekit-widget googlesitekit-widget--one"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
@@ -619,7 +705,9 @@ exports[`WidgetAreaRenderer should treat widgets that render no content as zero-
         class="googlesitekit-widget googlesitekit-widget--three"
       >
         <div>
-          Foo bar!
+          Foo bar! Connected: 
+           yes
+          .
         </div>
       </div>
     </div>
