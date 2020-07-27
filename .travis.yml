@@ -88,7 +88,7 @@ script:
     if [[ "$E2E" == "1" ]]; then
       npm run build:test || exit 1 # Build for tests.
       npm run env:start || exit 1
-      npm run test:e2e:ci -- tests/e2e/specs/admin-tracking.test.js || exit 1 # E2E tests.
+      npm run test:e2e:ci -- specs/admin-tracking.test.js specs/modules/analytics/write-scope-requests.test.js || exit 1 # E2E tests.
     fi
 
 jobs:
