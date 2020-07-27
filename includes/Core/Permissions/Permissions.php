@@ -158,6 +158,28 @@ final class Permissions {
 			4
 		);
 
+		add_filter(
+			'googlesitekit_user_data',
+			function( $data ) {
+				$permissions = array(
+					self::AUTHENTICATE,
+					self::SETUP,
+					self::VIEW_POSTS_INSIGHTS,
+					self::VIEW_DASHBOARD,
+					self::VIEW_MODULE_DETAILS,
+					self::MANAGE_OPTIONS,
+					self::PUBLISH_POSTS,
+				);
+
+				$data['permissions'] = array_combine(
+					$permissions,
+					array_map( 'current_user_can', $permissions )
+				);
+
+				return $data;
+			}
+		);
+
 		// This constant can be set if an alternative mechanism to grant these capabilities is in place.
 		if ( defined( 'GOOGLESITEKIT_DISABLE_DYNAMIC_CAPABILITIES' ) && GOOGLESITEKIT_DISABLE_DYNAMIC_CAPABILITIES ) {
 			return;
