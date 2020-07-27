@@ -16,7 +16,7 @@ jobs:
   build-storybook:
     name: Build Storybook
     runs-on: ubuntu-latest
-    if: ${{ ! ( ( github.event_name == 'pull_request' && github.event.action == 'closed' ) || github.event.pull_request.head.repo.fork ) }}
+    if: ! ( ( github.event_name == 'pull_request' && github.event.action == 'closed' ) || github.event.pull_request.head.repo.fork )
     steps:
     - uses: actions/checkout@v2
     - name: Get Composer Cache Directory
