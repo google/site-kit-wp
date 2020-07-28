@@ -563,19 +563,19 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $range      Date range string. Either 'last-7-days', 'last-14-days', 'last-90-days', or
-	 *                           'last-28-days' (default).
-	 * @param string $multiplier Optional. How many times the date range to get. This value can be specified if the
-	 *                           range should be request multiple times back. Default 1.
-	 * @param int    $offset     Days the range should be offset by. Default 1. Used by Search Console where
-	 *                           data is delayed by two days.
-	 * @param bool   $previous   Whether to select the previous period. Default false.
-	 * @param bool   $day_align  Whether to align the previous period days of the week to current period. Default false.
+	 * @param string $range         Date range string. Either 'last-7-days', 'last-14-days', 'last-90-days', or
+	 *                              'last-28-days' (default).
+	 * @param string $multiplier    Optional. How many times the date range to get. This value can be specified if the
+	 *                              range should be request multiple times back. Default 1.
+	 * @param int    $offset        Days the range should be offset by. Default 1. Used by Search Console where
+	 *                              data is delayed by two days.
+	 * @param bool   $previous      Whether to select the previous period. Default false.
+	 * @param bool   $weekday_align Whether to align the previous period days of the week to current period. Default false.
 	 *
 	 * @return array List with two elements, the first with the start date and the second with the end date, both as
 	 *               'Y-m-d'.
 	 */
-	public function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false, $day_align = false ) {
+	public function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false, $weekday_align = false ) {
 
 		preg_match( '*-(\d+)-*', $range, $matches );
 		$number_of_days = $multiplier * ( isset( $matches[1] ) ? $matches[1] : 28 );
@@ -591,7 +591,7 @@ abstract class Module {
 		// Check the day of the week alignment.
 		$previous_day_of_week  = gmdate( 'w', strtotime( $date_end ) );
 		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
-		if ( $day_align && $previous && $previous_day_of_week !== $yesterday_day_of_week ) {
+		if ( $weekday_align && $previous && $previous_day_of_week !== $yesterday_day_of_week ) {
 			// Adjust the date to closest period that matches the same days of the week.
 			$off_by = $number_of_days % 7;
 			if ( $off_by > 3 ) {
