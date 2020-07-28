@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { get } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -43,8 +38,8 @@ const trafficIncrease = ( reports, id ) => {
 	}
 
 	const totals = reports?.[0]?.data?.totals || [];
-	const totalUsers = totals.[0]?.values?.[0];
-	const previousTotalUsers = totals[1]?.values?.[0];
+	const totalUsers = totals?.[0]?.values?.[0];
+	const previousTotalUsers = totals?.[1]?.values?.[0];
 	const totalUsersChange = Number( changeToPercent( previousTotalUsers, totalUsers ) );
 
 	// Adds threshold to show data only between 10-100 percent change.

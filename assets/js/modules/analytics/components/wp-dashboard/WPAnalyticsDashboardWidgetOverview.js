@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { get } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -162,11 +157,9 @@ export default withData(
 			context: 'WPDashboard',
 			toState( state, { data } ) {
 				if ( ! state.directTotalUsers ) {
-					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
-					const previousTotalUsers = get( data, '[0].data.totals[1].values[0]' );
 					return {
-						directTotalUsers,
-						previousTotalUsers,
+						directTotalUsers: data?.[0]?.data?.totals?.[0]?.values?.[0],
+						previousTotalUsers: data?.[0]?.data?.totals?.[1]?.values?.[0],
 					};
 				}
 			},
