@@ -31,16 +31,16 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../util';
-import withData from '../../../components/higherorder/withdata';
-import { TYPE_MODULES } from '../../../components/data';
-import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
-import PreviewTable from '../../../components/preview-table';
-import Layout from '../../../components/layout/layout';
+import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import withData from '../../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../../components/data';
+import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import PreviewTable from '../../../../components/preview-table';
+import Layout from '../../../../components/layout/layout';
 import {
 	isDataZeroSearchConsole,
-} from '../dashboard/util';
-import { STORE_NAME } from '../datastore/constants';
+} from '../../dashboard/util';
+import { STORE_NAME } from '../../datastore/constants';
 
 const DashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;

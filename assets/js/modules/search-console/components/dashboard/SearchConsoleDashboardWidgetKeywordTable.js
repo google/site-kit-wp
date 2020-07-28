@@ -31,12 +31,12 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../util';
-import withData from '../../../components/higherorder/withdata';
-import { TYPE_MODULES } from '../../../components/data';
-import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
-import PreviewTable from '../../../components/preview-table';
-import { STORE_NAME } from '../datastore/constants';
+import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import withData from '../../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../../components/data';
+import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import PreviewTable from '../../../../components/preview-table';
+import { STORE_NAME } from '../../datastore/constants';
 
 const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const { data } = props;
