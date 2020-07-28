@@ -1,4 +1,4 @@
-name: build-storybook
+name: Storybook
 
 on:
   push:
@@ -14,8 +14,9 @@ on:
 
 jobs:
   build-storybook:
+    name: Build Storybook
     runs-on: ubuntu-latest
-    if: ${{ ! ( github.event_name == 'pull_request' && github.event.action == 'closed' ) }}
+    if: false == ( ( github.event_name == 'pull_request' && github.event.action == 'closed' ) || github.event.pull_request.head.repo.fork )
     steps:
     - uses: actions/checkout@v2
     - name: Get Composer Cache Directory
@@ -59,6 +60,7 @@ jobs:
         path: dist
 
   deploy-storybook:
+    name: Deploy Storybook
     runs-on: ubuntu-latest
     needs: build-storybook
     steps:
@@ -98,8 +100,9 @@ jobs:
           GIT_COMMITTER_NAME: ${{ github.actor }}
 
   remove-storybook:
+    name: Remove Storybook
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    if: ( github.event_name == 'pull_request' && github.event.action == 'closed' ) && github.event.pull_request.head.repo.fork == false
     steps:
       - uses: actions/checkout@v2
         with:
