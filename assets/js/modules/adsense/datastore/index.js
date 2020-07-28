@@ -35,6 +35,7 @@ import settings from './settings';
 import adblocker from './adblocker';
 import error from './error';
 import { STORE_NAME } from './constants';
+
 export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'adsense', {

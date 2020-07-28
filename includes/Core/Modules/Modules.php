@@ -140,6 +140,17 @@ final class Modules {
 			}
 		);
 
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				$modules_routes = array(
+					'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
+				);
+
+				return array_merge( $paths, $modules_routes );
+			}
+		);
+
 		$available_modules = $this->get_available_modules();
 		array_walk(
 			$available_modules,
@@ -476,6 +487,10 @@ final class Modules {
 			return current_user_can( Permissions::MANAGE_OPTIONS );
 		};
 
+		$get_module_schema = function () {
+			return $this->get_module_schema();
+		};
+
 		return array(
 			new REST_Route(
 				'core/modules/data/list',
@@ -493,7 +508,7 @@ final class Modules {
 					),
 				),
 				array(
-					'schema' => $this->get_module_schema(),
+					'schema' => $get_module_schema,
 				)
 			),
 			new REST_Route(
@@ -553,7 +568,7 @@ final class Modules {
 					),
 				),
 				array(
-					'schema' => $this->get_module_schema(),
+					'schema' => $get_module_schema,
 				)
 			),
 			new REST_Route(
@@ -581,7 +596,7 @@ final class Modules {
 					),
 				),
 				array(
-					'schema' => $this->get_module_schema(),
+					'schema' => $get_module_schema,
 				)
 			),
 			new REST_Route(
@@ -795,6 +810,7 @@ final class Modules {
 			'description'  => $module->description,
 			'homepage'     => $module->homepage,
 			'internal'     => $module->internal,
+			'order'        => $module->order,
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),

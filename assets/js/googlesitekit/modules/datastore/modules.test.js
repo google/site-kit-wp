@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { getQueryArg } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -32,20 +27,21 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import { sortByProperty } from '../../../util/sort-by-property';
+import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
 
 describe( 'core/modules modules', () => {
-	const fixturesKeyValue = FIXTURES.reduce( ( acc, module ) => {
-		return { ...acc, [ module.slug ]: module };
-	}, {} );
+	const sortedFixtures = sortByProperty( FIXTURES, 'order' );
+	const fixturesKeyValue = convertArrayListToKeyedObjectMap( sortedFixtures, 'slug' );
 	let registry;
 	let store;
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		// Invalidate the cache before every request, but keep it enabled to
 		// make sure we're opting-out of the cache for the correct requests.
-		API.invalidateCache();
+		await API.invalidateCache();
 
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
@@ -118,11 +114,6 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				// Ensure the request to re-fetch authentication has a timestamp parameter.
-				expect(
-					getQueryArg( fetchMock.calls()[ 3 ][ 0 ], 'timestamp' )
-				).not.toBe( undefined );
-
 				// Optimize should be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
 
@@ -133,18 +124,8 @@ describe( 'core/modules modules', () => {
 			it( 'does not update status if the API encountered a failure', async () => {
 				// In our fixtures, optimize is off by default.
 				const slug = 'optimize';
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
 
-				// Call a selector that triggers an HTTP request to get the modules.
-				registry.select( STORE_NAME ).isModuleActive( slug );
-				// Wait until the modules have been loaded.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
 				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
 
 				expect( isActiveBefore ).toEqual( false );
@@ -159,10 +140,6 @@ describe( 'core/modules modules', () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{ body: response, status: 500 }
-				);
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
-					{ body: {}, status: 200 }
 				);
 
 				muteConsole( 'error' );
@@ -192,7 +169,7 @@ describe( 'core/modules modules', () => {
 
 				// The fourth request to update the modules shouldn't be called, because the
 				// activation request failed.
-				expect( fetchMock ).toHaveBeenCalledTimes( 3 );
+				expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 				expect( isActiveAfter ).toEqual( false );
 			} );
 		} );
@@ -257,11 +234,6 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				// Ensure the request to re-fetch authentication has a timestamp parameter.
-				expect(
-					getQueryArg( fetchMock.calls()[ 3 ][ 0 ], 'timestamp' )
-				).not.toBe( undefined );
-
 				// Analytics should no longer be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
 
@@ -272,19 +244,8 @@ describe( 'core/modules modules', () => {
 			it( 'does not update status if the API encountered a failure', async () => {
 				// In our fixtures, analytics is on by default.
 				const slug = 'analytics';
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-
-				// Call a selector that triggers an HTTP request to get the modules.
-				registry.select( STORE_NAME ).isModuleActive( slug );
-				// Wait until the modules have been loaded.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
 				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
 
 				expect( isActiveBefore ).toEqual( true );
@@ -299,11 +260,6 @@ describe( 'core/modules modules', () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{ body: response, status: 500 }
-				);
-
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
-					{ body: {}, status: 200 }
 				);
 
 				muteConsole( 'error' );
@@ -327,8 +283,33 @@ describe( 'core/modules modules', () => {
 
 				// The fourth request to update the modules shouldn't be called, because the
 				// deactivation request failed.
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isActiveAfter ).toEqual( true );
+			} );
+		} );
+
+		describe( 'registerModule', () => {
+			const moduleSlug = 'test-module';
+			const moduleSettings = {
+				name: 'Test Module',
+				order: 1,
+				description: 'A module for testing',
+				homepage: 'https://sitekit.withgoogle.com/',
+				icon: 'icon-name',
+			};
+
+			it( 'registers a module', async () => {
+				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, moduleSettings );
+				const modules = await registry.select( STORE_NAME ).getModules();
+				expect( modules[ moduleSlug ] ).not.toBeUndefined();
+				expect( modules[ moduleSlug ] ).toEqual( expect.objectContaining( moduleSettings ) );
+			} );
+
+			it( 'does not allow active or connected properties to be set to true', async () => {
+				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, { active: true, connected: true, ...moduleSettings } );
+				const modules = await registry.select( STORE_NAME ).getModules();
+				expect( modules[ moduleSlug ].active ).toBe( false );
+				expect( modules[ moduleSlug ].connected ).toBe( false );
 			} );
 		} );
 
@@ -431,6 +412,7 @@ describe( 'core/modules modules', () => {
 				);
 				const slug = 'analytics';
 				const module = registry.select( STORE_NAME ).getModule( slug );
+
 				// The modules will be undefined whilst loading.
 				expect( module ).toEqual( undefined );
 

@@ -26,14 +26,12 @@ import { React } from '@wordpress/element';
  */
 import { dispatch, select } from 'googlesitekit-data';
 import Widget from './components/Widget';
-import { STORE_NAME } from './datastore/constants';
+import { STORE_NAME, WIDGET_WIDTHS, WIDGET_STYLES } from './datastore/constants';
 // This import has side-effects; it registers the Widgets datastore on the default
 // data store registry (eg. `googlesitekit.data`).
 import './datastore';
 
 export { registerDefaults } from './register-defaults';
-export { default as contexts } from './default-contexts';
-export { default as areas } from './default-areas';
 
 const Widgets = {
 	/**
@@ -42,6 +40,20 @@ const Widgets = {
 	 * @since 1.11.0
 	 */
 	components: { Widget },
+
+	/**
+	 * Supported styles for Site Kit widgets.
+	 *
+	 * @since n.e.x.t
+	 */
+	WIDGET_STYLES,
+
+	/**
+	 * Supported widths for Site Kit widgets.
+	 *
+	 * @since n.e.x.t
+	 */
+	WIDGET_WIDTHS,
 
 	/**
 	 * Registers a widget area.
@@ -69,12 +81,13 @@ const Widgets = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {string}          slug               Widget's slug.
-	 * @param {Object}          settings           Widget's settings.
-	 * @param {React.Component} settings.component React component used to display the contents of this widget.
-	 * @param {number}          settings.priority  Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
-	 * @param {string}          settings.width     Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
-	 * @param {(string|Array)}  [widgetAreaSlugs]  Optional. Widget area slug(s).
+	 * @param {string}          slug                Widget's slug.
+	 * @param {Object}          settings            Widget's settings.
+	 * @param {React.Component} settings.component  React component used to display the contents of this widget.
+	 * @param {number}          settings.priority   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string}          settings.width      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @param {boolean}         settings.wrapWidget Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
+	 * @param {(string|Array)}  [widgetAreaSlugs]   Optional. Widget area slug(s).
 	 */
 	registerWidget( slug, settings, widgetAreaSlugs ) {
 		dispatch( STORE_NAME ).registerWidget( slug, settings );

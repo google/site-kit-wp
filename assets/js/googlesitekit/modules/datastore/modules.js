@@ -22,17 +22,38 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { WPElement } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import DefaultModuleSettings from '../components/DefaultModuleSettings';
+import { sortByProperty } from '../../../util/sort-by-property';
+import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 
-const { createRegistrySelector } = Data;
+const { commonActions, createRegistrySelector, createRegistryControl } = Data;
+
+/**
+ * Store our module components by registry, then by module `slug`. We do this because
+ * we can't store React components in our data store.
+ *
+ * @private
+ * @since n.e.x.t
+ */
+export const ModuleComponents = {};
 
 // Actions.
-const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
+const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
+const REGISTER_MODULE = 'REGISTER_MODULE';
+const WAIT_FOR_MODULES = 'WAIT_FOR_MODULES';
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
@@ -88,6 +109,19 @@ const BASE_INITIAL_STATE = {
 
 const baseActions = {
 	/**
+	 * Wait for the modules to be loaded
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	waitForModules() {
+		return {
+			payload: {},
+			type: WAIT_FOR_MODULES,
+		};
+	},
+	/**
 	 * Activates a module on the server.
 	 *
 	 * Activate a module (based on the slug provided).
@@ -102,16 +136,16 @@ const baseActions = {
 
 		yield {
 			payload: {},
-			type: REFETCH_AUTHENICATION,
+			type: REFETCH_AUTHENTICATION,
 		};
 
 		return { response, error };
 	},
 
 	/**
-	 * Dectivates a module on the server.
+	 * Deactivates a module on the server.
 	 *
-	 * Dectivate a module (based on the slug provided).
+	 * Deactivate a module (based on the slug provided).
 	 *
 	 * @since 1.8.0
 	 *
@@ -123,7 +157,7 @@ const baseActions = {
 
 		yield {
 			payload: {},
-			type: REFETCH_AUTHENICATION,
+			type: REFETCH_AUTHENTICATION,
 		};
 
 		return { response, error };
@@ -150,16 +184,117 @@ const baseActions = {
 		if ( response?.success === true ) {
 			// Fetch (or re-fetch) all modules, with their updated status.
 			yield fetchGetModulesStore.actions.fetchGetModules();
+			yield {
+				payload: {},
+				type: REFETCH_AUTHENTICATION,
+			};
 		}
 
 		return { response, error };
 	},
+
+	/**
+	 * Registers a module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}    slug                         Module slug.
+	 * @param {Object}    [settings]                   Optional. Module settings.
+	 * @param {string}    [settings.name]              Optional. Module name. Default is the slug.
+	 * @param {string}    [settings.description]       Optional. Module description. Default empty string.
+	 * @param {string}    [settings.icon]              Optional. Module icon. Default empty string.
+	 * @param {number}    [settings.order]             Optional. Numeric indicator for module order. Default 10.
+	 * @param {string}    [settings.homepage]          Optional. Module homepage URL. Default empty string.
+	 * @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
+	 * @return {Object} Redux-style action.
+	 */
+	*registerModule( slug, { settingsComponent = DefaultModuleSettings, ...settings } = {} ) {
+		invariant( slug, 'module slug is required' );
+
+		const registry = yield commonActions.getRegistry();
+		yield actions.waitForModules();
+		const registryKey = registry.select( CORE_SITE ).getRegistryKey();
+
+		// We do this assignment in the action rather than the reducer because we can't send a
+		// payload that includes a React component to the reducer; we'll get an error about
+		// payloads needing to be plain objects.
+		if ( ModuleComponents[ registryKey ] === undefined ) {
+			ModuleComponents[ registryKey ] = {};
+		}
+		if ( ModuleComponents[ registryKey ][ slug ] === undefined ) {
+			ModuleComponents[ registryKey ][ slug ] = settingsComponent;
+		}
+		// Ensure that active and connected properties are not passed here.
+		delete settings.active;
+		delete settings.connected;
+
+		const mergedModuleSettings = {
+			slug,
+			...settings,
+		};
+
+		return {
+			payload: { slug, settings: mergedModuleSettings },
+			type: REGISTER_MODULE,
+		};
+	},
 };
 
 export const baseControls = {
-	[ REFETCH_AUTHENICATION ]: () => {
-		return API.get( 'core', 'user', 'authentication', { timestamp: Date.now() }, { useCache: false } );
-	},
+	[ REFETCH_AUTHENTICATION ]: createRegistryControl( ( { dispatch } ) => () => {
+		return dispatch( CORE_USER ).fetchGetAuthentication();
+	} ),
+	[ WAIT_FOR_MODULES ]: createRegistryControl( ( registry ) => ( { payload: {} } ) => {
+		// Select first to ensure resolution is always triggered.
+		const { getModules, hasFinishedResolution } = registry.select( STORE_NAME );
+		getModules();
+		const modulesAreLoaded = () => hasFinishedResolution( 'getModules', [] );
+		if ( modulesAreLoaded() ) {
+			return;
+		}
+		return new Promise( ( resolve ) => {
+			const unsubscribe = registry.subscribe( () => {
+				if ( modulesAreLoaded() ) {
+					unsubscribe();
+					resolve();
+				}
+			} );
+		} );
+	} ),
+};
+
+const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case REGISTER_MODULE: {
+			const { slug, settings } = payload;
+			const { modules: existingModules } = state;
+			const defaults = {
+				description: null,
+				icon: null,
+				order: 10,
+				homepage: null,
+				internal: false,
+				active: false,
+				connected: false,
+				name: slug,
+			};
+			return {
+				...state,
+				modules: {
+					...existingModules,
+					[ slug ]: {
+						...defaults,
+						...( existingModules?.[ slug ] || {} ),
+						...settings,
+					},
+				},
+			};
+		}
+
+		default: {
+			return { ...state };
+		}
+	}
 };
 
 const baseResolvers = {
@@ -197,7 +332,7 @@ const baseSelectors = {
 	 *   "dependencies": [
 	 *     "analytics"
 	 *   ],
-	 *   "dependants": []
+	 *   "dependents": []
 	 * }
 	 * ```
 	 *
@@ -206,11 +341,35 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Modules available on the site.
 	 */
-	getModules( state ) {
+	getModules: createRegistrySelector( ( select ) => ( state ) => {
 		const { modules } = state;
 
-		return modules;
-	},
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		const registryKey = select( CORE_SITE ).getRegistryKey();
+		if ( registryKey === undefined ) {
+			return undefined;
+		}
+		// Sorting the modules object by order property.
+		const sortedModules = sortByProperty( Object.values( modules ), 'order' );
+		const mappedModules = sortedModules.map( ( module ) => {
+			const moduleWithComponent = { ...module };
+			if ( ModuleComponents[ registryKey ] ) {
+				// If there is a settingsComponent that was passed use it, otherwise set to the default.
+				if ( ModuleComponents[ registryKey ][ module.slug ] ) {
+					moduleWithComponent.settingsComponent = ModuleComponents[ registryKey ][ module.slug ];
+				} else {
+					moduleWithComponent.settingsComponent = DefaultModuleSettings;
+				}
+			}
+
+			return moduleWithComponent;
+		} );
+		return convertArrayListToKeyedObjectMap( mappedModules, 'slug' );
+	} ),
 
 	/**
 	 * Gets a specific module by slug.
@@ -314,6 +473,7 @@ const store = Data.combineStores(
 		INITIAL_STATE: BASE_INITIAL_STATE,
 		actions: baseActions,
 		controls: baseControls,
+		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

@@ -22,7 +22,7 @@
 import Data from 'googlesitekit-data';
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
-import { SettingsMain as SearchConsolesSettings } from './settings';
+import { SettingsMain as SearchConsolesSettings } from './components/settings';
 
 /**
  * WordPress dependencies
