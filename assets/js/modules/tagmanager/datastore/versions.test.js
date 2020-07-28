@@ -328,7 +328,7 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'gets the propertyID associated with the Universal Analytics tag for an AMP container', () => {
-				const liveContainerVersion = fixtures.liveContainerVersions.amp.ga;
+				const liveContainerVersion = factories.buildLiveContainerVersionAMP( { propertyID: 'UA-123456789-1' } );
 				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
 				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
 
@@ -338,7 +338,7 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'returns null if no Analytics tag exists in the container', () => {
-				const liveContainerVersion = fixtures.liveContainerVersions.web.noGAWithVariable;
+				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
 				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
 				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } );
 
@@ -348,7 +348,7 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'returns undefined if the live container version is not loaded yet', () => {
-				const liveContainerVersion = fixtures.liveContainerVersions.web.noGAWithVariable;
+				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
 				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
@@ -382,8 +382,7 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'returns null if no live container version exists', () => {
-				const liveContainerVersion = fixtures.liveContainerVersions.web.noGAWithVariable;
-				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
+				const { accountID, internalContainerID } = parseIDs( factories.buildLiveContainerVersionWeb() );
 				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( null, { accountID, internalContainerID } );
 
 				const variableName = 'Test Variable';
@@ -393,8 +392,7 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'returns undefined if the live container version is not loaded yet', () => {
-				const liveContainerVersion = fixtures.liveContainerVersions.web.noGAWithVariable;
-				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
+				const { accountID, internalContainerID } = parseIDs( factories.buildLiveContainerVersionWeb() );
 				const variableName = 'Test Variable';
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ );
@@ -406,12 +404,12 @@ describe( 'modules/tagmanager versions', () => {
 
 		describe( 'getLiveContainerVersion', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				const accountID = fixtures.liveContainerVersion.accountId;
-				const internalContainerID = fixtures.liveContainerVersion.containerId;
+				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
-					{ body: fixtures.liveContainerVersion, status: 200 }
+					{ body: liveContainerVersion, status: 200 }
 				);
 
 				const initialContainerVersion = registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
@@ -419,30 +417,32 @@ describe( 'modules/tagmanager versions', () => {
 				expect( initialContainerVersion ).toEqual( undefined );
 				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
-				const liveContainerVersion = registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( liveContainerVersion ).toEqual( fixtures.liveContainerVersion );
+				expect(
+					registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID )
+				).toEqual( liveContainerVersion );
 			} );
 
 			it( 'does not make a network request if the container version is already present', async () => {
-				const accountID = fixtures.liveContainerVersion.accountId;
-				const internalContainerID = fixtures.liveContainerVersion.containerId;
+				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } = parseIDs( liveContainerVersion );
 
 				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion(
-					fixtures.liveContainerVersion,
+					liveContainerVersion,
 					{ accountID, internalContainerID }
 				);
 
-				const liveContainerVersion = registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
+				expect(
+					registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID )
+				).toEqual( liveContainerVersion );
+
 				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
-				expect( liveContainerVersion ).toEqual( fixtures.liveContainerVersion );
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
-				const accountID = fixtures.liveContainerVersion.accountId;
-				const internalContainerID = fixtures.liveContainerVersion.containerId;
+				const { accountID, internalContainerID } = parseIDs( factories.buildLiveContainerVersionWeb() );
 				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -463,8 +463,7 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'receives null if the container has no published version', async () => {
-				const accountID = fixtures.liveContainerVersion.accountId;
-				const internalContainerID = fixtures.liveContainerVersion.containerId;
+				const { accountID, internalContainerID } = parseIDs( factories.buildLiveContainerVersionWeb() );
 				const notFoundResponse = {
 					code: 404,
 					message: 'Published container version not found',
