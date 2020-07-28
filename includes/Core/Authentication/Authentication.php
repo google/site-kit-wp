@@ -609,8 +609,11 @@ final class Authentication {
 		$data['isFirstAdmin'] = ( $current_user_id === $first_admin_id );
 		$data['splashURL']    = esc_url_raw( $this->context->admin_url( 'splash' ) );
 
-		$auth_client = $this->get_oauth_client();
+		$data['proxySetupURL']       = '';
+		$data['proxyPermissionsURL'] = '';
+		$data['usingProxy']          = false;
 		if ( $this->credentials->using_proxy() ) {
+			$auth_client                 = $this->get_oauth_client();
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
@@ -640,13 +643,6 @@ final class Authentication {
 		if ( $profile_data ) {
 			$data['userData']['email']   = $profile_data['email'];
 			$data['userData']['picture'] = $profile_data['photo'];
-		}
-
-		$auth_client = $this->get_oauth_client();
-		if ( $this->credentials->using_proxy() ) {
-			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
-			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
 		}
 
 		$data['connectURL']    = esc_url_raw( $this->get_connect_url() );
