@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { get } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -44,6 +39,7 @@ import {
 	getAnalyticsErrorMessageFromData,
 	overviewReportDataDefaults,
 	userReportDataDefaults,
+	parseTotalUsersData,
 } from '../../util';
 import PreviewBlock from '../../../../components/preview-block';
 
@@ -162,12 +158,7 @@ export default withData(
 			context: 'Adminbar',
 			toState( state, { data } ) {
 				if ( ! state.totalUsers ) {
-					const totalUsers = get( data, '[0].data.totals[0].values[0]' );
-					const previousTotalUsers = get( data, '[0].data.totals[1].values[0]' );
-					return {
-						totalUsers,
-						previousTotalUsers,
-					};
+					return parseTotalUsersData( data );
 				}
 			},
 		},

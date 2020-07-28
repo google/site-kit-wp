@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getTimeInSeconds, readableLargeNumber, getModulesData, changeToPercent } from '../../util';
+import { parseTotalUsersData } from '../../../js/modules/analytics/util';
 
 const trafficIncrease = ( reports, id ) => {
 	const modulesData = getModulesData();
@@ -38,8 +39,7 @@ const trafficIncrease = ( reports, id ) => {
 	}
 
 	const totals = reports?.[0]?.data?.totals || [];
-	const totalUsers = totals?.[0]?.values?.[0];
-	const previousTotalUsers = totals?.[1]?.values?.[0];
+	const { totalUsers, previousTotalUsers } = parseTotalUsersData( totals );
 	const totalUsersChange = Number( changeToPercent( previousTotalUsers, totalUsers ) );
 
 	// Adds threshold to show data only between 10-100 percent change.

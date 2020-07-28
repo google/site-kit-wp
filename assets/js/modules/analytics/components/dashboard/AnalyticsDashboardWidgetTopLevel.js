@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { isEmpty, get } from 'lodash';
+import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -45,6 +45,7 @@ import {
 	overviewReportDataDefaults,
 	isDataZeroForReporting,
 	userReportDataDefaults,
+	parseTotalUsersData,
 } from '../../util';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
@@ -59,7 +60,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		this.state = {
 			accounts: false,
 			goals: false,
-			directTotalUsers: false,
+			totalUsers: false,
 			previousTotalUsers: false,
 		};
 	}
@@ -92,7 +93,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			overview,
 			extractedAnalytics,
 			goals,
-			directTotalUsers,
+			totalUsers,
 			previousTotalUsers,
 		} = this.state;
 
@@ -113,7 +114,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			averageBounceRateChange = overview.averageBounceRateChange;
 		}
 
-		const totalUsersChange = changeToPercent( previousTotalUsers, directTotalUsers );
+		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
 
 		return (
 			<Fragment>
@@ -127,7 +128,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 					<DataBlock
 						className="overview-total-users"
 						title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( directTotalUsers ) }
+						datapoint={ readableLargeNumber( totalUsers ) }
 						change={ totalUsersChange }
 						changeDataUnit="%"
 						source={ {
@@ -263,13 +264,8 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
 			toState( state, { data } ) {
-				if ( ! state.directTotalUsers ) {
-					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
-					const previousTotalUsers = get( data, '[0].data.totals[1].values[0]' );
-					return {
-						directTotalUsers,
-						previousTotalUsers,
-					};
+				if ( ! state.totalUsers ) {
+					return parseTotalUsersData( data );
 				}
 			},
 		},

@@ -37,6 +37,7 @@ import {
 	isDataZeroForReporting,
 	overviewReportDataDefaults,
 	userReportDataDefaults,
+	parseTotalUsersData,
 } from '../../util';
 import PreviewBlocks from '../../../../components/preview-blocks';
 import DataBlock from '../../../../components/data-block';
@@ -49,7 +50,7 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 		super( props );
 		this.state = {
 			overview: false,
-			directTotalUsers: false,
+			totalUsers: false,
 			previousTotalUsers: false,
 		};
 	}
@@ -80,11 +81,11 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 	render() {
 		const {
 			overview,
-			directTotalUsers,
+			totalUsers,
 			previousTotalUsers,
 		} = this.state;
 
-		if ( ! overview || ! directTotalUsers ) {
+		if ( ! overview || ! totalUsers ) {
 			return null;
 		}
 
@@ -93,11 +94,11 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 			averageSessionDurationChange,
 		} = overview;
 
-		const totalUsersChange = changeToPercent( previousTotalUsers, directTotalUsers );
+		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
 
 		return (
 			<Fragment>
-				{ 0 === directTotalUsers
+				{ 0 === totalUsers
 					? <div className="googlesitekit-wp-dashboard-stats__cta">
 						<CTA
 							title={ __( 'Analytics Gathering Data', 'google-site-kit' ) }
@@ -110,7 +111,7 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 						<DataBlock
 							className="googlesitekit-wp-dashboard-stats__data-table overview-total-users"
 							title={ __( 'Total Unique Visitors', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( directTotalUsers ) }
+							datapoint={ readableLargeNumber( totalUsers ) }
 							change={ totalUsersChange }
 							changeDataUnit="%"
 						/>
@@ -156,11 +157,8 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'WPDashboard',
 			toState( state, { data } ) {
-				if ( ! state.directTotalUsers ) {
-					return {
-						directTotalUsers: data?.[0]?.data?.totals?.[0]?.values?.[0],
-						previousTotalUsers: data?.[0]?.data?.totals?.[1]?.values?.[0],
-					};
+				if ( ! state.totalUsers ) {
+					return parseTotalUsersData( data );
 				}
 			},
 		},

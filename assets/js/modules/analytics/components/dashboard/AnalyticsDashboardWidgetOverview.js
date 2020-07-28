@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -46,6 +45,7 @@ import {
 	getAnalyticsErrorMessageFromData,
 	overviewReportDataDefaults,
 	userReportDataDefaults,
+	parseTotalUsersData,
 } from '../../util';
 import PreviewBlock from '../../../../components/preview-block';
 
@@ -54,7 +54,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 		super( props );
 		this.state = {
 			report: false,
-			directTotalUsers: false,
+			totalUsers: false,
 			previousTotalUsers: false,
 		};
 	}
@@ -79,9 +79,9 @@ class AnalyticsDashboardWidgetOverview extends Component {
 
 	render() {
 		const { selectedStats, handleStatSelection } = this.props;
-		const { report, directTotalUsers, previousTotalUsers } = this.state;
+		const { report, totalUsers, previousTotalUsers } = this.state;
 
-		if ( ! report || ! report.length || ! directTotalUsers ) {
+		if ( ! report || ! report.length || ! totalUsers ) {
 			return null;
 		}
 
@@ -100,13 +100,13 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			averageSessionDurationChange,
 		} = overviewData;
 
-		const totalUsersChange = changeToPercent( previousTotalUsers, directTotalUsers );
+		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
 
 		const dataBlocks = [
 			{
 				className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
 				title: __( 'Users', 'google-site-kit' ),
-				datapoint: readableLargeNumber( directTotalUsers ),
+				datapoint: readableLargeNumber( totalUsers ),
 				change: totalUsersChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -216,13 +216,8 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single' ],
 			toState( state, { data } ) {
-				if ( ! state.directTotalUsers ) {
-					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
-					const previousTotalUsers = get( data, '[0].data.totals[1].values[0]' );
-					return {
-						directTotalUsers,
-						previousTotalUsers,
-					};
+				if ( ! state.totalUsers ) {
+					return parseTotalUsersData( data );
 				}
 			},
 		},
