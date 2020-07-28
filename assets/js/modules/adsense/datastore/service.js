@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * Wordpress dependencies
  */
@@ -46,8 +47,8 @@ export const selectors = {
 		}
 		const baseURI = `https://www.google.com/adsense/new/u/${ userEmail }`;
 		if ( path ) {
-			const sanitizedPath = ! path.match( /^\// ) ? `/${ path }` : path;
-			return addQueryArgs( `${ baseURI }${ sanitizedPath }/`, query );
+			const sanitizedPath = path.replace( /^\/|\/$/g, '' ); //replace the first and last `/` if they exist.
+			return addQueryArgs( `${ baseURI }/${ sanitizedPath }/`, query );
 		}
 		return addQueryArgs( baseURI, query );
 	} ),
