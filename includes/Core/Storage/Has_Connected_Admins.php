@@ -95,7 +95,7 @@ class Has_Connected_Admins extends Setting {
 	}
 
 	/**
-	 * Queries connected admins.
+	 * Queries connected admins and returns an array of connected admin IDs.
 	 *
 	 * @since n.e.x.t
 	 *
