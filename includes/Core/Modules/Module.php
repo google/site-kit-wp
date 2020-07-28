@@ -588,9 +588,13 @@ abstract class Module {
 		$start_date_offset = $offset + $number_of_days - 1;
 		$date_start        = gmdate( 'Y-m-d', strtotime( $start_date_offset . ' days ago' ) );
 
-		// Check the day of the week alignment.
+		// Align previous period days of the week to the last period.
+		// Compare end of period dates, since period lengths are the same.
 		$previous_day_of_week  = gmdate( 'w', strtotime( $date_end ) );
+
+		// The last period always ends "yesterday".
 		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
+
 		if ( $weekday_align && $previous && $previous_day_of_week !== $yesterday_day_of_week ) {
 			// Adjust the date to closest period that matches the same days of the week.
 			$off_by = $number_of_days % 7;
