@@ -63,7 +63,7 @@ final class Measurement_Event implements \JsonSerializable {
 				throw new \Exception( 'Invalid configuration parameter: ' . $key );
 			}
 			if ( ! is_string( $value ) ) {
-				throw new \Exception( 'Configuration parameter type must be string' );
+				throw new \Exception( 'Configuration parameter ' . $key . ' must be string' );
 			}
 		}
 	}

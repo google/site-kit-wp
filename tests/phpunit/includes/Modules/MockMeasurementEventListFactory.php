@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_List_Factory;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Woocommerce_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WooCommerce_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
@@ -62,7 +62,7 @@ class MockMeasurementEventListFactory extends Measurement_Event_List_Factory {
 		$event_list = null;
 		switch ( $plugin_name ) {
 			case 'WooCommerce':
-				$event_list = new Woocommerce_Event_List();
+				$event_list = new WooCommerce_Event_List();
 				break;
 			case 'WPForms Lite':
 			case 'WPForms':
