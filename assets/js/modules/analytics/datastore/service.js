@@ -1,5 +1,5 @@
 /**
- * modules/search-console data store
+ * modules/analytics data store: service.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * Wordpress dependencies
  */
@@ -25,22 +24,10 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-export { STORE_NAME };
 const { createRegistrySelector } = Data;
 
-const baseModuleStore = Modules.createModuleStore( 'search-console', {
-	storeName: STORE_NAME,
-	settingSlugs: [
-		'propertyID',
-	],
-	adminPage: 'googlesitekit-module-search-console',
-	requiresSetup: false,
-} );
-
-const baseSelectors = {
+export const selectors = {
 	/**
 	 * Return the services base url.
 	 *
@@ -57,31 +44,17 @@ const baseSelectors = {
 		if ( userEmail === undefined ) {
 			return undefined;
 		}
-		const baseURI = 'https://search.google.com/search-console';
-		const queryArgs = { ...query, authuser: userEmail };
+		const baseURI = `https://analytics.google.com/analytics/web/?authuser=${ userEmail }#`;
 		if ( path ) {
 			const sanitizedPath = ! path.match( /^\// ) ? `/${ path }` : path;
-			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryArgs );
+			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, query );
 		}
-		return addQueryArgs( baseURI, queryArgs );
+		return addQueryArgs( baseURI, query );
 	} ),
 };
 
-const store = Data.combineStores(
-	baseModuleStore,
-	{
-		selectors: baseSelectors,
-	}
-);
+const store = {
+	selectors,
+};
 
-export const INITIAL_STATE = store.INITIAL_STATE;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
-
-// Register this baseModuleStore on the global registry.
-Data.registerStore( STORE_NAME, store );
-
-export default baseModuleStore;
+export default store;
