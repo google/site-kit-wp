@@ -51,7 +51,7 @@
         {
           "key": "html",
           "type": "template",
-          "value": "console.log( 'Hello world!' );"
+          "value": "<!-- Hello world! -->"
         },
         {
           "key": "supportDocumentWrite",
