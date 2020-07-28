@@ -25,7 +25,7 @@ final class WPForms_Event_List extends Measurement_Event_List {
 	 * @since n.e.x.t.
 	 */
 	public function __construct() {
-		$event = new Measurement_Event(
+		/*$event = new Measurement_Event(
 			array(
 				'pluginName' => 'WPForms',
 				'category'   => 'engagement',
@@ -40,6 +40,36 @@ function( params, element ) {
 }
 CALLBACK
 			,
+			)
+		);
+		$this->add_event( $event );*/
+	}
+
+	public function register() {
+		add_filter(
+			'do_shortcode_tag',
+			function( $output, $tag, $attr ) {
+				if ( 'wpforms' == $tag ) {
+					$this->collect_wpform_shortcode( $attr['id'] );
+				}
+				return $output;
+			},
+			15,
+			3
+		);
+	}
+
+	private function collect_wpform_shortcode( $id ) {
+		$params = array();
+		$params['event_category'] = 'engagement';
+		$params['event_label'] = $id;
+		$event = new Measurement_Event(
+			array(
+				'pluginName' => 'WPForms',
+				'action'     => 'form_submit',
+				'selector'   => '.wpforms-submit-container button',
+				'on'         => 'click',
+				'metadata'   => $params,
 			)
 		);
 		$this->add_event( $event );
