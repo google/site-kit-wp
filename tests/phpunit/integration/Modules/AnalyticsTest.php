@@ -27,6 +27,7 @@ use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Resource_ManagementWebproperties;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
+use ReflectionMethod;
 
 /**
  * @group Modules
@@ -158,8 +159,9 @@ class AnalyticsTest extends TestCase {
 	 */
 	public function test_parse_date_range( $period_requested, $previous_period_end_offset ) {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$result = $analytics->parse_date_range( 'last-' . $period_requested . '-days', 1, 1, true, true );
+		$reflected_parse_date_range_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'parse_date_range' );
+		$reflected_parse_date_range_method->setAccessible( true );
+		$result = $reflected_parse_date_range_method->invoke( $analytics, 'last-' . $period_requested . '-days', 1, 1, true, true );
 		$previous_end = strtotime( $result[ 1 ] );
 		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
 		$diff = round( ( strtotime( 'yesterday' ) - ( $period_requested * 86400 )  - $previous_end ) / 86400 );
