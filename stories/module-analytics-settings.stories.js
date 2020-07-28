@@ -30,7 +30,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SettingsModule from '../assets/js/components/settings/settings-module';
-import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytics/settings';
+import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytics/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datastore/constants';
@@ -161,7 +161,10 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				accountID: properties[ 0 ].accountId,
+				propertyID: profiles[ 0 ].webPropertyId,
+			} );
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: accountId,
 				propertyID: webPropertyId,
@@ -185,7 +188,10 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: webPropertyId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				accountID: accountId,
+				propertyID: webPropertyId,
+			} );
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: accountId,
 				propertyID: webPropertyId,
@@ -226,7 +232,10 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				accountID: properties[ 0 ].accountId,
+				propertyID: profiles[ 0 ].webPropertyId,
+			} );
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: '',
 				propertyID: '',
@@ -261,7 +270,10 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				accountID: properties[ 0 ].accountId,
+				propertyID: profiles[ 0 ].webPropertyId,
+			} );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;

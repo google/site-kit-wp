@@ -27,6 +27,8 @@ class Measurement_Event_List {
 	 */
 	private $measurement_events = array();
 
+	public function register() {}
+
 	/**
 	 * Adds a measurement event to the measurement events array.
 	 *

@@ -14,10 +14,10 @@ import { __ } from '@wordpress/i18n';
  */
 import Layout from '../assets/js/components/layout/layout';
 import AdSenseEstimateEarningsWidget
-	from '../assets/js/modules/adsense/dashboard/dashboard-widget-estimate-earnings';
-import AdSensePerformanceWidget from '../assets/js/modules/adsense/dashboard/dashboard-widget-performance';
-import AdSenseDashboardOutro from '../assets/js/modules/adsense/dashboard/dashboard-outro';
-import DashboardZeroData from '../assets/js/modules/adsense/dashboard/dashboard-zero-data';
+	from '../assets/js/modules/adsense/components/dashboard/AdSenseEstimateEarningsWidget';
+import AdSensePerformanceWidget from '../assets/js/modules/adsense/components/dashboard/AdSensePerformanceWidget';
+import AdSenseDashboardOutro from '../assets/js/modules/adsense/components/dashboard/AdSenseDashboardOutro';
+import DashboardZeroData from '../assets/js/modules/adsense/components/dashboard/DashboardZeroData';
 import { googlesitekit as adSenseData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-adsense-googlesitekit';
 import {
 	AccountSelect,
@@ -25,7 +25,7 @@ import {
 	AdBlockerWarning,
 	UserProfile,
 	SiteSteps,
-} from '../assets/js/modules/adsense/common';
+} from '../assets/js/modules/adsense/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore';

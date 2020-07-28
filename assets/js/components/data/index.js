@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { each, intersection, isEqual, sortBy } from 'lodash';
+import { each, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -34,6 +34,7 @@ import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction }
 import { getCurrentDateRangeSlug } from '../../util/date-range';
 import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
+import { isWPError } from '../../util/is-wp-error';
 import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
 import { getCacheKey, getCache, setCache } from './cache';
@@ -182,12 +183,18 @@ const dataAPI = {
 					return;
 				}
 
-				this.handleWPError( result );
+				const isError = isWPError( result );
+				if ( isError ) {
+					this.handleWPError( result );
+				}
 
 				each( keyIndexesMap[ key ], ( index ) => {
 					const request = dataRequest[ index ];
 
-					setCache( request.key, result );
+					if ( ! isError ) {
+						setCache( request.key, result );
+					}
+
 					this.resolve( request, result );
 				} );
 
@@ -205,12 +212,6 @@ const dataAPI = {
 	},
 
 	handleWPError( error ) {
-		const wpErrorKeys = [ 'code', 'data', 'message' ];
-		const commonKeys = intersection( wpErrorKeys, Object.keys( error ) );
-		if ( ! isEqual( wpErrorKeys, commonKeys ) ) {
-			return;
-		}
-
 		// eslint-disable-next-line no-console
 		console.warn( 'WP Error in data response', error );
 		const { data } = error;

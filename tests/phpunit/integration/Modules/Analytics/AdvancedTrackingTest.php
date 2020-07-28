@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics;
 
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
-use Google\Site_Kit\Tests\Modules\MockMeasurementEventListFactory;
+use Google\Site_Kit\Tests\Modules\MockPluginDetector;
 
 /**
  * Class AdvancedTrackingTest
@@ -22,13 +22,13 @@ class AdvancedTrackingTest extends TestCase {
 
 	private $supported_plugins;
 
-	private $mock_event_list_factory;
+	private $mock_plugin_detector;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->supported_plugins       = ( new Advanced_Tracking() )->get_supported_plugins();
-		$this->mock_event_list_factory = new MockMeasurementEventListFactory();
+		$this->supported_plugins    = ( new Advanced_Tracking() )->get_supported_plugins();
+		$this->mock_plugin_detector = new MockPluginDetector();
 	}
 
 	/**
@@ -37,7 +37,7 @@ class AdvancedTrackingTest extends TestCase {
 	public function test_configure_events() {
 		$this->enqueue_google_script();
 
-		$advanced_tracking = new Advanced_Tracking( $this->mock_event_list_factory );
+		$advanced_tracking = new Advanced_Tracking( $this->mock_plugin_detector );
 
 		$num_supported_plugins = count( $this->supported_plugins );
 		$num_permutations      = pow( 2, $num_supported_plugins );
@@ -59,17 +59,16 @@ class AdvancedTrackingTest extends TestCase {
 	}
 
 	/**
-	 * Updates the active plugin array in the MockMeasurementEventListFactory.
+	 * Updates the active plugin array in the MockPluginDetector.
 	 *
 	 * @param number $permutation represents what permutation of supported plugins to enable.
 	 */
 	private function update_plugin_detector( $permutation ) {
-		$supported_plugin_names = array_keys( $this->supported_plugins );
-		foreach ( $supported_plugin_names as $plugin_name ) {
+		foreach ( $this->supported_plugins as $plugin_name => $plugin_configuration ) {
 			if ( 1 == ( $permutation % 2 ) ) {
-				$this->mock_event_list_factory->add_active_plugin( $plugin_name );
+				$this->mock_plugin_detector->add_active_plugin( $plugin_name, $plugin_configuration );
 			} else {
-				$this->mock_event_list_factory->remove_active_plugin( $plugin_name );
+				$this->mock_plugin_detector->remove_active_plugin( $plugin_name );
 			}
 			$permutation = $permutation >> 1;
 		}
@@ -81,11 +80,13 @@ class AdvancedTrackingTest extends TestCase {
 	 * @param array $actual_event_configs list of Measurement_Event objects returned by Advanced_Tracking.
 	 */
 	private function compare_event_configurations( $actual_event_configs ) {
-		foreach ( $this->mock_event_list_factory->get_active_plugin_event_lists( null ) as $event_list ) {
+		foreach ( $this->mock_plugin_detector->determine_active_plugins( null ) as $plugin_name => $plugin_config ) {
+			$event_list_class = $plugin_config['event_list_class'];
+			$event_list       = new $event_list_class();
 			foreach ( $event_list->get_events() as $expected_event_config ) {
 				$found = false;
 				foreach ( $actual_event_configs as $actual_event_config ) {
-					if ( json_encode( $expected_event_config ) === json_encode( $actual_event_config ) ) {
+					if ( wp_json_encode( $expected_event_config ) === wp_json_encode( $actual_event_config ) ) {
 						$found = true;
 						break;
 					}
