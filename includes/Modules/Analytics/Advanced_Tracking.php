@@ -10,7 +10,12 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_List_Factory;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WooCommerce_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
 
 // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -41,25 +46,25 @@ final class Advanced_Tracking {
 	private $event_configurations;
 
 	/**
-	 * Main class plugin factory instance.
+	 * Main class plugin detector instance.
 	 *
 	 * @since n.e.x.t.
-	 * @var Measurement_Event_List_Factory
+	 * @var Plugin_Detector
 	 */
-	private $event_list_factory;
+	private $plugin_detector;
 
 	/**
 	 * Advanced_Tracking constructor.
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param Measurement_Event_List_Factory $event_list_factory Optional event list factory used for testing. Default is a new instance.
+	 * @param Plugin_Detector $plugin_detector Optional plugin detector used for testing. Default is a new instance.
 	 */
-	public function __construct( $event_list_factory = null ) {
-		if ( null === $event_list_factory ) {
-			$this->event_list_factory = new Measurement_Event_List_Factory();
+	public function __construct( $plugin_detector = null ) {
+		if ( null === $plugin_detector ) {
+			$this->plugin_detector = new Plugin_Detector();
 		} else {
-			$this->event_list_factory = $event_list_factory;
+			$this->plugin_detector = $plugin_detector;
 		}
 	}
 
@@ -124,12 +129,14 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	private function configure_events() {
-		$active_plugin_event_lists = $this->event_list_factory->get_active_plugin_event_lists( $this->get_supported_plugins() );
+		$active_plugins = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
 
 		$this->event_configurations = array();
-		foreach ( $active_plugin_event_lists as $event_list ) {
-			if ( null !== $event_list ) {
-				foreach ( $event_list->get_events() as $measurement_event ) {
+		foreach ( $active_plugins as $plugin_config ) {
+			$plugin_event_list_class = $plugin_config['event_list_class'];
+			$plugin_event_list = new $plugin_event_list_class();
+			if ( null !== $plugin_event_list ) {
+				foreach ( $plugin_event_list->get_events() as $measurement_event ) {
 					$this->event_configurations[] = $measurement_event;
 				}
 			}
@@ -160,23 +167,28 @@ final class Advanced_Tracking {
 			$this->supported_plugins = array(
 				'Contact Form 7'   => array(
 					'check_name' => 'WPCF7_PLUGIN_DIR',
-					'check_type' => Measurement_Event_List_Factory::TYPE_CONSTANT,
+					'check_type' => Plugin_Detector::TYPE_CONSTANT,
+					'event_list_class' => CF7_Event_List::class,
 				),
 				'Formidable Forms' => array(
 					'check_name' => 'load_formidable_forms',
-					'check_type' => Measurement_Event_List_Factory::TYPE_FUNCTION,
+					'check_type' => Plugin_Detector::TYPE_FUNCTION,
+					'event_list_class' => FormidableForms_Event_List::class,
 				),
 				'Ninja Forms'      => array(
 					'check_name' => 'NF_PLUGIN_DIR',
-					'check_type' => Measurement_Event_List_Factory::TYPE_CONSTANT,
+					'check_type' => Plugin_Detector::TYPE_CONSTANT,
+					'event_list_class' => NinjaForms_Event_List::class,
 				),
 				'WooCommerce'      => array(
 					'check_name' => 'WC_PLUGIN_FILE',
-					'check_type' => Measurement_Event_List_Factory::TYPE_CONSTANT,
+					'check_type' => Plugin_Detector::TYPE_CONSTANT,
+					'event_list_class' => WooCommerce_Event_List::class,
 				),
 				'WPForms'          => array(
 					'check_name' => 'WPFORMS_PLUGIN_DIR',
-					'check_type' => Measurement_Event_List_Factory::TYPE_CONSTANT,
+					'check_type' => Plugin_Detector::TYPE_CONSTANT,
+					'event_list_class' => WPForms_Event_List::class,
 				),
 			);
 		}
