@@ -134,7 +134,7 @@ final class Advanced_Tracking {
 		$this->event_configurations = array();
 		foreach ( $active_plugins as $plugin_config ) {
 			$plugin_event_list_class = $plugin_config['event_list_class'];
-			$plugin_event_list = new $plugin_event_list_class();
+			$plugin_event_list       = new $plugin_event_list_class();
 			if ( null !== $plugin_event_list ) {
 				foreach ( $plugin_event_list->get_events() as $measurement_event ) {
 					$this->event_configurations[] = $measurement_event;
@@ -166,28 +166,28 @@ final class Advanced_Tracking {
 		if ( null == $this->supported_plugins ) {
 			$this->supported_plugins = array(
 				'Contact Form 7'   => array(
-					'check_name' => 'WPCF7_PLUGIN_DIR',
-					'check_type' => Plugin_Detector::TYPE_CONSTANT,
+					'check_name'       => 'WPCF7_PLUGIN_DIR',
+					'check_type'       => Plugin_Detector::TYPE_CONSTANT,
 					'event_list_class' => CF7_Event_List::class,
 				),
 				'Formidable Forms' => array(
-					'check_name' => 'load_formidable_forms',
-					'check_type' => Plugin_Detector::TYPE_FUNCTION,
+					'check_name'       => 'load_formidable_forms',
+					'check_type'       => Plugin_Detector::TYPE_FUNCTION,
 					'event_list_class' => FormidableForms_Event_List::class,
 				),
 				'Ninja Forms'      => array(
-					'check_name' => 'NF_PLUGIN_DIR',
-					'check_type' => Plugin_Detector::TYPE_CONSTANT,
+					'check_name'       => 'NF_PLUGIN_DIR',
+					'check_type'       => Plugin_Detector::TYPE_CONSTANT,
 					'event_list_class' => NinjaForms_Event_List::class,
 				),
 				'WooCommerce'      => array(
-					'check_name' => 'WC_PLUGIN_FILE',
-					'check_type' => Plugin_Detector::TYPE_CONSTANT,
+					'check_name'       => 'WC_PLUGIN_FILE',
+					'check_type'       => Plugin_Detector::TYPE_CONSTANT,
 					'event_list_class' => WooCommerce_Event_List::class,
 				),
 				'WPForms'          => array(
-					'check_name' => 'WPFORMS_PLUGIN_DIR',
-					'check_type' => Plugin_Detector::TYPE_CONSTANT,
+					'check_name'       => 'WPFORMS_PLUGIN_DIR',
+					'check_type'       => Plugin_Detector::TYPE_CONSTANT,
 					'event_list_class' => WPForms_Event_List::class,
 				),
 			);

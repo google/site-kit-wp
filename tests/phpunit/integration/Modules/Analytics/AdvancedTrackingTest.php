@@ -82,7 +82,7 @@ class AdvancedTrackingTest extends TestCase {
 	private function compare_event_configurations( $actual_event_configs ) {
 		foreach ( $this->mock_plugin_detector->determine_active_plugins( null ) as $plugin_name => $plugin_config ) {
 			$event_list_class = $plugin_config['event_list_class'];
-			$event_list = new $event_list_class();
+			$event_list       = new $event_list_class();
 			foreach ( $event_list->get_events() as $expected_event_config ) {
 				$found = false;
 				foreach ( $actual_event_configs as $actual_event_config ) {
