@@ -100,13 +100,13 @@ class Health_Checks {
 		$restore_defer = $client->withDefer( false );
 		$error_msg     = '';
 
-		// Make a request to the Analytics API.
+		// Make a request to the Search API.
 		// This request is bound to fail with a 401 "Login Required" error
 		// but this is okay - the test is only intended to check that
 		// the server is capable of connecting to the Google API (at all)
 		// regardless of valid authentication, which will likely be missing here.
 		try {
-			( new Google_Service_Analytics( $client ) )->accounts->listManagementAccounts();
+			( new Google_Service_Webmasters( $client ) )->sites->listSites();
 			$pass = true;
 		} catch ( Exception $e ) {
 			if ( $e->getCode() === 401 ) {

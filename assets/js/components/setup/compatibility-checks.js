@@ -43,6 +43,8 @@ const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
 const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
 const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
 
+export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
+
 const checks = [
 	// Check for a known non-public/reserved domain.
 	async () => {
@@ -81,7 +83,7 @@ const checks = [
 	// Check that client can connect to AMP Project.
 	async () => {
 		try {
-			const response = await fetch( 'https://cdn.ampproject.org/v0.js' );
+			const response = await fetch( AMP_PROJECT_TEST_URL );
 			if ( ! response.ok ) {
 				throw ERROR_AMP_CDN_RESTRICTED;
 			}
