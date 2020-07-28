@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WooCommerce_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
@@ -38,13 +40,19 @@ final class Advanced_Tracking {
 	 */
 	private $supported_plugins;
 
+	/**
+	 * List of active plugin event lists.
+	 *
+	 * @since n.e.x.t.
+	 * @var Measurement_Event_List[]
+	 */
 	private $plugin_event_lists;
 
 	/**
 	 * List of event configurations to be tracked.
 	 *
 	 * @since n.e.x.t.
-	 * @var array
+	 * @var Measurement_Event[]
 	 */
 	private $event_configurations;
 
@@ -56,6 +64,11 @@ final class Advanced_Tracking {
 	 */
 	private $plugin_detector;
 
+	/**
+	 * Main class code injector instance.
+	 *
+	 * @var Measurement_Code_Injector
+	 */
 	private $measurement_code_injector;
 
 	/**
@@ -144,6 +157,13 @@ final class Advanced_Tracking {
 		return $gtag_amp_opt;
 	}
 
+	/**
+	 * Instantiates and registers the active plugin event lists.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param array $active_plugin_configurations The list of active plugin configurations.
+	 */
 	private function register_event_lists( $active_plugin_configurations ) {
 		$this->plugin_event_lists = array();
 		foreach ( $active_plugin_configurations as $plugin_config ) {
@@ -154,6 +174,11 @@ final class Advanced_Tracking {
 		}
 	}
 
+	/**
+	 * Builds the list of Measurement_Event objects.
+	 *
+	 * @since n.e.x.t.
+	 */
 	private function configure_events() {
 		$this->event_configurations = array();
 		foreach ( $this->plugin_event_lists as $plugin_event_list ) {

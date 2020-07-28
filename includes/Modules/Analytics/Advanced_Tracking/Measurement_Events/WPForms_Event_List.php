@@ -20,31 +20,10 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
 final class WPForms_Event_List extends Measurement_Event_List {
 
 	/**
-	 * WPForms_Event_List constructor.
+	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t.
 	 */
-	public function __construct() {
-		/*$event = new Measurement_Event(
-			array(
-				'pluginName' => 'WPForms',
-				'category'   => 'engagement',
-				'action'     => 'form_submit',
-				'selector'   => '.wpforms-submit-container button',
-				'on'         => 'click',
-				'metadata'   => <<<CALLBACK
-function( params, element ) {
-	var formId = element.closest('.wpforms-submit-container').querySelector('input[name="wpforms[id]"]').value;
-	params['event_label'] = formId;
-	return params;
-}
-CALLBACK
-			,
-			)
-		);
-		$this->add_event( $event );*/
-	}
-
 	public function register() {
 		add_filter(
 			'do_shortcode_tag',
@@ -59,11 +38,19 @@ CALLBACK
 		);
 	}
 
+	/**
+	 * Creates a new Measurement_Event object when a WPForms shortcode is rendered.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param string $id The form's id.
+	 * @throws \Exception Thrown when invalid keys or value type.
+	 */
 	private function collect_wpform_shortcode( $id ) {
-		$params = array();
+		$params                   = array();
 		$params['event_category'] = 'engagement';
-		$params['event_label'] = $id;
-		$event = new Measurement_Event(
+		$params['event_label']    = $id;
+		$event                    = new Measurement_Event(
 			array(
 				'pluginName' => 'WPForms',
 				'action'     => 'form_submit',

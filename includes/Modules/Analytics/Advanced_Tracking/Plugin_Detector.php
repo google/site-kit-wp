@@ -42,7 +42,7 @@ class Plugin_Detector {
 	 * @since n.e.x.t.
 	 *
 	 * @param  array $supported_plugins The List of supported plugins.
-	 * @return array $active_plugins The list of active plugin configurations.
+	 * @return array The list of active plugin configurations.
 	 */
 	public function determine_active_plugins( $supported_plugins ) {
 		return array_filter(

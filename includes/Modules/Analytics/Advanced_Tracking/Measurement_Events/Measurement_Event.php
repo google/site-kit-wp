@@ -38,13 +38,7 @@ final class Measurement_Event implements \JsonSerializable {
 	 * @throws \Exception Thrown when config param is undefined.
 	 */
 	public function __construct( $config ) {
-		//$this->validate_config( $config );
-
-		if ( ! array_key_exists( 'metadata', $config ) ) {
-			$config['metadata'] = null;
-		}
-
-		$this->config = $config;
+		$this->config = $this->validate_config( $config );
 	}
 
 	/**
@@ -53,6 +47,7 @@ final class Measurement_Event implements \JsonSerializable {
 	 * @since n.e.x.t.
 	 *
 	 * @param array $config The event's configuration.
+	 * @return array The event's configuration.
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function validate_config( $config ) {
@@ -67,11 +62,15 @@ final class Measurement_Event implements \JsonSerializable {
 		foreach ( $config as $key => $value ) {
 			if ( ! array_key_exists( $key, $valid_keys ) ) {
 				throw new \Exception( 'Invalid configuration parameter: ' . $key );
-			}
-			if ( ! is_string( $value ) ) {
-				throw new \Exception( 'Configuration parameter ' . $key . ' must be string' );
-			}
+			}       
 		}
+		if ( ! array_key_exists( 'action', $config ) ) {
+			$config['action'] = null;
+		}
+		if ( ! array_key_exists( 'metadata', $config ) || is_string( $config['metadata'] ) ) {
+			$config['metadata'] = null;
+		}
+		return $config;
 	}
 
 	/**

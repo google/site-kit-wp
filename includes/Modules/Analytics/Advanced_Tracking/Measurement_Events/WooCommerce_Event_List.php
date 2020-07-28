@@ -214,7 +214,7 @@ CALLBACK
 		);
 		$this->add_event( $event );
 
-		//TODO: This event most likely needs to happen when the thank you page is loaded rather than when button is clicked.
+		// TODO: This event most likely needs to happen when the thank you page is loaded rather than when button is clicked.
 		$event = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCommerce',
@@ -236,10 +236,6 @@ CALLBACK
 			)
 		);
 		$this->add_event( $event );
-	}
-
-	public function register() {
-
 	}
 
 }

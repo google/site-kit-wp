@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event_Pipe;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event;
 
 /**
  * Class for injecting Javascript based on the current active plugins.
@@ -32,6 +32,8 @@ final class Measurement_Code_Injector {
 	 * Creates list of measurement event configurations and javascript to inject.
 	 *
 	 * @since n.e.x.t.
+	 *
+	 * @param Measurement_Event[] $event_configurations The list of Measurement_Event objects.
 	 */
 	public function inject_event_tracking( $event_configurations ) {
 		?>
@@ -52,6 +54,7 @@ final class Measurement_Code_Injector {
 				var eventConfigurations = <?php echo wp_json_encode( $event_configurations ); ?>;
 				var config;
 				for ( config of eventConfigurations ) {
+					console.log(config);
 					const thisConfig = config;
 					document.addEventListener( config.on, function( e ) {
 						var el = e.target;
