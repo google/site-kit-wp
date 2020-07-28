@@ -51,6 +51,8 @@ final class Advanced_Tracking {
 	 */
 	private $event_list_factory;
 
+	private $measurement_code_injector;
+
 	/**
 	 * Advanced_Tracking constructor.
 	 *
@@ -64,6 +66,7 @@ final class Advanced_Tracking {
 		} else {
 			$this->event_list_factory = $event_list_factory;
 		}
+		$this->measurement_code_injector = null;
 	}
 
 	/**
@@ -77,13 +80,24 @@ final class Advanced_Tracking {
 			function() {
 				$this->set_up_advanced_tracking();
 			},
-			11
+			15
 		);
 		add_filter(
 			'googlesitekit_amp_gtag_opt',
 			function( $gtag_amp_opt ) {
 				return $this->set_up_advanced_tracking_amp( $gtag_amp_opt );
 			}
+		);
+		add_action(
+			'wp_footer',
+			function() {
+				if ( null === $this->measurement_code_injector ) {
+					return;
+				}
+				$this->get_event_lists();
+				$this->measurement_code_injector->inject_event_tracking( $this->event_configurations );
+			},
+			15
 		);
 	}
 
@@ -98,7 +112,7 @@ final class Advanced_Tracking {
 		}
 		$this->configure_events();
 		( new Metadata_Collector( $this->active_plugin_event_lists ) )->register();
-		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
+		$this->measurement_code_injector = new Measurement_Code_Injector();
 	}
 
 	/**
@@ -128,7 +142,9 @@ final class Advanced_Tracking {
 	 */
 	private function configure_events() {
 		$this->active_plugin_event_lists = $this->event_list_factory->get_active_plugin_event_lists( $this->get_supported_plugins() );
+	}
 
+	private function get_event_lists() {
 		$this->event_configurations = array();
 		foreach ( $this->active_plugin_event_lists as $event_list ) {
 			if ( null !== $event_list ) {

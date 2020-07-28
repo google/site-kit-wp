@@ -38,7 +38,7 @@ final class Measurement_Event implements \JsonSerializable {
 	 * @throws \Exception Thrown when config param is undefined.
 	 */
 	public function __construct( $config ) {
-		$this->validate_config( $config );
+		//$this->validate_config( $config );
 
 		if ( ! array_key_exists( 'metadata', $config ) ) {
 			$config['metadata'] = null;

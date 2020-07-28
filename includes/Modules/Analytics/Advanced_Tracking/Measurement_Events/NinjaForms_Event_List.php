@@ -46,4 +46,7 @@ CALLBACK
 		$this->add_event( $event );
 	}
 
+	public function register() {
+
+	}
 }

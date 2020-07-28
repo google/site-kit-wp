@@ -98,6 +98,7 @@ class Measurement_Event_List_Factory {
 				$event_list = new NinjaForms_Event_List();
 				break;
 		}
+		$event_list->register();
 		return $event_list;
 	}
 }

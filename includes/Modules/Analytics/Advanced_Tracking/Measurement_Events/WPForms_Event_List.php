@@ -67,7 +67,7 @@ CALLBACK
 			array(
 				'pluginName' => 'WPForms',
 				'action'     => 'form_submit',
-				'selector'   => '.wpforms-submit-container button',
+				'selector'   => '.wpforms-submit-container button#wpforms-submit-' . $id,
 				'on'         => 'click',
 				'metadata'   => $params,
 			)
