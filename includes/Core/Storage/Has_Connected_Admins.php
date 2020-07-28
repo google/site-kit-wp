@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 use Google\Site_Kit\Core\Storage\User_Options_Interface;
 
 /**
- * ConnectedAdmins class.
+ * Has_Connected_Admins class.
  *
  * @since n.e.x.t
  * @access private
@@ -38,7 +38,7 @@ class Has_Connected_Admins extends Setting {
 	protected $user_options;
 
 	/**
-	 * ConnectedAdmins constructor.
+	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -51,7 +51,7 @@ class Has_Connected_Admins extends Setting {
 	}
 
 	/**
-	 * Registers the ConnectedAdmins setting in WordPress.
+	 * Registers the setting in WordPress.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -73,7 +73,8 @@ class Has_Connected_Admins extends Setting {
 	}
 
 	/**
-	 * Gets the value of the setting.
+	 * Gets the value of the setting. If the option is not set yet, it pulls connected
+	 * admins from the database and sets the option.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -94,11 +95,11 @@ class Has_Connected_Admins extends Setting {
 	}
 
 	/**
-	 * Queries connected admins and sets the setting.
+	 * Queries connected admins.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return boolean TRUE if the site kit already has connected admins, otherwise FALSE.
+	 * @return array The array of connected admin IDs.
 	 */
 	protected function query_connected_admins() {
 		return get_users(

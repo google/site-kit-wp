@@ -26,6 +26,7 @@ import {
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
@@ -166,7 +167,7 @@ describe( 'core/site connection', () => {
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( select.hasConnectedAdmins() ).toBeUndefined();
-				await subscribeUntil( registry, () => select.isConnected() !== undefined );
+				await untilResolved( registry, STORE_NAME ).getConnection();
 
 				expect( select.hasConnectedAdmins() ).toEqual( responseConnected.hasConnectedAdmins );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -185,11 +186,7 @@ describe( 'core/site connection', () => {
 
 				muteConsole( 'error' );
 				select.hasConnectedAdmins();
-				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => select.isFetchingGetConnection() === false,
-				);
+				await untilResolved( registry, STORE_NAME ).getConnection();
 
 				expect( select.hasConnectedAdmins() ).toBeUndefined();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
