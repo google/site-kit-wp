@@ -20,14 +20,20 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
+import domReady from '@wordpress/dom-ready';
 
 /**
  * Internal dependencies
  */
+import Widgets from 'googlesitekit-widgets';
+import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
 import './datastore';
-import { getModulesData, fillFilterWithComponent, createAddToFilter } from '../../util';
-import { SettingsMain as PageSpeedInsightsSettings } from './settings';
-import DashboardSpeed from './dashboard/dashboard-widget-speed';
+import { fillFilterWithComponent, getModulesData } from '../../util';
+import { createAddToFilter } from '../../util/helpers';
+import { SettingsMain as PageSpeedInsightsSettings } from './components/settings';
+import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
+import DashboardPageSpeedCTA from './components/dashboard/DashboardPageSpeedCTA';
+import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
 
 /**
  * Add components to the settings page.
@@ -43,19 +49,36 @@ const {
 	setupComplete,
 } = getModulesData()[ 'pagespeed-insights' ];
 
+// @TODO: remove LegacyDashboardSpeed once all widgets have been migrated.
 if ( active && setupComplete ) {
 	// Add to main dashboard.
 	addFilter(
 		'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <DashboardSpeed /> ),
+		createAddToFilter( <LegacyDashboardSpeed /> ),
 		45
 	);
+
 	// Add to dashboard-details view.
 	addFilter(
 		'googlesitekit.DashboardDetailsModule',
 		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <DashboardSpeed /> ),
+		createAddToFilter( <LegacyDashboardSpeed /> ),
+		45
+	);
+} else {
+	addFilter(
+		'googlesitekit.DashboardModule',
+		'googlesitekit.PageSpeedInsights',
+		createAddToFilter( <DashboardPageSpeedCTA /> ),
 		45
 	);
 }
+
+domReady( () => {
+	Widgets.registerWidget( 'pagespeedInsightsWebVitals', {
+		component: DashboardPageSpeedWidget,
+		width: Widgets.WIDGET_WIDTHS.FULL,
+		wrapWidget: false,
+	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );
+} );

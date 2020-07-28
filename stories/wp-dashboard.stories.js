@@ -14,7 +14,7 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
 import SvgIcon from '../assets/js/util/svg-icon';
 import WPDashboardMain from '../assets/js/components/wp-dashboard/wp-dashboard-main';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
-import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/wp-dashboard/wp-dashboard-widget';
+import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
 import { createAddToFilter } from '../assets/js/util/helpers';
 import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
 import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
