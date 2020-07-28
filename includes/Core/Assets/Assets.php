@@ -813,7 +813,7 @@ final class Assets {
 			 * @param array $data Notification Data.
 			 */
 			'notifications'      => apply_filters( 'googlesitekit_notification_data', array() ),
-			'permaLink'          => esc_url_raw( $permalink ),
+			'permaLink'          => $permalink ? esc_url_raw( $permalink ) : false,
 			'pageTitle'          => $page_title,
 			'postID'             => get_the_ID(),
 			'postType'           => get_post_type(),

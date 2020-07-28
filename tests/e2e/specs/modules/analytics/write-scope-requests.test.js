@@ -179,11 +179,11 @@ describe( 'Analytics write scope requests', () => {
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await expect( page ).toClick( '.mdc-button', { text: /configure analytics/i } );
-		await page.waitForSelector( '.mdc-dialog__container' );
+		await page.waitForSelector( '.mdc-dialog--open' );
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [
-			expect( page ).toClick( '.mdc-dialog__actions .mdc-button', { text: /proceed/i } ),
+			expect( page ).toClick( '.mdc-dialog--open .mdc-button', { text: /proceed/i } ),
 			page.waitForRequest( ( req ) => req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' ) ),
 		] );
 
@@ -227,11 +227,11 @@ describe( 'Analytics write scope requests', () => {
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await expect( page ).toClick( '.mdc-button', { text: /configure analytics/i } );
-		await page.waitForSelector( '.mdc-dialog__container' );
+		await page.waitForSelector( '.mdc-dialog--open' );
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [
-			expect( page ).toClick( '.mdc-dialog__actions .mdc-button', { text: /proceed/i } ),
+			expect( page ).toClick( '.mdc-dialog--open .mdc-button', { text: /proceed/i } ),
 			page.waitForRequest( ( req ) => req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' ) ),
 		] );
 

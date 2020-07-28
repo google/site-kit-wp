@@ -444,7 +444,7 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(boolean|undefined)} Activation change status; `undefined` if state is still loading or if no module with that slug exists.
 	 */
-	isSettingModuleActivation: createRegistrySelector( ( select ) => ( state, slug ) => {
+	isDoingSetModuleActivation: createRegistrySelector( ( select ) => ( state, slug ) => {
 		// Return undefined if modules not loaded or invalid slug.
 		if ( ! select( STORE_NAME ).getModule( slug ) ) {
 			return undefined;
