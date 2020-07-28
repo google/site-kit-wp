@@ -67,9 +67,7 @@ final class Measurement_Code_Injector {
 		document.addEventListener( config.on, function( e ) {
 			var el = e.target;
 			if ( matches(el, thisConfig.selector) || matches(el, thisConfig.selector.concat( ' *' )) ) {
-				var params = {};
-				params['event_category'] = thisConfig.category;
-				gtag( 'event', thisConfig.action, params );
+				gtag( 'event', thisConfig.action, thisConfig.metadata );
 			}
 		}, true );
 	}
