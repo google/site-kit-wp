@@ -48,14 +48,11 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
-		const {
-			metrics,
-			dimensions,
-			orderby,
-		} = options;
-
 		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
 		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Analytics report.' );
+
+		const { metrics, dimensions, orderby } = options;
+
 		invariant(
 			isValidMetrics( metrics ),
 			'Metrics for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" and "alias" properties.',
