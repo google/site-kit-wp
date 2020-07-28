@@ -164,7 +164,7 @@ class AnalyticsTest extends TestCase {
 		$result = $reflected_parse_date_range_method->invoke( $analytics, 'last-' . $period_requested . '-days', 1, 1, true, true );
 		$previous_end = strtotime( $result[ 1 ] );
 		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
-		$diff = round( ( strtotime( 'yesterday' ) - ( $period_requested * 86400 )  - $previous_end ) / 86400 );
+		$diff = round( ( strtotime( 'yesterday' ) - ( $period_requested * DAY_IN_SECONDS )  - $previous_end ) / DAY_IN_SECONDS );
 
 		$previous_day_of_week  = gmdate( 'w', strtotime( $result[ 1 ] ) );
 		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
