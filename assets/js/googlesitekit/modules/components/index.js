@@ -1,5 +1,5 @@
 /**
- * DefaultModuleSettings component.
+ * Modules common components.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,19 +16,8 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-
-import PropTypes from 'prop-types';
-
-const DefaultModuleSettings = ( { slug } ) => {
-	return null;
-};
-
-DefaultModuleSettings.propTypes = {
-	slug: PropTypes.string.isRequired,
-};
-
-export default DefaultModuleSettings;
-
+export { default as DefaultModuleSettings } from './DefaultModuleSettings';
+export { default as ModuleSettings } from './ModuleSettings';
+export { default as ModuleSettingsBody } from './ModuleSettingsBody';
+export { default as ModuleSettingsFooter } from './ModuleSettingsFooter';
+export { default as ModuleSettingsHeader } from './ModuleSettingsHeader';

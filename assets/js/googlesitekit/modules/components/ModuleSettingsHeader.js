@@ -1,5 +1,5 @@
 /**
- * DefaultModuleSettings component.
+ * ModuleSettingsHeader component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,16 +19,18 @@
 /**
  * External dependencies
  */
-
 import PropTypes from 'prop-types';
 
-const DefaultModuleSettings = ( { slug } ) => {
+/**
+ * Internal dependencies
+ */
+
+const ModuleSettingsHeader = ( { slug } ) => {
 	return null;
 };
 
-DefaultModuleSettings.propTypes = {
+ModuleSettingsHeader.propTypes = {
 	slug: PropTypes.string.isRequired,
 };
 
-export default DefaultModuleSettings;
-
+export default ModuleSettingsHeader;

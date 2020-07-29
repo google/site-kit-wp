@@ -1,5 +1,5 @@
 /**
- * DefaultModuleSettings component.
+ * ModuleSettingsFooter component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,16 +19,26 @@
 /**
  * External dependencies
  */
-
 import PropTypes from 'prop-types';
 
-const DefaultModuleSettings = ( { slug } ) => {
+/**
+ * Internal dependencies
+ */
+
+const ModuleSettingsFooter = ( { allowEdit, provides, slug } ) => {
 	return null;
 };
 
-DefaultModuleSettings.propTypes = {
+ModuleSettingsFooter.propTypes = {
+	allowEdit: PropTypes.bool,
+	provides: PropTypes.arrayOf( PropTypes.string ),
 	slug: PropTypes.string.isRequired,
+
 };
 
-export default DefaultModuleSettings;
+ModuleSettingsFooter.defaultProps = {
+	allowEdit: false,
+	provides: [],
+};
 
+export default ModuleSettingsFooter;
