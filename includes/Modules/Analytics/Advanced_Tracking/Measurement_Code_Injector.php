@@ -58,6 +58,7 @@ final class Measurement_Code_Injector {
 					const thisConfig = config;
 					document.addEventListener( config.on, function( e ) {
 						if ( "DOMContentLoaded" === thisConfig.on ) {
+							alert('got an event called: '.concat(thisConfig.action));
 							gtag( 'event', thisConfig.action, thisConfig.metadata );
 						} else {
 							var el = e.target;

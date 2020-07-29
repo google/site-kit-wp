@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events;
 
 use WC_Product;
+use WC_Cart;
 
 /**
  * Class for containing tracking event information for WooCommerce plugin.
@@ -187,7 +188,7 @@ CALLBACK
 				'pluginName' => 'WooCommerce',
 				'category'   => 'ecommerce',
 				'action'     => 'update_cart',
-				'selector'   => '.woocommerce-cart-form__contents .coupon ~ .button',
+				'selector'   => '.woocommerce-cart-form__contents .button[name="update_cart"]',
 				'on'         => 'click',
 				'metadata'   => <<<CALLBACK
 function( params, element ) {
@@ -262,6 +263,22 @@ CALLBACK
 			},
 			15
 		);
+		add_action(
+			'woocommerce_after_cart', // Fires after the cart's contents are rendered.
+			function() {
+				$this->create_wc_cart_events( WC()->cart );
+			},
+			15
+		);
+		add_filter(
+			'woocommerce_cart_item_product', // Fires when a cart item is being rendered.
+			function( $product, $cart_item ) {
+				$this->collect_wc_cart_item( $product, $cart_item['quantity'] );
+				return $product;
+			},
+			15,
+			2
+		);
 	}
 
 	/**
@@ -269,7 +286,7 @@ CALLBACK
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param WC_Product $product
+	 * @param WC_Product $product The WooCommerce product that is being rendered.
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function collect_wc_shop_item( $product ) {
@@ -323,12 +340,11 @@ CALLBACK
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param WC_Product $product
+	 * @param WC_Product $product The WooCommerce product that is being rendered.
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function collect_wc_single_item( $product ) {
 		$product_name = $product->get_name();
-		$product_id = $product->get_id();
 		$item = array();
 		$category_id = $product->get_category_ids()[0];
 		$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
@@ -384,5 +400,82 @@ CALLBACK
 			)
 		);
 		$this->add_event( $view_item_event );
+	}
+
+	/**
+	 * Creates the relevant cart events after the cart contents are rendered.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param WC_Cart $cart The WooCommerce cart instance.
+	 * @throws \Exception Thrown when invalid keys or value type.
+	 */
+	private function create_wc_cart_events( $cart ) {
+		$view_cart_meta = array();
+		$view_cart_meta['event_category'] = 'ecommerce';
+		$view_cart_meta['event_label'] = $cart->get_subtotal();
+
+		$view_cart_event = new Measurement_Event(
+			array(
+				'pluginName' => 'WooCoomerce',
+				'action' => 'view_cart',
+				'selector' => '',
+				'on' => 'DOMContentLoaded',
+				'metadata' => $view_cart_meta,
+			)
+		);
+		$this->add_event( $view_cart_event );
+
+		$update_cart_meta = array();
+		$update_cart_meta['event_category'] = 'ecommerce';
+		$update_cart_event = new Measurement_Event(
+			array(
+				'pluginName' => 'WooCommerce',
+				'action' => 'update_cart',
+				'selector' => '.woocommerce-cart-form__contents .button[name="update_cart"]',
+				'on' => 'click',
+				'metadata' => $update_cart_meta,
+			)
+		);
+		$this->add_event( $update_cart_event );
+	}
+
+	/**
+	 * Creates relevant Measurement_Event objects when a WooCommerce cart item is rendered.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param WC_Product $product The WooCommerce product that is being rendered.
+	 * @param number $quantity The quantity of the product that is in the cart.
+	 * @throws \Exception Thrown when invalid keys or value type.
+	 */
+	private function collect_wc_cart_item( $product, $quantity ) {
+		$product_name = $product->get_name();
+		$product_id = $product->get_id();
+		$item = array();
+		$category_id = $product->get_category_ids()[0];
+		$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
+		$item['id'] = $product->get_sku();
+		$item['name'] = $product_name;
+		$item['price'] = $product->get_price();
+		$item['quantity'] = $quantity;
+
+		$remove_from_cart_meta = array();
+		$remove_from_cart_meta['event_category'] = 'ecommerce';
+		$remove_from_cart_meta['value'] = strval( floatval( $product->get_price() ) * floatval( $quantity ) );
+		$remove_from_cart_meta['currency'] = get_woocommerce_currency();
+		$remove_from_cart_items = array();
+		$remove_from_cart_items[] = $item;
+		$remove_from_cart_meta['items'] = $remove_from_cart_items;
+		$remove_from_cart_event = new Measurement_Event(
+			array(
+				'pluginName' => 'WooCommerce',
+				'action' => 'remove_from_cart',
+				'selector' => '.woocommerce-page .remove[data-product_id="' . $product_id . '"]',
+				'on' => 'click',
+				'metadata' => $remove_from_cart_meta,
+			)
+		);
+		$this->add_event( $remove_from_cart_event );
 	}
 }
