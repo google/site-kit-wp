@@ -50,25 +50,32 @@ const publishingWin = ( data, id ) => {
 			averageCTR,
 		} = processedData;
 
-		dataBlocks = [
-			{
-				title: __( 'Total Impressions', 'google-site-kit' ),
-				datapoint: totalImpressions,
-				datapointUnit: '',
-			},
-			{
-				title: __( 'Total Clicks', 'google-site-kit' ),
-				datapoint: totalClicks,
-				datapointUnit: '',
-			},
-			{
-				title: __( 'Average CTR', 'google-site-kit' ),
-				datapoint: averageCTR,
-				datapointUnit: '%',
-			},
-		];
+		// Only display stats if they are relevant. If everything is 0, it's likely
+		// because the Search Console property is entirely new and hasn't aggregated
+		// any data yet for the site.
+		if ( 0 !== parseInt( totalClicks ) ||
+			0 !== parseInt( totalImpressions ) ||
+			0 !== parseInt( averageCTR ) ) {
+			dataBlocks = [
+				{
+					title: __( 'Total Clicks', 'google-site-kit' ),
+					datapoint: totalClicks,
+					datapointUnit: '',
+				},
+				{
+					title: __( 'Total Impressions', 'google-site-kit' ),
+					datapoint: totalImpressions,
+					datapointUnit: '',
+				},
+				{
+					title: __( 'Average CTR', 'google-site-kit' ),
+					datapoint: averageCTR,
+					datapointUnit: '%',
+				},
+			];
 
-		message = __( 'That’s out of this world. Here are the combined stats for your posts', 'google-site-kit' );
+			message = __( 'That’s out of this world. Here are the combined stats for your posts', 'google-site-kit' );
+		}
 	}
 
 	return {
