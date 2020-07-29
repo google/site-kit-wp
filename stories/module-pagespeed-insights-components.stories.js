@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import DashboardPageSpeed from '../assets/js/modules/pagespeed-insights/components/DashboardPageSpeed';
+import DashboardPageSpeed from '../assets/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeed';
 import { STORE_NAME } from '../assets/js/modules/pagespeed-insights/datastore';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';

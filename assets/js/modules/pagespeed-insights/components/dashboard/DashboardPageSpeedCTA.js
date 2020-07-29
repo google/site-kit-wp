@@ -1,4 +1,22 @@
 /**
+ * Dashboard PageSpeed CTA component.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -6,25 +24,30 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
-	getModulesData,
 } from '../../../../util';
 import CTA from '../../../../components/notifications/cta';
 import data from '../../../../components/data';
 import GenericError from '../../../../components/notifications/generic-error';
+import { STORE_NAME as MODULES_STORE } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as USER_STORE, PERMISSION_MANAGE_OPTIONS } from '../../../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
-const PageSpeedInsightsCTA = () => {
-	const {
-		active,
-		setupComplete,
-	} = getModulesData()[ 'pagespeed-insights' ];
+function DashboardPageSpeedCTA() {
+	const pagespeedInsightsModule = useSelect( ( select ) => select( MODULES_STORE ).getModule( 'pagespeed-insights' ) );
+	const canManageOptions = useSelect( ( select ) => select( USER_STORE ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
-	const { canManageOptions } = global._googlesitekitLegacyData.permissions;
+	if ( ! pagespeedInsightsModule ) {
+		return null;
+	}
 
-	if ( ! canManageOptions && ! setupComplete ) {
+	const { active, setupComplete } = pagespeedInsightsModule;
+
+	if ( ! canManageOptions || ( active && setupComplete ) ) {
 		return null;
 	}
 
@@ -63,6 +86,6 @@ const PageSpeedInsightsCTA = () => {
 			/>
 		</div>
 	);
-};
+}
 
-export default PageSpeedInsightsCTA;
+export default DashboardPageSpeedCTA;
