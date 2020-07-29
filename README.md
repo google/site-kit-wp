@@ -13,3 +13,5 @@ Any kind of contributions to Site Kit by Google are welcome. Head over to the [C
 
 * WordPress >= 4.7
 * PHP >= 5.6
+
+Testing #1818.
