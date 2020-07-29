@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
 
 use WC_Product;
 use WC_Cart;
+use WC_Order;
 
 /**
  * Class for containing tracking event information for WooCommerce plugin.
@@ -286,6 +287,14 @@ CALLBACK
 			},
 			15
 		);
+		add_action(
+			'woocommerce_thankyou', // Fires when a WooCommerce order is received.
+			function( $order_id ) {
+				$order = wc_get_order( $order_id );
+				$this->create_wc_purchase_event( $order );
+			},
+			15
+		);
 
 	}
 
@@ -524,5 +533,51 @@ CALLBACK
 			)
 		);
 		$this->add_event( $checkout_event );
+	}
+
+	/**
+	 * Creates a purchase Measurement_Event object when an order is received.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param WC_Order $order The WooCommerce order.
+	 * @throws \Exception Thrown when invalid keys or value type.
+	 */
+	private function create_wc_purchase_event( $order ) {
+		$items = array();
+		$order_items = $order->get_items( apply_filters( 'woocommerce_purchase_order_item_types', 'line_item' ) );
+		foreach ( $order_items as $item_id => $item ) {
+			$product = $item->get_product();
+			$purchase_item = array();
+			$category_id = $product->get_category_ids()[0];
+			$purchase_item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
+			$purchase_item['id'] = $product->get_sku();
+			$purchase_item['name'] = $product->get_name();
+			$purchase_item['price'] = $product->get_price();
+			$purchase_item['quantity'] = $item->get_quantity();
+			$items[] = $purchase_item;
+		}
+
+		$order_data = $order->get_data();
+
+		$purchase_meta = array();
+		$purchase_meta['event_category'] = 'ecommerce';
+		$transaction_id = $order->get_transaction_id();
+		$purchase_meta['transaction_id'] = empty( $transaction_id ) ? 'not_paid' : $transaction_id;
+		$purchase_meta['value'] = $order->get_subtotal();
+		$purchase_meta['currency'] = get_woocommerce_currency();
+		$purchase_meta['tax'] = strval( floatval( $order_data['cart_tax'] ) + floatval( $order_data['shipping_tax'] ) );
+		$purchase_meta['shipping'] = $order_data['shipping_total'];
+		$purchase_meta['items'] = $items;
+		$place_order_event = new Measurement_Event(
+			array(
+				'pluginName' => 'WooCommerce',
+				'action' => 'purchase',
+				'selector' => '',
+				'on' => 'DOMContentLoaded',
+				'metadata' => $purchase_meta,
+			)
+		);
+		$this->add_event( $place_order_event );
 	}
 }
