@@ -46,7 +46,7 @@ const WidgetRenderer = ( { slug, gridClassName, activeWidgets, setActiveWidgets 
 	// Capitalize the "component" variable, as it is required by JSX.
 	const { component: Component, wrapWidget } = widget;
 
-	// Check if widget component will render `null` by calling directly. Maybe???
+	// Check if widget component will render `null` by calling it directly.
 	if ( typeof Component === 'function' && ! Component( {} ) ) {
 		if ( activeWidgets[ slug ] ) {
 			setActiveWidgets( {
