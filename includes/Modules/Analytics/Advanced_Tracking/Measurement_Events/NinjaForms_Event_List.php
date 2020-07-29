@@ -31,8 +31,6 @@ final class NinjaForms_Event_List extends Measurement_Event_List {
 				if ( 'ninja_form' == $tag ) {
 					$this->collect_ninja_form_shortcode( $attr['id'] );
 				}
-
-
 				return $output;
 			},
 			15,
