@@ -240,6 +240,11 @@ CALLBACK
 		$this->add_event( $event );
 	}
 
+	/**
+	 * Registers functionality through WordPress hooks.
+	 *
+	 * @since n.e.x.t.
+	 */
 	public function register() {
 		add_action(
 			'woocommerce_after_shop_loop_item', // Fires after a non-single product is loaded.
@@ -249,10 +254,23 @@ CALLBACK
 			},
 			15
 		);
+		add_action(
+			'woocommerce_after_single_product',  // Fires after a single product is loaded.
+			function() {
+				global $product;
+				$this->collect_wc_single_item( $product );
+			},
+			15
+		);
 	}
 
 	/**
+	 * Creates relevant Measurement_Event objects when a WooCommerce shop item is rendered.
+	 *
+	 * @since n.e.x.t.
+	 *
 	 * @param WC_Product $product
+	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function collect_wc_shop_item( $product ) {
 		$product_name = $product->get_name();
@@ -298,6 +316,59 @@ CALLBACK
 		);
 		$this->add_event( $view_cart_event );
 
+	}
+
+	/**
+	 * Creates relevant Measurement_Event objects when a single WooCommerce item is rendered.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param WC_Product $product
+	 * @throws \Exception Thrown when invalid keys or value type.
+	 */
+	private function collect_wc_single_item( $product ) {
+		$product_name = $product->get_name();
+		$product_id = $product->get_id();
+		$item = array();
+		$category_id = $product->get_category_ids()[0];
+		$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
+		$item['id'] = $product->get_sku();
+		$item['name'] = $product_name;
+		$item['price'] = $product->get_price();
+		// TODO: Get the quantity of the item from the frontend.
+
+		$add_to_cart_meta = array();
+		$add_to_cart_meta['event_category'] = 'ecommerce';
+		$add_to_cart_meta['value'] = $product->get_price();
+		$add_to_cart_meta['currency'] = get_woocommerce_currency();
+		$add_to_cart_items = array();
+		$add_to_cart_items[] = $item;
+		$add_to_cart_meta['items'] = $add_to_cart_items;
+		$add_to_cart_event = new Measurement_Event(
+			array(
+				'pluginName' => 'WooCommerce',
+				'action' => 'add_to_cart',
+				'selector' => '.woocommerce-page .single_add_to_cart_button',
+				'on' => 'click',
+				'metadata' => $add_to_cart_meta,
+			)
+		);
+		$this->add_event( $add_to_cart_event );
+
+		$view_cart_meta = array();
+		$view_cart_meta['event_category'] = 'ecommerce';
+		$view_cart_meta['event_label'] = WC()->cart->get_subtotal();
+		$view_cart_event = new Measurement_Event(
+			array(
+				'pluginName' => 'WooCommerce',
+				'action' => 'view_cart',
+				'selector' => 'div.woocommerce-message a.wc-forward',
+				'on' => 'click',
+				'metadata' => $view_cart_meta,
+			)
+		);
+		$this->add_event( $view_cart_event );
+
 		$view_item_meta = array();
 		$view_item_meta['event_category'] = 'ecommerce';
 		$view_item_items = array();
@@ -307,12 +378,11 @@ CALLBACK
 			array(
 				'pluginName' => 'WooCommerce',
 				'action' => 'view_item',
-				'selector' => '.woocommerce-page .products .post-' . $product_id . ' a.woocommerce-LoopProduct-link',
-				'on' => 'click',
+				'selector' => '',
+				'on' => 'DOMContentLoaded',
 				'metadata' => $view_item_meta,
 			)
 		);
 		$this->add_event( $view_item_event );
 	}
-
 }

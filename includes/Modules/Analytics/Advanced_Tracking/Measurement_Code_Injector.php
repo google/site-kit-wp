@@ -57,9 +57,13 @@ final class Measurement_Code_Injector {
 					console.log(config);
 					const thisConfig = config;
 					document.addEventListener( config.on, function( e ) {
-						var el = e.target;
-						if ( matches( el, thisConfig.selector ) || matches( el, thisConfig.selector.concat( ' *' ) ) ) {
+						if ( "DOMContentLoaded" === thisConfig.on ) {
 							gtag( 'event', thisConfig.action, thisConfig.metadata );
+						} else {
+							var el = e.target;
+							if ( matches( el, thisConfig.selector ) || matches( el, thisConfig.selector.concat( ' *' ) ) ) {
+								gtag( 'event', thisConfig.action, thisConfig.metadata );
+							}
 						}
 					}, true );
 				}
