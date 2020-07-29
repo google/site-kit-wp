@@ -47,10 +47,11 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
-		const { orderby, metrics } = options;
-
 		invariant( isPlainObject( options ), 'options must be an object.' );
 		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
+
+		const { orderby, metrics } = options;
+
 		invariant(
 			typeof metrics === 'string' || ( Array.isArray( metrics ) && metrics.every( ( metric ) => typeof metric === 'string' && metric.trim().length > 0 ) ),
 			'Metrics for an AdSense report must be either a string or an array of strings.',
