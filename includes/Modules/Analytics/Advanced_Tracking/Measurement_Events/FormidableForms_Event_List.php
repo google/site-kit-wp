@@ -20,26 +20,42 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
 final class FormidableForms_Event_List extends Measurement_Event_List {
 
 	/**
-	 * FormidableForms_Event_List constructor.
+	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t.
 	 */
-	public function __construct() {
-		$event = new Measurement_Event(
+	public function register() {
+		add_filter(
+			'do_shortcode_tag',
+			function( $output, $tag, $attr ) {
+				if ( 'formidable' == $tag ) {
+					$this->collect_formidable_shortcode( $attr['id'] );
+				}
+				return $output;
+			},
+			15,
+			3
+		);
+	}
+
+	/** Creates a new Measurement_Event object when a Formidable Forms shortcode is rendered.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param string $id The form's id.
+	 * @throws \Exception Thrown when invalid keys or value type.
+	 */
+	private function collect_formidable_shortcode( $id ) {
+		$params                   = array();
+		$params['event_category'] = 'engagement';
+		$params['event_label']    = $id;
+		$event                    = new Measurement_Event(
 			array(
 				'pluginName' => 'Formidable Forms',
-				'category'   => 'engagement',
 				'action'     => 'form_submit',
 				'selector'   => '.frm_fields_container .frm_button_submit',
 				'on'         => 'click',
-				'metadata'   => <<<CALLBACK
-function( params, element ) {
-	var formId = element.closest('.frm_fields_container').querySelector('input[name="form_id"]').value;
-	params['event_label'] = formId;
-	return params;
-}
-CALLBACK
-			,
+				'metadata'   => $params,
 			)
 		);
 		$this->add_event( $event );
