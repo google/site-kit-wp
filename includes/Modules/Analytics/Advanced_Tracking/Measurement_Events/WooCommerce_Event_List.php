@@ -279,6 +279,14 @@ CALLBACK
 			15,
 			2
 		);
+		add_action(
+			'woocommerce_after_checkout_form',
+			function() {
+				$this->create_wc_checkout_event( WC()->cart );
+			},
+			15
+		);
+
 	}
 
 	/**
@@ -477,5 +485,44 @@ CALLBACK
 			)
 		);
 		$this->add_event( $remove_from_cart_event );
+	}
+
+	/**
+	 * Creates begin_checkout Measurement_Event object when the checkout page is loaded.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param WC_Cart $cart The WooCommerce cart instance.
+	 * @throws \Exception Thrown when invalid keys or value type.
+	 */
+	private function create_wc_checkout_event( $cart ) {
+		$items = array();
+		foreach ($cart->get_cart() as $cart_item) {
+			$product = $cart_item['data'];
+			$item = array();
+			$category_id = $product->get_category_ids()[0];
+			$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
+			$item['id'] = $product->get_sku();
+			$item['name'] = $product->get_name();
+			$item['price'] = $product->get_price();
+			$item['quantity'] = $cart_item['quantity'];
+			$items[] = $item;
+		}
+
+		$checkout_meta = array();
+		$checkout_meta['event_category'] = 'ecommerce';
+		$checkout_meta['value'] = $cart->get_subtotal();
+		$checkout_meta['currency'] = get_woocommerce_currency();
+		$checkout_meta['items'] = $items;
+		$checkout_event = new Measurement_Event(
+			array(
+				'pluginName' => 'WooCommerce',
+				'action' => 'begin_checkout',
+				'selector' => '',
+				'on' => 'DOMContentLoaded',
+				'metadata' => $checkout_meta,
+			)
+		);
+		$this->add_event( $checkout_event );
 	}
 }
