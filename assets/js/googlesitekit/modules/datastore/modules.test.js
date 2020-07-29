@@ -98,7 +98,7 @@ describe( 'core/modules modules', () => {
 				// Wait until this activation action has completed.
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.isSettingModuleActivation( slug ) === false
+					.isDoingSetModuleActivation( slug ) === false
 				);
 
 				// Ensure the proper body parameters were sent.
@@ -148,7 +148,7 @@ describe( 'core/modules modules', () => {
 				// Wait until this activation action has completed.
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.isSettingModuleActivation( slug ) === false
+					.isDoingSetModuleActivation( slug ) === false
 				);
 
 				// Ensure the proper body parameters were sent.
