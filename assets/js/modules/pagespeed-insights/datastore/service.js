@@ -20,37 +20,25 @@
  */
 import { addQueryArgs } from '@wordpress/url';
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-const { createRegistrySelector } = Data;
-
 export const selectors = {
 	/**
 	 * Return the services base url.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} [args]
-	 * @param {string} [args.path]
-	 * @param {Object} [args.query]
-	 * @return {string}
+	 * @param {Object} state  Data store's state.
+	 * @param {Object} [args] Object containing optional path and query properties
+	 * @return {string} The service url.
 	 */
-	getServiceURL: createRegistrySelector( ( select ) => ( state, args = {} ) => {
+	getServiceURL: ( state, args = {} ) => {
 		const { path, query } = args;
-		const userEmail = select( CORE_USER ).getEmail();
-		if ( userEmail === undefined ) {
-			return undefined;
-		}
 		const baseURI = `https://developers.google.com/speed/pagespeed/insights`;
 		if ( path ) {
 			const sanitizedPath = ! path.match( /^\// ) ? `/${ path }` : path;
 			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, query );
 		}
 		return addQueryArgs( baseURI, query );
-	} ),
+	},
 };
 
 const store = {

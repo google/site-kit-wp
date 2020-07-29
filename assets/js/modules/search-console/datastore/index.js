@@ -49,4 +49,4 @@ export const selectors = store.selectors;
 // Register this baseModuleStore on the global registry.
 Data.registerStore( STORE_NAME, store );
 
-export default baseModuleStore;
+export default store;
