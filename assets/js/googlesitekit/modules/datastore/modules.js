@@ -52,6 +52,7 @@ export const ModuleComponents = {};
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
+const SET_SETTINGS_DISPLAY_MODE = 'SET_SETTINGS_DISPLAY_MODE';
 const REGISTER_MODULE = 'REGISTER_MODULE';
 const WAIT_FOR_MODULES = 'WAIT_FOR_MODULES';
 
@@ -238,6 +239,25 @@ const baseActions = {
 			type: REGISTER_MODULE,
 		};
 	},
+
+	/**
+	 * Set settings display mode for the module identified by slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug   Module slug.
+	 * @param {string} status The settings status, one of: "closed", "view", "edit", or "locked".
+	 * @return {Object} Redux-style action.
+	 */
+	setSettingsDisplayMode( slug, status ) {
+		invariant( slug, 'slug is required.' );
+		invariant( [ 'closed', 'view', 'edit', 'locked' ].contains( status ), 'status is one of "closed", "view", "edit" or "locked.' );
+
+		return {
+			payload: { slug, status },
+			type: SET_SETTINGS_DISPLAY_MODE,
+		};
+	},
 };
 
 export const baseControls = {
@@ -288,6 +308,14 @@ const baseReducer = ( state, { type, payload } ) => {
 						...settings,
 					},
 				},
+			};
+		}
+		case SET_SETTINGS_DISPLAY_MODE: {
+			const { slug, status } = payload;
+			const { modules: existingModules } = state;
+			// TODO: Write reducer logic.
+			return {
+				...state,
 			};
 		}
 
