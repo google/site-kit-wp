@@ -121,9 +121,9 @@ export const isDataZeroSearchConsole = ( data ) => {
 	} = processedData;
 
 	return (
-		0 === parseInt( totalClicks ) &&
-			0 === parseInt( totalImpressions ) &&
-			0 === parseInt( averageCTR ) &&
-			0 === parseInt( averagePosition )
+		0 === parseInt( totalClicks, 10 ) &&
+			0 === parseInt( totalImpressions, 10 ) &&
+			0 === parseInt( averageCTR, 10 ) &&
+			0 === parseInt( averagePosition, 10 )
 	);
 };

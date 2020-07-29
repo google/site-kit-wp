@@ -53,9 +53,9 @@ const publishingWin = ( data, id ) => {
 		// Only display stats if they are relevant. If everything is 0, it's likely
 		// because the Search Console property is entirely new and hasn't aggregated
 		// any data yet for the site.
-		if ( 0 !== parseInt( totalClicks ) ||
-			0 !== parseInt( totalImpressions ) ||
-			0 !== parseInt( averageCTR ) ) {
+		if ( 0 !== parseInt( totalClicks, 10 ) ||
+			0 !== parseInt( totalImpressions, 10 ) ||
+			0 !== parseInt( averageCTR, 10 ) ) {
 			dataBlocks = [
 				{
 					title: __( 'Total Clicks', 'google-site-kit' ),
