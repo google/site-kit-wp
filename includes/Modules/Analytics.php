@@ -907,24 +907,20 @@ final class Analytics extends Module
 					return $request;
 				}
 
-				$date_range = $data['dateRange'] ?: 'last-28-days';
-				$start_date = $data['startDate'];
-				$end_date   = $data['endDate'];
-				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
-					list( $start_date, $end_date ) = $this->parse_date_range(
-						$date_range,
-						$data['compareDateRanges'] ? 2 : 1
-					);
-				}
+				$date_ranges = array();
+				$start_date  = $data['startDate'];
+				$end_date    = $data['endDate'];
+				if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
+					$date_ranges[] = array( $start_date, $end_date );
+				} else {
+					$date_range    = $data['dateRange'] ?: 'last-28-days';
+					$date_ranges[] = $this->parse_date_range( $date_range, $data['compareDateRanges'] ? 2 : 1 );
 
-				$date_ranges = array(
-					array( $start_date, $end_date ),
-				);
-
-				// When using multiple date ranges, it changes the structure of the response,
-				// where each date range becomes an item in a list.
-				if ( ! empty( $data['multiDateRange'] ) ) {
-					$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
+					// When using multiple date ranges, it changes the structure of the response,
+					// where each date range becomes an item in a list.
+					if ( ! empty( $data['multiDateRange'] ) ) {
+						$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
+					}
 				}
 
 				$date_ranges = array_map(
