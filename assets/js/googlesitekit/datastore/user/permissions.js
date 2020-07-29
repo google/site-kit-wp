@@ -21,12 +21,21 @@
  */
 import invariant from 'invariant';
 
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
+const { createRegistrySelector } = Data;
+
 // Actions
 const CLEAR_PERMISSION_SCOPE_ERROR = 'CLEAR_PERMISSION_SCOPE_ERROR';
 const SET_PERMISSION_SCOPE_ERROR = 'SET_PERMISSION_SCOPE_ERROR';
+const RECEIVE_CAPABILITIES = 'RECEIVE_CAPABILITIES';
 
 export const INITIAL_STATE = {
 	permissionError: null,
+	capabilities: {},
 };
 
 export const actions = {
@@ -62,6 +71,22 @@ export const actions = {
 			type: SET_PERMISSION_SCOPE_ERROR,
 		};
 	},
+
+	/**
+	 * Sets user capabilities.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} capabilities User capabilities.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveCapabilities( capabilities ) {
+		return {
+			type: RECEIVE_CAPABILITIES,
+			payload: { capabilities },
+		};
+	},
 };
 
 export const controls = {};
@@ -84,13 +109,30 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case RECEIVE_CAPABILITIES: {
+			const { capabilities } = payload;
+
+			return {
+				...state,
+				capabilities,
+			};
+		}
+
 		default: {
 			return { ...state };
 		}
 	}
 };
 
-export const resolvers = {};
+export const resolvers = {
+	*getCapabilities() {
+		if ( ! global._googlesitekitUserData?.permissions ) {
+			global.console.error( 'Could not load core/user permissions.' );
+		}
+
+		yield actions.receiveCapabilities( global._googlesitekitUserData?.permissions );
+	},
+};
 
 export const selectors = {
 	/**
@@ -106,6 +148,37 @@ export const selectors = {
 		const { permissionError } = state;
 		return permissionError;
 	},
+
+	/**
+	 * Gets capabilities of the current user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Capabilities object. Returns undefined if it is not loaded yet.
+	 */
+	getCapabilities( state ) {
+		const { capabilities } = state;
+		return capabilities;
+	},
+
+	/**
+	 * Checks if the current user has the specified capability or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} capability Capability name to check.
+	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
+	 */
+	hasCapability: createRegistrySelector( ( select ) => ( state, capability ) => {
+		const capabilities = select( STORE_NAME ).getCapabilities();
+		if ( capabilities ) {
+			return !! capabilities[ capability ];
+		}
+
+		return undefined;
+	} ),
 };
 
 export default {
