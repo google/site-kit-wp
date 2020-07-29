@@ -32,13 +32,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DeviceSizeTabBar from '../../../components/DeviceSizeTabBar';
-import ProgressBar from '../../../components/progress-bar';
-import Layout from '../../../components/layout/layout';
-import LabReportMetrics from './LabReportMetrics';
-import FieldReportMetrics from './FieldReportMetrics';
-import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
+import ProgressBar from '../../../../components/progress-bar';
+import Layout from '../../../../components/layout/layout';
+import LabReportMetrics from '../common/LabReportMetrics';
+import FieldReportMetrics from '../common/FieldReportMetrics';
+import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	STORE_NAME,
 	STRATEGY_MOBILE,
@@ -46,7 +46,7 @@ import {
 	DATA_SRC_FIELD,
 	DATA_SRC_LAB,
 	FORM_DASH_WIDGET,
-} from '../datastore/constants';
+} from '../../datastore/constants';
 
 const { useSelect, useDispatch } = Data;
 
