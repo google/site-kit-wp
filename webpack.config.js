@@ -31,11 +31,37 @@ const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
+const ManifestPlugin = require( 'webpack-manifest-plugin' );
+
+/**
+ * Internal dependencies
+ */
 const flagsConfig = require( './webpack.feature-flags.config' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
+
+const manifestTemplate = `<?php
+/**
+ * Class Google\\Site_Kit\\Core\\Assets\\Manifest
+ *
+ * @package   Google\Site_Kit
+ * @copyright ${ ( new Date() ).getFullYear() } Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+namespace Google\\Site_Kit\\Core\\Assets;
+
+class Manifest {
+
+	public static $assets = array(
+		{{assets}}
+	);
+
+}
+`;
 
 const noAMDParserRule = { parser: { amd: false } };
 
@@ -124,7 +150,7 @@ const webpackConfig = ( mode ) => {
 			},
 			externals,
 			output: {
-				filename: '[name].js',
+				filename: '[name].[hash].js',
 				path: __dirname + '/dist/assets/js',
 				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
@@ -163,6 +189,19 @@ const webpackConfig = ( mode ) => {
 						mode,
 					},
 				),
+				new ManifestPlugin( {
+					fileName: '../../../includes/Core/Assets/Manifest.php',
+					serialize( manifest ) {
+						const files = [];
+						Object.keys( manifest ).forEach( ( key ) => {
+							if ( key.match( /.js$/ ) ) {
+								files.push( `"${ key.replace( '.js', '' ) }" => "${ manifest[ key ] }",` );
+							}
+						} );
+
+						return manifestTemplate.replace( '{{assets}}', files.join( '\n\t\t' ) );
+					},
+				} ),
 			],
 			optimization: {
 				minimizer: [
