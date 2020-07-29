@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events;
 
+use WC_Product;
+
 /**
  * Class for containing tracking event information for WooCommerce plugin.
  *
@@ -236,6 +238,81 @@ CALLBACK
 			)
 		);
 		$this->add_event( $event );
+	}
+
+	public function register() {
+		add_action(
+			'woocommerce_after_shop_loop_item', // Fires after a non-single product is loaded.
+			function() {
+				global $product;
+				$this->collect_wc_shop_item( $product );
+			},
+			15
+		);
+	}
+
+	/**
+	 * @param WC_Product $product
+	 */
+	private function collect_wc_shop_item( $product ) {
+		$product_name = $product->get_name();
+		$product_id = $product->get_id();
+		$item = array();
+		// TODO: Figure out more robust way to collect product category.
+		$category_id = $product->get_category_ids()[0];
+		$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
+		$item['id'] = $product->get_sku();
+		$item['name'] = $product_name;
+		$item['price'] = $product->get_price();
+		$item['quantity'] = 1;
+
+		$add_to_cart_meta = array();
+		$add_to_cart_meta['event_category'] = 'ecommerce';
+		$add_to_cart_meta['value'] = $product->get_price();
+		$add_to_cart_meta['currency'] = get_woocommerce_currency();
+		$add_to_cart_items = array();
+		$add_to_cart_items[] = $item;
+		$add_to_cart_meta['items'] = $add_to_cart_items;
+		$add_to_cart_event = new Measurement_Event(
+			array(
+				'pluginName' => 'WooCommerce',
+				'action' => 'add_to_cart',
+				'selector' => '.woocommerce-page .add_to_cart_button[data-product_id="' . $product_id . '"]',
+				'on' => 'click',
+				'metadata' => $add_to_cart_meta,
+			)
+		);
+		$this->add_event( $add_to_cart_event );
+
+		$view_cart_meta = array();
+		$view_cart_meta['event_category'] = 'ecommerce';
+		$view_cart_meta['event_label'] = WC()->cart->get_subtotal();
+		$view_cart_event = new Measurement_Event(
+			array(
+				'pluginName' => 'WooCommerce',
+				'action' => 'view_cart',
+				'selector' => '.woocommerce-page .add_to_cart_button[data-product_id="' . $product_id . '"] ~ a',
+				'on' => 'click',
+				'metadata' => $view_cart_meta,
+			)
+		);
+		$this->add_event( $view_cart_event );
+
+		$view_item_meta = array();
+		$view_item_meta['event_category'] = 'ecommerce';
+		$view_item_items = array();
+		$view_item_items[] = $item;
+		$view_item_meta['items'] = $view_item_items;
+		$view_item_event = new Measurement_Event(
+			array(
+				'pluginName' => 'WooCommerce',
+				'action' => 'view_item',
+				'selector' => '.woocommerce-page .products .post-' . $product_id . ' a.woocommerce-LoopProduct-link',
+				'on' => 'click',
+				'metadata' => $view_item_meta,
+			)
+		);
+		$this->add_event( $view_item_event );
 	}
 
 }
