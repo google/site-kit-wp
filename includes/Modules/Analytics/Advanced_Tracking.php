@@ -19,7 +19,6 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WooCo
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Metadata_Collector;
 
 // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
@@ -131,8 +130,6 @@ final class Advanced_Tracking {
 
 		$active_plugin_configurations = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
 		$this->register_event_lists( $active_plugin_configurations );
-
-		( new Metadata_Collector( $active_plugin_configurations ) )->register();
 
 		$this->measurement_code_injector = new Measurement_Code_Injector();
 	}
