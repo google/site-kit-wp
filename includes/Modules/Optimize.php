@@ -335,13 +335,11 @@ final class Optimize extends Module
 	 * @return Asset[] List of Asset objects.
 	 */
 	protected function setup_assets() {
-		$base_url = $this->context->url( 'dist/assets/' );
-
 		return array(
 			new Script(
 				'googlesitekit-modules-optimize',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-modules-optimize.js',
+					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',

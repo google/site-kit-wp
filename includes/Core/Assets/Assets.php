@@ -325,7 +325,7 @@ final class Assets {
 	 * @since 1.0.0
 	 */
 	private function enqueue_minimal_admin_script() {
-		$this->enqueue_asset( 'googlesitekit-base' );
+		$this->enqueue_asset( 'googlesitekit-admin' );
 	}
 
 	/**
@@ -347,7 +347,7 @@ final class Assets {
 		$dependencies = array(
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
-			'googlesitekit-base',
+			'googlesitekit-admin',
 			'googlesitekit-data',
 			'googlesitekit-datastore-forms',
 			'googlesitekit-datastore-site',
@@ -373,7 +373,7 @@ final class Assets {
 				)
 			),
 			new Script_Data(
-				'googlesitekit-base-data',
+				'googlesitekit-admin-data',
 				array(
 					'global'        => '_googlesitekitBaseData',
 					'data_callback' => function () {
@@ -433,15 +433,15 @@ final class Assets {
 			new Script(
 				'googlesitekit-activation',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-activation.js',
+					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
-				'googlesitekit-base',
+				'googlesitekit-admin',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-admin.js',
-					'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-base-data' ),
+					'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-admin-data' ),
 					'execution'    => 'defer',
 				)
 			),
@@ -449,7 +449,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-api',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-api.js',
+					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-apifetch-data',
@@ -459,7 +459,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-data',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-data.js',
+					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
@@ -469,7 +469,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-datastore-user',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-datastore-user.js',
+					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-api',
@@ -480,12 +480,12 @@ final class Assets {
 			new Script(
 				'googlesitekit-datastore-site',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
+					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
-						'googlesitekit-base-data',
+						'googlesitekit-admin-data',
 						'googlesitekit-entity-data',
 					),
 				)
@@ -493,7 +493,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-datastore-forms',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-datastore-forms.js',
+					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-data',
 					),
@@ -502,7 +502,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-modules',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-modules.js',
+					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
@@ -515,7 +515,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-widgets',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-widgets.js',
+					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-data',
 					),
@@ -523,43 +523,43 @@ final class Assets {
 			),
 			// End JSR Assets.
 			new Script(
-				'googlesitekit-ads-detect',
+				'pagead2.ads',
 				array(
-					'src' => $base_url . 'js/pagead2.ads.js',
+					'version' => null,
 				)
 			),
 			new Script(
 				'googlesitekit-dashboard-splash',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-dashboard-splash.js',
+					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
 				'googlesitekit-dashboard-details',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-dashboard-details.js',
+					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
 				'googlesitekit-dashboard',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-dashboard.js',
+					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
-				'googlesitekit-module-page',
+				'googlesitekit-module',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-module.js',
+					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
 				'googlesitekit-settings',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-settings.js',
+					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
@@ -573,7 +573,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-wp-dashboard',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-wp-dashboard.js',
+					'version'      => null,
 					'dependencies' => $dependencies,
 					'execution'    => 'defer',
 				)
@@ -588,7 +588,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-adminbar-loader',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-adminbar-loader.js',
+					'version'      => null,
 					'dependencies' => $dependencies,
 					'execution'    => 'defer',
 					'before_print' => function( $handle ) use ( $base_url ) {

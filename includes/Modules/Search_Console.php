@@ -538,13 +538,11 @@ final class Search_Console extends Module
 	 * @return Asset[] List of Asset objects.
 	 */
 	protected function setup_assets() {
-		$base_url = $this->context->url( 'dist/assets/' );
-
 		return array(
 			new Script(
 				'googlesitekit-modules-search-console',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-modules-search-console.js',
+					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
