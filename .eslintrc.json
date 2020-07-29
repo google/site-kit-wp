@@ -12,6 +12,9 @@
     "featureFlags": false
   },
   "rules": {
+    "sitekit/camelcase-acronyms": [
+      "warn"
+    ],
     "no-restricted-globals": [
       "error",
       {
@@ -32,7 +35,7 @@
     "@wordpress/i18n-text-domain": [
       "error",
       {
-        "allowedTextDomain":  "google-site-kit"
+        "allowedTextDomain": "google-site-kit"
       }
     ]
   },
@@ -67,5 +70,8 @@
       }
     }
   ],
-  "plugins": ["filenames"]
+  "plugins": [
+    "filenames",
+    "sitekit"
+  ]
 }
