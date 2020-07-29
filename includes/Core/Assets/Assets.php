@@ -440,7 +440,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-admin',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-admin.js',
+					'version'      => null,
 					'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-admin-data' ),
 					'execution'    => 'defer',
 				)
