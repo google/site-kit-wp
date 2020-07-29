@@ -26,8 +26,8 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { sanitizeHTML } from '../../../util';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { sanitizeHTML } from '../../../../util';
 const { useSelect } = Data;
 
 export default function ReportDetailsLink() {

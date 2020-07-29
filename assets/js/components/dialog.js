@@ -45,7 +45,7 @@ class Dialog extends Component {
 			attributes: [
 				__( 'Audience overview', 'google-site-kit' ),
 				__( 'Top pages', 'google-site-kit' ),
-				__( 'Top acquisition sources', 'google-site-kit' ),
+				__( 'Top acquisition channels', 'google-site-kit' ),
 				__( 'AdSense & Analytics metrics for top pages', 'google-site-kit' ),
 			],
 		};
