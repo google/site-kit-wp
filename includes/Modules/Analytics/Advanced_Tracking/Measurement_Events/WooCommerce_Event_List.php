@@ -89,44 +89,44 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 	 */
 	private function collect_wc_shop_item( $product ) {
 		$product_name = $product->get_name();
-		$product_id = $product->get_id();
-		$item = array();
+		$product_id   = $product->get_id();
+		$item         = array();
 		// TODO: Figure out more robust way to collect product category.
-		$category_id = $product->get_category_ids()[0];
+		$category_id      = $product->get_category_ids()[0];
 		$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
-		$item['id'] = $product->get_sku();
-		$item['name'] = $product_name;
-		$item['price'] = $product->get_price();
+		$item['id']       = $product->get_sku();
+		$item['name']     = $product_name;
+		$item['price']    = $product->get_price();
 		$item['quantity'] = 1;
 
-		$add_to_cart_meta = array();
+		$add_to_cart_meta                   = array();
 		$add_to_cart_meta['event_category'] = 'ecommerce';
-		$add_to_cart_meta['value'] = $product->get_price();
-		$add_to_cart_meta['currency'] = get_woocommerce_currency();
-		$add_to_cart_items = array();
-		$add_to_cart_items[] = $item;
-		$add_to_cart_meta['items'] = $add_to_cart_items;
-		$add_to_cart_event = new Measurement_Event(
+		$add_to_cart_meta['value']          = $product->get_price();
+		$add_to_cart_meta['currency']       = get_woocommerce_currency();
+		$add_to_cart_items                  = array();
+		$add_to_cart_items[]                = $item;
+		$add_to_cart_meta['items']          = $add_to_cart_items;
+		$add_to_cart_event                  = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCommerce',
-				'action' => 'add_to_cart',
-				'selector' => '.woocommerce-page .add_to_cart_button[data-product_id="' . $product_id . '"]',
-				'on' => 'click',
-				'metadata' => $add_to_cart_meta,
+				'action'     => 'add_to_cart',
+				'selector'   => '.woocommerce-page .add_to_cart_button[data-product_id="' . $product_id . '"]',
+				'on'         => 'click',
+				'metadata'   => $add_to_cart_meta,
 			)
 		);
 		$this->add_event( $add_to_cart_event );
 
-		$view_cart_meta = array();
+		$view_cart_meta                   = array();
 		$view_cart_meta['event_category'] = 'ecommerce';
-		$view_cart_meta['event_label'] = WC()->cart->get_subtotal();
-		$view_cart_event = new Measurement_Event(
+		$view_cart_meta['event_label']    = WC()->cart->get_subtotal();
+		$view_cart_event                  = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCommerce',
-				'action' => 'view_cart',
-				'selector' => '.woocommerce-page .add_to_cart_button[data-product_id="' . $product_id . '"] ~ a',
-				'on' => 'click',
-				'metadata' => $view_cart_meta,
+				'action'     => 'view_cart',
+				'selector'   => '.woocommerce-page .add_to_cart_button[data-product_id="' . $product_id . '"] ~ a',
+				'on'         => 'click',
+				'metadata'   => $view_cart_meta,
 			)
 		);
 		$this->add_event( $view_cart_event );
@@ -142,59 +142,59 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function collect_wc_single_item( $product ) {
-		$product_name = $product->get_name();
-		$item = array();
-		$category_id = $product->get_category_ids()[0];
+		$product_name     = $product->get_name();
+		$item             = array();
+		$category_id      = $product->get_category_ids()[0];
 		$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
-		$item['id'] = $product->get_sku();
-		$item['name'] = $product_name;
-		$item['price'] = $product->get_price();
+		$item['id']       = $product->get_sku();
+		$item['name']     = $product_name;
+		$item['price']    = $product->get_price();
 		// TODO: Get the quantity of the item from the frontend.
 
-		$add_to_cart_meta = array();
+		$add_to_cart_meta                   = array();
 		$add_to_cart_meta['event_category'] = 'ecommerce';
-		$add_to_cart_meta['value'] = $product->get_price();
-		$add_to_cart_meta['currency'] = get_woocommerce_currency();
-		$add_to_cart_items = array();
-		$add_to_cart_items[] = $item;
-		$add_to_cart_meta['items'] = $add_to_cart_items;
-		$add_to_cart_event = new Measurement_Event(
+		$add_to_cart_meta['value']          = $product->get_price();
+		$add_to_cart_meta['currency']       = get_woocommerce_currency();
+		$add_to_cart_items                  = array();
+		$add_to_cart_items[]                = $item;
+		$add_to_cart_meta['items']          = $add_to_cart_items;
+		$add_to_cart_event                  = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCommerce',
-				'action' => 'add_to_cart',
-				'selector' => '.woocommerce-page .single_add_to_cart_button',
-				'on' => 'click',
-				'metadata' => $add_to_cart_meta,
+				'action'     => 'add_to_cart',
+				'selector'   => '.woocommerce-page .single_add_to_cart_button',
+				'on'         => 'click',
+				'metadata'   => $add_to_cart_meta,
 			)
 		);
 		$this->add_event( $add_to_cart_event );
 
-		$view_cart_meta = array();
+		$view_cart_meta                   = array();
 		$view_cart_meta['event_category'] = 'ecommerce';
-		$view_cart_meta['event_label'] = WC()->cart->get_subtotal();
-		$view_cart_event = new Measurement_Event(
+		$view_cart_meta['event_label']    = WC()->cart->get_subtotal();
+		$view_cart_event                  = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCommerce',
-				'action' => 'view_cart',
-				'selector' => 'div.woocommerce-message a.wc-forward',
-				'on' => 'click',
-				'metadata' => $view_cart_meta,
+				'action'     => 'view_cart',
+				'selector'   => 'div.woocommerce-message a.wc-forward',
+				'on'         => 'click',
+				'metadata'   => $view_cart_meta,
 			)
 		);
 		$this->add_event( $view_cart_event );
 
-		$view_item_meta = array();
+		$view_item_meta                   = array();
 		$view_item_meta['event_category'] = 'ecommerce';
-		$view_item_items = array();
-		$view_item_items[] = $item;
-		$view_item_meta['items'] = $view_item_items;
-		$view_item_event = new Measurement_Event(
+		$view_item_items                  = array();
+		$view_item_items[]                = $item;
+		$view_item_meta['items']          = $view_item_items;
+		$view_item_event                  = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCommerce',
-				'action' => 'view_item',
-				'selector' => '',
-				'on' => 'DOMContentLoaded',
-				'metadata' => $view_item_meta,
+				'action'     => 'view_item',
+				'selector'   => '',
+				'on'         => 'DOMContentLoaded',
+				'metadata'   => $view_item_meta,
 			)
 		);
 		$this->add_event( $view_item_event );
@@ -209,30 +209,30 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function create_wc_cart_events( $cart ) {
-		$view_cart_meta = array();
+		$view_cart_meta                   = array();
 		$view_cart_meta['event_category'] = 'ecommerce';
-		$view_cart_meta['event_label'] = $cart->get_subtotal();
+		$view_cart_meta['event_label']    = $cart->get_subtotal();
 
 		$view_cart_event = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCoomerce',
-				'action' => 'view_cart',
-				'selector' => '',
-				'on' => 'DOMContentLoaded',
-				'metadata' => $view_cart_meta,
+				'action'     => 'view_cart',
+				'selector'   => '',
+				'on'         => 'DOMContentLoaded',
+				'metadata'   => $view_cart_meta,
 			)
 		);
 		$this->add_event( $view_cart_event );
 
-		$update_cart_meta = array();
+		$update_cart_meta                   = array();
 		$update_cart_meta['event_category'] = 'ecommerce';
-		$update_cart_event = new Measurement_Event(
+		$update_cart_event                  = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCommerce',
-				'action' => 'update_cart',
-				'selector' => '.woocommerce-cart-form__contents .button[name="update_cart"]',
-				'on' => 'click',
-				'metadata' => $update_cart_meta,
+				'action'     => 'update_cart',
+				'selector'   => '.woocommerce-cart-form__contents .button[name="update_cart"]',
+				'on'         => 'click',
+				'metadata'   => $update_cart_meta,
 			)
 		);
 		$this->add_event( $update_cart_event );
@@ -244,34 +244,34 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 	 * @since n.e.x.t.
 	 *
 	 * @param WC_Product $product The WooCommerce product that is being rendered.
-	 * @param number $quantity The quantity of the product that is in the cart.
+	 * @param number     $quantity The quantity of the product that is in the cart.
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function collect_wc_cart_item( $product, $quantity ) {
-		$product_name = $product->get_name();
-		$product_id = $product->get_id();
-		$item = array();
-		$category_id = $product->get_category_ids()[0];
+		$product_name     = $product->get_name();
+		$product_id       = $product->get_id();
+		$item             = array();
+		$category_id      = $product->get_category_ids()[0];
 		$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
-		$item['id'] = $product->get_sku();
-		$item['name'] = $product_name;
-		$item['price'] = $product->get_price();
+		$item['id']       = $product->get_sku();
+		$item['name']     = $product_name;
+		$item['price']    = $product->get_price();
 		$item['quantity'] = $quantity;
 
-		$remove_from_cart_meta = array();
+		$remove_from_cart_meta                   = array();
 		$remove_from_cart_meta['event_category'] = 'ecommerce';
-		$remove_from_cart_meta['value'] = strval( floatval( $product->get_price() ) * floatval( $quantity ) );
-		$remove_from_cart_meta['currency'] = get_woocommerce_currency();
-		$remove_from_cart_items = array();
-		$remove_from_cart_items[] = $item;
-		$remove_from_cart_meta['items'] = $remove_from_cart_items;
-		$remove_from_cart_event = new Measurement_Event(
+		$remove_from_cart_meta['value']          = strval( floatval( $product->get_price() ) * floatval( $quantity ) );
+		$remove_from_cart_meta['currency']       = get_woocommerce_currency();
+		$remove_from_cart_items                  = array();
+		$remove_from_cart_items[]                = $item;
+		$remove_from_cart_meta['items']          = $remove_from_cart_items;
+		$remove_from_cart_event                  = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCommerce',
-				'action' => 'remove_from_cart',
-				'selector' => '.woocommerce-page .remove[data-product_id="' . $product_id . '"]',
-				'on' => 'click',
-				'metadata' => $remove_from_cart_meta,
+				'action'     => 'remove_from_cart',
+				'selector'   => '.woocommerce-page .remove[data-product_id="' . $product_id . '"]',
+				'on'         => 'click',
+				'metadata'   => $remove_from_cart_meta,
 			)
 		);
 		$this->add_event( $remove_from_cart_event );
@@ -287,30 +287,30 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 	 */
 	private function create_wc_checkout_event( $cart ) {
 		$items = array();
-		foreach ($cart->get_cart() as $cart_item) {
-			$product = $cart_item['data'];
-			$item = array();
-			$category_id = $product->get_category_ids()[0];
+		foreach ( $cart->get_cart() as $cart_item ) {
+			$product          = $cart_item['data'];
+			$item             = array();
+			$category_id      = $product->get_category_ids()[0];
 			$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
-			$item['id'] = $product->get_sku();
-			$item['name'] = $product->get_name();
-			$item['price'] = $product->get_price();
+			$item['id']       = $product->get_sku();
+			$item['name']     = $product->get_name();
+			$item['price']    = $product->get_price();
 			$item['quantity'] = $cart_item['quantity'];
-			$items[] = $item;
+			$items[]          = $item;
 		}
 
-		$checkout_meta = array();
+		$checkout_meta                   = array();
 		$checkout_meta['event_category'] = 'ecommerce';
-		$checkout_meta['value'] = $cart->get_subtotal();
-		$checkout_meta['currency'] = get_woocommerce_currency();
-		$checkout_meta['items'] = $items;
-		$checkout_event = new Measurement_Event(
+		$checkout_meta['value']          = $cart->get_subtotal();
+		$checkout_meta['currency']       = get_woocommerce_currency();
+		$checkout_meta['items']          = $items;
+		$checkout_event                  = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCommerce',
-				'action' => 'begin_checkout',
-				'selector' => '',
-				'on' => 'DOMContentLoaded',
-				'metadata' => $checkout_meta,
+				'action'     => 'begin_checkout',
+				'selector'   => '',
+				'on'         => 'DOMContentLoaded',
+				'metadata'   => $checkout_meta,
 			)
 		);
 		$this->add_event( $checkout_event );
@@ -325,38 +325,38 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function create_wc_purchase_event( $order ) {
-		$items = array();
+		$items       = array();
 		$order_items = $order->get_items( apply_filters( 'woocommerce_purchase_order_item_types', 'line_item' ) );
 		foreach ( $order_items as $item_id => $item ) {
-			$product = $item->get_product();
-			$purchase_item = array();
-			$category_id = $product->get_category_ids()[0];
+			$product                   = $item->get_product();
+			$purchase_item             = array();
+			$category_id               = $product->get_category_ids()[0];
 			$purchase_item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
-			$purchase_item['id'] = $product->get_sku();
-			$purchase_item['name'] = $product->get_name();
-			$purchase_item['price'] = $product->get_price();
+			$purchase_item['id']       = $product->get_sku();
+			$purchase_item['name']     = $product->get_name();
+			$purchase_item['price']    = $product->get_price();
 			$purchase_item['quantity'] = $item->get_quantity();
-			$items[] = $purchase_item;
+			$items[]                   = $purchase_item;
 		}
 
 		$order_data = $order->get_data();
 
-		$purchase_meta = array();
+		$purchase_meta                   = array();
 		$purchase_meta['event_category'] = 'ecommerce';
-		$transaction_id = $order->get_transaction_id();
+		$transaction_id                  = $order->get_transaction_id();
 		$purchase_meta['transaction_id'] = empty( $transaction_id ) ? 'not_paid' : $transaction_id;
-		$purchase_meta['value'] = $order->get_subtotal();
-		$purchase_meta['currency'] = get_woocommerce_currency();
-		$purchase_meta['tax'] = strval( floatval( $order_data['cart_tax'] ) + floatval( $order_data['shipping_tax'] ) );
-		$purchase_meta['shipping'] = $order_data['shipping_total'];
-		$purchase_meta['items'] = $items;
-		$place_order_event = new Measurement_Event(
+		$purchase_meta['value']          = $order->get_subtotal();
+		$purchase_meta['currency']       = get_woocommerce_currency();
+		$purchase_meta['tax']            = strval( floatval( $order_data['cart_tax'] ) + floatval( $order_data['shipping_tax'] ) );
+		$purchase_meta['shipping']       = $order_data['shipping_total'];
+		$purchase_meta['items']          = $items;
+		$place_order_event               = new Measurement_Event(
 			array(
 				'pluginName' => 'WooCommerce',
-				'action' => 'purchase',
-				'selector' => '',
-				'on' => 'DOMContentLoaded',
-				'metadata' => $purchase_meta,
+				'action'     => 'purchase',
+				'selector'   => '',
+				'on'         => 'DOMContentLoaded',
+				'metadata'   => $purchase_meta,
 			)
 		);
 		$this->add_event( $place_order_event );

@@ -38,7 +38,8 @@ final class NinjaForms_Event_List extends Measurement_Event_List {
 		);
 	}
 
-	/** Creates a new Measurement_Event object when a Ninja Forms shortcode is rendered.
+	/**
+	 * Creates a new Measurement_Event object when a Ninja Forms shortcode is rendered.
 	 *
 	 * @since n.e.x.t.
 	 *
