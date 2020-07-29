@@ -281,7 +281,7 @@ final class Assets {
 		$assets = $this->get_assets();
 
 		foreach ( $assets as $asset ) {
-			$asset->register();
+			$asset->register( $this->context );
 		}
 	}
 

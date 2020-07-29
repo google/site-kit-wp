@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Assets;
 
+use Google\Site_Kit\Context;
+
 /**
  * Class representing a single script.
  *
@@ -53,15 +55,23 @@ class Script extends Asset {
 	 * Registers the script.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Adds $context parameter.
+	 *
+	 * @param Context $context Plugin context.
 	 */
-	public function register() {
+	public function register( Context $context ) {
 		if ( $this->args['fallback'] && wp_script_is( $this->handle, 'registered' ) ) {
 			return;
 		}
 
+		$src = $this->args['src'];
+		if ( class_exists( '\Google\Site_Kit\Core\Assets\Manifest' ) && isset( Manifest::$assets[ $this->get_handle() ] ) ) {
+			$src = $context->url( 'dist/assets/js/' . Manifest::$assets[ $this->get_handle() ] );
+		}
+
 		wp_register_script(
 			$this->handle,
-			$this->args['src'],
+			$src,
 			(array) $this->args['dependencies'],
 			$this->args['version'],
 			$this->args['in_footer']
