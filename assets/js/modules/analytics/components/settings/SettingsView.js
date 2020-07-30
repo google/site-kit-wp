@@ -31,7 +31,8 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
-import { ExistingTagError, ExistingTagNotice, ErrorNotice } from '../common';
+import { ExistingTagError, ExistingTagNotice } from '../common';
+import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -53,7 +54,7 @@ export default function SettingsView() {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 
 			{ /* Prevent showing ExistingTagError and general ErrorNotice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <ErrorNotice /> }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice storeName={ STORE_NAME } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 
