@@ -63,9 +63,10 @@ function reduceSearchConsoleData( rows ) {
 	totalClicks = readableLargeNumber( totalClicks );
 	totalImpressions = readableLargeNumber( totalImpressions );
 
-	const averageCTR = ( totalCTR / count * 100 ).toFixed( 1 );
-	const averageCTRRaw = totalCTR / count;
-	const averagePosition = ( totalPosition / count ).toFixed( 1 );
+	// Do not divide by zero.
+	const averageCTR = count > 0 ? ( totalCTR / count * 100 ).toFixed( 1 ) : '0.0';
+	const averageCTRRaw = count > 0 ? totalCTR / count : 0.0;
+	const averagePosition = count > 0 ? ( totalPosition / count ).toFixed( 1 ) : '0.0';
 
 	return {
 		dataMap,
@@ -120,9 +121,9 @@ export const isDataZeroSearchConsole = ( data ) => {
 	} = processedData;
 
 	return (
-		0 === parseInt( totalClicks ) &&
-			0 === parseInt( totalImpressions ) &&
-			0 === parseInt( averageCTR ) &&
-			0 === parseInt( averagePosition )
+		0 === parseInt( totalClicks, 10 ) &&
+			0 === parseInt( totalImpressions, 10 ) &&
+			0 === parseInt( averageCTR, 10 ) &&
+			0 === parseInt( averagePosition, 10 )
 	);
 };
