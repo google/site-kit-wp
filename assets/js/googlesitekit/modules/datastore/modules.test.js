@@ -339,6 +339,10 @@ describe( 'core/modules modules', () => {
 				expect( state ).toMatchObject( { modules: fixturesKeyValue } );
 			} );
 		} );
+
+		describe( 'setSettingsDisplayMode', () => {
+
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -485,6 +489,65 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( moduleLoaded ).toEqual( null );
+			} );
+		} );
+
+		describe( 'getSettingsDisplayMode', () => {
+			it( 'returns the correct status', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'analytics';
+				registry.select( STORE_NAME ).getModule( slug );
+
+				let displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+
+				// Expect initial status to be closed.
+				expect( displayMode ).toEqual( 'closed' );
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				const moduleLoaded = registry.select( STORE_NAME ).getModule( slug );
+				expect( moduleLoaded ).not.toEqual( null );
+
+				// Set display mode to 'view'.
+				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'view' );
+
+				displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+
+				// Expect displayMode to default to be 'view'.
+				expect( displayMode ).toEqual( 'view' );
+			} );
+
+			it( 'returns "closed" by default', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'analytics';
+				const module = registry.select( STORE_NAME ).getModule( slug );
+
+				let displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+
+				// Expect displayMode to be 'closed' before modules are loaded.
+				expect( displayMode ).toEqual( 'closed' );
+				expect( module ).toEqual( undefined );
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+
+				// Expect displayMode to default to 'closed' after modules are loaded.
+				expect( displayMode ).toEqual( 'closed' );
 			} );
 		} );
 

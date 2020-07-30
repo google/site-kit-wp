@@ -251,7 +251,7 @@ const baseActions = {
 	 */
 	setSettingsDisplayMode( slug, status ) {
 		invariant( slug, 'slug is required.' );
-		invariant( [ 'closed', 'view', 'edit', 'locked' ].contains( status ), 'status is one of "closed", "view", "edit" or "locked.' );
+		invariant( [ 'closed', 'view', 'edit', 'locked' ].includes( status ), 'status is one of "closed", "view", "edit" or "locked.' );
 
 		return {
 			payload: { slug, status },
@@ -297,6 +297,7 @@ const baseReducer = ( state, { type, payload } ) => {
 				active: false,
 				connected: false,
 				name: slug,
+				displayMode: 'closed',
 			};
 			return {
 				...state,
@@ -313,9 +314,37 @@ const baseReducer = ( state, { type, payload } ) => {
 		case SET_SETTINGS_DISPLAY_MODE: {
 			const { slug, status } = payload;
 			const { modules: existingModules } = state;
-			// TODO: Write reducer logic.
+
+			// Clone object so as not to override previous object's values below.
+			const updatedModules = JSON.parse( JSON.stringify( existingModules ) );
+
+			// If status is "view", set all other modules to "closed".
+			if ( status === 'open' ) {
+				Object.keys( updatedModules ).forEach( ( currentSlug ) => {
+					if ( updatedModules[ currentSlug ] !== slug ) {
+						updatedModules[ currentSlug ].displayMode = 'closed';
+					}
+				} );
+			}
+
+			// If status is "edit", set all other modules to "locked".
+			if ( status === 'edit' ) {
+				Object.keys( updatedModules ).forEach( ( currentSlug ) => {
+					if ( updatedModules[ currentSlug ] !== slug ) {
+						updatedModules[ currentSlug ].displayMode = 'locked';
+					}
+				} );
+			}
+
 			return {
 				...state,
+				modules: {
+					...updatedModules,
+					[ slug ]: {
+						...updatedModules[ slug ],
+						displayMode: status,
+					},
+				},
 			};
 		}
 
@@ -427,6 +456,28 @@ const baseSelectors = {
 
 		// This module exists, so let's return it.
 		return modules[ slug ];
+	} ),
+
+	/**
+	 * Gets the display mode for module's settings.
+	 *
+	 * Returns one of: "closed", "view", "edit", or "locked".
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {string} The displayMode status of the module identified by the slug, default 'closed'.
+	 */
+	getSettingsDisplayMode: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const modules = select( STORE_NAME ).getModules();
+
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return 'closed';
+		}
+
+		return modules[ slug ]?.displayMode || 'closed';
 	} ),
 
 	/**
