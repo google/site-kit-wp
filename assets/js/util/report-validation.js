@@ -88,3 +88,23 @@ export function isValidOrders( orders ) {
 	// Arguably this should fail/throw, because none of our allowed types were encountered.
 	return false;
 }
+
+/**
+ * Verifies that dimensions are either a string or an array of strings.
+ *
+ * @since n.e.x.t
+ *
+ * @param {(string|Array.<string>)} dimensions Dimensions to validate.
+ * @return {boolean} TRUE if dimensions are valid, otherwise FALSE.
+ */
+export function isValidStringularDimensions( dimensions ) {
+	if ( typeof dimensions === 'string' ) {
+		return true;
+	}
+
+	if ( Array.isArray( dimensions ) ) {
+		return dimensions.every( ( dimension ) => typeof dimension === 'string' );
+	}
+
+	return false;
+}

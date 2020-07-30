@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { isValidDateRange, isValidOrders } from './report-validation';
+import { isValidDateRange, isValidOrders, isValidStringularDimensions } from './report-validation';
 
 describe( 'Reporting API validation', () => {
 	describe( 'isValidDateRange', () => {
@@ -42,6 +42,21 @@ describe( 'Reporting API validation', () => {
 				startDate: '2020',
 				endDate: '2020-01-01',
 			} ) ).toBeFalsy();
+		} );
+	} );
+
+	describe( 'isValidStringularDimensions', () => {
+		it( 'should return TRUE if dimensions is string', () => {
+			expect( isValidStringularDimensions( 'device' ) ).toBe( true );
+		} );
+
+		it( 'should return TRUE if dimensions is an array of strings', () => {
+			expect( isValidStringularDimensions( [ 'device', 'page' ] ) ).toBe( true );
+		} );
+
+		it( 'should return FALSE if dimensions is neither a string nor an array', () => {
+			expect( isValidStringularDimensions( 5 ) ).toBe( false );
+			expect( isValidStringularDimensions( [ 'device', null ] ) ).toBe( false );
 		} );
 	} );
 
