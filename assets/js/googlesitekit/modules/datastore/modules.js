@@ -481,6 +481,52 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Checks if a module's settings are being edited.
+	 *
+	 * Returns `true` if the module exists and is being edited.
+	 * Returns `false` if the module doesn't exist or is not being edited.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {boolean} True if module exists and settings are being edited, false if not.
+	 */
+	isEditingSettings: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const modules = select( STORE_NAME ).getModules();
+
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return false;
+		}
+
+		return modules[ slug ]?.displayMode === 'edit';
+	} ),
+
+	/**
+	 * Checks if a module's settings are open.
+	 *
+	 * Returns `true` if the module exists and its settings are open.
+	 * Returns `false` if the module doesn't exist or its settings aren't open.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {boolean} True if module exists and settings are open, false if not.
+	 */
+	isSettingsOpen: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const modules = select( STORE_NAME ).getModules();
+
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return false;
+		}
+
+		return modules[ slug ]?.displayMode === 'view';
+	} ),
+
+	/**
 	 * Checks a module's activation status.
 	 *
 	 * Returns `true` if the module exists and is active.

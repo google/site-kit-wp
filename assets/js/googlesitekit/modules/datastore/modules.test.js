@@ -646,6 +646,34 @@ describe( 'core/modules modules', () => {
 			} );
 		} );
 
+		describe( 'isEditingSettings', () => {
+			it( 'returns true if module is being edited, false if not', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'analytics';
+				registry.select( STORE_NAME ).getModule( slug );
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				let displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+
+				expect( displayMode ).not.toEqual( 'edit' );
+				expect( registry.select( STORE_NAME ).isEditingSettings( slug ) ).toBe( false );
+
+				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'edit' );
+				displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+
+				expect( displayMode ).toEqual( 'edit' );
+				expect( registry.select( STORE_NAME ).isEditingSettings( slug ) ).toBe( true );
+			} );
+		} );
+
 		describe( 'isModuleActive', () => {
 			beforeEach( () => {
 				fetchMock.getOnce(
@@ -715,6 +743,34 @@ describe( 'core/modules modules', () => {
 				const isActive = registry.select( STORE_NAME ).isModuleActive( 'analytics' );
 
 				expect( isActive ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'isSettingsOpen', () => {
+			it( 'returns true if module is open, false if not', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'analytics';
+				registry.select( STORE_NAME ).getModule( slug );
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				let displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+
+				expect( displayMode ).not.toEqual( 'view' );
+				expect( registry.select( STORE_NAME ).isSettingsOpen( slug ) ).toBe( false );
+
+				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'view' );
+				displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+
+				expect( displayMode ).toEqual( 'view' );
+				expect( registry.select( STORE_NAME ).isSettingsOpen( slug ) ).toBe( true );
 			} );
 		} );
 	} );
