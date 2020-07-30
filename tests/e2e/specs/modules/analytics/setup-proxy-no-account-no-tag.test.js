@@ -75,7 +75,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await expect( page ).toClick( '.googlesitekit-analytics__select-country' );
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /united kingdom/i } );
 
-		await expect( page ).toMatchElement( 'p', { text: /need to give Site Kit permission to create an Analytics account/i } );
+		await expect( page ).toMatchElement( 'p', { text: /need to give Site Kit permission to create an Analytics account/i, timeout: 750 } );
 
 		await Promise.all( [
 			page.waitForNavigation(), // User is sent directly to OAuth.
