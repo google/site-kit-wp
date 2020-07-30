@@ -69,13 +69,12 @@ export const createExistingTagStore = ( {
 			};
 		},
 		receiveGetExistingTag( existingTag ) {
-			invariant(
-				existingTag !== undefined && ( existingTag === null || isValidTag( existingTag ) ),
-				'existingTag must be a valid tag or null.'
-			);
+			invariant( existingTag === null || 'string' === typeof existingTag, 'existingTag must be a tag string or null.' );
 
 			return {
-				payload: { existingTag },
+				payload: {
+					existingTag: isValidTag( existingTag ) ? existingTag : null,
+				},
 				type: RECEIVE_GET_EXISTING_TAG,
 			};
 		},
