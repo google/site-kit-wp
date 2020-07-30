@@ -515,14 +515,7 @@ tag_partner: "site_kit"
 				$metrics = $data['metrics'];
 				$metrics = is_array( $metrics ) ? $metrics : explode( ',', $metrics );
 				$metrics = array_filter( array_map( 'trim', $metrics ) );
-				if ( empty( $metrics ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ),
-						array( 'status' => 400 )
-					);
-				} else {
+				if ( ! empty( $metrics ) ) {
 					$args['metrics'] = $metrics;
 				}
 
@@ -772,6 +765,7 @@ tag_partner: "site_kit"
 	 *     Optional. Additional arguments.
 	 *
 	 *     @type array  $dimensions List of request dimensions. Default empty array.
+	 *     @type array  $metrics    List of request metrics. Default empty array.
 	 *     @type string $start_date Start date in 'Y-m-d' format. Default empty string.
 	 *     @type string $end_date   End date in 'Y-m-d' format. Default empty string.
 	 *     @type int    $row_limit  Limit of rows to return. Default none (will be skipped).
@@ -783,6 +777,7 @@ tag_partner: "site_kit"
 			$args,
 			array(
 				'dimensions' => array(),
+				'metrics'    => array(),
 				'start_date' => '',
 				'end_date'   => '',
 				'row_limit'  => '',
@@ -801,6 +796,10 @@ tag_partner: "site_kit"
 
 		if ( ! empty( $args['dimensions'] ) ) {
 			$opt_params['dimension'] = (array) $args['dimensions'];
+		}
+
+		if ( ! empty( $args['metrics'] ) ) {
+			$opt_params['metric'] = (array) $args['metrics'];
 		}
 
 		if ( ! empty( $args['row_limit'] ) ) {
