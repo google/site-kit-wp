@@ -17,13 +17,15 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+/**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { errorToStatus } from '../../util/status';
 import StoreErrorNotice from '../.././../../components/StoreErrorNotice';
-const { useCallback } = Data;
 
 export default function ErrorNotice() {
 	const shouldDisplayError = useCallback( ( error ) => undefined === errorToStatus( error ), [] );
