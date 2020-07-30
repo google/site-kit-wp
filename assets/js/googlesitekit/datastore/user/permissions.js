@@ -35,7 +35,7 @@ const RECEIVE_CAPABILITIES = 'RECEIVE_CAPABILITIES';
 
 export const INITIAL_STATE = {
 	permissionError: null,
-	capabilities: {},
+	capabilities: undefined,
 };
 
 export const actions = {
@@ -126,6 +126,12 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getCapabilities() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( STORE_NAME ).getCapabilities() ) {
+			return;
+		}
+
 		if ( ! global._googlesitekitUserData?.permissions ) {
 			global.console.error( 'Could not load core/user permissions.' );
 		}
