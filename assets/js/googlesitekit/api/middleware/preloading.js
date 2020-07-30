@@ -27,7 +27,7 @@ import { getStablePath } from '@wordpress/api-fetch/build/middlewares/preloading
  * Based on preloadMiddleware from from @wordpress/api-fetch, this middle is a single-use per-endpoint and provides cached
  * data for the first request only and any subsequent requests hit the server.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  *
  * @param {Object} preloadedData Preloaded data paths.
  * @return {Function} Function.

@@ -277,7 +277,7 @@ export const isDataZeroForReporting = ( data ) => {
 		// Are all the data points zeros?
 		let allZeros = true;
 		each( values, ( value ) => {
-			if ( 0 !== parseInt( value ) ) {
+			if ( 0 !== parseInt( value, 10 ) ) {
 				allZeros = false;
 			}
 		} );
