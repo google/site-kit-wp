@@ -572,6 +572,7 @@ class OAuth_ClientTest extends TestCase {
 		$url = $client->get_proxy_permissions_url();
 		$this->assertContains( 'token=test-access-token', $url );
 		$this->assertContains( 'application_name=', $url );
+		$this->assertContains( 'hl=', $url );
 
 		// If there is a site ID, it should also include that.
 		$fake_credentials = $this->fake_proxy_site_connection();
@@ -581,6 +582,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'token=test-access-token', $url );
 		$this->assertContains( 'site_id=' . $fake_credentials['client_id'], $url );
 		$this->assertContains( 'application_name=', $url );
+		$this->assertContains( 'hl=', $url );
 	}
 
 	public function test_get_error_message_unknown() {
