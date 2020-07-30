@@ -114,7 +114,11 @@ export const resolvers = {
 		}
 
 		if ( ! global._googlesitekitBaseData || ! global._googlesitekitEntityData ) {
-			global.console.error( 'Could not load core/site info.' );
+			if ( featureFlags.throwOnError.enabled ) {
+				throw new Error( 'Could not load core/site info.' );
+			} else {
+				global.console.error( 'Could not load core/site info.' );
+			}
 			return;
 		}
 
