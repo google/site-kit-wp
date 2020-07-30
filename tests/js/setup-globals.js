@@ -5,6 +5,11 @@ import intlLocalesSupported from 'intl-locales-supported';
 import intl from 'intl';
 import React from 'react';
 
+/**
+ * Internal dependencies
+ */
+import { featureFlags } from '../../webpack.feature-flags.config';
+
 if ( global.Intl ) {
 	// Check for locales other than American English.
 	if ( ! intlLocalesSupported( [ 'en-US', 'de-DE' ] ) ) {
@@ -58,3 +63,11 @@ global._googlesitekitAPIFetchData.nonceEndpoint = 'http://sitekit.test/wp-admin/
 
 // Instantiate global to which we'll assign to the value imported from fetch-mock-jest during Jest's setupFilesAfterEnv execution.
 global.fetchMock = undefined;
+
+global.featureFlags = (
+	( flags ) => JSON.parse(
+		JSON.stringify( flags )
+			.replace( '"development"', 'true' )
+			.replace( '"production"', 'false' )
+	)
+)( featureFlags );
