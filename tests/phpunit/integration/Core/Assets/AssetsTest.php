@@ -88,15 +88,15 @@ class AssetsTest extends TestCase {
 
 	public function test_enqueue_asset() {
 		// Also check registration since that is automatically done in the method if needed.
-		$this->assertFalse( wp_script_is( 'googlesitekit-base', 'registered' ) );
-		$this->assertFalse( wp_script_is( 'googlesitekit-base', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'googlesitekit-admin', 'registered' ) );
+		$this->assertFalse( wp_script_is( 'googlesitekit-admin', 'enqueued' ) );
 
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$assets->enqueue_asset( 'googlesitekit-base' );
+		$assets->enqueue_asset( 'googlesitekit-admin' );
 
-		$this->assertTrue( wp_script_is( 'googlesitekit-base', 'registered' ) );
-		$this->assertTrue( wp_script_is( 'googlesitekit-base', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-admin', 'registered' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-admin', 'enqueued' ) );
 	}
 
 	public function test_enqueue_asset_with_unknown() {
