@@ -143,7 +143,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 			global.googlesitekit.data.dispatch( CORE_USER ).setPermissionScopeError( error );
 		}
 
-		global.console.error( 'Google Site Kit API Error', error );
+		global.console.error( 'Google Site Kit API', { method, type, identifier, datapoint, bodyParams, error: error.message }, error );
 
 		throw error;
 	}
