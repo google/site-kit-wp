@@ -54,6 +54,13 @@ const manifestTemplate = `<?php
 
 namespace Google\\Site_Kit\\Core\\Assets;
 
+/**
+ * Assets manifest.
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
+ */
 class Manifest {
 
 	public static $assets = array(
