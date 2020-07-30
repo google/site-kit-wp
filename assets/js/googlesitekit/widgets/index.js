@@ -44,14 +44,14 @@ const Widgets = {
 	/**
 	 * Supported styles for Site Kit widget areas.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 */
 	WIDGET_AREA_STYLES,
 
 	/**
 	 * Supported widths for Site Kit widgets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 */
 	WIDGET_WIDTHS,
 

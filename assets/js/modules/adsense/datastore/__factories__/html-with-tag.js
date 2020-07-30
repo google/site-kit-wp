@@ -23,7 +23,7 @@ function tagHeadHTML( adsenseID ) {
 /**
  * Generates valid HTML with an Adsense tag.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  *
  * @param {string} adsenseID Adsense Client ID to generate tag with.
  * @return {string} HTML.

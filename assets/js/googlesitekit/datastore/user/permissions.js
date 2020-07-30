@@ -75,7 +75,7 @@ export const actions = {
 	/**
 	 * Sets user capabilities.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 * @private
 	 *
 	 * @param {Object} capabilities User capabilities.
@@ -158,7 +158,7 @@ export const selectors = {
 	/**
 	 * Gets capabilities of the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Capabilities object. Returns undefined if it is not loaded yet.
@@ -171,7 +171,7 @@ export const selectors = {
 	/**
 	 * Checks if the current user has the specified capability or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} capability Capability name to check.
