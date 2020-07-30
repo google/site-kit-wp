@@ -38,7 +38,7 @@ import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
 import {
 	isDataZeroSearchConsole,
-} from '../../dashboard/util';
+} from '../../util';
 
 class DashboardWidgetPopularKeywordsTable extends Component {
 	static renderLayout( component ) {

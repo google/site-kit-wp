@@ -29,7 +29,7 @@ import { getTimeInSeconds } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import { extractSearchConsoleDashboardData, isDataZeroSearchConsole } from '../../dashboard/util';
+import { extractSearchConsoleDashboardData, isDataZeroSearchConsole } from '../../util';
 import PreviewBlock from '../../../../components/preview-block';
 
 class SearchConsoleAdminbarWidgetOverview extends Component {
