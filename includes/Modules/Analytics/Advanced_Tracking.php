@@ -64,13 +64,6 @@ final class Advanced_Tracking {
 	private $plugin_detector;
 
 	/**
-	 * Main class code injector instance.
-	 *
-	 * @var Measurement_Code_Injector
-	 */
-	private $measurement_code_injector;
-
-	/**
 	 * Advanced_Tracking constructor.
 	 *
 	 * @since n.e.x.t.
@@ -83,7 +76,6 @@ final class Advanced_Tracking {
 		} else {
 			$this->plugin_detector = $plugin_detector;
 		}
-		$this->measurement_code_injector = null;
 	}
 
 	/**
@@ -108,11 +100,8 @@ final class Advanced_Tracking {
 		add_action(
 			'wp_footer',
 			function() {
-				if ( null === $this->measurement_code_injector ) {
-					return;
-				}
 				$this->configure_events();
-				$this->measurement_code_injector->inject_event_tracking( $this->event_configurations );
+				( new Measurement_Code_Injector() )->inject_event_tracking( $this->event_configurations );
 			},
 			15
 		);
@@ -130,8 +119,6 @@ final class Advanced_Tracking {
 
 		$active_plugin_configurations = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
 		$this->register_event_lists( $active_plugin_configurations );
-
-		$this->measurement_code_injector = new Measurement_Code_Injector();
 	}
 
 	/**
