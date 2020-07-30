@@ -21,19 +21,11 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 import { errorToStatus } from '../../util/status';
-import ErrorText from '../../../../components/error-text';
-const { useSelect } = Data;
+import StoreErrorNotice from '../.././../../components/StoreErrorNotice';
+const { useCallback } = Data;
 
 export default function ErrorNotice() {
-	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
-
-	// Do not display if no error, or if the error is for missing scopes, or if
-	// it yields an account status, in which case it is an "expected" error.
-	if ( ! error || isPermissionScopeError( error ) || undefined !== errorToStatus( error ) ) {
-		return null;
-	}
-
-	return <ErrorText message={ error.message } reconnectURL={ error.data?.reconnectURL } />;
+	const shouldDisplayError = useCallback( ( error ) => undefined === errorToStatus( error ), [] );
+	return <StoreErrorNotice storeName={ STORE_NAME } shouldDisplayError={ shouldDisplayError } />;
 }
