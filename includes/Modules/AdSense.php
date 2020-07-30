@@ -538,7 +538,7 @@ tag_partner: "site_kit"
 				}
 
 				if ( ! empty( $data['limit'] ) ) {
-					$args['maxResults'] = $ata['limit'];
+					$args['maxResults'] = $data['limit'];
 				}
 
 				return $this->create_adsense_earning_data_request( array_filter( $args ) );

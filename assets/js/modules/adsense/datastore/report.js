@@ -60,7 +60,7 @@ const fetchGetReportStore = createFetchStore( {
 		if ( dimensions ) {
 			invariant(
 				isValidStringularItems( dimensions ),
-				'Dimensions for AdSense report must be either a string or an array of strings.',
+				'Dimensions for an AdSense report must be either a string or an array of strings.',
 			);
 		}
 
