@@ -38,7 +38,7 @@ const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
 /**
  * Creates a store object that includes actions and selectors for getting existing tags.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  * @private
  *
  * @param {Object}   args             Arguments for the store generation.
@@ -153,7 +153,7 @@ export const createExistingTagStore = ( {
 		/**
 		 * Gets the existing tag, if any.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.13.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {(string|null|undefined)} The existing tag `string` if present, `null` if not present, or `undefined` if not loaded yet.
@@ -165,7 +165,7 @@ export const createExistingTagStore = ( {
 		/**
 		 * Checks whether or not an existing tag is present.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.13.0
 		 *
 		 * @return {(boolean|undefined)} Boolean if tag is present, `undefined` if tag presence has not been resolved yet.
 		 */
