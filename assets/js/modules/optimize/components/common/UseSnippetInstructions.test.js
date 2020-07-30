@@ -22,16 +22,20 @@
 import UseSnippetInstructions from './UseSnippetInstructions';
 import { render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_MODULE } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import fixtures from '../../../../googlesitekit/modules/datastore/fixtures.json';
+
+const siteInfo = { adminURL: 'http://example.com/wp-admin/' };
 
 describe( 'UseSnippetInstructions', () => {
 	it( 'should render with analytics active and no useSnippet', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
+			registry.dispatch( CORE_MODULES ).receiveGetModules( fixtures );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( siteInfo );
 		};
 
 		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
@@ -43,6 +47,7 @@ describe( 'UseSnippetInstructions', () => {
 	it( 'should render with analytics message if analytics is inactive', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( siteInfo );
 		};
 
 		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
@@ -54,7 +59,8 @@ describe( 'UseSnippetInstructions', () => {
 	it( 'should not render with analytics active and a useSnippet', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
+			registry.dispatch( CORE_MODULES ).receiveGetModules( fixtures );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( siteInfo );
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		};
 
@@ -73,7 +79,8 @@ describe( 'UseSnippetInstructions', () => {
 
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-			registry.dispatch( CORE_MODULE ).receiveGetModules( newFixtures );
+			registry.dispatch( CORE_MODULES ).receiveGetModules( newFixtures );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( siteInfo );
 			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
 		};
 

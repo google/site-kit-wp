@@ -21,7 +21,13 @@
  */
 import { render, fireEvent, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsMain from './SettingsMain';
+
+import modulesFixture from '../../../../googlesitekit/modules/datastore/fixtures.json';
 
 describe( 'SettingsMain', () => {
 	const initialSettings = {
@@ -32,9 +38,18 @@ describe( 'SettingsMain', () => {
 		optimizeID: 'OPT-2222222',
 	};
 
+	const siteInfo = {
+		adminURL: 'http://example.com/wp-admin/',
+		ampMode: false,
+	};
+
 	it( 'rolls back settings if settings have changed and is not editing', async () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
+			dispatch( CORE_SITE ).receiveSiteInfo( siteInfo );
+			dispatch( CORE_MODULES ).receiveGetModules( modulesFixture );
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 		};
 
 		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
@@ -56,6 +71,10 @@ describe( 'SettingsMain', () => {
 	it( 'does not roll back settings if settings have changed and is editing', async () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
+			dispatch( CORE_SITE ).receiveSiteInfo( siteInfo );
+			dispatch( CORE_MODULES ).receiveGetModules( modulesFixture );
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 		};
 
 		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
