@@ -341,7 +341,102 @@ describe( 'core/modules modules', () => {
 		} );
 
 		describe( 'setSettingsDisplayMode', () => {
+			it( 'sets the a module\'s displayMode to the correct value', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'analytics';
+				registry.select( STORE_NAME ).getModule( slug );
 
+				let displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+
+				// Expect initial status to be closed.
+				expect( displayMode ).toEqual( 'closed' );
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				const moduleLoaded = registry.select( STORE_NAME ).getModule( slug );
+				expect( moduleLoaded ).not.toEqual( null );
+
+				// Set display mode to 'view'.
+				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'view' );
+
+				displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+
+				// Expect displayMode to default to be 'view'.
+				expect( displayMode ).toEqual( 'view' );
+			} );
+
+			it( 'changes other modules\' displayModes to "closed" when changing a module to "view"', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'analytics';
+				const otherSlug = 'adsense';
+				registry.select( STORE_NAME ).getModule( slug );
+				registry.select( STORE_NAME ).getModule( otherSlug );
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				// Set otherSlug mode to 'open'.
+				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( otherSlug, 'view' );
+
+				let otherDisplayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( otherSlug );
+				expect( otherDisplayMode ).toEqual( 'view' );
+
+				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'view' );
+
+				// Expect target's displayMode to be "view".
+				const displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+				expect( displayMode ).toEqual( 'view' );
+
+				// Expect other module's displayMode to have changed to "closed".
+				otherDisplayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( otherSlug );
+				expect( otherDisplayMode ).toEqual( 'closed' );
+			} );
+		} );
+
+		it( 'changes other modules\' displayModes to "locked" when changing a module to "edit"', async () => {
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+				{ body: FIXTURES, status: 200 }
+			);
+			const slug = 'analytics';
+			const otherSlug = 'adsense';
+			registry.select( STORE_NAME ).getModule( slug );
+			registry.select( STORE_NAME ).getModule( otherSlug );
+
+			// Wait for loading to complete.
+			await subscribeUntil( registry, () => registry
+				.select( STORE_NAME )
+				.hasFinishedResolution( 'getModules' )
+			);
+
+			// Set otherSlug mode to "edit".
+			registry.dispatch( STORE_NAME ).setSettingsDisplayMode( otherSlug, 'edit' );
+
+			let otherDisplayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( otherSlug );
+			expect( otherDisplayMode ).toEqual( 'edit' );
+
+			registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'edit' );
+
+			// Expect target's displayMode to be "edit".
+			const displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
+			expect( displayMode ).toEqual( 'edit' );
+
+			// Expect other module's displayMode to have changed to "locked".
+			otherDisplayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( otherSlug );
+			expect( otherDisplayMode ).toEqual( 'locked' );
 		} );
 	} );
 

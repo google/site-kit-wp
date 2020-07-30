@@ -319,7 +319,7 @@ const baseReducer = ( state, { type, payload } ) => {
 			const updatedModules = JSON.parse( JSON.stringify( existingModules ) );
 
 			// If status is "view", set all other modules to "closed".
-			if ( status === 'open' ) {
+			if ( status === 'view' ) {
 				Object.keys( updatedModules ).forEach( ( currentSlug ) => {
 					if ( updatedModules[ currentSlug ] !== slug ) {
 						updatedModules[ currentSlug ].displayMode = 'closed';
