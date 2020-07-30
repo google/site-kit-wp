@@ -90,20 +90,20 @@ export function isValidOrders( orders ) {
 }
 
 /**
- * Verifies that dimensions are either a string or an array of strings.
+ * Verifies that provided parameter is either a string or an array of strings.
  *
  * @since n.e.x.t
  *
- * @param {(string|Array.<string>)} dimensions Dimensions to validate.
- * @return {boolean} TRUE if dimensions are valid, otherwise FALSE.
+ * @param {(string|Array.<string>)} items Items to validate.
+ * @return {boolean} TRUE if items are either a string or an array of strings, otherwise FALSE.
  */
-export function isValidStringularDimensions( dimensions ) {
-	if ( typeof dimensions === 'string' ) {
+export function isValidStringularItems( items ) {
+	if ( typeof items === 'string' ) {
 		return true;
 	}
 
-	if ( Array.isArray( dimensions ) ) {
-		return dimensions.every( ( dimension ) => typeof dimension === 'string' );
+	if ( Array.isArray( items ) ) {
+		return items.every( ( item ) => typeof item === 'string' );
 	}
 
 	return false;

@@ -30,7 +30,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidDateRange, isValidStringularDimensions } from '../../../util/report-validation';
+import { isValidDateRange, isValidStringularItems } from '../../../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -53,8 +53,8 @@ const fetchGetReportStore = createFetchStore( {
 		const { dimensions } = options;
 		if ( dimensions ) {
 			invariant(
-				isValidStringularDimensions( dimensions ),
-				'Dimensions for search Console report must be either a string or an array of strings',
+				isValidStringularItems( dimensions ),
+				'Dimensions for Search Console report must be either a string or an array of strings',
 			);
 		}
 

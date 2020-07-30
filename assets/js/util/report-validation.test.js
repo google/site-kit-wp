@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { isValidDateRange, isValidOrders, isValidStringularDimensions } from './report-validation';
+import { isValidDateRange, isValidOrders, isValidStringularItems } from './report-validation';
 
 describe( 'Reporting API validation', () => {
 	describe( 'isValidDateRange', () => {
@@ -45,18 +45,18 @@ describe( 'Reporting API validation', () => {
 		} );
 	} );
 
-	describe( 'isValidStringularDimensions', () => {
-		it( 'should return TRUE if dimensions is string', () => {
-			expect( isValidStringularDimensions( 'device' ) ).toBe( true );
+	describe( 'isValidStringularItems', () => {
+		it( 'should return TRUE if items is string', () => {
+			expect( isValidStringularItems( 'device' ) ).toBe( true );
 		} );
 
-		it( 'should return TRUE if dimensions is an array of strings', () => {
-			expect( isValidStringularDimensions( [ 'device', 'page' ] ) ).toBe( true );
+		it( 'should return TRUE if items is an array of strings', () => {
+			expect( isValidStringularItems( [ 'device', 'page' ] ) ).toBe( true );
 		} );
 
-		it( 'should return FALSE if dimensions is neither a string nor an array', () => {
-			expect( isValidStringularDimensions( 5 ) ).toBe( false );
-			expect( isValidStringularDimensions( [ 'device', null ] ) ).toBe( false );
+		it( 'should return FALSE if items is neither a string nor an array', () => {
+			expect( isValidStringularItems( 5 ) ).toBe( false );
+			expect( isValidStringularItems( [ 'device', null ] ) ).toBe( false );
 		} );
 	} );
 
