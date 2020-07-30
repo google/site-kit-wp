@@ -17,6 +17,9 @@
  */
 
 exports.featureFlags = {
+	throwOnError: {
+		enabled: 'development',
+	},
 	widgets: {
 		dashboard: {
 			enabled: 'development',
