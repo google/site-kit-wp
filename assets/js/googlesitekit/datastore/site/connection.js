@@ -93,8 +93,7 @@ const baseSelectors = {
 	 * @return {string|undefined} Owner ID if it exists, otherwise undefined.
 	 */
 	getOwnerID: createRegistrySelector( ( select ) => () => {
-		const connection = select( STORE_NAME ).getConnection();
-		const { ownerID } = connection || {};
+		const { ownerID } = select( STORE_NAME ).getConnection() || {};
 
 		return ownerID;
 	} ),
