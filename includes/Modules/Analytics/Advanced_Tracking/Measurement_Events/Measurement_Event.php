@@ -95,13 +95,15 @@ final class Measurement_Event implements \JsonSerializable {
 	public function to_amp_config() {
 		$amp_config             = array();
 		$amp_config['selector'] = $this->config['selector'];
-		$amp_config['on']       = $this->config['on'];
+		$amp_config['on']       = 'DOMContentLoaded' == $this->config['on'] ? 'visible' : $this->config['on'];
 
 		$vars_config                   = array();
 		$vars_config['event_name']     = $this->config['action'];
-		$vars_config['event_category'] = $this->config['metadata']['event_category'];
-
+		foreach ( $this->config['metadata'] as $key => $value ) {
+			$vars_config[ $key ] = $value;
+		}
 		$amp_config['vars'] = $vars_config;
+
 		return $amp_config;
 	}
 

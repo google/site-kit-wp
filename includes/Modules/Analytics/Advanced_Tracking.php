@@ -76,6 +76,10 @@ final class Advanced_Tracking {
 		} else {
 			$this->plugin_detector = $plugin_detector;
 		}
+
+		// TODO: Move the following two lines into SiteKit-defined hooks.
+		$active_plugin_configurations = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
+		$this->register_event_lists( $active_plugin_configurations );
 	}
 
 	/**
@@ -91,7 +95,6 @@ final class Advanced_Tracking {
 			},
 			15
 		);
-		//TODO: Modify the logic to resolve the problem of tracking events on AMP websites.
 		add_filter(
 			'googlesitekit_amp_gtag_opt',
 			function( $gtag_amp_opt ) {
@@ -109,9 +112,6 @@ final class Advanced_Tracking {
 		if ( ! wp_script_is( 'google_gtagjs' ) ) {
 			return;
 		}
-
-		$active_plugin_configurations = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
-		$this->register_event_lists( $active_plugin_configurations );
 
 		add_action(
 			'wp_footer',
