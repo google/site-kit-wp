@@ -29,7 +29,11 @@ final class NinjaForms_Event_List extends Measurement_Event_List {
 			'do_shortcode_tag',
 			function( $output, $tag, $attr ) {
 				if ( 'ninja_form' == $tag ) {
-					$this->collect_ninja_form_shortcode( $attr['id'] );
+					if ( '' !== $attr && array_key_exists( 'id', $attr ) ) {
+						$this->collect_ninja_form_shortcode( $attr['id'] );
+					} else {
+						$this->collect_ninja_form_shortcode( 'unknown' );
+					}
 				}
 				return $output;
 			},
