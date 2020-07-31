@@ -101,20 +101,12 @@ class SetupUsingProxy extends Component {
 		let title;
 		let description;
 		let startSetupText;
-		let siteHostname = global.location?.hostname;
-
-		try {
-			// "new URL" will throw an exception if it can't parse site URL.
-			siteHostname = ( new URL( siteURL ) ).hostname;
-		} catch ( e ) {
-			// Do nothing.
-		}
 
 		if ( isRevoked ) {
 			title = sprintf(
 				/* translators: %s is the site's hostname. (e.g. example.com) */
 				__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
-				punycode.toUnicode( siteHostname )
+				punycode.toUnicode( ( new URL( siteURL ) ).hostname )
 			);
 			description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Start Setup" below to generate new credentials.', 'google-site-kit' );
 			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
