@@ -44,6 +44,15 @@ final class Measurement_Code_Injector {
 					}
 					return false;
 				}
+
+				function sendEvent( action, metadata ) {
+					if ( null === metadata ) {
+						gtag( 'event', action );
+					} else {
+						gtag( 'event', action, metadata );
+					}
+				}
+
 				var eventConfigurations = <?php echo wp_json_encode( $event_configurations ); ?>;
 				var config;
 				for ( config of eventConfigurations ) {
@@ -52,11 +61,11 @@ final class Measurement_Code_Injector {
 					document.addEventListener( config.on, function( e ) {
 						if ( "DOMContentLoaded" === thisConfig.on ) {
 							alert('got an event called: '.concat(thisConfig.action));
-							gtag( 'event', thisConfig.action, thisConfig.metadata );
+							sendEvent( thisConfig.action, thisConfig.metadata );
 						} else {
 							var el = e.target;
 							if ( matches( el, thisConfig.selector ) || matches( el, thisConfig.selector.concat( ' *' ) ) ) {
-								gtag( 'event', thisConfig.action, thisConfig.metadata );
+								sendEvent( thisConfig.action, thisConfig.metadata );
 							}
 						}
 					}, true );
