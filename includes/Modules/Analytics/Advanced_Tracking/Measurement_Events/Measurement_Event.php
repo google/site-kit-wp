@@ -53,7 +53,6 @@ final class Measurement_Event implements \JsonSerializable {
 	private function validate_config( $config ) {
 		$valid_keys = array(
 			'pluginName' => false,
-			'category'   => false,
 			'action'     => false,
 			'selector'   => false,
 			'on'         => false,
@@ -62,7 +61,7 @@ final class Measurement_Event implements \JsonSerializable {
 		foreach ( $config as $key => $value ) {
 			if ( ! array_key_exists( $key, $valid_keys ) ) {
 				throw new \Exception( 'Invalid configuration parameter: ' . $key );
-			}       
+			}
 		}
 		if ( ! array_key_exists( 'action', $config ) ) {
 			$config['action'] = null;
@@ -98,7 +97,7 @@ final class Measurement_Event implements \JsonSerializable {
 
 		$vars_config                   = array();
 		$vars_config['event_name']     = $this->config['action'];
-		$vars_config['event_category'] = $this->config['category'];
+		$vars_config['event_category'] = $this->config['metadata']['event_category'];
 
 		$amp_config['vars'] = $vars_config;
 		return $amp_config;
