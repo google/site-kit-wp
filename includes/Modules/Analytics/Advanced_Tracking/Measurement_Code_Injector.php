@@ -22,13 +22,6 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measu
 final class Measurement_Code_Injector {
 
 	/**
-	 * Injector constructor.
-	 *
-	 * @since n.e.x.t.
-	 */
-	public function __construct() {}
-
-	/**
 	 * Creates list of measurement event configurations and javascript to inject.
 	 *
 	 * @since n.e.x.t.
