@@ -45,6 +45,64 @@ class AdSenseTest extends TestCase {
 		$this->assertContains( $adsense->get_screen(), apply_filters( 'googlesitekit_module_screens', array() ) );
 	}
 
+	public function test_register_wp_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->expects( $this->once() )
+			->method( 'is_amp' )
+			->will( $this->returnValue( true ) );
+
+		$adsense = new AdSense( $context );
+		$this->force_set_property( $adsense, 'context', $mock_context );
+
+		remove_all_actions( 'wp' );
+		$adsense->register();
+
+		remove_all_actions( 'wp_body_open' );
+		remove_all_filters( 'the_content' );
+		remove_all_filters( 'amp_post_template_data' );
+
+		do_action( 'wp' );
+		$this->assertFalse( has_action( 'wp_body_open' ) );
+		$this->assertFalse( has_filter( 'the_content' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+
+		do_action( 'wp' );
+		$this->assertTrue( has_action( 'wp_body_open' ) );
+		$this->assertTrue( has_filter( 'the_content' ) );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+	}
+
+	public function test_register_wp_non_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->expects( $this->once() )
+			->method( 'is_amp' )
+			->will( $this->returnValue( false ) );
+
+		$adsense = new AdSense( $context );
+		$this->force_set_property( $adsense, 'context', $mock_context );
+
+		remove_all_actions( 'wp' );
+		$adsense->register();
+
+		remove_all_actions( 'wp_head' );
+
+		do_action( 'wp' );
+		$this->assertFalse( has_action( 'wp_head' ) );
+
+		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+
+		do_action( 'wp' );
+		$this->assertTrue( has_action( 'wp_head' ) );
+	}
+
 	public function test_get_module_scope() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
