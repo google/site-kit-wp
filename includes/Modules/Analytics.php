@@ -89,6 +89,24 @@ final class Analytics extends Module
 		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
 		add_action(
+			'admin_init',
+			function() {
+				$this->handle_provisioning_callback();
+			}
+		);
+
+		add_action(
+			'wp_head',
+			function () {
+				if ( $this->is_tracking_disabled() ) {
+					$this->print_tracking_opt_out();
+				}
+			},
+			0
+		);
+
+		// Analytics tag placement logic.
+		add_action(
 			'wp',
 			function() {
 				// Bail early if we are checking for the tag presence from the back end.
@@ -144,23 +162,6 @@ final class Analytics extends Module
 						}
 					);
 				}
-			}
-		);
-
-		add_action(
-			'wp_head',
-			function () {
-				if ( $this->is_tracking_disabled() ) {
-					$this->print_tracking_opt_out();
-				}
-			},
-			0
-		);
-
-		add_action(
-			'admin_init',
-			function() {
-				$this->handle_provisioning_callback();
 			}
 		);
 	}
