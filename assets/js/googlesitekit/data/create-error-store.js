@@ -26,6 +26,7 @@ export function createErrorStore() {
 
 	const INITIAL_STATE = {
 		errors: {},
+		error: undefined,
 	};
 
 	const actions = {
@@ -89,6 +90,26 @@ export function createErrorStore() {
 			return selectors.getError( state, actionName, args );
 		},
 
+		/**
+		 * Retrieves the error object from state.
+		 *
+		 * Returns `undefined` if there is no error set.
+		 *```
+		 * {
+		 *   code: <String>,
+		 *   message: <String>,
+		 *   data: <Object>
+		 * }
+		 * ```
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @param {Object} state Data store's state.
+		 * @param {string} [baseName] A selector or action name.
+		 * @param {Object} [args] An arguments object.
+		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
+		 */
 		getError( state, baseName, args ) {
 			if ( ! baseName && ! args ) {
 				return state.error;

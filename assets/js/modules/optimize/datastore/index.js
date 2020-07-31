@@ -23,7 +23,7 @@ import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import settings from './settings';
-import error from './error';
+import { createErrorStore } from '../../../googlesitekit/data/create-error-store';
 
 export { STORE_NAME };
 
@@ -56,7 +56,7 @@ baseModuleStore = ( ( { actions, selectors, ...store } ) => {
 const store = Data.combineStores(
 	baseModuleStore,
 	settings,
-	error,
+	createErrorStore(),
 );
 
 // Register this store on the global registry.

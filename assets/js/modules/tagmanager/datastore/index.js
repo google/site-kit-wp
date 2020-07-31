@@ -22,10 +22,10 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
+import { createErrorStore } from '../../../googlesitekit/data/create-error-store';
 import { STORE_NAME } from './constants';
 import accounts from './accounts';
 import containers from './containers';
-import error from './error';
 import tags from './tags';
 import settings from './settings';
 import versions from './versions';
@@ -66,7 +66,7 @@ const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
 	containers,
-	error,
+	createErrorStore(),
 	tags,
 	settings,
 	versions,
