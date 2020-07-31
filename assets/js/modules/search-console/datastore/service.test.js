@@ -58,6 +58,7 @@ describe( 'module/adsense service store', () => {
 				const serviceURL = registry.select( STORE_NAME ).getServiceURL();
 				expect( serviceURL ).toBe( addQueryArgs( baseURI, { authuser: userData.email } ) );
 			} );
+
 			it( 'adds the path parameter', () => {
 				const expectedURL = addQueryArgs( `${ baseURI }/test/path/to/deeplink`, { authuser: userData.email } );
 				const serviceURLNoSlashes = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink' } );
@@ -65,6 +66,7 @@ describe( 'module/adsense service store', () => {
 				const serviceURLWithLeadingSlash = registry.select( STORE_NAME ).getServiceURL( { path: '/test/path/to/deeplink' } );
 				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
 			} );
+
 			it( 'adds query args', async () => {
 				const query = {
 					param1: 1,
