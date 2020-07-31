@@ -85,6 +85,21 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Gets owner ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string|undefined} Owner ID if it exists, otherwise undefined.
+	 */
+	getOwnerID: createRegistrySelector( ( select ) => () => {
+		const connection = select( STORE_NAME ).getConnection();
+		const { ownerID } = connection || {};
+
+		return ownerID;
+	} ),
+
+	/**
 	 * Gets the Site Kit connection status for this site.
 	 *
 	 * Returns `true` if the site is connected to Site Kit, `false` if
