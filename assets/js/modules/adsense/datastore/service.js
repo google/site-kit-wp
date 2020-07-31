@@ -40,8 +40,7 @@ export const selectors = {
 	 * @param {Object} [args.query] Object of query params to be added to the URL.
 	 * @return {string} The URL to the service
 	 */
-	getServiceURL: createRegistrySelector( ( select ) => ( state, args = {} ) => {
-		const { path, query } = args;
+	getServiceURL: createRegistrySelector( ( select ) => ( state, { path, query } = {} ) => {
 		const userEmail = select( CORE_USER ).getEmail();
 		if ( userEmail === undefined ) {
 			return undefined;

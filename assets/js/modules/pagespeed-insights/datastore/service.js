@@ -32,8 +32,7 @@ export const selectors = {
 	 * @param {Object} [args.query] Object of query params to be added to the URL.
 	 * @return {string} The URL to the service
 	 */
-	getServiceURL: ( state, args = {} ) => {
-		const { path, query } = args;
+	getServiceURL: ( state, { path, query } = {} ) => {
 		const baseURI = `https://developers.google.com/speed/pagespeed/insights`;
 		if ( path ) {
 			const sanitizedPath = ! path.match( /^\// ) ? `/${ path }` : path;
