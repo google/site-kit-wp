@@ -111,11 +111,75 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertTrue( has_action( 'wp_footer' ) );
 	}
 
-	public function test_is_connected() {
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	public function test_is_connected_web() {
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
+		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( false ) );
 
-		// is_connected relies on get_data so it isn't currently possible to test a connected state.
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
 		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => '9999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+
+		$this->assertTrue( $tagmanager->is_connected() );
+	}
+
+	public function test_is_connected_primary_amp() {
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
+		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( Context::AMP_MODE_PRIMARY ) );
+
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => '9999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		$this->assertTrue( $tagmanager->is_connected() );
+	}
+
+	public function test_is_connected_secondary_amp() {
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
+		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( Context::AMP_MODE_SECONDARY ) );
+
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => '9999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+
+		// Should still fail because both 'web' and 'amp' containers are required.
+		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => '9999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		$this->assertTrue( $tagmanager->is_connected() );
 	}
 
 	public function test_on_deactivation() {

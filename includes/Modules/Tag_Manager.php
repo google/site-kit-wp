@@ -197,9 +197,32 @@ final class Tag_Manager extends Module
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
-		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+		$amp_mode = $this->context->get_amp_mode();
+		switch ( $amp_mode ) {
+			case Context::AMP_MODE_PRIMARY:
+				$container_ids = array(
+					$this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_AMP ) ),
+				);
+				break;
+			case Context::AMP_MODE_SECONDARY:
+				$container_ids = array(
+					$this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_WEB ) ),
+					$this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_AMP ) ),
+				);
+				break;
+			default:
+				$container_ids = array(
+					$this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_WEB ) ),
+				);
+		}
 
-		if ( is_wp_error( $container_id ) || ! $container_id ) {
+		$container_id_errors = array_filter(
+			$container_ids,
+			function( $container_id ) {
+				return is_wp_error( $container_id ) || ! $container_id;
+			}
+		);
+		if ( ! empty( $container_id_errors ) ) {
 			return false;
 		}
 
@@ -343,17 +366,6 @@ final class Tag_Manager extends Module
 
 		$data['amp_component_scripts']['amp-analytics'] = 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js';
 		return $data;
-	}
-
-	/**
-	 * Gets the current container usage context based on the current AMP mode (defaults to 'web').
-	 *
-	 * @return string
-	 */
-	protected function get_usage_context() {
-		return Context::AMP_MODE_PRIMARY === $this->context->get_amp_mode()
-			? self::USAGE_CONTEXT_AMP
-			: self::USAGE_CONTEXT_WEB;
 	}
 
 	/**
