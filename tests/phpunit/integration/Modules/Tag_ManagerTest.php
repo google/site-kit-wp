@@ -36,6 +36,81 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
+	public function test_register_wp_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
+
+		$tagmanager = new Tag_Manager( $context );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		remove_all_actions( 'wp' );
+		$tagmanager->register();
+
+		remove_all_actions( 'amp_print_analytics' );
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'amp_post_template_footer' );
+		remove_all_filters( 'amp_post_template_data' );
+
+		do_action( 'wp' );
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => '9999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		do_action( 'wp' );
+		$this->assertTrue( has_action( 'amp_print_analytics' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+	}
+
+	public function test_register_wp_non_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
+
+		$tagmanager = new Tag_Manager( $context );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		remove_all_actions( 'wp' );
+		$tagmanager->register();
+
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'wp_body_open' );
+		remove_all_actions( 'wp_footer' );
+
+		do_action( 'wp' );
+		$this->assertFalse( has_action( 'wp_head' ) );
+		$this->assertFalse( has_action( 'wp_body_open' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+
+		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => '9999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+
+		do_action( 'wp' );
+		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'wp_body_open' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+	}
+
 	public function test_is_connected() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -113,34 +188,6 @@ class Tag_ManagerTest extends TestCase {
 			),
 			$tagmanager->get_datapoints()
 		);
-	}
-
-	public function test_amp_data_load_analytics_component() {
-		remove_all_filters( 'amp_post_template_data' );
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$tagmanager->register();
-
-		$data = array( 'amp_component_scripts' => array() );
-
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertSame( $data, $result );
-
-		$set_data_response = $tagmanager->set_data( 'container-id', array( 'containerID' => '12345678' ) );
-		$this->assertNotWPError( $set_data_response );
-
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertArrayNotHasKey( 'amp-analytics', $result['amp_component_scripts'] );
-
-		$set_data_response = $tagmanager->set_data(
-			'container-id',
-			array(
-				'containerID'  => '99999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
-			)
-		);
-		$this->assertNotWPError( $set_data_response );
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );
 	}
 
 	/**
