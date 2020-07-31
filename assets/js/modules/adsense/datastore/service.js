@@ -47,8 +47,8 @@ export const selectors = {
 		}
 		const baseURI = `https://www.google.com/adsense/new/u/${ userEmail }`;
 		if ( path ) {
-			const sanitizedPath = path.replace( /^\/|\/$/g, '' ); //replace the first and last `/` if they exist.
-			return addQueryArgs( `${ baseURI }/${ sanitizedPath }/`, query );
+			const sanitizedPath = path.replace( /^\//g, '' ); //replace the leading slash if it's there to be sure we don't add a second.
+			return addQueryArgs( `${ baseURI }/${ sanitizedPath }`, query );
 		}
 		return addQueryArgs( baseURI, query );
 	} ),
