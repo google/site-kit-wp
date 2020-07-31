@@ -154,6 +154,18 @@ final class Analytics extends Module
 							return $this->amp_data_load_analytics_component( $data );
 						}
 					);
+
+					/**
+					 * Fires when the Analytics tag for AMP has been initialized.
+					 *
+					 * This means that the tag will be rendered in the current request.
+					 * Site Kit uses `gtag.js` for its Analytics snippet.
+					 *
+					 * @since n.e.x.t
+					 *
+					 * @param string $property_id Analytics property ID used in the tag.
+					 */
+					do_action( 'googlesitekit_init_analytics_tag_amp', $property_id );
 				} else {
 					add_action( // For non-AMP.
 						'wp_enqueue_scripts',
@@ -161,6 +173,18 @@ final class Analytics extends Module
 							$this->enqueue_gtag_js( $property_id );
 						}
 					);
+
+					/**
+					 * Fires when the Analytics tag has been initialized.
+					 *
+					 * This means that the tag will be rendered in the current request.
+					 * Site Kit uses `gtag.js` for its Analytics snippet.
+					 *
+					 * @since n.e.x.t
+					 *
+					 * @param string $property_id Analytics property ID used in the tag.
+					 */
+					do_action( 'googlesitekit_init_analytics_tag', $property_id );
 				}
 			}
 		);

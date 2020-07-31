@@ -130,6 +130,17 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 							return $this->amp_data_load_auto_ads_component( $data );
 						}
 					);
+
+					/**
+					 * Fires when the AdSense tag for AMP has been initialized.
+					 *
+					 * This means that the tag will be rendered in the current request.
+					 *
+					 * @since n.e.x.t
+					 *
+					 * @param string $client_id AdSense client ID used in the tag.
+					 */
+					do_action( 'googlesitekit_init_adsense_tag_amp', $client_id );
 				} else {
 					add_action( // For non-AMP.
 						'wp_head',
@@ -137,6 +148,17 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 							$this->output_adsense_script( $client_id );
 						}
 					);
+
+					/**
+					 * Fires when the AdSense tag has been initialized.
+					 *
+					 * This means that the tag will be rendered in the current request.
+					 *
+					 * @since n.e.x.t
+					 *
+					 * @param string $client_id AdSense client ID used in the tag.
+					 */
+					do_action( 'googlesitekit_init_adsense_tag', $client_id );
 				}
 			}
 		);

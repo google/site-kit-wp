@@ -137,6 +137,17 @@ final class Tag_Manager extends Module
 							return $this->amp_data_load_analytics_component( $data );
 						}
 					);
+
+					/**
+					 * Fires when the Tag Manager tag for AMP has been initialized.
+					 *
+					 * This means that the tag will be rendered in the current request.
+					 *
+					 * @since n.e.x.t
+					 *
+					 * @param string $container_id Tag Manager container ID used in the tag.
+					 */
+					do_action( 'googlesitekit_init_tagmanager_tag_amp', $container_id );
 				} else {
 					add_action( // For non-AMP.
 						'wp_head',
@@ -152,6 +163,17 @@ final class Tag_Manager extends Module
 					add_action( 'wp_body_open', $print_gtm_no_js, -9999 );
 					// For non-AMP (as fallback).
 					add_action( 'wp_footer', $print_gtm_no_js );
+
+					/**
+					 * Fires when the Tag Manager tag has been initialized.
+					 *
+					 * This means that the tag will be rendered in the current request.
+					 *
+					 * @since n.e.x.t
+					 *
+					 * @param string $container_id Tag Manager container ID used in the tag.
+					 */
+					do_action( 'googlesitekit_init_tagmanager_tag', $container_id );
 				}
 			}
 		);
