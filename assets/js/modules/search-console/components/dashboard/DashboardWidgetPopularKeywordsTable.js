@@ -34,7 +34,7 @@ import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
 import {
 	isDataZeroSearchConsole,
-} from '../../dashboard/util';
+} from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
