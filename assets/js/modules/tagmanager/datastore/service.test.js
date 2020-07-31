@@ -17,11 +17,6 @@
  */
 
 /**
- * Wordpress dependencies
- */
-import { addQueryArgs } from '@wordpress/url';
-
-/**
  *
  * Internal dependencies
  */
@@ -32,7 +27,7 @@ import {
 import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
-describe( 'module/adsense service store', () => {
+describe( 'module/tagmanager service store', () => {
 	const userData = {
 		id: 1,
 		email: 'admin@fakedomain.com',
@@ -68,13 +63,15 @@ describe( 'module/adsense service store', () => {
 			} );
 
 			it( 'adds query args', async () => {
+				const path = '/test/path/to/deeplink';
 				const query = {
-					param1: 1,
-					param2: 2,
+					param1: '1',
+					param2: '2',
 				};
-				const expectedURL = addQueryArgs( `${ baseURI }?authuser=${ userData.email }#/test/path/to/deeplink`, query );
-				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink', query } );
-				expect( serviceURL ).toEqual( expectedURL );
+				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path, query } );
+				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
+				expect( serviceURL.endsWith( `${ encodeURIComponent( path ) }&param1=1&param2=2` ) ).toBe( true );
+				expect( serviceURL ).toMatchQueryParameters( query );
 			} );
 		} );
 	} );
