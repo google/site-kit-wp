@@ -21,9 +21,56 @@
  */
 import invariant from 'invariant';
 
-export function createErrorStore() {
-	const RECEIVE_ERROR = 'RECEIVE_ERROR';
+const RECEIVE_ERROR = 'RECEIVE_ERROR';
+const CLEAR_ERROR = 'CLEAR_ERROR';
 
+function generateErrorKey( baseName, args ) {
+	let key = baseName;
+	if ( args ) {
+		key += JSON.stringify( args );
+	}
+
+	return key;
+}
+
+function reducer( state, { type, payload } ) {
+	switch ( type ) {
+		case RECEIVE_ERROR: {
+			const { baseName, args, error } = payload;
+			const newState = { ...state };
+
+			if ( baseName ) {
+				newState.errors = {
+					...( state.errors || {} ),
+					[ generateErrorKey( baseName, args ) ]: error,
+				};
+			} else {
+				newState.error = error;
+			}
+
+			return newState;
+		}
+
+		case CLEAR_ERROR: {
+			const { baseName, args } = payload;
+			const key = generateErrorKey( baseName, args );
+
+			return {
+				...state,
+				errors: Object
+					.keys( state.errors )
+					.filter( ( errorKey ) => errorKey !== key )
+					.reduce( ( errors, errorKey ) => ( { ...errors, [ errorKey ]: state.errors[ errorKey ] } ), {} ),
+			};
+		}
+
+		default: {
+			return { ...state };
+		}
+	}
+}
+
+export function createErrorStore() {
 	const INITIAL_STATE = {
 		errors: {},
 		error: undefined,
@@ -42,40 +89,19 @@ export function createErrorStore() {
 				},
 			};
 		},
+
+		clearError( baseName, args ) {
+			return {
+				type: CLEAR_ERROR,
+				payload: {
+					baseName,
+					args,
+				},
+			};
+		},
 	};
 
 	const controls = {};
-
-	function reducer( state, { type, payload } ) {
-		switch ( type ) {
-			case RECEIVE_ERROR: {
-				const { baseName, args, error } = payload;
-				const newState = { ...state };
-
-				if ( baseName ) {
-					let key = baseName;
-					if ( args ) {
-						key += JSON.stringify( args );
-					}
-
-					delete newState.error;
-
-					newState.errors = {
-						...( state.errors || {} ),
-						[ key ]: error,
-					};
-				} else {
-					newState.error = error;
-				}
-
-				return newState;
-			}
-
-			default: {
-				return { ...state };
-			}
-		}
-	}
 
 	const resolvers = {};
 
@@ -117,12 +143,8 @@ export function createErrorStore() {
 
 			if ( baseName ) {
 				const { errors } = state;
-				let key = baseName;
-				if ( args ) {
-					key += JSON.stringify( args );
-				}
 
-				return errors[ key ];
+				return errors[ generateErrorKey( baseName, args ) ];
 			}
 
 			return undefined;
