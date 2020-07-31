@@ -46,7 +46,7 @@ const { commonActions, createRegistrySelector, createRegistryControl } = Data;
  * we can't store React components in our data store.
  *
  * @private
- * @since n.e.x.t
+ * @since 1.13.0
  */
 export const ModuleComponents = {};
 
@@ -112,7 +112,7 @@ const baseActions = {
 	/**
 	 * Wait for the modules to be loaded
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -197,7 +197,7 @@ const baseActions = {
 	/**
 	 * Registers a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 *
 	 * @param {string}    slug                         Module slug.
 	 * @param {Object}    [settings]                   Optional. Module settings.
