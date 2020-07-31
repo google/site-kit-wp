@@ -31,16 +31,16 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/preview-table';
 import { STORE_NAME } from '../../datastore/constants';
+const { useSelect } = Data;
 
 const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const { data } = props;
-	const { useSelect } = Data;
 	const headers = [
 		{
 			title: __( 'Keyword', 'google-site-kit' ),
@@ -56,7 +56,7 @@ const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 			tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
 		},
 	];
-	const domain = getModulesData()[ 'search-console' ].settings.propertyID;
+	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const links = [];
 
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics' } ) );
