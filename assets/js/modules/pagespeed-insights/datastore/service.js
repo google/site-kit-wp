@@ -22,13 +22,15 @@ import { addQueryArgs } from '@wordpress/url';
 
 export const selectors = {
 	/**
-	 * Return the services base url.
+	 * Gets a URL to the service.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state  Data store's state.
-	 * @param {Object} [args] Object containing optional path and query properties
-	 * @return {string} The service url.
+	 * @param {Object} state        Data store's state.
+	 * @param {Object} [args]       Object containing optional path and query args
+	 * @param {string} [args.path]  A path to append to the base url.
+	 * @param {Object} [args.query] Object of query params to be added to the URL.
+	 * @return {string} The URL to the service
 	 */
 	getServiceURL: ( state, args = {} ) => {
 		const { path, query } = args;

@@ -29,14 +29,15 @@ const { createRegistrySelector } = Data;
 
 export const selectors = {
 	/**
-	 * Return the services base url.
+	 * Gets a URL to the service.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} [args]
-	 * @param {string} [args.path]
-	 * @param {Object} [args.query]
-	 * @return {string}
+	 * @param {Object} state        Data store's state.
+	 * @param {Object} [args]       Object containing optional path and query args
+	 * @param {string} [args.path]  A path to append to the base url.
+	 * @param {Object} [args.query] Object of query params to be added to the URL.
+	 * @return {string} The URL to the service
 	 */
 	getServiceURL: createRegistrySelector( ( select ) => ( state, args = {} ) => {
 		const { path, query } = args;
