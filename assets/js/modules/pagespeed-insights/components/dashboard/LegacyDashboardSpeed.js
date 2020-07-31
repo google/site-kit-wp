@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Layout from '../../../../components/layout/layout';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import DashboardPageSpeed from './DashboardPageSpeed';
 import { STORE_NAME } from '../../../../googlesitekit/datastore/site/constants';
@@ -53,7 +54,9 @@ function LegacyDashboardSpeed() {
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12
 			">
-				<DashboardPageSpeed />
+				<Layout className="googlesitekit-pagespeed-widget">
+					<DashboardPageSpeed />
+				</Layout>
 			</div>
 		</Fragment>
 	);

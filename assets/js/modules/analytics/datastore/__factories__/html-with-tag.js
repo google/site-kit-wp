@@ -31,7 +31,7 @@ function tagHeadHTML( analyticsID ) {
 /**
  * Generates valid HTML with an Analytics tag.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  *
  * @param {string} analyticsID Analytics ID to generate tag with.
  * @return {string} HTML.
