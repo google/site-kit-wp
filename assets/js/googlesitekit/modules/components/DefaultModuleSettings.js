@@ -20,10 +20,29 @@
  * External dependencies
  */
 
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore/constants';
+import { ModuleSettings, ModuleSettingsHeader, ModuleSettingsBody, ModuleSettingsFooter } from '.';
+const { useSelect } = Data;
+
 import PropTypes from 'prop-types';
 
 const DefaultModuleSettings = ( { slug } ) => {
-	return null;
+	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
+
+	return (
+		<ModuleSettings slug={ slug }>
+			<ModuleSettingsHeader slug={ slug } />
+			{ isOpen &&
+				<ModuleSettingsBody slug={ slug }>
+					<ModuleSettingsFooter slug={ slug } allowEdit={ false } />
+				</ModuleSettingsBody>
+			}
+		</ModuleSettings>
+	);
 };
 
 DefaultModuleSettings.propTypes = {

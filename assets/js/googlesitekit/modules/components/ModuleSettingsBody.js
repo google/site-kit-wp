@@ -20,13 +20,54 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore/constants';
+import ModuleSetupIncomplete from '../../../components/settings/module-setup-incomplete';
+const { useSelect } = Data;
 
 const ModuleSettingsBody = ( { slug, children } ) => {
-	return children;
+	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
+
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-settings-module__content',
+				{ 'googlesitekit-settings-module__content--open': isOpen }
+			)
+			}
+			id={ `googlesitekit-settings-module__content--${ slug }` }
+			role="tabpanel"
+			aria-hidden={ ! isOpen }
+			aria-labelledby={ `googlesitekit-settings-module__header--${ slug }` }
+		>
+			<div className="mdc-layout-grid">
+				<div className="mdc-layout-grid__inner">
+					{ setupComplete &&
+					<Fragment>
+						<div className="
+                                    mdc-layout-grid__cell
+                                    mdc-layout-grid__cell--span-12
+                                ">
+							{ /* Render children other than footer here */ }
+						</div>
+					</Fragment>
+					}
+					{
+						hasSettings && ! setupComplete &&
+						<ModuleSetupIncomplete
+							slug={ slug }
+						/>
+					}
+				</div>
+			</div>
+			{ /* Render footer child here */ }
+		</div>
+	);
 };
 
 ModuleSettingsBody.propTypes = {
