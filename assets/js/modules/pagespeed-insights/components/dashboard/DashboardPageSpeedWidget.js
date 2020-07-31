@@ -32,15 +32,19 @@ function DashboardPageSpeedWidget() {
 		return null;
 	}
 
-	const { active, setupComplete } = pagespeedInsightsModule;
-	if ( ! active && ! setupComplete ) {
+	const { active, connected } = pagespeedInsightsModule;
+	if ( ! active || ! connected ) {
 		return <DashboardPageSpeedCTA />;
 	}
 
 	const { Widget } = Widgets.components;
 
+	// Pass class to omit regular widget padding and legacy widget class to use original styles.
 	return (
-		<Widget slug="pagespeedInsightsWebVitals">
+		<Widget
+			slug="pagespeedInsightsWebVitals"
+			className="googlesitekit-widget--no-padding googlesitekit-pagespeed-widget"
+		>
 			<DashboardPageSpeed />
 		</Widget>
 	);

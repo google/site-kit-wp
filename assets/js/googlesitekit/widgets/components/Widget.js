@@ -22,9 +22,9 @@
 import classnames from 'classnames';
 import { node, string } from 'prop-types';
 
-const Widget = ( { children, slug } ) => {
+const Widget = ( { children, className, slug } ) => {
 	return (
-		<div className={ classnames( 'googlesitekit-widget', `googlesitekit-widget--${ slug }` ) }>
+		<div className={ classnames( 'googlesitekit-widget', `googlesitekit-widget--${ slug }`, className ) }>
 			{ children }
 		</div>
 	);

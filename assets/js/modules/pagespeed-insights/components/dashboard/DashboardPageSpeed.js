@@ -25,7 +25,7 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,7 +34,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/progress-bar';
-import Layout from '../../../../components/layout/layout';
 import LabReportMetrics from '../common/LabReportMetrics';
 import FieldReportMetrics from '../common/FieldReportMetrics';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
@@ -89,25 +88,23 @@ export default function DashboardPageSpeed() {
 
 	if ( ! referenceURL || ! reportMobile || ! reportDesktop || ! dataSrc ) {
 		return (
-			<Layout className="googlesitekit-pagespeed-widget">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-							<ProgressBar />
-							<p className="googlesitekit-text-align-center">
-								{ __( 'PageSpeed Insights is preparing data…', 'google-site-kit' ) }
-							</p>
-						</div>
+			<div className="mdc-layout-grid">
+				<div className="mdc-layout-grid__inner">
+					<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<ProgressBar />
+						<p className="googlesitekit-text-align-center">
+							{ __( 'PageSpeed Insights is preparing data…', 'google-site-kit' ) }
+						</p>
 					</div>
 				</div>
-			</Layout>
+			</div>
 		);
 	}
 
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
 
 	return (
-		<Layout className="googlesitekit-pagespeed-widget">
+		<Fragment>
 			<header className="googlesitekit-pagespeed-widget__header">
 				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
 					<TabBar
@@ -149,6 +146,6 @@ export default function DashboardPageSpeed() {
 				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } /> }
 				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } /> }
 			</section>
-		</Layout>
+		</Fragment>
 	);
 }
