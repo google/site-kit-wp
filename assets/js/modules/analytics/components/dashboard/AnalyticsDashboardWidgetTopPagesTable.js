@@ -27,29 +27,27 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/preview-table';
 import { getTopPagesReportDataDefaults } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
+const { useSelect } = Data;
 
 const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
-	const { useSelect } = Data;
-
-	const {
-		accountID,
-		internalWebPropertyID,
-		profileID,
-	} = getModulesData().analytics.settings;
-	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: `/report/content-drilldown/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath` } ) );
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{ path: `/report/content-drilldown/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath` }
+	) );
 	const { data, colspan } = props;
 
 	if ( ! data || ! data.length ) {
@@ -85,7 +83,7 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 			title,
 			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
 			numberFormat( row.metrics[ 0 ].values[ 1 ] ),
-			<Fragment key={ 'minichart-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ `${ percent.toFixed( 2 ) }%` }</div></Fragment>,
+			<div className="googlesitekit-table__body-item-chart-wrap" key={ 'minichart-' + i }>{ `${ percent.toFixed( 2 ) }%` }</div>,
 		];
 	} );
 
