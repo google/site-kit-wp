@@ -26,7 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
@@ -40,6 +40,7 @@ const { useSelect } = Data;
 
 const DashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;
+	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics' } ) );
 	if ( ! data || ! data.length ) {
 		return null;
@@ -60,7 +61,6 @@ const DashboardWidgetPopularKeywordsTable = ( props ) => {
 			tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
 		},
 	];
-	const domain = getModulesData()[ 'search-console' ].settings.propertyID;
 	const links = [];
 
 	const dataMapped = data.map( ( row, i ) => {
@@ -92,7 +92,7 @@ const DashboardWidgetPopularKeywordsTable = ( props ) => {
 				footer
 				footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 				footerCtaLink={
-					sprintf( 'https://search.google.com/search-console?resource_id=%s', getModulesData()[ 'search-console' ].settings.propertyID )
+					sprintf( 'https://search.google.com/search-console?resource_id=%s', domain )
 				}
 				fill
 			>
