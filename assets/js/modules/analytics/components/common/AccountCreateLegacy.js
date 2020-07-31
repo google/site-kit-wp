@@ -39,11 +39,12 @@ export default function AccountCreateLegacy() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/provision/SignUp' } ) );
 
 	const createAccountHandler = async ( event ) => {
 		event.preventDefault();
 		await trackEvent( 'analytics_setup', 'new_analytics_account' );
-		global.open( 'https://analytics.google.com/analytics/web/?#/provision/SignUp', '_blank' );
+		global.open( createAccountURL, '_blank' );
 	};
 
 	const { resetAccounts } = useDispatch( STORE_NAME );
