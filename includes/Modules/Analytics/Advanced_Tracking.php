@@ -98,14 +98,6 @@ final class Advanced_Tracking {
 				return $this->set_up_advanced_tracking_amp( $gtag_amp_opt );
 			}
 		);
-		add_action(
-			'wp_footer',
-			function() {
-				$this->configure_events();
-				( new Measurement_Code_Injector() )->inject_event_tracking( $this->event_configurations );
-			},
-			15
-		);
 	}
 
 	/**
@@ -120,6 +112,15 @@ final class Advanced_Tracking {
 
 		$active_plugin_configurations = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
 		$this->register_event_lists( $active_plugin_configurations );
+
+		add_action(
+			'wp_footer',
+			function() {
+				$this->configure_events();
+				( new Measurement_Code_Injector() )->inject_event_tracking( $this->event_configurations );
+			},
+			15
+		);
 	}
 
 	/**
