@@ -33,7 +33,7 @@ import { TYPE_MODULES } from '../../../../components/data';
 import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
-} from '../../dashboard/util';
+} from '../../util';
 import CTA from '../../../../components/notifications/cta';
 
 class WPSearchConsoleDashboardWidgetOverview extends Component {

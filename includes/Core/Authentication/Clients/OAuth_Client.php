@@ -756,7 +756,7 @@ final class OAuth_Client {
 	 * Fetches and updates the user profile data for the currently authenticated Google account.
 	 *
 	 * @since 1.1.4
-	 * @since n.e.x.t Added $retry_after param, also made public.
+	 * @since 1.13.0 Added $retry_after param, also made public.
 	 *
 	 * @param int $retry_after Optional. Number of seconds to retry data fetch if unsuccessful.
 	 */
