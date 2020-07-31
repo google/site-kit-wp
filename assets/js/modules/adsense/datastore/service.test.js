@@ -30,31 +30,25 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'module/adsense service store', () => {
-	const userDataGlobal = '_googlesitekitUserData';
 	const userData = {
-		connectURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&googlesitekit_connect=1&nonce=a1b2c3d4e5',
-		user: {
-			id: 1,
-			email: 'admin@fakedomain.com',
-			name: 'admin',
-			picture: 'https://path/to/image',
-		},
-		verified: true,
+		id: 1,
+		email: 'admin@fakedomain.com',
+		name: 'admin',
+		picture: 'https://path/to/image',
 	};
 	const baseURI = 'https://www.google.com/adsense/new/u/';
 
 	let registry;
 
 	beforeAll( async () => {
-		// Set up the global
-		global[ userDataGlobal ] = userData;
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
 	} );
 
 	afterAll( async () => {
-		delete global[ userDataGlobal ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -62,10 +56,11 @@ describe( 'module/adsense service store', () => {
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', async () => {
 				const serviceURL = registry.select( STORE_NAME ).getServiceURL();
-				expect( serviceURL ).toBe( `${ baseURI }${ userData.user.email }` );
+				expect( serviceURL ).toBe( `${ baseURI }${ userData.email }` );
 			} );
+
 			it( 'adds forward slashes around the path', () => {
-				const expectedURL = `${ baseURI }${ userData.user.email }/test/path/to/deeplink/`;
+				const expectedURL = `${ baseURI }${ userData.email }/test/path/to/deeplink/`;
 
 				const serviceURLNoSlashes = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink' } );
 				expect( serviceURLNoSlashes ).toEqual( expectedURL );
@@ -76,12 +71,13 @@ describe( 'module/adsense service store', () => {
 				const serviceURLWithSlashes = registry.select( STORE_NAME ).getServiceURL( { path: '/test/path/to/deeplink/' } );
 				expect( serviceURLWithSlashes ).toEqual( expectedURL );
 			} );
+
 			it( 'adds query args', async () => {
 				const query = {
 					param1: 1,
 					param2: 2,
 				};
-				const expectedURL = addQueryArgs( `${ baseURI }${ userData.user.email }/test/path/to/deeplink/`, query );
+				const expectedURL = addQueryArgs( `${ baseURI }${ userData.email }/test/path/to/deeplink/`, query );
 				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink', query } );
 				expect( serviceURL ).toEqual( expectedURL );
 			} );

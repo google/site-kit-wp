@@ -30,31 +30,25 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'module/adsense service store', () => {
-	const userDataGlobal = '_googlesitekitUserData';
 	const userData = {
-		connectURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&googlesitekit_connect=1&nonce=a1b2c3d4e5',
-		user: {
-			id: 1,
-			email: 'admin@fakedomain.com',
-			name: 'admin',
-			picture: 'https://path/to/image',
-		},
-		verified: true,
+		id: 1,
+		email: 'admin@fakedomain.com',
+		name: 'admin',
+		picture: 'https://path/to/image',
 	};
 	const baseURI = 'https://developers.google.com/speed/pagespeed/insights';
 
 	let registry;
 
 	beforeAll( async () => {
-		// Set up the global
-		global[ userDataGlobal ] = userData;
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
 	} );
 
 	afterAll( async () => {
-		delete global[ userDataGlobal ];
 		unsubscribeFromAll( registry );
 	} );
 
