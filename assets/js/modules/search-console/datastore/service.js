@@ -47,7 +47,7 @@ export const selectors = {
 		const baseURI = 'https://search.google.com/search-console';
 		const queryArgs = { ...query, authuser: userEmail };
 		if ( path ) {
-			const sanitizedPath = ! path.match( /^\// ) ? `/${ path }` : path;
+			const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
 			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryArgs );
 		}
 		return addQueryArgs( baseURI, queryArgs );

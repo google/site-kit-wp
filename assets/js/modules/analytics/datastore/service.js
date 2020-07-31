@@ -46,7 +46,7 @@ export const selectors = {
 		}
 		const baseURI = `https://analytics.google.com/analytics/web/?authuser=${ userEmail }#`;
 		if ( path ) {
-			const sanitizedPath = ! path.match( /^\// ) ? `/${ path }` : path;
+			const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
 			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, query );
 		}
 		return addQueryArgs( baseURI, query );
