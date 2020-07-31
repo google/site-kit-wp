@@ -489,7 +489,7 @@ final class Authentication {
 	/**
 	 * Refreshes user profile data in the background.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 *
 	 * @param int $user_id User ID to refresh profile data for.
 	 */
