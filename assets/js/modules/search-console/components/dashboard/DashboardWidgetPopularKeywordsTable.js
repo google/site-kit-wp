@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
@@ -41,10 +36,10 @@ import {
 	isDataZeroSearchConsole,
 } from '../../dashboard/util';
 import { STORE_NAME } from '../../datastore/constants';
+const { useSelect } = Data;
 
 const DashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;
-	const { useSelect } = Data;
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics' } ) );
 	if ( ! data || ! data.length ) {
 		return null;
@@ -68,7 +63,7 @@ const DashboardWidgetPopularKeywordsTable = ( props ) => {
 	const domain = getModulesData()[ 'search-console' ].settings.propertyID;
 	const links = [];
 
-	const dataMapped = map( data, ( row, i ) => {
+	const dataMapped = data.map( ( row, i ) => {
 		const query = row.keys[ 0 ];
 		links[ i ] = addQueryArgs( baseServiceURL, { query, resource_id: domain, num_of_days: 28 } );
 		return [
