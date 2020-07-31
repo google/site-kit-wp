@@ -21,13 +21,18 @@
  */
 import invariant from 'invariant';
 
+/**
+ * Internal dependencies
+ */
+import { stringifyObject } from '../../util';
+
 const RECEIVE_ERROR = 'RECEIVE_ERROR';
 const CLEAR_ERROR = 'CLEAR_ERROR';
 
 function generateErrorKey( baseName, args ) {
 	let key = baseName;
 	if ( args ) {
-		key += JSON.stringify( args );
+		key += stringifyObject( args );
 	}
 
 	return key;
