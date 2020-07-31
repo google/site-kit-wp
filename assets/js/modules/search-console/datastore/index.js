@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
+import { createErrorStore } from '../../../googlesitekit/data/create-error-store';
 export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
@@ -33,13 +34,18 @@ const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	requiresSetup: false,
 } );
 
+const store = Data.combineStores(
+	baseModuleStore,
+	createErrorStore(),
+);
+
 const {
 	actions,
 	controls,
 	reducer,
 	resolvers,
 	selectors,
-} = baseModuleStore;
+} = store;
 
 export {
 	actions,
@@ -50,6 +56,6 @@ export {
 };
 
 // Register this baseModuleStore on the global registry.
-Data.registerStore( STORE_NAME, baseModuleStore );
+Data.registerStore( STORE_NAME, store );
 
-export default baseModuleStore;
+export default store;

@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import report from './report';
 import { STORE_NAME } from './constants';
+import { createErrorStore } from '../../../googlesitekit/data/create-error-store';
 
 export { STORE_NAME };
 
@@ -34,6 +35,7 @@ const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
 const store = Data.combineStores(
 	baseModuleStore,
 	report,
+	createErrorStore(),
 );
 
 // Register this store on the global registry.

@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
+import { createErrorStore } from '../../../googlesitekit/data/create-error-store';
 import accounts from './accounts';
 import properties from './properties';
 import profiles from './profiles';
@@ -54,6 +55,7 @@ const store = Data.combineStores(
 	report,
 	settings,
 	createSnapshotStore( STORE_NAME ),
+	createErrorStore(),
 	tags,
 );
 
