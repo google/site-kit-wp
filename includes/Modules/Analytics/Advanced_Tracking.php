@@ -91,6 +91,7 @@ final class Advanced_Tracking {
 			},
 			15
 		);
+		//TODO: Modify the logic to resolve the problem of tracking events on AMP websites.
 		add_filter(
 			'googlesitekit_amp_gtag_opt',
 			function( $gtag_amp_opt ) {
