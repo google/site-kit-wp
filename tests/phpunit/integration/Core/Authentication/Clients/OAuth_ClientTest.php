@@ -561,6 +561,9 @@ class OAuth_ClientTest extends TestCase {
 	public function test_get_proxy_permissions_url() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		// If no access token, this does not work.
 		$client = new OAuth_Client( $context );
 		$url    = $client->get_proxy_permissions_url();
