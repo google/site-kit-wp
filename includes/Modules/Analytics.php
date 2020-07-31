@@ -88,38 +88,62 @@ final class Analytics extends Module
 		 */
 		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
-		add_action( // For non-AMP.
-			'wp_enqueue_scripts',
+		add_action(
+			'wp',
 			function() {
-				$this->enqueue_gtag_js();
-			}
-		);
+				// Bail early if we are checking for the tag presence from the back end.
+				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+					return;
+				}
 
-		$print_amp_gtag = function() {
-			// This hook is only available in AMP plugin version >=1.3, so if it
-			// has already completed, do nothing.
-			if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
-				return;
-			}
+				$use_snippet = $this->get_data( 'use-snippet' );
+				if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
+					return;
+				}
 
-			$this->print_amp_gtag();
-		};
-		// Which actions are run depends on the version of the AMP Plugin
-		// (https://amp-wp.org/) available. Version >=1.3 exposes a
-		// new, `amp_print_analytics` action.
-		// For all AMP modes, AMP plugin version >=1.3.
-		add_action( 'amp_print_analytics', $print_amp_gtag );
-		// For AMP Standard and Transitional, AMP plugin version <1.3.
-		add_action( 'wp_footer', $print_amp_gtag, 20 );
-		// For AMP Reader, AMP plugin version <1.3.
-		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
-		// For Web Stories plugin.
-		add_action( 'web_stories_print_analytics', $print_amp_gtag );
+				$property_id = $this->get_data( 'property-id' );
+				if ( is_wp_error( $property_id ) || ! $property_id ) {
+					return;
+				}
 
-		add_filter( // Load amp-analytics component for AMP Reader.
-			'amp_post_template_data',
-			function( $data ) {
-				return $this->amp_data_load_analytics_component( $data );
+				// At this point, we know the tag should be rendered, so let's take care of it
+				// for AMP and non-AMP.
+				if ( $this->context->is_amp() ) {
+					$print_amp_gtag = function() use ( $property_id ) {
+						// This hook is only available in AMP plugin version >=1.3, so if it
+						// has already completed, do nothing.
+						if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
+							return;
+						}
+
+						$this->print_amp_gtag( $property_id );
+					};
+					// Which actions are run depends on the version of the AMP Plugin
+					// (https://amp-wp.org/) available. Version >=1.3 exposes a
+					// new, `amp_print_analytics` action.
+					// For all AMP modes, AMP plugin version >=1.3.
+					add_action( 'amp_print_analytics', $print_amp_gtag );
+					// For AMP Standard and Transitional, AMP plugin version <1.3.
+					add_action( 'wp_footer', $print_amp_gtag, 20 );
+					// For AMP Reader, AMP plugin version <1.3.
+					add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
+					// For Web Stories plugin.
+					add_action( 'web_stories_print_analytics', $print_amp_gtag );
+
+					add_filter( // Load amp-analytics component for AMP Reader.
+						'amp_post_template_data',
+						function( $data ) {
+							return $this->amp_data_load_analytics_component( $data );
+						}
+					);
+				} else {
+					add_action( // For non-AMP.
+						'wp_enqueue_scripts',
+						function() use ( $property_id ) {
+							$this->enqueue_gtag_js( $property_id );
+						}
+					);
+				}
 			}
 		);
 
@@ -282,28 +306,11 @@ final class Analytics extends Module
 	 * Outputs gtag snippet.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t The `$tracking_id` parameter was added.
+	 *
+	 * @param string $tracking_id Analytics property ID to use in the snippet.
 	 */
-	protected function enqueue_gtag_js() {
-		// Bail early if we are checking for the tag presence from the back end.
-		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-			return;
-		}
-
-		// On AMP, do not print the script tag.
-		if ( $this->context->is_amp() ) {
-			return;
-		}
-
-		$use_snippet = $this->get_data( 'use-snippet' );
-		if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-			return;
-		}
-
-		$tracking_id = $this->get_data( 'property-id' );
-		if ( is_wp_error( $tracking_id ) ) {
-			return;
-		}
-
+	protected function enqueue_gtag_js( $tracking_id ) {
 		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			'google_gtagjs',
 			'https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $tracking_id ),
@@ -375,27 +382,11 @@ final class Analytics extends Module
 	 * Outputs gtag <amp-analytics> tag.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t The `$tracking_id` parameter was added.
+	 *
+	 * @param string $tracking_id Analytics property ID to use in the snippet.
 	 */
-	protected function print_amp_gtag() {
-		// Bail early if we are checking for the tag presence from the back end.
-		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-			return;
-		}
-
-		if ( ! $this->context->is_amp() ) {
-			return;
-		}
-
-		$use_snippet = $this->get_data( 'use-snippet' );
-		if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-			return;
-		}
-
-		$tracking_id = $this->get_data( 'property-id' );
-		if ( is_wp_error( $tracking_id ) ) {
-			return;
-		}
-
+	protected function print_amp_gtag( $tracking_id ) {
 		$gtag_amp_opt = array(
 			'vars'            => array(
 				'gtag_id' => $tracking_id,
@@ -455,16 +446,6 @@ final class Analytics extends Module
 	 */
 	protected function amp_data_load_analytics_component( $data ) {
 		if ( isset( $data['amp_component_scripts']['amp-analytics'] ) ) {
-			return $data;
-		}
-
-		$use_snippet = $this->get_data( 'use-snippet' );
-		if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-			return $data;
-		}
-
-		$tracking_id = $this->get_data( 'property-id' );
-		if ( is_wp_error( $tracking_id ) ) {
 			return $data;
 		}
 
@@ -996,7 +977,7 @@ final class Analytics extends Module
 								$order_by = new Google_Service_AnalyticsReporting_OrderBy();
 								$order_by->setFieldName( $order_def['fieldName'] );
 								$order_by->setSortOrder( $order_def['sortOrder'] );
-		
+
 								return $order_by;
 							},
 							$orderby
@@ -1069,7 +1050,7 @@ final class Analytics extends Module
 						$this->has_access_to_property( $property_id )
 					);
 				};
-			case 'GET:tracking-disabled': 
+			case 'GET:tracking-disabled':
 				return function() {
 					$option = $this->get_settings()->get();
 
@@ -1437,7 +1418,7 @@ final class Analytics extends Module
 				);
 			}
 		}
-	
+
 		// No property matched the account ID.
 		return array(
 			'permission' => false,
