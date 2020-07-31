@@ -29,7 +29,11 @@ final class WPForms_Event_List extends Measurement_Event_List {
 			'do_shortcode_tag',
 			function( $output, $tag, $attr ) {
 				if ( 'wpforms' == $tag ) {
-					$this->collect_wpform_shortcode( $attr['id'] );
+					if ( '' !== $attr && array_key_exists( 'id', $attr ) ) {
+						$this->collect_wpform_shortcode( $attr['id'] );
+					} else {
+						$this->collect_wpform_shortcode( 'unknown' );
+					}
 				}
 				return $output;
 			},
