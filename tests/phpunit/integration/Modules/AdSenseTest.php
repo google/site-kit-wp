@@ -49,9 +49,7 @@ class AdSenseTest extends TestCase {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
 		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->expects( $this->once() )
-			->method( 'is_amp' )
-			->will( $this->returnValue( true ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
 
 		$adsense = new AdSense( $context );
 		$this->force_set_property( $adsense, 'context', $mock_context );
@@ -81,9 +79,7 @@ class AdSenseTest extends TestCase {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
 		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->expects( $this->once() )
-			->method( 'is_amp' )
-			->will( $this->returnValue( false ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
 
 		$adsense = new AdSense( $context );
 		$this->force_set_property( $adsense, 'context', $mock_context );

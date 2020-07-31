@@ -64,9 +64,7 @@ class AnalyticsTest extends TestCase {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
 		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->expects( $this->once() )
-			->method( 'is_amp' )
-			->will( $this->returnValue( true ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
 
 		$analytics = new Analytics( $context );
 		$this->force_set_property( $analytics, 'context', $mock_context );
@@ -102,9 +100,7 @@ class AnalyticsTest extends TestCase {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
 		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->expects( $this->once() )
-			->method( 'is_amp' )
-			->will( $this->returnValue( false ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
 
 		$analytics = new Analytics( $context );
 		$this->force_set_property( $analytics, 'context', $mock_context );
