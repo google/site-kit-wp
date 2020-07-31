@@ -62,7 +62,7 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 			2
 		);
 		add_action(
-			'woocommerce_after_checkout_form',
+			'woocommerce_after_checkout_form', // Fires after checkout form is loaded.
 			function() {
 				$this->create_wc_checkout_event( WC()->cart );
 			},
