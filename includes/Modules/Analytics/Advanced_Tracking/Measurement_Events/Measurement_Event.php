@@ -63,11 +63,13 @@ final class Measurement_Event implements \JsonSerializable {
 				throw new \Exception( 'Invalid configuration parameter: ' . $key );
 			}
 		}
-		if ( ! array_key_exists( 'action', $config ) ) {
-			$config['action'] = null;
-		}
-		if ( ! array_key_exists( 'metadata', $config ) || is_string( $config['metadata'] ) ) {
+		if ( ! array_key_exists( 'metadata', $config ) ) {
 			$config['metadata'] = null;
+		}
+		foreach ( $valid_keys as $key => $value ) {
+			if ( ! array_key_exists( $key, $config ) ) {
+				throw new \Exception( 'Missed configuration parameter: ' . $key );
+			}
 		}
 		return $config;
 	}
