@@ -590,7 +590,7 @@ abstract class Module {
 
 		// Align previous period days of the week to the last period.
 		// Compare end of period dates, since period lengths are the same.
-		$previous_day_of_week  = gmdate( 'w', strtotime( $date_end ) );
+		$previous_day_of_week = gmdate( 'w', strtotime( $date_end ) );
 
 		// The last period always ends "yesterday".
 		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
