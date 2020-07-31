@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -42,6 +42,7 @@ const DashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics' } ) );
+	const searchConsolePropertyMainURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: domain } } ) );
 	if ( ! data || ! data.length ) {
 		return null;
 	}
@@ -91,9 +92,7 @@ const DashboardWidgetPopularKeywordsTable = ( props ) => {
 				className="googlesitekit-popular-content"
 				footer
 				footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-				footerCtaLink={
-					sprintf( 'https://search.google.com/search-console?resource_id=%s', domain )
-				}
+				footerCtaLink={ searchConsolePropertyMainURL }
 				fill
 			>
 				<TableOverflowContainer>
