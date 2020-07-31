@@ -160,6 +160,10 @@ const baseActions = {
 		};
 
 		const { response, error } = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
+		if ( error ) {
+			yield registry.dispatch( STORE_NAME ).receiveError( error, 'createAccount', data );
+		}
+
 		return { response, error };
 	},
 };
@@ -209,8 +213,9 @@ const baseResolvers = {
 		// Only fetch accounts if there are none in the store.
 		if ( existingAccounts === undefined ) {
 			yield tagActions.waitForExistingTag();
-			const existingTag = registry.select( STORE_NAME ).getExistingTag();
+
 			let existingTagPermission;
+			const existingTag = registry.select( STORE_NAME ).getExistingTag();
 			if ( existingTag ) {
 				yield tagActions.waitForTagPermission( existingTag );
 				existingTagPermission = registry.select( STORE_NAME ).getTagPermission( existingTag );
@@ -272,34 +277,6 @@ const baseSelectors = {
 		const { accounts } = state;
 
 		return accounts;
-	},
-
-	/**
-	 * Gets an error encountered by this store or its side effects.
-	 *
-	 * Returns an object with the shape when there is an error:
-	 * ```
-	 * {
-	 *   code,
-	 *   message,
-	 * }
-	 * ```
-	 *
-	 * Returns `null` if there was no error.
-	 *
-	 * Marked as private, because in the future we'll have more robust error
-	 * handling.
-	 *
-	 * @since 1.8.0
-	 * @private
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Any error encountered with requests in state.
-	 */
-	getError( state ) {
-		const { error } = state;
-
-		return error || null;
 	},
 
 	/**
