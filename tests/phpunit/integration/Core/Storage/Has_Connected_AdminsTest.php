@@ -44,24 +44,13 @@ class Has_Connected_AdminsTest extends TestCase {
 		$this->user_options = new User_Options( $this->context );
 	}
 
-	private function get_user_id() {
-		return $this->factory()->user->create(
-			array(
-				'user_login' => 'test_admin',
-				'user_email' => 'test_admin@example.com',
-				'user_pass'  => 'password',
-				'role'       => 'administrator',
-			)
-		);
-	}
-
 	public function test_get_without_option_value_yet() {
 		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
 
 		delete_option( Has_Connected_Admins::OPTION );
 		$this->assertFalse( $setting->get() );
 
-		$user_id = $this->get_user_id();
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		add_user_meta(
 			$user_id,
@@ -85,7 +74,7 @@ class Has_Connected_AdminsTest extends TestCase {
 
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 
-		$user_id  = $this->get_user_id();
+		$user_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
 
 		add_user_meta( $user_id, $meta_key, 'xxxxx' );
@@ -98,23 +87,17 @@ class Has_Connected_AdminsTest extends TestCase {
 	}
 
 	public function test_option_is_set_when_admin_meta_is_chagned() {
-		$setting     = new Has_Connected_Admins( $this->options, $this->user_options );
-		$meta_key    = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
-		$editor_args = array(
-			'user_login' => 'test_editor',
-			'user_email' => 'test_editor@example.com',
-			'user_pass'  => 'password',
-			'role'       => 'editor',
-		);
+		$setting  = new Has_Connected_Admins( $this->options, $this->user_options );
+		$meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
 
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 
-		$user_id = $this->factory()->user->create( $editor_args );
+		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		add_user_meta( $user_id, $meta_key, 'xxxxx' );
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 		$this->assertFalse( $setting->get() );
 
-		$user_id = $this->get_user_id();
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		add_user_meta( $user_id, $meta_key, 'xxxxx' );
 		$this->assertOptionExists( Has_Connected_Admins::OPTION );
 		$this->assertTrue( $setting->get() );
