@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Core\Storage;
 
-use Google\Site_Kit\Core\Authentication\First_Admin;
-use Google\Site_Kit\Core\Storage\Options_Interface;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
@@ -27,27 +25,6 @@ class Owner_ID extends Setting {
 	 * The option_name for this setting.
 	 */
 	const OPTION = 'googlesitekit_owner_id';
-
-	/**
-	 * First admin option instance.
-	 *
-	 * @since n.e.x.t
-	 * @var First_Admin
-	 */
-	protected $first_admin;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Options_Interface $options     Options instance.
-	 * @param First_Admin       $first_admin User options instance.
-	 */
-	public function __construct( Options_Interface $options, First_Admin $first_admin ) {
-		parent::__construct( $options );
-		$this->first_admin = $first_admin;
-	}
 
 	/**
 	 * Gets the expected value type.
@@ -68,7 +45,7 @@ class Owner_ID extends Setting {
 	 * @return mixed The default value.
 	 */
 	protected function get_default() {
-		return $this->first_admin->get();
+		return intval( get_option( 'googlesitekit_first_admin' ) );
 	}
 
 	/**
