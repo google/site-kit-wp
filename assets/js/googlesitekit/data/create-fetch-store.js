@@ -150,11 +150,9 @@ export const createFetchStore = ( {
 			};
 
 			const registry = yield Data.commonActions.getRegistry();
-			if ( registry ) {
-				const storeActions = registry.dispatch( storeName );
-				if ( storeActions.clearError ) {
-					yield storeActions.clearError( baseName, params );
-				}
+			const { clearError } = registry ? registry.dispatch( storeName ) : {};
+			if ( clearError ) {
+				yield clearError( baseName, params );
 			}
 
 			try {
@@ -172,6 +170,12 @@ export const createFetchStore = ( {
 			} catch ( e ) {
 				error = e;
 
+				const { receiveError } = registry ? registry.dispatch( storeName ) : {};
+				if ( receiveError ) {
+					yield receiveError( error, baseName, params );
+				}
+
+				// @TODO: remove error from the payload once all instances of the legacy behavior have been removed.
 				yield {
 					payload: { error, params },
 					type: CATCH_FETCH,
@@ -232,6 +236,7 @@ export const createFetchStore = ( {
 			}
 
 			case CATCH_FETCH: {
+				// @TODO: remove error from here once all instances of the legacy behavior have been removed.
 				const { error, params } = payload;
 				return {
 					...state,
