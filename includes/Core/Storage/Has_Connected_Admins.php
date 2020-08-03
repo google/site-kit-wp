@@ -100,8 +100,8 @@ class Has_Connected_Admins extends Setting {
 			$users                = $this->query_connected_admins();
 			$has_connected_admins = count( $users ) > 0;
 
-			$this->set( $has_connected_admins );
-	
+			$this->set( (int) $has_connected_admins );
+
 			return $has_connected_admins;
 		}
 

@@ -85,6 +85,10 @@ class Has_Connected_AdminsTest extends TestCase {
 		delete_user_meta( $user_id, $meta_key );
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 		$this->assertFalse( $setting->get() );
+		// The option is now set as `false` as there are no longer any connected admins.
+		$this->assertTrue( $setting->has() );
+		$this->assertOptionExists( Has_Connected_Admins::OPTION );
+		$this->assertFalse( $setting->get() );
 	}
 
 	public function test_option_is_set_when_admin_meta_is_changed() {
