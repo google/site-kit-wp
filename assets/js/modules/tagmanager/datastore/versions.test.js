@@ -65,8 +65,7 @@ describe( 'modules/tagmanager versions', () => {
 		return ids;
 	};
 
-	const buildAndReceiveWebAndAMP = ( { webPropertyID, ampPropertyID } = {} ) => {
-		const accountID = '12345';
+	const buildAndReceiveWebAndAMP = ( { webPropertyID, ampPropertyID, accountID = '12345' } = {} ) => {
 		const liveContainerVersionWeb = factories.buildLiveContainerVersionWeb( { accountID, propertyID: webPropertyID } );
 		const liveContainerVersionAMP = factories.buildLiveContainerVersionAMP( { accountID, propertyID: ampPropertyID } );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
