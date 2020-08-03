@@ -25,10 +25,8 @@ import isPlainObject from 'lodash/isPlainObject';
 /**
  * Internal dependencies
  */
-import {
-	camelCaseToPascalCase,
-	camelCaseToConstantCase,
-} from './transform-case';
+import Data from 'googlesitekit-data';
+import { camelCaseToPascalCase, camelCaseToConstantCase } from './transform-case';
 import { stringifyObject } from '../../util';
 
 const defaultReducerCallback = ( state ) => {
@@ -150,6 +148,12 @@ export const createFetchStore = ( {
 				payload: { params },
 				type: START_FETCH,
 			};
+
+			const registry = yield Data.commonActions.getRegistry();
+			const storeActions = registry.dispatch( storeName );
+			if ( storeActions.clearError ) {
+				yield storeActions.clearError( baseName, params );
+			}
 
 			try {
 				response = yield {
