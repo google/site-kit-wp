@@ -55,7 +55,7 @@ class Has_Connected_AdminsTest extends TestCase {
 		add_user_meta(
 			$user_id,
 			$this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ),
-			'xxxxx'
+			'test-access-token'
 		);
 
 		$this->assertTrue( $setting->get() );
@@ -77,7 +77,7 @@ class Has_Connected_AdminsTest extends TestCase {
 		$user_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
 
-		add_user_meta( $user_id, $meta_key, 'xxxxx' );
+		add_user_meta( $user_id, $meta_key, 'test-access-token' );
 		$this->assertOptionExists( Has_Connected_Admins::OPTION );
 		$this->assertTrue( $setting->get() );
 
@@ -93,12 +93,12 @@ class Has_Connected_AdminsTest extends TestCase {
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
-		add_user_meta( $user_id, $meta_key, 'xxxxx' );
+		add_user_meta( $user_id, $meta_key, 'test-access-token' );
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 		$this->assertFalse( $setting->get() );
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		add_user_meta( $user_id, $meta_key, 'xxxxx' );
+		add_user_meta( $user_id, $meta_key, 'test-access-token' );
 		$this->assertOptionExists( Has_Connected_Admins::OPTION );
 		$this->assertTrue( $setting->get() );
 	}
