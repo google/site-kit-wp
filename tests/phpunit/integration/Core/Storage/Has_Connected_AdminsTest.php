@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Has_Connected_Admins;
 use Google\Site_Kit\Tests\TestCase;
-use WP_Error;
 
 /**
  * @group Storage
@@ -45,43 +44,72 @@ class Has_Connected_AdminsTest extends TestCase {
 		$this->user_options = new User_Options( $this->context );
 	}
 
-	public function tearDown() {
-		parent::tearDown();
-		delete_option( Has_Connected_Admins::OPTION );
-	}
-
-	public function test_get__without_option_value_yet() {
+	public function test_get_without_option_value_yet() {
 		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		delete_option( Has_Connected_Admins::OPTION );
+		// Even though there is an admin, the user is not connected until they have an access token.
 		$this->assertFalse( $setting->get() );
-
-		$user_id = wp_insert_user(
-			array(
-				'user_login' => 'test_admin',
-				'user_email' => 'test_admin@example.com',
-				'user_pass'  => 'password',
-				'role'       => 'administrator',
-			)
-		);
 
 		add_user_meta(
 			$user_id,
 			$this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ),
-			'xxxxx'
+			'test-access-token'
 		);
 
-		delete_option( Has_Connected_Admins::OPTION );
 		$this->assertTrue( $setting->get() );
 		$this->assertTrue( get_option( Has_Connected_Admins::OPTION ) );
-
-		wp_delete_user( $user_id );
 	}
 
-	public function test_get__with_option_value() {
+	public function test_get_with_option_value() {
 		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
 		update_option( Has_Connected_Admins::OPTION, true );
 
+		$this->assertTrue( $setting->get() );
+	}
+
+	public function test_option_is_set_when_access_token_added_and_deleted_together() {
+		$setting  = new Has_Connected_Admins( $this->options, $this->user_options );
+		$user_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
+
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+
+		// Adding the access token meta sets the option.
+		add_user_meta( $user_id, $meta_key, 'test-access-token' );
+		$this->assertOptionExists( Has_Connected_Admins::OPTION );
+		$this->assertTrue( $setting->get() );
+
+		// Deleting an access token deletes the option as well.
+		delete_user_meta( $user_id, $meta_key );
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+		$this->assertFalse( $setting->get() );
+		// The option is now set as `false` as there are no longer any connected admins.
+		$this->assertTrue( $setting->has() );
+		$this->assertOptionExists( Has_Connected_Admins::OPTION );
+		$this->assertFalse( $setting->get() );
+	}
+
+	public function test_option_is_set_for_administrators_only() {
+		$setting   = new Has_Connected_Admins( $this->options, $this->user_options );
+		$meta_key  = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+
+		// Editors can't currently authenticate, but if they could it would not count as a connected admin.
+		add_user_meta( $editor_id, $meta_key, 'test-access-token' );
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+		$this->assertFalse( $setting->get() );
+
+		// Adding an access token for an admin will set the option to true.
+		add_user_meta( $admin_id, $meta_key, 'test-access-token' );
+		$this->assertOptionExists( Has_Connected_Admins::OPTION );
+		$this->assertTrue( $setting->get() );
+		// Even if the option is deleted, the setting will still return true.
+		delete_option( Has_Connected_Admins::OPTION );
 		$this->assertTrue( $setting->get() );
 	}
 

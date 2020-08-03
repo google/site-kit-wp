@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options_Interface;
 use Google\Site_Kit\Core\Storage\Setting;
 use Google\Site_Kit\Core\Storage\User_Options_Interface;
+use WP_User;
 
 /**
  * Has_Connected_Admins class.
@@ -61,8 +62,19 @@ class Has_Connected_Admins extends Setting {
 		$access_token_meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
 
 		add_action(
+			'added_user_meta',
+			function ( $mid, $uid, $meta_key ) use ( $access_token_meta_key ) {
+				if ( $meta_key === $access_token_meta_key && user_can( $uid, 'administrator' ) ) {
+					$this->set( true );
+				}
+			},
+			10,
+			3
+		);
+
+		add_action(
 			'deleted_user_meta',
-			function ( $meta_ids, $object_id, $meta_key ) use ( $access_token_meta_key ) {
+			function ( $mid, $uid, $meta_key ) use ( $access_token_meta_key ) {
 				if ( $meta_key === $access_token_meta_key ) {
 					$this->delete();
 				}
@@ -86,8 +98,8 @@ class Has_Connected_Admins extends Setting {
 			$users                = $this->query_connected_admins();
 			$has_connected_admins = count( $users ) > 0;
 
-			$this->set( $has_connected_admins );
-	
+			$this->set( (int) $has_connected_admins );
+
 			return $has_connected_admins;
 		}
 
