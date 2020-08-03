@@ -150,9 +150,11 @@ export const createFetchStore = ( {
 			};
 
 			const registry = yield Data.commonActions.getRegistry();
-			const storeActions = registry.dispatch( storeName );
-			if ( storeActions.clearError ) {
-				yield storeActions.clearError( baseName, params );
+			if ( registry ) {
+				const storeActions = registry.dispatch( storeName );
+				if ( storeActions.clearError ) {
+					yield storeActions.clearError( baseName, params );
+				}
 			}
 
 			try {
