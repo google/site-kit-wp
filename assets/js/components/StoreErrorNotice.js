@@ -29,7 +29,7 @@ import { isPermissionScopeError } from '../googlesitekit/datastore/user/utils/is
 import ErrorText from '../components/error-text';
 const { useSelect } = Data;
 
-export default function ErrorNotice( { storeName, shouldDisplayError = () => true } ) {
+export default function StoreErrorNotice( { storeName, shouldDisplayError = () => true } ) {
 	const error = useSelect( ( select ) => select( storeName ).getError() );
 
 	// Do not display if no error, or if the error is for missing scopes.
@@ -40,6 +40,7 @@ export default function ErrorNotice( { storeName, shouldDisplayError = () => tru
 	return <ErrorText message={ error.message } reconnectURL={ error.data?.reconnectURL } />;
 }
 
-ErrorNotice.propTypes = {
+StoreErrorNotice.propTypes = {
 	storeName: PropTypes.string.isRequired,
+	shouldDisplayError: PropTypes.func,
 };

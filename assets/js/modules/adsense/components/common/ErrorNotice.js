@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */

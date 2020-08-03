@@ -53,7 +53,7 @@ export default function SettingsView() {
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 
-			{ /* Prevent showing ExistingTagError and general ErrorNotice at the same time. */ }
+			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
 			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice storeName={ STORE_NAME } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
