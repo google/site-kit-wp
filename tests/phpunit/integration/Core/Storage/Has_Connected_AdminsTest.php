@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Has_Connected_Admins;
 use Google\Site_Kit\Tests\TestCase;
-use WP_Error;
 
 /**
  * @group Storage
