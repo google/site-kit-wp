@@ -65,6 +65,7 @@ final class Measurement_Code_Injector {
 						} else {
 							var el = e.target;
 							if ( matches( el, thisConfig.selector ) || matches( el, thisConfig.selector.concat( ' *' ) ) ) {
+								alert('got an event called: '.concat(thisConfig.action));
 								sendEvent( thisConfig.action, thisConfig.metadata );
 							}
 						}

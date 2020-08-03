@@ -117,20 +117,6 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 		);
 		$this->add_event( $add_to_cart_event );
 
-		$view_cart_meta                   = array();
-		$view_cart_meta['event_category'] = 'ecommerce';
-		$view_cart_meta['event_label']    = WC()->cart->get_subtotal();
-		$view_cart_event                  = new Measurement_Event(
-			array(
-				'pluginName' => 'WooCommerce',
-				'action'     => 'view_cart',
-				'selector'   => '.woocommerce-page .add_to_cart_button[data-product_id="' . $product_id . '"] ~ a',
-				'on'         => 'click',
-				'metadata'   => $view_cart_meta,
-			)
-		);
-		$this->add_event( $view_cart_event );
-
 	}
 
 	/**
@@ -169,19 +155,6 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 		);
 		$this->add_event( $add_to_cart_event );
 
-		$view_cart_meta                   = array();
-		$view_cart_meta['event_category'] = 'ecommerce';
-		$view_cart_meta['event_label']    = WC()->cart->get_subtotal();
-		$view_cart_event                  = new Measurement_Event(
-			array(
-				'pluginName' => 'WooCommerce',
-				'action'     => 'view_cart',
-				'selector'   => 'div.woocommerce-message a.wc-forward',
-				'on'         => 'click',
-				'metadata'   => $view_cart_meta,
-			)
-		);
-		$this->add_event( $view_cart_event );
 
 		$view_item_meta                   = array();
 		$view_item_meta['event_category'] = 'ecommerce';
