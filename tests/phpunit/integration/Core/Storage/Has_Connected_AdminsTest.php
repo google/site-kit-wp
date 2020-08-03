@@ -46,11 +46,11 @@ class Has_Connected_AdminsTest extends TestCase {
 
 	public function test_get_without_option_value_yet() {
 		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		delete_option( Has_Connected_Admins::OPTION );
+		// Even though there is an admin, the user is not connected until they have an access token.
 		$this->assertFalse( $setting->get() );
-
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		add_user_meta(
 			$user_id,
@@ -69,37 +69,43 @@ class Has_Connected_AdminsTest extends TestCase {
 		$this->assertTrue( $setting->get() );
 	}
 
-	public function test_option_is_adjusted_when_meta_is_changed() {
-		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
-
-		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
-
+	public function test_option_is_set_when_access_token_added_and_deleted_together() {
+		$setting  = new Has_Connected_Admins( $this->options, $this->user_options );
 		$user_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
 
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+
+		// Adding the access token meta sets the option.
 		add_user_meta( $user_id, $meta_key, 'test-access-token' );
 		$this->assertOptionExists( Has_Connected_Admins::OPTION );
 		$this->assertTrue( $setting->get() );
 
+		// Deleting an access token deletes the option as well.
 		delete_user_meta( $user_id, $meta_key );
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 		$this->assertFalse( $setting->get() );
 	}
 
-	public function test_option_is_set_when_admin_meta_is_chagned() {
+	public function test_option_is_set_when_admin_meta_is_changed() {
 		$setting  = new Has_Connected_Admins( $this->options, $this->user_options );
 		$meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
 
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 
+		// Editors can't currently authenticate, but if they could it would not count as a connected admin.
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		add_user_meta( $user_id, $meta_key, 'test-access-token' );
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 		$this->assertFalse( $setting->get() );
 
+		// Adding an access token for an admin will set the option to true.
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		add_user_meta( $user_id, $meta_key, 'test-access-token' );
 		$this->assertOptionExists( Has_Connected_Admins::OPTION );
+		$this->assertTrue( $setting->get() );
+		// Even if the option is deleted, the setting will still return true.
+		delete_option( Has_Connected_Admins::OPTION );
 		$this->assertTrue( $setting->get() );
 	}
 
