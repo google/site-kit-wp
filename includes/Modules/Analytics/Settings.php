@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
+use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 
 /**
  * Class for Analytics settings.
@@ -21,7 +22,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
  * @ignore
  */
 class Settings extends Module_Settings {
-	use Setting_With_Legacy_Keys_Trait;
+	use Setting_With_Legacy_Keys_Trait, Setting_With_Owned_Keys_Trait;
 
 	const OPTION = 'googlesitekit_analytics_settings';
 
@@ -39,6 +40,14 @@ class Settings extends Module_Settings {
 				'profileId'             => 'profileID',
 				'propertyId'            => 'propertyID',
 				'internalWebPropertyId' => 'internalWebPropertyID',
+			)
+		);
+
+		$this->register_owned_keys(
+			array(
+				'accountID',
+				'propertyID',
+				'profileID',
 			)
 		);
 
@@ -136,6 +145,7 @@ class Settings extends Module_Settings {
 	 */
 	protected function get_default() {
 		return array(
+			'ownerID'               => 0,
 			'accountID'             => '',
 			'adsenseLinked'         => false,
 			'anonymizeIP'           => true,

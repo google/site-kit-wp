@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Optimize;
 
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
+use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 
 /**
  * Class for Optimize settings.
@@ -21,7 +22,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
  * @ignore
  */
 class Settings extends Module_Settings {
-	use Setting_With_Legacy_Keys_Trait;
+	use Setting_With_Legacy_Keys_Trait, Setting_With_Owned_Keys_Trait;
 
 	const OPTION = 'googlesitekit_optimize_settings';
 
@@ -39,6 +40,12 @@ class Settings extends Module_Settings {
 				'ampExperimentJson' => 'ampExperimentJSON',
 				'optimize_id'       => 'optimizeID',
 				'optimizeId'        => 'optimizeID',
+			)
+		);
+
+		$this->register_owned_keys(
+			array(
+				'optimizeID',
 			)
 		);
 
@@ -68,6 +75,7 @@ class Settings extends Module_Settings {
 	 */
 	protected function get_default() {
 		return array(
+			'ownerID'           => 0,
 			'ampExperimentJSON' => '',
 			'optimizeID'        => '',
 		);
