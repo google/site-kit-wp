@@ -84,7 +84,7 @@ const baseActions = {
 	/**
 	 * Resets the HTML for a given URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 * @private
 	 *
 	 * @param {string} url URL for which the HTML should be reset.
@@ -104,7 +104,7 @@ const baseActions = {
 	/**
 	 * Waits for HTML for to be resolved for the given URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 * @private
 	 *
 	 * @param {string} url URL for which to fetch HTML.
@@ -164,7 +164,7 @@ export const baseSelectors = {
 	 * Returns a string representation of the HTML when successful.
 	 *
 	 * @private
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} url URL for which to fetch HTML.
