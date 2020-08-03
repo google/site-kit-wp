@@ -74,6 +74,7 @@ const defaultArgsToParams = () => {
  *
  * @param {Object}   args                   Arguments for creating the fetch store.
  * @param {string}   args.baseName          The base name to use for all the created infrastructure.
+ * @param {string}   args.storeName         The store name to use for error handling.
  * @param {Function} args.controlCallback   Callback function to issue the API request. Will be used inside the
  *                                          control. The function receives a params object based on argsToParams,
  *                                          i.e. the respective values passed to the action.
@@ -91,11 +92,13 @@ const defaultArgsToParams = () => {
  */
 export const createFetchStore = ( {
 	baseName,
+	storeName,
 	controlCallback,
 	reducerCallback = defaultReducerCallback,
 	argsToParams = defaultArgsToParams,
 } ) => {
 	invariant( baseName, 'baseName is required.' );
+	invariant( storeName, 'storeName is required.' );
 	invariant( 'function' === typeof controlCallback, 'controlCallback is required and must be a function.' );
 	invariant( 'function' === typeof reducerCallback, 'reducerCallback must be a function.' );
 	invariant( 'function' === typeof argsToParams, 'argsToParams must be a function.' );

@@ -33,6 +33,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
+	storeName: STORE_NAME,
 	controlCallback: ( { options } ) => {
 		return API.get( 'modules', 'adsense', 'earnings', options );
 	},

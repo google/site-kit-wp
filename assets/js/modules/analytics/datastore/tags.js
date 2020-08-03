@@ -36,6 +36,7 @@ const { createRegistrySelector, createRegistryControl } = Data;
 
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
+	storeName: STORE_NAME,
 	controlCallback: ( { propertyID } ) => {
 		return API.get( 'modules', 'analytics', 'tag-permission', { propertyID }, {
 			useCache: false,

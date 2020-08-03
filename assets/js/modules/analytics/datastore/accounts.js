@@ -42,6 +42,7 @@ const { createRegistrySelector } = Data;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getAccountsPropertiesProfiles',
+	storeName: STORE_NAME,
 	controlCallback: ( { data } ) => {
 		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', data, {
 			useCache: false,
@@ -63,6 +64,7 @@ const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 
 const fetchCreateAccountStore = createFetchStore( {
 	baseName: 'createAccount',
+	storeName: STORE_NAME,
 	controlCallback: ( { data } ) => {
 		return API.set( 'modules', 'analytics', 'create-account-ticket', data );
 	},
