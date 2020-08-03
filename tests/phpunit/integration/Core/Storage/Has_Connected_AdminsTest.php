@@ -45,18 +45,13 @@ class Has_Connected_AdminsTest extends TestCase {
 		$this->user_options = new User_Options( $this->context );
 	}
 
-	public function tearDown() {
-		parent::tearDown();
-		delete_option( Has_Connected_Admins::OPTION );
-	}
-
 	public function test_get__without_option_value_yet() {
 		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
 
 		delete_option( Has_Connected_Admins::OPTION );
 		$this->assertFalse( $setting->get() );
 
-		$user_id = wp_insert_user(
+		$user_id = $this->factory()->user->create(
 			array(
 				'user_login' => 'test_admin',
 				'user_email' => 'test_admin@example.com',
@@ -71,11 +66,8 @@ class Has_Connected_AdminsTest extends TestCase {
 			'xxxxx'
 		);
 
-		delete_option( Has_Connected_Admins::OPTION );
 		$this->assertTrue( $setting->get() );
 		$this->assertTrue( get_option( Has_Connected_Admins::OPTION ) );
-
-		wp_delete_user( $user_id );
 	}
 
 	public function test_get__with_option_value() {
