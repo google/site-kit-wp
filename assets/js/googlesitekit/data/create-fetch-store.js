@@ -39,6 +39,8 @@ const defaultArgsToParams = () => {
 	return {};
 };
 
+const defaultValidateParams = () => {};
+
 /**
  * Creates a store object implementing the necessary infrastructure for a
  * single fetch action.
@@ -82,11 +84,12 @@ const defaultArgsToParams = () => {
  *                                          object as first parameter, the API response as second parameter, and the
  *                                          params object for the request (see above) as third parameter. If not
  *                                          provided, the default will return the unmodified state.
- * @param {Function} [args.argsToParams]    Optional. Function that should validate expected arguments for the
- *                                          internal fetch action and parse them into an named parameters object,
- *                                          with the argument names used as keys. If not provided, the default
- *                                          function will return an empty object, essentially indicating that no
- *                                          arguments are supported/required.
+ * @param {Function} [args.argsToParams]    Optional. Function that reduces the given list of arguments
+ *                                          into a object of key/value parameters, with the argument names used as keys.
+ *                                          If not provided, the default function will return an empty object,
+ *                                          essentially indicating that no arguments are supported/required.
+ * @param {Function} [args.validateParams]  Optional. Function that validates the given parameters object created by `argsToParams`.
+ *                                          Any invalid parameters should cause a respective error to be thrown.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
 export const createFetchStore = ( {
@@ -94,17 +97,19 @@ export const createFetchStore = ( {
 	controlCallback,
 	reducerCallback = defaultReducerCallback,
 	argsToParams = defaultArgsToParams,
+	validateParams = defaultValidateParams,
 } ) => {
 	invariant( baseName, 'baseName is required.' );
 	invariant( 'function' === typeof controlCallback, 'controlCallback is required and must be a function.' );
 	invariant( 'function' === typeof reducerCallback, 'reducerCallback must be a function.' );
 	invariant( 'function' === typeof argsToParams, 'argsToParams must be a function.' );
+	invariant( 'function' === typeof validateParams, 'validateParams must be a function.' );
 
-	// If argsToParams without any arguments does not result in an error, we
+	// If validating the result of argsToParams without any arguments does not result in an error, we
 	// know params is okay to be empty.
 	let requiresParams;
 	try {
-		argsToParams();
+		validateParams( argsToParams() );
 		requiresParams = false;
 	} catch ( error ) {
 		requiresParams = true;
