@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options_Interface;
 use Google\Site_Kit\Core\Storage\Setting;
 use Google\Site_Kit\Core\Storage\User_Options_Interface;
+use WP_User;
 
 /**
  * Has_Connected_Admins class.
@@ -63,11 +64,8 @@ class Has_Connected_Admins extends Setting {
 		add_action(
 			'added_user_meta',
 			function ( $mid, $uid, $meta_key ) use ( $access_token_meta_key ) {
-				if ( $meta_key === $access_token_meta_key ) {
-					$user = get_userdata( $uid );
-					if ( ! empty( $user ) && in_array( 'administrator', (array) $user->roles ) ) {
-						$this->set( true );
-					}
+				if ( $meta_key === $access_token_meta_key && user_can( $uid, 'administrator' ) ) {
+					$this->set( true );
 				}
 			},
 			10,
