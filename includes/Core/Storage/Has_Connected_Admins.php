@@ -58,18 +58,16 @@ class Has_Connected_Admins extends Setting {
 	public function register() {
 		parent::register();
 
-		$access_token_meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
+		$reset_setting = function ( $mid, $uid, $meta_key ) {
+			$access_token_meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
+			if ( $meta_key === $access_token_meta_key ) {
+				$this->delete();
+			}
+		};
 
-		add_action(
-			'deleted_user_meta',
-			function ( $meta_ids, $object_id, $meta_key ) use ( $access_token_meta_key ) {
-				if ( $meta_key === $access_token_meta_key ) {
-					$this->delete();
-				}
-			},
-			10,
-			3
-		);
+		add_action( 'added_user_meta', $reset_setting, 10, 3 );
+		add_action( 'updated_user_meta', $reset_setting, 10, 3 );
+		add_action( 'deleted_user_meta', $reset_setting, 10, 3 );
 	}
 
 	/**
