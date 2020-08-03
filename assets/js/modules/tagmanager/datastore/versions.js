@@ -88,7 +88,7 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(Array.<string|null>|undefined)} Array of unique property IDs, including `null` if none, or `undefined` if not fully loaded.
+	 * @return {(Array|undefined)} Array of unique property IDs, including `null` if none, or `undefined` if not fully loaded.
 	 */
 	getAnalyticsPropertyIDs: createRegistrySelector( ( select ) => () => {
 		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
@@ -252,6 +252,8 @@ const baseSelectors = {
 	/**
 	 * Checks whether any Analytics property ID is present in either selected container.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @return {(boolean|undefined)} `true` if an Analytics property ID is present in either container,
 	 *                               `false` if no Analytics property ID is present in either container,
 	 *                               `undefined` if live container version data is not loaded yet.
@@ -271,7 +273,9 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(boolean|undefined)}
+	 * @return {(boolean|undefined)} `true` if multiple unique Analytics property IDs are found in selected GTM containers
+	 *                               `false` if no Analytics property IDs are found, or the same property ID is found in both (if secondary AMP)
+	 *                               `undefined` if live container data is not loaded yet for selected containers.
 	 */
 	hasMultipleAnalyticsPropertyIDs: createRegistrySelector( ( select ) => () => {
 		const propertyIDs = select( STORE_NAME ).getAnalyticsPropertyIDs();
