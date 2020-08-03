@@ -45,13 +45,8 @@ class Has_Connected_AdminsTest extends TestCase {
 		$this->user_options = new User_Options( $this->context );
 	}
 
-	public function test_get__without_option_value_yet() {
-		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
-
-		delete_option( Has_Connected_Admins::OPTION );
-		$this->assertFalse( $setting->get() );
-
-		$user_id = $this->factory()->user->create(
+	private function get_user_id() {
+		return $this->factory()->user->create(
 			array(
 				'user_login' => 'test_admin',
 				'user_email' => 'test_admin@example.com',
@@ -59,6 +54,15 @@ class Has_Connected_AdminsTest extends TestCase {
 				'role'       => 'administrator',
 			)
 		);
+	}
+
+	public function test_get__without_option_value_yet() {
+		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
+
+		delete_option( Has_Connected_Admins::OPTION );
+		$this->assertFalse( $setting->get() );
+
+		$user_id = $this->get_user_id();
 
 		add_user_meta(
 			$user_id,
@@ -75,6 +79,28 @@ class Has_Connected_AdminsTest extends TestCase {
 		update_option( Has_Connected_Admins::OPTION, true );
 
 		$this->assertTrue( $setting->get() );
+	}
+
+	public function test_option_is_deleted_when_meta_is_changed() {
+		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
+
+		update_option( Has_Connected_Admins::OPTION, true );
+		$this->assertTrue( $setting->get() );
+
+		$user_id  = $this->get_user_id();
+		$meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
+
+		add_user_meta( $user_id, $meta_key, 'xxxxx' );
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+		$this->assertTrue( $setting->get() );
+
+		update_user_meta( $user_id, $meta_key, 'xxxxxx' );
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+		$this->assertTrue( $setting->get() );
+
+		delete_user_meta( $user_id, $meta_key );
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+		$this->assertFalse( $setting->get() );
 	}
 
 }
