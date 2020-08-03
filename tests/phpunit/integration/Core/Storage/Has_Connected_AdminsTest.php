@@ -56,7 +56,7 @@ class Has_Connected_AdminsTest extends TestCase {
 		);
 	}
 
-	public function test_get__without_option_value_yet() {
+	public function test_get_without_option_value_yet() {
 		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
 
 		delete_option( Has_Connected_Admins::OPTION );
@@ -74,14 +74,14 @@ class Has_Connected_AdminsTest extends TestCase {
 		$this->assertTrue( get_option( Has_Connected_Admins::OPTION ) );
 	}
 
-	public function test_get__with_option_value() {
+	public function test_get_with_option_value() {
 		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
 		update_option( Has_Connected_Admins::OPTION, true );
 
 		$this->assertTrue( $setting->get() );
 	}
 
-	public function test_option_is_deleted_when_meta_is_changed() {
+	public function test_option_is_adjusted_when_meta_is_changed() {
 		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
 
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
@@ -96,6 +96,29 @@ class Has_Connected_AdminsTest extends TestCase {
 		delete_user_meta( $user_id, $meta_key );
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 		$this->assertFalse( $setting->get() );
+	}
+
+	public function test_option_is_set_when_admin_meta_is_chagned() {
+		$setting     = new Has_Connected_Admins( $this->options, $this->user_options );
+		$meta_key    = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
+		$editor_args = array(
+			'user_login' => 'test_editor',
+			'user_email' => 'test_editor@example.com',
+			'user_pass'  => 'password',
+			'role'       => 'editor',
+		);
+
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+
+		$user_id = $this->factory()->user->create( $editor_args );
+		add_user_meta( $user_id, $meta_key, 'xxxxx' );
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+		$this->assertFalse( $setting->get() );
+
+		$user_id = $this->get_user_id();
+		add_user_meta( $user_id, $meta_key, 'xxxxx' );
+		$this->assertOptionExists( Has_Connected_Admins::OPTION );
+		$this->assertTrue( $setting->get() );
 	}
 
 }
