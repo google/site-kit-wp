@@ -28,9 +28,11 @@ import { delay } from 'lodash';
 import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg } from '@wordpress/url';
+
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { trackEvent, getSiteKitAdminURL } from '../../util';
 import Header from '../header';
 import Button from '../button';
@@ -39,35 +41,31 @@ import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import OptIn from '../optin';
 import CompatibilityChecks from './compatibility-checks';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+const { withSelect } = Data;
 
 class SetupUsingProxy extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { proxySetupURL, siteURL } = global._googlesitekitLegacyData.admin;
-		const { isSiteKitConnected, isResettable, errorMessage } = global._googlesitekitLegacyData.setup;
+		// @TODO: this needs to be migrated to the core/site datastore in the future
+		const { errorMessage } = global._googlesitekitLegacyData.setup;
 		const { canSetup } = global._googlesitekitLegacyData.permissions;
 
 		this.state = {
 			canSetup,
 			errorMessage,
-			isSiteKitConnected,
-			isResettable,
 			completeSetup: false,
-			proxySetupURL,
 			resetSuccess: getQueryArg( location.href, 'notification' ) === 'reset_success',
 			context: getQueryArg( location.href, 'googlesitekit_context' ),
-			siteHostname: punycode.toUnicode( ( new URL( siteURL ) ).hostname ),
 		};
 	}
 
 	isSetupFinished() {
-		const {
-			isSiteKitConnected,
-			completeSetup,
-		} = this.state;
+		const { completeSetup } = this.state;
+		const { isConnected } = this.props;
 
-		return isSiteKitConnected && completeSetup;
+		return isConnected && completeSetup;
 	}
 
 	render() {
@@ -87,13 +85,18 @@ class SetupUsingProxy extends Component {
 		const {
 			context,
 			errorMessage,
-			isResettable,
-			proxySetupURL,
 			resetSuccess,
-			siteHostname,
 		} = this.state;
+
+		const {
+			proxySetupURL,
+			isResettable,
+			hasConnectedAdmins,
+			siteURL,
+		} = this.props;
+
 		const isRevoked = 'revoked' === context;
-		const isSecondAdmin = isResettable;
+		const isSecondAdmin = hasConnectedAdmins;
 
 		let title;
 		let description;
@@ -103,13 +106,13 @@ class SetupUsingProxy extends Component {
 			title = sprintf(
 				/* translators: %s is the site's hostname. (e.g. example.com) */
 				__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
-				siteHostname
+				punycode.toUnicode( ( new URL( siteURL ) ).hostname )
 			);
 			description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Start Setup" below to generate new credentials.', 'google-site-kit' );
 			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
 		} else if ( isSecondAdmin ) {
-			title = __( 'Sign in with Google to configure Site Kit', 'google-site-kit' );
-			description = __( 'To use Site Kit, sign in with your Google account. The Site Kit service will guide you through 3 simple steps to complete the connection and configure the plugin.', 'google-site-kit' );
+			title = __( 'Connect your Google account to Site Kit', 'google-site-kit' );
+			description = __( 'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.', 'google-site-kit' );
 			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
 		} else {
 			title = __( 'Sign in with Google to set up Site Kit', 'google-site-kit' );
@@ -182,7 +185,7 @@ class SetupUsingProxy extends Component {
 																			{ startSetupText }
 																		</Button>
 																		{ inProgressFeedback }
-																		{ isResettable && <ResetButton /> }
+																		{ ! isSecondAdmin && isResettable && <ResetButton /> }
 																	</div>
 																</Fragment>
 															) }
@@ -202,4 +205,14 @@ class SetupUsingProxy extends Component {
 	}
 }
 
-export default SetupUsingProxy;
+export default withSelect( ( select ) => {
+	const store = select( CORE_SITE );
+
+	return {
+		hasConnectedAdmins: store.hasConnectedAdmins(),
+		isConnected: store.isConnected(),
+		isResettable: store.isResettable(),
+		siteURL: store.getReferenceSiteURL(),
+		proxySetupURL: store.getProxySetupURL(),
+	};
+} )( SetupUsingProxy );
