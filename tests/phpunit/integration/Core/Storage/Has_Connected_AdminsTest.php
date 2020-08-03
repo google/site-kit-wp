@@ -84,18 +84,13 @@ class Has_Connected_AdminsTest extends TestCase {
 	public function test_option_is_deleted_when_meta_is_changed() {
 		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
 
-		update_option( Has_Connected_Admins::OPTION, true );
-		$this->assertTrue( $setting->get() );
+		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
 
 		$user_id  = $this->get_user_id();
 		$meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
 
 		add_user_meta( $user_id, $meta_key, 'xxxxx' );
-		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
-		$this->assertTrue( $setting->get() );
-
-		update_user_meta( $user_id, $meta_key, 'xxxxxx' );
-		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
+		$this->assertOptionExists( Has_Connected_Admins::OPTION );
 		$this->assertTrue( $setting->get() );
 
 		delete_user_meta( $user_id, $meta_key );

@@ -413,6 +413,9 @@ final class Authentication {
 		$user_id = $this->user_options->get_user_id();
 		$prefix  = $this->user_options->get_meta_key( 'googlesitekit\_%' );
 
+		// Reset Has_Connected_Admins setting.
+		$this->has_connected_admins->delete();
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
 			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE user_id = %d AND meta_key LIKE %s", $user_id, $prefix )
