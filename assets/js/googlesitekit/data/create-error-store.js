@@ -38,43 +38,6 @@ function generateErrorKey( baseName, args ) {
 	return key;
 }
 
-function reducer( state, { type, payload } ) {
-	switch ( type ) {
-		case RECEIVE_ERROR: {
-			const { baseName, args, error } = payload;
-			const newState = { ...state };
-
-			if ( baseName ) {
-				newState.errors = {
-					...( state.errors || {} ),
-					[ generateErrorKey( baseName, args ) ]: error,
-				};
-			} else {
-				newState.error = error;
-			}
-
-			return newState;
-		}
-
-		case CLEAR_ERROR: {
-			const { baseName, args } = payload;
-			const key = generateErrorKey( baseName, args );
-
-			return {
-				...state,
-				errors: Object
-					.keys( state.errors )
-					.filter( ( errorKey ) => errorKey !== key )
-					.reduce( ( errors, errorKey ) => ( { ...errors, [ errorKey ]: state.errors[ errorKey ] } ), {} ),
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-}
-
 export function createErrorStore() {
 	const INITIAL_STATE = {
 		errors: {},
@@ -94,7 +57,6 @@ export function createErrorStore() {
 				},
 			};
 		},
-
 		clearError( baseName, args ) {
 			return {
 				type: CLEAR_ERROR,
@@ -106,16 +68,90 @@ export function createErrorStore() {
 		},
 	};
 
+	function reducer( state, { type, payload } ) {
+		switch ( type ) {
+			case RECEIVE_ERROR: {
+				const { baseName, args, error } = payload;
+				const newState = { ...state };
+
+				if ( baseName ) {
+					newState.errors = {
+						...( state.errors || {} ),
+						[ generateErrorKey( baseName, args ) ]: error,
+					};
+				} else {
+					// @TODO: remove it once all instances of the legacy behavior have been removed.
+					newState.error = error;
+				}
+
+				return newState;
+			}
+
+			case CLEAR_ERROR: {
+				const { baseName, args } = payload;
+				const key = generateErrorKey( baseName, args );
+
+				return {
+					...state,
+					errors: Object
+						.keys( state.errors )
+						.filter( ( errorKey ) => errorKey !== key )
+						.reduce( ( errors, errorKey ) => ( { ...errors, [ errorKey ]: state.errors[ errorKey ] } ), {} ),
+				};
+			}
+
+			default: {
+				return { ...state };
+			}
+		}
+	}
+
 	const controls = {};
 
 	const resolvers = {};
 
 	const selectors = {
+		/**
+		 * Retrieves the error object from state.
+		 *
+		 *```
+		 * {
+		 *   code: <String>,
+		 *   message: <String>,
+		 *   data: <Object>
+		 * }
+		 * ```
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state Data store's state.
+		 * @param {string} selectorName A selector name.
+		 * @param {Object} [args] An arguments object.
+		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
+		 */
 		getErrorForSelector( state, selectorName, args ) {
 			invariant( selectorName, 'selectorName is required.' );
 			return selectors.getError( state, selectorName, args );
 		},
 
+		/**
+		 * Retrieves the error object from state.
+		 *
+		 *```
+		 * {
+		 *   code: <String>,
+		 *   message: <String>,
+		 *   data: <Object>
+		 * }
+		 * ```
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state Data store's state.
+		 * @param {string} actionName An action name.
+		 * @param {Object} [args] An arguments object.
+		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
+		 */
 		getErrorForAction( state, actionName, args ) {
 			invariant( actionName, 'actionName is required.' );
 			return selectors.getError( state, actionName, args );
@@ -124,7 +160,6 @@ export function createErrorStore() {
 		/**
 		 * Retrieves the error object from state.
 		 *
-		 * Returns `undefined` if there is no error set.
 		 *```
 		 * {
 		 *   code: <String>,
