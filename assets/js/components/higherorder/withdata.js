@@ -204,6 +204,7 @@ const withData = (
 					data: returnedData,
 					datapoint,
 					module: identifier,
+					zeroData: !! isDataZero( returnedData, datapoint, requestData ),
 				} );
 			};
 
