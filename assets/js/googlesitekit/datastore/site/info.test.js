@@ -179,6 +179,8 @@ describe( 'core/site site info', () => {
 			[ 'getCurrentEntityURL' ],
 			[ 'getHomeURL' ],
 			[ 'getReferenceSiteURL' ],
+			[ 'getProxySetupURL' ],
+			[ 'getProxyPermissionsURL' ],
 			[ 'getSiteName' ],
 			[ 'getTimezone' ],
 			[ 'isUsingProxy' ],

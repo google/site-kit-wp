@@ -21,7 +21,6 @@ export { default as AccountCreate } from './AccountCreate';
 export { default as AccountSelect } from './AccountSelect';
 export { default as AdSenseLinkCTA } from './AdSenseLinkCTA';
 export { default as AnonymizeIPSwitch } from './AnonymizeIPSwitch';
-export { default as ErrorNotice } from './ErrorNotice';
 export { default as ExistingTagError } from './ExistingTagError';
 export { default as ExistingTagNotice } from './ExistingTagNotice';
 export { default as ProfileNameTextField } from './ProfileNameTextField';
