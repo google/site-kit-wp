@@ -188,7 +188,7 @@ final class Analytics extends Module
 		$info['provides'] = array(
 			__( 'Audience overview', 'google-site-kit' ),
 			__( 'Top pages', 'google-site-kit' ),
-			__( 'Top acquisition sources', 'google-site-kit' ),
+			__( 'Top acquisition channels', 'google-site-kit' ),
 		);
 
 		return $info;
@@ -854,23 +854,51 @@ final class Analytics extends Module
 					return true;
 				};
 			case 'GET:report':
-				$date_range = $data['dateRange'] ?: 'last-28-days';
+				$request_args = array();
 
-				$dimensions = array_map(
-					function ( $name ) {
-						$dimension = new Google_Service_AnalyticsReporting_Dimension();
-						$dimension->setName( $name );
+				if ( empty( $data['metrics'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ), array( 'status' => 400 ) );
+				}
 
-						return $dimension;
-					},
-					array_filter( explode( ',', $data['dimensions'] ) )
-				);
-
-				$request_args         = compact( 'dimensions' );
-				$request_args['page'] = $data['url'];
+				if ( ! empty( $data['url'] ) ) {
+					$request_args['page'] = $data['url'];
+				}
 
 				if ( ! empty( $data['limit'] ) ) {
 					$request_args['row_limit'] = $data['limit'];
+				}
+
+				$dimensions = $data['dimensions'];
+				if ( ! empty( $dimensions ) && ( is_string( $dimensions ) || is_array( $dimensions ) ) ) {
+					if ( is_string( $dimensions ) ) {
+						$dimensions = explode( ',', $dimensions );
+					} elseif ( is_array( $dimensions ) && ! wp_is_numeric_array( $dimensions ) ) { // If single object is passed.
+						$dimensions = array( $dimensions );
+					}
+
+					$dimensions = array_filter(
+						array_map(
+							function ( $dimension_def ) {
+								$dimension = new Google_Service_AnalyticsReporting_Dimension();
+
+								if ( is_string( $dimension_def ) ) {
+									$dimension->setName( $dimension_def );
+								} elseif ( is_array( $dimension_def ) && ! empty( $dimension_def['name'] ) ) {
+									$dimension->setName( $dimension_def['name'] );
+								} else {
+									return null;
+								}
+
+								return $dimension;
+							},
+							array_filter( $dimensions )
+						)
+					);
+
+					if ( ! empty( $dimensions ) ) {
+						$request_args['dimensions'] = $dimensions;
+					}
 				}
 
 				$request = $this->create_analytics_site_data_request( $request_args );
@@ -879,17 +907,20 @@ final class Analytics extends Module
 					return $request;
 				}
 
-				$date_ranges = array(
-					$this->parse_date_range(
-						$date_range,
-						$data['compareDateRanges'] ? 2 : 1
-					),
-				);
+				$date_ranges = array();
+				$start_date  = $data['startDate'];
+				$end_date    = $data['endDate'];
+				if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
+					$date_ranges[] = array( $start_date, $end_date );
+				} else {
+					$date_range    = $data['dateRange'] ?: 'last-28-days';
+					$date_ranges[] = $this->parse_date_range( $date_range, $data['compareDateRanges'] ? 2 : 1 );
 
-				// When using multiple date ranges, it changes the structure of the response,
-				// where each date range becomes an item in a list.
-				if ( ! empty( $data['multiDateRange'] ) ) {
-					$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
+					// When using multiple date ranges, it changes the structure of the response,
+					// where each date range becomes an item in a list.
+					if ( ! empty( $data['multiDateRange'] ) ) {
+						$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
+					}
 				}
 
 				$date_ranges = array_map(
@@ -905,44 +936,77 @@ final class Analytics extends Module
 				);
 				$request->setDateRanges( $date_ranges );
 
-				$metrics = array_map(
-					function ( $metric_def ) {
-						$metric_def = array_merge(
-							array(
-								'alias'      => '',
-								'expression' => '',
-							),
-							(array) $metric_def
-						);
-						$metric     = new Google_Service_AnalyticsReporting_Metric();
-						$metric->setAlias( $metric_def['alias'] );
-						$metric->setExpression( $metric_def['expression'] );
+				$metrics = $data['metrics'];
+				if ( is_string( $metrics ) || is_array( $metrics ) ) {
+					if ( is_string( $metrics ) ) {
+						$metrics = explode( ',', $data['metrics'] );
+					} elseif ( is_array( $metrics ) && ! wp_is_numeric_array( $metrics ) ) { // If single object is passed.
+						$metrics = array( $metrics );
+					}
 
-						return $metric;
-					},
-					(array) $data['metrics']
-				);
-				$request->setMetrics( $metrics );
+					$metrics = array_filter(
+						array_map(
+							function ( $metric_def ) {
+								$metric = new Google_Service_AnalyticsReporting_Metric();
+
+								if ( is_string( $metric_def ) ) {
+									$metric->setAlias( $metric_def );
+									$metric->setExpression( $metric_def );
+								} elseif ( is_array( $metric_def ) && ! empty( $metric_def['expression'] ) ) {
+									$metric->setExpression( $metric_def['expression'] );
+									$metric->setAlias( ! empty( $metric_def['alias'] ) ? $metric_def['alias'] : $metric_def['expression'] );
+								} else {
+									return null;
+								}
+
+								return $metric;
+							},
+							array_filter( $metrics )
+						)
+					);
+
+					if ( ! empty( $metrics ) ) {
+						$request->setMetrics( $metrics );
+					}
+				}
 
 				// Order by.
-				$orderby = array_map(
-					function ( $order_def ) {
-						$order_def = array_merge(
-							array(
-								'fieldName' => '',
-								'sortOrder' => '',
-							),
-							(array) $order_def
-						);
-						$order_by  = new Google_Service_AnalyticsReporting_OrderBy();
-						$order_by->setFieldName( $order_def['fieldName'] );
-						$order_by->setSortOrder( $order_def['sortOrder'] );
+				$orderby = $data['orderby'];
+				if ( ! empty( $orderby ) && is_array( $orderby ) ) {
+					// When just object is passed we need to convert it to an array of objects.
+					if ( ! wp_is_numeric_array( $orderby[0] ) ) {
+						$orderby = array( $orderby );
+					}
 
-						return $order_by;
-					},
-					(array) $data['orderby']
-				);
-				$request->setOrderBys( $orderby );
+					$orderby = array_filter(
+						array_map(
+							function ( $order_def ) {
+								$order_def = array_merge(
+									array(
+										'fieldName' => '',
+										'sortOrder' => 'DESCENDING',
+									),
+									(array) $order_def
+								);
+
+								if ( empty( $order_def['fieldName'] ) ) {
+									return null;
+								}
+
+								$order_by = new Google_Service_AnalyticsReporting_OrderBy();
+								$order_by->setFieldName( $order_def['fieldName'] );
+								$order_by->setSortOrder( $order_def['sortOrder'] );
+		
+								return $order_by;
+							},
+							$orderby
+						)
+					);
+
+					if ( ! empty( $orderby ) ) {
+						$request->setOrderBys( $orderby );
+					}
+				}
 
 				// Batch reports requests.
 				$body = new Google_Service_AnalyticsReporting_GetReportsRequest();

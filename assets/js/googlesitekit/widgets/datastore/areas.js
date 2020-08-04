@@ -24,7 +24,8 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { WIDGET_STYLES } from './constants';
+import { WIDGET_AREA_STYLES } from './constants';
+import { sortByProperty } from '../../../util/sort-by-property';
 
 /**
  * Store our widget components by registry, then by widget `slug`. We do this because
@@ -38,7 +39,7 @@ export const WidgetComponents = {};
 const ASSIGN_WIDGET_AREA = 'ASSIGN_WIDGET_AREA';
 const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
 
-const WidgetStyleKeys = Object.keys( WIDGET_STYLES ).map( ( ( key ) => `WIDGET_STYLES.${ key }` ) ).join( ', ' );
+const WidgetAreaStyleKeys = Object.keys( WIDGET_AREA_STYLES ).map( ( ( key ) => `WIDGET_AREA_STYLES.${ key }` ) ).join( ', ' );
 
 export const INITIAL_STATE = {
 	areas: {},
@@ -91,7 +92,7 @@ export const actions = {
 	 */
 	registerWidgetArea( slug, {
 		priority = 10,
-		style = WIDGET_STYLES.BOXES,
+		style = WIDGET_AREA_STYLES.BOXES,
 		title,
 		subtitle,
 		icon,
@@ -99,7 +100,7 @@ export const actions = {
 		invariant( slug, 'slug is required.' );
 		invariant( title, 'settings.title is required.' );
 		invariant( subtitle, 'settings.subtitle is required.' );
-		invariant( Object.values( WIDGET_STYLES ).includes( style ), `settings.style must be one of: ${ WidgetStyleKeys }.` );
+		invariant( Object.values( WIDGET_AREA_STYLES ).includes( style ), `settings.style must be one of: ${ WidgetAreaStyleKeys }.` );
 
 		return {
 			payload: {
@@ -198,9 +199,12 @@ export const selectors = {
 
 		const { areas, contextAssignments } = state;
 
-		return Object.values( areas ).filter( ( area ) => {
-			return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
-		} ).sort( ( areaA, areaB ) => areaA.priority - areaB.priority );
+		return sortByProperty(
+			Object.values( areas ).filter( ( area ) => {
+				return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
+			} ),
+			'priority'
+		);
 	},
 
 	/**

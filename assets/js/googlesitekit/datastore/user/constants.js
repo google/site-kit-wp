@@ -18,5 +18,14 @@
 
 export const STORE_NAME = 'core/user';
 
+// Permissions list.
+export const PERMISSION_AUTHENTICATE = 'googlesitekit_authenticate';
+export const PERMISSION_SETUP = 'googlesitekit_setup';
+export const PERMISSION_VIEW_POSTS_INSIGHTS = 'googlesitekit_view_posts_insights';
+export const PERMISSION_VIEW_DASHBOARD = 'googlesitekit_view_dashboard';
+export const PERMISSION_VIEW_MODULE_DETAILS = 'googlesitekit_view_module_details';
+export const PERMISSION_MANAGE_OPTIONS = 'googlesitekit_manage_options';
+export const PERMISSION_PUBLISH_POSTS = 'googlesitekit_publish_posts';
+
 // Error code returned when scopes are missing.
-export const PERMISSION_SCOPE_ERROR_CODE = 'missing_required_scopes';
+export const ERROR_MISSING_REQUIRED_SCOPE = 'missing_required_scopes';
