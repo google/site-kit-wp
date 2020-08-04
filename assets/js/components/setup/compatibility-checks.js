@@ -38,7 +38,7 @@ import Warning from '../notifications/warning';
 import ProgressBar from '../../components/progress-bar';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
-const ERROR_FETCH_FAIL = 'tag_fetch_failed';
+const ERROR_FETCH_FAIL = 'check_fetch_failed';
 const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
 const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
 const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
@@ -68,26 +68,23 @@ const checks = [
 	},
 	// Check that server can connect to Google's APIs via the core/site/data/health-checks endpoint.
 	async () => {
-		try {
-			const response = await API.get( 'core', 'site', 'health-checks', undefined, {
-				useCache: false,
-			} );
+		const response = await API.get( 'core', 'site', 'health-checks', undefined, {
+			useCache: false,
+		} ).catch( () => {
+			throw ERROR_FETCH_FAIL;
+		} );
 
-			if ( ! response?.checks?.googleAPI?.pass ) {
-				throw ERROR_GOOGLE_API_CONNECTION_FAIL;
-			}
-		} catch ( error ) {
+		if ( ! response?.checks?.googleAPI?.pass ) {
 			throw ERROR_GOOGLE_API_CONNECTION_FAIL;
 		}
 	},
 	// Check that client can connect to AMP Project.
 	async () => {
-		try {
-			const response = await fetch( AMP_PROJECT_TEST_URL );
-			if ( ! response.ok ) {
-				throw ERROR_AMP_CDN_RESTRICTED;
-			}
-		} catch ( error ) {
+		const response = await fetch( AMP_PROJECT_TEST_URL ).catch( () => {
+			throw ERROR_AMP_CDN_RESTRICTED;
+		} );
+
+		if ( ! response.ok ) {
 			throw ERROR_AMP_CDN_RESTRICTED;
 		}
 	},
