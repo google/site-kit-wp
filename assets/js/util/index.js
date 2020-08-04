@@ -45,6 +45,7 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 import SvgIcon from './svg-icon';
 import { trackEvent } from './tracking';
 import { fillFilterWithComponent } from './helpers';
+import pageSpeedIcon from '../../images/icon-pagespeed.png';
 export { trackEvent };
 export { SvgIcon };
 export * from './sanitize';
@@ -591,7 +592,7 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 	if ( blockedByParentModule ) {
 		iconComponent = <SvgIcon id={ `${ module }-disabled` } width={ width } height={ height } className={ useClass } />;
 	} else if ( 'pagespeed-insights' === module ) {
-		iconComponent = <img src={ global._googlesitekitLegacyData.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
+		iconComponent = <img src={ global._googlesitekitLegacyData.admin.assetsRoot + pageSpeedIcon } width={ width } alt="" className={ useClass } />;
 	}
 
 	return iconComponent;

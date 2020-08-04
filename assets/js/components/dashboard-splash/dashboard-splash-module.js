@@ -30,6 +30,7 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import SvgIcon from '../../util/svg-icon';
+import pageSpeedIcon from '../../../images/icon-pagespeed.png';
 
 class DashboardSplashModule extends Component {
 	render() {
@@ -41,7 +42,7 @@ class DashboardSplashModule extends Component {
 					{ 'pagespeed' === icon ? (
 						<img
 							alt="PageSpeed Icon"
-							src={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/icon-pagespeed.png` }
+							src={ global._googlesitekitLegacyData.admin.assetsRoot + pageSpeedIcon }
 						/>
 					) : <SvgIcon id={ icon } width="33" height="33" /> }
 				</div>

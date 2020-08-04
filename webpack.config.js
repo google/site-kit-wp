@@ -31,6 +31,7 @@ const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
+const ImageminPlugin = require( 'imagemin-webpack' );
 
 /**
  * Internal dependencies
@@ -129,7 +130,7 @@ const webpackConfig = ( mode ) => {
 			externals,
 			output: {
 				filename: '[name].js',
-				path: __dirname + '/dist/assets/js',
+				path: path.join( __dirname, 'dist/assets/js' ),
 				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
 				/**
@@ -144,7 +145,34 @@ const webpackConfig = ( mode ) => {
 				maxEntrypointSize: 175000,
 			},
 			module: {
-				rules,
+				rules: [
+					...rules,
+					{
+						test: /\.(png|jpg)$/i,
+						use: [
+							{
+								loader: 'file-loader',
+								options: {
+									name: '[name].[hash].[ext]',
+									publicPath: 'images/',
+									outputPath: '../images',
+								},
+							},
+							{
+								loader: ImageminPlugin.loader,
+								options: {
+									imageminOptions: {
+										plugins: [
+											'jpegtran',
+											'optipng',
+											'svgo',
+										],
+									},
+								},
+							},
+						],
+					},
+				],
 			},
 			plugins: [
 				new ProvidePlugin( {
