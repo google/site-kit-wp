@@ -26,11 +26,18 @@ import {
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/site connection', () => {
-	const responseConnected = { connected: true, resettable: true, setupCompleted: true };
+	const responseConnected = {
+		connected: true,
+		resettable: true,
+		setupCompleted: true,
+		hasConnectedAdmins: true,
+	};
+
 	let registry;
 	let select;
 	let store;
@@ -147,6 +154,47 @@ describe( 'core/site connection', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( connection ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'hasConnectedAdmins', () => {
+			it( 'uses a resolver get all connection info', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: responseConnected, status: 200 }
+				);
+
+				// The connection info will be its initial value while the connection
+				// info is fetched.
+				expect( select.hasConnectedAdmins() ).toBeUndefined();
+				await untilResolved( registry, STORE_NAME ).getConnection();
+
+				expect( select.hasConnectedAdmins() ).toEqual( responseConnected.hasConnectedAdmins );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
+					{ body: response, status: 500 }
+				);
+
+				muteConsole( 'error' );
+				select.hasConnectedAdmins();
+				await untilResolved( registry, STORE_NAME ).getConnection();
+
+				expect( select.hasConnectedAdmins() ).toBeUndefined();
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'returns undefined if connection info is not available', async () => {
+				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
+				expect( select.hasConnectedAdmins() ).toBeUndefined();
 			} );
 		} );
 
