@@ -35,6 +35,8 @@ describe( 'core/site site info', () => {
 		ampMode: 'reader',
 		homeURL: 'http://something.test/homepage',
 		referenceSiteURL: 'http://something.test',
+		proxyPermissionsURL: '', // not available until site is authenticated
+		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/', // params omitted
 		siteName: 'Something Test',
 		timezone: 'America/Denver',
 		usingProxy: true,
