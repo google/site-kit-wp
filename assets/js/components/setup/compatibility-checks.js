@@ -167,7 +167,9 @@ export default class CompatibilityChecks extends Component {
 					/>
 				</p>;
 			case ERROR_TOKEN_MISMATCH:
-				return <p>{ __( 'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.', 'google-site-kit' ) }</p>;
+				return <p>
+					{ __( 'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.', 'google-site-kit' ) }
+				</p>;
 			case ERROR_GOOGLE_API_CONNECTION_FAIL:
 				return <Fragment>
 					<p
