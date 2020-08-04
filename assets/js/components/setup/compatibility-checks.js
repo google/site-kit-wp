@@ -174,8 +174,9 @@ export default class CompatibilityChecks extends Component {
 						dangerouslySetInnerHTML={ sanitizeHTML(
 							sprintf(
 							/* translators: %s: Support Forum URL */
-								__( 'Looks like your site is having a technical issue with requesting data from Google services.<br/>To get more help, ask a question on our <a href="%s">support forum</a> and include the text of the original error message:<br/>', 'google-site-kit' ),
-								'https://wordpress.org/support/plugin/google-site-kit/'
+								__( 'Looks like your site is having a technical issue with requesting data from Google services.<br/>To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message:<br/>%2$s', 'google-site-kit' ),
+								'https://wordpress.org/support/plugin/google-site-kit/',
+								error
 							),
 							{
 								ALLOWED_TAGS: [ 'a', 'br' ],
@@ -184,7 +185,6 @@ export default class CompatibilityChecks extends Component {
 						) }
 
 					/>
-					<p>{ error }</p>
 				</Fragment>;
 			case ERROR_AMP_CDN_RESTRICTED:
 				return <Fragment>
@@ -192,17 +192,16 @@ export default class CompatibilityChecks extends Component {
 						dangerouslySetInnerHTML={ sanitizeHTML(
 							sprintf(
 							/* translators: %s: Support Forum URL */
-								__( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.<br/>To get more help, ask a question on our <a href="%s">support forum</a> and include the text of the original error message:<br/>', 'google-site-kit' ),
-								'https://wordpress.org/support/plugin/google-site-kit/'
+								__( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.<br/>To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message:<br/>%2$s', 'google-site-kit' ),
+								'https://wordpress.org/support/plugin/google-site-kit/',
+								error
 							),
 							{
 								ALLOWED_TAGS: [ 'a', 'br' ],
 								ALLOWED_ATTR: [ 'href' ],
 							}
 						) }
-
 					/>
-					<p>{ error }</p>
 				</Fragment>;
 		}
 	}
