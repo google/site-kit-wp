@@ -173,7 +173,7 @@ export default class CompatibilityChecks extends Component {
 					<p
 						dangerouslySetInnerHTML={ sanitizeHTML(
 							sprintf(
-							/* translators: %s: Support Forum URL */
+								/* translators: %1$s: Support Forum URL, %2$s: Error message */
 								__( 'Looks like your site is having a technical issue with requesting data from Google services.<br/>To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message:<br/>%2$s', 'google-site-kit' ),
 								'https://wordpress.org/support/plugin/google-site-kit/',
 								error
@@ -191,7 +191,7 @@ export default class CompatibilityChecks extends Component {
 					<p
 						dangerouslySetInnerHTML={ sanitizeHTML(
 							sprintf(
-							/* translators: %s: Support Forum URL */
+								/* translators: %1$s: Support Forum URL, %2$s: Error message */
 								__( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.<br/>To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message:<br/>%2$s', 'google-site-kit' ),
 								'https://wordpress.org/support/plugin/google-site-kit/',
 								error
