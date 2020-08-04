@@ -974,7 +974,7 @@ final class Analytics extends Module
 				$orderby = $data['orderby'];
 				if ( ! empty( $orderby ) && is_array( $orderby ) ) {
 					// When just object is passed we need to convert it to an array of objects.
-					if ( ! wp_is_numeric_array( $orderby[0] ) ) {
+					if ( ! wp_is_numeric_array( $orderby ) ) {
 						$orderby = array( $orderby );
 					}
 
