@@ -45,6 +45,7 @@ import { getCurrentDateRange } from '../../../../util/date-range';
 import HelpLink from '../../../../components/help-link';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+
 const { useSelect } = Data;
 
 const GoogleSitekitSearchConsoleDashboardWidget = () => {
