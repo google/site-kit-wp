@@ -971,41 +971,9 @@ final class Analytics extends Module
 				}
 
 				// Order by.
-				$orderby = $data['orderby'];
-				if ( ! empty( $orderby ) && is_array( $orderby ) ) {
-					// When just object is passed we need to convert it to an array of objects.
-					if ( ! wp_is_numeric_array( $orderby ) ) {
-						$orderby = array( $orderby );
-					}
-
-					$orderby = array_filter(
-						array_map(
-							function ( $order_def ) {
-								$order_def = array_merge(
-									array(
-										'fieldName' => '',
-										'sortOrder' => 'DESCENDING',
-									),
-									(array) $order_def
-								);
-
-								if ( empty( $order_def['fieldName'] ) ) {
-									return null;
-								}
-
-								$order_by = new Google_Service_AnalyticsReporting_OrderBy();
-								$order_by->setFieldName( $order_def['fieldName'] );
-								$order_by->setSortOrder( $order_def['sortOrder'] );
-		
-								return $order_by;
-							},
-							$orderby
-						)
-					);
-
-					if ( ! empty( $orderby ) ) {
-						$request->setOrderBys( $orderby );
-					}
+				$orderby = $this->parse_data_orderby( $data );
+				if ( ! empty( $orderby ) ) {
+					$request->setOrderBys( $orderby );
 				}
 
 				// Batch reports requests.
@@ -1092,6 +1060,48 @@ final class Analytics extends Module
 		}
 
 		throw new Invalid_Datapoint_Exception();
+	}
+
+	/**
+	 * Parses orderby value of the data request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 *
+	 * @return array An array of parsed orders.
+	 */
+	protected function parse_data_orderby( Data_Request $data ) {
+		$orderby = $data['orderby'];
+		if ( empty( $orderby ) || ! is_array( $orderby ) ) {
+			return array();
+		}
+
+		return array_filter(
+			array_map(
+				function ( $order_def ) {
+					$order_def = array_merge(
+						array(
+							'fieldName' => '',
+							'sortOrder' => 'DESCENDING',
+						),
+						(array) $order_def
+					);
+
+					if ( empty( $order_def['fieldName'] ) ) {
+						return null;
+					}
+
+					$order_by = new Google_Service_AnalyticsReporting_OrderBy();
+					$order_by->setFieldName( $order_def['fieldName'] );
+					$order_by->setSortOrder( $order_def['sortOrder'] );
+
+					return $order_by;
+				},
+				// When just object is passed we need to convert it to an array of objects.
+				wp_is_numeric_array( $orderby ) ? $orderby : array( $orderby )
+			)
+		);
 	}
 
 	/**

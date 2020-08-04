@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
@@ -26,7 +27,9 @@ use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Resource_ManagementWebproperties;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_OrderBy;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
+use \ReflectionMethod;
 
 /**
  * @group Modules
@@ -458,4 +461,50 @@ class AnalyticsTest extends TestCase {
 	protected function get_module_with_settings() {
 		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
+
+	public function test_parse_data_orderby() {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$reflected_parse_data_orderby_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'parse_data_orderby' );
+		$reflected_parse_data_orderby_method->setAccessible( true );
+
+		// When there is no orderby in the request.
+		$result = $reflected_parse_data_orderby_method->invoke( $analytics, new Data_Request( 'GET', null, null, 'report', array() ) );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEmpty( $result );
+
+		// When a single order object is used.
+		$order  = array(
+			'fieldName' => 'views',
+			'sortOrder' => 'ASCENDING',
+		);
+		$result = $reflected_parse_data_orderby_method->invoke( $analytics, new Data_Request( 'GET', null, null, 'report', array( 'orderby' => $order ) ) );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 1, count( $result ) );
+		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( $order['fieldName'], $result[0]->getFieldName() );
+		$this->assertEquals( $order['sortOrder'], $result[0]->getSortOrder() );
+
+		// When multiple orders are passed.
+		$orders = array(
+			array(
+				'fieldName' => 'pages',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => 'sessions',
+				'sortOrder' => 'ASCENDING',
+			),
+		);
+		$result = $reflected_parse_data_orderby_method->invoke( $analytics, new Data_Request( 'GET', null, null, 'report', array( 'orderby' => $orders ) ) );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 2, count( $result ) );
+		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( $orders[0]['fieldName'], $result[0]->getFieldName() );
+		$this->assertEquals( $orders[0]['sortOrder'], $result[0]->getSortOrder() );
+		$this->assertTrue( $result[1] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( $orders[1]['fieldName'], $result[1]->getFieldName() );
+		$this->assertEquals( $orders[1]['sortOrder'], $result[1]->getSortOrder() );
+	}
+
 }
