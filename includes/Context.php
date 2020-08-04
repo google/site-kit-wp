@@ -200,8 +200,7 @@ final class Context {
 
 			$post = get_post();
 			if ( $post instanceof \WP_Post ) {
-				$post_type = get_post_type_object( $post->post_type );
-				if ( empty( $post_type->public ) || 'publish' !== get_post_status( $post ) ) {
+				if ( ! is_post_type_viewable( $post->post_type ) || 'publish' !== get_post_status( $post ) ) {
 					return null;
 				}
 
