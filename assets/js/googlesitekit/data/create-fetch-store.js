@@ -181,6 +181,7 @@ export const createFetchStore = ( {
 			invariant( response !== undefined, 'response is required.' );
 			if ( requiresParams ) {
 				invariant( isPlainObject( params ), 'params is required.' );
+				validateParams( params );
 			} else {
 				params = {};
 			}
@@ -254,6 +255,7 @@ export const createFetchStore = ( {
 			let params;
 			try {
 				params = argsToParams( ...args );
+				validateParams( params );
 			} catch ( err ) {
 				// If parameters are invalid, fail silently here. It likely is
 				// because some dependency selector is still resolving.
