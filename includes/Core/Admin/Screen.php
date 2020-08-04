@@ -129,7 +129,7 @@ final class Screen {
 						$this->args['capability'],
 						$this->slug,
 						'',
-						$context->url( 'dist/assets/images/logo-g_white_small.png' )
+						'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDMiIGhlaWdodD0iNDQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxwYXRoIGQ9Ik00Mi41IDE4SDIydjguNWgxMS44QzMyLjcgMzEuOSAyOC4xIDM1IDIyIDM1Yy03LjIgMC0xMy01LjgtMTMtMTNTMTQuOCA5IDIyIDljMy4xIDAgNS45IDEuMSA4LjEgMi45bDYuNC02LjRDMzIuNiAyLjEgMjcuNiAwIDIyIDAgOS44IDAgMCA5LjggMCAyMnM5LjggMjIgMjIgMjJjMTEgMCAyMS04IDIxLTIyIDAtMS4zLS4yLTIuNy0uNS00eiIgaWQ9ImEiLz48L2RlZnM+PHVzZSBmaWxsPSIjRkZGIiB4bGluazpocmVmPSIjYSIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+'
 					);
 					$menu_slug = $this->slug;
 				}

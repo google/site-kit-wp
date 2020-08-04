@@ -153,7 +153,7 @@ const webpackConfig = ( mode ) => {
 							{
 								loader: 'file-loader',
 								options: {
-									name: '[name].[hash].[ext]',
+									name: '[name].[ext]',
 									publicPath: 'images/',
 									outputPath: '../images',
 								},
