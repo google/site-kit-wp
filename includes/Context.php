@@ -200,6 +200,13 @@ final class Context {
 
 			$post = get_post();
 			if ( $post instanceof \WP_Post ) {
+				$post_type = get_post_type_object( $post->post_type );
+				if ( empty( $post_type->public ) ) {
+					return null;
+				}
+				if ( 'publish' !== $post->post_status && ! ( 'attachment' === $post->post_type && 'inherit' === $post->post_status ) ) {
+					return null;
+				}
 				return $this->create_entity_for_post( $post );
 			}
 			return null;
