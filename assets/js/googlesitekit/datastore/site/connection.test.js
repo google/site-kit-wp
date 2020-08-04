@@ -157,23 +157,34 @@ describe( 'core/site connection', () => {
 			} );
 		} );
 
-		describe( 'hasConnectedAdmins', () => {
-			it( 'uses a resolver get all connection info', async () => {
+		describe.each( [
+			[ 'hasConnectedAdmins', 'hasConnectedAdmins' ],
+			[ 'isConnected', 'connected' ],
+			[ 'isResettable', 'resettable' ],
+			[ 'isSetupCompleted', 'setupCompleted' ],
+		] )( `%s`, ( selector, connectionKey ) => {
+			it( `references the "${ connectionKey }" key in the connection data`, () => {
+				registry.dispatch( STORE_NAME ).receiveGetConnection( responseConnected );
+
+				const connection = registry.select( STORE_NAME ).getConnection();
+
+				expect( connection ).toHaveProperty( connectionKey );
+			} );
+
+			it( 'depends on the getConnection selector and resolver', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: responseConnected, status: 200 }
 				);
 
-				// The connection info will be its initial value while the connection
-				// info is fetched.
-				expect( select.hasConnectedAdmins() ).toBeUndefined();
+				expect( select[ selector ]() ).toBeUndefined();
 				await untilResolved( registry, STORE_NAME ).getConnection();
 
-				expect( select.hasConnectedAdmins() ).toEqual( responseConnected.hasConnectedAdmins );
+				expect( select[ selector ]() ).toEqual( responseConnected[ connectionKey ] );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'dispatches an error if the request fails', async () => {
+			it( 'dispatches an error if the request fails while resolving', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -185,184 +196,16 @@ describe( 'core/site connection', () => {
 				);
 
 				muteConsole( 'error' );
-				select.hasConnectedAdmins();
+				select[ selector ]();
 				await untilResolved( registry, STORE_NAME ).getConnection();
 
-				expect( select.hasConnectedAdmins() ).toBeUndefined();
+				expect( select[ selector ]() ).toBeUndefined();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
 				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
-				expect( select.hasConnectedAdmins() ).toBeUndefined();
-			} );
-		} );
-
-		describe( 'isConnected', () => {
-			it( 'uses a resolver get all connection info', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: responseConnected, status: 200 }
-				);
-
-				const initialIsConnected = select.isConnected();
-				// The connection info will be its initial value while the connection
-				// info is fetched.
-				expect( initialIsConnected ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						select.isConnected() !== undefined
-					),
-				);
-
-				const isConnected = select.isConnected();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( isConnected ).toEqual( responseConnected.connected );
-			} );
-
-			it( 'dispatches an error if the request fails', async () => {
-				const response = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: response, status: 500 }
-				);
-
-				muteConsole( 'error' );
-				select.isConnected();
-				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => select.isFetchingGetConnection() === false,
-				);
-
-				const isConnected = select.isConnected();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( isConnected ).toEqual( undefined );
-			} );
-
-			it( 'returns undefined if connection info is not available', async () => {
-				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
-				const isConnected = select.isConnected();
-
-				expect( isConnected ).toEqual( undefined );
-			} );
-		} );
-
-		describe( 'isResettable', () => {
-			it( 'uses a resolver get all connection info', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: responseConnected, status: 200 }
-				);
-
-				const initialIsResettable = select.isResettable();
-				// The connection info will be its initial value while the connection
-				// info is fetched.
-				expect( initialIsResettable ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						select.isResettable() !== undefined
-					),
-				);
-
-				const isResettable = select.isResettable();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( isResettable ).toEqual( responseConnected.resettable );
-			} );
-
-			it( 'dispatches an error if the request fails', async () => {
-				const response = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: response, status: 500 }
-				);
-
-				muteConsole( 'error' );
-				select.isResettable();
-				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => select.isFetchingGetConnection() === false,
-				);
-
-				const isResettable = select.isResettable();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( isResettable ).toEqual( undefined );
-			} );
-
-			it( 'returns undefined if connection info is not available', async () => {
-				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
-				const isResettable = select.isResettable();
-
-				expect( isResettable ).toEqual( undefined );
-			} );
-		} );
-
-		describe( 'isSetupCompleted', () => {
-			it( 'uses a resolver get all connection info', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: responseConnected, status: 200 }
-				);
-
-				const initialIsSetupCompleted = select.isSetupCompleted();
-				// The connection info will be its initial value while the connection
-				// info is fetched.
-				expect( initialIsSetupCompleted ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						select.isSetupCompleted() !== undefined
-					),
-				);
-
-				const isSetupCompleted = select.isSetupCompleted();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( isSetupCompleted ).toEqual( responseConnected.setupCompleted );
-			} );
-
-			it( 'dispatches an error if the request fails', async () => {
-				const response = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: response, status: 500 }
-				);
-
-				muteConsole( 'error' );
-				select.isSetupCompleted();
-				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => select.isFetchingGetConnection() === false,
-				);
-
-				const isSetupCompleted = select.isSetupCompleted();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( isSetupCompleted ).toEqual( undefined );
-			} );
-
-			it( 'returns undefined if connection info is not available', async () => {
-				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
-				const isSetupCompleted = select.isSetupCompleted();
-
-				expect( isSetupCompleted ).toEqual( undefined );
+				expect( select[ selector ]() ).toBeUndefined();
 			} );
 		} );
 	} );
