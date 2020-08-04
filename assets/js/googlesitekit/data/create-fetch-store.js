@@ -132,49 +132,49 @@ export const createFetchStore = ( {
 		[ isFetching ]: {},
 	};
 
-	const actions = {
-		*[ fetchCreator ]( ...args ) {
-			let response;
-			let error;
-			let params;
+	function *fetchGenerator( params ) {
+		let response;
+		let error;
 
-			try {
-				params = argsToParams( ...args );
-			} catch ( err ) {
-				// Parameters should never be invalid here, this needs to be
-				// strict and inform the developer of the issue.
-				global.console.error( err.message );
-				error = err;
-				return { response, error };
-			}
+		yield {
+			payload: { params },
+			type: START_FETCH,
+		};
+
+		try {
+			response = yield {
+				payload: { params },
+				type: FETCH,
+			};
+
+			yield actions[ receiveCreator ]( response, params );
 
 			yield {
 				payload: { params },
-				type: START_FETCH,
+				type: FINISH_FETCH,
 			};
+		} catch ( e ) {
+			error = e;
 
-			try {
-				response = yield {
-					payload: { params },
-					type: FETCH,
-				};
+			yield {
+				payload: { error, params },
+				type: CATCH_FETCH,
+			};
+		}
 
-				yield actions[ receiveCreator ]( response, params );
+		return { response, error };
+	}
 
-				yield {
-					payload: { params },
-					type: FINISH_FETCH,
-				};
-			} catch ( e ) {
-				error = e;
+	const actions = {
+		[ fetchCreator ]( ...args ) {
+			const params = argsToParams( ...args );
+			// In order for params validation to throw an error as expected,
+			// this function cannot be a generator.
+			validateParams( params );
 
-				yield {
-					payload: { error, params },
-					type: CATCH_FETCH,
-				};
-			}
-
-			return { response, error };
+			// The normal fetch action generator is invoked as the return here
+			// to preserve asynchronous behavior without registering another action creator.
+			return fetchGenerator( params );
 		},
 
 		[ receiveCreator ]( response, params ) {
