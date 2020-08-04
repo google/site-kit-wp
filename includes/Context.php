@@ -14,6 +14,7 @@ use AMP_Options_Manager;
 use AMP_Theme_Support;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\Entity;
+use WP_Screen;
 
 /**
  * Class representing the context in which the plugin is running.
@@ -196,6 +197,11 @@ final class Context {
 				if ( ! empty( $entity_url_query_param ) ) {
 					return $this->get_reference_entity_from_url( $entity_url_query_param );
 				}
+			}
+
+			$screen = get_current_screen();
+			if ( ! $screen instanceof WP_Screen || 'post' !== $screen->base || 'edit' !== $screen->parent_base ) {
+				return null;
 			}
 
 			$post = get_post();
