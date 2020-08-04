@@ -164,23 +164,29 @@ describe( 'core/site connection', () => {
 			[ 'isConnected', 'connected' ],
 			[ 'isResettable', 'resettable' ],
 			[ 'isSetupCompleted', 'setupCompleted' ],
-		] )( '%s', ( method, propertyName ) => {
-			it( 'uses a resolver get all connection info', async () => {
+		] )( `%s`, ( selector, connectionKey ) => {
+			it( `references the "${ connectionKey }" key in the connection data`, () => {
+				registry.dispatch( STORE_NAME ).receiveGetConnection( responseConnected );
+
+				const connection = registry.select( STORE_NAME ).getConnection();
+
+				expect( connection ).toHaveProperty( connectionKey );
+			} );
+
+			it( 'depends on the getConnection selector and resolver', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: responseConnected, status: 200 }
 				);
 
-				// The connection info will be its initial value while the connection
-				// info is fetched.
-				expect( select[ method ]() ).toBeUndefined();
+				expect( select[ selector ]() ).toBeUndefined();
 				await untilResolved( registry, STORE_NAME ).getConnection();
 
-				expect( select[ method ]() ).toEqual( responseConnected[ propertyName ] );
+				expect( select[ selector ]() ).toEqual( responseConnected[ connectionKey ] );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'dispatches an error if the request fails', async () => {
+			it( 'dispatches an error if the request fails while resolving', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -192,16 +198,16 @@ describe( 'core/site connection', () => {
 				);
 
 				muteConsole( 'error' );
-				select[ method ]();
+				select[ selector ]();
 				await untilResolved( registry, STORE_NAME ).getConnection();
 
-				expect( select[ method ]() ).toBeUndefined();
+				expect( select[ selector ]() ).toBeUndefined();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {
 				muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
-				expect( select[ method ]() ).toBeUndefined();
+				expect( select[ selector ]() ).toBeUndefined();
 			} );
 		} );
 	} );
