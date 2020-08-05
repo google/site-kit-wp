@@ -140,7 +140,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 					 *
 					 * @param string $client_id AdSense client ID used in the tag.
 					 */
-					do_action( 'googlesitekit_init_adsense_tag_amp', $client_id );
+					do_action( 'googlesitekit_adsense_init_tag_amp', $client_id );
 				} else {
 					add_action( // For non-AMP.
 						'wp_head',
@@ -158,7 +158,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 					 *
 					 * @param string $client_id AdSense client ID used in the tag.
 					 */
-					do_action( 'googlesitekit_init_adsense_tag', $client_id );
+					do_action( 'googlesitekit_adsense_init_tag', $client_id );
 				}
 			}
 		);

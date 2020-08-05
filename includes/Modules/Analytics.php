@@ -165,7 +165,7 @@ final class Analytics extends Module
 					 *
 					 * @param string $property_id Analytics property ID used in the tag.
 					 */
-					do_action( 'googlesitekit_init_analytics_tag_amp', $property_id );
+					do_action( 'googlesitekit_analytics_init_tag_amp', $property_id );
 				} else {
 					add_action( // For non-AMP.
 						'wp_enqueue_scripts',
@@ -184,7 +184,7 @@ final class Analytics extends Module
 					 *
 					 * @param string $property_id Analytics property ID used in the tag.
 					 */
-					do_action( 'googlesitekit_init_analytics_tag', $property_id );
+					do_action( 'googlesitekit_analytics_init_tag', $property_id );
 				}
 			}
 		);

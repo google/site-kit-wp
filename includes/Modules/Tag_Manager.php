@@ -147,7 +147,7 @@ final class Tag_Manager extends Module
 					 *
 					 * @param string $container_id Tag Manager container ID used in the tag.
 					 */
-					do_action( 'googlesitekit_init_tagmanager_tag_amp', $container_id );
+					do_action( 'googlesitekit_tagmanager_init_tag_amp', $container_id );
 				} else {
 					add_action( // For non-AMP.
 						'wp_head',
@@ -173,7 +173,7 @@ final class Tag_Manager extends Module
 					 *
 					 * @param string $container_id Tag Manager container ID used in the tag.
 					 */
-					do_action( 'googlesitekit_init_tagmanager_tag', $container_id );
+					do_action( 'googlesitekit_tagmanager_init_tag', $container_id );
 				}
 			}
 		);
