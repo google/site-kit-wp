@@ -1063,7 +1063,7 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Parses orderby value of the data request.
+	 * Parses the orderby value of the data request into an array of reporting orderby object instances.
 	 *
 	 * @since n.e.x.t
 	 *
