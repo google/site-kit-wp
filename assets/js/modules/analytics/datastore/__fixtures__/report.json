@@ -1,0 +1,20 @@
+[
+	{
+		"columnHeader": {
+			"dimensions": null,
+			"metricHeader": {
+				"metricHeaderEntries": [
+					{
+						"name": "ga:sessionDuration",
+						"type": "TIME"
+					}
+				]
+			}
+		},
+		"data": {
+			"dataLastRefreshed": null,
+			"isDataGolden": true,
+			"rows": []
+		}
+	}
+]

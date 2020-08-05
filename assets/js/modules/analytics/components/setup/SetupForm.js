@@ -37,12 +37,12 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	AccountSelect,
-	ErrorNotice,
 	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
 } from '../common';
+import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 import { trackEvent } from '../../../../util';
 import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 const { useSelect, useDispatch } = Data;
@@ -84,8 +84,7 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-analytics-setup__form"
 			onSubmit={ submitForm }
 		>
-			<ErrorNotice />
-
+			<StoreErrorNotice storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (
