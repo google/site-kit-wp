@@ -1069,7 +1069,7 @@ final class Analytics extends Module
 	 *
 	 * @param Data_Request $data Data request object.
 	 *
-	 * @return array An array of parsed orders.
+	 * @return Google_Service_AnalyticsReporting_OrderBy[] An array of reporting orderby objects.
 	 */
 	protected function parse_data_orderby( Data_Request $data ) {
 		$orderby = $data['orderby'];
