@@ -331,14 +331,14 @@ final class Analytics extends Module
 	 * Outputs gtag snippet.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t The `$tracking_id` parameter was added.
+	 * @since n.e.x.t The `$property_id` parameter was added.
 	 *
-	 * @param string $tracking_id Analytics property ID to use in the snippet.
+	 * @param string $property_id Analytics property ID to use in the snippet.
 	 */
-	protected function enqueue_gtag_js( $tracking_id ) {
+	protected function enqueue_gtag_js( $property_id ) {
 		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			'google_gtagjs',
-			'https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $tracking_id ),
+			'https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $property_id ),
 			false,
 			null,
 			false
@@ -393,12 +393,12 @@ final class Analytics extends Module
 		if ( empty( $gtag_opt ) ) {
 			wp_add_inline_script(
 				'google_gtagjs',
-				'gtag(\'config\', \'' . esc_attr( $tracking_id ) . '\');'
+				'gtag(\'config\', \'' . esc_attr( $property_id ) . '\');'
 			);
 		} else {
 			wp_add_inline_script(
 				'google_gtagjs',
-				'gtag(\'config\', \'' . esc_attr( $tracking_id ) . '\', ' . wp_json_encode( $gtag_opt ) . ' );'
+				'gtag(\'config\', \'' . esc_attr( $property_id ) . '\', ' . wp_json_encode( $gtag_opt ) . ' );'
 			);
 		}
 	}
@@ -407,16 +407,16 @@ final class Analytics extends Module
 	 * Outputs gtag <amp-analytics> tag.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t The `$tracking_id` parameter was added.
+	 * @since n.e.x.t The `$property_id` parameter was added.
 	 *
-	 * @param string $tracking_id Analytics property ID to use in the snippet.
+	 * @param string $property_id Analytics property ID to use in the snippet.
 	 */
-	protected function print_amp_gtag( $tracking_id ) {
+	protected function print_amp_gtag( $property_id ) {
 		$gtag_amp_opt = array(
 			'vars'            => array(
-				'gtag_id' => $tracking_id,
+				'gtag_id' => $property_id,
 				'config'  => array(
-					$tracking_id => array(
+					$property_id => array(
 						'groups' => 'default',
 						'linker' => array(
 							'domains' => array( $this->get_home_domain() ),
@@ -449,7 +449,7 @@ final class Analytics extends Module
 			$gtag_amp_opt_filtered['vars'] = $gtag_amp_opt['vars'];
 		}
 
-		$gtag_amp_opt_filtered['vars']['gtag_id'] = $tracking_id;
+		$gtag_amp_opt_filtered['vars']['gtag_id'] = $property_id;
 		?>
 		<amp-analytics type="gtag" data-credentials="include">
 			<script type="application/json">

@@ -63,7 +63,7 @@ class Tag_ManagerTest extends TestCase {
 		$tagmanager->set_data(
 			'container-id',
 			array(
-				'containerID'  => '9999999',
+				'containerID'  => 'GTM-999999',
 				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
 			)
 		);
@@ -100,7 +100,7 @@ class Tag_ManagerTest extends TestCase {
 		$tagmanager->set_data(
 			'container-id',
 			array(
-				'containerID'  => '9999999',
+				'containerID'  => 'GTM-999999',
 				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
 			)
 		);
@@ -123,7 +123,7 @@ class Tag_ManagerTest extends TestCase {
 		$tagmanager->set_data(
 			'container-id',
 			array(
-				'containerID'  => '9999999',
+				'containerID'  => 'GTM-999999',
 				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
 			)
 		);
@@ -143,7 +143,7 @@ class Tag_ManagerTest extends TestCase {
 		$tagmanager->set_data(
 			'container-id',
 			array(
-				'containerID'  => '9999999',
+				'containerID'  => 'GTM-999999',
 				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
 			)
 		);
@@ -163,7 +163,7 @@ class Tag_ManagerTest extends TestCase {
 		$tagmanager->set_data(
 			'container-id',
 			array(
-				'containerID'  => '9999999',
+				'containerID'  => 'GTM-999999',
 				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
 			)
 		);
@@ -174,7 +174,7 @@ class Tag_ManagerTest extends TestCase {
 		$tagmanager->set_data(
 			'container-id',
 			array(
-				'containerID'  => '9999999',
+				'containerID'  => 'GTM-999999',
 				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
 			)
 		);

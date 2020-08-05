@@ -252,6 +252,8 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			return;
 		}
 
+		$this->adsense_tag_printed = true;
+
 		// If we haven't completed the account connection yet, we still insert the AdSense tag
 		// because it is required for account verification.
 		?>
@@ -264,7 +266,6 @@ tag_partner: "site_kit"
 });
 </script>
 		<?php
-		$this->adsense_tag_printed = true;
 	}
 
 	/**
@@ -279,10 +280,11 @@ tag_partner: "site_kit"
 			return;
 		}
 
+		$this->adsense_tag_printed = true;
+
 		?>
 		<amp-auto-ads type="adsense" data-ad-client="<?php echo esc_attr( $client_id ); ?>"></amp-auto-ads>
 		<?php
-		$this->adsense_tag_printed = true;
 	}
 
 	/**
