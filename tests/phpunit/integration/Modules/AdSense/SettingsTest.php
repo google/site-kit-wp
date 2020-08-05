@@ -59,6 +59,7 @@ class SettingsTest extends SettingsTestCase {
 				'accountSetupComplete' => false,
 				'siteSetupComplete'    => false,
 				'useSnippet'           => true,
+				'ownerID'              => 0,
 			),
 			get_option( Settings::OPTION )
 		);

@@ -299,6 +299,7 @@ class AnalyticsTest extends TestCase {
 					'anonymizeIP'           => true,
 					'adsenseLinked'         => false,
 					'trackingDisabled'      => array( 'loggedinUsers' ),
+					'ownerID'               => 108, // Not sure why this is 108.
 				),
 				$analytics->get_settings()->get()
 			);

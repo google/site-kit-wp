@@ -41,10 +41,12 @@ trait Setting_With_Owned_Keys_Trait {
 		add_filter(
 			'pre_update_option_' . static::OPTION,
 			function( $value, $old_value ) use ( $keys ) {
-				foreach ( $keys as $key ) {
-					if ( $value[ $key ] !== $old_value[ $key ] ) {
-						$value['ownerID'] = get_current_user_id();
-						break;
+				if ( is_array( $value ) && is_array( $old_value ) ) {
+					foreach ( $keys as $key ) {
+						if ( isset( $value[ $key ] ) && isset( $old_value[ $key ] ) && $value[ $key ] !== $old_value[ $key ] ) {
+							$value['ownerID'] = get_current_user_id();
+							break;
+						}
 					}
 				}
 

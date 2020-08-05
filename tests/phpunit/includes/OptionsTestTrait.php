@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Tests;
 
 use Google\Site_Kit\Core\Authentication\Credentials;
-use Google\Site_Kit\Core\Authentication\First_Admin;
 use Google\Site_Kit\Core\Util\Activation_Flag;
 use Google\Site_Kit\Core\Util\Beta_Migration;
 use Google\Site_Kit\Modules\AdSense;
@@ -33,7 +32,6 @@ trait OptionsTestTrait {
 			AdSense\Settings::OPTION,
 			Analytics\Settings::OPTION,
 			Credentials::OPTION,
-			First_Admin::OPTION,
 			Optimize\Settings::OPTION,
 			Search_Console\Settings::OPTION,
 			Tag_Manager\Settings::OPTION,

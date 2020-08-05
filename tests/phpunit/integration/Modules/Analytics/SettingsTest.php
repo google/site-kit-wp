@@ -99,6 +99,7 @@ class SettingsTest extends SettingsTestCase {
 				'profileID'             => '',
 				'internalWebPropertyID' => '',
 				'useSnippet'            => true,
+				'ownerID'               => 0,
 				'anonymizeIP'           => true,
 				'trackingDisabled'      => array( 'loggedinUsers' ),
 				'adsenseLinked'         => false,

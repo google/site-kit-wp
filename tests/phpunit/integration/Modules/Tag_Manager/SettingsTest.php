@@ -33,6 +33,7 @@ class SettingsTest extends SettingsTestCase {
 				'useSnippet'             => true,
 				'internalContainerID'    => '',
 				'internalAMPContainerID' => '',
+				'ownerID'                => 0,
 			),
 			get_option( Settings::OPTION )
 		);

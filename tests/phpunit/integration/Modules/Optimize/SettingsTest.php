@@ -29,6 +29,7 @@ class SettingsTest extends SettingsTestCase {
 			array(
 				'optimizeID'        => '',
 				'ampExperimentJSON' => '',
+				'ownerID'           => 0,
 			),
 			get_option( Settings::OPTION )
 		);
