@@ -25,7 +25,10 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { parseDomain } from '../util/url';
+
 const { createRegistrySelector } = Data;
 
 export const selectors = {
@@ -51,6 +54,92 @@ export const selectors = {
 			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, query );
 		}
 		return addQueryArgs( baseURI, query );
+	} ),
+
+	/**
+	 * Returns the URL for creating a new AdSense account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state                  Data store's state.
+	 * @param {(string|undefined)} [siteURL] The initial site URL to create the account for
+	 * @return {string} AdSense URL to create a new account.
+	 */
+	getCreateAccountURL( state, siteURL ) {
+		const query = {
+			// TODO: Check which of these parameters are actually required.
+			source: 'site-kit',
+			utm_source: 'site-kit',
+			utm_medium: 'wordpress_signup',
+		};
+		if ( siteURL ) {
+			query.url = siteURL;
+		}
+		const baseURI = `https://www.google.com/adsense/signup/new`;
+		return addQueryArgs( baseURI, query );
+	},
+
+	/**
+	 * Returns the URL to an AdSense account's overview page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} AdSense account overview URL.
+	 */
+	getAccountURL: createRegistrySelector( ( select ) => () => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		if ( accountID === undefined ) {
+			return undefined;
+		}
+		const accountURL = select( STORE_NAME ).getServiceURL( { path: `${ accountID }/home`, query: { source: 'site-kit' } } );
+		return accountURL;
+	} ),
+
+	/**
+	 * Returns the URL to an AdSense account's site overview page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state                  Data store's state.
+	 * @param {(string|undefined)} [siteURL] The initial site URL to create the account for
+	 * @return {string} AdSense account site overview URL.
+	 */
+	getAccountSiteURL: createRegistrySelector( ( select ) => ( state, siteURL ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		if ( accountID === undefined ) {
+			return undefined;
+		}
+		const query = { source: 'site-kit' };
+		if ( siteURL ) {
+			query.url = parseDomain( siteURL ) || siteURL;
+		}
+		const accountSiteURL = select( STORE_NAME ).getServiceURL( { path: `${ accountID }/sites/my-sites`, query } );
+		return accountSiteURL;
+	} ),
+
+	/**
+	 * Returns the URL to an AdSense account's site ads preview page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}             options           Options for generating the URL.
+	 * @param {(string|undefined)} options.accountID The AdSense account ID.
+	 * @param {(string|undefined)} options.siteURL   The site URL to link to in AdSense.
+	 * @param {(string|undefined)} options.userEmail The Google account email address. Relevant
+	 *                                               for users with multiple Google accounts.
+	 * @return {string} AdSense account site ads preview URL.
+	 */
+	getAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => ( state, siteURL ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		if ( accountID === undefined ) {
+			return undefined;
+		}
+		const query = { source: 'site-kit' };
+		if ( siteURL ) {
+			query.url = parseDomain( siteURL ) || siteURL;
+		}
+		const accountSiteAdsPreviewURL = select( STORE_NAME ).getServiceURL( { path: `${ accountID }/myads/sites/preview`, query } );
+		return accountSiteAdsPreviewURL;
 	} ),
 };
 

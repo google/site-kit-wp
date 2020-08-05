@@ -27,10 +27,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/link';
 import ProgressBar from '../../../../components/progress-bar';
-import {
-	getAccountSiteURL,
-	getAccountSiteAdsPreviewURL,
-} from '../../util/url';
 import { STORE_NAME } from '../../datastore';
 import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
@@ -40,14 +36,13 @@ export default function SiteSteps() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
 	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
+	// Site status is only displayed in sites list view, so do not pass siteURL here.
+	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteURL() );
+	const enableAutoAdsURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteAdsPreviewURL( siteURL ) );
 
 	if ( ! accountID || ! siteURL || ! userEmail ) {
 		return <ProgressBar small />;
 	}
-
-	const enableAutoAdsURL = getAccountSiteAdsPreviewURL( { accountID, siteURL, userEmail } );
-	// Site status is only displayed in sites list view, so do not pass siteURL here.
-	const siteStatusURL = getAccountSiteURL( { accountID, userEmail } );
 
 	const steps = [
 		{
