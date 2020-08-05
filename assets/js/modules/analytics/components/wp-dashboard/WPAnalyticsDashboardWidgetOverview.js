@@ -157,7 +157,7 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'WPDashboard',
 			toState( state, { data } ) {
-				if ( ! state.totalUsers ) {
+				if ( false === state.totalUsers ) {
 					return parseTotalUsersData( data );
 				}
 			},
