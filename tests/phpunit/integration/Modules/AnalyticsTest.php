@@ -26,8 +26,9 @@ use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Resource_ManagementWebproperties;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_OrderBy;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
-use ReflectionMethod;
+use \ReflectionMethod;
 
 /**
  * @group Modules
@@ -459,4 +460,79 @@ class AnalyticsTest extends TestCase {
 	protected function get_module_with_settings() {
 		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
+
+	public function test_parse_reporting_orderby() {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$reflected_parse_reporting_orderby_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'parse_reporting_orderby' );
+		$reflected_parse_reporting_orderby_method->setAccessible( true );
+
+		// When there is no orderby in the request.
+		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, array() );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEmpty( $result );
+
+		// When a single order object is used.
+		$order  = array(
+			'fieldName' => 'views',
+			'sortOrder' => 'ASCENDING',
+		);
+		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, $order );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 1, count( $result ) );
+		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( 'views', $result[0]->getFieldName() );
+		$this->assertEquals( 'ASCENDING', $result[0]->getSortOrder() );
+
+		// When multiple orders are passed.
+		$orders = array(
+			array(
+				'fieldName' => 'pages',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => 'sessions',
+				'sortOrder' => 'ASCENDING',
+			),
+		);
+		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, $orders );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 2, count( $result ) );
+		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( 'pages', $result[0]->getFieldName() );
+		$this->assertEquals( 'DESCENDING', $result[0]->getSortOrder() );
+		$this->assertTrue( $result[1] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( 'sessions', $result[1]->getFieldName() );
+		$this->assertEquals( 'ASCENDING', $result[1]->getSortOrder() );
+
+		// Check that it skips invalid orders.
+		$orders = array(
+			array(
+				'fieldName' => 'views',
+				'sortOrder' => '',
+			),
+			array(
+				'fieldName' => 'pages',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => '',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => 'sessions',
+				'sortOrder' => 'ASCENDING',
+			),
+		);
+		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, $orders );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 2, count( $result ) );
+		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( 'pages', $result[0]->getFieldName() );
+		$this->assertEquals( 'DESCENDING', $result[0]->getSortOrder() );
+		$this->assertTrue( $result[1] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( 'sessions', $result[1]->getFieldName() );
+		$this->assertEquals( 'ASCENDING', $result[1]->getSortOrder() );
+	}
+
 }
