@@ -62,7 +62,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertFalse( $analytics->is_connected() );
 	}
 
-	public function test_register_wp_amp() {
+	public function test_register_template_redirect_amp() {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
 		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
@@ -71,7 +71,7 @@ class AnalyticsTest extends TestCase {
 		$analytics = new Analytics( $context );
 		$this->force_set_property( $analytics, 'context', $mock_context );
 
-		remove_all_actions( 'wp' );
+		remove_all_actions( 'template_redirect' );
 		$analytics->register();
 
 		remove_all_actions( 'amp_print_analytics' );
@@ -80,7 +80,7 @@ class AnalyticsTest extends TestCase {
 		remove_all_actions( 'web_stories_print_analytics' );
 		remove_all_filters( 'amp_post_template_data' );
 
-		do_action( 'wp' );
+		do_action( 'template_redirect' );
 		$this->assertFalse( has_action( 'amp_print_analytics' ) );
 		$this->assertFalse( has_action( 'wp_footer' ) );
 		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
@@ -90,7 +90,7 @@ class AnalyticsTest extends TestCase {
 		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
 		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
 
-		do_action( 'wp' );
+		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'amp_print_analytics' ) );
 		$this->assertTrue( has_action( 'wp_footer' ) );
 		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
@@ -98,7 +98,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
 	}
 
-	public function test_register_wp_non_amp() {
+	public function test_register_template_redirect_non_amp() {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
 		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
@@ -107,18 +107,18 @@ class AnalyticsTest extends TestCase {
 		$analytics = new Analytics( $context );
 		$this->force_set_property( $analytics, 'context', $mock_context );
 
-		remove_all_actions( 'wp' );
+		remove_all_actions( 'template_redirect' );
 		$analytics->register();
 
 		remove_all_actions( 'wp_enqueue_scripts' );
 
-		do_action( 'wp' );
+		do_action( 'template_redirect' );
 		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
 
 		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
 		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
 
-		do_action( 'wp' );
+		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
 	}
 
@@ -371,9 +371,9 @@ class AnalyticsTest extends TestCase {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->set( $settings );
 
-		remove_all_actions( 'wp' );
+		remove_all_actions( 'template_redirect' );
 		$analytics->register();
-		do_action( 'wp' );
+		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
 		// Sanity check.

@@ -36,7 +36,7 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_register_wp_amp() {
+	public function test_register_template_redirect_amp() {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
 		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
@@ -45,7 +45,7 @@ class Tag_ManagerTest extends TestCase {
 		$tagmanager = new Tag_Manager( $context );
 		$this->force_set_property( $tagmanager, 'context', $mock_context );
 
-		remove_all_actions( 'wp' );
+		remove_all_actions( 'template_redirect' );
 		$tagmanager->register();
 
 		remove_all_actions( 'amp_print_analytics' );
@@ -53,7 +53,7 @@ class Tag_ManagerTest extends TestCase {
 		remove_all_actions( 'amp_post_template_footer' );
 		remove_all_filters( 'amp_post_template_data' );
 
-		do_action( 'wp' );
+		do_action( 'template_redirect' );
 		$this->assertFalse( has_action( 'amp_print_analytics' ) );
 		$this->assertFalse( has_action( 'wp_footer' ) );
 		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
@@ -68,14 +68,14 @@ class Tag_ManagerTest extends TestCase {
 			)
 		);
 
-		do_action( 'wp' );
+		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'amp_print_analytics' ) );
 		$this->assertTrue( has_action( 'wp_footer' ) );
 		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
 		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
 	}
 
-	public function test_register_wp_non_amp() {
+	public function test_register_template_redirect_non_amp() {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
 		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
@@ -84,14 +84,14 @@ class Tag_ManagerTest extends TestCase {
 		$tagmanager = new Tag_Manager( $context );
 		$this->force_set_property( $tagmanager, 'context', $mock_context );
 
-		remove_all_actions( 'wp' );
+		remove_all_actions( 'template_redirect' );
 		$tagmanager->register();
 
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'wp_body_open' );
 		remove_all_actions( 'wp_footer' );
 
-		do_action( 'wp' );
+		do_action( 'template_redirect' );
 		$this->assertFalse( has_action( 'wp_head' ) );
 		$this->assertFalse( has_action( 'wp_body_open' ) );
 		$this->assertFalse( has_action( 'wp_footer' ) );
@@ -105,7 +105,7 @@ class Tag_ManagerTest extends TestCase {
 			)
 		);
 
-		do_action( 'wp' );
+		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_head' ) );
 		$this->assertTrue( has_action( 'wp_body_open' ) );
 		$this->assertTrue( has_action( 'wp_footer' ) );

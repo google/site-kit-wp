@@ -83,7 +83,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 
 		// AdSense tag placement logic.
 		add_action(
-			'wp',
+			'template_redirect',
 			function() {
 				// Bail early if we are checking for the tag presence from the back end.
 				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
