@@ -154,62 +154,6 @@ class AnalyticsTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @dataProvider data_parse_date_range
-	 */
-	public function test_parse_date_range( $period_requested, $previous_period_end_offset ) {
-		$analytics                         = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$reflected_parse_date_range_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'parse_date_range' );
-		$reflected_parse_date_range_method->setAccessible( true );
-		$result                = $reflected_parse_date_range_method->invoke( $analytics, 'last-' . $period_requested . '-days', 1, 1, true, true );
-		$previous_end          = strtotime( $result[1] );
-		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
-		$diff                  = round( ( strtotime( 'yesterday' ) - ( $period_requested * DAY_IN_SECONDS ) - $previous_end ) / DAY_IN_SECONDS );
-
-		$previous_day_of_week  = gmdate( 'w', strtotime( $result[1] ) );
-		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
-
-		$this->assertEquals( $previous_day_of_week, $yesterday_day_of_week );
-		$this->assertEquals( $previous_period_end_offset, $diff );
-	}
-
-	public function data_parse_date_range() {
-		return array(
-			array(
-				7,
-				0,
-			),
-			array(
-				8,
-				-1, //sun -> mon
-			),
-			array(
-				9,
-				-2, // sat -> mon
-			),
-			array(
-				10,
-				-3, // fri -> mon
-			),
-			array(
-				11,
-				3, // thur -> previous mon
-			),
-			array(
-				12,
-				2, // wed -> previous mon
-			),
-			array(
-				13,
-				1, // tues -> previous mon
-			),
-			array(
-				14,
-				0, // mon === mon
-			),
-		);
-	}
-
 	public function test_amp_data_load_analytics_component() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->register();
