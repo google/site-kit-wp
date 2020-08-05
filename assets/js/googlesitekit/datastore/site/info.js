@@ -77,15 +77,17 @@ export const reducer = ( state, { payload, type } ) => {
 			const {
 				adminURL,
 				ampMode,
-				currentEntityURL,
 				currentEntityID,
 				currentEntityTitle,
 				currentEntityType,
+				currentEntityURL,
 				homeURL,
+				proxyPermissionsURL,
+				proxySetupURL,
 				referenceSiteURL,
+				siteName,
 				timezone,
 				usingProxy,
-				siteName,
 			} = payload.siteInfo;
 
 			return {
@@ -93,15 +95,17 @@ export const reducer = ( state, { payload, type } ) => {
 				siteInfo: {
 					adminURL,
 					ampMode,
-					currentEntityURL,
 					currentEntityID: parseInt( currentEntityID, 10 ),
 					currentEntityTitle,
 					currentEntityType,
+					currentEntityURL,
 					homeURL,
+					proxyPermissionsURL,
+					proxySetupURL,
 					referenceSiteURL,
+					siteName,
 					timezone,
 					usingProxy,
-					siteName,
 				},
 			};
 		}
@@ -129,30 +133,34 @@ export const resolvers = {
 			adminURL,
 			ampMode,
 			homeURL,
+			proxyPermissionsURL,
+			proxySetupURL,
 			referenceSiteURL,
+			siteName,
 			timezone,
 			usingProxy,
-			siteName,
 		} = global._googlesitekitBaseData;
 		const {
-			currentEntityURL,
 			currentEntityID,
 			currentEntityTitle,
 			currentEntityType,
+			currentEntityURL,
 		} = global._googlesitekitEntityData;
 
 		yield actions.receiveSiteInfo( {
 			adminURL,
 			ampMode,
-			currentEntityURL,
 			currentEntityID,
 			currentEntityTitle,
 			currentEntityType,
+			currentEntityURL,
 			homeURL,
+			proxyPermissionsURL,
+			proxySetupURL,
 			referenceSiteURL,
+			siteName,
 			timezone,
 			usingProxy: !! usingProxy,
-			siteName,
 		} );
 	},
 };
