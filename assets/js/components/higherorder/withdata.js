@@ -151,7 +151,7 @@ const withData = (
 				'googlesitekit.moduleDataReset',
 				'googlesitekit.moduleDataResetHandler',
 				() => {
-					this.setState( { data: false } );
+					this.setState( { data: false, zeroData: false } );
 				}
 			);
 
@@ -204,7 +204,6 @@ const withData = (
 					data: returnedData,
 					datapoint,
 					module: identifier,
-					zeroData: !! isDataZero( returnedData, datapoint, requestData ),
 				} );
 			};
 
