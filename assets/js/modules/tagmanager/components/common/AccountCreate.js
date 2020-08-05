@@ -32,13 +32,13 @@ import Button from '../../../../components/button';
 import ProgressBar from '../../../../components/progress-bar';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user';
-import { escapeURI } from '../../../../util/escape-uri';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreate() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: 'admin/accounts/create' } ) );
 
 	const { resetAccounts } = useDispatch( STORE_NAME );
 	const refetchAccountsHandler = useCallback( () => {
@@ -47,7 +47,7 @@ export default function AccountCreate() {
 
 	const createAccountHandler = useCallback( () => {
 		// Need to use window.open for this to allow for stubbing in E2E.
-		global.window.open( escapeURI`https://tagmanager.google.com/?authuser=${ userEmail }#/admin/accounts/create`, '_blank' );
+		global.window.open( createAccountURL, '_blank' );
 	}, [ userEmail ] );
 
 	if ( undefined === accounts || isDoingGetAccounts || ! userEmail ) {
