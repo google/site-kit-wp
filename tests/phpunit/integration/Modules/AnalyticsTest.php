@@ -508,6 +508,10 @@ class AnalyticsTest extends TestCase {
 		// Check that it skips invalid orders.
 		$orders = array(
 			array(
+				'fieldName' => 'views',
+				'sortOrder' => '',
+			),
+			array(
 				'fieldName' => 'pages',
 				'sortOrder' => 'DESCENDING',
 			),

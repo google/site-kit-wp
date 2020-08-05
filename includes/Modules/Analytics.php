@@ -1081,12 +1081,12 @@ final class Analytics extends Module
 				$order_def = array_merge(
 					array(
 						'fieldName' => '',
-						'sortOrder' => 'DESCENDING',
+						'sortOrder' => '',
 					),
 					(array) $order_def
 				);
 
-				if ( empty( $order_def['fieldName'] ) ) {
+				if ( empty( $order_def['fieldName'] ) || empty( $order_def['sortOrder'] ) ) {
 					return null;
 				}
 
