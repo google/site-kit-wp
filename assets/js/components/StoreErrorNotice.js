@@ -1,5 +1,5 @@
 /**
- * Optimize Error component.
+ * StoreErrorNotice component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,21 +17,30 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
-import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
-import ErrorText from '../../../../components/error-text';
+import { isPermissionScopeError } from '../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import ErrorText from '../components/error-text';
 const { useSelect } = Data;
 
-export default function ErrorNotice() {
-	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
+export default function StoreErrorNotice( { storeName, shouldDisplayError = () => true } ) {
+	const error = useSelect( ( select ) => select( storeName ).getError() );
 
 	// Do not display if no error, or if the error is for missing scopes.
-	if ( ! error || isPermissionScopeError( error ) ) {
+	if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
 		return null;
 	}
 
 	return <ErrorText message={ error.message } reconnectURL={ error.data?.reconnectURL } />;
 }
+
+StoreErrorNotice.propTypes = {
+	storeName: PropTypes.string.isRequired,
+	shouldDisplayError: PropTypes.func,
+};
