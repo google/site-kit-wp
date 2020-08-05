@@ -971,7 +971,7 @@ final class Analytics extends Module
 				}
 
 				// Order by.
-				$orderby = $this->parse_data_orderby( $data );
+				$orderby = $this->parse_reporting_orderby( $data['orderby'] );
 				if ( ! empty( $orderby ) ) {
 					$request->setOrderBys( $orderby );
 				}
@@ -1067,7 +1067,7 @@ final class Analytics extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Data_Request $data Data request object.
+	 * @param array $orderby Data request object.
 	 *
 	 * @return Google_Service_AnalyticsReporting_OrderBy[] An array of reporting orderby objects.
 	 */
@@ -1076,31 +1076,34 @@ final class Analytics extends Module
 			return array();
 		}
 
-		return array_filter(
-			array_map(
-				function ( $order_def ) {
-					$order_def = array_merge(
-						array(
-							'fieldName' => '',
-							'sortOrder' => 'DESCENDING',
-						),
-						(array) $order_def
-					);
+		$results = array_map(
+			function ( $order_def ) {
+				$order_def = array_merge(
+					array(
+						'fieldName' => '',
+						'sortOrder' => 'DESCENDING',
+					),
+					(array) $order_def
+				);
 
-					if ( empty( $order_def['fieldName'] ) ) {
-						return null;
-					}
+				if ( empty( $order_def['fieldName'] ) ) {
+					return null;
+				}
 
-					$order_by = new Google_Service_AnalyticsReporting_OrderBy();
-					$order_by->setFieldName( $order_def['fieldName'] );
-					$order_by->setSortOrder( $order_def['sortOrder'] );
+				$order_by = new Google_Service_AnalyticsReporting_OrderBy();
+				$order_by->setFieldName( $order_def['fieldName'] );
+				$order_by->setSortOrder( $order_def['sortOrder'] );
 
-					return $order_by;
-				},
-				// When just object is passed we need to convert it to an array of objects.
-				wp_is_numeric_array( $orderby ) ? $orderby : array( $orderby )
-			)
+				return $order_by;
+			},
+			// When just object is passed we need to convert it to an array of objects.
+			wp_is_numeric_array( $orderby ) ? $orderby : array( $orderby )
 		);
+
+		$results = array_filter( $results );
+		$results = array_values( $results );
+
+		return $results;
 	}
 
 	/**
