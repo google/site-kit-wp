@@ -1067,7 +1067,7 @@ final class Analytics extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $orderby Data request object.
+	 * @param array|null $orderby Data request orderby value.
 	 *
 	 * @return Google_Service_AnalyticsReporting_OrderBy[] An array of reporting orderby objects.
 	 */
