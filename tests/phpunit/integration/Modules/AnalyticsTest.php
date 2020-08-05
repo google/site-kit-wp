@@ -171,7 +171,6 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEquals( $previous_day_of_week, $yesterday_day_of_week );
 		$this->assertEquals( $previous_period_end_offset, $diff );
-
 	}
 
 	public function data_parse_date_range() {
