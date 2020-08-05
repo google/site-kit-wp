@@ -1071,8 +1071,7 @@ final class Analytics extends Module
 	 *
 	 * @return Google_Service_AnalyticsReporting_OrderBy[] An array of reporting orderby objects.
 	 */
-	protected function parse_data_orderby( Data_Request $data ) {
-		$orderby = $data['orderby'];
+	protected function parse_reporting_orderby( $orderby ) {
 		if ( empty( $orderby ) || ! is_array( $orderby ) ) {
 			return array();
 		}
