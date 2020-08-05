@@ -1037,7 +1037,7 @@ final class Analytics extends Module
 						$this->has_access_to_property( $property_id )
 					);
 				};
-			case 'GET:tracking-disabled': 
+			case 'GET:tracking-disabled':
 				return function() {
 					$option = $this->get_settings()->get();
 
@@ -1065,7 +1065,7 @@ final class Analytics extends Module
 	/**
 	 * Parses the orderby value of the data request into an array of reporting orderby object instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.1
 	 *
 	 * @param array|null $orderby Data request orderby value.
 	 * @return Google_Service_AnalyticsReporting_OrderBy[] An array of reporting orderby objects.
@@ -1448,7 +1448,7 @@ final class Analytics extends Module
 				);
 			}
 		}
-	
+
 		// No property matched the account ID.
 		return array(
 			'permission' => false,
