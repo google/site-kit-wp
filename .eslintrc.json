@@ -7,6 +7,10 @@
     "browser": true,
     "es6": true
   },
+  "globals": {
+    "fetchMock": false,
+    "featureFlags": false
+  },
   "rules": {
     "no-restricted-globals": [
       "error",
@@ -23,6 +27,12 @@
       "error",
       {
         "requireReturn": false
+      }
+    ],
+    "@wordpress/i18n-text-domain": [
+      "error",
+      {
+        "allowedTextDomain":  "google-site-kit"
       }
     ]
   },
@@ -43,6 +53,19 @@
           "off"
         ]
       }
+    },
+    {
+      "files": [
+        "**/modules/*/components/**/*.js",
+        "assets/js/googlesitekit/*/components/**/*.js"
+      ],
+      "rules": {
+        "filenames/match-exported": [
+          2,
+          "[A-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])[A-Za-z0-9]*"
+        ]
+      }
     }
-  ]
+  ],
+  "plugins": ["filenames"]
 }

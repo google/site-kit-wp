@@ -81,7 +81,7 @@ class UserMenu extends Component {
 	}
 
 	handleMenuItemSelect( index, e ) {
-		const { proxyPermissionsURL } = global.googlesitekit.admin;
+		const { proxyPermissionsURL } = global._googlesitekitLegacyData.admin;
 
 		if (
 			( ( 'keydown' === e.type && (
@@ -144,7 +144,7 @@ class UserMenu extends Component {
 		const {
 			userData: { email = '', picture = '' },
 			proxyPermissionsURL,
-		} = global.googlesitekit.admin;
+		} = global._googlesitekitLegacyData.admin;
 		const { dialogActive, menuOpen } = this.state;
 
 		return (
@@ -173,7 +173,7 @@ class UserMenu extends Component {
 								__( 'Disconnect', 'google-site-kit' ),
 							].concat(
 								proxyPermissionsURL ? [
-									__( 'Manage sites...', 'google-site-kit' ),
+									__( 'Manage sites…', 'google-site-kit' ),
 								] : []
 							)
 						}
@@ -189,6 +189,7 @@ class UserMenu extends Component {
 						subtitle={ __( 'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.', 'google-site-kit' ) }
 						confirmButton={ __( 'Disconnect', 'google-site-kit' ) }
 						provides={ [] }
+						danger
 					/>
 				</Modal>
 			</Fragment>

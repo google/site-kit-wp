@@ -1,0 +1,18 @@
+[
+  {
+    "creationTime":"1382025063000",
+    "id":"pub-2833782679114991",
+    "kind":"adsense#account",
+    "name":"Test Account",
+    "premium":false,
+    "timezone":"Europe/Berlin"
+  },
+  {
+    "creationTime":"1382025063000",
+    "id":"pub-3772192679115192",
+    "kind":"adsense#account",
+    "name":"Additional Account",
+    "premium":false,
+    "timezone":"Europe/Berlin"
+  }
+]

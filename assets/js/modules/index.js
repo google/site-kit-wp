@@ -19,9 +19,7 @@
 /**
  * Internal dependencies
  */
-import './adsense';
-import './analytics';
-import './optimize';
-import './pagespeed-insights';
-import './search-console';
-import './tagmanager';
+import './adsense/index.legacy';
+import './analytics/index.legacy';
+import './optimize/index.legacy';
+import './search-console/index.legacy';

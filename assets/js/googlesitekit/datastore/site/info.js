@@ -20,29 +20,29 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { addQueryArgs } from '@wordpress/url';
+import queryString from 'query-string';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 
 const { createRegistrySelector } = Data;
+
+function getSiteInfoProperty( propName ) {
+	return createRegistrySelector( ( select ) => () => {
+		const siteInfo = select( STORE_NAME ).getSiteInfo() || {};
+		return siteInfo[ propName ];
+	} );
+}
 
 // Actions
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 
 export const INITIAL_STATE = {
-	siteInfo: {
-		adminURL: undefined,
-		ampMode: undefined,
-		currentEntityURL: undefined,
-		currentEntityID: undefined,
-		currentEntityTitle: undefined,
-		currentEntityType: undefined,
-		homeURL: undefined,
-		referenceSiteURL: undefined,
-	},
+	siteInfo: undefined,
 };
 
 export const actions = {
@@ -77,12 +77,17 @@ export const reducer = ( state, { payload, type } ) => {
 			const {
 				adminURL,
 				ampMode,
-				currentEntityURL,
 				currentEntityID,
 				currentEntityTitle,
 				currentEntityType,
+				currentEntityURL,
 				homeURL,
+				proxyPermissionsURL,
+				proxySetupURL,
 				referenceSiteURL,
+				siteName,
+				timezone,
+				usingProxy,
 			} = payload.siteInfo;
 
 			return {
@@ -90,12 +95,17 @@ export const reducer = ( state, { payload, type } ) => {
 				siteInfo: {
 					adminURL,
 					ampMode,
-					currentEntityURL,
 					currentEntityID: parseInt( currentEntityID, 10 ),
 					currentEntityTitle,
 					currentEntityType,
+					currentEntityURL,
 					homeURL,
+					proxyPermissionsURL,
+					proxySetupURL,
 					referenceSiteURL,
+					siteName,
+					timezone,
+					usingProxy,
 				},
 			};
 		}
@@ -108,6 +118,12 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getSiteInfo() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( STORE_NAME ).getSiteInfo() ) {
+			return;
+		}
+
 		if ( ! global._googlesitekitBaseData || ! global._googlesitekitEntityData ) {
 			global.console.error( 'Could not load core/site info.' );
 			return;
@@ -117,24 +133,34 @@ export const resolvers = {
 			adminURL,
 			ampMode,
 			homeURL,
+			proxyPermissionsURL,
+			proxySetupURL,
 			referenceSiteURL,
+			siteName,
+			timezone,
+			usingProxy,
 		} = global._googlesitekitBaseData;
 		const {
-			currentEntityURL,
 			currentEntityID,
 			currentEntityTitle,
 			currentEntityType,
+			currentEntityURL,
 		} = global._googlesitekitEntityData;
 
 		yield actions.receiveSiteInfo( {
 			adminURL,
 			ampMode,
-			currentEntityURL,
 			currentEntityID,
 			currentEntityTitle,
 			currentEntityType,
+			currentEntityURL,
 			homeURL,
+			proxyPermissionsURL,
+			proxySetupURL,
 			referenceSiteURL,
+			siteName,
+			timezone,
+			usingProxy: !! usingProxy,
 		} );
 	},
 };
@@ -150,30 +176,10 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object} Site connection info.
+	 * @return {(Object|undefined)} Site connection info.
 	 */
 	getSiteInfo( state ) {
-		const {
-			adminURL,
-			ampMode,
-			currentEntityURL,
-			currentEntityID,
-			currentEntityTitle,
-			currentEntityType,
-			homeURL,
-			referenceSiteURL,
-		} = state.siteInfo || {};
-
-		return {
-			adminURL,
-			ampMode,
-			currentEntityURL,
-			currentEntityID,
-			currentEntityTitle,
-			currentEntityType,
-			homeURL,
-			referenceSiteURL,
-		};
+		return state.siteInfo;
 	},
 
 	/**
@@ -182,12 +188,44 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} This site's admin URL.
+	 * @param {(string|undefined)} page Optional page query argument ( Simple format: 'test-page' or Full format: 'custom.php?page=test-page' ) to add to admin URL. If not provided, the base admin URL is returned.
+	 * @param {(Object|undefined)} args Optional additional query arguments to add to admin URL.
+	 * @return {(string|undefined)} This site's admin URL.
 	 */
-	getAdminURL: createRegistrySelector( ( select ) => () => {
-		const { adminURL } = select( STORE_NAME ).getSiteInfo();
+	getAdminURL: createRegistrySelector( ( select ) => ( state, page, args = {} ) => {
+		const { adminURL } = select( STORE_NAME ).getSiteInfo() || {};
 
-		return adminURL;
+		// Return adminURL if undefined, or if no page supplied.
+		if ( adminURL === undefined || page === undefined ) {
+			return adminURL;
+		}
+
+		const baseURL = ( adminURL[ adminURL.length - 1 ] === '/' ) ? adminURL : `${ adminURL }/`;
+		let pageArg = page;
+		let phpFile = 'admin.php';
+
+		// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
+		if ( page.indexOf( '.php?' ) !== -1 ) {
+			const splitPage = page.split( '?' );
+			pageArg = queryString.parse( splitPage.pop() ).page;
+
+			if ( ! pageArg ) {
+				return adminURL;
+			}
+
+			phpFile = splitPage.shift();
+		}
+
+		// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
+		const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
+
+		return addQueryArgs(
+			`${ baseURL }${ phpFile }`,
+			{
+				page: pageArg,
+				...queryArgs,
+			}
+		);
 	} ),
 
 	/**
@@ -196,13 +234,9 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} AMP Mode.
+	 * @return {(string|undefined)} AMP Mode.
 	 */
-	getAMPMode: createRegistrySelector( ( select ) => () => {
-		const { ampMode } = select( STORE_NAME ).getSiteInfo();
-
-		return ampMode;
-	} ),
+	getAMPMode: getSiteInfoProperty( 'ampMode' ),
 
 	/**
 	 * Gets the current entity's ID.
@@ -210,13 +244,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?number} Current entity's ID.
+	 * @return {(number|null|undefined)} Current entity's ID, null if there is
+	 *                                   none, undefined if not loaded yet.
 	 */
-	getCurrentEntityID: createRegistrySelector( ( select ) => () => {
-		const { currentEntityID } = select( STORE_NAME ).getSiteInfo();
-
-		return currentEntityID;
-	} ),
+	getCurrentEntityID: getSiteInfoProperty( 'currentEntityID' ),
 
 	/**
 	 * Gets the current entity's title.
@@ -224,13 +255,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} Current entity's title.
+	 * @return {(string|null|undefined)} Current entity's title, null if there
+	 *                                   is none, undefined if not loaded yet.
 	 */
-	getCurrentEntityTitle: createRegistrySelector( ( select ) => () => {
-		const { currentEntityTitle } = select( STORE_NAME ).getSiteInfo();
-
-		return currentEntityTitle;
-	} ),
+	getCurrentEntityTitle: getSiteInfoProperty( 'currentEntityTitle' ),
 
 	/**
 	 * Gets the current entity's title.
@@ -238,13 +266,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} Current entity's type.
+	 * @return {(string|null|undefined)} Current entity's type, null if there
+	 *                                   is none, undefined if not loaded yet.
 	 */
-	getCurrentEntityType: createRegistrySelector( ( select ) => () => {
-		const { currentEntityType } = select( STORE_NAME ).getSiteInfo();
-
-		return currentEntityType;
-	} ),
+	getCurrentEntityType: getSiteInfoProperty( 'currentEntityType' ),
 
 	/**
 	 * Gets the current entity's reference URL.
@@ -252,13 +277,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} Current entity's reference URL.
+	 * @return {(string|null|undefined)} Current entity's URL, null if there is
+	 *                                   none, undefined if not loaded yet.
 	 */
-	getCurrentEntityURL: createRegistrySelector( ( select ) => () => {
-		const { currentEntityURL } = select( STORE_NAME ).getSiteInfo();
-
-		return currentEntityURL;
-	} ),
+	getCurrentEntityURL: getSiteInfoProperty( 'currentEntityURL' ),
 
 	/**
 	 * Gets a site's homepage URL.
@@ -266,13 +288,9 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} This site's home URL.
+	 * @return {(string|undefined)} This site's home URL.
 	 */
-	getHomeURL: createRegistrySelector( ( select ) => () => {
-		const { homeURL } = select( STORE_NAME ).getSiteInfo();
-
-		return homeURL;
-	} ),
+	getHomeURL: getSiteInfoProperty( 'homeURL' ),
 
 	/**
 	 * Gets a site's reference site URL.
@@ -280,27 +298,138 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} The reference site URL.
+	 * @return {(string|undefined)} The reference site URL.
 	 */
-	getReferenceSiteURL: createRegistrySelector( ( select ) => () => {
-		const { referenceSiteURL } = select( STORE_NAME ).getSiteInfo();
+	getReferenceSiteURL: getSiteInfoProperty( 'referenceSiteURL' ),
 
-		return referenceSiteURL;
+	/**
+	 * Gets proxy setup URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} Proxy setup URL if available, otherwise an empty string.
+	 */
+	getProxySetupURL: getSiteInfoProperty( 'proxySetupURL' ),
+
+	/**
+	 * Gets proxy permissions URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} Proxy permissions URL if available, otherwise an empty string.
+	 */
+	getProxyPermissionsURL: getSiteInfoProperty( 'proxyPermissionsURL' ),
+
+	/**
+	 * Gets the current reference URL to use.
+	 *
+	 * This selector should be used to get the contextual URL for requesting
+	 * URL-specific data from Google APIs.
+	 *
+	 * If a current entity exists, this will return the same value as the
+	 * `getCurrentEntityURL` selector. Otherwise it will fall back to returning
+	 * the same value as the `getReferenceSiteURL` selector.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The current reference URL, or undefined if
+	 *                              not loaded yet.
+	 */
+	getCurrentReferenceURL: createRegistrySelector( ( select ) => () => {
+		// Use current entity URL if present or still loading.
+		const currentEntityURL = select( STORE_NAME ).getCurrentEntityURL();
+		if ( currentEntityURL !== null ) {
+			return currentEntityURL;
+		}
+
+		// Otherwise fall back to reference site URL.
+		return select( STORE_NAME ).getReferenceSiteURL();
 	} ),
 
 	/**
 	 * Returns true if this site supports AMP.
 	 *
 	 * @since 1.7.0
+	 * @since 1.11.0 Renamed from isAmp to isAMP.
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
+	 * @return {(string|undefined)} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
-	isAmp: createRegistrySelector( ( select ) => () => {
+	isAMP: createRegistrySelector( ( select ) => () => {
 		const ampMode = select( STORE_NAME ).getAMPMode();
 
-		return ampMode !== undefined ? !! ampMode : ampMode;
+		if ( ampMode === undefined ) {
+			return undefined;
+		}
+
+		return !! ampMode;
 	} ),
+
+	/**
+	 * Checks if the site is in the primary AMP mode.
+	 *
+	 * @since 1.12.0
+	 *
+	 * @return {(boolean|undefined)} `true` or `false` if the site is in the primary AMP mode. Returns `undefined` if not loaded.
+	 */
+	isPrimaryAMP: createRegistrySelector( ( select ) => () => {
+		const ampMode = select( STORE_NAME ).getAMPMode();
+
+		if ( ampMode === undefined ) {
+			return undefined;
+		}
+
+		return ampMode === AMP_MODE_PRIMARY;
+	} ),
+
+	/**
+	 * Checks if the site is in a secondary AMP mode.
+	 *
+	 * @since 1.12.0
+	 *
+	 * @return {(boolean|undefined)} `true` or `false` if the site is in a secondary AMP mode. Returns `undefined` if not loaded.
+	 */
+	isSecondaryAMP: createRegistrySelector( ( select ) => () => {
+		const ampMode = select( STORE_NAME ).getAMPMode();
+
+		if ( ampMode === undefined ) {
+			return undefined;
+		}
+
+		return ampMode === AMP_MODE_SECONDARY;
+	} ),
+
+	/**
+	 * Gets a site's timezone.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The timezone.
+	 */
+	getTimezone: getSiteInfoProperty( 'timezone' ),
+
+	/**
+	 * Returns true if this site is using the proxy service.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if the proxy service is in use, `false` if not. Returns `undefined` if not loaded.
+	 */
+	isUsingProxy: getSiteInfoProperty( 'usingProxy' ),
+
+	/**
+	 * Gets a site's name.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The site name.
+	 */
+	getSiteName: getSiteInfoProperty( 'siteName' ),
+
 };
 
 export default {

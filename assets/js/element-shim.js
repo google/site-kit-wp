@@ -4,8 +4,6 @@
  * A temporary workaround to ensure the same version of React
  * is always used across multiple entrypoints.
  *
- * @private
- *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +17,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * @private
  */
 
 import * as element from '@wordpress/element__non-shim';
@@ -28,13 +28,13 @@ if ( global.googlesitekit === undefined ) {
 }
 
 const {
-	__experimentalCreateInterpolateElement,
 	Children,
 	cloneElement,
 	Component,
 	concatChildren,
 	createContext,
 	createElement,
+	createInterpolateElement,
 	createPortal,
 	createRef,
 	findDOMNode,
@@ -65,13 +65,13 @@ const {
 } = global.googlesitekit._element || element;
 
 export {
-	__experimentalCreateInterpolateElement,
 	Children,
 	cloneElement,
 	Component,
 	concatChildren,
 	createContext,
 	createElement,
+	createInterpolateElement,
 	createPortal,
 	createRef,
 	findDOMNode,
@@ -103,13 +103,13 @@ export {
 
 if ( global.googlesitekit._element === undefined ) {
 	global.googlesitekit._element = {
-		__experimentalCreateInterpolateElement,
 		Children,
 		cloneElement,
 		Component,
 		concatChildren,
 		createContext,
 		createElement,
+		createInterpolateElement,
 		createPortal,
 		createRef,
 		findDOMNode,

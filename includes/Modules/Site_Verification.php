@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -128,19 +129,18 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
+	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since 1.0.0
+	 * @since 1.12.0
 	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
+	 * @return array Map of datapoints to their definitions.
 	 */
-	protected function get_datapoint_services() {
+	protected function get_datapoint_definitions() {
 		return array(
-			// GET / POST.
-			'verification'       => 'siteverification',
-			// GET.
-			'verification-token' => 'siteverification',
-			'verified-sites'     => 'siteverification',
+			'GET:verification'       => array( 'service' => 'siteverification' ),
+			'POST:verification'      => array( 'service' => 'siteverification' ),
+			'GET:verification-token' => array( 'service' => 'siteverification' ),
+			'GET:verified-sites'     => array( 'service' => 'siteverification' ),
 		);
 	}
 
@@ -150,8 +150,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 *
+	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -259,7 +260,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				return $this->get_siteverification_service()->webResource->listWebResource();
 		}
 
-		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**
@@ -395,6 +396,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		if ( empty( $verification_token ) ) {
 			return;
+		}
+
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
 		switch ( $verification_type ) {

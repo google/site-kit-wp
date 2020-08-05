@@ -97,6 +97,15 @@ final class Assets {
 		add_action( 'admin_enqueue_scripts', $register_callback );
 		add_action( 'wp_enqueue_scripts', $register_callback );
 
+		// All other asset-related general logic should only be active when the
+		// current user can actually use Site Kit (which only is so if they can
+		// authenticate).
+		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+			return;
+		}
+
+		$this->add_amp_dev_mode_attributes( $this->get_assets() );
+
 		add_action(
 			'admin_enqueue_scripts',
 			function() {
@@ -274,8 +283,6 @@ final class Assets {
 		foreach ( $assets as $asset ) {
 			$asset->register();
 		}
-
-		$this->add_amp_dev_mode_attributes( $assets );
 	}
 
 	/**
@@ -341,6 +348,11 @@ final class Assets {
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
 			'googlesitekit-base',
+			'googlesitekit-data',
+			'googlesitekit-datastore-forms',
+			'googlesitekit-datastore-site',
+			'googlesitekit-datastore-user',
+			'googlesitekit-widgets',
 		);
 
 		// Register plugin scripts.
@@ -354,7 +366,7 @@ final class Assets {
 			new Script_Data(
 				'googlesitekit-commons',
 				array(
-					'global'        => 'googlesitekit',
+					'global'        => '_googlesitekitLegacyData',
 					'data_callback' => function () {
 						return $this->get_inline_data();
 					},
@@ -375,6 +387,15 @@ final class Assets {
 					'global'        => '_googlesitekitEntityData',
 					'data_callback' => function () {
 						return $this->get_inline_entity_data();
+					},
+				)
+			),
+			new Script_Data(
+				'googlesitekit-user-data',
+				array(
+					'global'        => '_googlesitekitUserData',
+					'data_callback' => function() {
+						return $this->get_inline_user_data();
 					},
 				)
 			),
@@ -446,6 +467,17 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-datastore-user',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-user.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+						'googlesitekit-api',
+						'googlesitekit-user-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-datastore-site',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
@@ -459,12 +491,32 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-datastore-forms',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-forms.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-modules',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules.js',
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-user',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-widgets',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-widgets.js',
+					'dependencies' => array(
 						'googlesitekit-data',
 					),
 				)
@@ -473,7 +525,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-ads-detect',
 				array(
-					'src' => $base_url . 'js/ads.js',
+					'src' => $base_url . 'js/pagead2.ads.js',
 				)
 			),
 			new Script(
@@ -599,6 +651,8 @@ final class Assets {
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
+			'timezone'         => get_option( 'timezone_string' ),
+			'siteName'         => get_bloginfo( 'name' ),
 		);
 
 		/**
@@ -629,6 +683,37 @@ final class Assets {
 			'currentEntityTitle' => $current_entity ? $current_entity->get_title() : null,
 			'currentEntityID'    => $current_entity ? $current_entity->get_id() : null,
 		);
+	}
+
+	/**
+	 * Gets the inline data specific to the current user
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return array The user inline data to be output.
+	 */
+	private function get_inline_user_data() {
+		$current_user = wp_get_current_user();
+
+		$inline_data = array(
+			'user' => array(
+				'id'      => $current_user->ID,
+				'email'   => $current_user->user_email,
+				'name'    => $current_user->display_name,
+				'picture' => get_avatar_url( $current_user->user_email ),
+			),
+		);
+
+		/**
+		 * Filters the user inline data to pass to JS.
+		 *
+		 * This should not include anything remotely expensive to compute.
+		 *
+		 * @since 1.9.0
+		 *
+		 * @param array $data User data.
+		 */
+		return apply_filters( 'googlesitekit_user_data', $inline_data );
 	}
 
 	/**
@@ -728,7 +813,7 @@ final class Assets {
 			 * @param array $data Notification Data.
 			 */
 			'notifications'      => apply_filters( 'googlesitekit_notification_data', array() ),
-			'permaLink'          => esc_url_raw( $permalink ),
+			'permaLink'          => $permalink ? esc_url_raw( $permalink ) : false,
 			'pageTitle'          => $page_title,
 			'postID'             => get_the_ID(),
 			'postType'           => get_post_type(),

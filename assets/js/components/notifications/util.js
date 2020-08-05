@@ -44,7 +44,7 @@ export const modulesNotificationsToRequest = () => {
  * otherwise make the requests to get modules and page wins notifications.
  */
 export async function getTotalNotifications() {
-	const { setup } = global.googlesitekit;
+	const { setup } = global._googlesitekitLegacyData;
 
 	if (
 		! setup.isSiteKitConnected ||

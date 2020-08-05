@@ -12,6 +12,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Plugin;
@@ -28,23 +29,17 @@ add_action(
 
 		$context      = Plugin::instance()->context();
 		$user_options = new User_Options( $context );
+		$auth         = new Authentication( $context );
 
 		if ( filter_input( INPUT_GET, 'googlesitekit_connect', FILTER_VALIDATE_BOOLEAN ) ) {
-			$redirect_url = '';
-			if ( ! empty( $_GET['redirect'] ) ) {
-				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) );
-			}
-
-			$auth_client = new OAuth_Client( $context );
-			// User is trying to authenticate, but access token hasn't been set.
-			wp_safe_redirect( $auth_client->get_authentication_url( $redirect_url ) );
-			exit();
+			// Allow this case to be handled by default implementation.
+			return;
 		}
 
 		if (
-		empty( $_GET['oauth2callback'] )
-		|| empty( $_GET['code'] )
-		|| 'valid-test-code' !== $_GET['code']
+			empty( $_GET['oauth2callback'] )
+			|| empty( $_GET['code'] )
+			|| 'valid-test-code' !== $_GET['code']
 		) {
 			return;
 		}
@@ -53,19 +48,24 @@ add_action(
 
 		$redirect_url        = $user_options->get( OAuth_Client::OPTION_REDIRECT_URL );
 		$success_redirect    = $redirect_url ?: $context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
-		$plugins_to_activate = array( __DIR__ . '/auth.php' );
+		$plugins_to_activate = array(
+			sprintf( '%s/%s-auth.php', __DIR__, $auth->credentials()->using_proxy() ? 'proxy' : 'gcp' ),
+		);
 
 		if ( ! empty( $_GET['e2e-site-verification'] ) ) {
 			$plugins_to_activate[] = __DIR__ . '/site-verification.php';
 		}
 
 		if ( isset( $_GET['scope'] ) ) {
-			if ( 'TEST_ALL_SCOPES' === $_GET['scope'] ) {
-				$scopes = ( new OAuth_Client( $context ) )->get_required_scopes();
-			} else {
-				$scopes = explode( ' ', $_GET['scope'] );
+			$oauth_client = new OAuth_Client( $context );
+			$scopes       = explode( ' ', $_GET['scope'] );
+
+			if ( in_array( 'TEST_ALL_SCOPES', $scopes, true ) ) {
+				$scopes = array_diff( $scopes, array( 'TEST_ALL_SCOPES' ) );
+				$scopes = array_merge( $scopes, $oauth_client->get_required_scopes() );
 			}
-			$user_options->set( OAuth_Client::OPTION_AUTH_SCOPES, $scopes );
+
+			$oauth_client->set_granted_scopes( $scopes );
 		}
 
 		activate_plugins(

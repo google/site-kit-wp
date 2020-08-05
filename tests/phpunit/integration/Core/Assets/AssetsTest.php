@@ -29,23 +29,60 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_register() {
+		global $wp_filter;
+
 		$actions_to_test = array(
 			'admin_enqueue_scripts',
 			'wp_enqueue_scripts',
+		);
+		foreach ( $actions_to_test as $hook ) {
+			remove_all_actions( $hook );
+		}
+
+		// The actions and filters below only get registered for users that can
+		// authorize with Site Kit.
+		$authorized_actions = array(
 			'admin_print_scripts',
 			'wp_print_scripts',
 			'admin_print_styles',
 			'wp_print_styles',
 		);
-		foreach ( $actions_to_test as $hook ) {
+		$authorized_filters = array(
+			'script_loader_tag',
+			'style_loader_tag',
+		);
+		foreach ( $authorized_actions as $hook ) {
 			remove_all_actions( $hook );
+		}
+		foreach ( $authorized_filters as $hook ) {
+			remove_all_filters( $hook );
 		}
 
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$assets->register();
 
 		foreach ( $actions_to_test as $hook ) {
-			$this->assertTrue( has_action( $hook ) );
+			$this->assertTrue( has_action( $hook ), "Failed asserting that action was added to {$hook}." );
+		}
+
+		// Without a user that can authenticate with Site Kit, these hooks
+		// should not have been added.
+		foreach ( $authorized_actions as $hook ) {
+			$this->assertFalse( has_action( $hook ), "Failed asserting that action was not added to {$hook}." );
+		}
+		foreach ( $authorized_filters as $hook ) {
+			$this->assertFalse( has_filter( $hook ), "Failed asserting that filter was not added to {$hook}." );
+		}
+
+		// For a user that can authenticate, ensure the hooks are added.
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+		$assets->register();
+		foreach ( $authorized_actions as $hook ) {
+			$this->assertTrue( has_action( $hook ), "Failed asserting that action was added to {$hook}." );
+		}
+		foreach ( $authorized_filters as $hook ) {
+			$this->assertTrue( has_filter( $hook ), "Failed asserting that filter was added to {$hook}." );
 		}
 	}
 
@@ -96,6 +133,8 @@ class AssetsTest extends TestCase {
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		remove_all_actions( 'wp_print_scripts' );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
 		$assets->register();
 
 		// Enqueue script that has 'googlesitekit-commons' as dependency.
@@ -109,6 +148,6 @@ class AssetsTest extends TestCase {
 
 		// Ensure that before_print callback for 'googlesitekit-commons' was run (its localized script should be there).
 		$localized_script = wp_scripts()->get_data( 'googlesitekit-commons', 'data' );
-		$this->assertContains( 'var googlesitekit = ', $localized_script );
+		$this->assertContains( 'var _googlesitekitLegacyData = ', $localized_script );
 	}
 }

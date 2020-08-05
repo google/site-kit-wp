@@ -60,12 +60,10 @@ import ModuleSetupIncomplete from '../../components/settings/module-setup-incomp
 class SettingsModule extends Component {
 	constructor( props ) {
 		super( props );
-		const { slug } = props;
-		const { setupComplete } = getModulesData()[ slug ];
 		this.state = {
 			isSaving: false,
 			active: props.active,
-			setupComplete,
+			setupComplete: props.setupComplete,
 			dialogActive: false,
 		};
 
@@ -152,7 +150,7 @@ class SettingsModule extends Component {
 	// Find modules that depend on a module.
 	getDependentModules() {
 		const { slug } = this.props;
-		const { modules } = global.googlesitekit;
+		const modules = getModulesData();
 		const dependants = {};
 
 		if ( modules[ slug ].dependants ) {
@@ -186,7 +184,6 @@ class SettingsModule extends Component {
 			autoActivate,
 			provides,
 			isSaving,
-			screenID,
 			error,
 		} = this.props;
 
@@ -215,7 +212,7 @@ class SettingsModule extends Component {
 		let buttonText = __( 'Close', 'google-site-kit' );
 		if ( hasSettings && setupComplete ) {
 			if ( isSavingModule ) {
-				buttonText = __( 'Saving...', 'google-site-kit' );
+				buttonText = __( 'Saving…', 'google-site-kit' );
 			} else {
 				buttonText = __( 'Confirm Changes', 'google-site-kit' );
 			}
@@ -288,10 +285,16 @@ class SettingsModule extends Component {
 										<p className="googlesitekit-settings-module__status">
 											{
 												isConnected
-													/* translators: %s: module name */
-													? sprintf( __( '%s is connected', 'google-site-kit' ), name )
-													/* translators: %s: module name */
-													: sprintf( __( '%s is not connected', 'google-site-kit' ), name )
+													? sprintf(
+														/* translators: %s: module name. */
+														__( '%s is connected', 'google-site-kit' ),
+														name
+													)
+													: sprintf(
+														/* translators: %s: module name. */
+														__( '%s is not connected', 'google-site-kit' ),
+														name
+													)
 											}
 											<span className={ classnames(
 												'googlesitekit-settings-module__status-icon',
@@ -334,7 +337,6 @@ class SettingsModule extends Component {
 									{
 										hasSettings && ! setupComplete &&
 											<ModuleSetupIncomplete
-												screenID={ screenID }
 												slug={ slug }
 											/>
 									}
@@ -448,6 +450,7 @@ class SettingsModule extends Component {
 									name
 								) + dependentModules : false
 							}
+							danger
 						/>
 					</div>
 				) : (
@@ -479,6 +482,7 @@ SettingsModule.propTypes = {
 	hasSettings: PropTypes.bool,
 	required: PropTypes.array,
 	active: PropTypes.bool,
+	setupComplete: PropTypes.bool,
 };
 
 SettingsModule.defaultProps = {
@@ -489,6 +493,7 @@ SettingsModule.defaultProps = {
 	handleEdit: null,
 	handleDialog: null,
 	active: false,
+	setupComplete: false,
 };
 
 export default SettingsModule;

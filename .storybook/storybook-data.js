@@ -57,21 +57,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'dashboard--pagespeed-insights',
-		kind: 'Dashboard',
-		name: 'PageSpeed Insights',
-		story: 'PageSpeed Insights',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-pagespeed-report__score-gauge',
-				delay: 1000,
-			},
-		},
-	},
-	{
 		id: 'dashboard--post-searcher',
 		kind: 'Dashboard',
 		name: 'Post Searcher',
@@ -478,27 +463,6 @@ module.exports = [
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
 				delay: 1000,
-			},
-		},
-	},
-	{
-		id: 'settings--vrt-editing-settings-module',
-		kind: 'Settings',
-		name: 'VRT: Editing Settings Module',
-		story: 'VRT: Editing Settings Module',
-		parameters: {
-			fileName: './stories/settings.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				delay: 2000,
-				clickSelectors: [
-					'#googlesitekit-settings-module__header--analytics',
-					'.googlesitekit-settings-module__edit-button',
-				],
-				hoverSelector: '.googlesitekit-settings-module__title',
-				postInteractionWait: 3000,
-				onReadyScript: 'mouse.js',
 			},
 		},
 	},

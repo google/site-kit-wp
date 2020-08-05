@@ -15,13 +15,14 @@ import Dialog from '../assets/js/components/dialog';
 
 storiesOf( 'Global', module )
 	.add( 'Modal Dialog', () => {
-		const { provides } = global.googlesitekit.modules.analytics;
+		const { provides } = global._googlesitekitLegacyData.modules.analytics;
 		return (
 			<Dialog
 				dialogActive
 				title={ __( 'Modal Dialog Title', 'google-site-kit' ) }
 				subtitle={ __( 'Modal Dialog Subtitle', 'google-site-kit' ) }
 				provides={ provides }
+				danger
 			/>
 		);
 	}, {

@@ -17,3 +17,6 @@
  */
 
 export const STORE_NAME = 'core/site';
+
+export const AMP_MODE_PRIMARY = 'primary';
+export const AMP_MODE_SECONDARY = 'secondary';

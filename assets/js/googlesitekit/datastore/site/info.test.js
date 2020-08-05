@@ -22,7 +22,7 @@
 import {
 	createTestRegistry,
 	muteConsole,
-	subscribeUntil,
+	untilResolved,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import { INITIAL_STATE } from './index';
@@ -35,6 +35,11 @@ describe( 'core/site site info', () => {
 		ampMode: 'reader',
 		homeURL: 'http://something.test/homepage',
 		referenceSiteURL: 'http://something.test',
+		proxyPermissionsURL: '', // not available until site is authenticated
+		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/', // params omitted
+		siteName: 'Something Test',
+		timezone: 'America/Denver',
+		usingProxy: true,
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -74,6 +79,68 @@ describe( 'core/site site info', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getAdminURL', () => {
+			it( 'returns the adminURL on its own if no page argument is supplied', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				let adminURL = registry.select( STORE_NAME ).getAdminURL();
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
+
+				adminURL = registry.select( STORE_NAME ).getAdminURL( undefined, { arg1: 'argument-1', arg2: 'argument-2' } );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
+			} );
+
+			it( 'returns the adminURL with page query parameter if simple page argument is supplied', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=testpage' );
+			} );
+
+			it( 'returns the adminURL with page query parameter if the full page argument is supplied', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'custom.php?page=testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/custom.php?page=testpage' );
+			} );
+
+			it( 'returns the original adminURL if the full page argument is supplied without "page" query param', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'custom.php?notpage=testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
+			} );
+
+			it( 'properly handles the adminURLs with trailing slash', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo, adminURL: 'http://something.test/wp-admin/' } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'custom.php?page=testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/custom.php?page=testpage' );
+			} );
+
+			it( 'returns the adminURL with page and extra query if page and args supplied', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'testpage', { arg1: 'argument-1', arg2: 'argument-2' } );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=testpage&arg1=argument-1&arg2=argument-2' );
+			} );
+
+			it( 'returns the adminURL with first page if an extra page is provided in the args', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'correct-page', { arg1: 'argument-1', arg2: 'argument-2', page: 'wrong-page' } );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=correct-page&arg1=argument-1&arg2=argument-2' );
+			} );
+
+			it( 'returns undefined if adminURL is undefined', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( {} );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL();
+
+				expect( adminURL ).toEqual( undefined );
+			} );
+		} );
+
 		describe( 'getSiteInfo', () => {
 			it( 'uses a resolver to load site info from a global variable by default, then deletes that global variable after consumption', async () => {
 				global[ baseInfoVar ] = baseInfo;
@@ -83,11 +150,7 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
 
 				registry.select( STORE_NAME ).getSiteInfo();
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getSiteInfo() !== INITIAL_STATE
-					),
-				);
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
@@ -98,40 +161,46 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
 			} );
 
-			it( 'will return initial state (undefined values) when no data is available', async () => {
+			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ baseInfoVar ] ).toEqual( undefined );
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				muteConsole( 'error' );
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
-				expect( info ).toMatchObject( INITIAL_STATE.siteInfo );
+				expect( info ).toBe( INITIAL_STATE.siteInfo );
 			} );
 		} );
 
 		describe.each( [
-			[ 'getAdminURL' ],
-			[ 'getAMPMode' ],
-			[ 'getCurrentEntityID' ],
-			[ 'getCurrentEntityTitle' ],
-			[ 'getCurrentEntityType' ],
-			[ 'getCurrentEntityURL' ],
-			[ 'getHomeURL' ],
-			[ 'getReferenceSiteURL' ],
-		] )( `%i()`, ( selector ) => {
+			[ 'getAdminURL', 'adminURL' ],
+			[ 'getAMPMode', 'ampMode' ],
+			[ 'getCurrentEntityID', 'currentEntityID' ],
+			[ 'getCurrentEntityTitle', 'currentEntityTitle' ],
+			[ 'getCurrentEntityType', 'currentEntityType' ],
+			[ 'getCurrentEntityURL', 'currentEntityURL' ],
+			[ 'getHomeURL', 'homeURL' ],
+			[ 'getReferenceSiteURL', 'referenceSiteURL' ],
+			[ 'getProxySetupURL', 'proxySetupURL' ],
+			[ 'getProxyPermissionsURL', 'proxyPermissionsURL' ],
+			[ 'getSiteName', 'siteName' ],
+			[ 'getTimezone', 'timezone' ],
+			[ 'isUsingProxy', 'usingProxy' ],
+			[ 'isAMP', 'ampMode' ],
+			[ 'isPrimaryAMP', 'ampMode' ],
+			[ 'isSecondaryAMP', 'ampMode' ],
+		] )( `%s`, ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;
 				global[ entityInfoVar ] = entityInfo;
 
 				registry.select( STORE_NAME )[ selector ]();
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME )[ selector ]() !== undefined
-					),
-				);
+
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
+				expect( info ).toHaveProperty( infoKey );
 				expect( info ).toEqual( { ...baseInfo, ...entityInfo, currentEntityID: 4 } );
 			} );
 
@@ -146,21 +215,18 @@ describe( 'core/site site info', () => {
 			} );
 		} );
 
-		describe( 'isAmp', () => {
+		describe( 'isAMP', () => {
 			it( 'uses a resolver to load site info, then returns true if AMP mode is set', async () => {
 				global[ baseInfoVar ] = baseInfo;
 				global[ entityInfoVar ] = entityInfo;
 
-				registry.select( STORE_NAME ).isAmp();
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).isAmp() !== undefined
-					),
-				);
+				registry.select( STORE_NAME ).isAMP();
 
-				const isAmp = registry.select( STORE_NAME ).isAmp();
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 
-				expect( isAmp ).toEqual( true );
+				const isAMP = registry.select( STORE_NAME ).isAMP();
+
+				expect( isAMP ).toEqual( true );
 			} );
 
 			it( 'uses a resolver to load site info, then returns false if AMP mode is not set', async () => {
@@ -170,16 +236,12 @@ describe( 'core/site site info', () => {
 				};
 				global[ entityInfoVar ] = entityInfo;
 
-				registry.select( STORE_NAME ).isAmp();
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).isAmp() !== undefined
-					),
-				);
+				registry.select( STORE_NAME ).isAMP();
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
 
-				const isAmp = registry.select( STORE_NAME ).isAmp();
+				const isAMP = registry.select( STORE_NAME ).isAMP();
 
-				expect( isAmp ).toEqual( false );
+				expect( isAMP ).toEqual( false );
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
@@ -187,9 +249,41 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				muteConsole( 'error' );
-				const result = registry.select( STORE_NAME ).isAmp();
+				const result = registry.select( STORE_NAME ).isAMP();
 
 				expect( result ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'getCurrentReferenceURL', () => {
+			it( 'uses a resolver to load site info, then returns entity URL if set', async () => {
+				global[ baseInfoVar ] = baseInfo;
+				global[ entityInfoVar ] = entityInfo;
+
+				registry.select( STORE_NAME ).getCurrentReferenceURL();
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
+
+				const referenceURL = registry.select( STORE_NAME ).getCurrentReferenceURL();
+
+				expect( referenceURL ).toEqual( entityInfo.currentEntityURL );
+			} );
+
+			it( 'uses a resolver to load site info, then returns reference site URL if entity URL not set', async () => {
+				global[ baseInfoVar ] = baseInfo;
+				// Set empty entity info as it would come from the server in such a case.
+				global[ entityInfoVar ] = {
+					currentEntityURL: null,
+					currentEntityType: null,
+					currentEntityTitle: null,
+					currentEntityID: null,
+				};
+
+				registry.select( STORE_NAME ).getCurrentReferenceURL();
+				await untilResolved( registry, STORE_NAME ).getSiteInfo();
+
+				const referenceURL = registry.select( STORE_NAME ).getCurrentReferenceURL();
+
+				expect( referenceURL ).toEqual( baseInfo.referenceSiteURL );
 			} );
 		} );
 	} );

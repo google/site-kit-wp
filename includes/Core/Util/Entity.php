@@ -20,7 +20,7 @@ use Google\Site_Kit\Context;
  *
  * An entity may also have a type, if it can be determined.
  * Possible types are e.g. 'post' for a WordPress post (of any post type!),
- * 'term' for a WordPress term (of any taxonomy!), 'home' for the blog archive,
+ * 'term' for a WordPress term (of any taxonomy!), 'blog' for the blog archive,
  * 'date' for a date-based archive etc.
  *
  * For specific entity types, the entity will also have a title, and it may

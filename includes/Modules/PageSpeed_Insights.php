@@ -10,9 +10,13 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Service_Pagespeedonline;
@@ -26,8 +30,9 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class PageSpeed_Insights extends Module implements Module_With_Scopes {
-	use Module_With_Scopes_Trait;
+final class PageSpeed_Insights extends Module
+	implements Module_With_Scopes, Module_With_Assets {
+	use Module_With_Scopes_Trait, Module_With_Assets_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -47,16 +52,15 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
+	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since 1.0.0
+	 * @since 1.12.0
 	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
+	 * @return array Map of datapoints to their definitions.
 	 */
-	protected function get_datapoint_services() {
+	protected function get_datapoint_definitions() {
 		return array(
-			// GET.
-			'pagespeed' => 'pagespeedonline',
+			'GET:pagespeed' => array( 'service' => 'pagespeedonline' ),
 		);
 	}
 
@@ -66,8 +70,9 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 *
+	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -116,13 +121,14 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 				);
 		}
 
-		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**
 	 * Parses a response for the given datapoint.
 	 *
 	 * @since 1.0.0
+	 * @since 1.10.0 GET:pagespeed returns the full response, not just the lighthouse result.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @param mixed        $response Request response.
@@ -130,14 +136,39 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:pagespeed':
-				// TODO: Parse this response to a regular array.
-				return $response->getLighthouseResult();
+		switch ( "{$data->method}:{$data->datapoint}" ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedSwitch
 		}
 
 		return $response;
 	}
+
+	/**
+	 * Sets up the module's assets to register.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return Asset[] List of Asset objects.
+	 */
+	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		return array(
+			new Script(
+				'googlesitekit-modules-pagespeed-insights',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-pagespeed-insights.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+						'googlesitekit-datastore-site',
+					),
+				)
+			),
+		);
+	}
+
 
 	/**
 	 * Sets up information about the module.

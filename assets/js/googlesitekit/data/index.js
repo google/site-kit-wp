@@ -26,6 +26,7 @@ import {
 	useSelect,
 	useDispatch,
 	useRegistry,
+	withSelect,
 	RegistryProvider,
 } from '@wordpress/data';
 
@@ -33,39 +34,26 @@ import {
  * Internal dependencies
  */
 import {
-	addInitializeAction,
-	addInitializeReducer,
-	collectActions,
-	collectControls,
-	collectReducers,
-	collectResolvers,
-	collectSelectors,
-	collectState,
-	collectName,
+	combineStores,
 	commonActions,
 	commonControls,
+	commonStore,
 } from './utils';
 
 const Data = createRegistry();
 
 // Attach some of our utility functions to the registry so third-party
 // developers can use them.
-Data.addInitializeAction = addInitializeAction;
-Data.addInitializeReducer = addInitializeReducer;
-Data.collectActions = collectActions;
-Data.collectControls = collectControls;
-Data.collectReducers = collectReducers;
-Data.collectResolvers = collectResolvers;
-Data.collectSelectors = collectSelectors;
-Data.collectState = collectState;
-Data.collectName = collectName;
+Data.combineStores = combineStores;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;
+Data.commonStore = commonStore;
 Data.createRegistryControl = createRegistryControl;
 Data.createRegistrySelector = createRegistrySelector;
 Data.useSelect = useSelect;
 Data.useDispatch = useDispatch;
 Data.useRegistry = useRegistry;
+Data.withSelect = withSelect;
 Data.RegistryProvider = RegistryProvider;
 
 export default Data;

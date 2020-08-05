@@ -24,13 +24,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { extractSearchConsoleDashboardData } from '../../modules/search-console/dashboard/util';
-import { readableLargeNumber, getModulesData } from '../../util';
+import { extractSearchConsoleDashboardData } from '../../modules/search-console/util';
+import { getModulesData } from '../../util';
 
 const publishingWin = ( data, id ) => {
-	const showNotification = 5 === parseInt( global.googlesitekit.admin.newSitePosts, 10 );
+	// Only display if site is considered new (determined during activation, based on post count).
+	if ( 5 !== parseInt( global._googlesitekitLegacyData.admin.newSitePosts, 10 ) ) {
+		return false;
+	}
 
-	if ( ! showNotification ) {
+	if ( ! Array.isArray( data ) ) {
 		return false;
 	}
 
@@ -47,25 +50,32 @@ const publishingWin = ( data, id ) => {
 			averageCTR,
 		} = processedData;
 
-		dataBlocks = [
-			{
-				title: __( 'Total Impressions', 'google-site-kit' ),
-				datapoint: readableLargeNumber( totalImpressions ),
-				datapointUnit: '',
-			},
-			{
-				title: __( 'Total Clicks', 'google-site-kit' ),
-				datapoint: readableLargeNumber( totalClicks ),
-				datapointUnit: '',
-			},
-			{
-				title: __( 'Average CTR', 'google-site-kit' ),
-				datapoint: averageCTR,
-				datapointUnit: '%',
-			},
-		];
+		// Only display stats if they are relevant. If everything is 0, it's likely
+		// because the Search Console property is entirely new and hasn't aggregated
+		// any data yet for the site.
+		if ( 0 !== parseInt( totalClicks, 10 ) ||
+			0 !== parseInt( totalImpressions, 10 ) ||
+			0 !== parseInt( averageCTR, 10 ) ) {
+			dataBlocks = [
+				{
+					title: __( 'Total Clicks', 'google-site-kit' ),
+					datapoint: totalClicks,
+					datapointUnit: '',
+				},
+				{
+					title: __( 'Total Impressions', 'google-site-kit' ),
+					datapoint: totalImpressions,
+					datapointUnit: '',
+				},
+				{
+					title: __( 'Average CTR', 'google-site-kit' ),
+					datapoint: averageCTR,
+					datapointUnit: '%',
+				},
+			];
 
-		message = __( 'That’s out of this world. Here are the combined stats for your posts', 'google-site-kit' );
+			message = __( 'That’s out of this world. Here are the combined stats for your posts', 'google-site-kit' );
+		}
 	}
 
 	return {
@@ -73,7 +83,7 @@ const publishingWin = ( data, id ) => {
 		title: __( 'Congrats on five published posts', 'google-site-kit' ),
 		description: message,
 		format: 'large',
-		winImage: `${ global.googlesitekit.admin.assetsRoot }images/rocket.png`,
+		winImage: `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png`,
 		blockData: dataBlocks,
 		type: 'win-stats',
 		showOnce: true,

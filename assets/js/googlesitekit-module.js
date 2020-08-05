@@ -25,7 +25,7 @@ import './modules';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { doAction, applyFilters } from '@wordpress/hooks';
+import { applyFilters } from '@wordpress/hooks';
 import { Component, render, Suspense, lazy } from '@wordpress/element';
 
 /**
@@ -35,7 +35,7 @@ import { loadTranslations } from './util';
 import ProgressBar from './components/progress-bar';
 import './components/data';
 import './components/notifications';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import ModuleApp from './components/module-app';
 
 class GoogleSitekitModule extends Component {
@@ -43,7 +43,7 @@ class GoogleSitekitModule extends Component {
 		super( props );
 
 		this.state = {
-			showModuleSetupWizard: global.googlesitekit.setup.showModuleSetupWizard,
+			showModuleSetupWizard: global._googlesitekitLegacyData.setup.showModuleSetupWizard,
 		};
 	}
 
@@ -52,7 +52,7 @@ class GoogleSitekitModule extends Component {
 			showModuleSetupWizard,
 		} = this.state;
 
-		const { currentAdminPage } = global.googlesitekit.admin;
+		const { currentAdminPage } = global._googlesitekitLegacyData.admin;
 
 		/**
 		 * Filters whether to show the Module setup wizard when showModuleSetupWizard is true.
@@ -63,32 +63,30 @@ class GoogleSitekitModule extends Component {
 
 		if ( showModuleSetupWizard && moduleHasSetupWizard ) {
 			// Set webpackPublicPath on-the-fly.
-			if ( global.googlesitekit && global.googlesitekit.publicPath ) {
+			if ( global._googlesitekitLegacyData && global._googlesitekitLegacyData.publicPath ) {
 				// eslint-disable-next-line no-undef
-				__webpack_public_path__ = global.googlesitekit.publicPath; /*eslint camelcase: 0*/
+				__webpack_public_path__ = global._googlesitekitLegacyData.publicPath; /*eslint camelcase: 0*/
 			}
 
 			const Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'./components/setup/setup-wrapper' ) );
 
 			return (
-				<ErrorHandler>
-					<Suspense fallback={
-						<div className="googlesitekit-setup">
-							<div className="mdc-layout-grid">
-								<div className="mdc-layout-grid__inner">
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-									">
-										<div className="googlesitekit-setup__wrapper">
-											<div className="mdc-layout-grid">
-												<div className="mdc-layout-grid__inner">
-													<div className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-12
-													">
-														<ProgressBar />
-													</div>
+				<Suspense fallback={
+					<div className="googlesitekit-setup">
+						<div className="mdc-layout-grid">
+							<div className="mdc-layout-grid__inner">
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-12
+								">
+									<div className="googlesitekit-setup__wrapper">
+										<div className="mdc-layout-grid">
+											<div className="mdc-layout-grid__inner">
+												<div className="
+													mdc-layout-grid__cell
+													mdc-layout-grid__cell--span-12
+												">
+													<ProgressBar />
 												</div>
 											</div>
 										</div>
@@ -96,18 +94,14 @@ class GoogleSitekitModule extends Component {
 								</div>
 							</div>
 						</div>
-					}>
-						<Setup />
-					</Suspense>
-				</ErrorHandler>
+					</div>
+				}>
+					<Setup />
+				</Suspense>
 			);
 		}
 
-		return (
-			<ErrorHandler>
-				<ModuleApp />
-			</ErrorHandler>
-		);
+		return <ModuleApp />;
 	}
 }
 
@@ -118,12 +112,12 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitModule />, renderTarget );
-
-		/**
-		 * Action triggered when the dashboard App is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Single', global.googlesitekitCurrentModule );
+		render(
+			<Root dataAPIContext="Single" dataAPIModuleArgs={ global.googlesitekitCurrentModule } >
+				<GoogleSitekitModule />
+			</Root>,
+			renderTarget
+		);
 	}
 } );
 

@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { isEqual } from 'lodash';
-
-/**
  * Prefix used for all Site Kit keys.
  *
  * Anything not using this key should not be touched by this library.
@@ -31,7 +26,7 @@ import { isEqual } from 'lodash';
  */
 export const STORAGE_KEY_PREFIX = 'googlesitekit_';
 
-const defaultOrder = [ 'localStorage', 'sessionStorage' ];
+const defaultOrder = [ 'sessionStorage', 'localStorage' ];
 let storageBackend;
 let storageOrder = [ ...defaultOrder	];
 /**
@@ -134,7 +129,7 @@ export const isStorageAvailable = async ( type ) => {
 export const getStorage = async () => {
 	// If `googlesitekit.admin.nojscache` is `true`, we should never use
 	// the cache.
-	if ( global.googlesitekit && global.googlesitekit.admin && global.googlesitekit.admin.nojscache ) {
+	if ( global._googlesitekitLegacyData && global._googlesitekitLegacyData.admin && global._googlesitekitLegacyData.admin.nojscache ) {
 		return null;
 	}
 
@@ -216,16 +211,6 @@ export const setItem = async ( key, value, _timestamp = undefined ) => {
 
 	if ( storage ) {
 		try {
-			// Don't save truthy values that can't be saved by `JSON.stringify`.
-			// This prevents unserializable objects like `ArrayBuffer`s from being
-			// saved as empty objects, etc.
-			if ( ! isEqual(
-				value,
-				JSON.parse( JSON.stringify( { value } ) ).value
-			) ) {
-				return false;
-			}
-
 			storage.setItem( `${ STORAGE_KEY_PREFIX }${ key }`, JSON.stringify( {
 				timestamp: _timestamp || Math.round( Date.now() / 1000 ),
 				value,

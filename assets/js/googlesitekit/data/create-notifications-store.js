@@ -25,17 +25,12 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
+import { createFetchStore } from './create-fetch-store';
 
 // Actions
 const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
-
-const FETCH_NOTIFICATIONS = 'FETCH_NOTIFICATIONS';
-const START_FETCH_NOTIFICATIONS = 'START_FETCH_NOTIFICATIONS';
-const FINISH_FETCH_NOTIFICATIONS = 'FINISH_FETCH_NOTIFICATIONS';
-const CATCH_FETCH_NOTIFICATIONS = 'CATCH_FETCH_NOTIFICATIONS';
-
-const RECEIVE_NOTIFICATIONS = 'RECEIVE_NOTIFICATIONS';
 
 /**
  * Creates a store object that includes actions and selectors for managing notifications.
@@ -45,15 +40,19 @@ const RECEIVE_NOTIFICATIONS = 'RECEIVE_NOTIFICATIONS';
  * @since 1.6.0
  * @private
  *
- * @param {string} type              The data to access. One of 'core' or 'modules'.
- * @param {string} identifier        The data identifier, eg. a module slug like 'search-console'.
- * @param {string} datapoint         The endpoint to request data from, e.g. 'notifications'.
- * @param {Object} options           Optional. Options to consider for the store.
- * @param {number} options.storeName Store name to use. Default is '{type}/{identifier}'.
+ * @param {string}  type              The data to access. One of 'core' or 'modules'.
+ * @param {string}  identifier        The data identifier, eg. a module slug like 'search-console'.
+ * @param {string}  datapoint         The endpoint to request data from, e.g. 'notifications'.
+ * @param {Object}  options           Optional. Options to consider for the store.
+ * @param {boolean} options.client    Enable client-only notifications. `true` by default.
+ * @param {boolean} options.server    Enable server notifications. `true` by default.
+ * @param {number}  options.storeName Store name to use. Default is '{type}/{identifier}'.
  * @return {Object} The notifications store object, with additional `STORE_NAME` and
  *                  `INITIAL_STATE` properties.
  */
 export const createNotificationsStore = ( type, identifier, datapoint, {
+	client = true,
+	server = true,
 	storeName = undefined,
 } = {} ) => {
 	invariant( type, 'type is required.' );
@@ -63,13 +62,33 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 	const STORE_NAME = storeName || `${ type }/${ identifier }`;
 
 	const INITIAL_STATE = {
-		serverNotifications: undefined,
+		serverNotifications: server ? undefined : {},
 		// Initialize clientNotifications as undefined rather than an empty
 		// object so we can know if a client notification was added and then
 		// removed from state.
-		clientNotifications: undefined,
-		isFetchingNotifications: false,
+		clientNotifications: client ? undefined : {},
 	};
+
+	const fetchGetNotificationsStore = createFetchStore( {
+		baseName: 'getNotifications',
+		controlCallback: () => {
+			return API.get( type, identifier, datapoint );
+		},
+		reducerCallback: ( state, notifications ) => {
+			return {
+				...state,
+				serverNotifications: notifications.reduce(
+					( acc, notification ) => {
+						return {
+							...acc,
+							[ notification.id ]: notification,
+						};
+					},
+					{}
+				),
+			};
+		},
+	} );
 
 	const actions = {
 		/**
@@ -105,70 +124,9 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 				type: REMOVE_NOTIFICATION,
 			};
 		},
-
-		/**
-		 * Dispatches an action that creates an HTTP request to the notifications endpoint.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @return {Object} {response, error}
-		 */
-		*fetchNotifications() {
-			let response, error;
-
-			yield {
-				payload: {},
-				type: START_FETCH_NOTIFICATIONS,
-			};
-
-			try {
-				response = yield {
-					payload: {},
-					type: FETCH_NOTIFICATIONS,
-				};
-
-				yield actions.receiveNotifications( response );
-
-				yield {
-					payload: {},
-					type: FINISH_FETCH_NOTIFICATIONS,
-				};
-			} catch ( e ) {
-				error = e;
-				yield {
-					payload: { error },
-					type: CATCH_FETCH_NOTIFICATIONS,
-				};
-			}
-
-			return { response, error };
-		},
-
-		/**
-		 * Stores notifications received from the REST API.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @param {Array} notifications Notifications from the API.
-		 * @return {Object} Redux-style action.
-		 */
-		receiveNotifications( notifications ) {
-			invariant( notifications, 'notifications is required.' );
-
-			return {
-				payload: { notifications },
-				type: RECEIVE_NOTIFICATIONS,
-			};
-		},
 	};
 
-	const controls = {
-		[ FETCH_NOTIFICATIONS ]: () => {
-			return API.get( type, identifier, datapoint );
-		},
-	};
+	const controls = {};
 
 	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
 		switch ( type ) {
@@ -211,46 +169,6 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case START_FETCH_NOTIFICATIONS: {
-				return {
-					...state,
-					isFetchingNotifications: true,
-				};
-			}
-
-			case RECEIVE_NOTIFICATIONS: {
-				const { notifications } = payload;
-
-				return {
-					...state,
-					isFetchingNotifications: false,
-					serverNotifications: notifications.reduce(
-						( acc, notification ) => {
-							return {
-								...acc,
-								[ notification.id ]: notification,
-							};
-						},
-						{}
-					),
-				};
-			}
-
-			case FINISH_FETCH_NOTIFICATIONS: {
-				return {
-					...state,
-					isFetchingNotifications: false,
-				};
-			}
-
-			case CATCH_FETCH_NOTIFICATIONS: {
-				return {
-					...state,
-					error: payload.error,
-					isFetchingNotifications: false,
-				};
-			}
-
 			default: {
 				return { ...state };
 			}
@@ -259,9 +177,17 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 
 	const resolvers = {
 		*getNotifications() {
-			yield actions.fetchNotifications();
+			yield fetchGetNotificationsStore.actions.fetchGetNotifications();
 		},
 	};
+
+	// If server notifications are disabled, we should remove the getNotifications
+	// resolver. If we set it as `undefined` we'll encounter issues with an `undefined`
+	// resolver, because @wordpress/data will still try to register the resolver because
+	// it sees a key. And this is nicer than a no-op resolver.
+	if ( ! server ) {
+		delete resolvers.getNotifications;
+	}
 
 	const selectors = {
 		/**
@@ -272,7 +198,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		 * @since 1.6.0
 		 *
 		 * @param {Object} state Data store's state.
-		 * @return {Array|undefined} Current list of notifications.
+		 * @return {(Array|undefined)} Current list of notifications.
 		 */
 		getNotifications( state ) {
 			const { serverNotifications, clientNotifications } = state;
@@ -295,13 +221,19 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		},
 	};
 
+	const store = Data.combineStores(
+		fetchGetNotificationsStore,
+		{
+			INITIAL_STATE,
+			actions,
+			controls,
+			reducer,
+			resolvers,
+			selectors,
+		}
+	);
 	return {
+		...store,
 		STORE_NAME,
-		INITIAL_STATE,
-		actions,
-		controls,
-		reducer,
-		resolvers,
-		selectors,
 	};
 };

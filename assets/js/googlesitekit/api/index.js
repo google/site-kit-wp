@@ -38,6 +38,9 @@ import {
 } from './cache';
 import { stringifyObject } from '../../util';
 
+// Specific error to handle here, see below.
+import { STORE_NAME as CORE_USER, ERROR_MISSING_REQUIRED_SCOPE } from '../datastore/user/constants';
+
 // Caching is enabled by default.
 let cachingEnabled = true;
 
@@ -132,6 +135,14 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 
 		return response;
 	} catch ( error ) {
+		// Check to see if this error was a `ERROR_MISSING_REQUIRED_SCOPE` error;
+		// if so and there is a data store available to dispatch on, dispatch a
+		// `setPermissionScopeError()` action.
+		// Kind of a hack, but scales to all components.
+		if ( error.code === ERROR_MISSING_REQUIRED_SCOPE && global.googlesitekit?.data?.dispatch?.( CORE_USER ) ) {
+			global.googlesitekit.data.dispatch( CORE_USER ).setPermissionScopeError( error );
+		}
+
 		global.console.error( 'Google Site Kit API Error', error );
 
 		throw error;

@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import { getModulesData } from './index';
+import { getModulesData, activateOrDeactivateModule } from './index';
 
 describe( 'getModulesData', () => {
 	it( 'returns only properties that are module data', () => {
-		const _googlesitekit = {
+		const __googlesitekitLegacyData = {
 			modules: {
 				module1: {
 					slug: 'module1',
@@ -40,14 +40,14 @@ describe( 'getModulesData', () => {
 				anAPIFunction: () => true,
 			},
 		};
-		expect( getModulesData( _googlesitekit ) ).toEqual( {
-			module1: _googlesitekit.modules.module1,
-			anotherModule: _googlesitekit.modules.anotherModule,
+		expect( getModulesData( __googlesitekitLegacyData ) ).toEqual( {
+			module1: __googlesitekitLegacyData.modules.module1,
+			anotherModule: __googlesitekitLegacyData.modules.anotherModule,
 		} );
 	} );
 
 	it( 'passes through module data to directly modify module objects', () => {
-		const _googlesitekit = {
+		const __googlesitekitLegacyData = {
 			modules: {
 				module1: {
 					slug: 'module1',
@@ -64,8 +64,48 @@ describe( 'getModulesData', () => {
 				anAPIFunction: () => true,
 			},
 		};
-		const modulesData = getModulesData( _googlesitekit );
+		const modulesData = getModulesData( __googlesitekitLegacyData );
 		modulesData.module1.active = true;
-		expect( _googlesitekit.modules.module1.active ).toEqual( true );
+		expect( __googlesitekitLegacyData.modules.module1.active ).toEqual( true );
+	} );
+} );
+
+describe( 'activateOrDeactivateModule', () => {
+	it( 'should update module "active" property to be the new status', async () => {
+		const slug = 'test-module';
+		const status = false;
+
+		const originalStatus = true;
+		const originalModule = { active: originalStatus };
+
+		const restApiClient = {
+			setModuleActive: jest.fn().mockResolvedValueOnce( { success: true } ),
+		};
+
+		const trackEvents = () => {};
+		const getModulesDataMock = () => ( {
+			[ slug ]: originalModule,
+		} );
+
+		await activateOrDeactivateModule( restApiClient, slug, status, trackEvents, getModulesDataMock );
+		expect( originalModule.active ).toBeDefined();
+		expect( originalModule.active ).not.toBe( originalStatus );
+		expect( originalModule.active ).toBe( status );
+	} );
+
+	it( 'should call trackEvent function to track module status change event', async () => {
+		const slug = 'test-module';
+		const status = true;
+
+		const restApiClient = {
+			setModuleActive: jest.fn().mockResolvedValueOnce( { success: true } ),
+		};
+
+		const trackEvents = jest.fn();
+		const getModulesDataMock = () => ( {} );
+
+		await activateOrDeactivateModule( restApiClient, slug, status, trackEvents, getModulesDataMock );
+		expect( trackEvents ).toHaveBeenCalled();
+		expect( trackEvents ).toHaveBeenCalledWith( `test-module_setup`, 'module_activate', slug );
 	} );
 } );

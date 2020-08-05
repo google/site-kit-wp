@@ -19,7 +19,7 @@ if ( global.Intl ) {
 global.React = React;
 
 // eslint-disable-next-line no-undef
-global.googlesitekit = {
+global._googlesitekitLegacyData = {
 	admin: {
 		connectURL: 'http://sitekit.withgoogle.com/wp-admin/admin.php?googlesitekit_connect=1&nonce=12345&page=googlesitekit-splash',
 		adminRoot: 'http://sitekit.withgoogle.com/wp-admin/admin.php',
@@ -55,3 +55,6 @@ global._googlesitekitAPIFetchData = global._googlesitekitAPIFetchData || {};
 global._googlesitekitAPIFetchData.rootURL = 'http://sitekit.test/';
 global._googlesitekitAPIFetchData.nonceMiddleware = '6af976d56d';
 global._googlesitekitAPIFetchData.nonceEndpoint = 'http://sitekit.test/wp-admin/admin-ajax.php?action=rest-nonce';
+
+// Instantiate global to which we'll assign to the value imported from fetch-mock-jest during Jest's setupFilesAfterEnv execution.
+global.fetchMock = undefined;

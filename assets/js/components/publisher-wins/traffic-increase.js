@@ -27,18 +27,18 @@ import { __ } from '@wordpress/i18n';
 import { getTimeInSeconds, readableLargeNumber, getModulesData } from '../../util';
 import { calculateOverviewData } from '../../modules/analytics/util';
 
-const trafficIncrease = ( data, id ) => {
+const trafficIncrease = ( reports, id ) => {
 	const modulesData = getModulesData();
 
 	if ( ! modulesData.analytics || ! modulesData.analytics.active ) {
 		return false;
 	}
 
-	if ( ! data || ! data[ 0 ] ) {
+	if ( ! Array.isArray( reports ) ) {
 		return false;
 	}
 
-	const overviewData = calculateOverviewData( data );
+	const overviewData = calculateOverviewData( reports );
 
 	if ( ! overviewData ) {
 		return false;
@@ -57,7 +57,7 @@ const trafficIncrease = ( data, id ) => {
 		description: __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ),
 		dismiss: __( 'OK, Got it!', 'google-site-kit' ),
 		format: 'large',
-		winImage: `${ global.googlesitekit.admin.assetsRoot }images/sun.png`,
+		winImage: `${ global._googlesitekitLegacyData.admin.assetsRoot }images/sun.png`,
 		blockData:
 			[
 				{

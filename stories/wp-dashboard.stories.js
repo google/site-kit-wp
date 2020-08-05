@@ -14,16 +14,16 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
 import SvgIcon from '../assets/js/util/svg-icon';
 import WPDashboardMain from '../assets/js/components/wp-dashboard/wp-dashboard-main';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
-import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/wp-dashboard/wp-dashboard-widget';
+import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
 import { createAddToFilter } from '../assets/js/util/helpers';
-import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/wp-dashboard/wp-dashboard-widget-overview';
-import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/wp-dashboard/wp-dashboard-widget-top-pages-table';
+import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
+import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
 
 storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {
-		global.googlesitekit = wpDashboardData;
-		global.googlesitekit.admin.assetsRoot = '/assets/';
-		global.googlesitekit.canAdsRun = true;
+		global._googlesitekitLegacyData = wpDashboardData;
+		global._googlesitekitLegacyData.admin.assetsRoot = '/assets/';
+		global._googlesitekitLegacyData.canAdsRun = true;
 		const addWPSearchConsoleDashboardWidget = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
 		const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
 		const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );

@@ -37,29 +37,73 @@ import PageHeader from '../page-header';
 import Layout from '../layout/layout';
 import HelpLink from '../help-link';
 import SettingsModules from './settings-modules';
+import { getModulesData } from '../../util';
+
+// tabID to tabIndex
+const tabToIndex = {
+	settings: 0,
+	connect: 1,
+	admin: 2,
+};
+const tabIDsByIndex = Object.keys( tabToIndex );
 
 class SettingsApp extends Component {
 	constructor( props ) {
 		super( props );
-		const hashedTab = global.location.hash.replace( '#', '' );
+		// Route, e.g. #settings/analytics/(view|edit)
+		const hashParts = global.location.hash.replace( '#', '' ).split( /\// );
+		// eslint-disable-next-line prefer-const
+		let [ activeTabID, moduleSlug, moduleState ] = hashParts;
+		moduleSlug = getModulesData()[ moduleSlug ] ? moduleSlug : null;
+		moduleState = [ 'view', 'edit' ].includes( moduleState ) ? moduleState : null;
+		if ( moduleSlug && ! moduleState ) {
+			moduleState = 'view';
+		}
 
 		this.state = {
-			activeTab: hashedTab ? Number( hashedTab ) : 0,
+			activeTabID: activeTabID || 'settings',
+			moduleSlug,
+			moduleState,
 		};
 
+		this.updateFragment = this.updateFragment.bind( this );
 		this.handleTabUpdate = this.handleTabUpdate.bind( this );
 	}
 
+	componentDidMount() {
+		this.updateFragment();
+	}
+	componentDidUpdate() {
+		this.updateFragment();
+	}
+
+	updateFragment() {
+		const {
+			activeTabID,
+			moduleSlug,
+			moduleState,
+		} = this.state;
+		const fragments = [ activeTabID ];
+
+		if ( activeTabID === 'settings' ) {
+			// eslint-disable-next-line no-unused-expressions
+			moduleSlug && fragments.push( moduleSlug );
+			// eslint-disable-next-line no-unused-expressions
+			( moduleSlug && moduleState ) && fragments.push( moduleState );
+		}
+
+		global.location.hash = fragments.join( '/' );
+	}
+
 	handleTabUpdate( tabIndex ) {
-		const activeTab = -1 === tabIndex ? 0 : tabIndex; // Check for invalid index.
-		global.location.hash = activeTab;
 		this.setState( {
-			activeTab,
+			activeTabID: tabIDsByIndex[ tabIndex ],
 		} );
 	}
 
 	render() {
-		const { activeTab } = this.state;
+		const { activeTabID } = this.state;
+		const activeTab = tabToIndex[ activeTabID ];
 		return (
 			<Fragment>
 				<Header />
@@ -87,14 +131,16 @@ class SettingsApp extends Component {
 									</TabBar>
 								</Layout>
 							</div>
-							{ ( 0 === activeTab || 1 === activeTab ) && // If we're on Connected or Add tabs. TODO Refactor SettingsModules into separate components.
-								<SettingsModules activeTab={ activeTab } />
+							{ ( [ 'settings', 'connect' ].includes( activeTabID ) ) && // TODO Refactor SettingsModules into separate components.
+								<SettingsModules
+									activeTab={ activeTab }
+									activeModule={ this.state.moduleSlug }
+									moduleState={ this.state.moduleState }
+									setActiveModule={ ( moduleSlug ) => this.setState( { moduleSlug } ) }
+									setModuleState={ ( moduleState ) => this.setState( { moduleState } ) }
+								/>
 							}
-							{ 2 === activeTab && // If we're on Settings tab.
-								<Fragment>
-									<SettingsAdmin />
-								</Fragment>
-							}
+							{ 'admin' === activeTabID && <SettingsAdmin /> }
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12

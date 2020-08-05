@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -136,6 +137,17 @@ final class Modules {
 			'googlesitekit_rest_routes',
 			function( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
+			}
+		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				$modules_routes = array(
+					'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
+				);
+
+				return array_merge( $paths, $modules_routes );
 			}
 		);
 
@@ -475,6 +487,10 @@ final class Modules {
 			return current_user_can( Permissions::MANAGE_OPTIONS );
 		};
 
+		$get_module_schema = function () {
+			return $this->get_module_schema();
+		};
+
 		return array(
 			new REST_Route(
 				'core/modules/data/list',
@@ -492,7 +508,7 @@ final class Modules {
 					),
 				),
 				array(
-					'schema' => $this->get_module_schema(),
+					'schema' => $get_module_schema,
 				)
 			),
 			new REST_Route(
@@ -552,7 +568,7 @@ final class Modules {
 					),
 				),
 				array(
-					'schema' => $this->get_module_schema(),
+					'schema' => $get_module_schema,
 				)
 			),
 			new REST_Route(
@@ -580,7 +596,7 @@ final class Modules {
 					),
 				),
 				array(
-					'schema' => $this->get_module_schema(),
+					'schema' => $get_module_schema,
 				)
 			),
 			new REST_Route(
@@ -599,10 +615,10 @@ final class Modules {
 								$notifications = $modules[ $slug ]->get_data( 'notifications' );
 								if ( is_wp_error( $notifications ) ) {
 									// Don't consider it an error if the module does not have a 'notifications' datapoint.
-									if ( 'invalid_datapoint' !== $notifications->get_error_code() ) {
-										return $notifications;
+									if ( Invalid_Datapoint_Exception::WP_ERROR_CODE === $notifications->get_error_code() ) {
+										$notifications = array();
 									}
-									$notifications = array();
+									return $notifications;
 								}
 							}
 							return new WP_REST_Response( $notifications );
@@ -765,7 +781,7 @@ final class Modules {
 
 		if ( in_array( 'settings', $module->get_datapoints(), true ) ) {
 			$result = $module->set_data( 'settings', $data );
-			if ( is_wp_error( $result ) && $result->get_error_code() !== 'invalid_datapoint' ) {
+			if ( is_wp_error( $result ) && $result->get_error_code() !== Invalid_Datapoint_Exception::WP_ERROR_CODE ) {
 				return $result;
 			} elseif ( ! is_wp_error( $result ) ) {
 				return true;
@@ -794,6 +810,7 @@ final class Modules {
 			'description'  => $module->description,
 			'homepage'     => $module->homepage,
 			'internal'     => $module->internal,
+			'order'        => $module->order,
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),

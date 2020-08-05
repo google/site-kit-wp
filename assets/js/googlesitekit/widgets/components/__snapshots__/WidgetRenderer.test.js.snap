@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WidgetRenderer should output children directly 1`] = `
+<div>
+  Test
+</div>
+`;
+
+exports[`WidgetRenderer should wrap children when wrapWidget is true 1`] = `
+<div
+  class="googlesitekit-widget googlesitekit-widget--TestWidget"
+>
+  <div>
+    Test
+  </div>
+</div>
+`;

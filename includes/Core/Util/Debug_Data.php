@@ -214,7 +214,7 @@ class Debug_Data {
 	 */
 	private function get_site_status_field() {
 		$is_connected = $this->authentication->credentials()->has();
-		$using_proxy  = $this->authentication->get_oauth_client()->using_proxy();
+		$using_proxy  = $this->authentication->credentials()->using_proxy();
 		$status_map   = array(
 			'connected-site'  => __( 'Connected through site credentials', 'google-site-kit' ),
 			'connected-oauth' => __( 'Connected through OAuth client credentials', 'google-site-kit' ),
@@ -289,8 +289,8 @@ class Debug_Data {
 		$value           = array();
 
 		foreach ( $required_scopes as $scope ) {
-			$granted         = in_array( $scope, $granted_scopes, true );
-			$value[ $scope ] = $granted ? '✅' : '⭕';
+			$satisfied       = Scopes::is_satisfied_by( $scope, $granted_scopes );
+			$value[ $scope ] = $satisfied ? '✅' : '⭕';
 		}
 
 		return array(

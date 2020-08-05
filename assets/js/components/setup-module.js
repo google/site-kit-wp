@@ -37,6 +37,7 @@ import {
 	getReAuthURL,
 	showErrorNotification,
 	moduleIcon,
+	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
@@ -97,7 +98,7 @@ class SetupModule extends Component {
 
 		let blockedByParentModule = false;
 
-		const { modules } = global.googlesitekit;
+		const modules = getModulesData();
 
 		// Check if required module is active.
 		if ( modules[ slug ].required.length ) {
@@ -148,10 +149,16 @@ class SetupModule extends Component {
 						>
 							{
 								! blockedByParentModule
-									/* translators: %s: module name */
-									? sprintf( __( 'Set up %s', 'google-site-kit' ), name )
-									/* translators: %s: module name */
-									: sprintf( __( 'Set up Analytics to gain access to %s', 'google-site-kit' ), name )
+									? sprintf(
+										/* translators: %s: module name */
+										__( 'Set up %s', 'google-site-kit' ),
+										name
+									)
+									: sprintf(
+										/* translators: %s: module name */
+										__( 'Set up Analytics to gain access to %s', 'google-site-kit' ),
+										name
+									)
 							}
 						</Link>
 					</p>

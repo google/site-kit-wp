@@ -10,11 +10,15 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
@@ -29,8 +33,9 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Optimize extends Module implements Module_With_Settings, Module_With_Debug_Fields {
-	use Module_With_Settings_Trait;
+final class Optimize extends Module
+	implements Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets {
+	use Module_With_Settings_Trait, Module_With_Assets_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -186,19 +191,19 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 	}
 
 	/**
-	 * Returns the mapping between available datapoints and their services.
+	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since 1.0.0
+	 * @since 1.12.0
 	 *
-	 * @return array Associative array of $datapoint => $service_identifier pairs.
+	 * @return array Map of datapoints to their definitions.
 	 */
-	protected function get_datapoint_services() {
+	protected function get_datapoint_definitions() {
 		return array(
-			// GET / POST.
-			'optimize-id'         => '',
-			'amp-experiment-json' => '',
-			// POST.
-			'settings'            => '',
+			'GET:amp-experiment-json'  => array( 'service' => '' ),
+			'POST:amp-experiment-json' => array( 'service' => '' ),
+			'GET:optimize-id'          => array( 'service' => '' ),
+			'POST:optimize-id'         => array( 'service' => '' ),
+			'POST:settings'            => array( 'service' => '' ),
 		);
 	}
 
@@ -208,8 +213,9 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 *
+	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -221,7 +227,7 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 						return new WP_Error( 'amp_experiment_json_not_set', __( 'AMP experiment JSON not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
 
-					return wp_json_encode( $option['ampExperimentJSON'] );
+					return $option['ampExperimentJSON'];
 				};
 			case 'POST:amp-experiment-json':
 				if ( ! isset( $data['ampExperimentJSON'] ) ) {
@@ -230,9 +236,6 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 				}
 				return function() use ( $data ) {
 					$json = $data['ampExperimentJSON'];
-					if ( is_string( $json ) ) {
-						$json = json_decode( $json );
-					}
 					$this->get_settings()->merge( array( 'ampExperimentJSON' => $json ) );
 					return true;
 				};
@@ -257,7 +260,7 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 				};
 		}
 
-		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**
@@ -322,5 +325,33 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Sets up the module's assets to register.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @return Asset[] List of Asset objects.
+	 */
+	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		return array(
+			new Script(
+				'googlesitekit-modules-optimize',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-optimize.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-forms',
+					),
+				)
+			),
+		);
 	}
 }

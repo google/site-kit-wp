@@ -9,19 +9,38 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-add_action(
-	'init',
-	function () {
-		if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
-			return;
-		}
+use Google\Site_Kit\Core\Assets\Script;
 
-		wp_enqueue_script(
-			'googlesitekit-e2e-utilities',
-			plugins_url( 'dist/assets/js/e2e-utilities.js', GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
-			array( 'googlesitekit-apifetch-data' ),
-			md5_file( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . 'dist/assets/js/e2e-utilities.js' ),
-			true
+add_filter(
+	'googlesitekit_assets',
+	function ( $assets ) {
+		$assets[] = new Script(
+			'googlesitekit-e2e-api-fetch',
+			array(
+				'src'          => plugins_url( 'dist/assets/js/e2e-api-fetch.js', GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
+				'dependencies' => array( 'googlesitekit-apifetch-data' ),
+				'version'      => md5_file( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . 'dist/assets/js/e2e-api-fetch.js' ),
+			)
 		);
+		$assets[] = new Script(
+			'googlesitekit-e2e-redux-logger',
+			array(
+				'src'          => plugins_url( 'dist/assets/js/e2e-redux-logger.js', GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
+				'version'      => md5_file( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . 'dist/assets/js/e2e-redux-logger.js' ),
+				'dependencies' => array(),
+				'in_footer'    => false, // Load as early as possible.
+			)
+		);
+
+		return $assets;
+	}
+);
+// Enqueue E2E Utilities globally `wp_print_scripts` is called on admin and front.
+// If asset is not registered enqueuing is a no-op.
+add_action(
+	'wp_print_scripts',
+	function () {
+		wp_enqueue_script( 'googlesitekit-e2e-api-fetch' );
+		wp_enqueue_script( 'googlesitekit-e2e-redux-logger' );
 	}
 );

@@ -48,7 +48,7 @@ class SiteVerification extends Component {
 
 		this.state = {
 			loading: isAuthenticated && shouldSetup,
-			loadingMsg: __( 'Getting your verified sites...', 'google-site-kit' ),
+			loadingMsg: __( 'Getting your verified sites…', 'google-site-kit' ),
 			siteURL: ' ', // Space allows TextField label to look right.
 			selectedURL: '',
 			errorCode: false,
@@ -77,7 +77,7 @@ class SiteVerification extends Component {
 
 				// Our current siteURL has been verified. Proceed to next step.
 				if ( verified ) {
-					trackEvent( 'verification_setup', 'verification_check_true' );
+					await trackEvent( 'verification_setup', 'verification_check_true' );
 
 					const response = await this.insertSiteVerification( identifier );
 
@@ -86,7 +86,7 @@ class SiteVerification extends Component {
 						return true;
 					}
 				} else {
-					trackEvent( 'verification_setup', 'verification_check_false' );
+					await trackEvent( 'verification_setup', 'verification_check_false' );
 				}
 
 				this.setState( {
@@ -107,7 +107,7 @@ class SiteVerification extends Component {
 					loading: false,
 					errorCode: err.code,
 					errorMsg: message,
-					siteURL: global.googlesitekit.admin.siteURL, // Fallback to site URL from the settings.
+					siteURL: global._googlesitekitLegacyData.admin.siteURL, // Fallback to site URL from the settings.
 				} );
 			}
 		} )();
@@ -121,13 +121,13 @@ class SiteVerification extends Component {
 		const { setErrorMessage } = this.props;
 
 		// Try to get siteURL from state, and if blank get from the settings.
-		const siteURL = this.state.siteURL ? this.state.siteURL : global.googlesitekit.admin.siteURL;
+		const siteURL = this.state.siteURL ? this.state.siteURL : global._googlesitekitLegacyData.admin.siteURL;
 
 		setErrorMessage( '' );
 
 		this.setState( {
 			loading: true,
-			loadingMsg: __( 'Verifying...', 'google-site-kit' ),
+			loadingMsg: __( 'Verifying…', 'google-site-kit' ),
 			errorCode: false,
 			errorMsg: '',
 		} );

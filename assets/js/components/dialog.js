@@ -45,7 +45,7 @@ class Dialog extends Component {
 			attributes: [
 				__( 'Audience overview', 'google-site-kit' ),
 				__( 'Top pages', 'google-site-kit' ),
-				__( 'Top acquisition sources', 'google-site-kit' ),
+				__( 'Top acquisition channels', 'google-site-kit' ),
 				__( 'AdSense & Analytics metrics for top pages', 'google-site-kit' ),
 			],
 		};
@@ -68,6 +68,7 @@ class Dialog extends Component {
 			confirmButton,
 			dependentModules,
 			instanceId,
+			danger,
 		} = this.props;
 
 		const labelledByID = `googlesitekit-dialog-label-${ instanceId }`;
@@ -122,7 +123,7 @@ class Dialog extends Component {
 								<footer className="mdc-dialog__actions">
 									<Button
 										onClick={ handleConfirm }
-										danger
+										danger={ danger }
 									>
 										{ confirmButton ? confirmButton : __( 'Disconnect', 'google-site-kit' ) }
 									</Button>
@@ -146,6 +147,7 @@ Dialog.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.string,
 	confirmButton: PropTypes.string,
+	danger: PropTypes.bool,
 };
 
 Dialog.defaultProps = {
@@ -154,6 +156,7 @@ Dialog.defaultProps = {
 	title: null,
 	description: null,
 	confirmButton: null,
+	danger: false,
 };
 
 export default withInstanceId( Dialog );

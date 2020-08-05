@@ -30,6 +30,7 @@ import Header from '../header';
 import Link from '../link';
 import PageHeader from '../page-header';
 import Layout from '../layout/layout';
+import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DateRangeSelector from '../date-range-selector';
 import HelpLink from '../help-link';
 import DashboardDetailsModules from './dashboard-details-modules';
@@ -55,7 +56,7 @@ class DashboardDetailsApp extends Component {
 									mdc-layout-grid__cell--span-4-tablet
 									mdc-layout-grid__cell--span-8-desktop
 								">
-									<Link href={ global.googlesitekit.dashboardPermalink } inherit back small>
+									<Link href={ global._googlesitekitLegacyData.dashboardPermalink } inherit back small>
 										{ __( 'Back to the Site Kit Dashboard', 'google-site-kit' ) }
 									</Link>
 									<PageHeader
@@ -92,16 +93,24 @@ class DashboardDetailsApp extends Component {
 															googlesitekit-heading-3
 															googlesitekit-dashboard-single-url__title
 														">
-														{ decodeHtmlEntity( global.googlesitekit.pageTitle ) }
+														{ decodeHtmlEntity( global._googlesitekitLegacyData.pageTitle ) }
 													</h3>
-													<Link href={ global.googlesitekit.permaLink } inherit external>
-														{ global.googlesitekit.permaLink }
+													<Link href={ global._googlesitekitLegacyData.permaLink } inherit external>
+														{ global._googlesitekitLegacyData.permaLink }
 													</Link>
 												</div>
 											</div>
 										</div>
 									</Layout>
 								</div>
+								{ featureFlags.widgets.pageDashboard.enabled && (
+									<div className="
+										mdc-layout-grid__cell
+										mdc-layout-grid__cell--span-12
+									">
+										<WidgetContextRenderer slug="pageDashboard" />
+									</div>
+								) }
 								<DashboardDetailsModules />
 								<div className="
 									mdc-layout-grid__cell

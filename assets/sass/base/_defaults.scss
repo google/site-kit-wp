@@ -125,12 +125,14 @@
 		color: $c-success;
 		font-size: 10px;
 		font-weight: $fw-primary-medium;
+		text-transform: uppercase;
 	}
 
 	.googlesitekit-nodata {
 		display: none;
 	}
 
+	legend,
 	p {
 		font-size: 1rem;
 	}
@@ -166,8 +168,20 @@
 		}
 	}
 
+	legend {
+		line-height: 1.5;
+		margin: 1em 0;
+	}
+
 	.screen-reader-only {
 
 		@include screen-reader-only;
+	}
+
+	.hidden-on-mobile {
+
+		@media (max-width: $bp-mobileOnly ) {
+			display: none;
+		}
 	}
 }

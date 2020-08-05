@@ -27,18 +27,18 @@ import { __ } from '@wordpress/i18n';
 import { numberFormat, getTimeInSeconds, getModulesData } from '../../util';
 import { calculateOverviewData } from '../../modules/analytics/util';
 
-const pageviewIncrease = ( data, id ) => {
+const pageviewIncrease = ( reports, id ) => {
 	const modulesData = getModulesData();
 
 	if ( ! modulesData.analytics || ! modulesData.analytics.active ) {
 		return false;
 	}
 
-	if ( ! data || ! data.reports ) {
+	if ( ! Array.isArray( reports ) ) {
 		return false;
 	}
 
-	const overviewData = calculateOverviewData( data );
+	const overviewData = calculateOverviewData( reports );
 
 	if ( ! overviewData ) {
 		return false;
@@ -56,7 +56,7 @@ const pageviewIncrease = ( data, id ) => {
 		description: __( 'Over the past 4 weeks', 'google-site-kit' ),
 		format: 'large',
 		logo: false,
-		winImage: `${ global.googlesitekit.admin.assetsRoot }images/sun-small.png`,
+		winImage: `${ global._googlesitekitLegacyData.admin.assetsRoot }images/sun-small.png`,
 		blockData: [
 			{
 				title: __( 'Total Page Views', 'google-site-kit' ),

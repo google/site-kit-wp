@@ -122,9 +122,21 @@ final class Context {
 	 * @return string Full admin screen URL.
 	 */
 	public function admin_url( $slug = 'dashboard', array $query_args = array() ) {
-		$query_args['page'] = Core\Admin\Screens::PREFIX . $slug;
+		unset( $query_args['page'] );
 
-		return add_query_arg( $query_args, self_admin_url( 'admin.php' ) );
+		if ( $this->is_network_mode() ) {
+			$base_url = network_admin_url( 'admin.php' );
+		} else {
+			$base_url = admin_url( 'admin.php' );
+		}
+
+		return add_query_arg(
+			array_merge(
+				array( 'page' => Core\Admin\Screens::PREFIX . $slug ),
+				$query_args
+			),
+			$base_url
+		);
 	}
 
 	/**
@@ -178,6 +190,14 @@ final class Context {
 	public function get_reference_entity() {
 		// If currently in WP admin, run admin-specific checks.
 		if ( is_admin() ) {
+			// Support specific URL stats being checked in Site Kit dashboard details view.
+			if ( 'googlesitekit-dashboard' === $this->input()->filter( INPUT_GET, 'page' ) ) {
+				$entity_url_query_param = $this->input()->filter( INPUT_GET, 'permaLink' );
+				if ( ! empty( $entity_url_query_param ) ) {
+					return $this->get_reference_entity_from_url( $entity_url_query_param );
+				}
+			}
+
 			$post = get_post();
 			if ( $post instanceof \WP_Post ) {
 				return $this->create_entity_for_post( $post );
@@ -196,16 +216,60 @@ final class Context {
 
 		// If not singular (see above) but front page, this is the blog archive.
 		if ( is_front_page() ) {
-			return new Entity(
-				user_trailingslashit( $this->get_reference_site_url() ),
-				array(
-					'type' => 'home',
-				)
-			);
+			return $this->create_entity_for_home_blog();
 		}
 
 		// TODO: This is not comprehensive, but will be expanded in the future.
 		// Related: https://github.com/google/site-kit-wp/issues/174.
+		return null;
+	}
+
+	/**
+	 * Gets the entity for the given URL, if available.
+	 *
+	 * An entity in Site Kit terminology is based on a canonical URL, i.e. every
+	 * canonical URL has an associated entity.
+	 *
+	 * An entity may also have a type, a title, and an ID.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param string $url URL to determine the entity from.
+	 * @return Entity|null The current entity, or null if none could be determined.
+	 */
+	public function get_reference_entity_from_url( $url ) {
+		// Ensure local URL is used for lookup.
+		$url = str_replace(
+			$this->get_reference_site_url(),
+			untrailingslashit( home_url() ),
+			$url
+		);
+
+		if ( function_exists( 'wpcom_vip_url_to_postid' ) ) {
+			$post_id = wpcom_vip_url_to_postid( $url );
+		} else {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions
+			$post_id = url_to_postid( $url );
+		}
+
+		// url_to_postid() does not support detecting the posts page, hence
+		// this code covers up for it.
+		if ( ! $post_id && get_option( 'page_for_posts' ) && get_permalink( get_option( 'page_for_posts' ) ) === $url ) {
+			$post_id = (int) get_option( 'page_for_posts' );
+		}
+
+		if ( $post_id ) {
+			$post = get_post( $post_id );
+			if ( $post instanceof \WP_Post ) {
+				return $this->create_entity_for_post( $post );
+			}
+		}
+
+		$path = str_replace( untrailingslashit( home_url() ), '', $url );
+		if ( empty( $path ) || '/' === $path ) {
+			return $this->create_entity_for_home_blog();
+		}
+
 		return null;
 	}
 
@@ -261,6 +325,10 @@ final class Context {
 	 * @return bool True if an AMP request, false otherwise.
 	 */
 	public function is_amp() {
+		if ( is_singular( 'web-story' ) ) {
+			return true;
+		}
+
 		return function_exists( 'is_amp_endpoint' ) && is_amp_endpoint();
 	}
 
@@ -341,9 +409,9 @@ final class Context {
 	private function create_entity_for_post( \WP_Post $post ) {
 		$type = 'post';
 
-		// If this post is assigned as the home page, it is actually the blog archive.
+		// If this post is assigned as the posts page, it is actually the blog archive.
 		if ( (int) get_option( 'page_for_posts' ) === (int) $post->ID ) {
-			$type = 'home';
+			$type = 'blog';
 		}
 
 		return new Entity(
@@ -352,6 +420,27 @@ final class Context {
 				'type'  => $type,
 				'title' => $post->post_title,
 				'id'    => $post->ID,
+			)
+		);
+	}
+
+	/**
+	 * Creates the entity for the home blog archive.
+	 *
+	 * This method should only be used when the home page is set to display the
+	 * blog archive, i.e. is not technically a post itself. Otherwise, it
+	 * should be handled through {@see Context::create_entity_for_post()}.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @return Entity The entity for the home blog archive.
+	 */
+	private function create_entity_for_home_blog() {
+		return new Entity(
+			user_trailingslashit( $this->get_reference_site_url() ),
+			array(
+				'type'  => 'blog',
+				'title' => __( 'Home', 'google-site-kit' ),
 			)
 		);
 	}

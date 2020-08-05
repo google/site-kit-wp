@@ -24,22 +24,23 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { extractSearchConsoleDashboardData } from '../../modules/search-console/dashboard/util';
+import { extractSearchConsoleDashboardData } from '../../modules/search-console/util';
 import { getTimeInSeconds, getDaysBetweenDates } from '../../util';
 
 const totalStats = ( data, id ) => {
-	if ( 5 >= parseInt( global.googlesitekit.admin.newSitePosts, 10 ) ) {
+	// Only display if site has more than 5 posts.
+	if ( 5 >= parseInt( global._googlesitekitLegacyData.admin.newSitePosts, 10 ) ) {
 		return false;
 	}
 
-	if ( ! data || ! data.rows ) {
+	if ( ! Array.isArray( data ) ) {
 		return false;
 	}
 
 	let dataBlocks = [];
 	let description = __( 'Here are some high level stats', 'google-site-kit' );
 
-	if ( data && data.rows ) {
+	if ( data ) {
 		const processedData = extractSearchConsoleDashboardData( data );
 
 		const {
@@ -93,7 +94,7 @@ const totalStats = ( data, id ) => {
 		title: __( 'Welcome Back!', 'google-site-kit' ),
 		description,
 		format: 'large',
-		winImage: `${ global.googlesitekit.admin.assetsRoot }images/g-win.png`,
+		winImage: `${ global._googlesitekitLegacyData.admin.assetsRoot }images/g-win.png`,
 		blockData: dataBlocks,
 		type: 'win-stats',
 		dismissExpires: getTimeInSeconds( 'day' ) * days,

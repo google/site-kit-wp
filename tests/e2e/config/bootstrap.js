@@ -21,9 +21,7 @@ import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
 } from '../utils';
-import {
-	toHaveAdSenseTag,
-} from '../matchers';
+import * as customMatchers from '../matchers';
 
 /**
  * Environment variables
@@ -58,9 +56,7 @@ jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
 setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 500 } );
 
 // Add custom matchers specific to Site Kit.
-expect.extend( {
-	toHaveAdSenseTag,
-} );
+expect.extend( customMatchers );
 
 /**
  * Adds an event listener to the page to handle additions of page event
@@ -74,6 +70,10 @@ function capturePageEventsForTearDown() {
 
 /**
  * Opt out of all Analytics tracking on page load.
+ *
+ * This function emulates the behavior of the opt-out browser extension,
+ * which is the only way to opt-out in an AMP-friendly way
+ * since AMP does not allow for arbitrary JS from the origin.
  *
  * @see {@link https://tools.google.com/dlpage/gaoptout}
  */
@@ -119,6 +119,12 @@ function observeConsoleLogging() {
 		// Viewing posts on the front end can result in this error, which
 		// has nothing to do with Gutenberg.
 		if ( text.includes( 'net::ERR_UNKNOWN_URL_SCHEME' ) ) {
+			return;
+		}
+
+		// We log this separately now in a way which includes the URL
+		// which is much more useful than this message.
+		if ( text.startsWith( 'Failed to load resource: the server responded with a status of' ) ) {
 			return;
 		}
 
@@ -248,6 +254,15 @@ beforeAll( async () => {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
 	}
+
+	page.on( 'response', ( res ) => {
+		if ( res.status() > 399 ) {
+			const req = res.request();
+			// eslint-disable-next-line no-console
+			console.warn( res.status(), req.method(), req.url() );
+		}
+	} );
+
 	// There's no good way to otherwise conditionally enable this logging
 	// since the code needs to be built into the e2e-utilities.js.
 	if ( '1' === process.env.DEBUG_REDUX ) {

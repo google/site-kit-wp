@@ -17,151 +17,47 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
-// Actions
-const START_FETCH_CONNECTION = 'START_FETCH_CONNECTION';
-const FETCH_CONNECTION = 'FETCH_CONNECTION';
-const FINISH_FETCH_CONNECTION = 'FINISH_FETCH_CONNECTION';
-const CATCH_FETCH_CONNECTION = 'CATCH_FETCH_CONNECTION';
-
-const RECEIVE_CONNECTION = 'RECEIVE_CONNECTION';
-
-export const INITIAL_STATE = {
-	connection: undefined,
-	isFetchingConnection: false,
-};
-
-export const actions = {
-	/**
-	 * Dispatches an action that creates an HTTP request.
-	 *
-	 * Requests the `core/site/connection` endpoint.
-	 *
-	 * @since 1.5.0
-	 * @private
-	 *
-	 * @return {Object} Object with {response, error}
-	 */
-	*fetchConnection() {
-		let response, error;
-
-		yield {
-			payload: {},
-			type: START_FETCH_CONNECTION,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_CONNECTION,
-			};
-
-			yield actions.receiveConnection( response );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_CONNECTION,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_CONNECTION,
-			};
-		}
-
-		return { response, error };
+const fetchGetConnectionStore = createFetchStore( {
+	baseName: 'getConnection',
+	controlCallback: () => {
+		return API.get( 'core', 'site', 'connection', undefined, {
+			useCache: false,
+		} );
 	},
-
-	/**
-	 * Stores connection info received from the REST API.
-	 *
-	 * @since 1.5.0
-	 * @private
-	 *
-	 * @param {Object} connection Connection info from the API.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveConnection( connection ) {
-		invariant( connection, 'connection is required.' );
-
+	reducerCallback: ( state, connection ) => {
 		return {
-			payload: { connection },
-			type: RECEIVE_CONNECTION,
+			...state,
+			connection,
 		};
 	},
+} );
+
+const BASE_INITIAL_STATE = {
+	connection: undefined,
 };
 
-export const controls = {
-	[ FETCH_CONNECTION ]: () => {
-		return API.get( 'core', 'site', 'connection' );
-	},
-};
-
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case START_FETCH_CONNECTION: {
-			return {
-				...state,
-				isFetchingConnection: true,
-			};
-		}
-
-		case RECEIVE_CONNECTION: {
-			const { connection } = payload;
-
-			return {
-				...state,
-				connection,
-			};
-		}
-
-		case FINISH_FETCH_CONNECTION: {
-			return {
-				...state,
-				isFetchingConnection: false,
-			};
-		}
-
-		case CATCH_FETCH_CONNECTION: {
-			return {
-				...state,
-				error: payload.error,
-				isFetchingConnection: false,
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-};
-
-export const resolvers = {
+const baseResolvers = {
 	*getConnection() {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const existingConnection = registry.select( STORE_NAME ).getConnection();
 
 		if ( ! existingConnection ) {
-			yield actions.fetchConnection();
+			yield fetchGetConnectionStore.actions.fetchGetConnection();
 		}
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets the connection info for this site.
 	 *
@@ -180,13 +76,27 @@ export const selectors = {
 	 * @since 1.5.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} Site connection info.
+	 * @return {(Object|undefined)} Site connection info.
 	 */
 	getConnection( state ) {
 		const { connection } = state;
 
 		return connection;
 	},
+
+	/**
+	 * Gets information about connected admins.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} TRUE if there are connected admins, otherwise FALSE or undefined if information is not available yet.
+	 */
+	hasConnectedAdmins: createRegistrySelector( ( select ) => () => {
+		const { hasConnectedAdmins } = select( STORE_NAME ).getConnection() || {};
+
+		return hasConnectedAdmins;
+	} ),
 
 	/**
 	 * Gets the Site Kit connection status for this site.
@@ -197,7 +107,7 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} Site connection status.
+	 * @return {(boolean|undefined)} Site connection status.
 	 */
 	isConnected: createRegistrySelector( ( select ) => () => {
 		const connection = select( STORE_NAME ).getConnection();
@@ -215,7 +125,7 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} Site reset status.
+	 * @return {(boolean|undefined)} Site reset status.
 	 */
 	isResettable: createRegistrySelector( ( select ) => () => {
 		const connection = select( STORE_NAME ).getConnection();
@@ -233,7 +143,7 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} Site setup completion status.
+	 * @return {(boolean|undefined)} Site setup completion status.
 	 */
 	isSetupCompleted: createRegistrySelector( ( select ) => () => {
 		const connection = select( STORE_NAME ).getConnection();
@@ -242,11 +152,20 @@ export const selectors = {
 	} ),
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetConnectionStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

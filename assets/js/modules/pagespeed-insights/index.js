@@ -1,7 +1,7 @@
 /**
  * PageSpeed Insights module initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,54 +17,68 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
+import domReady from '@wordpress/dom-ready';
 
 /**
  * Internal dependencies
  */
+import Widgets from 'googlesitekit-widgets';
+import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
+import './datastore';
+import { fillFilterWithComponent, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
-import DashboardSpeed from './dashboard/dashboard-widget-speed';
-import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
-import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
-import { settingsDetails as SettingsDetails } from './settings';
-import { getModulesData } from '../../util';
+import { SettingsMain as PageSpeedInsightsSettings } from './components/settings';
+import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
+import DashboardPageSpeedCTA from './components/dashboard/DashboardPageSpeedCTA';
+import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
 
-const slug = 'pagespeed-insights';
+/**
+ * Add components to the settings page.
+ */
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-pagespeed-insights',
+	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
+	fillFilterWithComponent( PageSpeedInsightsSettings )
+);
 
 const {
 	active,
 	setupComplete,
-} = getModulesData()[ slug ];
+} = getModulesData()[ 'pagespeed-insights' ];
 
+// @TODO: remove LegacyDashboardSpeed once all widgets have been migrated.
 if ( active && setupComplete ) {
-	const addDashboardSpeed = createAddToFilter( <DashboardSpeed /> );
-	const addPageSpeedInsightsDashboardWidgetHomepageSpeed = createAddToFilter( <PageSpeedInsightsDashboardWidgetHomepageSpeed /> );
+	// Add to main dashboard.
+	addFilter(
+		'googlesitekit.DashboardModule',
+		'googlesitekit.PageSpeedInsights',
+		createAddToFilter( <LegacyDashboardSpeed /> ),
+		45
+	);
 
-	/**
-	 * Add components to the Site Kit Dashboard.
-	 */
-	addFilter( 'googlesitekit.DashboardModule',
+	// Add to dashboard-details view.
+	addFilter(
+		'googlesitekit.DashboardDetailsModule',
 		'googlesitekit.PageSpeedInsights',
-		addDashboardSpeed, 45 );
-	addFilter( 'googlesitekit.DashboardDetailsModule',
-		'googlesitekit.PageSpeedInsights',
-		addDashboardSpeed, 45 );
-	addFilter( 'googlesitekit.DashboardSpeed',
-		'googlesitekit.PageSpeedInsightsHomepageSpeed',
-		addPageSpeedInsightsDashboardWidgetHomepageSpeed );
+		createAddToFilter( <LegacyDashboardSpeed /> ),
+		45
+	);
 } else {
-	const addPageSpeedInsightsCTA = createAddToFilter( <PageSpeedInsightsCTA /> );
-	addFilter( 'googlesitekit.DashboardModule',
+	addFilter(
+		'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
-		addPageSpeedInsightsCTA, 45 );
+		createAddToFilter( <DashboardPageSpeedCTA /> ),
+		45
+	);
 }
 
-addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
-	createAddToFilter( <SettingsDetails /> ), 10 );
+domReady( () => {
+	Widgets.registerWidget( 'pagespeedInsightsWebVitals', {
+		component: DashboardPageSpeedWidget,
+		width: Widgets.WIDGET_WIDTHS.FULL,
+		wrapWidget: false,
+	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );
+} );

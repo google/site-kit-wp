@@ -10,17 +10,22 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
+use Closure;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
+use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
+use Google\Site_Kit\Core\Contracts\WP_Errorable;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
-use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use WP_Error;
 use Exception;
 
@@ -260,8 +265,8 @@ abstract class Module {
 
 		$restore_defer = $this->with_client_defer( true );
 
-		$datapoint_services = $this->get_datapoint_services();
-		$service_batches    = array();
+		$datapoint_definitions = $this->get_datapoint_definitions();
+		$service_batches       = array();
 
 		$data_requests = array();
 		$results       = array();
@@ -282,25 +287,34 @@ abstract class Module {
 				continue;
 			}
 
-			if ( ! isset( $datapoint_services[ $dataset->datapoint ] ) ) {
+			$definition_key = "{$dataset->method}:{$dataset->datapoint}";
+			if ( ! isset( $datapoint_definitions[ $definition_key ] ) ) {
 				continue;
 			}
 
 			$key                   = $dataset->key ?: wp_rand();
 			$data_requests[ $key ] = $dataset;
 			$datapoint             = $dataset->datapoint;
-			$request               = $this->create_data_request( $dataset );
+
+			try {
+				$this->validate_data_request( $dataset );
+				$request = $this->create_data_request( $dataset );
+			} catch ( Exception $e ) {
+				$request = $this->exception_to_error( $e, $datapoint );
+			}
 
 			if ( is_wp_error( $request ) ) {
 				$results[ $key ] = $request;
 				continue;
 			}
 
-			if ( ! $request instanceof RequestInterface ) {
+			if ( $request instanceof Closure ) {
 				try {
-					$results[ $key ] = call_user_func( $request );
-					if ( ! is_wp_error( $results[ $key ] ) ) {
-						$results[ $key ] = $this->parse_data_response( $dataset, $results[ $key ] );
+					$response        = $request();
+					$results[ $key ] = $response;
+
+					if ( ! is_wp_error( $response ) ) {
+						$results[ $key ] = $this->parse_data_response( $dataset, $response );
 					}
 				} catch ( Exception $e ) {
 					$results[ $key ] = $this->exception_to_error( $e, $datapoint );
@@ -308,16 +322,17 @@ abstract class Module {
 				continue;
 			}
 
-			if ( empty( $datapoint_services[ $datapoint ] ) ) {
+			$datapoint_service = $datapoint_definitions[ $definition_key ]['service'];
+			if ( empty( $datapoint_service ) ) {
 				continue;
 			}
 
-			if ( ! isset( $service_batches[ $datapoint_services[ $datapoint ] ] ) ) {
-				$service_batches[ $datapoint_services[ $datapoint ] ] = $this->google_services[ $datapoint_services[ $datapoint ] ]->createBatch();
+			if ( ! isset( $service_batches[ $datapoint_service ] ) ) {
+				$service_batches[ $datapoint_service ] = $this->google_services[ $datapoint_service ]->createBatch();
 			}
 
-			$service_batches[ $datapoint_services[ $datapoint ] ]->add( $request, $key );
-			$results[ $key ] = $datapoint;
+			$service_batches[ $datapoint_service ]->add( $request, $key );
+			$results[ $key ] = $definition_key;
 		}
 
 		foreach ( $service_batches as $service_identifier => $batch ) {
@@ -325,12 +340,18 @@ abstract class Module {
 				$batch_results = $batch->execute();
 			} catch ( Exception $e ) {
 				// Set every result of this batch to the exception.
-				foreach ( $results as $key => $datapoint ) {
-					if ( ! is_string( $datapoint ) || ! isset( $datapoint_services[ $datapoint ] ) || $service_identifier !== $datapoint_services[ $datapoint ] ) {
+				foreach ( $results as $key => $definition_key ) {
+					if ( is_wp_error( $definition_key ) ) {
 						continue;
 					}
 
-					$results[ $key ] = $this->exception_to_error( $e, $datapoint );
+					$datapoint_service = ! empty( $datapoint_definitions[ $definition_key ] )
+						? $datapoint_definitions[ $definition_key ]['service']
+						: null;
+
+					if ( is_string( $definition_key ) && $service_identifier === $datapoint_service ) {
+						$results[ $key ] = $this->exception_to_error( $e, explode( ':', $definition_key, 2 )[1] );
+					}
 				}
 				continue;
 			}
@@ -343,13 +364,12 @@ abstract class Module {
 					continue;
 				}
 
-				$datapoint = $results[ $key ];
-
 				if ( ! $result instanceof Exception ) {
 					$results[ $key ] = $result;
 					$results[ $key ] = $this->parse_data_response( $data_requests[ $key ], $result );
 				} else {
-					$results[ $key ] = $this->exception_to_error( $result, $datapoint );
+					$definition_key  = $results[ $key ];
+					$results[ $key ] = $this->exception_to_error( $result, explode( ':', $definition_key, 2 )[1] );
 				}
 			}
 		}
@@ -377,17 +397,44 @@ abstract class Module {
 	 * @return array List of datapoints.
 	 */
 	final public function get_datapoints() {
-		return array_keys( $this->get_datapoint_services() );
+		$keys        = array();
+		$definitions = $this->get_datapoint_definitions();
+
+		foreach ( array_keys( $definitions ) as $key ) {
+			$parts = explode( ':', $key );
+			$name  = end( $parts );
+			if ( ! empty( $name ) ) {
+				$keys[ $name ] = $name;
+			}
+		}
+
+		return array_values( $keys );
 	}
 
 	/**
 	 * Returns the mapping between available datapoints and their services.
 	 *
 	 * @since 1.0.0
+	 * @since 1.9.0 No longer abstract.
+	 * @deprecated 1.12.0
 	 *
 	 * @return array Associative array of $datapoint => $service_identifier pairs.
 	 */
-	abstract protected function get_datapoint_services();
+	protected function get_datapoint_services() {
+		_deprecated_function( __METHOD__, '1.12.0', static::class . '::get_datapoint_definitions' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return array();
+	}
+
+	/**
+	 * Gets map of datapoint to definition data for each.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return array Map of datapoints to their definitions.
+	 */
+	protected function get_datapoint_definitions() {
+		return array();
+	}
 
 	/**
 	 * Creates a request object for the given datapoint.
@@ -423,10 +470,80 @@ abstract class Module {
 	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
 	 */
 	final protected function execute_data_request( Data_Request $data ) {
-		$datapoint_services = $this->get_datapoint_services();
+		try {
+			$this->validate_data_request( $data );
+
+			$request = $this->make_data_request( $data );
+
+			if ( is_wp_error( $request ) ) {
+				return $request;
+			} elseif ( $request instanceof Closure ) {
+				$response = $request();
+			} elseif ( $request instanceof RequestInterface ) {
+				$response = $this->get_client()->execute( $request );
+			} else {
+				return new WP_Error(
+					'invalid_datapoint_request',
+					__( 'Invalid datapoint request.', 'google-site-kit' ),
+					array( 'status' => 400 )
+				);
+			}
+		} catch ( Exception $e ) {
+			return $this->exception_to_error( $e, $data->datapoint );
+		}
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		return $this->parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Validates the given data request.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param Data_Request $data Data request object.
+	 *
+	 * @throws Invalid_Datapoint_Exception   Thrown if the datapoint does not exist.
+	 * @throws Insufficient_Scopes_Exception Thrown if the user has not granted
+	 *                                       necessary scopes required by the datapoint.
+	 */
+	private function validate_data_request( Data_Request $data ) {
+		$definitions   = $this->get_datapoint_definitions();
+		$datapoint_key = "$data->method:$data->datapoint";
+
+		// All datapoints must be defined.
+		if ( empty( $definitions[ $datapoint_key ] ) ) {
+			throw new Invalid_Datapoint_Exception();
+		}
+
+		if ( empty( $definitions[ $datapoint_key ]['scopes'] ) ) {
+			return;
+		}
+
+		$datapoint = $definitions[ $datapoint_key ];
+
+		// If the datapoint requires specific scopes, ensure they are satisfied.
+		if ( ! $this->authentication->get_oauth_client()->has_sufficient_scopes( $datapoint['scopes'] ) ) {
+			throw new Insufficient_Scopes_Exception( $datapoint['request_scopes_message'], 0, null, $datapoint['scopes'] );
+		}
+	}
+
+	/**
+	 * Facilitates the creation of a request object for execution.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @return RequestInterface|Closure|WP_Error
+	 */
+	private function make_data_request( Data_Request $data ) {
+		$definitions = $this->get_datapoint_definitions();
 
 		// We only need to initialize the client if this datapoint relies on a service.
-		$requires_client = ! empty( $datapoint_services[ $data->datapoint ] );
+		$requires_client = ! empty( $definitions[ "$data->method:$data->datapoint" ]['service'] );
 
 		if ( $requires_client ) {
 			$restore_defer = $this->with_client_defer( true );
@@ -438,27 +555,7 @@ abstract class Module {
 			$restore_defer();
 		}
 
-		if ( is_wp_error( $request ) ) {
-			return $request;
-		}
-
-		try {
-			if ( ! $request instanceof RequestInterface ) {
-				$response = call_user_func( $request );
-			} elseif ( $requires_client ) {
-				$response = $this->get_client()->execute( $request );
-			} else {
-				throw new Exception( __( 'Datapoint registered incorrectly.', 'google-site-kit' ) );
-			}
-		} catch ( Exception $e ) {
-			return $this->exception_to_error( $e, $data->datapoint );
-		}
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
-
-		return $this->parse_data_response( $data, $response );
+		return $request;
 	}
 
 	/**
@@ -707,33 +804,46 @@ abstract class Module {
 	 * @return WP_Error WordPress error object.
 	 */
 	protected function exception_to_error( Exception $e, $datapoint ) {
+		if ( $e instanceof WP_Errorable ) {
+			return $e->to_wp_error();
+		}
+
 		$code = $e->getCode();
+
+		$message       = $e->getMessage();
+		$status        = is_numeric( $code ) && $code ? (int) $code : 500;
+		$reason        = '';
+		$reconnect_url = '';
+
+		if ( $e instanceof Google_Service_Exception ) {
+			$errors = $e->getErrors();
+			if ( isset( $errors[0]['message'] ) ) {
+				$message = $errors[0]['message'];
+			}
+			if ( isset( $errors[0]['reason'] ) ) {
+				$reason = $errors[0]['reason'];
+			}
+		} elseif ( $e instanceof Google_Proxy_Code_Exception ) {
+			$status        = 401;
+			$code          = $message;
+			$auth_client   = $this->authentication->get_oauth_client();
+			$message       = $auth_client->get_error_message( $code );
+			$reconnect_url = $auth_client->get_proxy_setup_url( $e->getAccessCode(), $code );
+		}
+
 		if ( empty( $code ) ) {
 			$code = 'unknown';
 		}
 
-		$reason = '';
+		$data = array(
+			'status' => $status,
+			'reason' => $reason,
+		);
 
-		if ( $e instanceof Google_Service_Exception ) {
-			$message = $e->getErrors();
-			if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-				$message = $message[0]['message'];
-				$errors  = json_decode( $e->getMessage() );
-				if ( isset( $errors->error->errors[0]->reason ) ) {
-					$reason = $errors->error->errors[0]->reason;
-				}
-			}
-		} else {
-			$message = $e->getMessage();
+		if ( ! empty( $reconnect_url ) ) {
+			$data['reconnectURL'] = $reconnect_url;
 		}
 
-		return new WP_Error(
-			$code,
-			$message,
-			array(
-				'status' => 500,
-				'reason' => $reason,
-			)
-		);
+		return new WP_Error( $code, $message, $data );
 	}
 }
