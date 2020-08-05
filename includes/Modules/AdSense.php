@@ -569,10 +569,10 @@ tag_partner: "site_kit"
 				};
 			case 'GET:reports-url':
 				return function() {
-					$account_id   = $this->get_data( 'account-id' );
-					$current_user = wp_get_current_user();
+					$account_id    = $this->get_data( 'account-id' );
+					$profile_email = $this->authentication->profile()->get()['email'];
 					if ( ! is_wp_error( $account_id ) && $account_id ) {
-						return sprintf( 'https://www.google.com/adsense/new/u/%1$s/%2$s/main/viewreports', $current_user->user_email, $account_id );
+						return sprintf( 'https://www.google.com/adsense/new/u/%1$s/%2$s/main/viewreports', $profile_email, $account_id );
 					}
 					return 'https://www.google.com/adsense/start';
 				};
