@@ -16,9 +16,11 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Owner_ID;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
@@ -126,6 +128,14 @@ final class OAuth_Client {
 	private $http_proxy;
 
 	/**
+	 * Owner_ID instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Owner_ID
+	 */
+	private $owner_id;
+
+	/**
 	 * Access token for communication with Google APIs, for temporary storage.
 	 *
 	 * @since 1.0.0
@@ -180,6 +190,7 @@ final class OAuth_Client {
 		$this->google_proxy           = $google_proxy ?: new Google_Proxy( $this->context );
 		$this->profile                = $profile ?: new Profile( $this->user_options );
 		$this->http_proxy             = $http_proxy ?: new WP_HTTP_Proxy();
+		$this->owner_id               = new Owner_ID( $this->options );
 	}
 
 	/**
@@ -679,6 +690,15 @@ final class OAuth_Client {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
 			wp_safe_redirect( admin_url() );
 			exit();
+		}
+
+		$current_user_id  = get_current_user_id();
+		$current_owner_id = $this->owner_id->get();
+		if (
+			( empty( $current_owner_id ) && current_user_can( Permissions::MANAGE_OPTIONS ) ) ||
+			( ! empty( $current_owner_id ) && $current_owner_id != $current_user_id && ! user_can( $current_owner_id, Permissions::MANAGE_OPTIONS ) )
+		) {
+			$this->owner_id->set( $current_user_id );
 		}
 
 		$this->set_access_token(

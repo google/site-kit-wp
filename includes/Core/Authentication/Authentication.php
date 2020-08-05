@@ -120,14 +120,6 @@ final class Authentication {
 	protected $profile;
 
 	/**
-	 * First_Admin instance.
-	 *
-	 * @since 1.0.0
-	 * @var First_Admin
-	 */
-	protected $first_admin;
-
-	/**
 	 * Has_Connected_Admins instance.
 	 *
 	 * @since n.e.x.t
@@ -176,7 +168,6 @@ final class Authentication {
 		$this->verification_meta    = new Verification_Meta( $this->user_options );
 		$this->verification_file    = new Verification_File( $this->user_options );
 		$this->profile              = new Profile( $this->user_options );
-		$this->first_admin          = new First_Admin( $this->options );
 		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
 	}
 
@@ -602,16 +593,7 @@ final class Authentication {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_base_data( $data ) {
-		$first_admin_id  = (int) $this->first_admin->get();
-		$current_user_id = get_current_user_id();
-
-		// If no first admin is stored yet and the current user is one, consider them the first.
-		if ( ! $first_admin_id && current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-			$first_admin_id = $current_user_id;
-		}
-		$data['isFirstAdmin'] = ( $current_user_id === $first_admin_id );
-		$data['splashURL']    = esc_url_raw( $this->context->admin_url( 'splash' ) );
-
+		$data['splashURL']           = esc_url_raw( $this->context->admin_url( 'splash' ) );
 		$data['proxySetupURL']       = '';
 		$data['proxyPermissionsURL'] = '';
 		$data['usingProxy']          = false;
@@ -688,15 +670,6 @@ final class Authentication {
 		} else {
 			$data['isVerified'] = false;
 		}
-
-		// Flag the first admin user.
-		$first_admin_id  = (int) $this->first_admin->get();
-		$current_user_id = get_current_user_id();
-		if ( ! $first_admin_id && current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-			$first_admin_id = $current_user_id;
-			$this->first_admin->set( $first_admin_id );
-		}
-		$data['isFirstAdmin'] = ( $current_user_id === $first_admin_id );
 
 		// The actual data for this is passed in from the Search Console module.
 		if ( ! isset( $data['hasSearchConsoleProperty'] ) ) {
