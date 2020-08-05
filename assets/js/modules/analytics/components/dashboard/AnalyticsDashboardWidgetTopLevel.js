@@ -264,7 +264,7 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
 			toState( state, { data } ) {
-				if ( ! state.totalUsers ) {
+				if ( false === state.totalUsers ) {
 					return parseTotalUsersData( data );
 				}
 			},
