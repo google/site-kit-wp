@@ -124,9 +124,9 @@ export function createErrorStore() {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} state Data store's state.
+		 * @param {Object} state        Data store's state.
 		 * @param {string} selectorName A selector name.
-		 * @param {Object} [args] An arguments object.
+		 * @param {Object} [args]       An arguments object.
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getErrorForSelector( state, selectorName, args ) {
@@ -147,9 +147,9 @@ export function createErrorStore() {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} state Data store's state.
-		 * @param {string} actionName An action name.
-		 * @param {Object} [args] An arguments object.
+		 * @param {Object} state        Data store's state.
+		 * @param {string} actionName   An action name.
+		 * @param {Object} [args]       An arguments object.
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getErrorForAction( state, actionName, args ) {
@@ -171,23 +171,22 @@ export function createErrorStore() {
 		 * @since n.e.x.t
 		 * @private
 		 *
-		 * @param {Object} state Data store's state.
-		 * @param {string} [baseName] A selector or action name.
-		 * @param {Object} [args] An arguments object.
+		 * @param {Object} state        Data store's state.
+		 * @param {string} [baseName]   A selector or action name.
+		 * @param {Object} [args]       An arguments object.
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getError( state, baseName, args ) {
+			const { error, errors } = state;
+
+			// @TODO: remove it once all instances of the legacy usage have been removed. Also make baseName required then.
 			if ( ! baseName && ! args ) {
-				return state.error;
+				return error;
 			}
 
-			if ( baseName ) {
-				const { errors } = state;
+			invariant( baseName, 'baseName is required.' );
 
-				return errors[ generateErrorKey( baseName, args ) ];
-			}
-
-			return undefined;
+			return errors[ generateErrorKey( baseName, args ) ];
 		},
 	};
 
