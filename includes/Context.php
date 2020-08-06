@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit;
 
-use AMP_Options_Manager;
 use AMP_Theme_Support;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\Entity;
