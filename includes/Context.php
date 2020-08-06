@@ -197,6 +197,7 @@ final class Context {
 				if ( ! empty( $entity_url_query_param ) ) {
 					return $this->get_reference_entity_from_url( $entity_url_query_param );
 				}
+				return null;
 			}
 
 			$screen = get_current_screen();
