@@ -34,7 +34,6 @@ import urlchannels from './urlchannels';
 import settings from './settings';
 import adblocker from './adblocker';
 import { STORE_NAME } from './constants';
-import { createErrorStore } from '../../../googlesitekit/data/create-error-store';
 
 export { STORE_NAME };
 
@@ -62,7 +61,6 @@ const store = Data.combineStores(
 	urlchannels,
 	settings,
 	adblocker,
-	createErrorStore(),
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;

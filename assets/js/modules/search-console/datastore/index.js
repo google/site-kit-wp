@@ -22,7 +22,6 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
-import { createErrorStore } from '../../../googlesitekit/data/create-error-store';
 export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
@@ -36,7 +35,6 @@ const baseModuleStore = Modules.createModuleStore( 'search-console', {
 
 const store = Data.combineStores(
 	baseModuleStore,
-	createErrorStore(),
 );
 
 const {
