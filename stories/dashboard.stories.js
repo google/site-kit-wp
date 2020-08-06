@@ -20,7 +20,7 @@ import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/j
 import DashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/DashboardSearchFunnelInner';
 import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopLevel';
 import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetTopLevel';
-import PostSearcher from '../assets/js/components/post-searcher';
+import PostSearcher from '../assets/js/components/PostSearcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 
 storiesOf( 'Dashboard', module )
