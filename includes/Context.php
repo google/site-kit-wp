@@ -262,9 +262,9 @@ final class Context {
 
 		// url_to_postid() does not support detecting the posts page, hence
 		// this code covers up for it.
-		$page_for_posts_id = get_option( 'page_for_posts' );
+		$page_for_posts_id = (int) get_option( 'page_for_posts' );
 		if ( ! $post_id && $page_for_posts_id && get_permalink( $page_for_posts_id ) === $url ) {
-			$post_id = (int) $page_for_posts_id;
+			$post_id = $page_for_posts_id;
 		}
 
 		if ( $post_id ) {
