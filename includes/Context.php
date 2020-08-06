@@ -261,15 +261,18 @@ final class Context {
 
 		// url_to_postid() does not support detecting the posts page, hence
 		// this code covers up for it.
-		if ( ! $post_id && get_option( 'page_for_posts' ) && get_permalink( get_option( 'page_for_posts' ) ) === $url ) {
-			$post_id = (int) get_option( 'page_for_posts' );
+		$page_for_posts_id = get_option( 'page_for_posts' );
+		if ( ! $post_id && $page_for_posts_id && get_permalink( $page_for_posts_id ) === $url ) {
+			$post_id = (int) $page_for_posts_id;
 		}
 
 		if ( $post_id ) {
 			$post = get_post( $post_id );
-			if ( $post instanceof WP_Post ) {
+			if ( $post instanceof WP_Post && $this->is_public_post( $post ) ) {
 				return $this->create_entity_for_post( $post );
 			}
+			// If we got here, either the post doesn't exist or isn't public.
+			return null;
 		}
 
 		$path = str_replace( untrailingslashit( home_url() ), '', $url );
