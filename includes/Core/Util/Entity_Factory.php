@@ -161,14 +161,13 @@ final class Entity_Factory {
 	 * @return bool True if the post is public, false otherwise.
 	 */
 	private static function is_post_public( WP_Post $post ) {
-		// If post status isn't 'publish' (or 'inherit' in case of an 'attachment' post), the post is not public.
-		if ( 'publish' !== $post->post_status && ( 'attachment' !== $post->post_type || 'inherit' !== $post->post_status ) ) {
+		// If post status isn't 'publish', the post is not public.
+		if ( 'publish' !== get_post_status( $post ) ) {
 			return false;
 		}
 
-		// If the post type overall is not public, the post is not public.
-		$post_type = get_post_type_object( $post->post_type );
-		if ( ! $post_type || ! $post_type->public ) {
+		// If the post type overall is not publicly viewable, the post is not public.
+		if ( ! is_post_type_viewable( $post->post_type ) ) {
 			return false;
 		}
 
