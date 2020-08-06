@@ -20,11 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-
-/**
- * Internal dependencies
- */
-import { stringifyObject } from '../../util';
+import md5 from 'md5';
 
 const RECEIVE_ERROR = 'RECEIVE_ERROR';
 const CLEAR_ERROR = 'CLEAR_ERROR';
@@ -32,7 +28,7 @@ const CLEAR_ERROR = 'CLEAR_ERROR';
 function generateErrorKey( baseName, args ) {
 	let key = baseName;
 	if ( args ) {
-		key += stringifyObject( args );
+		key += md5( JSON.stringify( args ) );
 	}
 
 	return key;
@@ -126,7 +122,7 @@ export function createErrorStore() {
 		 *
 		 * @param {Object} state        Data store's state.
 		 * @param {string} selectorName A selector name.
-		 * @param {Object} [args]       An arguments object.
+		 * @param {Array.<any>} [args]  An arguments array.
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getErrorForSelector( state, selectorName, args ) {
@@ -149,7 +145,7 @@ export function createErrorStore() {
 		 *
 		 * @param {Object} state        Data store's state.
 		 * @param {string} actionName   An action name.
-		 * @param {Object} [args]       An arguments object.
+		 * @param {Array.<any>} [args]  An arguments array.
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getErrorForAction( state, actionName, args ) {
@@ -173,7 +169,7 @@ export function createErrorStore() {
 		 *
 		 * @param {Object} state        Data store's state.
 		 * @param {string} [baseName]   A selector or action name.
-		 * @param {Object} [args]       An arguments object.
+		 * @param {Array.<any>} [args]  An arguments array.
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getError( state, baseName, args ) {

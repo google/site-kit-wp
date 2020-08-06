@@ -34,8 +34,6 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-const { createRegistrySelector } = Data;
-
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	storeName: STORE_NAME,
@@ -99,20 +97,6 @@ const baseSelectors = {
 
 		return reports[ `${ strategy }::${ url }` ];
 	},
-
-	/**
-	 * Gets a PageSpeed Insights error for the given strategy and URL if it has been received.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state    Data store's state.
-	 * @param {string} url      URL used for generating the report.
-	 * @param {string} strategy Strategy used for generating the report.
-	 * @return {(Object|undefined)} A PageSpeed Insights error; `undefined` if not thrown.
-	 */
-	getReportError: createRegistrySelector( ( select ) => ( state, url, strategy ) => {
-		return select( STORE_NAME ).getErrorForSelector( 'getReport', { url, strategy } );
-	} ),
 };
 
 const store = Data.combineStores(

@@ -152,7 +152,7 @@ export const createFetchStore = ( {
 			const registry = yield Data.commonActions.getRegistry();
 			const { clearError } = registry ? registry.dispatch( storeName ) : {};
 			if ( clearError ) {
-				yield clearError( baseName, params );
+				yield clearError( baseName, args );
 			}
 
 			try {
@@ -172,7 +172,7 @@ export const createFetchStore = ( {
 
 				const { receiveError } = registry ? registry.dispatch( storeName ) : {};
 				if ( receiveError ) {
-					yield receiveError( error, baseName, params );
+					yield receiveError( error, baseName, args );
 				}
 
 				// @TODO: remove error from the payload once all instances of the legacy behavior have been removed.
