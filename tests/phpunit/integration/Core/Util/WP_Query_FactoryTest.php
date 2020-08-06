@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Util\Entity_FactoryTest
+ * Class Google\Site_Kit\Tests\Core\Util\WP_Query_FactoryTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2020 Google LLC
@@ -10,22 +10,22 @@
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
-use Google\Site_Kit\Core\Util\Entity_Factory;
+use Google\Site_Kit\Core\Util\WP_Query_Factory;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
- * @group Util
+ * @group Utill
  */
-class Entity_FactoryTest extends TestCase {
+class WP_Query_FactoryTest extends TestCase {
 
 	/**
-	 * @dataProvider data_url_to_query_args
+	 * @dataProvider data_from_url
 	 *
 	 * @param string $url           URL to get query arguments.
 	 * @param array  $expected_args Expected query arguments.
 	 * @param array  $template_tags Map of template tag method names and whether they should be `true` or `false`.
 	 */
-	public function test_url_to_query_args( $url, $expected_args, $template_tags ) {
+	public function test_from_url( $url, $expected_args, $template_tags ) {
 		global $wp_rewrite;
 
 		add_filter(
@@ -73,15 +73,10 @@ class Entity_FactoryTest extends TestCase {
 
 		flush_rewrite_rules();
 
-		$url_to_query_args = new \ReflectionMethod( Entity_Factory::class, 'url_to_query_args' );
-		$url_to_query_args->setAccessible( true );
+		$query = WP_Query_Factory::from_url( $url );
+		$query->get_posts();
 
-		$query_args = $url_to_query_args->invoke( null, $url );
-
-		$this->assertEqualSetsWithIndex( $expected_args, $query_args );
-
-		$query = new \WP_Query();
-		$query->query( $query_args );
+		$this->assertEqualSetsWithIndex( $expected_args, $query->query );
 
 		foreach ( $template_tags as $template_tag => $expected_result ) {
 			if ( $expected_result ) {
@@ -92,7 +87,7 @@ class Entity_FactoryTest extends TestCase {
 		}
 	}
 
-	public function data_url_to_query_args() {
+	public function data_from_url() {
 		// Home URL is 'https://example.com'.
 		// Permalink structure is '/%postname%/'.
 		// Front page is a static page with slug 'home'.
@@ -320,13 +315,13 @@ class Entity_FactoryTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_url_to_query_args_homepage
+	 * @dataProvider data_from_url_homepage
 	 *
 	 * @param string $url           URL to get query arguments.
 	 * @param string $show_on_front Either 'posts' or 'page'.
 	 * @param array  $expected_args Expected query arguments.
 	 */
-	public function test_url_to_query_args_homepage( $url, $show_on_front, $expected_args ) {
+	public function test_from_url_homepage( $url, $show_on_front, $expected_args ) {
 		global $wp_rewrite;
 
 		add_filter(
@@ -353,15 +348,10 @@ class Entity_FactoryTest extends TestCase {
 
 		flush_rewrite_rules();
 
-		$url_to_query_args = new \ReflectionMethod( Entity_Factory::class, 'url_to_query_args' );
-		$url_to_query_args->setAccessible( true );
+		$query = WP_Query_Factory::from_url( $url );
+		$query->get_posts();
 
-		$query_args = $url_to_query_args->invoke( null, $url );
-
-		$this->assertEqualSetsWithIndex( $expected_args, $query_args );
-
-		$query = new \WP_Query();
-		$query->query( $query_args );
+		$this->assertEqualSetsWithIndex( $expected_args, $query->query );
 
 		$this->assertTrue( $query->is_front_page() );
 		if ( 'page' === $show_on_front ) {
@@ -373,7 +363,7 @@ class Entity_FactoryTest extends TestCase {
 		}
 	}
 
-	public function data_url_to_query_args_homepage() {
+	public function data_from_url_homepage() {
 		// Home URL is 'https://example.com'.
 		// Permalink structure is '/%postname%/'.
 		return array(
