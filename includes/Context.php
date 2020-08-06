@@ -205,13 +205,10 @@ final class Context {
 			}
 
 			$post = get_post();
-			if ( $post instanceof WP_Post ) {
-				if ( ! is_post_type_viewable( $post->post_type ) || 'publish' !== get_post_status( $post ) ) {
-					return null;
-				}
-
+			if ( $post instanceof WP_Post && $this->is_public_post( $post ) ) {
 				return $this->create_entity_for_post( $post );
 			}
+
 			return null;
 		}
 
@@ -498,5 +495,17 @@ final class Context {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Checks whether the given post is publicly viewable.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Post $post Post object to check.
+	 * @return bool `true` if post is publicly viewable, otherwise `false`.
+	 */
+	private function is_public_post( WP_Post $post ) {
+		return ! is_post_type_viewable( $post->post_type ) || 'publish' !== get_post_status( $post );
 	}
 }
