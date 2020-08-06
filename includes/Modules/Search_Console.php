@@ -209,27 +209,8 @@ final class Search_Console extends Module
 					$data_request['row_limit'] = $data['limit'];
 				}
 
-				$dimensions = $data['dimensions'];
-				$dimensions = array_map(
-					'trim',
-					array_filter(
-						function( $dimension ) {
-							if ( ! is_string( $dimension ) ) {
-								return false;
-							}
-
-							$dimension = trim( $dimension );
-							if ( empty( $dimension ) ) {
-								return false;
-							}
-
-							return $dimension;
-						},
-						is_array( $dimensions ) ? $dimensions : explode( ',', $dimensions )
-					)
-				);
-
-				if ( ! empty( $dimensions ) ) {
+				$dimensions = $this->parse_string_list( $data['dimensions'] );
+				if ( is_array( $dimensions ) && ! empty( $dimensions ) ) {
 					$data_request['dimensions'] = $dimensions;
 				}
 
