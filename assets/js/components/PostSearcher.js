@@ -22,14 +22,13 @@
 import {
 	map,
 	debounce,
-	trim,
 } from 'lodash';
 import Autocomplete from 'accessible-autocomplete/react';
 
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -42,23 +41,19 @@ import {
 import data, { TYPE_CORE } from './data';
 import Button from './button';
 import Layout from './layout/layout';
-import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
-class PostSearcher extends Component {
-	constructor( props ) {
-		super( props );
-		this.noResultsMessage = __( 'No results found', 'google-site-kit' );
-		this.state = {
-			isSearching: false,
-			results: [],
-			error: false,
-			message: '',
-			canSubmit: false,
-			match: {},
-		};
-		this.postSearch = this.postSearch.bind( this );
-		this.onClick = this.onClick.bind( this );
-		this.onConfirm = this.onConfirm.bind( this );
-	}
+
+const PostSearcher = () => {
+	// eslint-disable-next-line no-unused-vars
+	const [ isSearching, setIsSearching ] = useState( false );
+	const [ results, setResults ] = useState( [] );
+	// eslint-disable-next-line no-unused-vars
+	const [ error, setError ] = useState( false );
+	// eslint-disable-next-line no-unused-vars
+	const [ message, setMessage ] = useState( 'test' );
+	const [ canSubmit, setCanSubmit ] = useState( false );
+	const [ match, setMatch ] = useState( {} );
+	const [ selection, setSelection ] = useState();
+	const noResultsMessage = __( 'No results found', 'google-site-kit' );
 
 	/**
 	 * Search for posts based on user input.
@@ -66,74 +61,46 @@ class PostSearcher extends Component {
 	 * @param {string} query             The search query.
 	 * @param {Function} populateResults The callback function to pass the results to.
 	 */
-	async postSearch( query, populateResults ) {
+	const postSearch = async ( query, populateResults ) => {
 		populateResults( [ __( 'Loading…', 'google-site-kit' ) ] );
 
 		try {
-			const results = await data.get( TYPE_CORE, 'search', 'post-search', { query: encodeURIComponent( query ) } );
+			const queryResults = await data.get( TYPE_CORE, 'search', 'post-search', { query: encodeURIComponent( query ) } );
 
-			if ( 0 < results.length ) {
-				populateResults( map( results, ( result ) => {
+			if ( 0 < queryResults.length ) {
+				populateResults( map( queryResults, ( result ) => {
 					return result.post_title;
 				} ) );
 			} else {
-				populateResults( [ this.noResultsMessage ] );
+				populateResults( [ noResultsMessage ] );
 			}
-
-			this.setState( {
-				isSearching: true,
-				results,
-				error: false,
-				message: '',
-			} );
+			setIsSearching( true );
+			setResults( results );
+			setError( false );
+			setMessage( '' );
 		} catch ( err ) {
-			populateResults( [ this.noResultsMessage ] );
-
-			this.setState( {
-				isSearching: false,
-				error: err.code,
-				message: err.message,
-			} );
+			populateResults( [ noResultsMessage ] );
+			setIsSearching( false );
+			setError( err.code );
+			setMessage( err.message );
 		}
-	}
+	};
 
-	/**
-	 * Return the pathname of URL.
-	 *
-	 * @param {string} url URL to parse pathname from.
-	 *
-	 * @return {string} Returns the pathname or false if param is not a valid URL.
-	 */
-	getURLPathname( url ) {
-		try {
-			const parseURL = new URL( url );
-			return trim( parseURL.pathname, '/' );
-		} catch {
-			return false;
-		}
-	}
-
-	onConfirm( selection ) {
-		const { results } = this.state;
+	const onConfirm = ( selected ) => {
 		// Check that the selection is "valid".
-		if ( Array.isArray( results ) && selection !== this.noResultsMessage ) {
-			const match = results.find( ( result ) => result.post_title === selection );
-			if ( selection && match ) {
-				this.setState( {
-					selection,
-					canSubmit: true,
-					match,
-				} );
+		if ( Array.isArray( results ) && selected !== noResultsMessage ) {
+			const foundMatch = results.find( ( result ) => result.post_title === selected );
+			if ( selected && foundMatch ) {
+				setSelection( selected );
+				setCanSubmit( true	);
+				setMatch( foundMatch );
 			}
 		} else {
-			this.setState( {
-				canSubmit: false,
-			} );
+			setCanSubmit( false );
 		}
-	}
+	};
 
-	onClick() {
-		const { selection, match } = this.state;
+	const onClick = () => {
 		if ( match && match.ID ) {
 			global.location.assign( getSiteKitAdminURL(
 				'googlesitekit-dashboard',
@@ -144,56 +111,53 @@ class PostSearcher extends Component {
 				}
 			) );
 		}
-	}
+	};
 
-	render() {
-		const modules = getModulesData();
+	const modules = getModulesData();
 
-		// Set column width full if Analytics active, half otherwise.
-		const classNameForColumn = modules.analytics && modules.analytics.active
-			? 'mdc-layout-grid__cell mdc-layout-grid__cell--span-12'
-			: 'mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop';
+	// Set column width full if Analytics active, half otherwise.
+	const classNameForColumn = modules.analytics && modules.analytics.active
+		? 'mdc-layout-grid__cell mdc-layout-grid__cell--span-12'
+		: 'mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop';
 
-		return (
-			<div
-				className={ classNameForColumn }
+	return (
+		<div
+			className={ classNameForColumn }
+		>
+			<Layout
+				title={ __( 'Search for individual page or post information', 'google-site-kit' ) }
+				header
 			>
-				<Layout
-					title={ __( 'Search for individual page or post information', 'google-site-kit' ) }
-					header
-				>
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-								<div className="googlesitekit-post-searcher">
-									<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">
-										{ __( 'Title or URL', 'google-site-kit' ) }
-									</label>
-									<PostSearcherAutoSuggest />
-									<Autocomplete
-										id="autocomplete"
-										source={ debounce( this.postSearch, 200 ) }
-										minLength={ 2 }
-										onConfirm={ this.onConfirm }
-										showNoOptionsFound={ false }
-									/>
-									<div className="googlesitekit-post-searcher__button-wrapper">
-										<Button
-											onClick={ this.onClick }
-											className="googlesitekit-post-searcher__button"
-											disabled={ ! this.state.canSubmit }
-										>
-											{ __( 'View Data', 'google-site-kit' ) }
-										</Button>
-									</div>
+				<div className="mdc-layout-grid">
+					<div className="mdc-layout-grid__inner">
+						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+							<div className="googlesitekit-post-searcher">
+								<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">
+									{ __( 'Title or URL', 'google-site-kit' ) }
+								</label>
+								<Autocomplete
+									id="autocomplete"
+									source={ debounce( postSearch, 200 ) }
+									minLength={ 2 }
+									onConfirm={ onConfirm }
+									showNoOptionsFound={ false }
+								/>
+								<div className="googlesitekit-post-searcher__button-wrapper">
+									<Button
+										onClick={ onClick }
+										className="googlesitekit-post-searcher__button"
+										disabled={ ! canSubmit }
+									>
+										{ __( 'View Data', 'google-site-kit' ) }
+									</Button>
 								</div>
 							</div>
 						</div>
 					</div>
-				</Layout>
-			</div>
-		);
-	}
-}
+				</div>
+			</Layout>
+		</div>
+	);
+};
 
 export default PostSearcher;
