@@ -971,41 +971,9 @@ final class Analytics extends Module
 				}
 
 				// Order by.
-				$orderby = $data['orderby'];
-				if ( ! empty( $orderby ) && is_array( $orderby ) ) {
-					// When just object is passed we need to convert it to an array of objects.
-					if ( ! wp_is_numeric_array( $orderby[0] ) ) {
-						$orderby = array( $orderby );
-					}
-
-					$orderby = array_filter(
-						array_map(
-							function ( $order_def ) {
-								$order_def = array_merge(
-									array(
-										'fieldName' => '',
-										'sortOrder' => 'DESCENDING',
-									),
-									(array) $order_def
-								);
-
-								if ( empty( $order_def['fieldName'] ) ) {
-									return null;
-								}
-
-								$order_by = new Google_Service_AnalyticsReporting_OrderBy();
-								$order_by->setFieldName( $order_def['fieldName'] );
-								$order_by->setSortOrder( $order_def['sortOrder'] );
-		
-								return $order_by;
-							},
-							$orderby
-						)
-					);
-
-					if ( ! empty( $orderby ) ) {
-						$request->setOrderBys( $orderby );
-					}
+				$orderby = $this->parse_reporting_orderby( $data['orderby'] );
+				if ( ! empty( $orderby ) ) {
+					$request->setOrderBys( $orderby );
 				}
 
 				// Batch reports requests.
@@ -1069,7 +1037,7 @@ final class Analytics extends Module
 						$this->has_access_to_property( $property_id )
 					);
 				};
-			case 'GET:tracking-disabled': 
+			case 'GET:tracking-disabled':
 				return function() {
 					$option = $this->get_settings()->get();
 
@@ -1092,6 +1060,49 @@ final class Analytics extends Module
 		}
 
 		throw new Invalid_Datapoint_Exception();
+	}
+
+	/**
+	 * Parses the orderby value of the data request into an array of reporting orderby object instances.
+	 *
+	 * @since 1.13.1
+	 *
+	 * @param array|null $orderby Data request orderby value.
+	 * @return Google_Service_AnalyticsReporting_OrderBy[] An array of reporting orderby objects.
+	 */
+	protected function parse_reporting_orderby( $orderby ) {
+		if ( empty( $orderby ) || ! is_array( $orderby ) ) {
+			return array();
+		}
+
+		$results = array_map(
+			function ( $order_def ) {
+				$order_def = array_merge(
+					array(
+						'fieldName' => '',
+						'sortOrder' => '',
+					),
+					(array) $order_def
+				);
+
+				if ( empty( $order_def['fieldName'] ) || empty( $order_def['sortOrder'] ) ) {
+					return null;
+				}
+
+				$order_by = new Google_Service_AnalyticsReporting_OrderBy();
+				$order_by->setFieldName( $order_def['fieldName'] );
+				$order_by->setSortOrder( $order_def['sortOrder'] );
+
+				return $order_by;
+			},
+			// When just object is passed we need to convert it to an array of objects.
+			wp_is_numeric_array( $orderby ) ? $orderby : array( $orderby )
+		);
+
+		$results = array_filter( $results );
+		$results = array_values( $results );
+
+		return $results;
 	}
 
 	/**
@@ -1437,7 +1448,7 @@ final class Analytics extends Module
 				);
 			}
 		}
-	
+
 		// No property matched the account ID.
 		return array(
 			'permission' => false,
