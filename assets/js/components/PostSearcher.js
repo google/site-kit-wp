@@ -42,7 +42,7 @@ import {
 import data, { TYPE_CORE } from './data';
 import Button from './button';
 import Layout from './layout/layout';
-
+import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
 class PostSearcher extends Component {
 	constructor( props ) {
 		super( props );
@@ -169,6 +169,7 @@ class PostSearcher extends Component {
 									<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">
 										{ __( 'Title or URL', 'google-site-kit' ) }
 									</label>
+									<PostSearcherAutoSuggest />
 									<Autocomplete
 										id="autocomplete"
 										source={ debounce( this.postSearch, 200 ) }
