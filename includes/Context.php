@@ -201,7 +201,7 @@ final class Context {
 			}
 
 			$screen = get_current_screen();
-			if ( ! $screen instanceof WP_Screen || 'post' !== $screen->base || 'edit' !== $screen->parent_base ) {
+			if ( ! $screen instanceof WP_Screen || 'post' !== $screen->base ) {
 				return null;
 			}
 

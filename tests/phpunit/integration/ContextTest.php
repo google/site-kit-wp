@@ -203,8 +203,6 @@ class ContextTest extends TestCase {
 
 		// The post edit screen should reference the global post.
 		set_current_screen( 'post.php' );
-		// Must set screen parentage manually which is normally set in admin-header.php.
-		get_current_screen()->set_parentage( 'edit.php' );
 		$entity = $context->get_reference_entity();
 		$this->assertInstanceOf( Entity::class, $entity );
 		$this->assertEquals( 'post', $entity->get_type() );
