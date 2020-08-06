@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use WP_Post;
 
 /**
  * Class providing access to entities.
@@ -39,7 +40,7 @@ final class Entity_Factory {
 		// If currently in WP admin, run admin-specific checks.
 		if ( is_admin() ) {
 			$post = get_post();
-			if ( $post instanceof \WP_Post ) {
+			if ( $post instanceof WP_Post ) {
 				return self::create_entity_for_post( $post );
 			}
 			return null;
@@ -48,7 +49,7 @@ final class Entity_Factory {
 		// Otherwise, run frontend-specific checks.
 		if ( is_singular() || is_home() && ! is_front_page() ) {
 			$post = get_queried_object();
-			if ( $post instanceof \WP_Post ) {
+			if ( $post instanceof WP_Post && self::is_post_public( $post ) ) {
 				return self::create_entity_for_post( $post );
 			}
 			return null;
@@ -88,8 +89,11 @@ final class Entity_Factory {
 
 		if ( $post_id ) {
 			$post = get_post( $post_id );
-			if ( $post instanceof \WP_Post ) {
-				return self::create_entity_for_post( $post );
+			if ( $post instanceof WP_Post ) {
+				if ( self::is_post_public( $post ) ) {
+					return self::create_entity_for_post( $post );
+				}
+				return null;
 			}
 		}
 
@@ -106,10 +110,10 @@ final class Entity_Factory {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param \WP_Post $post A WordPress post object.
+	 * @param WP_Post $post A WordPress post object.
 	 * @return Entity The entity for the post.
 	 */
-	private static function create_entity_for_post( \WP_Post $post ) {
+	private static function create_entity_for_post( WP_Post $post ) {
 		$type = 'post';
 
 		// If this post is assigned as the posts page, it is actually the blog archive.
@@ -146,5 +150,29 @@ final class Entity_Factory {
 				'title' => __( 'Home', 'google-site-kit' ),
 			)
 		);
+	}
+
+	/**
+	 * Checks whether a given post is public, i.e. has a public URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Post $post A WordPress post object.
+	 * @return bool True if the post is public, false otherwise.
+	 */
+	private static function is_post_public( WP_Post $post ) {
+		// If post status isn't 'publish' (or 'inherit' in case of an 'attachment' post), the post is not public.
+		if ( 'publish' !== $post->post_status && ( 'attachment' !== $post->post_type || 'inherit' !== $post->post_status ) ) {
+			return false;
+		}
+
+		// If the post type overall is not public, the post is not public.
+		$post_type = get_post_type_object( $post->post_type );
+		if ( ! $post_type || ! $post_type->public ) {
+			return false;
+		}
+
+		// Otherwise, the post is public.
+		return true;
 	}
 }
