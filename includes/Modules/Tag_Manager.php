@@ -75,7 +75,15 @@ final class Tag_Manager extends Module
 	 * @since 1.7.1
 	 * @var bool
 	 */
-	private $did_gtm_no_js;
+	private $did_gtm_no_js = false;
+
+	/**
+	 * Internal flag set after print_amp_gtm is invoked for the first time.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private $did_amp_gtm = false;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -113,12 +121,6 @@ final class Tag_Manager extends Module
 				// for AMP and non-AMP.
 				if ( $this->context->is_amp() ) {
 					$print_amp_gtm = function() use ( $container_id ) {
-						// This hook is only available in AMP plugin version >=1.3, so if it
-						// has already completed, do nothing.
-						if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
-							return;
-						}
-
 						$this->print_amp_gtm( $container_id );
 					};
 					// Which actions are run depends on the version of the AMP Plugin
@@ -353,6 +355,12 @@ final class Tag_Manager extends Module
 	 * @param string $container_id Tag Manager container ID to use in the snippet.
 	 */
 	protected function print_amp_gtm( $container_id ) {
+		if ( $this->did_amp_gtm ) {
+			return;
+		}
+
+		$this->did_amp_gtm = true;
+
 		// Add the optoutElementId for compatibility with our Analytics opt-out mechanism.
 		// This configuration object will be merged with the configuration object returned
 		// by the `config` attribute URL.

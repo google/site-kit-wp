@@ -72,6 +72,14 @@ final class Analytics extends Module
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
 	/**
+	 * Internal flag set after print_amp_gtag is invoked for the first time.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private $did_amp_gtag = false;
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -128,12 +136,6 @@ final class Analytics extends Module
 				// for AMP and non-AMP.
 				if ( $this->context->is_amp() ) {
 					$print_amp_gtag = function() use ( $property_id ) {
-						// This hook is only available in AMP plugin version >=1.3, so if it
-						// has already completed, do nothing.
-						if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
-							return;
-						}
-
 						$this->print_amp_gtag( $property_id );
 					};
 					// Which actions are run depends on the version of the AMP Plugin
@@ -412,6 +414,12 @@ final class Analytics extends Module
 	 * @param string $property_id Analytics property ID to use in the snippet.
 	 */
 	protected function print_amp_gtag( $property_id ) {
+		if ( $this->did_amp_gtag ) {
+			return;
+		}
+
+		$this->did_amp_gtag = true;
+
 		$gtag_amp_opt = array(
 			'vars'            => array(
 				'gtag_id' => $property_id,
