@@ -62,6 +62,66 @@ class AnalyticsTest extends TestCase {
 		$this->assertFalse( $analytics->is_connected() );
 	}
 
+	public function test_register_template_redirect_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
+
+		$analytics = new Analytics( $context );
+		$this->force_set_property( $analytics, 'context', $mock_context );
+
+		remove_all_actions( 'template_redirect' );
+		$analytics->register();
+
+		remove_all_actions( 'amp_print_analytics' );
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'amp_post_template_footer' );
+		remove_all_actions( 'web_stories_print_analytics' );
+		remove_all_filters( 'amp_post_template_data' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_action( 'web_stories_print_analytics' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'amp_print_analytics' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
+		$this->assertTrue( has_action( 'web_stories_print_analytics' ) );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+	}
+
+	public function test_register_template_redirect_non_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
+
+		$analytics = new Analytics( $context );
+		$this->force_set_property( $analytics, 'context', $mock_context );
+
+		remove_all_actions( 'template_redirect' );
+		$analytics->register();
+
+		remove_all_actions( 'wp_enqueue_scripts' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
+
+		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
+	}
+
 	public function test_prepare_info_for_js() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -153,22 +213,6 @@ class AnalyticsTest extends TestCase {
 			),
 			$analytics->get_datapoints()
 		);
-	}
-
-	public function test_amp_data_load_analytics_component() {
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->register();
-
-		$data = array( 'amp_component_scripts' => array() );
-
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertSame( $data, $result );
-
-		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
-
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );
 	}
 
 	public function test_handle_provisioning_callback() {
@@ -326,7 +370,10 @@ class AnalyticsTest extends TestCase {
 
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->set( $settings );
+
+		remove_all_actions( 'template_redirect' );
 		$analytics->register();
+		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
 		// Sanity check.
