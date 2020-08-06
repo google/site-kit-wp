@@ -205,7 +205,7 @@ final class Context {
 			}
 
 			$post = get_post();
-			if ( $post instanceof WP_Post && $this->is_public_post( $post ) ) {
+			if ( $post instanceof WP_Post ) {
 				return $this->create_entity_for_post( $post );
 			}
 
@@ -268,7 +268,7 @@ final class Context {
 
 		if ( $post_id ) {
 			$post = get_post( $post_id );
-			if ( $post instanceof WP_Post && $this->is_public_post( $post ) ) {
+			if ( $post instanceof WP_Post ) {
 				return $this->create_entity_for_post( $post );
 			}
 			// If we got here, either the post doesn't exist or isn't public.
@@ -414,11 +414,14 @@ final class Context {
 	 * @since 1.7.0
 	 *
 	 * @param WP_Post $post A WordPress post object.
-	 * @return Entity The entity for the post.
+	 * @return Entity|null The entity for the post or null if the given post is not publicly available.
 	 */
 	private function create_entity_for_post( WP_Post $post ) {
-		$type = 'post';
+		if ( ! is_post_type_viewable( $post->post_type ) || 'publish' !== get_post_status( $post ) ) {
+			return null;
+		}
 
+		$type = 'post';
 		// If this post is assigned as the posts page, it is actually the blog archive.
 		if ( (int) get_option( 'page_for_posts' ) === (int) $post->ID ) {
 			$type = 'blog';
@@ -498,17 +501,5 @@ final class Context {
 		}
 
 		return $url;
-	}
-
-	/**
-	 * Checks whether the given post is publicly viewable.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param WP_Post $post Post object to check.
-	 * @return bool `true` if post is publicly viewable, otherwise `false`.
-	 */
-	private function is_public_post( WP_Post $post ) {
-		return ! is_post_type_viewable( $post->post_type ) || 'publish' !== get_post_status( $post );
 	}
 }
