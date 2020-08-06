@@ -26,7 +26,7 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
  * an array of string, an array of objects or mix of strings and objects. Objects
  * must have "expression" and "alias" properties in order to be considered as valid.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  *
  * @param {string|string[]|Object|Object[]} metrics The metrics to check.
  * @return {boolean} TRUE if metrics are valid, otherwise FALSE.
@@ -44,7 +44,7 @@ export function isValidMetrics( metrics ) {
  * array of strings, an object with "name" field, array of such objects or an array of strings
  * and objects.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  *
  * @param {string|string[]|Object|Object[]} dimensions The dimensions to check.
  * @return {boolean} TRUE if dimensions are valid, otherwise FALSE.
