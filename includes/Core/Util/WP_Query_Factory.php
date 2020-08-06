@@ -37,14 +37,39 @@ final class WP_Query_Factory {
 	 * @return WP_Query|null WordPress query instance, or null if unable to parse query from URL.
 	 */
 	public static function from_url( $url ) {
-		global $wp, $wp_rewrite;
+		$url = self::normalize_url( $url );
+		if ( empty( $url ) ) {
+			return null;
+		}
+
+		$url_path_vars  = self::get_url_path_vars( $url );
+		$url_query_vars = self::get_url_query_vars( $url );
+
+		$query_args = self::parse_wp_query_args( $url_path_vars, $url_query_vars );
+
+		$query = new WP_Query();
+		$query->parse_query( $query_args );
+
+		return $query;
+	}
+
+	/**
+	 * Normalizes the URL for further processing.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url URL to normalize.
+	 * @return string Normalized URL, or empty string if URL is irrelevant for parsing into `WP_Query` arguments.
+	 */
+	private static function normalize_url( $url ) {
+		global $wp_rewrite;
 
 		$url_host      = str_replace( 'www.', '', wp_parse_url( $url, PHP_URL_HOST ) );
 		$home_url_host = str_replace( 'www.', '', wp_parse_url( home_url(), PHP_URL_HOST ) );
 
 		// Bail early if the URL does not belong to this site.
 		if ( $url_host && $url_host !== $home_url_host ) {
-			return null;
+			return '';
 		}
 
 		// Strip 'index.php/' if we're not using path info permalinks.
@@ -52,8 +77,27 @@ final class WP_Query_Factory {
 			$url = str_replace( $wp_rewrite->index . '/', '', $url );
 		}
 
-		$url_path  = wp_parse_url( $url, PHP_URL_PATH );
-		$url_query = wp_parse_url( $url, PHP_URL_QUERY );
+		return $url;
+	}
+
+	/**
+	 * Parses the path segment of a URL to get variables based on WordPress rewrite rules.
+	 *
+	 * The variables returned from this method are not necessarily all relevant for a `WP_Query`, they will still need
+	 * to go through sanitization against the available public query vars from WordPress.
+	 *
+	 * This code is mostly a partial copy of `WP::parse_request()` which is used to parse the current request URL
+	 * into variables in a similar way.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url URL to parse path vars from.
+	 * @return array Associative array of path vars.
+	 */
+	private static function get_url_path_vars( $url ) {
+		global $wp_rewrite;
+
+		$url_path = wp_parse_url( $url, PHP_URL_PATH );
 
 		// Strip potential home URL path segment from URL path.
 		$home_path = untrailingslashit( wp_parse_url( home_url( '/' ), PHP_URL_PATH ) );
@@ -63,10 +107,6 @@ final class WP_Query_Factory {
 
 		// Strip leading and trailing slashes.
 		$url_path = trim( $url_path, '/' );
-
-		// These two variables will be used further down to determine actual WP_Query arguments.
-		$url_path_vars  = array();
-		$url_query_vars = array();
 
 		// Fetch the rewrite rules.
 		$rewrite = $wp_rewrite->wp_rewrite_rules();
@@ -107,6 +147,7 @@ final class WP_Query_Factory {
 		}
 
 		// If rewrite rules matched, populate $url_path_vars.
+		$url_path_vars = array();
 		if ( $matched_rule ) {
 			// Trim the query of everything up to the '?'.
 			$query = preg_replace( '!^.+\?!', '', $query );
@@ -117,10 +158,48 @@ final class WP_Query_Factory {
 			parse_str( $query, $url_path_vars );
 		}
 
-		// If there is a URL query string, populate $url_query_vars.
+		return $url_path_vars;
+	}
+
+	/**
+	 * Parses the query segment of a URL to get variables.
+	 *
+	 * The variables returned from this method are not necessarily all relevant for a `WP_Query`, they will still need
+	 * to go through sanitization against the available public query vars from WordPress.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url URL to parse query vars from.
+	 * @return array Associative array of query vars.
+	 */
+	private static function get_url_query_vars( $url ) {
+		$url_query = wp_parse_url( $url, PHP_URL_QUERY );
+
+		$url_query_vars = array();
 		if ( $url_query ) {
 			parse_str( $url_query, $url_query_vars );
 		}
+
+		return $url_query_vars;
+	}
+
+	/**
+	 * Returns arguments for a `WP_Query` instance based on URL path vars and URL query vars.
+	 *
+	 * This method essentially sanitizes the passed vars, allowing only WordPress public query vars to be used as
+	 * actual arguments for `WP_Query`. When combining URL path vars and URL query vars, the latter take precedence.
+	 *
+	 * This code is mostly a partial copy of `WP::parse_request()` which is used to parse the current request URL
+	 * into query arguments in a similar way.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $url_path_vars  Associative array as returned from {@see WP_Query_Factory::get_url_path_vars()}.
+	 * @param array $url_query_vars Associative array as returned from {@see WP_Query_Factory::get_url_query_vars()}.
+	 * @return array Associative array of arguments to pass to a `WP_Query` instance.
+	 */
+	private static function parse_wp_query_args( array $url_path_vars, array $url_query_vars ) {
+		global $wp;
 
 		// Determine available post type query vars.
 		$post_type_query_vars = array();
@@ -130,7 +209,7 @@ final class WP_Query_Factory {
 			}
 		}
 
-		// Populate actual WP_Query arguments.
+		// Populate `WP_Query` arguments.
 		$query_args = array();
 		foreach ( $wp->public_query_vars as $wpvar ) {
 			if ( isset( $url_query_vars[ $wpvar ] ) ) {
@@ -186,10 +265,6 @@ final class WP_Query_Factory {
 		// Resolve conflicts between posts with numeric slugs and date archive queries.
 		$query_args = wp_resolve_numeric_slug_conflicts( $query_args );
 
-		// Instantiate `WP_Query`.
-		$query_instance = new WP_Query();
-		$query_instance->parse_query( $query_args );
-
-		return $query_instance;
+		return $query_args;
 	}
 }
