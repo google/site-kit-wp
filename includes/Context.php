@@ -14,6 +14,7 @@ use AMP_Options_Manager;
 use AMP_Theme_Support;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\Entity;
+use WP_Post;
 use WP_Screen;
 
 /**
@@ -205,7 +206,7 @@ final class Context {
 			}
 
 			$post = get_post();
-			if ( $post instanceof \WP_Post ) {
+			if ( $post instanceof WP_Post ) {
 				if ( ! is_post_type_viewable( $post->post_type ) || 'publish' !== get_post_status( $post ) ) {
 					return null;
 				}
@@ -218,7 +219,7 @@ final class Context {
 		// Otherwise, run frontend-specific checks.
 		if ( is_singular() || is_home() && ! is_front_page() ) {
 			$post = get_queried_object();
-			if ( $post instanceof \WP_Post ) {
+			if ( $post instanceof WP_Post ) {
 				return $this->create_entity_for_post( $post );
 			}
 			return null;
@@ -270,7 +271,7 @@ final class Context {
 
 		if ( $post_id ) {
 			$post = get_post( $post_id );
-			if ( $post instanceof \WP_Post ) {
+			if ( $post instanceof WP_Post ) {
 				return $this->create_entity_for_post( $post );
 			}
 		}
@@ -288,7 +289,7 @@ final class Context {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|\WP_Post $post  Optional. Post ID or post object. Default is the global `$post`.
+	 * @param int|WP_Post $post Optional. Post ID or post object. Default is the global `$post`.
 	 *
 	 * @return string|false The reference permalink URL or false if post does not exist.
 	 */
@@ -413,10 +414,10 @@ final class Context {
 	 *
 	 * @since 1.7.0
 	 *
-	 * @param \WP_Post $post A WordPress post object.
+	 * @param WP_Post $post A WordPress post object.
 	 * @return Entity The entity for the post.
 	 */
-	private function create_entity_for_post( \WP_Post $post ) {
+	private function create_entity_for_post( WP_Post $post ) {
 		$type = 'post';
 
 		// If this post is assigned as the posts page, it is actually the blog archive.
