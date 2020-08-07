@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
 use WP_Post;
+use WP_Screen;
 
 /**
  * Class providing access to entities.
@@ -39,6 +40,11 @@ final class Entity_Factory {
 	public static function from_context() {
 		// If currently in WP admin, run admin-specific checks.
 		if ( is_admin() ) {
+			$screen = get_current_screen();
+			if ( ! $screen instanceof WP_Screen || 'post' !== $screen->base ) {
+				return null;
+			}
+
 			$post = get_post();
 			if ( $post instanceof WP_Post ) {
 				return self::create_entity_for_post( $post );
@@ -85,18 +91,18 @@ final class Entity_Factory {
 
 		// url_to_postid() does not support detecting the posts page, hence
 		// this code covers up for it.
-		if ( ! $post_id && get_option( 'page_for_posts' ) && get_permalink( get_option( 'page_for_posts' ) ) === $url ) {
-			$post_id = (int) get_option( 'page_for_posts' );
+		$page_for_posts_id = (int) get_option( 'page_for_posts' );
+		if ( ! $post_id && $page_for_posts_id && get_permalink( $page_for_posts_id ) === $url ) {
+			$post_id = $page_for_posts_id;
 		}
 
 		if ( $post_id ) {
 			$post = get_post( $post_id );
-			if ( $post instanceof WP_Post ) {
-				if ( self::is_post_public( $post ) ) {
-					return self::create_entity_for_post( $post );
-				}
-				return null;
+			if ( $post instanceof WP_Post && self::is_post_public( $post ) ) {
+				return self::create_entity_for_post( $post );
 			}
+			// If we got here, either the post doesn't exist or isn't public.
+			return null;
 		}
 
 		$path = str_replace( untrailingslashit( home_url() ), '', $url );
