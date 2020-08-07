@@ -171,7 +171,12 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			const registry = yield Data.commonActions.getRegistry();
 			const values = registry.select( STORE_NAME ).getSettings();
 
-			return yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
+			const { response, error } = yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
+			if ( error ) {
+				registry.dispatch( STORE_NAME ).receiveError( error, 'saveSettings' );
+			}
+
+			return { response, error };
 		},
 	};
 

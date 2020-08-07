@@ -107,11 +107,6 @@ const baseActions = {
 		invariant( accountID, 'accountID is required.' );
 
 		const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
-		if ( error ) {
-			const registry = yield Data.commonActions.getRegistry();
-			yield registry.dispatch( STORE_NAME ).receiveError( error, 'createProperty', { accountID } );
-		}
-
 		return { response, error };
 	},
 
@@ -303,6 +298,7 @@ const baseResolvers = {
 
 			dispatch( STORE_NAME ).receivePropertiesProfilesCompletion( accountID );
 			if ( error ) {
+				yield dispatch( STORE_NAME ).receiveError( error, 'getProperties', [ accountID ] );
 				return;
 			}
 		}

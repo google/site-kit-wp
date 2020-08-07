@@ -163,7 +163,7 @@ const baseActions = {
 
 		const { response, error } = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
 		if ( error ) {
-			yield registry.dispatch( STORE_NAME ).receiveError( error, 'createAccount', data );
+			yield registry.dispatch( STORE_NAME ).receiveError( error, 'createAccount' );
 		}
 
 		return { response, error };
