@@ -29,18 +29,18 @@ import Autocomplete from 'accessible-autocomplete/react';
  */
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	getSiteKitAdminURL,
-} from '../util';
 import data, { TYPE_CORE } from './data';
 import Button from './button';
 import Layout from './layout/layout';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
 
 const { useSelect } = Data;
 
@@ -52,6 +52,7 @@ const PostSearcher = () => {
 	const [ match, setMatch ] = useState( {} );
 	const [ selection, setSelection ] = useState();
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
+	const adminURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 
 	/**
 	 * Search for posts based on user input.
@@ -95,15 +96,12 @@ const PostSearcher = () => {
 	};
 
 	const onClick = () => {
-		if ( match && match.ID ) {
-			global.location.assign( getSiteKitAdminURL(
-				'googlesitekit-dashboard',
-				{
-					id: match.ID,
-					permaLink: match.permalink,
-					pageTitle: selection,
-				}
-			) );
+		if ( match && match.ID && adminURL ) {
+			global.location.assign( addQueryArgs( adminURL, {
+				id: match.ID,
+				permaLink: match.permalink,
+				pageTitle: selection,
+			} ) );
 		}
 	};
 
@@ -128,6 +126,7 @@ const PostSearcher = () => {
 								<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">
 									{ __( 'Title or URL', 'google-site-kit' ) }
 								</label>
+								<PostSearcherAutoSuggest />
 								<Autocomplete
 									id="autocomplete"
 									source={ debounce( postSearch, 200 ) }
