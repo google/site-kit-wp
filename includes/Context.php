@@ -10,10 +10,11 @@
 
 namespace Google\Site_Kit;
 
-use AMP_Options_Manager;
 use AMP_Theme_Support;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\Entity;
+use WP_Post;
+use WP_Screen;
 
 /**
  * Class representing the context in which the plugin is running.
@@ -196,19 +197,26 @@ final class Context {
 				if ( ! empty( $entity_url_query_param ) ) {
 					return $this->get_reference_entity_from_url( $entity_url_query_param );
 				}
+				return null;
+			}
+
+			$screen = get_current_screen();
+			if ( ! $screen instanceof WP_Screen || 'post' !== $screen->base ) {
+				return null;
 			}
 
 			$post = get_post();
-			if ( $post instanceof \WP_Post ) {
+			if ( $post instanceof WP_Post ) {
 				return $this->create_entity_for_post( $post );
 			}
+
 			return null;
 		}
 
 		// Otherwise, run frontend-specific checks.
 		if ( is_singular() || is_home() && ! is_front_page() ) {
 			$post = get_queried_object();
-			if ( $post instanceof \WP_Post ) {
+			if ( $post instanceof WP_Post ) {
 				return $this->create_entity_for_post( $post );
 			}
 			return null;
@@ -254,15 +262,18 @@ final class Context {
 
 		// url_to_postid() does not support detecting the posts page, hence
 		// this code covers up for it.
-		if ( ! $post_id && get_option( 'page_for_posts' ) && get_permalink( get_option( 'page_for_posts' ) ) === $url ) {
-			$post_id = (int) get_option( 'page_for_posts' );
+		$page_for_posts_id = (int) get_option( 'page_for_posts' );
+		if ( ! $post_id && $page_for_posts_id && get_permalink( $page_for_posts_id ) === $url ) {
+			$post_id = $page_for_posts_id;
 		}
 
 		if ( $post_id ) {
 			$post = get_post( $post_id );
-			if ( $post instanceof \WP_Post ) {
+			if ( $post instanceof WP_Post ) {
 				return $this->create_entity_for_post( $post );
 			}
+			// If we got here, either the post doesn't exist or isn't public.
+			return null;
 		}
 
 		$path = str_replace( untrailingslashit( home_url() ), '', $url );
@@ -278,7 +289,7 @@ final class Context {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|\WP_Post $post  Optional. Post ID or post object. Default is the global `$post`.
+	 * @param int|WP_Post $post Optional. Post ID or post object. Default is the global `$post`.
 	 *
 	 * @return string|false The reference permalink URL or false if post does not exist.
 	 */
@@ -403,12 +414,15 @@ final class Context {
 	 *
 	 * @since 1.7.0
 	 *
-	 * @param \WP_Post $post A WordPress post object.
-	 * @return Entity The entity for the post.
+	 * @param WP_Post $post A WordPress post object.
+	 * @return Entity|null The entity for the post or null if the given post is not publicly available.
 	 */
-	private function create_entity_for_post( \WP_Post $post ) {
-		$type = 'post';
+	private function create_entity_for_post( WP_Post $post ) {
+		if ( ! is_post_type_viewable( $post->post_type ) || 'publish' !== get_post_status( $post ) ) {
+			return null;
+		}
 
+		$type = 'post';
 		// If this post is assigned as the posts page, it is actually the blog archive.
 		if ( (int) get_option( 'page_for_posts' ) === (int) $post->ID ) {
 			$type = 'blog';

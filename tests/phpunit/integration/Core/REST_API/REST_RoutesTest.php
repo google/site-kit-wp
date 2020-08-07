@@ -53,6 +53,7 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/data/settings',
 			'/' . REST_Routes::REST_ROOT . '/core/search/data/post-search',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/developer-plugin',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/health-checks',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/setup-tag',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/connection',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/notifications',
