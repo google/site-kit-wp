@@ -175,9 +175,8 @@ export const createFetchStore = ( {
 					yield receiveError( error, baseName, args );
 				}
 
-				// @TODO: remove error from the payload once all instances of the legacy behavior have been removed.
 				yield {
-					payload: { error, params },
+					payload: { params },
 					type: CATCH_FETCH,
 				};
 			}
@@ -236,11 +235,9 @@ export const createFetchStore = ( {
 			}
 
 			case CATCH_FETCH: {
-				// @TODO: remove error from here once all instances of the legacy behavior have been removed.
-				const { error, params } = payload;
+				const { params } = payload;
 				return {
 					...state,
-					error,
 					[ isFetching ]: {
 						...state[ isFetching ],
 						[ stringifyObject( params ) ]: false,

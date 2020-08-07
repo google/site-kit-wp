@@ -87,13 +87,10 @@ export function createErrorStore() {
 				const { baseName, args } = payload;
 				const key = generateErrorKey( baseName, args );
 
-				return {
-					...state,
-					errors: Object
-						.keys( state.errors )
-						.filter( ( errorKey ) => errorKey !== key )
-						.reduce( ( errors, errorKey ) => ( { ...errors, [ errorKey ]: state.errors[ errorKey ] } ), {} ),
-				};
+				const errors = { ...( state.errors || {} ) };
+				delete errors[ key ];
+
+				return { ...state, errors };
 			}
 
 			default: {
