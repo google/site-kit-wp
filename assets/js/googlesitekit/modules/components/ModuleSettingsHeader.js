@@ -35,16 +35,26 @@ import {
 	moduleIcon,
 } from '../../../util';
 import { STORE_NAME } from '../datastore/constants';
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 const ModuleSettingsHeader = ( { slug } ) => {
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
+	const { setSettingsOpen } = useDispatch( STORE_NAME );
 	const { connected, name } = module.settings;
 
 	const connectedClassName = connected
 		? 'googlesitekit-settings-module__status-icon--connected'
 		: 'googlesitekit-settings-module__status-icon--not-connected';
+
+	const handleAccordion = ( e ) => {
+		// Set focus on heading when clicked.
+		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
+
+		// If module is already open, close it, else set status to "view".
+		const newDisplayModeStatus = isOpen ? 'closed' : 'view';
+		setSettingsOpen( slug, newDisplayModeStatus );
+	};
 
 	return (
 		<button
@@ -58,7 +68,7 @@ const ModuleSettingsHeader = ( { slug } ) => {
 			aria-selected={ !! isOpen }
 			aria-expanded={ !! isOpen }
 			aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
-			onClick={ handleAccordion.bind( null, slug ) }
+			onClick={ handleAccordion }
 		>
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
