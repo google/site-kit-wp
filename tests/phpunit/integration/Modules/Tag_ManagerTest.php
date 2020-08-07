@@ -36,11 +36,150 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_is_connected() {
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	public function test_register_template_redirect_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
 
-		// is_connected relies on get_data so it isn't currently possible to test a connected state.
+		$tagmanager = new Tag_Manager( $context );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		remove_all_actions( 'template_redirect' );
+		$tagmanager->register();
+
+		remove_all_actions( 'amp_print_analytics' );
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'amp_post_template_footer' );
+		remove_all_filters( 'amp_post_template_data' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'amp_print_analytics' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+	}
+
+	public function test_register_template_redirect_non_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
+
+		$tagmanager = new Tag_Manager( $context );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		remove_all_actions( 'template_redirect' );
+		$tagmanager->register();
+
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'wp_body_open' );
+		remove_all_actions( 'wp_footer' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_head' ) );
+		$this->assertFalse( has_action( 'wp_body_open' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+
+		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'wp_body_open' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+	}
+
+	public function test_is_connected_web() {
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
+		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( false ) );
+
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
 		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+
+		$this->assertTrue( $tagmanager->is_connected() );
+	}
+
+	public function test_is_connected_primary_amp() {
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
+		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( Context::AMP_MODE_PRIMARY ) );
+
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		$this->assertTrue( $tagmanager->is_connected() );
+	}
+
+	public function test_is_connected_secondary_amp() {
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
+		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( Context::AMP_MODE_SECONDARY ) );
+
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+
+		// Should still fail because both 'web' and 'amp' containers are required.
+		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		$this->assertTrue( $tagmanager->is_connected() );
 	}
 
 	public function test_on_deactivation() {
@@ -113,34 +252,6 @@ class Tag_ManagerTest extends TestCase {
 			),
 			$tagmanager->get_datapoints()
 		);
-	}
-
-	public function test_amp_data_load_analytics_component() {
-		remove_all_filters( 'amp_post_template_data' );
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$tagmanager->register();
-
-		$data = array( 'amp_component_scripts' => array() );
-
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertSame( $data, $result );
-
-		$set_data_response = $tagmanager->set_data( 'container-id', array( 'containerID' => '12345678' ) );
-		$this->assertNotWPError( $set_data_response );
-
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertArrayNotHasKey( 'amp-analytics', $result['amp_component_scripts'] );
-
-		$set_data_response = $tagmanager->set_data(
-			'container-id',
-			array(
-				'containerID'  => '99999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
-			)
-		);
-		$this->assertNotWPError( $set_data_response );
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );
 	}
 
 	/**
