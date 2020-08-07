@@ -20,7 +20,6 @@
  * External dependencies
  */
 import {
-	map,
 	debounce,
 } from 'lodash';
 import Autocomplete from 'accessible-autocomplete/react';
@@ -67,7 +66,7 @@ const PostSearcher = () => {
 			const queryResults = await data.get( TYPE_CORE, 'search', 'post-search', { query: encodeURIComponent( query ) } );
 
 			if ( 0 < queryResults.length ) {
-				populateResults( map( queryResults, ( result ) => {
+				populateResults( queryResults.map( ( result ) => {
 					return result.post_title;
 				} ) );
 			} else {
@@ -110,7 +109,7 @@ const PostSearcher = () => {
 
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 	// Set column width full if Analytics active, half otherwise.
-	const classNameForColumn = modules.analytics && modules.analytics.active
+	const classNameForColumn = modules?.analytics?.active
 		? 'mdc-layout-grid__cell mdc-layout-grid__cell--span-12'
 		: 'mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop';
 
