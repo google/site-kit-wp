@@ -34,22 +34,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import {
 	getSiteKitAdminURL,
-	getModulesData,
 } from '../util';
 import data, { TYPE_CORE } from './data';
 import Button from './button';
 import Layout from './layout/layout';
+import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+
+const { useSelect } = Data;
 
 const PostSearcher = () => {
 	// eslint-disable-next-line no-unused-vars
 	const [ isSearching, setIsSearching ] = useState( false );
 	const [ results, setResults ] = useState( [] );
-	// eslint-disable-next-line no-unused-vars
-	const [ error, setError ] = useState( false );
-	// eslint-disable-next-line no-unused-vars
-	const [ message, setMessage ] = useState( 'test' );
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
 	const [ selection, setSelection ] = useState();
@@ -75,14 +74,10 @@ const PostSearcher = () => {
 				populateResults( [ noResultsMessage ] );
 			}
 			setIsSearching( true );
-			setResults( results );
-			setError( false );
-			setMessage( '' );
+			setResults( queryResults );
 		} catch ( err ) {
 			populateResults( [ noResultsMessage ] );
 			setIsSearching( false );
-			setError( err.code );
-			setMessage( err.message );
 		}
 	};
 
@@ -92,7 +87,7 @@ const PostSearcher = () => {
 			const foundMatch = results.find( ( result ) => result.post_title === selected );
 			if ( selected && foundMatch ) {
 				setSelection( selected );
-				setCanSubmit( true	);
+				setCanSubmit( true );
 				setMatch( foundMatch );
 			}
 		} else {
@@ -113,8 +108,7 @@ const PostSearcher = () => {
 		}
 	};
 
-	const modules = getModulesData();
-
+	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 	// Set column width full if Analytics active, half otherwise.
 	const classNameForColumn = modules.analytics && modules.analytics.active
 		? 'mdc-layout-grid__cell mdc-layout-grid__cell--span-12'
