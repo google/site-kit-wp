@@ -26,23 +26,106 @@ import {
 	ComboboxList,
 	ComboboxOption,
 } from '@reach/combobox';
-const PostSearcherAutoSuggest = () => {
+
+/**
+ * WordPress dependencies
+ */
+import { useState, useEffect } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import API from 'googlesitekit-api';
+
+/**
+ * useDebounce hook
+ *
+ * @param {string} value The value to be debounced.
+ * @param {number} delay Number of milliseconds to debounce
+ * @return {string} The update value after the delay
+ */
+const useDebounce = ( value, delay ) => {
+	const [ debouncedValue, setDebouncedValue ] = useState( value );
+
+	useEffect(
+		() => {
+			// Update debounced value after the delay
+			const timeout = setTimeout( () => {
+				setDebouncedValue( value );
+			}, delay );
+
+			return () => {
+				clearTimeout( timeout );
+			};
+		},
+		[ value, delay ]
+	);
+
+	return debouncedValue;
+};
+
+const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
+	const [ searchTerm, setSearchTerm ] = useState( '' );
+	const debouncedValue = useDebounce( searchTerm, 200 );
+	const [ results, setResults ] = useState( [] );
+	const noResultsMessage = __( 'No results found', 'google-site-kit' );
+
+	const postSearch = async ( query ) => {
+		try {
+			const queryResults = await API.get( 'core', 'search', 'post-search', { query: encodeURIComponent( query ) } );
+			if ( 0 < queryResults.length ) {
+				setResults( queryResults );
+			} else {
+				setResults( [] );
+			}
+		} catch ( err ) {
+			setResults( [] );
+		}
+	};
+
+	useEffect( () => {
+		if ( debouncedValue !== '' ) {
+			postSearch( debouncedValue );
+		}
+	}, [ debouncedValue ] );
+
 	return (
-		<div>
-			<h4 id="demo">Basic, Fixed List Combobox</h4>
-			<Combobox aria-labelledby="demo">
-				<ComboboxInput />
-				<ComboboxPopover portal={ false }>
-					<ComboboxList>
-						<ComboboxOption value="Apple" />
-						<ComboboxOption value="Banana" />
-						<ComboboxOption value="Orange" />
-						<ComboboxOption value="Pineapple" />
-						<ComboboxOption value="Kiwi" />
-					</ComboboxList>
+		<Combobox
+			className="autocomplete__wrapper"
+			onSelect={ ( value ) => {
+				if ( Array.isArray( results ) && value !== noResultsMessage ) {
+					const foundMatch = results.find( ( post ) => post.post_title === value );
+					if ( foundMatch ) {
+						setCanSubmit( true );
+						setMatch( foundMatch );
+					}
+				} else {
+					setCanSubmit( false );
+				}
+			} }
+		>
+			<ComboboxInput
+				id="autocomplete"
+				className="autocomplete__input"
+				type="text"
+				onChange={ ( evt ) => {
+					setCanSubmit( false );
+					setSearchTerm( evt.target.value );
+				} }
+			/>
+			{ ( debouncedValue !== '' ) && (
+				<ComboboxPopover className="autocomplete__menu">
+					{ results.length > 0 ? (
+						<ComboboxList>
+							{ results.map( ( { ID, post_title: title } ) => <ComboboxOption key={ ID } value={ title } className="autocomplete__option" /> ) }
+						</ComboboxList>
+					) : (
+						<ComboboxOption value={ 'No results found' } className="autocomplete__option" />
+					) }
 				</ComboboxPopover>
-			</Combobox>
-		</div>
+			) }
+		</Combobox>
 	);
 };
 

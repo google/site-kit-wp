@@ -17,14 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import {
-	debounce,
-} from 'lodash';
-import Autocomplete from 'accessible-autocomplete/react';
-
-/**
  * WordPress dependencies
  */
 import { useState } from '@wordpress/element';
@@ -35,7 +27,6 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import data, { TYPE_CORE } from './data';
 import Button from './button';
 import Layout from './layout/layout';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
@@ -45,62 +36,17 @@ import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
 const { useSelect } = Data;
 
 const PostSearcher = () => {
-	// eslint-disable-next-line no-unused-vars
-	const [ isSearching, setIsSearching ] = useState( false );
-	const [ results, setResults ] = useState( [] );
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
-	const [ selection, setSelection ] = useState();
-	const noResultsMessage = __( 'No results found', 'google-site-kit' );
 	const adminURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
-
-	/**
-	 * Search for posts based on user input.
-	 *
-	 * @param {string} query             The search query.
-	 * @param {Function} populateResults The callback function to pass the results to.
-	 */
-	const postSearch = async ( query, populateResults ) => {
-		populateResults( [ __( 'Loading…', 'google-site-kit' ) ] );
-
-		try {
-			const queryResults = await data.get( TYPE_CORE, 'search', 'post-search', { query: encodeURIComponent( query ) } );
-
-			if ( 0 < queryResults.length ) {
-				populateResults( queryResults.map( ( result ) => {
-					return result.post_title;
-				} ) );
-			} else {
-				populateResults( [ noResultsMessage ] );
-			}
-			setIsSearching( true );
-			setResults( queryResults );
-		} catch ( err ) {
-			populateResults( [ noResultsMessage ] );
-			setIsSearching( false );
-		}
-	};
-
-	const onConfirm = ( selected ) => {
-		// Check that the selection is "valid".
-		if ( Array.isArray( results ) && selected !== noResultsMessage ) {
-			const foundMatch = results.find( ( result ) => result.post_title === selected );
-			if ( selected && foundMatch ) {
-				setSelection( selected );
-				setCanSubmit( true );
-				setMatch( foundMatch );
-			}
-		} else {
-			setCanSubmit( false );
-		}
-	};
 
 	const onClick = () => {
 		if ( match && match.ID && adminURL ) {
+			const { ID: id, permalink: permaLink, post_title: pageTitle } = match;
 			global.location.assign( addQueryArgs( adminURL, {
-				id: match.ID,
-				permaLink: match.permalink,
-				pageTitle: selection,
+				id,
+				permaLink,
+				pageTitle,
 			} ) );
 		}
 	};
@@ -126,13 +72,9 @@ const PostSearcher = () => {
 								<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">
 									{ __( 'Title or URL', 'google-site-kit' ) }
 								</label>
-								<PostSearcherAutoSuggest />
-								<Autocomplete
-									id="autocomplete"
-									source={ debounce( postSearch, 200 ) }
-									minLength={ 2 }
-									onConfirm={ onConfirm }
-									showNoOptionsFound={ false }
+								<PostSearcherAutoSuggest
+									setCanSubmit={ setCanSubmit }
+									setMatch={ setMatch }
 								/>
 								<div className="googlesitekit-post-searcher__button-wrapper">
 									<Button
