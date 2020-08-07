@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import * as react from 'react';
+import reactDefault, * as react from 'react';
 
 /**
  * Internal dependencies
  */
-import * as reactShim from './react-shim';
+import reachShimDefault, * as reactShim from './react-shim';
 
 describe( 'react shim', () => {
 	it( 'mirrors all exports from the react package', () => {
@@ -32,5 +32,9 @@ describe( 'react shim', () => {
 		const shimExports = Object.keys( reactShim ).sort();
 
 		expect( shimExports ).toEqual( realExports );
+	} );
+
+	it( 'mirrors the default export', () => {
+		expect( reactDefault ).toEqual( reachShimDefault );
 	} );
 } );
