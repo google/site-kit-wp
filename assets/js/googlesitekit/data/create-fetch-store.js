@@ -152,7 +152,7 @@ export const createFetchStore = ( {
 			const registry = yield Data.commonActions.getRegistry();
 			const { clearError } = registry ? registry.dispatch( storeName ) : {};
 			if ( clearError ) {
-				yield clearError( baseName, args );
+				yield clearError( baseName, args.length ? args : undefined );
 			}
 
 			try {
@@ -172,7 +172,7 @@ export const createFetchStore = ( {
 
 				const { receiveError } = registry ? registry.dispatch( storeName ) : {};
 				if ( receiveError ) {
-					yield receiveError( error, baseName, args );
+					yield receiveError( error, baseName, args.length ? args : undefined );
 				}
 
 				yield {

@@ -117,7 +117,7 @@ describe( 'modules/analytics accounts', () => {
 				muteConsole( 'error' ); // Request will log an error.
 				await registry.dispatch( STORE_NAME ).createAccount();
 
-				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'createAccount' ) ).toMatchObject( response );
 			} );
 		} );
 

@@ -135,7 +135,7 @@ describe( 'modules/analytics settings', () => {
 				);
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
-				expect( registry.select( STORE_NAME ).getError() ).toEqual( error );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
 			} );
 
 			it( 'dispatches createProfile if the "set up a new profile" option is chosen', async () => {
@@ -220,7 +220,7 @@ describe( 'modules/analytics settings', () => {
 				);
 				expect( result.error ).toEqual( error );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
-				expect( registry.select( STORE_NAME ).getError() ).toEqual( error );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
 			} );
 
 			it( 'dispatches both createProperty and createProfile when selected', async () => {
