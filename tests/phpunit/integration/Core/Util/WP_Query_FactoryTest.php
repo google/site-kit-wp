@@ -1073,6 +1073,8 @@ class WP_Query_FactoryTest extends TestCase {
 	 * In order to switch the permalink structure around during tests and still have a proper `$rewrite` property for
 	 * existing post types, we need to manually fix this.
 	 *
+	 * See https://core.trac.wordpress.org/ticket/50877 for upstream ticket.
+	 *
 	 * @param WP_Post_Type $post_type Post type object.
 	 */
 	private function fix_post_type_rewrite( WP_Post_Type $post_type ) {
@@ -1115,6 +1117,8 @@ class WP_Query_FactoryTest extends TestCase {
 	 * When a taxonomy is registered, its `$rewrite` property is only sanitized if pretty permalinks are enabled.
 	 * In order to switch the permalink structure around during tests and still have a proper `$rewrite` property for
 	 * existing taxonomies, we need to manually fix this.
+	 *
+	 * See https://core.trac.wordpress.org/ticket/50877 for upstream ticket.
 	 *
 	 * @param WP_Taxonomy $taxonomy Taxonomy object.
 	 */
