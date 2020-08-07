@@ -23,6 +23,11 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
+ * WordPress dependencies
+ */
+import { Children } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -32,6 +37,11 @@ const { useSelect } = Data;
 
 const ModuleSettingsBody = ( { slug, children } ) => {
 	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
+
+	// Separate footer child and non-footer children.
+	const childArray = Children.toArray( children );
+	const footerChild = childArray.filter( ( child ) => child.type.name === 'ModuleSettingsFooter' );
+	const nonFooterChildren = childArray.filter( ( child ) => child.type.name !== 'ModuleSettingsFooter' );
 
 	return (
 		<div
@@ -53,7 +63,7 @@ const ModuleSettingsBody = ( { slug, children } ) => {
                                     mdc-layout-grid__cell
                                     mdc-layout-grid__cell--span-12
                                 ">
-							{ /* Render children other than footer here */ }
+							{ nonFooterChildren }
 						</div>
 					</Fragment>
 					}
@@ -65,7 +75,7 @@ const ModuleSettingsBody = ( { slug, children } ) => {
 					}
 				</div>
 			</div>
-			{ /* Render footer child here */ }
+			{ footerChild }
 		</div>
 	);
 };
