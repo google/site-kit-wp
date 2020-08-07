@@ -20,6 +20,67 @@ use WP_Taxonomy;
  */
 class WP_Query_FactoryTest extends TestCase {
 
+	private static $orig_show_on_front;
+	private static $orig_page_on_front;
+	private static $orig_page_for_posts;
+	private static $post_ids;
+
+	public static function wpSetUpBeforeClass( $factory ) {
+		// Register a custom post type and a custom taxonomy.
+		register_post_type(
+			'customposttype',
+			array(
+				'public'      => true,
+				'has_archive' => true,
+			)
+		);
+		register_taxonomy(
+			'customtaxonomy',
+			'post',
+			array(
+				'public' => true,
+			)
+		);
+
+		// Set up special pages.
+		$blog_id = $factory->post->create(
+			array(
+				'post_title' => 'Blog',
+				'post_name'  => 'blog',
+				'post_type'  => 'page',
+			)
+		);
+		$home_id = $factory->post->create(
+			array(
+				'post_title' => 'Home',
+				'post_name'  => 'home',
+				'post_type'  => 'page',
+			)
+		);
+
+		self::$orig_show_on_front  = get_option( 'show_on_front' );
+		self::$orig_page_on_front  = get_option( 'page_on_front' );
+		self::$orig_page_for_posts = get_option( 'page_for_posts' );
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_on_front', $home_id );
+		update_option( 'page_for_posts', $blog_id );
+
+		self::$post_ids = array( $home_id, $blog_id );
+	}
+
+	public static function wpTearDownAfterClass() {
+		update_option( 'show_on_front', self::$orig_show_on_front );
+		update_option( 'page_on_front', self::$orig_page_on_front );
+		update_option( 'page_for_posts', self::$orig_page_for_posts );
+
+		foreach ( self::$post_ids as $post_id ) {
+			wp_delete_post( $post_id, true );
+		}
+
+		unregister_post_type( 'customposttype' );
+		unregister_taxonomy( 'customtaxonomy' );
+	}
+
 	/**
 	 * @dataProvider data_from_url_querystring
 	 *
@@ -46,41 +107,6 @@ class WP_Query_FactoryTest extends TestCase {
 		foreach ( get_taxonomies( array(), 'objects' ) as $taxonomy ) {
 			$taxonomy->add_rewrite_rules();
 		}
-
-		// Register a custom post type and a custom taxonomy.
-		register_post_type(
-			'customposttype',
-			array(
-				'public'      => true,
-				'has_archive' => true,
-			)
-		);
-		register_taxonomy(
-			'customtaxonomy',
-			'post',
-			array(
-				'public' => true,
-			)
-		);
-
-		// Set up special pages.
-		$blog_id = self::factory()->post->create(
-			array(
-				'post_title' => 'Blog',
-				'post_name'  => 'blog',
-				'post_type'  => 'page',
-			)
-		);
-		$home_id = self::factory()->post->create(
-			array(
-				'post_title' => 'Home',
-				'post_name'  => 'home',
-				'post_type'  => 'page',
-			)
-		);
-		update_option( 'show_on_front', 'page' );
-		update_option( 'page_on_front', $home_id );
-		update_option( 'page_for_posts', $blog_id );
 
 		$query = WP_Query_Factory::from_url( $url );
 		$query->get_posts();
@@ -554,41 +580,6 @@ class WP_Query_FactoryTest extends TestCase {
 			$this->fix_taxonomy_rewrite( $taxonomy );
 			$taxonomy->add_rewrite_rules();
 		}
-
-		// Register a custom post type and a custom taxonomy.
-		register_post_type(
-			'customposttype',
-			array(
-				'public'      => true,
-				'has_archive' => true,
-			)
-		);
-		register_taxonomy(
-			'customtaxonomy',
-			'post',
-			array(
-				'public' => true,
-			)
-		);
-
-		// Set up special pages.
-		$blog_id = self::factory()->post->create(
-			array(
-				'post_title' => 'Blog',
-				'post_name'  => 'blog',
-				'post_type'  => 'page',
-			)
-		);
-		$home_id = self::factory()->post->create(
-			array(
-				'post_title' => 'Home',
-				'post_name'  => 'home',
-				'post_type'  => 'page',
-			)
-		);
-		update_option( 'show_on_front', 'page' );
-		update_option( 'page_on_front', $home_id );
-		update_option( 'page_for_posts', $blog_id );
 
 		flush_rewrite_rules();
 

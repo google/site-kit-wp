@@ -52,14 +52,14 @@ class Entity_FactoryTest extends TestCase {
 		);
 
 		// Set up special pages.
-		$blog_id = self::factory()->post->create(
+		$blog_id = $factory->post->create(
 			array(
 				'post_title' => 'Blog',
 				'post_name'  => 'blog',
 				'post_type'  => 'page',
 			)
 		);
-		$home_id = self::factory()->post->create(
+		$home_id = $factory->post->create(
 			array(
 				'post_title' => 'Home',
 				'post_name'  => 'home',
@@ -80,21 +80,21 @@ class Entity_FactoryTest extends TestCase {
 		);
 
 		// Add more entities.
-		self::$post_titles_to_ids['Some Post'] = self::factory()->post->create(
+		self::$post_titles_to_ids['Some Post'] = $factory->post->create(
 			array(
 				'post_title' => 'Some Post',
 				'post_name'  => 'some-post',
 				'post_type'  => 'post',
 			)
 		);
-		self::$post_titles_to_ids['Some Page'] = self::factory()->post->create(
+		self::$post_titles_to_ids['Some Page'] = $factory->post->create(
 			array(
 				'post_title' => 'Some Page',
 				'post_name'  => 'some-page',
 				'post_type'  => 'page',
 			)
 		);
-		self::$post_titles_to_ids['Coffee']    = self::factory()->post->create(
+		self::$post_titles_to_ids['Coffee']    = $factory->post->create(
 			array(
 				'post_title' => 'Coffee',
 				'post_name'  => 'coffee',
