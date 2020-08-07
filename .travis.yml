@@ -89,7 +89,7 @@ script:
 
 jobs:
   allow_failures:
-    - env: WP_VERSION=master PHP=1
+    - env: WP_VERSION=nightly PHP=1
     - env: E2E=1 WP_VERSION=nightly
   include:
     - stage: test
