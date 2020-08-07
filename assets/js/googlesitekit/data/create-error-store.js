@@ -181,6 +181,19 @@ export function createErrorStore() {
 
 			return errors[ generateErrorKey( baseName, args ) ];
 		},
+
+		/**
+		 * Determines whether the datastore has errors or not.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {boolean} TRUE if the datastore has errors, otherwise FALSE.
+		 */
+		hasErrors( state ) {
+			const { errors } = state;
+			return Object.keys( errors ).some( ( key ) => !! errors[ key ] );
+		},
 	};
 
 	return {

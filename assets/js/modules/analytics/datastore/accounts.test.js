@@ -280,7 +280,7 @@ describe( 'modules/analytics accounts', () => {
 
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).getAccounts() !== undefined ||
-					registry.select( STORE_NAME ).getError()
+					registry.select( STORE_NAME ).getErrorForSelector( 'getAccounts' )
 				);
 
 				// Ensure the proper parameters were sent.
