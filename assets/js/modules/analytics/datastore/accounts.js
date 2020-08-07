@@ -215,15 +215,14 @@ const baseResolvers = {
 		// Only fetch accounts if there are none in the store.
 		if ( existingAccounts === undefined ) {
 			yield tagActions.waitForExistingTag();
-
-			let existingTagPermission;
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
+			let existingTagPermission;
 			if ( existingTag ) {
 				yield tagActions.waitForTagPermission( existingTag );
 				existingTagPermission = registry.select( STORE_NAME ).getTagPermission( existingTag );
 			}
 
-			const { response } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
+			const { response, error } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
 				existingPropertyID: existingTag,
 				existingAccountID: existingTagPermission?.accountID,
 			} );
@@ -248,6 +247,10 @@ const baseResolvers = {
 				}
 
 				( { matchedProperty } = response );
+			}
+
+			if ( error ) {
+				dispatch( STORE_NAME ).receiveError( error, 'getAccounts' );
 			}
 
 			dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
