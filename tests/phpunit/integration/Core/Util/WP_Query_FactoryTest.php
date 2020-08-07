@@ -37,6 +37,32 @@ class WP_Query_FactoryTest extends TestCase {
 
 		$wp_rewrite->set_permalink_structure( '/%postname%/' );
 
+		// Manually add rewrite rules for post types and taxonomies because they were originally skipped due to an
+		// empty permalink structure.
+		foreach ( get_post_types( array(), 'objects' ) as $post_type ) {
+			$post_type->add_rewrite_rules();
+		}
+		foreach ( get_taxonomies( array(), 'objects' ) as $taxonomy ) {
+			$taxonomy->add_rewrite_rules();
+		}
+
+		// Register a custom post type and a custom taxonomy.
+		register_post_type(
+			'customposttype',
+			array(
+				'public'      => true,
+				'has_archive' => true,
+			)
+		);
+		register_taxonomy(
+			'customtaxonomy',
+			'post',
+			array(
+				'public' => true,
+			)
+		);
+
+		// Set up special pages.
 		$blog_id = self::factory()->post->create(
 			array(
 				'post_title' => 'Blog',
@@ -54,22 +80,6 @@ class WP_Query_FactoryTest extends TestCase {
 		update_option( 'show_on_front', 'page' );
 		update_option( 'page_on_front', $home_id );
 		update_option( 'page_for_posts', $blog_id );
-
-		register_post_type(
-			'customposttype',
-			array(
-				'public'      => true,
-				'has_archive' => true,
-			)
-		);
-
-		register_taxonomy(
-			'customtaxonomy',
-			'post',
-			array(
-				'public' => true,
-			)
-		);
 
 		flush_rewrite_rules();
 
@@ -95,7 +105,7 @@ class WP_Query_FactoryTest extends TestCase {
 		// There is a custom post type called 'customposttype'.
 		// There is a custom taxonomy called 'customtaxonomy'.
 		return array(
-			'front page'                 => array(
+			'front page'                   => array(
 				'https://example.com/',
 				array(),
 				array(
@@ -105,7 +115,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular'   => true,
 				),
 			),
-			'blog page'                  => array(
+			'blog page'                    => array(
 				'https://example.com/blog/',
 				array(
 					'pagename' => 'blog',
@@ -118,7 +128,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular'   => false,
 				),
 			),
-			'blog page, page 3'          => array(
+			'blog page, page 3'            => array(
 				'https://example.com/blog/page/3/',
 				array(
 					'pagename' => 'blog',
@@ -131,7 +141,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular'   => false,
 				),
 			),
-			'single post'                => array(
+			'single post'                  => array(
 				'https://example.com/some-post/',
 				array(
 					'name' => 'some-post',
@@ -142,7 +152,98 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => true,
 				),
 			),
-			'author archives'            => array(
+			'single post, paginated'       => array(
+				'https://example.com/some-post/2/',
+				array(
+					'name' => 'some-post',
+					'page' => '2',
+				),
+				array(
+					'is_single'   => true,
+					'is_singular' => true,
+				),
+			),
+			'category archives'            => array(
+				'https://example.com/category/uncategorized/',
+				array(
+					'category_name' => 'uncategorized',
+				),
+				array(
+					'is_category' => true,
+					'is_paged'    => false,
+					'is_singular' => false,
+				),
+			),
+			'sub-category archives'        => array(
+				'https://example.com/category/uncategorized/subcat/',
+				array(
+					'category_name' => 'uncategorized/subcat',
+				),
+				array(
+					'is_category' => true,
+					'is_paged'    => false,
+					'is_singular' => false,
+				),
+			),
+			'category archives, page 3'    => array(
+				'https://example.com/category/uncategorized/page/3/',
+				array(
+					'category_name' => 'uncategorized',
+					'paged'         => '3',
+				),
+				array(
+					'is_category' => true,
+					'is_paged'    => true,
+					'is_singular' => false,
+				),
+			),
+			'tag archives'                 => array(
+				'https://example.com/tag/food/',
+				array(
+					'tag' => 'food',
+				),
+				array(
+					'is_tag'      => true,
+					'is_paged'    => false,
+					'is_singular' => false,
+				),
+			),
+			'tag archives, page 3'         => array(
+				'https://example.com/tag/food/page/3/',
+				array(
+					'tag'   => 'food',
+					'paged' => '3',
+				),
+				array(
+					'is_tag'      => true,
+					'is_paged'    => true,
+					'is_singular' => false,
+				),
+			),
+			'post format archives'         => array(
+				'https://example.com/type/image/',
+				array(
+					'post_format' => 'image',
+				),
+				array(
+					'is_tax'      => true,
+					'is_paged'    => false,
+					'is_singular' => false,
+				),
+			),
+			'post format archives, page 2' => array(
+				'https://example.com/type/image/page/2/',
+				array(
+					'post_format' => 'image',
+					'paged'       => '2',
+				),
+				array(
+					'is_tax'      => true,
+					'is_paged'    => true,
+					'is_singular' => false,
+				),
+			),
+			'author archives'              => array(
 				'https://example.com/author/johndoe/',
 				array(
 					'author_name' => 'johndoe',
@@ -153,7 +254,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
-			'author archives, page 2'    => array(
+			'author archives, page 2'      => array(
 				'https://example.com/author/johndoe/page/2/',
 				array(
 					'author_name' => 'johndoe',
@@ -165,7 +266,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
-			'year archives'              => array(
+			'year archives'                => array(
 				'https://example.com/2020/',
 				array(
 					'year' => '2020',
@@ -177,7 +278,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
-			'year archives, page 3'      => array(
+			'year archives, page 3'        => array(
 				'https://example.com/2020/page/3/',
 				array(
 					'year'  => '2020',
@@ -190,7 +291,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
-			'month archives'             => array(
+			'month archives'               => array(
 				'https://example.com/2020/08/',
 				array(
 					'year'     => '2020',
@@ -204,7 +305,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
-			'month archives, page 3'     => array(
+			'month archives, page 3'       => array(
 				'https://example.com/2020/08/page/3/',
 				array(
 					'year'     => '2020',
@@ -219,7 +320,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
-			'day archives'               => array(
+			'day archives'                 => array(
 				'https://example.com/2020/08/04/',
 				array(
 					'year'     => '2020',
@@ -235,7 +336,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
-			'day archives, page 3'       => array(
+			'day archives, page 3'         => array(
 				'https://example.com/2020/08/04/page/3/',
 				array(
 					'year'     => '2020',
@@ -252,7 +353,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
-			'custom post type post'      => array(
+			'custom post type post'        => array(
 				'https://example.com/customposttype/coffee/',
 				array(
 					'customposttype' => 'coffee',
@@ -265,7 +366,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => true,
 				),
 			),
-			'post type archives'         => array(
+			'post type archives'           => array(
 				'https://example.com/customposttype/',
 				array(
 					'post_type' => 'customposttype',
@@ -276,7 +377,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular'          => false,
 				),
 			),
-			'post type archives, page 3' => array(
+			'post type archives, page 3'   => array(
 				'https://example.com/customposttype/page/3/',
 				array(
 					'post_type' => 'customposttype',
@@ -288,7 +389,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular'          => false,
 				),
 			),
-			'taxonomy archives'          => array(
+			'taxonomy archives'            => array(
 				'https://example.com/customtaxonomy/coffee/',
 				array(
 					'customtaxonomy' => 'coffee',
@@ -299,7 +400,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
-			'taxonomy archives, page 3'  => array(
+			'taxonomy archives, page 3'    => array(
 				'https://example.com/customtaxonomy/coffee/page/3/',
 				array(
 					'customtaxonomy' => 'coffee',
