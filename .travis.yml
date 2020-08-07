@@ -94,7 +94,7 @@ jobs:
   include:
     - name: Lint
       php: 7.4
-      env: WP_VERSION=4.7 SNIFF=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      env: SNIFF=1 WP_VERSION=4.7 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - name: PHP Tests (PHP 5.6, WordPress 4.7)
       php: 5.6
       env: PHP=1 WP_VERSION=4.7
@@ -109,7 +109,7 @@ jobs:
       env: PHP=1 WP_VERSION=nightly
     - name: JS Tests
       php: 7.4
-      env: WP_VERSION=latest JS=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      env: JS=1 WP_VERSION=latest PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - name: Visual Regression
       env: VRT=1
     - name: E2E Tests (WordPress latest)
