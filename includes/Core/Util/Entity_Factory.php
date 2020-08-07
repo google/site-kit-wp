@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use WP_Query;
 use WP_Post;
 use WP_Screen;
 
@@ -38,6 +39,8 @@ final class Entity_Factory {
 	 * @return Entity|null The entity for the current context, or null if none could be determined.
 	 */
 	public static function from_context() {
+		global $wp_the_query;
+
 		// If currently in WP admin, run admin-specific checks.
 		if ( is_admin() ) {
 			$screen = get_current_screen();
@@ -46,28 +49,16 @@ final class Entity_Factory {
 			}
 
 			$post = get_post();
-			if ( $post instanceof WP_Post ) {
-				return self::create_entity_for_post( $post );
-			}
-			return null;
-		}
-
-		// Otherwise, run frontend-specific checks.
-		if ( is_singular() || is_home() && ! is_front_page() ) {
-			$post = get_queried_object();
 			if ( $post instanceof WP_Post && self::is_post_public( $post ) ) {
 				return self::create_entity_for_post( $post );
 			}
 			return null;
 		}
 
-		// If not singular (see above) but front page, this is the blog archive.
-		if ( is_front_page() ) {
-			return self::create_entity_for_home_blog();
+		// Otherwise, run frontend-specific `WP_Query` logic.
+		if ( $wp_the_query instanceof WP_Query ) {
+			return self::from_wp_query( $wp_the_query );
 		}
-
-		// TODO: This is not comprehensive, but will be expanded in the future.
-		// Related: https://github.com/google/site-kit-wp/issues/174.
 		return null;
 	}
 
@@ -82,34 +73,40 @@ final class Entity_Factory {
 	 * @return Entity|null The entity for the URL, or null if none could be determined.
 	 */
 	public static function from_url( $url ) {
-		if ( function_exists( 'wpcom_vip_url_to_postid' ) ) {
-			$post_id = wpcom_vip_url_to_postid( $url );
-		} else {
-			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions
-			$post_id = url_to_postid( $url );
-		}
-
-		// url_to_postid() does not support detecting the posts page, hence
-		// this code covers up for it.
-		$page_for_posts_id = (int) get_option( 'page_for_posts' );
-		if ( ! $post_id && $page_for_posts_id && get_permalink( $page_for_posts_id ) === $url ) {
-			$post_id = $page_for_posts_id;
-		}
-
-		if ( $post_id ) {
-			$post = get_post( $post_id );
-			if ( $post instanceof WP_Post && self::is_post_public( $post ) ) {
-				return self::create_entity_for_post( $post );
-			}
-			// If we got here, either the post doesn't exist or isn't public.
+		$query = WP_Query_Factory::from_url( $url );
+		if ( ! $query ) {
 			return null;
 		}
 
-		$path = str_replace( untrailingslashit( home_url() ), '', $url );
-		if ( empty( $path ) || '/' === $path ) {
+		$query->get_posts();
+
+		return self::from_wp_query( $query );
+	}
+
+	/**
+	 * Gets the entity for the given `WP_Query` object, if available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Query $query WordPress query object. Must already have run the actual database query.
+	 * @return Entity|null The entity for the query, or null if none could be determined.
+	 */
+	public static function from_wp_query( WP_Query $query ) {
+		if ( $query->is_singular() || $query->is_home() && ! $query->is_front_page() ) {
+			$post = $query->get_queried_object();
+			if ( $post instanceof WP_Post && self::is_post_public( $post ) ) {
+				return self::create_entity_for_post( $post );
+			}
+			return null;
+		}
+
+		// If not singular (see above) but front page, this is the blog archive.
+		if ( $query->is_front_page() ) {
 			return self::create_entity_for_home_blog();
 		}
 
+		// TODO: This is not comprehensive, but will be expanded in the future.
+		// Related: https://github.com/google/site-kit-wp/issues/174.
 		return null;
 	}
 
