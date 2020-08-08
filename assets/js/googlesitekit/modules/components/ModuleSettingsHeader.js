@@ -41,7 +41,7 @@ const ModuleSettingsHeader = ( { slug } ) => {
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
 	const { setSettingsOpen } = useDispatch( STORE_NAME );
-	const { connected, name } = module.settings;
+	const { connected, name } = module;
 
 	const connectedClassName = connected
 		? 'googlesitekit-settings-module__status-icon--connected'

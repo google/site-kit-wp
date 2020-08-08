@@ -17,10 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -38,7 +34,7 @@ const DefaultModuleSettings = ( { slug } ) => {
 			<ModuleSettingsHeader slug={ slug } />
 			{ isOpen &&
 				<ModuleSettingsBody slug={ slug }>
-					<ModuleSettingsFooter slug={ slug } allowEdit={ false } />
+					<ModuleSettingsFooter slug={ slug } />
 				</ModuleSettingsBody>
 			}
 		</ModuleSettings>

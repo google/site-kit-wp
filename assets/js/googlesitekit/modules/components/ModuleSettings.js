@@ -37,7 +37,7 @@ import { STORE_NAME } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 import Dialog from '../../../components/dialog';
 
-const ModuleSettings = ( { provides, slug, children } ) => {
+const ModuleSettings = ( { children, error, provides, slug } ) => {
 	const [ state, setState ] = useState( {
 		isSaving: false,
 		// setupComplete: props.setupComplete,
@@ -48,8 +48,7 @@ const ModuleSettings = ( { provides, slug, children } ) => {
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 	const modules = useSelect( ( select ) => select( STORE_NAME ).getModules() );
 	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isEditingSettings( slug ) );
-	const { name } = module.settings;
-	const { dependents } = module;
+	const { name, dependents } = module;
 
 	const handleDialog = () => {
 		setState(
@@ -136,15 +135,17 @@ const ModuleSettings = ( { provides, slug, children } ) => {
 };
 
 ModuleSettings.propTypes = {
-	provides: PropTypes.arrayOf( PropTypes.string ),
-	slug: PropTypes.string.isRequired,
 	children: PropTypes.oneOfType( [
 		PropTypes.arrayOf( PropTypes.node ),
 		PropTypes.node,
 	] ).isRequired,
+	slug: PropTypes.string.isRequired,
+	error: PropTypes.bool,
+	provides: PropTypes.arrayOf( PropTypes.string ),
 };
 
 ModuleSettings.defaultProps = {
+	error: false,
 	provides: [],
 };
 

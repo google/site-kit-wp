@@ -40,11 +40,21 @@ const { useSelect } = Data;
 const ModuleSettingsFooter = ( { allowEdit, provides, slug } ) => {
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isEditingSettings( slug ) );
-	const { name } = module.settings;
+	const { homepage, name } = module;
 
 	const handleEdit = ( e ) => {
 
 	};
+
+	// Set button text based on state.
+	let buttonText = __( 'Close', 'google-site-kit' );
+	if ( allowEdit && setupComplete ) {
+		if ( isSavingModule ) {
+			buttonText = __( 'Saving…', 'google-site-kit' );
+		} else {
+			buttonText = __( 'Confirm Changes', 'google-site-kit' );
+		}
+	}
 
 	return (
 		<footer className="googlesitekit-settings-module__footer">
@@ -59,14 +69,14 @@ const ModuleSettingsFooter = ( { allowEdit, provides, slug } ) => {
 						{ isEditing || isSavingModule ? (
 							<Fragment>
 								<Button
-									onClick={ () => handleEdit( slug, hasSettings && setupComplete ? 'confirm' : 'cancel' ) }
+									onClick={ () => handleEdit( slug, allowEdit && setupComplete ? 'confirm' : 'cancel' ) }
 									disabled={ isSavingModule }
-									id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
+									id={ allowEdit && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 								>
 									{ buttonText }
 								</Button>
 								<Spinner isSaving={ isSavingModule } />
-								{ hasSettings &&
+								{ allowEdit &&
 								<Link
 									className="googlesitekit-settings-module__footer-cancel"
 									onClick={ () => handleEdit( slug, 'cancel' ) }
@@ -76,7 +86,7 @@ const ModuleSettingsFooter = ( { allowEdit, provides, slug } ) => {
 								</Link>
 								}
 							</Fragment>
-						) : ( ( hasSettings || ! autoActivate ) &&
+						) : ( ( allowEdit || ! autoActivate ) &&
 						<Link
 							className="googlesitekit-settings-module__edit-button"
 							onClick={ () => {

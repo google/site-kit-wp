@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Children } from '@wordpress/element';
+import { Children, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,7 +35,7 @@ import { STORE_NAME } from '../datastore/constants';
 import ModuleSetupIncomplete from '../../../components/settings/module-setup-incomplete';
 const { useSelect } = Data;
 
-const ModuleSettingsBody = ( { slug, children } ) => {
+const ModuleSettingsBody = ( { allowEdit, children, slug } ) => {
 	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
 
 	// Separate footer child and non-footer children.
@@ -68,7 +68,7 @@ const ModuleSettingsBody = ( { slug, children } ) => {
 					</Fragment>
 					}
 					{
-						hasSettings && ! setupComplete &&
+						allowEdit && ! setupComplete &&
 						<ModuleSetupIncomplete
 							slug={ slug }
 						/>
@@ -86,6 +86,11 @@ ModuleSettingsBody.propTypes = {
 		PropTypes.arrayOf( PropTypes.node ),
 		PropTypes.node,
 	] ).isRequired,
+	allowEdit: PropTypes.bool,
+};
+
+ModuleSettingsBody.defaultProps = {
+	allowEdit: false,
 };
 
 export default ModuleSettingsBody;
