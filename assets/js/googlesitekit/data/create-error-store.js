@@ -41,7 +41,7 @@ export function createErrorStore() {
 	};
 
 	const actions = {
-		receiveError( error, baseName, args ) {
+		receiveError( error, baseName, args = [] ) {
 			invariant( error, 'error is required.' );
 
 			return {
@@ -122,7 +122,7 @@ export function createErrorStore() {
 		 * @param {Array.<any>} [args]  An arguments array.
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
-		getErrorForSelector( state, selectorName, args ) {
+		getErrorForSelector( state, selectorName, args = [] ) {
 			invariant( selectorName, 'selectorName is required.' );
 			return selectors.getError( state, selectorName, args );
 		},
@@ -145,7 +145,7 @@ export function createErrorStore() {
 		 * @param {Array.<any>} [args]  An arguments array.
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
-		getErrorForAction( state, actionName, args ) {
+		getErrorForAction( state, actionName, args = [] ) {
 			invariant( actionName, 'actionName is required.' );
 			return selectors.getError( state, actionName, args );
 		},
@@ -169,7 +169,7 @@ export function createErrorStore() {
 		 * @param {Array.<any>} [args]  An arguments array.
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
-		getError( state, baseName, args ) {
+		getError( state, baseName, args = [] ) {
 			const { error, errors } = state;
 
 			// @TODO: remove it once all instances of the legacy usage have been removed. Also make baseName required then.
