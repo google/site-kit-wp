@@ -126,7 +126,7 @@ const baseActions = {
 		};
 
 		if ( result.error ) {
-			registry.dispatch( STORE_NAME ).receiveError( result.error, 'submitChanges' );
+			registry.dispatch( STORE_NAME ).receiveError( result.error, 'submitChanges', [] );
 		}
 
 		yield {

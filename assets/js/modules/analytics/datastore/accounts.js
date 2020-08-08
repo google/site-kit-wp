@@ -163,7 +163,7 @@ const baseActions = {
 
 		const { response, error } = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
 		if ( error ) {
-			yield registry.dispatch( STORE_NAME ).receiveError( error, 'createAccount' );
+			yield registry.dispatch( STORE_NAME ).receiveError( error, 'createAccount', [] );
 		}
 
 		return { response, error };
@@ -250,7 +250,7 @@ const baseResolvers = {
 			}
 
 			if ( error ) {
-				dispatch( STORE_NAME ).receiveError( error, 'getAccounts' );
+				dispatch( STORE_NAME ).receiveError( error, 'getAccounts', [] );
 			}
 
 			dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
