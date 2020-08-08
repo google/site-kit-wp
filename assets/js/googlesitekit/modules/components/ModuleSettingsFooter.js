@@ -42,6 +42,10 @@ const ModuleSettingsFooter = ( { allowEdit, provides, slug } ) => {
 	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isEditingSettings( slug ) );
 	const { name } = module.settings;
 
+	const handleEdit = ( e ) => {
+
+	};
+
 	return (
 		<footer className="googlesitekit-settings-module__footer">
 			<div className="mdc-layout-grid">
@@ -139,14 +143,12 @@ const ModuleSettingsFooter = ( { allowEdit, provides, slug } ) => {
 
 ModuleSettingsFooter.propTypes = {
 	allowEdit: PropTypes.bool,
-	provides: PropTypes.arrayOf( PropTypes.string ),
 	slug: PropTypes.string.isRequired,
 
 };
 
 ModuleSettingsFooter.defaultProps = {
 	allowEdit: false,
-	provides: [],
 };
 
 export default ModuleSettingsFooter;

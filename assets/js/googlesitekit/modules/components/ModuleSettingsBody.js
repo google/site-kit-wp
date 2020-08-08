@@ -59,10 +59,10 @@ const ModuleSettingsBody = ( { slug, children } ) => {
 				<div className="mdc-layout-grid__inner">
 					{ setupComplete &&
 					<Fragment>
-						<div className="
-                                    mdc-layout-grid__cell
-                                    mdc-layout-grid__cell--span-12
-                                ">
+						<div className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-12'
+						) }>
 							{ nonFooterChildren }
 						</div>
 					</Fragment>

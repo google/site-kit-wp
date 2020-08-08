@@ -20,31 +20,36 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { map } from 'lodash';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 import Dialog from '../../../components/dialog';
 
-const ModuleSettings = ( { slug, children } ) => {
+const ModuleSettings = ( { provides, slug, children } ) => {
 	const [ state, setState ] = useState( {
 		isSaving: false,
 		// setupComplete: props.setupComplete,
 		dialogActive: false,
 	} );
 
+	const { setModuleActivation } = useDispatch( ( dispatch ) => dispatch( STORE_NAME ) );
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
+	const modules = useSelect( ( select ) => select( STORE_NAME ).getModules() );
 	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isEditingSettings( slug ) );
-	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
-	const { connected, name } = module.settings;
+	const { name } = module.settings;
+	const { dependents } = module;
 
 	const handleDialog = () => {
 		setState(
@@ -64,11 +69,27 @@ const ModuleSettings = ( { slug, children } ) => {
 		}
 	};
 
-	// Handle user click on the confirm removal button.
 	const handleConfirmRemoveModule = () => {
-		useSelect( ( select ) => dispatch( STORE_NAME ).setModuleActivation( slug, false ) );
+		// Deactivate module.
+		setModuleActivation( slug, false );
 	};
 
+	// Find modules that depend on a module.
+	const getDependentModules = () => {
+		const dependentModules = {};
+
+		if ( dependents ) {
+			dependents.forEach( ( dependentSlug ) => {
+				if ( modules[ dependentSlug ] ) {
+					dependentModules[ dependentSlug ] = modules[ dependentSlug ];
+				}
+			} );
+		}
+
+		return dependentModules;
+	};
+
+	// Register listener for closing modal with Esc.
 	useEffect( () => {
 		global.addEventListener( 'keyup', handleCloseModal, false );
 		return () => {
@@ -76,27 +97,55 @@ const ModuleSettings = ( { slug, children } ) => {
 		};
 	}, [] );
 
+	/* translators: %s: module name */
+	const subtitle = sprintf( __( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ), name );
+	const dependentModules = map( getDependentModules(), 'name' ).join( ', ' );
+	const { dialogActive } = state;
+
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-settings-module',
 				'googlesitekit-settings-module--active',
 				`googlesitekit-settings-module--${ slug }`,
-				{ 'googlesitekit-settings-module--error': error && editActive && isEditing }
+				{ 'googlesitekit-settings-module--error': error && isEditing }
 			) }
 			key={ slug }
 		>
 			{ children }
+			<Dialog
+				dialogActive={ dialogActive }
+				handleDialog={ handleDialog }
+				/* translators: %s: module name */
+				title={ sprintf( __( 'Disconnect %s from Site Kit?', 'google-site-kit' ), name ) }
+				subtitle={ subtitle }
+				onKeyPress={ handleCloseModal }
+				provides={ provides }
+				handleConfirm={ handleConfirmRemoveModule }
+				dependentModules={ dependentModules
+					? sprintf(
+						/* translators: %s: module name */
+						__( 'these active modules depend on %s and will also be disconnected: ', 'google-site-kit' ),
+						name
+					) + dependentModules : false
+				}
+				danger
+			/>
 		</div>
 	);
 };
 
 ModuleSettings.propTypes = {
+	provides: PropTypes.arrayOf( PropTypes.string ),
 	slug: PropTypes.string.isRequired,
 	children: PropTypes.oneOfType( [
 		PropTypes.arrayOf( PropTypes.node ),
 		PropTypes.node,
 	] ).isRequired,
+};
+
+ModuleSettings.defaultProps = {
+	provides: [],
 };
 
 export default ModuleSettings;
