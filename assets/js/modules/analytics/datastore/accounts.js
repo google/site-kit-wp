@@ -23,11 +23,6 @@ import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
- * WordPress dependencies
- */
-import { addQueryArgs } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -350,18 +345,13 @@ const baseSelectors = {
 	getAccountTicketTermsOfServiceURL: createRegistrySelector( ( select ) => ( state ) => {
 		const { accountTicketID } = state;
 		const email = select( CORE_USER ).getEmail();
+		const tosURL = select( STORE_NAME ).getServiceURL( { path: `/termsofservice/${ accountTicketID }`, query: { provisioningSignup: 'false' } } );
 
-		if ( undefined === accountTicketID || ! email ) {
+		if ( undefined === accountTicketID || ! email || ! tosURL ) {
 			return undefined;
 		}
 
-		return addQueryArgs(
-			'https://analytics.google.com/analytics/web/',
-			{
-				authuser: email,
-				provisioningSignup: 'false',
-			}
-		) + `#/termsofservice/${ accountTicketID }`;
+		return tosURL;
 	} ),
 
 	/**
