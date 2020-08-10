@@ -61,8 +61,8 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state                  Data store's state.
-	 * @param {(string|undefined)} [siteURL] The initial site URL to create the account for
+	 * @param {Object}  state     Data store's state.
+	 * @param {string} [siteURL]  The initial site URL to create the account for
 	 * @return {string} AdSense URL to create a new account.
 	 */
 	getCreateAccountURL( state, siteURL ) {
@@ -91,8 +91,7 @@ export const selectors = {
 		if ( accountID === undefined ) {
 			return undefined;
 		}
-		const accountURL = select( STORE_NAME ).getServiceURL( { path: `${ accountID }/home`, query: { source: 'site-kit' } } );
-		return accountURL;
+		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/home`, query: { source: 'site-kit' } } );
 	} ),
 
 	/**
@@ -100,8 +99,8 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state                  Data store's state.
-	 * @param {(string|undefined)} [siteURL] The initial site URL to create the account for
+	 * @param {Object}  state     Data store's state.
+	 * @param {string} [siteURL]  The initial site URL to create the account for
 	 * @return {string} AdSense account site overview URL.
 	 */
 	getAccountSiteURL: createRegistrySelector( ( select ) => ( state, siteURL ) => {
@@ -109,12 +108,15 @@ export const selectors = {
 		if ( accountID === undefined ) {
 			return undefined;
 		}
-		const query = { source: 'site-kit' };
+		const query = {
+			// TODO: Check which of these parameters are actually required.
+			source: 'site-kit',
+			utm_source: 'site-kit',
+		};
 		if ( siteURL ) {
 			query.url = parseDomain( siteURL ) || siteURL;
 		}
-		const accountSiteURL = select( STORE_NAME ).getServiceURL( { path: `${ accountID }/sites/my-sites`, query } );
-		return accountSiteURL;
+		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/sites/my-sites`, query } );
 	} ),
 
 	/**
@@ -122,11 +124,8 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}             options           Options for generating the URL.
-	 * @param {(string|undefined)} options.accountID The AdSense account ID.
-	 * @param {(string|undefined)} options.siteURL   The site URL to link to in AdSense.
-	 * @param {(string|undefined)} options.userEmail The Google account email address. Relevant
-	 *                                               for users with multiple Google accounts.
+	 * @param {Object}  state     Data store's state.
+	 * @param {string} [siteURL]  The initial site URL to create the account for
 	 * @return {string} AdSense account site ads preview URL.
 	 */
 	getAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => ( state, siteURL ) => {
@@ -138,8 +137,7 @@ export const selectors = {
 		if ( siteURL ) {
 			query.url = parseDomain( siteURL ) || siteURL;
 		}
-		const accountSiteAdsPreviewURL = select( STORE_NAME ).getServiceURL( { path: `${ accountID }/myads/sites/preview`, query } );
-		return accountSiteAdsPreviewURL;
+		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/myads/sites/preview`, query } );
 	} ),
 };
 
