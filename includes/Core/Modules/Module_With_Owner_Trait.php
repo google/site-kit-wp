@@ -22,6 +22,14 @@ use Google\Site_Kit\Core\Storage\Owner_ID;
 trait Module_With_Owner_Trait {
 
 	/**
+	 * Owner_ID instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Owner_ID|null
+	 */
+	protected $owner;
+
+	/**
 	 * Gets an owner ID for the module.
 	 *
 	 * @since n.e.x.t
@@ -29,8 +37,11 @@ trait Module_With_Owner_Trait {
 	 * @return int Owner ID.
 	 */
 	public function get_owner_id() {
-		$owner = new Owner_ID( $this->options );
-		return $owner->get();
+		if ( is_null( $this->owner ) ) {
+			$this->owner = new Owner_ID( $this->options );
+		}
+
+		return $this->owner->get();
 	}
 
 }
