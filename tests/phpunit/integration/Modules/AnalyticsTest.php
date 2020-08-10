@@ -26,7 +26,9 @@ use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Resource_ManagementWebproperties;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_OrderBy;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
+use \ReflectionMethod;
 
 /**
  * @group Modules
@@ -58,6 +60,66 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertFalse( get_option( 'googlesitekit_analytics_adsense_linked' ) );
 		$this->assertFalse( $analytics->is_connected() );
+	}
+
+	public function test_register_template_redirect_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
+
+		$analytics = new Analytics( $context );
+		$this->force_set_property( $analytics, 'context', $mock_context );
+
+		remove_all_actions( 'template_redirect' );
+		$analytics->register();
+
+		remove_all_actions( 'amp_print_analytics' );
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'amp_post_template_footer' );
+		remove_all_actions( 'web_stories_print_analytics' );
+		remove_all_filters( 'amp_post_template_data' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_action( 'web_stories_print_analytics' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'amp_print_analytics' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
+		$this->assertTrue( has_action( 'web_stories_print_analytics' ) );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+	}
+
+	public function test_register_template_redirect_non_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
+
+		$analytics = new Analytics( $context );
+		$this->force_set_property( $analytics, 'context', $mock_context );
+
+		remove_all_actions( 'template_redirect' );
+		$analytics->register();
+
+		remove_all_actions( 'wp_enqueue_scripts' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
+
+		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
 	}
 
 	public function test_prepare_info_for_js() {
@@ -151,22 +213,6 @@ class AnalyticsTest extends TestCase {
 			),
 			$analytics->get_datapoints()
 		);
-	}
-
-	public function test_amp_data_load_analytics_component() {
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->register();
-
-		$data = array( 'amp_component_scripts' => array() );
-
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertSame( $data, $result );
-
-		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
-
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );
 	}
 
 	public function test_handle_provisioning_callback() {
@@ -325,7 +371,10 @@ class AnalyticsTest extends TestCase {
 
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->get_settings()->set( $settings );
+
+		remove_all_actions( 'template_redirect' );
 		$analytics->register();
+		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
 		// Sanity check.
@@ -459,4 +508,79 @@ class AnalyticsTest extends TestCase {
 	protected function get_module_with_settings() {
 		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
+
+	public function test_parse_reporting_orderby() {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$reflected_parse_reporting_orderby_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'parse_reporting_orderby' );
+		$reflected_parse_reporting_orderby_method->setAccessible( true );
+
+		// When there is no orderby in the request.
+		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, array() );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEmpty( $result );
+
+		// When a single order object is used.
+		$order  = array(
+			'fieldName' => 'views',
+			'sortOrder' => 'ASCENDING',
+		);
+		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, $order );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 1, count( $result ) );
+		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( 'views', $result[0]->getFieldName() );
+		$this->assertEquals( 'ASCENDING', $result[0]->getSortOrder() );
+
+		// When multiple orders are passed.
+		$orders = array(
+			array(
+				'fieldName' => 'pages',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => 'sessions',
+				'sortOrder' => 'ASCENDING',
+			),
+		);
+		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, $orders );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 2, count( $result ) );
+		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( 'pages', $result[0]->getFieldName() );
+		$this->assertEquals( 'DESCENDING', $result[0]->getSortOrder() );
+		$this->assertTrue( $result[1] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( 'sessions', $result[1]->getFieldName() );
+		$this->assertEquals( 'ASCENDING', $result[1]->getSortOrder() );
+
+		// Check that it skips invalid orders.
+		$orders = array(
+			array(
+				'fieldName' => 'views',
+				'sortOrder' => '',
+			),
+			array(
+				'fieldName' => 'pages',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => '',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => 'sessions',
+				'sortOrder' => 'ASCENDING',
+			),
+		);
+		$result = $reflected_parse_reporting_orderby_method->invoke( $analytics, $orders );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 2, count( $result ) );
+		$this->assertTrue( $result[0] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( 'pages', $result[0]->getFieldName() );
+		$this->assertEquals( 'DESCENDING', $result[0]->getSortOrder() );
+		$this->assertTrue( $result[1] instanceof Google_Service_AnalyticsReporting_OrderBy );
+		$this->assertEquals( 'sessions', $result[1]->getFieldName() );
+		$this->assertEquals( 'ASCENDING', $result[1]->getSortOrder() );
+	}
+
 }
