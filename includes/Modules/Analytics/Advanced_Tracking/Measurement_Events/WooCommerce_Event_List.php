@@ -88,11 +88,11 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function collect_wc_shop_item( $product ) {
-		$product_name = $product->get_name();
-		$product_id   = $product->get_id();
-		$item         = array();
+		$product_name    = $product->get_name();
+		$product_id      = $product->get_id();
+		$item            = array();
 		$category_string = '';
-		$category_ids = $product->get_category_ids();
+		$category_ids    = $product->get_category_ids();
 		foreach ( $category_ids as $category_id ) {
 			$category_query = get_term_by( 'id', $category_id, 'product_cat' );
 			if ( 'WP_Term' == get_class( $category_query ) ) {

@@ -74,7 +74,7 @@ final class Measurement_Event implements \JsonSerializable {
 			throw new \Exception( 'Missed configuration parameter: on' );
 		}
 		// Make this check after previous check since setting 'on' to DOMContentLoaded with no selector is valid.
-		foreach ( $valid_keys as $key  ) {
+		foreach ( $valid_keys as $key ) {
 			if ( ! array_key_exists( $key, $config ) ) {
 				throw new \Exception( 'Missed configuration parameter: ' . $key );
 			}
