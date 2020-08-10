@@ -28,12 +28,8 @@ final class NinjaForms_Event_List extends Measurement_Event_List {
 		add_filter(
 			'do_shortcode_tag',
 			function( $output, $tag, $attr ) {
-				if ( 'ninja_form' == $tag ) {
-					if ( '' !== $attr && array_key_exists( 'id', $attr ) ) {
-						$this->collect_ninja_form_shortcode( $attr['id'] );
-					} else {
-						$this->collect_ninja_form_shortcode( 'unknown' );
-					}
+				if ( 'ninja_forms' == $tag ) {
+					$this->collect_ninja_form_shortcode( $attr['id'] );
 				}
 				return $output;
 			},
@@ -58,7 +54,7 @@ final class NinjaForms_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'Ninja Forms',
 				'action'     => 'form_submit',
-				'selector'   => 'div.nf-field-container.submit-container [type="button"]',
+				'selector'   => 'div.nf-form-cont[id="nf-form-' . $id . '-cont"] div.submit-container input[value="Submit"]',
 				'on'         => 'click',
 				'metadata'   => $params,
 			)

@@ -29,11 +29,7 @@ final class CF7_Event_List extends Measurement_Event_List {
 			'do_shortcode_tag',
 			function( $output, $tag, $attr ) {
 				if ( 'contact-form-7' == $tag ) {
-					if ( '' !== $attr && array_key_exists( 'id', $attr ) ) {
-						$this->collect_cf7_shortcode( $attr['id'] );
-					} else {
-						$this->collect_cf7_shortcode( 'unknown' );
-					}
+					$this->collect_cf7_shortcode( $attr['id'] );
 				}
 				return $output;
 			},
@@ -57,7 +53,7 @@ final class CF7_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'Contact Form 7',
 				'action'     => 'form_submit',
-				'selector'   => '.wpcf7-form .wpcf7-submit',
+				'selector'   => 'div[id^="wpcf7-f' . $id . '"] ' . '.wpcf7-form .wpcf7-submit',
 				'on'         => 'click',
 				'metadata'   => $params,
 			)

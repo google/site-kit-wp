@@ -29,11 +29,7 @@ final class FormidableForms_Event_List extends Measurement_Event_List {
 			'do_shortcode_tag',
 			function( $output, $tag, $attr ) {
 				if ( 'formidable' == $tag ) {
-					if ( '' !== $attr && array_key_exists( 'id', $attr ) ) {
-						$this->collect_formidable_shortcode( $attr['id'] );
-					} else {
-						$this->collect_formidable_shortcode( 'unknown' );
-					}
+					$this->collect_formidable_shortcode( $attr['id'] );
 				}
 				return $output;
 			},
@@ -57,7 +53,7 @@ final class FormidableForms_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'Formidable Forms',
 				'action'     => 'form_submit',
-				'selector'   => '.frm_fields_container .frm_button_submit',
+				'selector'   => 'div.frm_forms[id="frm_form_' . $id . '_container"] .frm_fields_container .frm_button_submit',
 				'on'         => 'click',
 				'metadata'   => $params,
 			)
