@@ -37,6 +37,8 @@ const { useSelect } = Data;
 
 const ModuleSettingsBody = ( { allowEdit, children, slug } ) => {
 	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
+	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
+	const { setupComplete } = module;
 
 	// Separate footer child and non-footer children.
 	const childArray = Children.toArray( children );
@@ -48,8 +50,7 @@ const ModuleSettingsBody = ( { allowEdit, children, slug } ) => {
 			className={ classnames(
 				'googlesitekit-settings-module__content',
 				{ 'googlesitekit-settings-module__content--open': isOpen }
-			)
-			}
+			) }
 			id={ `googlesitekit-settings-module__content--${ slug }` }
 			role="tabpanel"
 			aria-hidden={ ! isOpen }
@@ -58,17 +59,16 @@ const ModuleSettingsBody = ( { allowEdit, children, slug } ) => {
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					{ setupComplete &&
-					<Fragment>
-						<div className={ classnames(
-							'mdc-layout-grid__cell',
-							'mdc-layout-grid__cell--span-12'
-						) }>
-							{ nonFooterChildren }
-						</div>
-					</Fragment>
+						<Fragment>
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12'
+							) }>
+								{ nonFooterChildren }
+							</div>
+						</Fragment>
 					}
-					{
-						allowEdit && ! setupComplete &&
+					{ allowEdit && ! setupComplete &&
 						<ModuleSetupIncomplete
 							slug={ slug }
 						/>

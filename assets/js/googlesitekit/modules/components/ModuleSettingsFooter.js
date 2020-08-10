@@ -20,27 +20,29 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Button from '../../../components/button';
+import Link from '../../../components/link';
+import Spinner from '../../../components/spinner';
 import SvgIcon from '../../../util/svg-icon';
-import {
-	moduleIcon,
-} from '../../../util';
 import { STORE_NAME } from '../datastore/constants';
 const { useSelect } = Data;
 
-const ModuleSettingsFooter = ( { allowEdit, provides, slug } ) => {
+const ModuleSettingsFooter = ( { allowEdit, handleDialog, handleEdit, slug } ) => {
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isEditingSettings( slug ) );
-	const { homepage, name } = module;
+	const { autoActivate, homepage, name, setupComplete } = module;
 
 	const handleEdit = ( e ) => {
 
@@ -60,12 +62,12 @@ const ModuleSettingsFooter = ( { allowEdit, provides, slug } ) => {
 		<footer className="googlesitekit-settings-module__footer">
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
-					<div className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-6-desktop
-											mdc-layout-grid__cell--span-8-tablet
-											mdc-layout-grid__cell--span-4-phone
-										">
+					<div className={ classnames(
+						'mdc-layout-grid__cell',
+						'mdc-layout-grid__cell--span-6-desktop',
+						'mdc-layout-grid__cell--span-8-tablet',
+						'mdc-layout-grid__cell--span-4-phone'
+					) } >
 						{ isEditing || isSavingModule ? (
 							<Fragment>
 								<Button
@@ -105,17 +107,17 @@ const ModuleSettingsFooter = ( { allowEdit, provides, slug } ) => {
 						) }
 					</div>
 					<div className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-6-desktop
-											mdc-layout-grid__cell--span-8-tablet
-											mdc-layout-grid__cell--span-4-phone
-											mdc-layout-grid__cell--align-middle
-											mdc-layout-grid__cell--align-right-desktop
-										">
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-6-desktop
+						mdc-layout-grid__cell--span-8-tablet
+						mdc-layout-grid__cell--span-4-phone
+						mdc-layout-grid__cell--align-middle
+						mdc-layout-grid__cell--align-right-desktop
+					">
 						{ isEditing && ! autoActivate && (
 							<Link
 								className="googlesitekit-settings-module__remove-button"
-								onClick={ this.handleDialog }
+								onClick={ handleDialog }
 								inherit
 								danger
 							>
@@ -152,9 +154,9 @@ const ModuleSettingsFooter = ( { allowEdit, provides, slug } ) => {
 };
 
 ModuleSettingsFooter.propTypes = {
-	allowEdit: PropTypes.bool,
+	handleEdit: PropTypes.func.isRequired,
 	slug: PropTypes.string.isRequired,
-
+	allowEdit: PropTypes.bool,
 };
 
 ModuleSettingsFooter.defaultProps = {

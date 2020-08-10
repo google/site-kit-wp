@@ -34,7 +34,7 @@ const DefaultModuleSettings = ( { slug } ) => {
 			<ModuleSettingsHeader slug={ slug } />
 			{ isOpen &&
 				<ModuleSettingsBody slug={ slug }>
-					<ModuleSettingsFooter slug={ slug } />
+					<ModuleSettingsFooter slug={ slug } handleDialog={ handleDialog } />
 				</ModuleSettingsBody>
 			}
 		</ModuleSettings>
