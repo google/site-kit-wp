@@ -29,14 +29,12 @@ import Data from 'googlesitekit-data';
 import Button from '../../../../components/button';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupSiteAdd() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
-	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
 	const addSiteURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteURL( siteURL ) );
 
 	const addSiteHandler = useCallback( ( event ) => {
@@ -44,7 +42,7 @@ export default function SetupSiteAdd() {
 		global.open( addSiteURL, '_blank' );
 	}, [ addSiteURL ] );
 
-	if ( ! accountID || ! siteURL || ! userEmail ) {
+	if ( ! accountID || ! siteURL || ! addSiteURL ) {
 		return null;
 	}
 
