@@ -48,7 +48,7 @@ export const selectors = {
 		if ( userEmail === undefined ) {
 			return undefined;
 		}
-		const baseURI = `https://www.google.com/adsense/new/u/${ userEmail }`;
+		const baseURI = `https://www.google.com/adsense/new/?authuser=${ userEmail }`;
 		if ( path ) {
 			const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
 			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, query );
