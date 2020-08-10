@@ -427,10 +427,10 @@ tag_partner: "site_kit"
 				};
 			case 'GET:account-url':
 				return function() {
-					$account_id   = $this->get_data( 'account-id' );
-					$current_user = wp_get_current_user();
-					if ( ! is_wp_error( $account_id ) && $account_id ) {
-						return sprintf( 'https://www.google.com/adsense/new/u/%1$s/%2$s/home', $current_user->user_email, $account_id );
+					$account_id = $this->get_data( 'account-id' );
+					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
+						$profile_email = $this->authentication->profile()->get()['email'];
+						return sprintf( 'https://www.google.com/adsense/new/u/%1$s/%2$s/home', $profile_email, $account_id );
 					}
 					return 'https://www.google.com/adsense/signup/new';
 				};
