@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -34,39 +29,14 @@ import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import Layout from '../../../../components/layout/layout';
 import PreviewTable from '../../../../components/preview-table';
 import ctaWrapper from '../../../../components/notifications/cta-wrapper';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as ADSENSE_STORE } from '../../../adsense/datastore/constants';
-import { STORE_NAME as SEARCH_CONSOLE_STORE } from '../../../search-console/datastore/constants';
+import AnalyticsAdSenseDashboardWidgetLayout from './AnalyticsAdSenseDashboardWidgetLayout';
 
 const { useSelect } = Data;
-
-const RenderLayout = ( { children } ) => {
-	const adSenseAccountID = useSelect( ( select ) => select( ADSENSE_STORE ).getAccountID() );
-	const propertyURL = useSelect( ( select ) => select( SEARCH_CONSOLE_STORE ).getPropertyID() );
-	const accountURL = useSelect( ( select ) => select( ADSENSE_STORE ).getServiceURL(
-		{
-			path: `/${ adSenseAccountID }/home`,
-			query: {
-				source: 'site-kit',
-				url: propertyURL,
-			},
-		}
-	) );
-	return (
-		<Layout
-			header
-			title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
-			headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
-			headerCtaLink={ accountURL }>
-			{ children }
-		</Layout>
-	);
-};
 
 const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
@@ -102,7 +72,7 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		},
 	];
 
-	const dataMapped = map( data[ 0 ].data.rows, ( row ) => {
+	const dataMapped = data[ 0 ].data.rows.map( ( row ) => {
 		/**
 		 * dimensions[0] = ga:pageTitle
 		 * dimensions[1] = ga:pagePath
@@ -119,7 +89,7 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		];
 	} );
 
-	const linksMapped = map( data[ 0 ].data.rows, ( row ) => {
+	const linksMapped = data[ 0 ].data.rows.map( ( row ) => {
 		const pagePath = row.dimensions[ 1 ].replace( /\//g, '~2F' );
 		return adsenseDeepLink + pagePath;
 	} );
@@ -133,11 +103,11 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 	return (
-		<RenderLayout>
+		<AnalyticsAdSenseDashboardWidgetLayout>
 			<TableOverflowContainer>
 				{ dataTable }
 			</TableOverflowContainer>
-		</RenderLayout>
+		</AnalyticsAdSenseDashboardWidgetLayout>
 	);
 };
 
@@ -156,7 +126,7 @@ const getDataError = ( data ) => {
 	if ( data.code && data.message && data.data && data.data.status ) {
 		// Specifically looking for string "badRequest"
 		if ( 'badRequest' === data.data.reason ) {
-			return <RenderLayout>{ ctaWrapper( <AdSenseLinkCTA />, false, false, true ) }</RenderLayout>;
+			return <AnalyticsAdSenseDashboardWidgetLayout>{ ctaWrapper( <AdSenseLinkCTA />, false, false, true ) }</AnalyticsAdSenseDashboardWidgetLayout>;
 		}
 
 		return data.message;
@@ -196,7 +166,7 @@ export default withData(
 			context: 'Single',
 		},
 	],
-	<RenderLayout><PreviewTable padding /></RenderLayout>,
+	<AnalyticsAdSenseDashboardWidgetLayout><PreviewTable padding /></AnalyticsAdSenseDashboardWidgetLayout>,
 	{ createGrid: true },
 	// Force isDataZero to false since it is handled within the component.
 	() => false,
