@@ -38,11 +38,27 @@ class Owner_ID extends Setting {
 	}
 
 	/**
+	 * Gets the value of the setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int Value set for the option, or registered default if not set.
+	 */
+	public function get() {
+		$owner_id = parent::get();
+		if ( false === $owner_id ) {
+			$owner_id = $this->get_default();
+		}
+
+		return $owner_id;
+	}
+
+	/**
 	 * Gets the default value.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return mixed The default value.
+	 * @return int The default value.
 	 */
 	protected function get_default() {
 		return intval( get_option( 'googlesitekit_first_admin' ) );

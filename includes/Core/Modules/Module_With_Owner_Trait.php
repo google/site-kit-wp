@@ -27,7 +27,7 @@ trait Module_With_Owner_Trait {
 	 * @since n.e.x.t
 	 * @var Owner_ID|null
 	 */
-	protected $owner;
+	protected $owner_id;
 
 	/**
 	 * Gets an owner ID for the module.
@@ -37,11 +37,11 @@ trait Module_With_Owner_Trait {
 	 * @return int Owner ID.
 	 */
 	public function get_owner_id() {
-		if ( is_null( $this->owner ) ) {
-			$this->owner = new Owner_ID( $this->options );
+		if ( is_null( $this->owner_id ) ) {
+			$this->owner_id = new Owner_ID( $this->options );
 		}
 
-		return $this->owner->get();
+		return $this->owner_id->get();
 	}
 
 }

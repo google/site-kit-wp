@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Has_Connected_Admins;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Owner_ID;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
@@ -120,6 +121,14 @@ final class Authentication {
 	protected $profile;
 
 	/**
+	 * Owner_ID instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Owner_ID
+	 */
+	protected $owner_id;
+
+	/**
 	 * Has_Connected_Admins instance.
 	 *
 	 * @since n.e.x.t
@@ -168,6 +177,7 @@ final class Authentication {
 		$this->verification_meta    = new Verification_Meta( $this->user_options );
 		$this->verification_file    = new Verification_File( $this->user_options );
 		$this->profile              = new Profile( $this->user_options );
+		$this->owner_id             = new Owner_ID( $this->options );
 		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
 	}
 
@@ -727,6 +737,7 @@ final class Authentication {
 								'resettable'         => $this->options->has( Credentials::OPTION ),
 								'setupCompleted'     => $this->is_setup_completed(),
 								'hasConnectedAdmins' => $this->has_connected_admins->get(),
+								'ownerID'            => $this->owner_id->get(),
 							);
 
 							return new WP_REST_Response( $data );
