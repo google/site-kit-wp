@@ -48,6 +48,7 @@ export default function SettingsView() {
 			path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
 		}
 	) );
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 

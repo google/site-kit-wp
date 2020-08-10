@@ -48,7 +48,7 @@ export default function AccountCreate() {
 	const createAccountHandler = useCallback( () => {
 		// Need to use window.open for this to allow for stubbing in E2E.
 		global.window.open( createAccountURL, '_blank' );
-	}, [ userEmail ] );
+	}, [ createAccountURL ] );
 
 	if ( undefined === accounts || isDoingGetAccounts || ! userEmail ) {
 		return <ProgressBar />;

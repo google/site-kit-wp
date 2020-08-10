@@ -41,6 +41,8 @@ const { useSelect } = Data;
 
 const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const { data } = props;
+	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics' } ) );
 	const headers = [
 		{
 			title: __( 'Keyword', 'google-site-kit' ),
@@ -56,10 +58,8 @@ const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 			tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
 		},
 	];
-	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const links = [];
 
-	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics' } ) );
 	const dataMapped = map( data, ( row, i ) => {
 		const query = row.keys[ 0 ];
 		links[ i ] = addQueryArgs( baseServiceURL, { query, resource_id: domain, num_of_days: 28 } );

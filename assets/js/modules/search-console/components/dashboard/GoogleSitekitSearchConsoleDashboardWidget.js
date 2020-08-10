@@ -54,6 +54,9 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	const [ error, setError ] = useState( false );
 	const [ errorObj, setErrorObject ] = useState();
 	const [ loading, setLoading ] = useState( true );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
 
 	/**
 	 * Handle data errors from the contained AdSense component(s).
@@ -132,15 +135,12 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 		} );
 	};
 
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const series = buildSeries();
 	const vAxes = buildVAxes();
 
 	// Hide AdSense data display when we don't have data.
 	const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
 	const currentDateRange = getCurrentDateRange( dateRange );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
 
 	return (
 		<Fragment>

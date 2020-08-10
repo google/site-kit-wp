@@ -36,6 +36,7 @@ const { useSelect } = Data;
 const DashboardDetailsWidgetKeywordsTable = () => {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const footerCtaLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
+
 	return (
 		<Fragment>
 			<div className="

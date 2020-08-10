@@ -43,6 +43,7 @@ const DashboardWidgetPopularKeywordsTable = ( props ) => {
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics' } ) );
 	const searchConsolePropertyMainURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: domain } } ) );
+
 	if ( ! data || ! data.length ) {
 		return null;
 	}
