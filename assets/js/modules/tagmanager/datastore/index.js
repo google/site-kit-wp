@@ -41,6 +41,7 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 		'internalContainerID',
 		'internalAMPContainerID',
 		'useSnippet',
+		'ownerID',
 	],
 } );
 

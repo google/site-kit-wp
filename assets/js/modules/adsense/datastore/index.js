@@ -48,6 +48,7 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 		'siteStatus',
 		'accountSetupComplete',
 		'siteSetupComplete',
+		'ownerID',
 	],
 	adminPage: 'googlesitekit-module-adsense',
 } );
