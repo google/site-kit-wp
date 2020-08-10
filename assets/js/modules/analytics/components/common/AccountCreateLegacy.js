@@ -41,11 +41,11 @@ export default function AccountCreateLegacy() {
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/provision/SignUp' } ) );
 
-	const createAccountHandler = async ( event ) => {
+	const createAccountHandler = useCallback( async ( event ) => {
 		event.preventDefault();
 		await trackEvent( 'analytics_setup', 'new_analytics_account' );
 		global.open( createAccountURL, '_blank' );
-	};
+	}, [ createAccountURL ] );
 
 	const { resetAccounts } = useDispatch( STORE_NAME );
 	const refetchAccountsHandler = useCallback( () => {
