@@ -28,6 +28,7 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { useExistingTagEffect } from '../../hooks';
 import SettingsForm from './SettingsForm';
 import ProgressBar from '../../../../components/progress-bar';
 import {
@@ -41,9 +42,7 @@ export default function SettingsEdit() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
@@ -51,17 +50,8 @@ export default function SettingsEdit() {
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
-	// Set the accountID and property if there is an existing tag.
-	// This only applies to the edit view, so we apply it here rather than in the datastore.
-	// These selections will be rolled back by the above hook if the user exits the edit view.
-	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
-	useEffect( () => {
-		if ( hasExistingTag && existingTagPermission ) {
-			const { accountID: existingTagAccountID } = existingTagPermission;
-			setAccountID( existingTagAccountID );
-			selectProperty( existingTag );
-		}
-	}, [ hasExistingTag, existingTag, existingTagPermission ] );
+	// Set the accountID and containerID if there is an existing tag.
+	useExistingTagEffect();
 
 	// Toggle disabled state of legacy confirm changes button.
 	useEffect( () => {

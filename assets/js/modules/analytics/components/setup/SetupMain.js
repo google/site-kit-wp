@@ -36,35 +36,33 @@ import ProgressBar from '../../../../components/progress-bar';
 import { SvgIcon, trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as GTM_STORE_NAME } from '../../../tagmanager/datastore/constants';
+import { useExistingTagEffect } from '../../hooks';
 import {
 	AccountCreate,
 	AccountCreateLegacy,
+	ExistingGTMPropertyNotice,
+	ExistingGTMPropertyError,
 	ExistingTagError,
 } from '../common';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
-	// Set the accountID and property if there is an existing tag.
-	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
-	useEffect( () => {
-		if ( hasExistingTag && existingTagPermission ) {
-			const { accountID: existingTagAccountID } = existingTagPermission;
-			setAccountID( existingTagAccountID );
-			selectProperty( existingTag );
-		}
-	}, [ hasExistingTag, existingTag, existingTagPermission ] );
+	// TODO logic for displaying <ExistingGTMPropertyNotice/>
+	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( GTM_STORE_NAME ).gtmAnalyticsPropertyID() );
+
+	// Set the accountID and containerID if there is an existing tag.
+	useExistingTagEffect();
 
 	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
 	const [ isNavigating, setIsNavigating ] = useState( false );
