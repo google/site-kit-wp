@@ -134,10 +134,17 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function collect_wc_single_item( $product ) {
-		$product_name     = $product->get_name();
-		$item             = array();
-		$category_id      = $product->get_category_ids()[0];
-		$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
+		$product_name    = $product->get_name();
+		$item            = array();
+		$category_string = '';
+		$category_ids    = $product->get_category_ids();
+		foreach ( $category_ids as $category_id ) {
+			$category_query = get_term_by( 'id', $category_id, 'product_cat' );
+			if ( 'WP_Term' == get_class( $category_query ) ) {
+				$category_string .= $category_query->name . '/';
+			}
+		}
+		$item['category'] = substr( $category_string, 0, strlen( $category_string ) - 1 );
 		$item['id']       = $product->get_sku();
 		$item['name']     = $product_name;
 		$item['price']    = $product->get_price();
@@ -225,11 +232,18 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function collect_wc_cart_item( $product, $quantity ) {
-		$product_name     = $product->get_name();
-		$product_id       = $product->get_id();
-		$item             = array();
-		$category_id      = $product->get_category_ids()[0];
-		$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
+		$product_name    = $product->get_name();
+		$product_id      = $product->get_id();
+		$item            = array();
+		$category_string = '';
+		$category_ids    = $product->get_category_ids();
+		foreach ( $category_ids as $category_id ) {
+			$category_query = get_term_by( 'id', $category_id, 'product_cat' );
+			if ( 'WP_Term' == get_class( $category_query ) ) {
+				$category_string .= $category_query->name . '/';
+			}
+		}
+		$item['category'] = substr( $category_string, 0, strlen( $category_string ) - 1 );
 		$item['id']       = $product->get_sku();
 		$item['name']     = $product_name;
 		$item['price']    = $product->get_price();
@@ -265,10 +279,17 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 	private function create_wc_checkout_event( $cart ) {
 		$items = array();
 		foreach ( $cart->get_cart() as $cart_item ) {
-			$product          = $cart_item['data'];
-			$item             = array();
-			$category_id      = $product->get_category_ids()[0];
-			$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
+			$product         = $cart_item['data'];
+			$item            = array();
+			$category_string = '';
+			$category_ids    = $product->get_category_ids();
+			foreach ( $category_ids as $category_id ) {
+				$category_query = get_term_by( 'id', $category_id, 'product_cat' );
+				if ( 'WP_Term' == get_class( $category_query ) ) {
+					$category_string .= $category_query->name . '/';
+				}
+			}
+			$item['category'] = substr( $category_string, 0, strlen( $category_string ) - 1 );
 			$item['id']       = $product->get_sku();
 			$item['name']     = $product->get_name();
 			$item['price']    = $product->get_price();
@@ -304,10 +325,17 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 		$items       = array();
 		$order_items = $order->get_items( apply_filters( 'woocommerce_purchase_order_item_types', 'line_item' ) );
 		foreach ( $order_items as $item_id => $item ) {
-			$product                   = $item->get_product();
-			$purchase_item             = array();
-			$category_id               = $product->get_category_ids()[0];
-			$purchase_item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
+			$product         = $item->get_product();
+			$purchase_item   = array();
+			$category_string = '';
+			$category_ids    = $product->get_category_ids();
+			foreach ( $category_ids as $category_id ) {
+				$category_query = get_term_by( 'id', $category_id, 'product_cat' );
+				if ( 'WP_Term' == get_class( $category_query ) ) {
+					$category_string .= $category_query->name . '/';
+				}
+			}
+			$item['category']          = substr( $category_string, 0, strlen( $category_string ) - 1 );
 			$purchase_item['id']       = $product->get_sku();
 			$purchase_item['name']     = $product->get_name();
 			$purchase_item['price']    = $product->get_price();
