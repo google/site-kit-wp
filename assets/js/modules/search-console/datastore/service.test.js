@@ -35,7 +35,7 @@ import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/c
 describe( 'module/search-console service store', () => {
 	const userData = {
 		id: 1,
-		email: 'admin@fakedomain.com',
+		email: 'admin@example.com',
 		name: 'admin',
 		picture: 'https://path/to/image',
 	};
@@ -43,12 +43,12 @@ describe( 'module/search-console service store', () => {
 
 	let registry;
 
-	beforeAll( async () => {
+	beforeAll( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
 	} );
 
-	afterAll( async () => {
+	afterAll( () => {
 		unsubscribeFromAll( registry );
 	} );
 

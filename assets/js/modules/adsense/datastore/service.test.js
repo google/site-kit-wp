@@ -30,7 +30,7 @@ import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/c
 describe( 'module/adsense service store', () => {
 	const userData = {
 		id: 1,
-		email: 'admin@fakedomain.com',
+		email: 'admin@example.com',
 		name: 'admin',
 		picture: 'https://path/to/image',
 	};
@@ -38,12 +38,12 @@ describe( 'module/adsense service store', () => {
 
 	let registry;
 
-	beforeAll( async () => {
+	beforeAll( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
 	} );
 
-	afterAll( async () => {
+	afterAll( () => {
 		unsubscribeFromAll( registry );
 	} );
 
@@ -54,7 +54,7 @@ describe( 'module/adsense service store', () => {
 				expect( serviceURL ).toBe( `${ baseURI }${ userData.email }` );
 			} );
 
-			it( 'adds forward slashes around the path', () => {
+			it( 'prepends a forward slash to to the path if missing', () => {
 				const expectedURL = `${ baseURI }${ userData.email }/test/path/to/deeplink`;
 
 				const serviceURLNoSlashes = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink' } );
