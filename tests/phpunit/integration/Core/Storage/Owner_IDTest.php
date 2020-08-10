@@ -43,7 +43,7 @@ class Owner_IDTest extends TestCase {
 	 * Test get() method.
 	 */
 	public function test_get() {
-		$this->assertFalse( $this->owner_id->get() );
+		$this->assertEquals( 0, $this->owner_id->get() );
 
 		$this->owner_id->set( 1 );
 		$this->assertEquals( 1, $this->owner_id->get() );

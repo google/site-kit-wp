@@ -50,7 +50,7 @@ class Owner_ID extends Setting {
 			$owner_id = $this->get_default();
 		}
 
-		return $owner_id;
+		return intval( $owner_id );
 	}
 
 	/**
