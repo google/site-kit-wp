@@ -91,9 +91,15 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 		$product_name = $product->get_name();
 		$product_id   = $product->get_id();
 		$item         = array();
-		// TODO: Figure out more robust way to collect product category.
-		$category_id      = $product->get_category_ids()[0];
-		$item['category'] = get_term_by( 'id', $category_id, 'product_cat' )->name;
+		$category_string = '';
+		$category_ids = $product->get_category_ids();
+		foreach ( $category_ids as $category_id ) {
+			$category_query = get_term_by( 'id', $category_id, 'product_cat' );
+			if ( 'WP_Term' == get_class( $category_query ) ) {
+				$category_string .= $category_query->name . '/';
+			}
+		}
+		$item['category'] = substr( $category_string, 0, strlen( $category_string ) - 1 );
 		$item['id']       = $product->get_sku();
 		$item['name']     = $product_name;
 		$item['price']    = $product->get_price();
@@ -148,7 +154,7 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'WooCommerce',
 				'action'     => 'add_to_cart',
-				'selector'   => '.woocommerce-page .single_add_to_cart_button',
+				'selector'   => '.woocommerce-page .single_add_to_cart_button[value="' . $product->get_id() . '"]',
 				'on'         => 'click',
 				'metadata'   => $add_to_cart_meta,
 			)
@@ -165,7 +171,6 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'WooCommerce',
 				'action'     => 'view_item',
-				'selector'   => '',
 				'on'         => 'DOMContentLoaded',
 				'metadata'   => $view_item_meta,
 			)
@@ -190,7 +195,6 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'WooCoomerce',
 				'action'     => 'view_cart',
-				'selector'   => '',
 				'on'         => 'DOMContentLoaded',
 				'metadata'   => $view_cart_meta,
 			)
@@ -281,7 +285,6 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'WooCommerce',
 				'action'     => 'begin_checkout',
-				'selector'   => '',
 				'on'         => 'DOMContentLoaded',
 				'metadata'   => $checkout_meta,
 			)
@@ -327,7 +330,6 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 			array(
 				'pluginName' => 'WooCommerce',
 				'action'     => 'purchase',
-				'selector'   => '',
 				'on'         => 'DOMContentLoaded',
 				'metadata'   => $purchase_meta,
 			)
