@@ -72,7 +72,7 @@ export function isValidAccountSelection( value ) {
  * @return {boolean} Whether or not the given container ID is valid.
  */
 export function isValidContainerID( containerID ) {
-	return !! containerID?.toString?.()?.match?.( /^GTM-[A-Z0-9]+$/ );
+	return typeof containerID === 'string' && /^GTM-[A-Z0-9]+$/.test( containerID );
 }
 
 /**
