@@ -25,7 +25,7 @@ export default function createTrackEvent( config, dataLayerTarget ) {
 	 */
 	return async function trackEvent( eventCategory, eventName, eventLabel = '', eventValue = '' ) {
 		const {
-			isFirstAdmin,
+			isOwner,
 			referenceSiteURL,
 			trackingEnabled,
 			trackingID,
@@ -43,7 +43,7 @@ export default function createTrackEvent( config, dataLayerTarget ) {
 			event_label: eventLabel,
 			event_value: eventValue,
 			dimension1: referenceSiteURL,
-			dimension2: isFirstAdmin ? 'true' : 'false',
+			dimension2: isOwner ? 'true' : 'false',
 			dimension3: userIDHash,
 		};
 

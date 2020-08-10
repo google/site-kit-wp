@@ -22,7 +22,7 @@
 import createTracking from './createTracking';
 
 const {
-	isFirstAdmin,
+	isOwner,
 	trackingAllowed,
 	trackingEnabled,
 	trackingID,
@@ -31,7 +31,7 @@ const {
 } = global._googlesitekitBaseData || {};
 
 const initialConfig = {
-	isFirstAdmin,
+	isOwner,
 	trackingEnabled,
 	trackingID,
 	referenceSiteURL,
