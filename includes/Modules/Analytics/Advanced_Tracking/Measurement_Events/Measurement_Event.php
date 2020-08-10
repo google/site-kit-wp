@@ -52,21 +52,29 @@ final class Measurement_Event implements \JsonSerializable {
 	 */
 	private function validate_config( $config ) {
 		$valid_keys = array(
-			'pluginName' => false,
-			'action'     => false,
-			'selector'   => false,
-			'on'         => false,
-			'metadata'   => false,
+			'pluginName',
+			'action',
+			'selector',
+			'on',
+			'metadata',
 		);
 		foreach ( $config as $key => $value ) {
-			if ( ! array_key_exists( $key, $valid_keys ) ) {
+			if ( ! in_array( $key, $valid_keys ) ) {
 				throw new \Exception( 'Invalid configuration parameter: ' . $key );
 			}
 		}
 		if ( ! array_key_exists( 'metadata', $config ) ) {
 			$config['metadata'] = null;
 		}
-		foreach ( $valid_keys as $key => $value ) {
+		if ( array_key_exists( 'on', $config ) ) {
+			if ( 'DOMContentLoaded' == $config['on'] ) {
+				$config['selector'] = '';
+			}
+		} else {
+			throw new \Exception( 'Missed configuration parameter: on' );
+		}
+		// Make this check after previous check since setting 'on' to DOMContentLoaded with no selector is valid.
+		foreach ( $valid_keys as $key  ) {
 			if ( ! array_key_exists( $key, $config ) ) {
 				throw new \Exception( 'Missed configuration parameter: ' . $key );
 			}
