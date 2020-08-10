@@ -561,6 +561,9 @@ class OAuth_ClientTest extends TestCase {
 	public function test_get_proxy_permissions_url() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		// If no access token, this does not work.
 		$client = new OAuth_Client( $context );
 		$url    = $client->get_proxy_permissions_url();
@@ -572,6 +575,7 @@ class OAuth_ClientTest extends TestCase {
 		$url = $client->get_proxy_permissions_url();
 		$this->assertContains( 'token=test-access-token', $url );
 		$this->assertContains( 'application_name=', $url );
+		$this->assertContains( 'hl=', $url );
 
 		// If there is a site ID, it should also include that.
 		$fake_credentials = $this->fake_proxy_site_connection();
@@ -581,6 +585,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'token=test-access-token', $url );
 		$this->assertContains( 'site_id=' . $fake_credentials['client_id'], $url );
 		$this->assertContains( 'application_name=', $url );
+		$this->assertContains( 'hl=', $url );
 	}
 
 	public function test_get_error_message_unknown() {

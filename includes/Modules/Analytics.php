@@ -73,6 +73,14 @@ final class Analytics extends Module
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
 	/**
+	 * Internal flag set after print_amp_gtag is invoked for the first time.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private $did_amp_gtag = false;
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -89,38 +97,10 @@ final class Analytics extends Module
 		 */
 		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
-		add_action( // For non-AMP.
-			'wp_enqueue_scripts',
+		add_action(
+			'admin_init',
 			function() {
-				$this->enqueue_gtag_js();
-			}
-		);
-
-		$print_amp_gtag = function() {
-			// This hook is only available in AMP plugin version >=1.3, so if it
-			// has already completed, do nothing.
-			if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
-				return;
-			}
-
-			$this->print_amp_gtag();
-		};
-		// Which actions are run depends on the version of the AMP Plugin
-		// (https://amp-wp.org/) available. Version >=1.3 exposes a
-		// new, `amp_print_analytics` action.
-		// For all AMP modes, AMP plugin version >=1.3.
-		add_action( 'amp_print_analytics', $print_amp_gtag );
-		// For AMP Standard and Transitional, AMP plugin version <1.3.
-		add_action( 'wp_footer', $print_amp_gtag, 20 );
-		// For AMP Reader, AMP plugin version <1.3.
-		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
-		// For Web Stories plugin.
-		add_action( 'web_stories_print_analytics', $print_amp_gtag );
-
-		add_filter( // Load amp-analytics component for AMP Reader.
-			'amp_post_template_data',
-			function( $data ) {
-				return $this->amp_data_load_analytics_component( $data );
+				$this->handle_provisioning_callback();
 			}
 		);
 
@@ -134,10 +114,81 @@ final class Analytics extends Module
 			0
 		);
 
+		// Analytics tag placement logic.
 		add_action(
-			'admin_init',
+			'template_redirect',
 			function() {
-				$this->handle_provisioning_callback();
+				// Bail early if we are checking for the tag presence from the back end.
+				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+					return;
+				}
+
+				$use_snippet = $this->get_data( 'use-snippet' );
+				if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
+					return;
+				}
+
+				$property_id = $this->get_data( 'property-id' );
+				if ( is_wp_error( $property_id ) || ! $property_id ) {
+					return;
+				}
+
+				// At this point, we know the tag should be rendered, so let's take care of it
+				// for AMP and non-AMP.
+				if ( $this->context->is_amp() ) {
+					$print_amp_gtag = function() use ( $property_id ) {
+						$this->print_amp_gtag( $property_id );
+					};
+					// Which actions are run depends on the version of the AMP Plugin
+					// (https://amp-wp.org/) available. Version >=1.3 exposes a
+					// new, `amp_print_analytics` action.
+					// For all AMP modes, AMP plugin version >=1.3.
+					add_action( 'amp_print_analytics', $print_amp_gtag );
+					// For AMP Standard and Transitional, AMP plugin version <1.3.
+					add_action( 'wp_footer', $print_amp_gtag, 20 );
+					// For AMP Reader, AMP plugin version <1.3.
+					add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
+					// For Web Stories plugin.
+					add_action( 'web_stories_print_analytics', $print_amp_gtag );
+
+					add_filter( // Load amp-analytics component for AMP Reader.
+						'amp_post_template_data',
+						function( $data ) {
+							return $this->amp_data_load_analytics_component( $data );
+						}
+					);
+
+					/**
+					 * Fires when the Analytics tag for AMP has been initialized.
+					 *
+					 * This means that the tag will be rendered in the current request.
+					 * Site Kit uses `gtag.js` for its Analytics snippet.
+					 *
+					 * @since n.e.x.t
+					 *
+					 * @param string $property_id Analytics property ID used in the tag.
+					 */
+					do_action( 'googlesitekit_analytics_init_tag_amp', $property_id );
+				} else {
+					add_action( // For non-AMP.
+						'wp_enqueue_scripts',
+						function() use ( $property_id ) {
+							$this->enqueue_gtag_js( $property_id );
+						}
+					);
+
+					/**
+					 * Fires when the Analytics tag has been initialized.
+					 *
+					 * This means that the tag will be rendered in the current request.
+					 * Site Kit uses `gtag.js` for its Analytics snippet.
+					 *
+					 * @since n.e.x.t
+					 *
+					 * @param string $property_id Analytics property ID used in the tag.
+					 */
+					do_action( 'googlesitekit_analytics_init_tag', $property_id );
+				}
 			}
 		);
 
@@ -285,31 +336,14 @@ final class Analytics extends Module
 	 * Outputs gtag snippet.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t The `$property_id` parameter was added.
+	 *
+	 * @param string $property_id Analytics property ID to use in the snippet.
 	 */
-	protected function enqueue_gtag_js() {
-		// Bail early if we are checking for the tag presence from the back end.
-		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-			return;
-		}
-
-		// On AMP, do not print the script tag.
-		if ( $this->context->is_amp() ) {
-			return;
-		}
-
-		$use_snippet = $this->get_data( 'use-snippet' );
-		if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-			return;
-		}
-
-		$tracking_id = $this->get_data( 'property-id' );
-		if ( is_wp_error( $tracking_id ) ) {
-			return;
-		}
-
+	protected function enqueue_gtag_js( $property_id ) {
 		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			'google_gtagjs',
-			'https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $tracking_id ),
+			'https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $property_id ),
 			false,
 			null,
 			false
@@ -364,12 +398,12 @@ final class Analytics extends Module
 		if ( empty( $gtag_opt ) ) {
 			wp_add_inline_script(
 				'google_gtagjs',
-				'gtag(\'config\', \'' . esc_attr( $tracking_id ) . '\');'
+				'gtag(\'config\', \'' . esc_attr( $property_id ) . '\');'
 			);
 		} else {
 			wp_add_inline_script(
 				'google_gtagjs',
-				'gtag(\'config\', \'' . esc_attr( $tracking_id ) . '\', ' . wp_json_encode( $gtag_opt ) . ' );'
+				'gtag(\'config\', \'' . esc_attr( $property_id ) . '\', ' . wp_json_encode( $gtag_opt ) . ' );'
 			);
 		}
 	}
@@ -378,32 +412,22 @@ final class Analytics extends Module
 	 * Outputs gtag <amp-analytics> tag.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t The `$property_id` parameter was added.
+	 *
+	 * @param string $property_id Analytics property ID to use in the snippet.
 	 */
-	protected function print_amp_gtag() {
-		// Bail early if we are checking for the tag presence from the back end.
-		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+	protected function print_amp_gtag( $property_id ) {
+		if ( $this->did_amp_gtag ) {
 			return;
 		}
 
-		if ( ! $this->context->is_amp() ) {
-			return;
-		}
-
-		$use_snippet = $this->get_data( 'use-snippet' );
-		if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-			return;
-		}
-
-		$tracking_id = $this->get_data( 'property-id' );
-		if ( is_wp_error( $tracking_id ) ) {
-			return;
-		}
+		$this->did_amp_gtag = true;
 
 		$gtag_amp_opt = array(
 			'vars'            => array(
-				'gtag_id' => $tracking_id,
+				'gtag_id' => $property_id,
 				'config'  => array(
-					$tracking_id => array(
+					$property_id => array(
 						'groups' => 'default',
 						'linker' => array(
 							'domains' => array( $this->get_home_domain() ),
@@ -436,7 +460,7 @@ final class Analytics extends Module
 			$gtag_amp_opt_filtered['vars'] = $gtag_amp_opt['vars'];
 		}
 
-		$gtag_amp_opt_filtered['vars']['gtag_id'] = $tracking_id;
+		$gtag_amp_opt_filtered['vars']['gtag_id'] = $property_id;
 		?>
 		<amp-analytics type="gtag" data-credentials="include">
 			<script type="application/json">
@@ -458,16 +482,6 @@ final class Analytics extends Module
 	 */
 	protected function amp_data_load_analytics_component( $data ) {
 		if ( isset( $data['amp_component_scripts']['amp-analytics'] ) ) {
-			return $data;
-		}
-
-		$use_snippet = $this->get_data( 'use-snippet' );
-		if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-			return $data;
-		}
-
-		$tracking_id = $this->get_data( 'property-id' );
-		if ( is_wp_error( $tracking_id ) ) {
 			return $data;
 		}
 
@@ -857,23 +871,51 @@ final class Analytics extends Module
 					return true;
 				};
 			case 'GET:report':
-				$date_range = $data['dateRange'] ?: 'last-28-days';
+				$request_args = array();
 
-				$dimensions = array_map(
-					function ( $name ) {
-						$dimension = new Google_Service_AnalyticsReporting_Dimension();
-						$dimension->setName( $name );
+				if ( empty( $data['metrics'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ), array( 'status' => 400 ) );
+				}
 
-						return $dimension;
-					},
-					array_filter( explode( ',', $data['dimensions'] ) )
-				);
-
-				$request_args         = compact( 'dimensions' );
-				$request_args['page'] = $data['url'];
+				if ( ! empty( $data['url'] ) ) {
+					$request_args['page'] = $data['url'];
+				}
 
 				if ( ! empty( $data['limit'] ) ) {
 					$request_args['row_limit'] = $data['limit'];
+				}
+
+				$dimensions = $data['dimensions'];
+				if ( ! empty( $dimensions ) && ( is_string( $dimensions ) || is_array( $dimensions ) ) ) {
+					if ( is_string( $dimensions ) ) {
+						$dimensions = explode( ',', $dimensions );
+					} elseif ( is_array( $dimensions ) && ! wp_is_numeric_array( $dimensions ) ) { // If single object is passed.
+						$dimensions = array( $dimensions );
+					}
+
+					$dimensions = array_filter(
+						array_map(
+							function ( $dimension_def ) {
+								$dimension = new Google_Service_AnalyticsReporting_Dimension();
+
+								if ( is_string( $dimension_def ) ) {
+									$dimension->setName( $dimension_def );
+								} elseif ( is_array( $dimension_def ) && ! empty( $dimension_def['name'] ) ) {
+									$dimension->setName( $dimension_def['name'] );
+								} else {
+									return null;
+								}
+
+								return $dimension;
+							},
+							array_filter( $dimensions )
+						)
+					);
+
+					if ( ! empty( $dimensions ) ) {
+						$request_args['dimensions'] = $dimensions;
+					}
 				}
 
 				$request = $this->create_analytics_site_data_request( $request_args );
@@ -882,17 +924,20 @@ final class Analytics extends Module
 					return $request;
 				}
 
-				$date_ranges = array(
-					$this->parse_date_range(
-						$date_range,
-						$data['compareDateRanges'] ? 2 : 1
-					),
-				);
+				$date_ranges = array();
+				$start_date  = $data['startDate'];
+				$end_date    = $data['endDate'];
+				if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
+					$date_ranges[] = array( $start_date, $end_date );
+				} else {
+					$date_range    = $data['dateRange'] ?: 'last-28-days';
+					$date_ranges[] = $this->parse_date_range( $date_range, $data['compareDateRanges'] ? 2 : 1 );
 
-				// When using multiple date ranges, it changes the structure of the response,
-				// where each date range becomes an item in a list.
-				if ( ! empty( $data['multiDateRange'] ) ) {
-					$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
+					// When using multiple date ranges, it changes the structure of the response,
+					// where each date range becomes an item in a list.
+					if ( ! empty( $data['multiDateRange'] ) ) {
+						$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
+					}
 				}
 
 				$date_ranges = array_map(
@@ -908,44 +953,45 @@ final class Analytics extends Module
 				);
 				$request->setDateRanges( $date_ranges );
 
-				$metrics = array_map(
-					function ( $metric_def ) {
-						$metric_def = array_merge(
-							array(
-								'alias'      => '',
-								'expression' => '',
-							),
-							(array) $metric_def
-						);
-						$metric     = new Google_Service_AnalyticsReporting_Metric();
-						$metric->setAlias( $metric_def['alias'] );
-						$metric->setExpression( $metric_def['expression'] );
+				$metrics = $data['metrics'];
+				if ( is_string( $metrics ) || is_array( $metrics ) ) {
+					if ( is_string( $metrics ) ) {
+						$metrics = explode( ',', $data['metrics'] );
+					} elseif ( is_array( $metrics ) && ! wp_is_numeric_array( $metrics ) ) { // If single object is passed.
+						$metrics = array( $metrics );
+					}
 
-						return $metric;
-					},
-					(array) $data['metrics']
-				);
-				$request->setMetrics( $metrics );
+					$metrics = array_filter(
+						array_map(
+							function ( $metric_def ) {
+								$metric = new Google_Service_AnalyticsReporting_Metric();
+
+								if ( is_string( $metric_def ) ) {
+									$metric->setAlias( $metric_def );
+									$metric->setExpression( $metric_def );
+								} elseif ( is_array( $metric_def ) && ! empty( $metric_def['expression'] ) ) {
+									$metric->setExpression( $metric_def['expression'] );
+									$metric->setAlias( ! empty( $metric_def['alias'] ) ? $metric_def['alias'] : $metric_def['expression'] );
+								} else {
+									return null;
+								}
+
+								return $metric;
+							},
+							array_filter( $metrics )
+						)
+					);
+
+					if ( ! empty( $metrics ) ) {
+						$request->setMetrics( $metrics );
+					}
+				}
 
 				// Order by.
-				$orderby = array_map(
-					function ( $order_def ) {
-						$order_def = array_merge(
-							array(
-								'fieldName' => '',
-								'sortOrder' => '',
-							),
-							(array) $order_def
-						);
-						$order_by  = new Google_Service_AnalyticsReporting_OrderBy();
-						$order_by->setFieldName( $order_def['fieldName'] );
-						$order_by->setSortOrder( $order_def['sortOrder'] );
-
-						return $order_by;
-					},
-					(array) $data['orderby']
-				);
-				$request->setOrderBys( $orderby );
+				$orderby = $this->parse_reporting_orderby( $data['orderby'] );
+				if ( ! empty( $orderby ) ) {
+					$request->setOrderBys( $orderby );
+				}
 
 				// Batch reports requests.
 				$body = new Google_Service_AnalyticsReporting_GetReportsRequest();
@@ -1008,7 +1054,7 @@ final class Analytics extends Module
 						$this->has_access_to_property( $property_id )
 					);
 				};
-			case 'GET:tracking-disabled': 
+			case 'GET:tracking-disabled':
 				return function() {
 					$option = $this->get_settings()->get();
 
@@ -1031,6 +1077,49 @@ final class Analytics extends Module
 		}
 
 		throw new Invalid_Datapoint_Exception();
+	}
+
+	/**
+	 * Parses the orderby value of the data request into an array of reporting orderby object instances.
+	 *
+	 * @since 1.13.1
+	 *
+	 * @param array|null $orderby Data request orderby value.
+	 * @return Google_Service_AnalyticsReporting_OrderBy[] An array of reporting orderby objects.
+	 */
+	protected function parse_reporting_orderby( $orderby ) {
+		if ( empty( $orderby ) || ! is_array( $orderby ) ) {
+			return array();
+		}
+
+		$results = array_map(
+			function ( $order_def ) {
+				$order_def = array_merge(
+					array(
+						'fieldName' => '',
+						'sortOrder' => '',
+					),
+					(array) $order_def
+				);
+
+				if ( empty( $order_def['fieldName'] ) || empty( $order_def['sortOrder'] ) ) {
+					return null;
+				}
+
+				$order_by = new Google_Service_AnalyticsReporting_OrderBy();
+				$order_by->setFieldName( $order_def['fieldName'] );
+				$order_by->setSortOrder( $order_def['sortOrder'] );
+
+				return $order_by;
+			},
+			// When just object is passed we need to convert it to an array of objects.
+			wp_is_numeric_array( $orderby ) ? $orderby : array( $orderby )
+		);
+
+		$results = array_filter( $results );
+		$results = array_values( $results );
+
+		return $results;
 	}
 
 	/**
@@ -1376,7 +1465,7 @@ final class Analytics extends Module
 				);
 			}
 		}
-	
+
 		// No property matched the account ID.
 		return array(
 			'permission' => false,
