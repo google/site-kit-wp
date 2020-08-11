@@ -28,21 +28,19 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/button';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
 import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupSiteAdd() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
-	const addSiteURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteURL( siteURL ) );
+	const addSiteURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteURL() );
 
 	const addSiteHandler = useCallback( ( event ) => {
 		event.preventDefault();
 		global.open( addSiteURL, '_blank' );
 	}, [ addSiteURL ] );
 
-	if ( ! accountID || ! siteURL || ! addSiteURL ) {
+	if ( ! accountID || ! addSiteURL ) {
 		return null;
 	}
 

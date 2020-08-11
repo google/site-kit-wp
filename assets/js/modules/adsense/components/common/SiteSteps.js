@@ -28,14 +28,14 @@ import Data from 'googlesitekit-data';
 import Link from '../../../../components/link';
 import ProgressBar from '../../../../components/progress-bar';
 import { STORE_NAME } from '../../datastore';
-import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function SiteSteps() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
+	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	// Site status is only displayed in sites list view, so do not pass siteURL here.
-	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteURL() );
+	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSitesURL() );
 	const enableAutoAdsURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteAdsPreviewURL( siteURL ) );
 
 	if ( ! accountID || ! siteURL || ! siteStatusURL || ! enableAutoAdsURL ) {

@@ -28,15 +28,13 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/link';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
 import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountPending() {
-	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
-	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteURL( siteURL ) );
+	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteURL() );
 
-	if ( ! siteURL || ! accountSiteURL ) {
+	if ( ! accountSiteURL ) {
 		return null;
 	}
 

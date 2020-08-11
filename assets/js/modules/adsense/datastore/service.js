@@ -27,6 +27,7 @@ import { addQueryArgs } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { parseDomain } from '../util/url';
 
 const { createRegistrySelector } = Data;
@@ -48,12 +49,13 @@ export const selectors = {
 		if ( userEmail === undefined ) {
 			return undefined;
 		}
-		const baseURI = `https://www.google.com/adsense/new/?authuser=${ userEmail }`;
+
+		const baseURI = 'https://www.google.com/adsense/new/';
 		if ( path ) {
 			const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, query );
+			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, { authuser: userEmail, ...query } );
 		}
-		return addQueryArgs( baseURI, query );
+		return addQueryArgs( baseURI, { authuser: userEmail, ...query } );
 	} ),
 
 	/**
@@ -61,23 +63,22 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}  state     Data store's state.
-	 * @param {string} [siteURL]  The initial site URL to create the account for
 	 * @return {string} AdSense URL to create a new account.
 	 */
-	getCreateAccountURL( state, siteURL ) {
+	getCreateAccountURL: createRegistrySelector( ( select ) => () => {
 		const query = {
 			// TODO: Check which of these parameters are actually required.
 			source: 'site-kit',
 			utm_source: 'site-kit',
 			utm_medium: 'wordpress_signup',
 		};
-		if ( siteURL ) {
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+		if ( undefined !== siteURL ) {
 			query.url = siteURL;
 		}
 		const baseURI = `https://www.google.com/adsense/signup/new`;
 		return addQueryArgs( baseURI, query );
-	},
+	} ),
 
 	/**
 	 * Returns the URL to an AdSense account's overview page.
@@ -88,6 +89,7 @@ export const selectors = {
 	 */
 	getAccountURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
+
 		if ( accountID === undefined ) {
 			return undefined;
 		}
@@ -99,23 +101,44 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}  state     Data store's state.
-	 * @param {string} [siteURL]  The initial site URL to create the account for
 	 * @return {string} AdSense account site overview URL.
 	 */
-	getAccountSiteURL: createRegistrySelector( ( select ) => ( state, siteURL ) => {
+	getAccountSiteURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+
+		if ( accountID === undefined || siteURL === undefined ) {
+			return undefined;
+		}
+
+		const query = {
+			// TODO: Check which of these parameters are actually required.
+			source: 'site-kit',
+			utm_source: 'site-kit',
+			url: parseDomain( siteURL ) || siteURL,
+		};
+		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/sites/my-sites`, query } );
+	} ),
+
+	/**
+	 * Returns the URL to the AdSense site list overview
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} AdSense account site list overview URL.
+	 */
+	getAccountSitesURL: createRegistrySelector( ( select ) => ( ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+
 		if ( accountID === undefined ) {
 			return undefined;
 		}
+
 		const query = {
 			// TODO: Check which of these parameters are actually required.
 			source: 'site-kit',
 			utm_source: 'site-kit',
 		};
-		if ( siteURL ) {
-			query.url = parseDomain( siteURL ) || siteURL;
-		}
 		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/sites/my-sites`, query } );
 	} ),
 
@@ -124,19 +147,20 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}  state     Data store's state.
-	 * @param {string} [siteURL]  The initial site URL to create the account for
 	 * @return {string} AdSense account site ads preview URL.
 	 */
-	getAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => ( state, siteURL ) => {
+	getAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => ( ) => {
 		const accountID = select( STORE_NAME ).getAccountID();
-		if ( accountID === undefined ) {
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+
+		if ( accountID === undefined || siteURL === undefined ) {
 			return undefined;
 		}
-		const query = { source: 'site-kit' };
-		if ( siteURL ) {
-			query.url = parseDomain( siteURL ) || siteURL;
-		}
+
+		const query = {
+			source: 'site-kit',
+			url: parseDomain( siteURL ) || siteURL,
+		};
 		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/myads/sites/preview`, query } );
 	} ),
 };
