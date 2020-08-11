@@ -59,7 +59,7 @@ final class Measurement_Event implements \JsonSerializable {
 			'metadata',
 		);
 		foreach ( $config as $key => $value ) {
-			if ( ! in_array( $key, $valid_keys ) ) {
+			if ( ! in_array( $key, $valid_keys, true ) ) {
 				throw new \Exception( 'Invalid configuration parameter: ' . $key );
 			}
 		}
