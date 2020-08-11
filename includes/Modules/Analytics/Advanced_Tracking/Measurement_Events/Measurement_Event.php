@@ -98,9 +98,13 @@ final class Measurement_Event implements \JsonSerializable {
 	 * @return array $amp_config The AMP configuration for this event.
 	 */
 	public function to_amp_config() {
-		$amp_config             = array();
-		$amp_config['selector'] = $this->config['selector'];
-		$amp_config['on']       = 'DOMContentLoaded' == $this->config['on'] ? 'visible' : $this->config['on'];
+		$amp_config = array();
+		if ( 'DOMContentLoaded' === $this->config['on'] ) {
+			$amp_config['on'] = 'visible';
+		} else {
+			$amp_config['on']       = $this->config['on'];
+			$amp_config['selector'] = $this->config['selector'];
+		}
 
 		$vars_config               = array();
 		$vars_config['event_name'] = $this->config['action'];
