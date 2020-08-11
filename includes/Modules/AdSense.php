@@ -437,7 +437,10 @@ tag_partner: "site_kit"
 					$account_id = $this->get_data( 'account-id' );
 					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
 						$profile_email = $this->authentication->profile()->get()['email'];
-						return sprintf( 'https://www.google.com/adsense/new/u/%1$s/%2$s/home', $profile_email, $account_id );
+						return add_query_arg(
+							array( 'authuser' => $profile_email ),
+							sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id )
+						);
 					}
 					return 'https://www.google.com/adsense/signup/new';
 				};
@@ -579,7 +582,10 @@ tag_partner: "site_kit"
 					$account_id = $this->get_data( 'account-id' );
 					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
 						$profile_email = $this->authentication->profile()->get()['email'];
-						return sprintf( 'https://www.google.com/adsense/new/u/%1$s/%2$s/main/viewreports', $profile_email, $account_id );
+						return add_query_arg(
+							array( 'authuser' => $profile_email ),
+							sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id )
+						);
 					}
 					return 'https://www.google.com/adsense/start';
 				};
