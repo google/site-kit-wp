@@ -68,7 +68,6 @@ export const selectors = {
 	 */
 	getCreateAccountURL: createRegistrySelector( ( select ) => () => {
 		const query = {
-			// TODO: Check which of these parameters are actually required.
 			source: 'site-kit',
 			utm_source: 'site-kit',
 			utm_medium: 'wordpress_signup',
@@ -77,8 +76,7 @@ export const selectors = {
 		if ( undefined !== siteURL ) {
 			query.url = siteURL;
 		}
-		const baseURI = `https://www.google.com/adsense/signup/new`;
-		return addQueryArgs( baseURI, query );
+		return addQueryArgs( 'https://www.google.com/adsense/signup/new', query );
 	} ),
 
 	/**
