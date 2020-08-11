@@ -580,11 +580,11 @@ abstract class Module {
 		$number_of_days = $multiplier * ( isset( $matches[1] ) ? $matches[1] : 28 );
 
 		// Calculate the end date. For previous period requests, offset period by the number of days in the request.
-		$offset   = $previous ? $offset + $number_of_days : $offset;
-		$date_end = gmdate( 'Y-m-d', strtotime( $offset . ' days ago' ) );
+		$end_date_offset = $previous ? $offset + $number_of_days : $offset;
+		$date_end        = gmdate( 'Y-m-d', strtotime( $end_date_offset . ' days ago' ) );
 
 		// Set the start date.
-		$start_date_offset = $offset + $number_of_days - 1;
+		$start_date_offset = $end_date_offset + $number_of_days - 1;
 		$date_start        = gmdate( 'Y-m-d', strtotime( $start_date_offset . ' days ago' ) );
 
 		// When weekday_align is true and request is for a previous period,
