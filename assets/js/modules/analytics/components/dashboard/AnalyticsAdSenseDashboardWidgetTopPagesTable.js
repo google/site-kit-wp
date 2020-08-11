@@ -44,7 +44,7 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 
 	const adsenseDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:~2F` }
+		{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=[]&_r.drilldown=analytics.pagePath:~2F` }
 	) );
 	// Do not return zero data callout here since it will already be
 	// present on the page from other sources.
@@ -91,7 +91,7 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 
 	const linksMapped = data[ 0 ].data.rows.map( ( row ) => {
 		const pagePath = row.dimensions[ 1 ].replace( /\//g, '~2F' );
-		return adsenseDeepLink + pagePath;
+		return encodeURI( adsenseDeepLink + pagePath );
 	} );
 
 	const options = {
