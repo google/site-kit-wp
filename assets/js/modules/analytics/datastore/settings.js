@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
 import { TYPE_MODULES } from '../../../components/data/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
 	isValidAccountID,
@@ -154,6 +155,7 @@ export const selectors = {
 			getProfileID,
 			getPropertyID,
 			hasExistingTagPermission,
+			hasTagPermission,
 			haveSettingsChanged,
 			isDoingSubmitChanges,
 		} = select( STORE_NAME );
@@ -171,6 +173,10 @@ export const selectors = {
 			return false;
 		}
 		if ( ! isValidProfileSelection( getProfileID() ) ) {
+			return false;
+		}
+		const gtmAnalyticsPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+		if ( isValidPropertyID( gtmAnalyticsPropertyID ) && hasTagPermission( gtmAnalyticsPropertyID ) === false ) {
 			return false;
 		}
 		const { getValue } = select( CORE_FORMS );
