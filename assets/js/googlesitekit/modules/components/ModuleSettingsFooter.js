@@ -42,7 +42,7 @@ import { STORE_NAME } from '../datastore/constants';
 const { useDispatch, useSelect } = Data;
 
 const ModuleSettingsFooter = ( { allowEdit, handleDialog, slug } ) => {
-	const { setSettingsDisplayMode } = useDispatch( ( dispatch ) => dispatch( STORE_NAME ) );
+	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isEditingSettings( slug ) );
 	const isSavingModuleSettings = useSelect( ( select ) => select( STORE_NAME ).isSavingSettings( slug ) );
@@ -101,7 +101,9 @@ const ModuleSettingsFooter = ( { allowEdit, handleDialog, slug } ) => {
 						{ isEditing || isSavingModuleSettings ? (
 							<Fragment>
 								<Button
-									onClick={ handleEdit( allowEdit && setupComplete ? 'confirm' : 'cancel' ) }
+									onClick={ () => {
+										handleEdit( allowEdit && setupComplete ? 'confirm' : 'cancel' );
+									} }
 									disabled={ isSavingModuleSettings }
 									id={ allowEdit && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 								>
@@ -111,7 +113,9 @@ const ModuleSettingsFooter = ( { allowEdit, handleDialog, slug } ) => {
 								{ allowEdit &&
 								<Link
 									className="googlesitekit-settings-module__footer-cancel"
-									onClick={ handleEdit( 'cancel' ) }
+									onClick={ () => {
+										handleEdit( 'cancel' );
+									} }
 									inherit
 								>
 									{ __( 'Cancel', 'google-site-kit' ) }
@@ -121,7 +125,9 @@ const ModuleSettingsFooter = ( { allowEdit, handleDialog, slug } ) => {
 						) : ( ( allowEdit || ! autoActivate ) &&
 						<Link
 							className="googlesitekit-settings-module__edit-button"
-							onClick={ handleEdit( 'edit' ) }
+							onClick={ () => {
+								handleEdit( 'edit' );
+							} }
 							inherit
 						>
 							{ __( 'Edit', 'google-site-kit' ) }

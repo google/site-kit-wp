@@ -40,11 +40,12 @@ import Dialog from '../../../components/dialog';
 const ModuleSettings = ( { children, error, provides, slug } ) => {
 	const [ dialogActive, setDialogActive ] = useState( false );
 
-	const { setModuleActivation } = useDispatch( ( dispatch ) => dispatch( STORE_NAME ) );
+	const { setModuleActivation } = useDispatch( STORE_NAME );
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 	const modules = useSelect( ( select ) => select( STORE_NAME ).getModules() );
 	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isEditingSettings( slug ) );
-	const { name, dependents } = module;
+
+	const { name, dependants: dependents } = module;
 
 	const handleDialog = () => {
 		setDialogActive( ! dialogActive );
