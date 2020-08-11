@@ -28,7 +28,7 @@ final class CF7_Event_List extends Measurement_Event_List {
 		add_filter(
 			'do_shortcode_tag',
 			function( $output, $tag, $attr ) {
-				if ( 'contact-form-7' == $tag ) {
+				if ( 'contact-form-7' === $tag && ! empty( $attr['id'] ) ) {
 					$this->collect_cf7_shortcode( $attr['id'] );
 				}
 				return $output;

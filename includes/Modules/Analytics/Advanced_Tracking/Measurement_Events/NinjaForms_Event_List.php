@@ -28,7 +28,7 @@ final class NinjaForms_Event_List extends Measurement_Event_List {
 		add_filter(
 			'do_shortcode_tag',
 			function( $output, $tag, $attr ) {
-				if ( 'ninja_forms' == $tag ) {
+				if ( 'ninja_forms' === $tag && ! empty( $attr['id'] ) ) {
 					$this->collect_ninja_form_shortcode( $attr['id'] );
 				}
 				return $output;

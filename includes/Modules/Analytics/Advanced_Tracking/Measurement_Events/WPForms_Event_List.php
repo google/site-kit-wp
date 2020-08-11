@@ -28,7 +28,7 @@ final class WPForms_Event_List extends Measurement_Event_List {
 		add_filter(
 			'do_shortcode_tag',
 			function( $output, $tag, $attr ) {
-				if ( 'wpforms' == $tag ) {
+				if ( 'wpforms' === $tag && ! empty( $attr['id'] ) ) {
 					$this->collect_wpform_shortcode( $attr['id'] );
 				}
 				return $output;

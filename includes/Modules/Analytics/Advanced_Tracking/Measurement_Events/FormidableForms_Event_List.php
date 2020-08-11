@@ -28,7 +28,7 @@ final class FormidableForms_Event_List extends Measurement_Event_List {
 		add_filter(
 			'do_shortcode_tag',
 			function( $output, $tag, $attr ) {
-				if ( 'formidable' == $tag ) {
+				if ( 'formidable' === $tag && ! empty( $attr['id'] ) ) {
 					$this->collect_formidable_shortcode( $attr['id'] );
 				}
 				return $output;
