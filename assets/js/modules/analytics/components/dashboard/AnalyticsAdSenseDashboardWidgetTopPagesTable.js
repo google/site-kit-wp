@@ -126,7 +126,11 @@ const getDataError = ( data ) => {
 	if ( data.code && data.message && data.data && data.data.status ) {
 		// Specifically looking for string "badRequest"
 		if ( 'badRequest' === data.data.reason ) {
-			return <AnalyticsAdSenseDashboardWidgetLayout>{ ctaWrapper( <AdSenseLinkCTA />, false, false, true ) }</AnalyticsAdSenseDashboardWidgetLayout>;
+			return (
+				<AnalyticsAdSenseDashboardWidgetLayout>
+					{ ctaWrapper( <AdSenseLinkCTA />, false, false, true ) }
+				</AnalyticsAdSenseDashboardWidgetLayout>
+			);
 		}
 
 		return data.message;
@@ -166,7 +170,9 @@ export default withData(
 			context: 'Single',
 		},
 	],
-	<AnalyticsAdSenseDashboardWidgetLayout><PreviewTable padding /></AnalyticsAdSenseDashboardWidgetLayout>,
+	<AnalyticsAdSenseDashboardWidgetLayout>
+		<PreviewTable padding />
+	</AnalyticsAdSenseDashboardWidgetLayout>,
 	{ createGrid: true },
 	// Force isDataZero to false since it is handled within the component.
 	() => false,
