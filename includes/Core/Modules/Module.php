@@ -577,6 +577,9 @@ abstract class Module {
 	 */
 	protected function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false, $weekday_align = false ) {
 
+		// The last period ends offset days ago.
+		$last_end_day_of_week = gmdate( 'w', strtotime( $offset . ' days ago' ) );
+
 		preg_match( '*-(\d+)-*', $range, $matches );
 		$number_of_days = $multiplier * ( isset( $matches[1] ) ? $matches[1] : 28 );
 
@@ -588,14 +591,10 @@ abstract class Module {
 		$start_date_offset = $offset + $number_of_days - 1;
 		$date_start        = gmdate( 'Y-m-d', strtotime( $start_date_offset . ' days ago' ) );
 
-		// Align previous period days of the week to the last period.
-		// Compare end of period dates, since period lengths are the same.
-		$previous_day_of_week = gmdate( 'w', strtotime( $date_end ) );
+		$date_end_day_of_week = gmdate( 'w', strtotime( $date_end ) );
 
-		// The last period always ends "yesterday".
-		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
-
-		if ( $weekday_align && $previous && $previous_day_of_week !== $yesterday_day_of_week ) {
+		// When weekday_align is true, ensure the last & previous periods align by day of the week.
+		if ( $weekday_align && $previous && $date_end_day_of_week !== $last_end_day_of_week ) {
 			// Adjust the date to closest period that matches the same days of the week.
 			$off_by = $number_of_days % 7;
 			if ( $off_by > 3 ) {

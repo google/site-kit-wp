@@ -239,20 +239,59 @@ class ModuleTest extends TestCase {
 	}
 
 	/**
+	 * Determine the difference between the expected and the returned date.
+	 *
+	 * @param int $offset Days the range should be offset by. Default 1. Used by Search Console where
+	 *                data is delayed by two days.
+	 * @param int $period_requested Number of days being requested.
+	 * @param int $calculated_end Timestamp of the calculated end of the period.
+	 *
+	 * @return int $calculated_diff The difference in days between the expected end date and the calculated end date.
+	 */
+	public function calculate_diff_from_expected( $offset, $period_requested, $calculated_end ) {
+		// Expected end of the previous period is: current date - $period_requested - $offset.
+		$expected_end = strtotime( $offset . ' days ago' ) - ( $period_requested * DAY_IN_SECONDS );
+
+		// Convert to a date, then back to timestamp for comparison (rounds to nearest day).
+		$expected_end_date   = gmdate( 'Y-m-d', $expected_end );
+		$calculated_end_date = gmdate( 'Y-m-d', $calculated_end );
+
+		// Return the difference in days.
+		return ( strtotime( $expected_end_date ) - strtotime( $calculated_end_date ) ) / DAY_IN_SECONDS;
+	}
+
+	/**
+	 * Test that previous dates ranges align by weekday when weekly_align = true.
+	 *
+	 * Call parse_date_range with previous = true and weekly_align = true.
+	 * Test $offset set to 1 and 2 work as expected.
+	 *
 	 * @dataProvider data_parse_date_range
 	 */
 	public function test_parse_date_range( $period_requested, $previous_period_end_offset ) {
-		$module                = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Test with $offset = 1.
 		$result                = $module->parse_date_range( 'last-' . $period_requested . '-days', 1, 1, true, true );
 		$previous_end          = strtotime( $result[1] );
 		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
-		$diff                  = round( ( strtotime( 'yesterday' ) - ( $period_requested * DAY_IN_SECONDS ) - $previous_end ) / DAY_IN_SECONDS );
-
+		$diff                  = self::calculate_diff_from_expected( 1, $period_requested, $previous_end );
 		$previous_day_of_week  = gmdate( 'w', strtotime( $result[1] ) );
 		$yesterday_day_of_week = gmdate( 'w', strtotime( 'yesterday' ) );
 
 		$this->assertEquals( $previous_day_of_week, $yesterday_day_of_week );
 		$this->assertEquals( $previous_period_end_offset, $diff );
+
+		// Test again with offset = 2.
+		$result               = $module->parse_date_range( 'last-' . $period_requested . '-days', 1, 2, true, true );
+		$previous_end         = strtotime( $result[1] );
+		$last_day_of_week     = gmdate( 'w', strtotime( '2 days ago' ) );
+		$diff                 = self::calculate_diff_from_expected( 2, $period_requested, $previous_end );
+		$previous_day_of_week = gmdate( 'w', strtotime( $result[1] ) );
+		$last_day_of_week     = gmdate( 'w', strtotime( '2 days ago' ) );
+
+		$this->assertEquals( $previous_day_of_week, $last_day_of_week, 'failed with offfset 2' );
+		$this->assertEquals( $previous_period_end_offset, $diff, 'failed with offfset 2' );
 	}
 
 	public function data_parse_date_range() {
@@ -302,7 +341,6 @@ class ModuleTest extends TestCase {
 				90,
 				1, // mon -> sun
 			),
-
 		);
 	}
 }
