@@ -50,12 +50,13 @@ export const selectors = {
 			return undefined;
 		}
 
-		const baseURI = 'https://www.google.com/adsense/new/';
+		const baseURI = 'https://www.google.com/adsense/new';
+		const queryParams = query ? { ...query, authuser: userEmail } : { authuser: userEmail };
 		if ( path ) {
 			const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, { authuser: userEmail, ...query } );
+			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryParams );
 		}
-		return addQueryArgs( baseURI, { authuser: userEmail, ...query } );
+		return addQueryArgs( baseURI, queryParams );
 	} ),
 
 	/**
@@ -114,7 +115,6 @@ export const selectors = {
 		const query = {
 			// TODO: Check which of these parameters are actually required.
 			source: 'site-kit',
-			utm_source: 'site-kit',
 			url: parseDomain( siteURL ) || siteURL,
 		};
 		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/sites/my-sites`, query } );

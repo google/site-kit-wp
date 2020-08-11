@@ -34,7 +34,7 @@ describe( 'module/adsense service store', () => {
 		name: 'admin',
 		picture: 'https://path/to/image',
 	};
-	const baseURI = 'https://www.google.com/adsense/new/';
+	const baseURI = 'https://www.google.com/adsense/new';
 
 	let registry;
 
@@ -51,11 +51,11 @@ describe( 'module/adsense service store', () => {
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', async () => {
 				const serviceURL = registry.select( STORE_NAME ).getServiceURL();
-				expect( serviceURL ).toBe( `${ baseURI }?authuser=${ userData.email }` );
+				expect( serviceURL ).toBe( `${ baseURI }?authuser=${ encodeURIComponent( userData.email ) }` );
 			} );
 
 			it( 'prepends a forward slash to to the path if missing', () => {
-				const expectedURL = `${ baseURI }?authuser=${ userData.email }/test/path/to/deeplink`;
+				const expectedURL = `${ baseURI }/test/path/to/deeplink?authuser=${ encodeURIComponent( userData.email ) }`;
 
 				const serviceURLNoSlashes = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink' } );
 				expect( serviceURLNoSlashes ).toEqual( expectedURL );
@@ -66,12 +66,13 @@ describe( 'module/adsense service store', () => {
 			it( 'adds query args', async () => {
 				const path = '/test/path/to/deeplink';
 				const query = {
+					authuser: userData.email,
 					param1: '1',
 					param2: '2',
 				};
 				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path, query } );
 				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect( serviceURL.endsWith( `${ encodeURIComponent( path ) }&param1=1&param2=2` ) ).toBe( true );
+				expect( serviceURL.endsWith( `${ path }?authuser=${ encodeURIComponent( userData.email ) }&param1=1&param2=2` ) ).toBe( true );
 				expect( serviceURL ).toMatchQueryParameters( query );
 			} );
 		} );
