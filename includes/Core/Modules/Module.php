@@ -576,10 +576,6 @@ abstract class Module {
 	 *               'Y-m-d'.
 	 */
 	protected function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false, $weekday_align = false ) {
-
-		// The last period ends offset days ago.
-		$last_end_day_of_week = gmdate( 'w', strtotime( $offset . ' days ago' ) );
-
 		preg_match( '*-(\d+)-*', $range, $matches );
 		$number_of_days = $multiplier * ( isset( $matches[1] ) ? $matches[1] : 28 );
 
@@ -591,11 +587,11 @@ abstract class Module {
 		$start_date_offset = $offset + $number_of_days - 1;
 		$date_start        = gmdate( 'Y-m-d', strtotime( $start_date_offset . ' days ago' ) );
 
-		$date_end_day_of_week = gmdate( 'w', strtotime( $date_end ) );
-
 		// When weekday_align is true and request is for a previous period,
 		// ensure the last & previous periods align by day of the week.
-		if ( $weekday_align && $previous && $date_end_day_of_week !== $last_end_day_of_week ) {
+		$date_end_day_of_week      = gmdate( 'w', strtotime( $date_end ) );
+		$previous_date_end_of_week = gmdate( 'w', strtotime( $offset . ' days ago' ) );
+		if ( $weekday_align && $previous && $date_end_day_of_week !== $previous_date_end_of_week ) {
 			// Adjust the date to closest period that matches the same days of the week.
 			$off_by = $number_of_days % 7;
 			if ( $off_by > 3 ) {
