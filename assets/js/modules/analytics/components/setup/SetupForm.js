@@ -35,15 +35,19 @@ import Button from '../../../../components/button';
 import { STORE_NAME, PROFILE_CREATE, FORM_SETUP, EDIT_SCOPE } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import {
 	AccountSelect,
 	ErrorNotice,
+	ExistingGTMPropertyNotice,
+	ExistingGTMPropertyError,
 	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
 } from '../common';
 import { trackEvent } from '../../../../util';
+import { isValidPropertyID } from '../../util';
 import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 const { useSelect, useDispatch } = Data;
 
@@ -53,6 +57,8 @@ export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
+	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( gtmAnalyticsPropertyID ) );
 	// Needed to conditionally show the profile name field and surrounding container.
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 
@@ -79,6 +85,13 @@ export default function SetupForm( { finishSetup } ) {
 		}
 	}, [ hasEditScope, autoSubmit, submitForm ] );
 
+	let gtmTagNotice;
+	if ( isValidPropertyID( gtmAnalyticsPropertyID ) && gtmAnalyticsPropertyIDPermission ) {
+		gtmTagNotice = <ExistingGTMPropertyNotice />;
+	} else if ( isValidPropertyID( gtmAnalyticsPropertyID ) && gtmAnalyticsPropertyIDPermission === false ) {
+		gtmTagNotice = <ExistingGTMPropertyError />;
+	}
+
 	return (
 		<form
 			className="googlesitekit-analytics-setup__form"
@@ -87,6 +100,8 @@ export default function SetupForm( { finishSetup } ) {
 			<ErrorNotice />
 
 			<ExistingTagNotice />
+
+			{ gtmTagNotice }
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (
 				<p className="googlesitekit-margin-bottom-0">

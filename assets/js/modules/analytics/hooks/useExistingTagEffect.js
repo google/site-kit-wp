@@ -34,9 +34,9 @@ const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
 	// Check for existing Analytics tag.
+	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 
 	// Check for existing Analytics tag added via Tagmanager.
 	const tagmanagerModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
