@@ -30,10 +30,10 @@ import DisplaySetting from '../../../../components/display-setting';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site';
 import { STORE_NAME } from '../../datastore';
 import {
-	ErrorNotice,
 	ExistingTagError,
 	ExistingTagNotice,
 } from '../common';
+import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -49,8 +49,8 @@ export default function SettingsView() {
 	return (
 		<Fragment>
 
-			{ /* Prevent showing ExistingTagError and general ErrorNotice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <ErrorNotice /> }
+			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice storeName={ STORE_NAME } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 

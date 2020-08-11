@@ -1,59 +1,55 @@
 # Site Kit Unit Tests
 
+All commands listed below should be run from the root of the repository in your local environment.
+
 ## Initial Setup
 
-1) Install `phpunit` using composer:
-
+1. Install dependencies using Composer  
     ```
     $ composer install
     ```
-
-2) Check if the `phpunit` exist:
-
+1. Install WordPress and the WP Unit Test lib using the `install-wp-tests.sh` script  
     ```
-    $ vendor/bin/phpunit --version
+    $ tests/bin/install-wp-tests.sh <db-name> <db-user> <db-pass> [db-host] [wp-version] [skip-database-creation]
     ```
 
-2) Install WordPress and the WP Unit Test lib using the `install.sh` script. Change to the plugin root directory and type:
+### Example Usage
 
-    ```
-    $ tests/bin/install.sh <db-name> <db-user> <db-password> [db-host] [wp-version] [skip-database-creation]
-    ```
+Install the test library and latest WordPress with a new database, using root credentials
+```
+$ tests/bin/install-wp-tests.sh googlesitekit_tests root password
+```
 
-Sample usage:
-
-    $ tests/bin/install.sh googlesitekit_tests root root localhost 4.9.8 false
-
-If you don't have `mysqladmin` installed on your host, please use create database manually. And set `skip-database-creation` to `true`:
-
-    $ tests/bin/install.sh googlesitekit_tests root root localhost 4.9.8 true
-
+If you don't have `mysqladmin` installed on your host, you'll need to create a database manually and set `skip-database-creation` to `true`.  
+If you're not sure, run `which mysqladmin` which will output the path to the executable if installed, or nothing if not installed.
+```
+$ tests/bin/install-wp-tests.sh googlesitekit_tests root password localhost latest true
+```
 
 **Important**: The `<db-name>` database will be created if it doesn't exist and all data will be removed during testing.
 
 ## Running Tests
 
-Simply change to the plugin root directory and type:
+Run all PHPUnit tests using Composer
+```
+$ composer test
+```
+This ensures that the tests are run with the version of PHPUnit required by Google Site Kit rather than requiring it to be globally installed on your system.
 
-    $ vendor/bin/phpunit
-
-You can run specific tests by providing the path and filename to the test class:
-
-    $ vendor/bin/phpunit tests/unit-tests/helpers
+You can run specific tests by providing the path and filename to the test class or a directory containing tests:
+```
+$ composer test -- tests/phpunit/integration/Core
+```
 
 You can run specific tests by providing group arguments:
-
-    $ vendor/bin/phpunit --group cache
-
-Available Groups:
-
-- helpers
-- cache
+```
+$ composer test -- --group Modules
+```
 
 Running with the WordPress Core PHPUnit configuration:
-    ```
-    $WP_TESTS_DIR=/path/to/wp/develop/phpunit vendor/bin/phpunit
-    ```
+```
+$WP_TESTS_DIR=/path/to/wp/develop/phpunit composer test
+```
 
 ## Automated Tests
 
