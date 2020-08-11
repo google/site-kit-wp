@@ -51,11 +51,11 @@ describe( 'module/analytics service store', () => {
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', async () => {
 				const serviceURL = registry.select( STORE_NAME ).getServiceURL();
-				expect( serviceURL ).toBe( `${ baseURI }?authuser=${ userData.email }#` );
+				expect( serviceURL ).toBe( `${ baseURI }?authuser=${ encodeURIComponent( userData.email ) }` );
 			} );
 
 			it( 'adds the path parameter', () => {
-				const expectedURL = `${ baseURI }?authuser=${ userData.email }#/test/path/to/deeplink`;
+				const expectedURL = `${ baseURI }?authuser=${ encodeURIComponent( userData.email ) }#/test/path/to/deeplink`;
 				const serviceURLNoSlashes = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink' } );
 				expect( serviceURLNoSlashes ).toEqual( expectedURL );
 				const serviceURLWithLeadingSlash = registry.select( STORE_NAME ).getServiceURL( { path: '/test/path/to/deeplink' } );
@@ -65,12 +65,13 @@ describe( 'module/analytics service store', () => {
 			it( 'adds query args', async () => {
 				const path = '/test/path/to/deeplink';
 				const query = {
+					authuser: userData.email,
 					param1: '1',
 					param2: '2',
 				};
 				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path, query } );
 				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect( serviceURL.endsWith( `${ encodeURIComponent( path ) }&param1=1&param2=2` ) ).toBe( true );
+				expect( serviceURL.endsWith( `#${ path }` ) ).toBe( true );
 				expect( serviceURL ).toMatchQueryParameters( query );
 			} );
 		} );

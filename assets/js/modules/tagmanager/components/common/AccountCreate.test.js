@@ -88,7 +88,7 @@ describe( 'AccountCreate', () => {
 
 			expect( openSpy ).toHaveBeenCalledTimes( 1 );
 			expect( openSpy ).toHaveBeenCalledWith( expect.stringMatching( /^https:\/\/tagmanager.google.com\/\?/ ), '_blank' );
-			expect( openSpy ).toHaveBeenCalledWith( expect.stringContaining( 'authuser=user@example.com' ), '_blank' );
+			expect( openSpy ).toHaveBeenCalledWith( expect.stringContaining( `authuser=${ encodeURIComponent( 'user@example.com' ) }#/admin/accounts/create` ), '_blank' );
 		} );
 	} );
 } );

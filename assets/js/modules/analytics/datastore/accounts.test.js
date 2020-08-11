@@ -383,7 +383,7 @@ describe( 'modules/analytics accounts', () => {
 
 				registry.dispatch( STORE_NAME ).receiveCreateAccount( { id: 'test-account-ticket-id' }, { data: {} } );
 
-				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( encodeURIComponent( '#/termsofservice/test-account-ticket-id' ) );
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( '#/termsofservice/test-account-ticket-id' );
 			} );
 
 			it( 'requires the user’s email', () => {
@@ -398,7 +398,7 @@ describe( 'modules/analytics accounts', () => {
 				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toMatchQueryParameters( {
 					provisioningSignup: 'false',
 				} );
-				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( encodeURIComponent( '#/termsofservice/test-account-ticket-id' ) );
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( '#/termsofservice/test-account-ticket-id' );
 			} );
 		} );
 	} );
