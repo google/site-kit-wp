@@ -29,12 +29,15 @@ import {
 	getTimeInSeconds,
 	prepareSecondsForDisplay,
 	readableLargeNumber,
+	changeToPercent,
 } from '../../../../util';
 import {
 	calculateOverviewData,
 	getAnalyticsErrorMessageFromData,
 	isDataZeroForReporting,
 	overviewReportDataDefaults,
+	userReportDataDefaults,
+	parseTotalUsersData,
 } from '../../util';
 import PreviewBlocks from '../../../../components/preview-blocks';
 import DataBlock from '../../../../components/data-block';
@@ -43,29 +46,59 @@ import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 
 class WPAnalyticsDashboardWidgetOverview extends Component {
-	render() {
-		const { data } = this.props;
+	constructor( props ) {
+		super( props );
+		this.state = {
+			overview: false,
+			totalUsers: false,
+			previousTotalUsers: false,
+		};
+	}
 
-		if ( ! data || ! data.length ) {
-			return null;
+	// When additional data is returned, componentDidUpdate will fire.
+	componentDidUpdate() {
+		this.processCallbackData();
+	}
+
+	componentDidMount() {
+		this.processCallbackData();
+	}
+
+	/**
+	 * Process callback data received from the API.
+	 */
+	processCallbackData() {
+		const {
+			data,
+			requestDataToState,
+		} = this.props;
+
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
+			this.setState( requestDataToState );
 		}
+	}
 
-		const overviewData = calculateOverviewData( data );
+	render() {
+		const {
+			overview,
+			totalUsers,
+			previousTotalUsers,
+		} = this.state;
 
-		if ( ! overviewData ) {
+		if ( ! overview || ! totalUsers ) {
 			return null;
 		}
 
 		const {
-			totalUsers,
 			averageSessionDuration,
-			totalUsersChange,
 			averageSessionDurationChange,
-		} = overviewData;
+		} = overview;
+
+		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
 
 		return (
 			<Fragment>
-				{ ! data.length
+				{ 0 === totalUsers
 					? <div className="googlesitekit-wp-dashboard-stats__cta">
 						<CTA
 							title={ __( 'Analytics Gathering Data', 'google-site-kit' ) }
@@ -106,7 +139,28 @@ export default withData(
 			data: overviewReportDataDefaults,
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'WPDashboard' ],
+			context: 'WPDashboard',
+			toState( state, { data } ) {
+				if ( ! state.overview ) {
+					return {
+						overview: calculateOverviewData( data ),
+					};
+				}
+			},
+		},
+		{
+			type: TYPE_MODULES,
+			identifier: 'analytics',
+			datapoint: 'report',
+			data: userReportDataDefaults,
+			priority: 1,
+			maxAge: getTimeInSeconds( 'day' ),
+			context: 'WPDashboard',
+			toState( state, { data } ) {
+				if ( false === state.totalUsers ) {
+					return parseTotalUsersData( data );
+				}
+			},
 		},
 	],
 	<PreviewBlocks

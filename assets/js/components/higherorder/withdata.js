@@ -198,7 +198,7 @@ const withData = (
 					handleDataSuccess();
 				}
 
-				// Resolve the returned data my setting state on the Component.
+				// Resolve the returned data by setting state on the Component.
 				this.setState( {
 					requestDataToState: toState,
 					data: returnedData,
