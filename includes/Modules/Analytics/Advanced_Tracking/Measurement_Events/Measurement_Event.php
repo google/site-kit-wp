@@ -66,13 +66,10 @@ final class Measurement_Event implements \JsonSerializable {
 		if ( ! array_key_exists( 'metadata', $config ) ) {
 			$config['metadata'] = null;
 		}
-		if ( array_key_exists( 'on', $config ) ) {
-			if ( 'DOMContentLoaded' == $config['on'] ) {
-				$config['selector'] = '';
-			}
-		} else {
-			throw new \Exception( 'Missed configuration parameter: on' );
+		if ( array_key_exists( 'on', $config ) && 'DOMContentLoaded' === $config['on'] ) {
+			$config['selector'] = '';
 		}
+
 		// Make this check after previous check since setting 'on' to DOMContentLoaded with no selector is valid.
 		foreach ( $valid_keys as $key ) {
 			if ( ! array_key_exists( $key, $config ) ) {
