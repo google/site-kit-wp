@@ -21,7 +21,12 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
-import { ModuleSettings, ModuleSettingsHeader, ModuleSettingsBody, ModuleSettingsFooter } from '.';
+import {
+	ModuleSettings,
+	ModuleSettingsHeader,
+	ModuleSettingsBody,
+	ModuleSettingsFooter,
+} from '.';
 const { useSelect } = Data;
 
 import PropTypes from 'prop-types';
@@ -34,7 +39,7 @@ const DefaultModuleSettings = ( { slug } ) => {
 			<ModuleSettingsHeader slug={ slug } />
 			{ isOpen &&
 				<ModuleSettingsBody slug={ slug }>
-					<ModuleSettingsFooter slug={ slug } handleDialog={ handleDialog } />
+					<ModuleSettingsFooter slug={ slug } />
 				</ModuleSettingsBody>
 			}
 		</ModuleSettings>

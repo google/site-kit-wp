@@ -246,12 +246,12 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {string} slug   Module slug.
-	 * @param {string} status The settings status, one of: "closed", "view", "edit", or "locked".
+	 * @param {string} status The settings status, one of: "closed", "view", "edit", "locked" or "saving".
 	 * @return {Object} Redux-style action.
 	 */
 	setSettingsDisplayMode( slug, status ) {
 		invariant( slug, 'slug is required.' );
-		invariant( [ 'closed', 'view', 'edit', 'locked' ].includes( status ), 'status is one of "closed", "view", "edit" or "locked.' );
+		invariant( [ 'closed', 'view', 'edit', 'locked', 'saving' ].includes( status ), 'status is one of "closed", "view", "edit", "locked" or "saving".' );
 
 		return {
 			payload: { slug, status },
@@ -524,6 +524,26 @@ const baseSelectors = {
 		}
 
 		return modules[ slug ]?.displayMode === 'view';
+	} ),
+
+	/**
+	 * Checks if a module's settings are being saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {boolean} True if module exists and settings are open, false if not.
+	 */
+	isSavingSettings: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const modules = select( STORE_NAME ).getModules();
+
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return false;
+		}
+
+		return modules[ slug ]?.displayMode === 'saving';
 	} ),
 
 	/**

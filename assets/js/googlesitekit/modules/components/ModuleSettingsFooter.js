@@ -27,31 +27,61 @@ import classnames from 'classnames';
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { clearWebStorage } from '../../../util';
 import Button from '../../../components/button';
 import Link from '../../../components/link';
 import Spinner from '../../../components/spinner';
 import SvgIcon from '../../../util/svg-icon';
 import { STORE_NAME } from '../datastore/constants';
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
-const ModuleSettingsFooter = ( { allowEdit, handleDialog, handleEdit, slug } ) => {
+const ModuleSettingsFooter = ( { allowEdit, handleDialog, slug } ) => {
+	const { setSettingsDisplayMode } = useDispatch( ( dispatch ) => dispatch( STORE_NAME ) );
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isEditingSettings( slug ) );
+	const isSavingModuleSettings = useSelect( ( select ) => select( STORE_NAME ).isSavingSettings( slug ) );
 	const { autoActivate, homepage, name, setupComplete } = module;
 
-	const handleEdit = ( e ) => {
+	const handleEdit = ( action ) => {
+		if ( action === 'confirm' ) {
+			const modulePromise = applyFilters( 'googlekit.SettingsConfirmed', false, slug );
+			setSettingsDisplayMode( slug, 'saving' );
 
+			if ( ! modulePromise ) {
+				// Clears session and local storage on successful setting.
+				clearWebStorage();
+				return;
+			}
+
+			modulePromise.then( () => {
+				// Clears session and local storage on every successful setting.
+				clearWebStorage();
+				// TODO Set error to false
+				// Change status from 'saving' to 'view'.
+				setSettingsDisplayMode( slug, 'view' );
+			} ).catch( () => {
+				// TODO: Set error in store.
+				// Change status from 'saving' to 'view'.
+				setSettingsDisplayMode( slug, 'view' );
+			} );
+
+			setSettingsDisplayMode( slug, 'view' );
+		} else {
+			// TODO: Set error to false.
+			setSettingsDisplayMode( slug, action === 'cancel' ? 'view' : 'edit' );
+		}
 	};
 
 	// Set button text based on state.
 	let buttonText = __( 'Close', 'google-site-kit' );
 	if ( allowEdit && setupComplete ) {
-		if ( isSavingModule ) {
+		if ( isSavingModuleSettings ) {
 			buttonText = __( 'Saving…', 'google-site-kit' );
 		} else {
 			buttonText = __( 'Confirm Changes', 'google-site-kit' );
@@ -68,20 +98,20 @@ const ModuleSettingsFooter = ( { allowEdit, handleDialog, handleEdit, slug } ) =
 						'mdc-layout-grid__cell--span-8-tablet',
 						'mdc-layout-grid__cell--span-4-phone'
 					) } >
-						{ isEditing || isSavingModule ? (
+						{ isEditing || isSavingModuleSettings ? (
 							<Fragment>
 								<Button
-									onClick={ () => handleEdit( slug, allowEdit && setupComplete ? 'confirm' : 'cancel' ) }
-									disabled={ isSavingModule }
+									onClick={ handleEdit( allowEdit && setupComplete ? 'confirm' : 'cancel' ) }
+									disabled={ isSavingModuleSettings }
 									id={ allowEdit && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 								>
 									{ buttonText }
 								</Button>
-								<Spinner isSaving={ isSavingModule } />
+								<Spinner isSaving={ isSavingModuleSettings } />
 								{ allowEdit &&
 								<Link
 									className="googlesitekit-settings-module__footer-cancel"
-									onClick={ () => handleEdit( slug, 'cancel' ) }
+									onClick={ handleEdit( 'cancel' ) }
 									inherit
 								>
 									{ __( 'Cancel', 'google-site-kit' ) }
@@ -91,9 +121,7 @@ const ModuleSettingsFooter = ( { allowEdit, handleDialog, handleEdit, slug } ) =
 						) : ( ( allowEdit || ! autoActivate ) &&
 						<Link
 							className="googlesitekit-settings-module__edit-button"
-							onClick={ () => {
-								handleEdit( slug, 'edit' );
-							} }
+							onClick={ handleEdit( 'edit' ) }
 							inherit
 						>
 							{ __( 'Edit', 'google-site-kit' ) }
@@ -154,7 +182,6 @@ const ModuleSettingsFooter = ( { allowEdit, handleDialog, handleEdit, slug } ) =
 };
 
 ModuleSettingsFooter.propTypes = {
-	handleEdit: PropTypes.func.isRequired,
 	slug: PropTypes.string.isRequired,
 	allowEdit: PropTypes.bool,
 };

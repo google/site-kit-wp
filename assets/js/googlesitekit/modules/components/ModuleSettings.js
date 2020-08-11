@@ -38,11 +38,7 @@ const { useSelect, useDispatch } = Data;
 import Dialog from '../../../components/dialog';
 
 const ModuleSettings = ( { children, error, provides, slug } ) => {
-	const [ state, setState ] = useState( {
-		isSaving: false,
-		// setupComplete: props.setupComplete,
-		dialogActive: false,
-	} );
+	const [ dialogActive, setDialogActive ] = useState( false );
 
 	const { setModuleActivation } = useDispatch( ( dispatch ) => dispatch( STORE_NAME ) );
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
@@ -51,25 +47,16 @@ const ModuleSettings = ( { children, error, provides, slug } ) => {
 	const { name, dependents } = module;
 
 	const handleDialog = () => {
-		setState(
-			{
-				...state,
-				dialogActive: ! state.dialogActive,
-			}
-		);
+		setDialogActive( ! dialogActive );
 	};
 
 	const handleCloseModal = ( e ) => {
 		if ( 27 === e.keyCode ) {
-			setState( {
-				...state,
-				dialogActive: false,
-			} );
+			setDialogActive( false );
 		}
 	};
 
 	const handleConfirmRemoveModule = () => {
-		// Deactivate module.
 		setModuleActivation( slug, false );
 	};
 
@@ -99,7 +86,6 @@ const ModuleSettings = ( { children, error, provides, slug } ) => {
 	/* translators: %s: module name */
 	const subtitle = sprintf( __( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ), name );
 	const dependentModules = map( getDependentModules(), 'name' ).join( ', ' );
-	const { dialogActive } = state;
 
 	return (
 		<div

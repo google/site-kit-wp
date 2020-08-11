@@ -31,16 +31,14 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	moduleIcon,
-} from '../../../util';
+import { moduleIcon } from '../../../util';
 import { STORE_NAME } from '../datastore/constants';
 const { useDispatch, useSelect } = Data;
 
 const ModuleSettingsHeader = ( { slug } ) => {
 	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
-	const { setSettingsOpen } = useDispatch( STORE_NAME );
+	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
 	const { connected, name } = module;
 
 	const connectedClassName = connected
@@ -52,8 +50,7 @@ const ModuleSettingsHeader = ( { slug } ) => {
 		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
 
 		// If module is already open, close it, else set status to "view".
-		const newDisplayModeStatus = isOpen ? 'closed' : 'view';
-		setSettingsOpen( slug, newDisplayModeStatus );
+		setSettingsDisplayMode( slug, isOpen ? 'closed' : 'view' );
 	};
 
 	return (
