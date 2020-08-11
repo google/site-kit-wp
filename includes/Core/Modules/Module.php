@@ -593,7 +593,8 @@ abstract class Module {
 
 		$date_end_day_of_week = gmdate( 'w', strtotime( $date_end ) );
 
-		// When weekday_align is true, ensure the last & previous periods align by day of the week.
+		// When weekday_align is true and request is for a previous period,
+		// ensure the last & previous periods align by day of the week.
 		if ( $weekday_align && $previous && $date_end_day_of_week !== $last_end_day_of_week ) {
 			// Adjust the date to closest period that matches the same days of the week.
 			$off_by = $number_of_days % 7;
@@ -601,7 +602,7 @@ abstract class Module {
 				$off_by = $off_by - 7;
 			}
 
-			// Move the past date to match the same day of the week.
+			// Move the date to match the same day of the week.
 			$date_end   = gmdate( 'Y-m-d', strtotime( $off_by . ' days', strtotime( $date_end ) ) );
 			$date_start = gmdate( 'Y-m-d', strtotime( $off_by . ' days', strtotime( $date_start ) ) );
 		}
