@@ -81,7 +81,7 @@ class UserMenu extends Component {
 	}
 
 	handleMenuItemSelect( index, e ) {
-		const { proxyPermissionsURL } = global._googlesitekitLegacyData.admin;
+		const { proxyPermissionsURL } = global._googlesitekitBaseData;
 
 		if (
 			( ( 'keydown' === e.type && (
@@ -95,6 +95,9 @@ class UserMenu extends Component {
 					this.handleDialog();
 					break;
 				case 1:
+					if ( ! proxyPermissionsURL ) {
+						return;
+					}
 					global.location.assign( proxyPermissionsURL );
 					break;
 				default:
@@ -141,10 +144,8 @@ class UserMenu extends Component {
 	}
 
 	render() {
-		const {
-			userData: { email = '', picture = '' },
-			proxyPermissionsURL,
-		} = global._googlesitekitLegacyData.admin;
+		const { proxyPermissionsURL } = global._googlesitekitBaseData;
+		const { userData: { email = '', picture = '' } } = global._googlesitekitLegacyData.admin;
 		const { dialogActive, menuOpen } = this.state;
 
 		return (
