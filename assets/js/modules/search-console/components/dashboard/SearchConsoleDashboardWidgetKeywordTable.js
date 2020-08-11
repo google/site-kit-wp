@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -60,7 +55,7 @@ const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	];
 	const links = [];
 
-	const dataMapped = map( data, ( row, i ) => {
+	const dataMapped = data.map( ( row, i ) => {
 		const query = row.keys[ 0 ];
 		links[ i ] = addQueryArgs( baseServiceURL, { query, resource_id: domain, num_of_days: 28 } );
 		return [
