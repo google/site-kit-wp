@@ -33,7 +33,7 @@ final class FormidableForms_Event_List extends Measurement_Event_List {
 				}
 				return $output;
 			},
-			15,
+			10,
 			3
 		);
 	}

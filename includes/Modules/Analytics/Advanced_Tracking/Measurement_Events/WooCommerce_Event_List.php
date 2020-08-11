@@ -34,23 +34,20 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 			function() {
 				global $product;
 				$this->collect_wc_shop_item( $product );
-			},
-			15
+			}
 		);
 		add_action(
 			'woocommerce_after_single_product',  // Fires after a single product is loaded.
 			function() {
 				global $product;
 				$this->collect_wc_single_item( $product );
-			},
-			15
+			}
 		);
 		add_action(
 			'woocommerce_after_cart', // Fires after the cart's contents are rendered.
 			function() {
 				$this->create_wc_cart_events( WC()->cart );
-			},
-			15
+			}
 		);
 		add_filter(
 			'woocommerce_cart_item_product', // Fires when a cart item is being rendered.
@@ -58,23 +55,21 @@ final class WooCommerce_Event_List extends Measurement_Event_List {
 				$this->collect_wc_cart_item( $product, $cart_item['quantity'] );
 				return $product;
 			},
-			15,
+			10,
 			2
 		);
 		add_action(
 			'woocommerce_after_checkout_form', // Fires after checkout form is loaded.
 			function() {
 				$this->create_wc_checkout_event( WC()->cart );
-			},
-			15
+			}
 		);
 		add_action(
 			'woocommerce_thankyou', // Fires when a WooCommerce order is received.
 			function( $order_id ) {
 				$order = wc_get_order( $order_id );
 				$this->create_wc_purchase_event( $order );
-			},
-			15
+			}
 		);
 
 	}
