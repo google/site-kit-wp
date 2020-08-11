@@ -44,7 +44,7 @@ export default function SetupAccountCreate() {
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
 	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const signUpURL = useSelect( ( select ) => select( STORE_NAME ).getCreateAccountURL( { url: siteURL } ) );
+	const signUpURL = useSelect( ( select ) => select( STORE_NAME ).getCreateAccountURL() );
 
 	const createAccountHandler = useCallback( async ( event ) => {
 		event.preventDefault();

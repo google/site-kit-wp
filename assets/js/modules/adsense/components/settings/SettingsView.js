@@ -44,7 +44,6 @@ export default function SettingsView() {
 	const accountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	// Site status is only displayed in sites list view, so do not pass siteURL here.
 	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSitesURL() );
 
 	let accountStatusLabel;

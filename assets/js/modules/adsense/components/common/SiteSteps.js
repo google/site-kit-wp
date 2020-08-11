@@ -34,7 +34,6 @@ const { useSelect } = Data;
 export default function SiteSteps() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	// Site status is only displayed in sites list view, so do not pass siteURL here.
 	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSitesURL() );
 	const enableAutoAdsURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteAdsPreviewURL( siteURL ) );
 
