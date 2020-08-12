@@ -60,13 +60,13 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Returns the URL for creating a new AdSense account.
+	 * Returns the service URL for creating a new AdSense account.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return {(string|undefined)} AdSense URL to create a new account (or `undefined` if not loaded).
 	 */
-	getCreateAccountURL: createRegistrySelector( ( select ) => () => {
+	getServiceCreateAccountURL: createRegistrySelector( ( select ) => () => {
 		const query = {
 			source: 'site-kit',
 			utm_source: 'site-kit',
@@ -80,13 +80,13 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Returns the URL to an AdSense account's overview page.
+	 * Returns the service URL to an AdSense account's overview page.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return {(string|undefined)} AdSense account overview URL (or `undefined` if not loaded).
 	 */
-	getAccountURL: createRegistrySelector( ( select ) => () => {
+	getServiceAccountURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
 
 		if ( accountID === undefined ) {
@@ -96,13 +96,13 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Returns the URL to an AdSense account's site overview page.
+	 * Returns the service URL to an AdSense account's site management page.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
+	 * @return {(string|undefined)} AdSense account site management URL (or `undefined` if not loaded).
 	 */
-	getAccountManageSiteURL: createRegistrySelector( ( select ) => () => {
+	getServiceAccountManageSiteURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
 		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 
@@ -119,13 +119,13 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Returns the URL to the AdSense site list overview
+	 * Returns the service URL to the AdSense sites list.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(string|undefined)} AdSense account site list overview URL (or `undefined` if not loaded).
+	 * @return {(string|undefined)} AdSense account sites list URL (or `undefined` if not loaded).
 	 */
-	getAccountManageSitesURL: createRegistrySelector( ( select ) => ( ) => {
+	getServiceAccountManageSitesURL: createRegistrySelector( ( select ) => ( ) => {
 		const accountID = select( STORE_NAME ).getAccountID();
 
 		if ( accountID === undefined ) {
@@ -141,13 +141,13 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Returns the URL to an AdSense account's site ads preview page.
+	 * Returns the service URL to an AdSense account's site ads preview page.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return {(string|undefined)} AdSense account site ads preview URL (or `undefined` if not loaded).
 	 */
-	getAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => () => {
+	getServiceAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
 		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 

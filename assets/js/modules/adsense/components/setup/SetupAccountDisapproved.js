@@ -33,7 +33,7 @@ const { useSelect } = Data;
 
 export default function SetupAccountDisapproved() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const accountURL = useSelect( ( select ) => select( STORE_NAME ).getAccountURL() );
+	const accountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountURL() );
 
 	if ( undefined === accountID || ! accountURL ) {
 		return null;

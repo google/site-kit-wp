@@ -32,7 +32,7 @@ import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountPending() {
-	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getAccountManageSiteURL() );
+	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSiteURL() );
 
 	if ( ! accountSiteURL ) {
 		return null;

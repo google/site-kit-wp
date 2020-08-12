@@ -44,7 +44,7 @@ export default function SettingsView() {
 	const accountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getAccountManageSitesURL() );
+	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSitesURL() );
 
 	let accountStatusLabel;
 	switch ( accountStatus ) {

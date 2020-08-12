@@ -32,8 +32,8 @@ const { useSelect } = Data;
 
 export default function SiteSteps() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getAccountManageSitesURL() );
-	const enableAutoAdsURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteAdsPreviewURL() );
+	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSitesURL() );
+	const enableAutoAdsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountSiteAdsPreviewURL() );
 
 	if ( ! accountID || ! siteStatusURL || ! enableAutoAdsURL ) {
 		return <ProgressBar small />;
