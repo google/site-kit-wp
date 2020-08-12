@@ -730,13 +730,6 @@ final class Assets {
 		$site_url     = $this->context->get_reference_site_url();
 		$input        = $this->context->input();
 		$page         = $input->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
-		$permalink    = $input->filter( INPUT_GET, 'permaLink', FILTER_SANITIZE_STRING );
-		$permalink    = $permalink ?: $this->context->get_reference_canonical();
-		$page_title   = $input->filter( INPUT_GET, 'pageTitle', FILTER_SANITIZE_STRING );
-
-		if ( ! $page_title ) {
-			$page_title = is_home() ? get_bloginfo( 'blogname' ) : get_the_title();
-		}
 
 		$admin_data = array(
 			'siteURL'          => esc_url_raw( $site_url ),
@@ -763,6 +756,8 @@ final class Assets {
 			'ampMode'          => $this->context->get_amp_mode(),
 			'homeURL'          => home_url(),
 		);
+
+		$current_entity = $this->context->get_reference_entity();
 
 		return array(
 
@@ -813,8 +808,8 @@ final class Assets {
 			 * @param array $data Notification Data.
 			 */
 			'notifications'      => apply_filters( 'googlesitekit_notification_data', array() ),
-			'permaLink'          => $permalink ? esc_url_raw( $permalink ) : false,
-			'pageTitle'          => $page_title,
+			'permaLink'          => $current_entity ? esc_url_raw( $current_entity->get_url() ) : false,
+			'pageTitle'          => $current_entity ? $current_entity->get_title() : '',
 			'postID'             => get_the_ID(),
 			'postType'           => get_post_type(),
 			'dashboardPermalink' => $this->context->admin_url( 'dashboard' ),
