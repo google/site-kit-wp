@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -57,7 +52,7 @@ class AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component 
 
 		const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
 
-		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
+		const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
 			const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
 
 			return [

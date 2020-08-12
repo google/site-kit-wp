@@ -20,7 +20,6 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { map } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -75,7 +74,7 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 	];
 
 	const links = [];
-	const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
+	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
 		const percent = Number( row.metrics[ 0 ].values[ 2 ] );
 		const [ title, url ] = row.dimensions;
 		links[ i ] = `${ baseServiceURL }:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
