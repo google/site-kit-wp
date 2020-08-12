@@ -24,12 +24,13 @@ import { React } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { dispatch, select } from 'googlesitekit-data';
+import Data from 'googlesitekit-data';
 import Widget from './components/Widget';
 import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from './datastore/constants';
 // This import has side-effects; it registers the Widgets datastore on the default
 // data store registry (eg. `googlesitekit.data`).
 import './datastore';
+const { dispatch, select } = Data;
 
 export { registerDefaults } from './register-defaults';
 
