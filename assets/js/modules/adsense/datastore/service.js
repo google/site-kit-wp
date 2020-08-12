@@ -67,15 +67,17 @@ export const selectors = {
 	 * @return {(string|undefined)} AdSense URL to create a new account (or `undefined` if not loaded).
 	 */
 	getServiceCreateAccountURL: createRegistrySelector( ( select ) => () => {
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+
 		const query = {
 			source: 'site-kit',
 			utm_source: 'site-kit',
 			utm_medium: 'wordpress_signup',
 		};
-		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 		if ( undefined !== siteURL ) {
 			query.url = siteURL;
 		}
+
 		return addQueryArgs( 'https://www.google.com/adsense/signup/new', query );
 	} ),
 
@@ -93,6 +95,29 @@ export const selectors = {
 			return undefined;
 		}
 		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/home`, query: { source: 'site-kit' } } );
+	} ),
+
+	/**
+	 * Returns the service URL to an AdSense account's site overview page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
+	 */
+	getServiceAccountSiteURL: createRegistrySelector( ( select ) => () => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+
+		if ( accountID === undefined || siteURL === undefined ) {
+			return undefined;
+		}
+
+		const query = {
+			// TODO: Check which of these parameters are actually required.
+			source: 'site-kit',
+			url: parseDomain( siteURL ) || siteURL,
+		};
+		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/home`, query } );
 	} ),
 
 	/**

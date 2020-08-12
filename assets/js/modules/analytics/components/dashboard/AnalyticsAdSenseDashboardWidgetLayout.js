@@ -26,29 +26,18 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as MODULES_ADSENSE } from '../../../adsense/datastore/constants';
-import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../../search-console/datastore/constants';
 import Layout from '../../../../components/layout/layout';
-
 const { useSelect } = Data;
 
 const AnalyticsAdSenseDashboardWidgetLayout = ( { children } ) => {
-	const adSenseAccountID = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccountID() );
-	const propertyURL = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
-	const accountURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceURL(
-		{
-			path: `/${ adSenseAccountID }/home`,
-			query: {
-				source: 'site-kit',
-				url: propertyURL,
-			},
-		}
-	) );
+	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteURL() );
+
 	return (
 		<Layout
 			header
 			title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
 			headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
-			headerCtaLink={ accountURL }>
+			headerCtaLink={ accountSiteURL }>
 			{ children }
 		</Layout>
 	);
