@@ -22,12 +22,23 @@ class ErrorHandler extends Component {
 			error: null,
 			info: null,
 		};
+
+		this.errorClickHandler = this.onErrorClick.bind( this );
 	}
 
 	componentDidCatch( error, info ) {
 		global.console.error( 'Caught an error:', error, info );
 
 		this.setState( { error, info } );
+	}
+
+	onErrorClick( e ) {
+		const range = document.createRange();
+		range.selectNodeContents( e.target );
+
+		const selection = global.getSelection();
+		selection.removeAllRanges();
+		selection.addRange( range );
 	}
 
 	render() {
@@ -39,16 +50,29 @@ class ErrorHandler extends Component {
 			return children;
 		}
 
+		const reportLink = (
+			<a href="https://wordpress.org/support/plugin/google-site-kit/" target="_blank" rel="noopener noreferrer">
+				{ __( 'Report this problem', 'google-site-kit' ) }
+			</a>
+		);
+
+		const code = (
+			// eslint-disable-next-line
+			<pre onClick={ this.errorClickHandler } style={ { overflow: 'auto' } }>
+				{ error.message + info.componentStack }
+			</pre>
+		);
+
 		return (
 			<Notification
 				id="googlesitekit-error"
 				title={ __( 'Site Kit encountered an error', 'google-site-kit' ) }
-				description={ <code>{ error.message }</code> }
+				description={ reportLink }
 				isDismissable={ false }
 				format="small"
 				type="win-error"
 			>
-				<pre>{ info.componentStack }</pre>
+				{ code }
 			</Notification>
 		);
 	}
