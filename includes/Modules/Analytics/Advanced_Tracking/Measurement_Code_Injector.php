@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event_Pipe;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event;
 
 /**
  * Class for injecting Javascript based on the current active plugins.
@@ -22,79 +22,57 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measu
 final class Measurement_Code_Injector {
 
 	/**
-	 * Holds a list of event configurations to be injected.
-	 *
-	 * @since n.e.x.t.
-	 * @var array
-	 */
-	private $event_configurations;
-
-	/**
-	 * The javascript code that is injected for event tracking.
-	 *
-	 * @since n.e.x.t.
-	 * @var string
-	 */
-	protected $inject_script;
-
-	/**
-	 * Injector constructor.
-	 *
-	 * @since n.e.x.t.
-	 *
-	 * @param array $event_configurations list of measurement events to track.
-	 */
-	public function __construct( $event_configurations ) {
-		$this->event_configurations = wp_json_encode( $event_configurations );
-		$this->inject_script        = <<<INJECT_SCRIPT
-( function() {
-	function matches( el, selector ) {
-	    const matcher =
-		    el.matches ||
-		    el.webkitMatchesSelector ||
-		    el.mozMatchesSelector ||
-		    el.msMatchesSelector ||
-		    el.oMatchesSelector;
-	    if ( matcher ) {
-	        return matcher.call( el, selector );
-	    }
-	    return false;
-	}
-    var eventConfigurations = {$this->event_configurations};
-	var config;
-	for ( config of eventConfigurations ) {
-		const thisConfig = config;
-		document.addEventListener( config.on, function( e ) {
-			var el = e.target;
-			if ( matches( el, thisConfig.selector ) || matches( el, thisConfig.selector.concat( ' *' ) ) ) {
-				var params = {};
-				params['event_category'] = thisConfig.category;
-				gtag( 'event', thisConfig.action, params );
-			}
-		}, true );
-	}
-	}
-)();
-INJECT_SCRIPT;
-	}
-
-	/**
-	 * Returns the injected Javascript code.
-	 *
-	 * @since n.e.x.t.
-	 *
-	 * @return string the injected JavaScript code
-	 */
-	public function get_injected_script() {
-		return $this->inject_script;
-	}
-
-	/**
 	 * Creates list of measurement event configurations and javascript to inject.
 	 *
 	 * @since n.e.x.t.
+	 *
+	 * @param Measurement_Event[] $event_configurations The list of Measurement_Event objects.
 	 */
-	public function inject_event_tracking() {
-		wp_add_inline_script( 'google_gtagjs', $this->inject_script );
+	public function inject_event_tracking( $event_configurations ) {
+		?>
+		<script>
+			( function() {
+				function matches( el, selector ) {
+					const matcher =
+						el.matches ||
+						el.webkitMatchesSelector ||
+						el.mozMatchesSelector ||
+						el.msMatchesSelector ||
+						el.oMatchesSelector;
+					if ( matcher ) {
+						return matcher.call( el, selector );
+					}
+					return false;
+				}
+
+				function sendEvent( action, metadata ) {
+					if ( null === metadata ) {
+						gtag( 'event', action );
+					} else {
+						gtag( 'event', action, metadata );
+					}
+				}
+
+				var eventConfigurations = <?php echo wp_json_encode( $event_configurations ); ?>;
+				var config;
+				for ( config of eventConfigurations ) {
+					console.log(config);
+					const thisConfig = config;
+					document.addEventListener( config.on, function( e ) {
+						if ( "DOMContentLoaded" === thisConfig.on ) {
+							alert('got an event called: '.concat(thisConfig.action));
+							sendEvent( thisConfig.action, thisConfig.metadata );
+						} else {
+							var el = e.target;
+							if ( matches( el, thisConfig.selector ) || matches( el, thisConfig.selector.concat( ' *' ) ) ) {
+								alert('got an event called: '.concat(thisConfig.action));
+								sendEvent( thisConfig.action, thisConfig.metadata );
+							}
+						}
+					}, true );
+				}
+			} )();
+		</script>
+		<?php
 	}
 }

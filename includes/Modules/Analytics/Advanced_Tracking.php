@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WooCommerce_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
@@ -38,10 +40,18 @@ final class Advanced_Tracking {
 	private $supported_plugins;
 
 	/**
+	 * List of active plugin event lists.
+	 *
+	 * @since n.e.x.t.
+	 * @var Measurement_Event_List[]
+	 */
+	private $plugin_event_lists;
+
+	/**
 	 * List of event configurations to be tracked.
 	 *
 	 * @since n.e.x.t.
-	 * @var array
+	 * @var Measurement_Event[]
 	 */
 	private $event_configurations;
 
@@ -75,16 +85,29 @@ final class Advanced_Tracking {
 	 */
 	public function register() {
 		add_action(
-			'wp_enqueue_scripts',
+			'googlesitekit_analytics_init_tag',
 			function() {
-				$this->set_up_advanced_tracking();
-			},
-			11
+				$active_plugin_configurations = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
+				$this->register_event_lists( $active_plugin_configurations );
+				add_action(
+					'wp_footer',
+					function() {
+						$this->set_up_advanced_tracking();
+					}
+				);
+			}
 		);
-		add_filter(
-			'googlesitekit_amp_gtag_opt',
-			function( $gtag_amp_opt ) {
-				return $this->set_up_advanced_tracking_amp( $gtag_amp_opt );
+		add_action(
+			'googlesitekit_analytics_init_tag_amp',
+			function() {
+				$active_plugin_configurations = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
+				$this->register_event_lists( $active_plugin_configurations );
+				add_filter(
+					'googlesitekit_amp_gtag_opt',
+					function( $gtag_amp_opt ) {
+						return $this->set_up_advanced_tracking_amp( $gtag_amp_opt );
+					}
+				);
 			}
 		);
 	}
@@ -95,12 +118,8 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	private function set_up_advanced_tracking() {
-		if ( ! wp_script_is( 'google_gtagjs' ) ) {
-			return;
-		}
-		$this->configure_events();
-		// TODO: Instantiate and register Metadata_Collector here.
-		( new Measurement_Code_Injector( $this->event_configurations ) )->inject_event_tracking();
+		$this->compile_events();
+		( new Measurement_Code_Injector() )->inject_event_tracking( $this->event_configurations );
 	}
 
 	/**
@@ -112,7 +131,7 @@ final class Advanced_Tracking {
 	 * @return array $gtag_amp_opt gtag config options for AMP.
 	 */
 	private function set_up_advanced_tracking_amp( $gtag_amp_opt ) {
-		$this->configure_events();
+		$this->compile_events();
 
 		if ( ! array_key_exists( 'triggers', $gtag_amp_opt ) ) {
 			$gtag_amp_opt['triggers'] = array();
@@ -124,17 +143,30 @@ final class Advanced_Tracking {
 	}
 
 	/**
-	 * Creates list of event configurations.
+	 * Instantiates and registers the active plugin event lists.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param array $active_plugin_configurations The list of active plugin configurations.
+	 */
+	private function register_event_lists( $active_plugin_configurations ) {
+		$this->plugin_event_lists = array();
+		foreach ( $active_plugin_configurations as $plugin_config ) {
+			$plugin_event_list_class = $plugin_config['event_list_class'];
+			$plugin_event_list       = new $plugin_event_list_class();
+			$plugin_event_list->register();
+			$this->plugin_event_lists[] = $plugin_event_list;
+		}
+	}
+
+	/**
+	 * Compiles the list of Measurement_Event objects.
 	 *
 	 * @since n.e.x.t.
 	 */
-	private function configure_events() {
-		$active_plugins = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
-
+	private function compile_events() {
 		$this->event_configurations = array();
-		foreach ( $active_plugins as $plugin_config ) {
-			$plugin_event_list_class = $plugin_config['event_list_class'];
-			$plugin_event_list       = new $plugin_event_list_class();
+		foreach ( $this->plugin_event_lists as $plugin_event_list ) {
 			if ( null !== $plugin_event_list ) {
 				foreach ( $plugin_event_list->get_events() as $measurement_event ) {
 					$this->event_configurations[] = $measurement_event;

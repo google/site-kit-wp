@@ -38,8 +38,7 @@ final class Measurement_Event implements \JsonSerializable {
 	 * @throws \Exception Thrown when config param is undefined.
 	 */
 	public function __construct( $config ) {
-		$this->validate_config( $config );
-		$this->config = $config;
+		$this->config = $this->validate_config( $config );
 	}
 
 	/**
@@ -48,24 +47,34 @@ final class Measurement_Event implements \JsonSerializable {
 	 * @since n.e.x.t.
 	 *
 	 * @param array $config The event's configuration.
+	 * @return array The event's configuration.
 	 * @throws \Exception Thrown when invalid keys or value type.
 	 */
 	private function validate_config( $config ) {
 		$valid_keys = array(
-			'pluginName' => false,
-			'category'   => false,
-			'action'     => false,
-			'selector'   => false,
-			'on'         => false,
+			'pluginName',
+			'action',
+			'selector',
+			'on',
+			'metadata',
 		);
 		foreach ( $config as $key => $value ) {
-			if ( ! array_key_exists( $key, $valid_keys ) ) {
+			if ( ! in_array( $key, $valid_keys, true ) ) {
 				throw new \Exception( 'Invalid configuration parameter: ' . $key );
 			}
-			if ( ! is_string( $value ) ) {
-				throw new \Exception( 'Configuration parameter ' . $key . ' must be string' );
+		}
+		if ( ! array_key_exists( 'metadata', $config ) ) {
+			$config['metadata'] = null;
+		}
+		if ( array_key_exists( 'on', $config ) && 'DOMContentLoaded' === $config['on'] ) {
+			$config['selector'] = '';
+		}
+		foreach ( $valid_keys as $key ) {
+			if ( ! array_key_exists( $key, $config ) ) {
+				throw new \Exception( 'Missed configuration parameter: ' . $key );
 			}
 		}
+		return $config;
 	}
 
 	/**
@@ -87,15 +96,21 @@ final class Measurement_Event implements \JsonSerializable {
 	 * @return array $amp_config The AMP configuration for this event.
 	 */
 	public function to_amp_config() {
-		$amp_config             = array();
-		$amp_config['selector'] = $this->config['selector'];
-		$amp_config['on']       = $this->config['on'];
+		$amp_config = array();
+		if ( 'DOMContentLoaded' === $this->config['on'] ) {
+			$amp_config['on'] = 'visible';
+		} else {
+			$amp_config['on']       = $this->config['on'];
+			$amp_config['selector'] = $this->config['selector'];
+		}
 
-		$vars_config                   = array();
-		$vars_config['event_name']     = $this->config['action'];
-		$vars_config['event_category'] = $this->config['category'];
-
+		$vars_config               = array();
+		$vars_config['event_name'] = $this->config['action'];
+		foreach ( $this->config['metadata'] as $key => $value ) {
+			$vars_config[ $key ] = $value;
+		}
 		$amp_config['vars'] = $vars_config;
+
 		return $amp_config;
 	}
 

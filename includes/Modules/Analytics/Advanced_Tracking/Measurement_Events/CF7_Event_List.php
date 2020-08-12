@@ -18,24 +18,46 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events
  * @ignore
  */
 final class CF7_Event_List extends Measurement_Event_List {
-	// TODO: Implement metadata callbacks.
 
 	/**
-	 * CF7_Event_List constructor.
+	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t.
 	 */
-	public function __construct() {
-		$event = new Measurement_Event(
+	public function register() {
+		add_filter(
+			'do_shortcode_tag',
+			function( $output, $tag, $attr ) {
+				if ( 'contact-form-7' === $tag && ! empty( $attr['id'] ) ) {
+					$this->collect_cf7_shortcode( $attr['id'] );
+				}
+				return $output;
+			},
+			10,
+			3
+		);
+	}
+
+	/** Creates a new Measurement_Event object when a Contact Form 7 shortcode is rendered.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param string $id The form's id.
+	 * @throws \Exception Thrown when invalid keys or value type.
+	 */
+	private function collect_cf7_shortcode( $id ) {
+		$params                   = array();
+		$params['event_category'] = 'engagement';
+		$params['event_label']    = $id;
+		$event                    = new Measurement_Event(
 			array(
 				'pluginName' => 'Contact Form 7',
-				'category'   => 'engagement',
 				'action'     => 'form_submit',
-				'selector'   => '.wpcf7-form .wpcf7-submit',
+				'selector'   => 'div[id^="wpcf7-f' . $id . '"] .wpcf7-form .wpcf7-submit',
 				'on'         => 'click',
+				'metadata'   => $params,
 			)
 		);
 		$this->add_event( $event );
 	}
-
 }
