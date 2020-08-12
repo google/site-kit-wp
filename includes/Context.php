@@ -357,25 +357,32 @@ final class Context {
 			return false;
 		}
 
-		$amp_plugin_version_2_or_higher = version_compare( AMP__VERSION, '2.0.0', '>=' );
+		$amp_plugin_version       = AMP__VERSION;
+		$amp_exposes_support_mode = defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
+			&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
+			&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
+
+		if ( strpos( $amp_plugin_version, '-' ) !== false ) {
+			$amp_plugin_version = explode( '-', $amp_plugin_version )[0];
+		}
+
+		$amp_plugin_version_2_or_higher = version_compare( $amp_plugin_version, '2.0.0', '>=' );
 
 		if ( $amp_plugin_version_2_or_higher ) {
 			$exposes_support_mode = method_exists( 'AMP_Options_Manager', 'get_option' )
-				&& defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
-				&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
-				&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
+				&& $amp_exposes_support_mode;
 		} else {
 			$exposes_support_mode = method_exists( 'AMP_Theme_Support', 'get_support_mode' )
-				&& defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
-				&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
-				&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
+				&& $amp_exposes_support_mode;
 		}
 
 		if ( $exposes_support_mode ) {
 			// If recent version, we can properly detect the mode.
-			$mode = $amp_plugin_version_2_or_higher ?
-				AMP_Options_Manager::get_option( 'theme_support' ) :
-				AMP_Theme_Support::get_support_mode();
+			if ( $amp_plugin_version_2_or_higher ) {
+				$mode = \AMP_Options_Manager::get_option( 'theme_support' );
+			} else {
+				$mode = AMP_Theme_Support::get_support_mode();
+			}
 
 			if ( AMP_Theme_Support::STANDARD_MODE_SLUG === $mode ) {
 				return self::AMP_MODE_PRIMARY;
