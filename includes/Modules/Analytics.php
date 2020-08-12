@@ -933,7 +933,7 @@ final class Analytics extends Module
 					// When using multiple date ranges, it changes the structure of the response,
 					// where each date range becomes an item in a list.
 					if ( ! empty( $data['multiDateRange'] ) ) {
-						$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
+						$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true, true );
 					}
 				}
 
