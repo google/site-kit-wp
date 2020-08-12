@@ -13,6 +13,9 @@ namespace Google\Site_Kit\Core\Util;
 use Google\Site_Kit\Context;
 use WP_Query;
 use WP_Post;
+use WP_Term;
+use WP_User;
+use WP_Post_Type;
 use WP_Screen;
 
 /**
@@ -92,7 +95,8 @@ final class Entity_Factory {
 	 * @return Entity|null The entity for the query, or null if none could be determined.
 	 */
 	public static function from_wp_query( WP_Query $query ) {
-		if ( $query->is_singular() || $query->is_home() && ! $query->is_front_page() ) {
+		// A singular post (possibly the static front page).
+		if ( $query->is_singular() ) {
 			$post = $query->get_queried_object();
 			if ( $post instanceof WP_Post && self::is_post_public( $post ) ) {
 				return self::create_entity_for_post( $post );
@@ -100,13 +104,65 @@ final class Entity_Factory {
 			return null;
 		}
 
-		// If not singular (see above) but front page, this is the blog archive.
-		if ( $query->is_front_page() ) {
-			return self::create_entity_for_home_blog();
+		// The blog.
+		if ( $query->is_home() ) {
+			// The blog is either the front page...
+			if ( $query->is_front_page() ) {
+				return self::create_entity_for_front_blog();
+			}
+			// ...or it is a separate post assigned as 'page_for_posts'.
+			return self::create_entity_for_posts_blog();
 		}
 
-		// TODO: This is not comprehensive, but will be expanded in the future.
-		// Related: https://github.com/google/site-kit-wp/issues/174.
+		// A taxonomy term archive.
+		if ( $query->is_category() || $query->is_tag() || $query->is_tax() ) {
+			$term = $query->get_queried_object();
+			if ( $term instanceof WP_Term ) {
+				return self::create_entity_for_term( $term );
+			}
+		}
+
+		// An author archive.
+		if ( $query->is_author() ) {
+			$user = $query->get_queried_object();
+			if ( $user instanceof WP_User ) {
+				return self::create_entity_for_author( $user );
+			}
+		}
+
+		// A post type archive.
+		if ( $query->is_post_type_archive() ) {
+			$post_type = $query->get( 'post_type' );
+			if ( is_array( $post_type ) ) {
+				$post_type = reset( $post_type );
+			}
+			$post_type_object = get_post_type_object( $post_type );
+			if ( $post_type_object instanceof WP_Post_Type ) {
+				return self::create_entity_for_post_type( $post_type_object );
+			}
+		}
+
+		// A date-based archive.
+		if ( $query->is_date() ) {
+			$queried_post = self::get_first_query_post( $query );
+			if ( ! $queried_post ) {
+				return null;
+			}
+			if ( $query->is_year() ) {
+				return self::create_entity_for_date( $queried_post, 'year' );
+			}
+			if ( $query->is_month() ) {
+				return self::create_entity_for_date( $queried_post, 'month' );
+			}
+			if ( $query->is_day() ) {
+				return self::create_entity_for_date( $queried_post, 'day' );
+			}
+
+			// Time archives are not covered for now. While they can theoretically be used in WordPress, they
+			// aren't fully supported, and WordPress does not link to them anywhere.
+			return null;
+		}
+
 		return null;
 	}
 
@@ -119,17 +175,10 @@ final class Entity_Factory {
 	 * @return Entity The entity for the post.
 	 */
 	private static function create_entity_for_post( WP_Post $post ) {
-		$type = 'post';
-
-		// If this post is assigned as the posts page, it is actually the blog archive.
-		if ( (int) get_option( 'page_for_posts' ) === (int) $post->ID ) {
-			$type = 'blog';
-		}
-
 		return new Entity(
 			get_permalink( $post ),
 			array(
-				'type'  => $type,
+				'type'  => 'post',
 				'title' => $post->post_title,
 				'id'    => $post->ID,
 			)
@@ -137,22 +186,225 @@ final class Entity_Factory {
 	}
 
 	/**
-	 * Creates the entity for the home blog archive.
+	 * Creates the entity for the posts page blog archive.
 	 *
-	 * This method should only be used when the home page is set to display the
-	 * blog archive, i.e. is not technically a post itself. Otherwise, it
-	 * should be handled through {@see Context::create_entity_for_post()}.
+	 * This method should only be used when the blog is handled via a separate page, i.e. when 'show_on_front' is set
+	 * to 'page' and the 'page_for_posts' option is set. In this case the blog is technically a post itself, therefore
+	 * its entity also includes an ID.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return Entity The entity for the home blog archive.
+	 * @return Entity|null The entity for the posts blog archive, or null if not set.
 	 */
-	private static function create_entity_for_home_blog() {
+	private static function create_entity_for_posts_blog() {
+		$post_id = (int) get_option( 'page_for_posts' );
+		if ( ! $post_id ) {
+			return null;
+		}
+
+		$post = get_post( $post_id );
+		if ( ! $post ) {
+			return null;
+		}
+
+		return new Entity(
+			get_permalink( $post ),
+			array(
+				'type'  => 'blog',
+				'title' => $post->post_title,
+				'id'    => $post->ID,
+			)
+		);
+	}
+
+	/**
+	 * Creates the entity for the front page blog archive.
+	 *
+	 * This method should only be used when the front page is set to display the
+	 * blog archive, i.e. is not technically a post itself.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Entity The entity for the front blog archive.
+	 */
+	private static function create_entity_for_front_blog() {
 		return new Entity(
 			user_trailingslashit( home_url() ),
 			array(
 				'type'  => 'blog',
-				'title' => __( 'Home', 'google-site-kit' ),
+				'title' => __( 'Home' ),
+			)
+		);
+	}
+
+	/**
+	 * Creates the entity for a given term object, i.e. for a taxonomy term archive.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Term $term A WordPress term object.
+	 * @return Entity The entity for the term.
+	 */
+	private static function create_entity_for_term( WP_Term $term ) {
+		// See WordPress's `get_the_archive_title()` function for this behavior. The strings here intentionally omit
+		// the 'google-site-kit' text domain since they should use WordPress core translations.
+		switch ( $term->taxonomy ) {
+			case 'category':
+				$title  = _x( 'Category:', 'category archive title prefix' );
+				$title .= " {$term->name}";
+				break;
+			case 'post_tag':
+				$title  = _x( 'Tag:', 'tag archive title prefix' );
+				$title .= " {$term->name}";
+				break;
+			case 'post_format':
+				switch ( $term->name ) {
+					case 'post-format-aside':
+						$title = _x( 'Asides', 'post format archive title' );
+						break;
+					case 'post-format-gallery':
+						$title = _x( 'Galleries', 'post format archive title' );
+						break;
+					case 'post-format-image':
+						$title = _x( 'Images', 'post format archive title' );
+						break;
+					case 'post-format-video':
+						$title = _x( 'Videos', 'post format archive title' );
+						break;
+					case 'post-format-quote':
+						$title = _x( 'Quotes', 'post format archive title' );
+						break;
+					case 'post-format-link':
+						$title = _x( 'Links', 'post format archive title' );
+						break;
+					case 'post-format-status':
+						$title = _x( 'Statuses', 'post format archive title' );
+						break;
+					case 'post-format-audio':
+						$title = _x( 'Audio', 'post format archive title' );
+						break;
+					case 'post-format-chat':
+						$title = _x( 'Chats', 'post format archive title' );
+						break;
+				}
+				break;
+			default:
+				$tax   = get_taxonomy( $term->taxonomy );
+				$title = sprintf(
+					/* translators: %s: Taxonomy singular name. */
+					_x( '%s:', 'taxonomy term archive title prefix' ),
+					$tax->labels->singular_name
+				);
+				$title .= " {$term->name}";
+		}
+
+		return new Entity(
+			get_term_link( $term ),
+			array(
+				'type'  => 'term',
+				'title' => $title,
+				'id'    => $term->term_id,
+			)
+		);
+	}
+
+	/**
+	 * Creates the entity for a given user object, i.e. for an author archive.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user A WordPress user object.
+	 * @return Entity The entity for the user.
+	 */
+	private static function create_entity_for_author( WP_User $user ) {
+		// See WordPress's `get_the_archive_title()` function for this behavior. The string here intentionally omits
+		// the 'google-site-kit' text domain since it should use WordPress core translations.
+		$title  = _x( 'Author:', 'author archive title prefix' );
+		$title .= " {$user->display_name}";
+
+		return new Entity(
+			get_author_posts_url( $user->ID, $user->user_nicename ),
+			array(
+				'type'  => 'user',
+				'title' => $title,
+				'id'    => $user->ID,
+			)
+		);
+	}
+
+	/**
+	 * Creates the entity for a given post type object.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Post_Type $post_type A WordPress post type object.
+	 * @return Entity The entity for the post type.
+	 */
+	private static function create_entity_for_post_type( WP_Post_Type $post_type ) {
+		// See WordPress's `get_the_archive_title()` function for this behavior. The string here intentionally omits
+		// the 'google-site-kit' text domain since it should use WordPress core translations.
+		$title  = _x( 'Archives:', 'post type archive title prefix' );
+		$title .= " {$post_type->labels->name}";
+
+		return new Entity(
+			get_post_type_archive_link( $post_type->name ),
+			array(
+				'type'  => 'post_type',
+				'title' => $title,
+			)
+		);
+	}
+
+	/**
+	 * Creates the entity for a date-based archive.
+	 *
+	 * The post specified has to any post from the query, in order to extract the relevant date information.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Post $queried_post A WordPress post object from the query.
+	 * @param string  $type         Optional. Type of the date-based archive. Either 'year', 'month', or 'day'.
+	 *                              Default is 'day'.
+	 * @return Entity The entity for the date archive.
+	 */
+	private static function create_entity_for_date( WP_Post $queried_post, $type = 'day' ) {
+		// See WordPress's `get_the_archive_title()` function for this behavior. The strings here intentionally omit
+		// the 'google-site-kit' text domain since they should use WordPress core translations.
+		switch ( $type ) {
+			case 'year':
+				$title           = _x( 'Year:', 'date archive title prefix' );
+				$format          = _x( 'Y', 'yearly archives date format' );
+				$url_func        = 'get_year_link';
+				$url_func_format = 'Y';
+				break;
+			case 'month':
+				$title           = _x( 'Month:', 'date archive title prefix' );
+				$format          = _x( 'F Y', 'monthly archives date format' );
+				$url_func        = 'get_month_link';
+				$url_func_format = 'Y/m';
+				break;
+			default:
+				$type            = 'day';
+				$title           = _x( 'Day:', 'date archive title prefix' );
+				$format          = _x( 'F j, Y', 'daily archives date format' );
+				$url_func        = 'get_day_link';
+				$url_func_format = 'Y/m/j';
+		}
+
+		$title        .= ' ' . get_post_time( $format, false, $queried_post, true );
+		$url_func_args = array_map(
+			'absint',
+			explode(
+				'/',
+				get_post_time( $url_func_format, false, $queried_post )
+			)
+		);
+
+		return new Entity(
+			call_user_func_array( $url_func, $url_func_args ),
+			array(
+				'type'  => $type,
+				'title' => $title,
 			)
 		);
 	}
@@ -178,5 +430,30 @@ final class Entity_Factory {
 
 		// Otherwise, the post is public.
 		return true;
+	}
+
+	/**
+	 * Gets the first post from a WordPress query.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Query $query WordPress query object. Must already have run the actual database query.
+	 * @return WP_Post|null WordPress post object, or null if none found.
+	 */
+	private static function get_first_query_post( WP_Query $query ) {
+		if ( ! $query->posts ) {
+			return null;
+		}
+
+		$post = $query->posts[ array_keys( $query->posts )[0] ];
+		if ( $post instanceof WP_Post ) {
+			return $post;
+		}
+
+		if ( is_numeric( $post ) ) {
+			return get_post( $post );
+		}
+
+		return null;
 	}
 }
