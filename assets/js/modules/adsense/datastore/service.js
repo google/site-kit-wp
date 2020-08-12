@@ -64,7 +64,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {string} AdSense URL to create a new account.
+	 * @return {(string|undefined)} AdSense URL to create a new account (or `undefined` if not loaded).
 	 */
 	getCreateAccountURL: createRegistrySelector( ( select ) => () => {
 		const query = {
@@ -84,7 +84,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {string} AdSense account overview URL.
+	 * @return {(string|undefined)} AdSense account overview URL (or `undefined` if not loaded).
 	 */
 	getAccountURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
@@ -100,7 +100,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {string} AdSense account site overview URL.
+	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
 	 */
 	getAccountSiteURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
@@ -123,7 +123,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {string} AdSense account site list overview URL.
+	 * @return {(string|undefined)} AdSense account site list overview URL (or `undefined` if not loaded).
 	 */
 	getAccountSitesURL: createRegistrySelector( ( select ) => ( ) => {
 		const accountID = select( STORE_NAME ).getAccountID();
@@ -145,7 +145,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {string} AdSense account site ads preview URL.
+	 * @return {(string|undefined)} AdSense account site ads preview URL (or `undefined` if not loaded).
 	 */
 	getAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
