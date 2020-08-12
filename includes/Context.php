@@ -358,12 +358,12 @@ final class Context {
 			return false;
 		}
 
-		if ( defined( 'AMP__VERSION' ) ) {
-			$amp_plugin_version       = AMP__VERSION;
-			$amp_exposes_support_mode = defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
-				&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
-				&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
+		$exposes_support_mode = defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
+			&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
+			&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
 
+		if ( defined( 'AMP__VERSION' ) ) {
+			$amp_plugin_version = AMP__VERSION;
 			if ( strpos( $amp_plugin_version, '-' ) !== false ) {
 				$amp_plugin_version = explode( '-', $amp_plugin_version )[0];
 			}
@@ -376,11 +376,11 @@ final class Context {
 		if ( $amp_plugin_version_2_or_higher ) {
 			$exposes_support_mode = class_exists( 'AMP_Options_Manager' )
 				&& method_exists( 'AMP_Options_Manager', 'get_option' )
-				&& $amp_exposes_support_mode;
+				&& $exposes_support_mode;
 		} else {
 			$exposes_support_mode = class_exists( 'AMP_Theme_Support' )
 				&& method_exists( 'AMP_Theme_Support', 'get_support_mode' )
-				&& $amp_exposes_support_mode;
+				&& $exposes_support_mode;
 		}
 
 		if ( $exposes_support_mode ) {
