@@ -369,7 +369,7 @@ final class Context {
 		$amp_plugin_version_2_or_higher = version_compare( $amp_plugin_version, '2.0.0', '>=' );
 
 		if ( $amp_plugin_version_2_or_higher ) {
-			$exposes_support_mode = method_exists( 'AMP_Options_Manager', 'get_option' )
+			$exposes_support_mode = class_exists( 'AMP_Options_Manager' ) && method_exists( 'AMP_Options_Manager', 'get_option' )
 				&& $amp_exposes_support_mode;
 		} else {
 			$exposes_support_mode = method_exists( 'AMP_Theme_Support', 'get_support_mode' )
