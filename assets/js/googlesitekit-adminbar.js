@@ -50,19 +50,11 @@ export class GoogleSitekitAdminbar extends Component {
 	}
 
 	async handleMoreDetailsLink() {
-		const {
-			permaLink,
-			postID,
-			postType,
-			pageTitle,
-		} = global._googlesitekitLegacyData;
+		const { permaLink } = global._googlesitekitLegacyData;
 		const href = getSiteKitAdminURL(
 			'googlesitekit-dashboard',
 			{
 				permaLink,
-				id: postID,
-				postType,
-				pageTitle,
 			}
 		);
 

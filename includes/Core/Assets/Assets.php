@@ -768,7 +768,7 @@ final class Assets {
 			 *
 			 * @param array $data Admin data.
 			 */
-			'admin'              => apply_filters( 'googlesitekit_admin_data', $admin_data ),
+			'admin'         => apply_filters( 'googlesitekit_admin_data', $admin_data ),
 
 			/**
 			 * Filters the modules data to pass to JS.
@@ -777,9 +777,9 @@ final class Assets {
 			 *
 			 * @param array $data Data about each module.
 			 */
-			'modules'            => apply_filters( 'googlesitekit_modules_data', array() ),
-			'locale'             => $locale,
-			'permissions'        => array(
+			'modules'       => apply_filters( 'googlesitekit_modules_data', array() ),
+			'locale'        => $locale,
+			'permissions'   => array(
 				'canAuthenticate'      => current_user_can( Permissions::AUTHENTICATE ),
 				'canSetup'             => current_user_can( Permissions::SETUP ),
 				'canViewPostsInsights' => current_user_can( Permissions::VIEW_POSTS_INSIGHTS ),
@@ -798,7 +798,7 @@ final class Assets {
 			 *
 			 * @param array $data Authentication Data.
 			 */
-			'setup'              => apply_filters( 'googlesitekit_setup_data', array() ),
+			'setup'         => apply_filters( 'googlesitekit_setup_data', array() ),
 
 			/**
 			 * Filters the notification message to print to plugin dashboard.
@@ -807,14 +807,11 @@ final class Assets {
 			 *
 			 * @param array $data Notification Data.
 			 */
-			'notifications'      => apply_filters( 'googlesitekit_notification_data', array() ),
-			'permaLink'          => $current_entity ? esc_url_raw( $current_entity->get_url() ) : false,
-			'pageTitle'          => $current_entity ? $current_entity->get_title() : '',
-			'postID'             => get_the_ID(),
-			'postType'           => get_post_type(),
-			'dashboardPermalink' => $this->context->admin_url( 'dashboard' ),
-			'publicPath'         => $this->context->url( 'dist/assets/js/' ),
-			'editmodule'         => $input->filter( INPUT_GET, 'editmodule', FILTER_SANITIZE_STRING ),
+			'notifications' => apply_filters( 'googlesitekit_notification_data', array() ),
+			'permaLink'     => $current_entity ? esc_url_raw( $current_entity->get_url() ) : false,
+			'pageTitle'     => $current_entity ? $current_entity->get_title() : '',
+			'publicPath'    => $this->context->url( 'dist/assets/js/' ),
+			'editmodule'    => $input->filter( INPUT_GET, 'editmodule', FILTER_SANITIZE_STRING ),
 		);
 	}
 

@@ -19,28 +19,34 @@
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Link from '../link';
 import WPDashboardModules from './wp-dashboard-modules';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
-class WPDashboardMain extends Component {
-	render() {
-		return (
-			<div className="googlesitekit-wp-dashboard">
-				<div className="googlesitekit-wp-dashboard__cta">
-					<Link className="googlesitekit-wp-dashboard__cta-link" href={ global._googlesitekitLegacyData.dashboardPermalink }>
-						{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
-					</Link>
-				</div>
-				<WPDashboardModules />
-			</div>
-		);
+const WPDashboardMain = () => {
+	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
+
+	if ( ! dashboardURL ) {
+		return null;
 	}
-}
+
+	return (
+		<div className="googlesitekit-wp-dashboard">
+			<div className="googlesitekit-wp-dashboard__cta">
+				<Link className="googlesitekit-wp-dashboard__cta-link" href={ dashboardURL }>
+					{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
+				</Link>
+			</div>
+			<WPDashboardModules />
+		</div>
+	);
+};
 
 export default WPDashboardMain;
