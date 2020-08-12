@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -77,7 +72,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 		];
 
 		const links = [];
-		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
+		const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
 			const [ title, url ] = row.dimensions;
 			links[ i ] = url.startsWith( '/' ) ? url : '/' + url;
 

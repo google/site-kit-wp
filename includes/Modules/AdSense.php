@@ -435,8 +435,12 @@ tag_partner: "site_kit"
 			case 'GET:account-url':
 				return function() {
 					$account_id = $this->get_data( 'account-id' );
-					if ( ! is_wp_error( $account_id ) && $account_id ) {
-						return sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id );
+					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
+						$profile_email = $this->authentication->profile()->get()['email'];
+						return add_query_arg(
+							array( 'authuser' => $profile_email ),
+							sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id )
+						);
 					}
 					return 'https://www.google.com/adsense/signup/new';
 				};
@@ -576,8 +580,12 @@ tag_partner: "site_kit"
 			case 'GET:reports-url':
 				return function() {
 					$account_id = $this->get_data( 'account-id' );
-					if ( ! is_wp_error( $account_id ) && $account_id ) {
-						return sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id );
+					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
+						$profile_email = $this->authentication->profile()->get()['email'];
+						return add_query_arg(
+							array( 'authuser' => $profile_email ),
+							sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id )
+						);
 					}
 					return 'https://www.google.com/adsense/start';
 				};

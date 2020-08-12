@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -79,7 +74,7 @@ function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 	];
 	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
 
-	const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
+	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
 		const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
 
 		return [
