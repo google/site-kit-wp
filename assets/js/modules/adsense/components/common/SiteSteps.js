@@ -28,16 +28,14 @@ import Data from 'googlesitekit-data';
 import Link from '../../../../components/link';
 import ProgressBar from '../../../../components/progress-bar';
 import { STORE_NAME } from '../../datastore';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function SiteSteps() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getAccountManageSitesURL() );
-	const enableAutoAdsURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteAdsPreviewURL( siteURL ) );
+	const enableAutoAdsURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteAdsPreviewURL() );
 
-	if ( ! accountID || ! siteURL || ! siteStatusURL || ! enableAutoAdsURL ) {
+	if ( ! accountID || ! siteStatusURL || ! enableAutoAdsURL ) {
 		return <ProgressBar small />;
 	}
 
