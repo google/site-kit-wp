@@ -49,14 +49,14 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea( AREA_DASHBOARD_ALL_TRAFFIC, {
 		title: __( 'All Traffic', 'google-site-kit' ),
 		subtitle: __( 'How people found your site.', 'google-site-kit' ),
-		style: WIDGET_AREA_STYLES.COMPOSITE,
+		style: WIDGET_AREA_STYLES.BOXES,
 		priority: 1,
 	}, CONTEXT_DASHBOARD );
 
 	widgetsAPI.registerWidgetArea( AREA_DASHBOARD_SEARCH_FUNNEL, {
 		title: __( 'Search Funnel', 'google-site-kit' ),
 		subtitle: __( 'How your site appeared in Search results and how many visitors you got from Search.', 'google-site-kit' ),
-		style: WIDGET_AREA_STYLES.COMPOSITE,
+		style: WIDGET_AREA_STYLES.BOXES,
 		priority: 2,
 	}, CONTEXT_DASHBOARD );
 
