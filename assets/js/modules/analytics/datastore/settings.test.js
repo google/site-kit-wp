@@ -377,6 +377,18 @@ describe( 'modules/analytics settings', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 			} );
 
+			it( 'requires permission for GTM Analytics tag if the tag is present', () => {
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).receiveGetSingleAnalyticsPropertyID( tagWithPermission.propertyID );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, false );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+			} );
+
 			it( 'requires permissions for an existing tag', () => {
 				const existingTag = {
 					accountID: '999999',
