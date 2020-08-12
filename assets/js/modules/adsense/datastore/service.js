@@ -147,7 +147,7 @@ export const selectors = {
 	 *
 	 * @return {string} AdSense account site ads preview URL.
 	 */
-	getAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => ( ) => {
+	getAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
 		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 
