@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import { renderHook, act } from '../../../../../tests/js/test-utils';
-import { createTestRegistry, untilResolved, muteConsole } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	untilResolved,
+	muteConsole,
+} from '../../../../../tests/js/utils';
 import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
 import useExistingTagEffect from './useExistingTagEffect';
@@ -31,11 +35,44 @@ describe( 'useExistingTagEffect', () => {
 		registry = createTestRegistry();
 		// Set settings to prevent fetch in resolver.
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		// Set set no existing tag.
+		// Set no existing tag.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 	} );
 
-	it( 'sets the accountID and containerID when there is an existing tag with permission', async () => {
+	it( 'sets the accountID and selects property when there is an existing tag with permission', async () => {
+		// const account = factories.accountBuilder();
+		// const accountID = account.accountId;
+		// const containers = factories.buildContainers(
+		// 	3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
+		// );
+		// // TODO define propertyID
+		// const [ firstContainer, existingContainer ] = containers;
 
+		const existingTag = 'test-tag-value';
+		const accountID = 'test-account-id';
+		const propertyID = 'test-property-id';
+
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag );
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
+
+		let rerender;
+		await act( () => new Promise( async ( resolve ) => {
+			( { rerender } = renderHook( () => useExistingTagEffect(), { registry } ) );
+			await untilResolved( registry, STORE_NAME ).getTagPermission( null );
+			resolve();
+		} ) );
+
+		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( accountID );
+		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
+
+		// muteConsole( 'error' );
+		// await act( () => new Promise( async ( resolve ) => {
+		// 	registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: existingContainer.publicId } );
+		// 	registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingContainer.publicId );
+		// 	await untilResolved( registry, STORE_NAME ).getTagPermission( existingContainer.publicId );
+		// 	rerender();
+		// 	resolve();
+		// } ) );
 	} );
 } );
