@@ -53,6 +53,10 @@ const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 		return null;
 	}
 
+	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+		return null;
+	}
+
 	const headers = [
 		{
 			title: __( 'Title', 'google-site-kit' ),

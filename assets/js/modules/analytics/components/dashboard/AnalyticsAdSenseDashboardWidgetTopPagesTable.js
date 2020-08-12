@@ -52,6 +52,14 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		return null;
 	}
 
+	if ( ! data || ! data.length ) {
+		return null;
+	}
+
+	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+		return null;
+	}
+
 	const headers = [
 		{
 			title: __( 'Page Title', 'google-site-kit' ),

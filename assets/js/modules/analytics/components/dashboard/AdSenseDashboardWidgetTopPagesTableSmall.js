@@ -65,6 +65,10 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 			return null;
 		}
 
+		if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+			return null;
+		}
+
 		const headers = [
 			{
 				title: __( 'Top Earning Pages', 'google-site-kit' ),
