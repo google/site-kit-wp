@@ -24,7 +24,7 @@ export const selectors = {
 	/**
 	 * Gets a URL to the service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {Object} [args]       Object containing optional path and query args

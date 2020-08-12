@@ -130,7 +130,7 @@ final class Authentication {
 	/**
 	 * Has_Connected_Admins instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 * @var Has_Connected_Admins
 	 */
 	protected $has_connected_admins;

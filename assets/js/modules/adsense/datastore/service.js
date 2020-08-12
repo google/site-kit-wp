@@ -36,7 +36,7 @@ export const selectors = {
 	/**
 	 * Gets a URL to the service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {Object} [args]       Object containing optional path and query args
@@ -62,7 +62,7 @@ export const selectors = {
 	/**
 	 * Returns the service URL for creating a new AdSense account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return {(string|undefined)} AdSense URL to create a new account (or `undefined` if not loaded).
 	 */
@@ -84,7 +84,7 @@ export const selectors = {
 	/**
 	 * Returns the service URL to an AdSense account's overview page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return {(string|undefined)} AdSense account overview URL (or `undefined` if not loaded).
 	 */
@@ -104,7 +104,7 @@ export const selectors = {
 	/**
 	 * Returns the service URL to an AdSense account's site overview page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
 	 */
@@ -128,7 +128,7 @@ export const selectors = {
 	/**
 	 * Returns the service URL to an AdSense account's site management page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return {(string|undefined)} AdSense account site management URL (or `undefined` if not loaded).
 	 */
@@ -152,7 +152,7 @@ export const selectors = {
 	/**
 	 * Returns the service URL to the AdSense sites list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return {(string|undefined)} AdSense account sites list URL (or `undefined` if not loaded).
 	 */
@@ -172,7 +172,7 @@ export const selectors = {
 	/**
 	 * Returns the service URL to an AdSense account's site ads preview page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return {(string|undefined)} AdSense account site ads preview URL (or `undefined` if not loaded).
 	 */
