@@ -28,7 +28,7 @@ import { getSiteKitAdminURL, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import AnalyticsDashboardWidget from './components/dashboard/AnalyticsDashboardWidget';
 import AnalyticsAdminbarWidget from './components/adminbar/AnalyticsAdminbarWidget';
-import AnalyticsAllTraffic from './components/dashboard/AnalyticsAllTraffic';
+import LegacyAnalyticsAllTraffic from './components/dashboard/LegacyAnalyticsAllTraffic';
 import AnalyticsDashboardWidgetTopLevel from './components/dashboard/AnalyticsDashboardWidgetTopLevel';
 import WPAnalyticsDashboardWidgetOverview from './components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
 import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/dashboard-details/AnalyticsDashboardDetailsWidgetTopAcquisitionSources';
@@ -71,7 +71,7 @@ if ( ! modulesData[ slug ].setupComplete ) {
 
 if ( modulesData.analytics.active ) {
 	const addAnalyticsDashboardWidget = createAddToFilter( <AnalyticsDashboardWidget /> );
-	const addAnalyticsAllTraffic = createAddToFilter( <AnalyticsAllTraffic /> );
+	const addAnalyticsAllTraffic = createAddToFilter( <LegacyAnalyticsAllTraffic /> );
 	const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
 	const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
 	const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
