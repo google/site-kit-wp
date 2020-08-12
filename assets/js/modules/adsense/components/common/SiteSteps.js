@@ -34,7 +34,7 @@ const { useSelect } = Data;
 export default function SiteSteps() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSitesURL() );
+	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getAccountManageSitesURL() );
 	const enableAutoAdsURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteAdsPreviewURL( siteURL ) );
 
 	if ( ! accountID || ! siteURL || ! siteStatusURL || ! enableAutoAdsURL ) {
