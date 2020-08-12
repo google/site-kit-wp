@@ -33,7 +33,7 @@ const { useSelect } = Data;
 
 export default function SetupSiteAdd() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const addSiteURL = useSelect( ( select ) => select( STORE_NAME ).getAccountSiteURL() );
+	const addSiteURL = useSelect( ( select ) => select( STORE_NAME ).getAccountManageSiteURL() );
 
 	const addSiteHandler = useCallback( ( event ) => {
 		event.preventDefault();

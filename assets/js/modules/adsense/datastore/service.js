@@ -102,7 +102,7 @@ export const selectors = {
 	 *
 	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
 	 */
-	getAccountSiteURL: createRegistrySelector( ( select ) => () => {
+	getAccountManageSiteURL: createRegistrySelector( ( select ) => () => {
 		const accountID = select( STORE_NAME ).getAccountID();
 		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 
