@@ -46,6 +46,14 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 			return null;
 		}
 
+		if ( ! data || ! data.length ) {
+			return null;
+		}
+
+		if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+			return null;
+		}
+
 		const links = [];
 		const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
 			const [ title, url ] = row.dimensions;

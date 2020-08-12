@@ -46,6 +46,12 @@ function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 	if ( ! data || ! data.length ) {
 		return null;
 	}
+	if ( ! Array.isArray( data[ 0 ].data.totals ) || ! data[ 0 ].data.totals.length ) {
+		return null;
+	}
+	if ( ! Array.isArray( data[ 0 ].data.rows ) || ! data[ 0 ].data.rows.length ) {
+		return null;
+	}
 
 	const currentRange = getCurrentDateRange( dateRange );
 	const headers = [

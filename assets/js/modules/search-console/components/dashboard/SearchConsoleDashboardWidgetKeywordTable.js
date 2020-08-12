@@ -38,6 +38,11 @@ const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics', query: { resource_id: domain, num_of_days: 28 } } ) );
+
+	if ( ! data || ! data.length ) {
+		return null;
+	}
+
 	const headers = [
 		{
 			title: __( 'Keyword', 'google-site-kit' ),

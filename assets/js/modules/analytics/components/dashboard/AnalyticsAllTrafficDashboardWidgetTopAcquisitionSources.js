@@ -39,10 +39,10 @@ class AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component 
 		if ( ! data || ! data.length ) {
 			return null;
 		}
-		if ( ! data[ 0 ].data.totals || ! data[ 0 ].data.totals.length ) {
+		if ( ! Array.isArray( data[ 0 ].data.totals ) || ! data[ 0 ].data.totals.length ) {
 			return null;
 		}
-		if ( ! data[ 0 ].data.rows || ! data[ 0 ].data.rows.length ) {
+		if ( ! Array.isArray( data[ 0 ].data.rows ) || ! data[ 0 ].data.rows.length ) {
 			return null;
 		}
 
