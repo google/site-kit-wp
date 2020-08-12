@@ -50,7 +50,7 @@ export const selectors = {
 			return undefined;
 		}
 
-		const baseURI = 'https://www.google.com/adsense/new';
+		const baseURI = 'https://www.google.com/adsense/new/u/0';
 		const queryParams = query ? { ...query, authuser: userEmail } : { authuser: userEmail };
 		if ( path ) {
 			const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
