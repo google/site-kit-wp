@@ -34,7 +34,7 @@ describe( 'module/adsense service store', () => {
 		name: 'admin',
 		picture: 'https://path/to/image',
 	};
-	const baseURI = 'https://www.google.com/adsense/new';
+	const baseURI = 'https://www.google.com/adsense/new/u/0';
 
 	let registry;
 

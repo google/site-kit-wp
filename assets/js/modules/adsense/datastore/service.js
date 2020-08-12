@@ -94,7 +94,11 @@ export const selectors = {
 		if ( accountID === undefined ) {
 			return undefined;
 		}
-		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/home`, query: { source: 'site-kit' } } );
+
+		const path = `${ accountID }/home`;
+		const query = { source: 'site-kit' };
+
+		return select( STORE_NAME ).getServiceURL( { path, query } );
 	} ),
 
 	/**
@@ -112,12 +116,13 @@ export const selectors = {
 			return undefined;
 		}
 
+		const path = `${ accountID }/home`;
 		const query = {
-			// TODO: Check which of these parameters are actually required.
 			source: 'site-kit',
 			url: parseDomain( siteURL ) || siteURL,
 		};
-		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/home`, query } );
+
+		return select( STORE_NAME ).getServiceURL( { path, query } );
 	} ),
 
 	/**
@@ -135,12 +140,13 @@ export const selectors = {
 			return undefined;
 		}
 
+		const path = `${ accountID }/sites/my-sites`;
 		const query = {
-			// TODO: Check which of these parameters are actually required.
 			source: 'site-kit',
 			url: parseDomain( siteURL ) || siteURL,
 		};
-		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/sites/my-sites`, query } );
+
+		return select( STORE_NAME ).getServiceURL( { path, query } );
 	} ),
 
 	/**
@@ -157,12 +163,10 @@ export const selectors = {
 			return undefined;
 		}
 
-		const query = {
-			// TODO: Check which of these parameters are actually required.
-			source: 'site-kit',
-			utm_source: 'site-kit',
-		};
-		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/sites/my-sites`, query } );
+		const path = `${ accountID }/sites/my-sites`;
+		const query = { source: 'site-kit' };
+
+		return select( STORE_NAME ).getServiceURL( { path, query } );
 	} ),
 
 	/**
@@ -180,11 +184,13 @@ export const selectors = {
 			return undefined;
 		}
 
+		const path = `${ accountID }/myads/sites/preview`;
 		const query = {
 			source: 'site-kit',
 			url: parseDomain( siteURL ) || siteURL,
 		};
-		return select( STORE_NAME ).getServiceURL( { path: `${ accountID }/myads/sites/preview`, query } );
+
+		return select( STORE_NAME ).getServiceURL( { path, query } );
 	} ),
 };
 
