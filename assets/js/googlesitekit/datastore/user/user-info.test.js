@@ -34,7 +34,7 @@ describe( 'core/user userInfo', () => {
 		connectURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&googlesitekit_connect=1&nonce=a1b2c3d4e5',
 		user: {
 			id: 1,
-			email: 'admin@fakedomain.com',
+			email: 'admin@example.com',
 			name: 'admin',
 			picture: 'https://path/to/image',
 		},

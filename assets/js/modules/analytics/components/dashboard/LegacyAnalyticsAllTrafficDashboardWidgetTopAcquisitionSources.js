@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -44,6 +39,12 @@ class LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Comp
 		if ( ! data || ! data.length ) {
 			return null;
 		}
+		if ( ! Array.isArray( data[ 0 ].data.totals ) || ! data[ 0 ].data.totals.length ) {
+			return null;
+		}
+		if ( ! Array.isArray( data[ 0 ].data.rows ) || ! data[ 0 ].data.rows.length ) {
+			return null;
+		}
 
 		const headers = [
 			{
@@ -57,7 +58,7 @@ class LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Comp
 
 		const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
 
-		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
+		const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
 			const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
 
 			return [
