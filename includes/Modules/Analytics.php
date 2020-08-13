@@ -74,7 +74,7 @@ final class Analytics extends Module
 	/**
 	 * Internal flag set after print_amp_gtag is invoked for the first time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 * @var bool
 	 */
 	private $did_amp_gtag = false;
@@ -163,7 +163,7 @@ final class Analytics extends Module
 					 * This means that the tag will be rendered in the current request.
 					 * Site Kit uses `gtag.js` for its Analytics snippet.
 					 *
-					 * @since n.e.x.t
+					 * @since 1.14.0
 					 *
 					 * @param string $property_id Analytics property ID used in the tag.
 					 */
@@ -182,7 +182,7 @@ final class Analytics extends Module
 					 * This means that the tag will be rendered in the current request.
 					 * Site Kit uses `gtag.js` for its Analytics snippet.
 					 *
-					 * @since n.e.x.t
+					 * @since 1.14.0
 					 *
 					 * @param string $property_id Analytics property ID used in the tag.
 					 */
@@ -333,7 +333,7 @@ final class Analytics extends Module
 	 * Outputs gtag snippet.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t The `$property_id` parameter was added.
+	 * @since 1.14.0 The `$property_id` parameter was added.
 	 *
 	 * @param string $property_id Analytics property ID to use in the snippet.
 	 */
@@ -409,7 +409,7 @@ final class Analytics extends Module
 	 * Outputs gtag <amp-analytics> tag.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t The `$property_id` parameter was added.
+	 * @since 1.14.0 The `$property_id` parameter was added.
 	 *
 	 * @param string $property_id Analytics property ID to use in the snippet.
 	 */
