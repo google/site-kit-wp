@@ -107,22 +107,23 @@ const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
 		>
 			<ComboboxInput
 				id="autocomplete"
-				className="autocomplete__input"
+				className="autocomplete__input autocomplete__input--default"
 				type="text"
 				onChange={ ( evt ) => {
 					setCanSubmit( false );
 					setSearchTerm( evt.target.value );
 				} }
 			/>
+
 			{ ( debouncedValue !== '' ) && (
-				<ComboboxPopover className="autocomplete__menu">
-					{ results.length > 0 ? (
-						<ComboboxList>
-							{ results.map( ( { ID, post_title: title } ) => <ComboboxOption key={ ID } value={ title } className="autocomplete__option" /> ) }
-						</ComboboxList>
-					) : (
-						<ComboboxOption value={ 'No results found' } className="autocomplete__option" />
-					) }
+				<ComboboxPopover portal={ false }>
+					<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
+						{ results.length > 0 ? (
+							results.map( ( { ID, post_title: title } ) => <ComboboxOption key={ ID } value={ title } className="autocomplete__option" /> )
+						) : (
+							<ComboboxOption value={ 'No results found' } className="autocomplete__option" />
+						) }
+					</ComboboxList>
 				</ComboboxPopover>
 			) }
 		</Combobox>
