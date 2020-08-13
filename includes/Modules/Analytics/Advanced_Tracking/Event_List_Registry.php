@@ -34,7 +34,9 @@ class Event_List_Registry {
 	 *
 	 * @since n.e.x.t.
 	 */
-	public function __construct() {}
+	public function __construct() {
+		$this->active_event_lists = array();
+	}
 
 	/**
 	 * Registers a third party event lists.
@@ -42,7 +44,27 @@ class Event_List_Registry {
 	 * @since n.e.x.t.
 	 *
 	 * @param Measurement_Event_List $event_list The third party event list to be registered.
+	 * @throws \Exception Thrown when $event_list is not an instance of Measurement_Event_List.
 	 */
-	public function register( Measurement_Event_List $event_list ) {}
+	public function register( Measurement_Event_List $event_list ) {
+		if ( ! $event_list instanceof Measurement_Event_List ) {
+			throw new \Exception( 'Event list must extend Measurement_Event_List.' );
+		}
+
+		$event_list->register();
+		$this->active_event_lists[] = $event_list;
+	}
+
+	/**
+	 * Gets the list of active event lists.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @return Measurement_Event_List[] The list of active event lists.
+	 */
+	public function get_active_event_lists() {
+		return $this->active_event_lists;
+	}
+
 
 }

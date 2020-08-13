@@ -19,6 +19,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WooCo
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
 
 // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
@@ -64,6 +65,14 @@ final class Advanced_Tracking {
 	private $plugin_detector;
 
 	/**
+	 * Main class event list registry instance.
+	 *
+	 * @since n.e.x.t.
+	 * @var Event_List_Registry
+	 */
+	private $event_list_registry;
+
+	/**
 	 * Advanced_Tracking constructor.
 	 *
 	 * @since n.e.x.t.
@@ -76,6 +85,8 @@ final class Advanced_Tracking {
 		} else {
 			$this->plugin_detector = $plugin_detector;
 		}
+
+		$this->event_list_registry = new Event_List_Registry();
 	}
 
 	/**
@@ -157,6 +168,7 @@ final class Advanced_Tracking {
 			$plugin_event_list->register();
 			$this->plugin_event_lists[] = $plugin_event_list;
 		}
+		do_action( 'googlesitekit_analytics_register_event_list', $this->event_list_registry );
 	}
 
 	/**
@@ -171,6 +183,12 @@ final class Advanced_Tracking {
 				foreach ( $plugin_event_list->get_events() as $measurement_event ) {
 					$this->event_configurations[] = $measurement_event;
 				}
+			}
+		}
+
+		foreach ( $this->event_list_registry->get_active_event_lists() as $registry_event_list ) {
+			foreach ( $registry_event_list->get_events() as $measurement_event ) {
+				$this->event_configurations[] = $measurement_event;
 			}
 		}
 	}
