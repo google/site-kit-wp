@@ -29,6 +29,7 @@ import error from './error';
 import tags from './tags';
 import settings from './settings';
 import versions from './versions';
+import service from './service';
 
 export { STORE_NAME };
 
@@ -71,6 +72,7 @@ const store = Data.combineStores(
 	settings,
 	versions,
 	createSnapshotStore( STORE_NAME ),
+	service
 );
 
 // Register this store on the global registry.

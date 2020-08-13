@@ -34,6 +34,7 @@ import urlchannels from './urlchannels';
 import settings from './settings';
 import adblocker from './adblocker';
 import error from './error';
+import service from './service';
 import { STORE_NAME } from './constants';
 
 export { STORE_NAME };
@@ -63,6 +64,7 @@ const store = Data.combineStores(
 	settings,
 	adblocker,
 	error,
+	service
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;

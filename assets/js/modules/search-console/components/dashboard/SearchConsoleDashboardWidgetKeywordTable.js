@@ -17,75 +17,73 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
-import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import Data from 'googlesitekit-data';
+import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/preview-table';
+import { STORE_NAME } from '../../datastore/constants';
+const { useSelect } = Data;
 
-class SearchConsoleDashboardWidgetKeywordTable extends Component {
-	render() {
-		const { data } = this.props;
+const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
+	const { data } = props;
+	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics', query: { resource_id: domain, num_of_days: 28 } } ) );
 
-		const headers = [
-			{
-				title: __( 'Keyword', 'google-site-kit' ),
-				tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
-				primary: true,
-			},
-			{
-				title: __( 'Clicks', 'google-site-kit' ),
-				tooltip: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
-			},
-			{
-				title: __( 'Impressions', 'google-site-kit' ),
-				tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
-			},
-		];
-		const domain = getModulesData()[ 'search-console' ].settings.propertyID;
-		const links = [];
-		const dataMapped = map( data, ( row, i ) => {
-			const query = row.keys[ 0 ];
-			links[ i ] = sprintf(
-				'https://search.google.com/search-console/performance/search-analytics?resource_id=%1$s&query=!%2$s&num_of_days=28',
-				domain,
-				query
-			);
-			return [
-				query,
-				numberFormat( row.clicks ),
-				numberFormat( row.impressions ),
-			];
-		} );
-
-		const options = {
-			hideHeader: false,
-			chartsEnabled: false,
-			links,
-		};
-
-		const dataTable = getDataTableFromData( dataMapped, headers, options );
-
-		return (
-			<TableOverflowContainer>
-				{ dataTable }
-			</TableOverflowContainer>
-		);
+	if ( ! data || ! data.length ) {
+		return null;
 	}
-}
+
+	const headers = [
+		{
+			title: __( 'Keyword', 'google-site-kit' ),
+			tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
+			primary: true,
+		},
+		{
+			title: __( 'Clicks', 'google-site-kit' ),
+			tooltip: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
+		},
+		{
+			title: __( 'Impressions', 'google-site-kit' ),
+			tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
+		},
+	];
+	const links = [];
+
+	const dataMapped = data.map( ( row, i ) => {
+		const query = row.keys[ 0 ];
+		links[ i ] = addQueryArgs( baseServiceURL, { query } );
+		return [
+			query,
+			numberFormat( row.clicks ),
+			numberFormat( row.impressions ),
+		];
+	} );
+
+	const options = {
+		hideHeader: false,
+		chartsEnabled: false,
+		links,
+	};
+
+	const dataTable = getDataTableFromData( dataMapped, headers, options );
+
+	return (
+		<TableOverflowContainer>
+			{ dataTable }
+		</TableOverflowContainer>
+	);
+};
 
 export default withData(
 	SearchConsoleDashboardWidgetKeywordTable,

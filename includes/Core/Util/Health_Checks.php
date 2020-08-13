@@ -20,7 +20,7 @@ use WP_REST_Server;
 /**
  * Class for performing health checks.
  *
- * @since n.e.x.t
+ * @since 1.14.0
  * @access private
  * @ignore
  */
@@ -45,7 +45,7 @@ class Health_Checks {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 */
 	public function register() {
 		add_filter(
@@ -61,7 +61,7 @@ class Health_Checks {
 	/**
 	 * Gets all health check REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return REST_Route[]
 	 */
@@ -91,7 +91,7 @@ class Health_Checks {
 	/**
 	 * Checks connection to Google APIs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return array Results data.
 	 */
