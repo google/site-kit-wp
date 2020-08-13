@@ -365,7 +365,7 @@ final class Entity_Factory {
 	 * @param WP_Post $queried_post A WordPress post object from the query.
 	 * @param string  $type         Optional. Type of the date-based archive. Either 'year', 'month', or 'day'.
 	 *                              Default is 'day'.
-	 * @return Entity The entity for the date archive.
+	 * @return Entity|null The entity for the date archive, or null if unable to parse date.
 	 */
 	private static function create_entity_for_date( WP_Post $queried_post, $type = 'day' ) {
 		// See WordPress's `get_the_archive_title()` function for this behavior. The strings here intentionally omit
@@ -391,14 +391,13 @@ final class Entity_Factory {
 				$url_func_format = 'Y/m/j';
 		}
 
-		$title        .= ' ' . get_post_time( $format, false, $queried_post, true );
-		$url_func_args = array_map(
-			'absint',
-			explode(
-				'/',
-				get_post_time( $url_func_format, false, $queried_post )
-			)
-		);
+		$title .= ' ' . get_post_time( $format, false, $queried_post, true );
+
+		$url_func_args = get_post_time( $url_func_format, false, $queried_post );
+		if ( ! $url_func_args ) {
+			return null; // Unable to parse date, likely there is none set.
+		}
+		$url_func_args = array_map( 'absint', explode( '/', $url_func_args ) );
 
 		return new Entity(
 			call_user_func_array( $url_func, $url_func_args ),
