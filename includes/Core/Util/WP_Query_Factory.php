@@ -265,6 +265,9 @@ final class WP_Query_Factory {
 		// Resolve conflicts between posts with numeric slugs and date archive queries.
 		$query_args = wp_resolve_numeric_slug_conflicts( $query_args );
 
+		// This is a WordPress core filter applied here to allow for the same modifications (e.g. for post formats).
+		$query_args = apply_filters( 'request', $query_args );
+
 		return $query_args;
 	}
 }

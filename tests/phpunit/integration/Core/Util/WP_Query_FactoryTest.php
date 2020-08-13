@@ -290,7 +290,8 @@ class WP_Query_FactoryTest extends TestCase {
 			'post format archives'               => array(
 				'https://example.com/?post_format=image',
 				array(
-					'post_format' => 'image',
+					'post_format' => 'post-format-image',
+					'post_type'   => array( 'post' ),
 				),
 				array(
 					'is_tax'      => true,
@@ -301,7 +302,8 @@ class WP_Query_FactoryTest extends TestCase {
 			'post format archives, page 2'       => array(
 				'https://example.com/?post_format=image&paged=2',
 				array(
-					'post_format' => 'image',
+					'post_format' => 'post-format-image',
+					'post_type'   => array( 'post' ),
 					'paged'       => '2',
 				),
 				array(
@@ -723,7 +725,8 @@ class WP_Query_FactoryTest extends TestCase {
 			'post format archives'         => array(
 				'https://example.com/type/image/',
 				array(
-					'post_format' => 'image',
+					'post_format' => 'post-format-image',
+					'post_type'   => array( 'post' ),
 				),
 				array(
 					'is_tax'      => true,
@@ -734,7 +737,8 @@ class WP_Query_FactoryTest extends TestCase {
 			'post format archives, page 2' => array(
 				'https://example.com/type/image/page/2/',
 				array(
-					'post_format' => 'image',
+					'post_format' => 'post-format-image',
+					'post_type'   => array( 'post' ),
 					'paged'       => '2',
 				),
 				array(
