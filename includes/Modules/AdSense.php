@@ -136,7 +136,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 					 *
 					 * This means that the tag will be rendered in the current request.
 					 *
-					 * @since n.e.x.t
+					 * @since 1.14.0
 					 *
 					 * @param string $client_id AdSense client ID used in the tag.
 					 */
@@ -154,7 +154,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 					 *
 					 * This means that the tag will be rendered in the current request.
 					 *
-					 * @since n.e.x.t
+					 * @since 1.14.0
 					 *
 					 * @param string $client_id AdSense client ID used in the tag.
 					 */
@@ -243,7 +243,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	 * Outputs the AdSense script tag.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t The `$client_id` parameter was added.
+	 * @since 1.14.0 The `$client_id` parameter was added.
 	 *
 	 * @param string $client_id AdSense client ID to use in the snippet.
 	 */
@@ -271,7 +271,7 @@ tag_partner: "site_kit"
 	/**
 	 * Outputs the <amp-auto-ads> tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @param string $client_id AdSense client ID to use in the snippet.
 	 */
@@ -339,7 +339,7 @@ tag_partner: "site_kit"
 	 * Adds the AMP auto ads tag if opted in.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t The `$client_id` parameter was added.
+	 * @since 1.14.0 The `$client_id` parameter was added.
 	 *
 	 * @param string $content   The page content.
 	 * @param string $client_id AdSense client ID to use in the snippet.
@@ -435,8 +435,12 @@ tag_partner: "site_kit"
 			case 'GET:account-url':
 				return function() {
 					$account_id = $this->get_data( 'account-id' );
-					if ( ! is_wp_error( $account_id ) && $account_id ) {
-						return sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id );
+					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
+						$profile_email = $this->authentication->profile()->get()['email'];
+						return add_query_arg(
+							array( 'authuser' => $profile_email ),
+							sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id )
+						);
 					}
 					return 'https://www.google.com/adsense/signup/new';
 				};
@@ -576,8 +580,12 @@ tag_partner: "site_kit"
 			case 'GET:reports-url':
 				return function() {
 					$account_id = $this->get_data( 'account-id' );
-					if ( ! is_wp_error( $account_id ) && $account_id ) {
-						return sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id );
+					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
+						$profile_email = $this->authentication->profile()->get()['email'];
+						return add_query_arg(
+							array( 'authuser' => $profile_email ),
+							sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id )
+						);
 					}
 					return 'https://www.google.com/adsense/start';
 				};

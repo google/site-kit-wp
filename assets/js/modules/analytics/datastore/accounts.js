@@ -23,18 +23,12 @@ import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
- * WordPress dependencies
- */
-import { addQueryArgs } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { isValidAccountSelection } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
-import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as tagActions } from './tags';
@@ -349,19 +343,13 @@ const baseSelectors = {
 	 */
 	getAccountTicketTermsOfServiceURL: createRegistrySelector( ( select ) => ( state ) => {
 		const { accountTicketID } = state;
-		const email = select( CORE_USER ).getEmail();
+		const tosURL = select( STORE_NAME ).getServiceURL( { path: `/termsofservice/${ accountTicketID }`, query: { provisioningSignup: 'false' } } );
 
-		if ( undefined === accountTicketID || ! email ) {
+		if ( undefined === accountTicketID || ! tosURL ) {
 			return undefined;
 		}
 
-		return addQueryArgs(
-			'https://analytics.google.com/analytics/web/',
-			{
-				authuser: email,
-				provisioningSignup: 'false',
-			}
-		) + `#/termsofservice/${ accountTicketID }`;
+		return tosURL;
 	} ),
 
 	/**
