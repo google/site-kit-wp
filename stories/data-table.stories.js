@@ -15,6 +15,7 @@ import { __, _x } from '@wordpress/i18n';
 import Layout from '../assets/js/components/layout/layout';
 import AnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopPagesTable';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
+import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Global', module )
 	.add( 'Data Table', () => {
@@ -28,17 +29,19 @@ storiesOf( 'Global', module )
 			);
 		}, 250 );
 		return (
-			<Layout
-				header
-				footer
-				title={ __( 'Top content over the last 28 days', 'google-site-kit' ) }
-				headerCtaLink="https://analytics.google.com"
-				headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-				footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-				footerCtaLink="https://analytics.google.com"
-			>
-				<AnalyticsDashboardWidgetTopPagesTable />
-			</Layout>
+			<WithTestRegistry>
+				<Layout
+					header
+					footer
+					title={ __( 'Top content over the last 28 days', 'google-site-kit' ) }
+					headerCtaLink="https://analytics.google.com"
+					headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					footerCtaLink="https://analytics.google.com"
+				>
+					<AnalyticsDashboardWidgetTopPagesTable />
+				</Layout>
+			</WithTestRegistry>
 		);
 	}, {
 		options: {

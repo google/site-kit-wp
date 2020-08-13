@@ -25,11 +25,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { getSiteKitAdminURL, clearWebStorage } from '../util';
 import Dialog from './dialog';
 import Button from './button';
 import Menu from './menu';
 import Modal from './modal';
+import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
+const { withSelect } = Data;
 
 class UserMenu extends Component {
 	constructor( props ) {
@@ -81,7 +85,7 @@ class UserMenu extends Component {
 	}
 
 	handleMenuItemSelect( index, e ) {
-		const { proxyPermissionsURL } = global._googlesitekitLegacyData.admin;
+		const { proxyPermissionsURL } = this.props;
 
 		if (
 			( ( 'keydown' === e.type && (
@@ -95,6 +99,9 @@ class UserMenu extends Component {
 					this.handleDialog();
 					break;
 				case 1:
+					if ( ! proxyPermissionsURL ) {
+						return;
+					}
 					global.location.assign( proxyPermissionsURL );
 					break;
 				default:
@@ -142,10 +149,15 @@ class UserMenu extends Component {
 
 	render() {
 		const {
-			userData: { email = '', picture = '' },
 			proxyPermissionsURL,
-		} = global._googlesitekitLegacyData.admin;
+			userEmail,
+			userPicture,
+		} = this.props;
 		const { dialogActive, menuOpen } = this.state;
+
+		if ( ! userEmail ) {
+			return null;
+		}
 
 		return (
 			<Fragment>
@@ -155,15 +167,15 @@ class UserMenu extends Component {
 						className="googlesitekit-header__dropdown mdc-button--dropdown"
 						text
 						onClick={ this.handleMenu }
-						icon={ picture
-							? <i className="mdc-button__icon" aria-hidden="true"><img className="mdc-button__icon--image" src={ picture } alt={ __( 'User Avatar', 'google-site-kit' ) } /></i>
+						icon={ userPicture
+							? <i className="mdc-button__icon" aria-hidden="true"><img className="mdc-button__icon--image" src={ userPicture } alt={ __( 'User Avatar', 'google-site-kit' ) } /></i>
 							: undefined
 						}
 						ariaHaspopup="menu"
 						ariaExpanded={ menuOpen }
 						ariaControls="user-menu"
 					>
-						{ email }
+						{ userEmail }
 					</Button>
 					<Menu
 						ref={ this.menuRef }
@@ -198,4 +210,10 @@ class UserMenu extends Component {
 	}
 }
 
-export default UserMenu;
+export default withSelect( ( select ) => {
+	return {
+		proxyPermissionsURL: select( CORE_SITE ).getProxyPermissionsURL(),
+		userEmail: select( CORE_USER ).getEmail(),
+		userPicture: select( CORE_USER ).getPicture(),
+	};
+} )( UserMenu );
