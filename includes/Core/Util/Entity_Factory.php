@@ -258,7 +258,7 @@ final class Entity_Factory {
 				$title .= " {$term->name}";
 				break;
 			case 'post_format':
-				switch ( $term->name ) {
+				switch ( $term->slug ) {
 					case 'post-format-aside':
 						$title = _x( 'Asides', 'post format archive title' );
 						break;

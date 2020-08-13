@@ -12,13 +12,13 @@ namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Core\Util\WP_Query_Factory;
 use Google\Site_Kit\Tests\TestCase;
-use WP_Post_Type;
-use WP_Taxonomy;
+use Google\Site_Kit\Tests\FixWPCoreEntityRewriteTrait;
 
 /**
  * @group Util
  */
 class WP_Query_FactoryTest extends TestCase {
+	use FixWPCoreEntityRewriteTrait;
 
 	private static $orig_show_on_front;
 	private static $orig_page_on_front;
@@ -573,11 +573,11 @@ class WP_Query_FactoryTest extends TestCase {
 		// Manually add public query vars and rewrite rules for post types and taxonomies because the latter were
 		// originally skipped due to an empty permalink structure.
 		foreach ( get_post_types( array(), 'objects' ) as $post_type ) {
-			$this->fix_post_type_rewrite( $post_type );
+			self::fix_post_type_rewrite( $post_type );
 			$post_type->add_rewrite_rules();
 		}
 		foreach ( get_taxonomies( array(), 'objects' ) as $taxonomy ) {
-			$this->fix_taxonomy_rewrite( $taxonomy );
+			self::fix_taxonomy_rewrite( $taxonomy );
 			$taxonomy->add_rewrite_rules();
 		}
 
@@ -1055,84 +1055,5 @@ class WP_Query_FactoryTest extends TestCase {
 				array(),
 			),
 		);
-	}
-
-	/**
-	 * Fixes a post type's `$rewrite` property on demand.
-	 *
-	 * When a post type is registered, its `$rewrite` property is only sanitized if pretty permalinks are enabled.
-	 * In order to switch the permalink structure around during tests and still have a proper `$rewrite` property for
-	 * existing post types, we need to manually fix this.
-	 *
-	 * See https://core.trac.wordpress.org/ticket/50877 for upstream ticket.
-	 *
-	 * @param WP_Post_Type $post_type Post type object.
-	 */
-	private function fix_post_type_rewrite( WP_Post_Type $post_type ) {
-		if ( false === $post_type->rewrite ) {
-			return;
-		}
-
-		$rewrite = $post_type->rewrite;
-
-		// This code is copied from `WP_Post_Type::set_props()`.
-		if ( ! is_array( $rewrite ) ) {
-			$rewrite = array();
-		}
-		if ( empty( $rewrite['slug'] ) ) {
-			$rewrite['slug'] = $post_type->name;
-		}
-		if ( ! isset( $rewrite['with_front'] ) ) {
-			$rewrite['with_front'] = true;
-		}
-		if ( ! isset( $rewrite['pages'] ) ) {
-			$rewrite['pages'] = true;
-		}
-		if ( ! isset( $rewrite['feeds'] ) || ! $post_type->has_archive ) {
-			$rewrite['feeds'] = (bool) $post_type->has_archive;
-		}
-		if ( ! isset( $rewrite['ep_mask'] ) ) {
-			if ( isset( $post_type->permalink_epmask ) ) {
-				$rewrite['ep_mask'] = $post_type->permalink_epmask;
-			} else {
-				$rewrite['ep_mask'] = EP_PERMALINK;
-			}
-		}
-
-		$post_type->rewrite = $rewrite;
-	}
-
-	/**
-	 * Fixes a taxonomy's `$rewrite` property on demand.
-	 *
-	 * When a taxonomy is registered, its `$rewrite` property is only sanitized if pretty permalinks are enabled.
-	 * In order to switch the permalink structure around during tests and still have a proper `$rewrite` property for
-	 * existing taxonomies, we need to manually fix this.
-	 *
-	 * See https://core.trac.wordpress.org/ticket/50877 for upstream ticket.
-	 *
-	 * @param WP_Taxonomy $taxonomy Taxonomy object.
-	 */
-	private function fix_taxonomy_rewrite( WP_Taxonomy $taxonomy ) {
-		if ( false === $taxonomy->rewrite ) {
-			return;
-		}
-
-		$rewrite = $taxonomy->rewrite;
-
-		// This code is copied from `WP_Taxonomy::set_props()`.
-		$rewrite = wp_parse_args(
-			$rewrite,
-			array(
-				'with_front'   => true,
-				'hierarchical' => false,
-				'ep_mask'      => EP_NONE,
-			)
-		);
-		if ( empty( $rewrite['slug'] ) ) {
-			$rewrite['slug'] = sanitize_title_with_dashes( $taxonomy->name );
-		}
-
-		$taxonomy->rewrite = $rewrite;
 	}
 }
