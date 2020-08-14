@@ -26,7 +26,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useState, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -37,29 +37,45 @@ import { STORE_NAME } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 import Dialog from '../../../components/dialog';
 
-const ModuleSettings = ( { children, error, provides, slug } ) => {
+function ModuleSettings( { children, error, provides, slug } ) {
 	const [ dialogActive, setDialogActive ] = useState( false );
+	const {
+		module,
+		isEditing,
+		modules,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			module: store.getModule( slug ),
+			isEditing: store.isEditingSettings( slug ),
+			modules: store.getModules(),
+		};
+	} );
 
 	const { setModuleActivation } = useDispatch( STORE_NAME );
-	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
-	const modules = useSelect( ( select ) => select( STORE_NAME ).getModules() );
-	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isEditingSettings( slug ) );
-
 	const { name, dependants: dependents } = module;
 
-	const handleDialog = () => {
+	const handleDialog = useCallback( () => {
 		setDialogActive( ! dialogActive );
-	};
+	}, [ slug ] );
 
-	const handleCloseModal = ( e ) => {
+	const handleCloseModal = useCallback( ( e ) => {
 		if ( 27 === e.keyCode ) {
 			setDialogActive( false );
 		}
-	};
+	}, [ slug ] );
 
-	const handleConfirmRemoveModule = () => {
+	const handleConfirmRemoveModule = useCallback( () => {
 		setModuleActivation( slug, false );
-	};
+	}, [ slug ] );
+
+	// Register listener for closing modal with Esc.
+	useEffect( () => {
+		global.addEventListener( 'keyup', handleCloseModal, false );
+		return () => {
+			global.removeEventListener( 'keyup', handleCloseModal );
+		};
+	}, [] );
 
 	// Find modules that depend on a module.
 	const getDependentModules = () => {
@@ -76,14 +92,6 @@ const ModuleSettings = ( { children, error, provides, slug } ) => {
 		return dependentModules;
 	};
 
-	// Register listener for closing modal with Esc.
-	useEffect( () => {
-		global.addEventListener( 'keyup', handleCloseModal, false );
-		return () => {
-			global.removeEventListener( 'keyup', handleCloseModal );
-		};
-	}, [] );
-
 	/* translators: %s: module name */
 	const subtitle = sprintf( __( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ), name );
 	const dependentModules = map( getDependentModules(), 'name' ).join( ', ' );
@@ -96,7 +104,6 @@ const ModuleSettings = ( { children, error, provides, slug } ) => {
 				`googlesitekit-settings-module--${ slug }`,
 				{ 'googlesitekit-settings-module--error': error && isEditing }
 			) }
-			key={ slug }
 		>
 			{ children }
 			<Dialog
@@ -119,7 +126,7 @@ const ModuleSettings = ( { children, error, provides, slug } ) => {
 			/>
 		</div>
 	);
-};
+}
 
 ModuleSettings.propTypes = {
 	children: PropTypes.oneOfType( [

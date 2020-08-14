@@ -20,13 +20,12 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
 
 /**
@@ -41,14 +40,22 @@ import SvgIcon from '../../../util/svg-icon';
 import { STORE_NAME } from '../datastore/constants';
 const { useDispatch, useSelect } = Data;
 
-const ModuleSettingsFooter = ( { allowEdit, handleDialog, slug } ) => {
-	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
-	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
-	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isEditingSettings( slug ) );
-	const isSavingModuleSettings = useSelect( ( select ) => select( STORE_NAME ).isSavingSettings( slug ) );
-	const { autoActivate, homepage, name, setupComplete } = module;
+function ModuleSettingsFooter( { allowEdit, handleDialog, slug } ) {
+	const {
+		module,
+		isEditing,
+		isSavingModuleSettings,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			module: store.getModule( slug ),
+			isEditing: store.isEditingSettings( slug ),
+			isSavingModuleSettings: store.isSavingSettings( slug ),
+		};
+	} );
 
-	const handleEdit = ( action ) => {
+	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
+	const handleEdit = useCallback( ( action ) => {
 		if ( action === 'confirm' ) {
 			const modulePromise = applyFilters( 'googlekit.SettingsConfirmed', false, slug );
 			setSettingsDisplayMode( slug, 'saving' );
@@ -76,85 +83,54 @@ const ModuleSettingsFooter = ( { allowEdit, handleDialog, slug } ) => {
 			// TODO: Set error to false.
 			setSettingsDisplayMode( slug, action === 'cancel' ? 'view' : 'edit' );
 		}
-	};
+	}, [ slug ] );
+
+	const { autoActivate, homepage, name, setupComplete } = module;
 
 	// Set button text based on state.
 	let buttonText = __( 'Close', 'google-site-kit' );
 	if ( allowEdit && setupComplete ) {
-		if ( isSavingModuleSettings ) {
-			buttonText = __( 'Saving…', 'google-site-kit' );
-		} else {
-			buttonText = __( 'Confirm Changes', 'google-site-kit' );
-		}
+		buttonText = isSavingModuleSettings
+			? __( 'Saving…', 'google-site-kit' )
+			: __( 'Confirm Changes', 'google-site-kit' );
 	}
 
 	return (
 		<footer className="googlesitekit-settings-module__footer">
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
-					<div className={ classnames(
-						'mdc-layout-grid__cell',
-						'mdc-layout-grid__cell--span-6-desktop',
-						'mdc-layout-grid__cell--span-8-tablet',
-						'mdc-layout-grid__cell--span-4-phone'
-					) } >
+					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone">
 						{ isEditing || isSavingModuleSettings ? (
 							<Fragment>
 								<Button
-									onClick={ () => {
-										handleEdit( allowEdit && setupComplete ? 'confirm' : 'cancel' );
-									} }
-									disabled={ isSavingModuleSettings }
 									id={ allowEdit && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
+									onClick={ () => handleEdit( allowEdit && setupComplete ? 'confirm' : 'cancel' ) }
+									disabled={ isSavingModuleSettings }
 								>
 									{ buttonText }
 								</Button>
 								<Spinner isSaving={ isSavingModuleSettings } />
 								{ allowEdit &&
-								<Link
-									className="googlesitekit-settings-module__footer-cancel"
-									onClick={ () => {
-										handleEdit( 'cancel' );
-									} }
-									inherit
-								>
-									{ __( 'Cancel', 'google-site-kit' ) }
-								</Link>
+									<Link className="googlesitekit-settings-module__footer-cancel" inherit onClick={ () => handleEdit( 'cancel' ) }>
+										{ __( 'Cancel', 'google-site-kit' ) }
+									</Link>
 								}
 							</Fragment>
 						) : ( ( allowEdit || ! autoActivate ) &&
-						<Link
-							className="googlesitekit-settings-module__edit-button"
-							onClick={ () => {
-								handleEdit( 'edit' );
-							} }
-							inherit
-						>
-							{ __( 'Edit', 'google-site-kit' ) }
-							<SvgIcon
-								className="googlesitekit-settings-module__edit-button-icon"
-								id="pencil"
-								width="10"
-								height="10"
-							/>
-						</Link>
+							<Link className="googlesitekit-settings-module__edit-button" inherit onClick={ () => handleEdit( 'edit' ) }>
+								{ __( 'Edit', 'google-site-kit' ) }
+								<SvgIcon
+									className="googlesitekit-settings-module__edit-button-icon"
+									id="pencil"
+									width="10"
+									height="10"
+								/>
+							</Link>
 						) }
 					</div>
-					<div className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-6-desktop
-						mdc-layout-grid__cell--span-8-tablet
-						mdc-layout-grid__cell--span-4-phone
-						mdc-layout-grid__cell--align-middle
-						mdc-layout-grid__cell--align-right-desktop
-					">
+					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right-desktop">
 						{ isEditing && ! autoActivate && (
-							<Link
-								className="googlesitekit-settings-module__remove-button"
-								onClick={ handleDialog }
-								inherit
-								danger
-							>
+							<Link className="googlesitekit-settings-module__remove-button" inherit danger onClick={ handleDialog }>
 								{
 									/* translators: %s: module name */
 									sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
@@ -168,12 +144,7 @@ const ModuleSettingsFooter = ( { allowEdit, handleDialog, slug } ) => {
 							</Link>
 						) }
 						{ ! isEditing && (
-							<Link
-								href={ homepage }
-								className="googlesitekit-settings-module__cta-button"
-								inherit
-								external
-							>
+							<Link href={ homepage } className="googlesitekit-settings-module__cta-button" inherit external>
 								{
 									/* translators: %s: module name */
 									sprintf( __( 'See full details in %s', 'google-site-kit' ), name )
@@ -185,7 +156,7 @@ const ModuleSettingsFooter = ( { allowEdit, handleDialog, slug } ) => {
 			</div>
 		</footer>
 	);
-};
+}
 
 ModuleSettingsFooter.propTypes = {
 	slug: PropTypes.string.isRequired,

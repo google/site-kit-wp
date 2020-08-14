@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Children, Fragment } from '@wordpress/element';
+import { Children } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,9 +35,18 @@ import { STORE_NAME } from '../datastore/constants';
 import ModuleSetupIncomplete from '../../../components/settings/module-setup-incomplete';
 const { useSelect } = Data;
 
-const ModuleSettingsBody = ( { allowEdit, children, slug } ) => {
-	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
-	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
+function ModuleSettingsBody( { allowEdit, children, slug } ) {
+	const {
+		module,
+		isOpen,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			module: store.getModule( slug ),
+			isOpen: store.isSettingsOpen( slug ),
+		};
+	} );
+
 	const { setupComplete } = module;
 
 	// Separate footer child and non-footer children.
@@ -47,11 +56,8 @@ const ModuleSettingsBody = ( { allowEdit, children, slug } ) => {
 
 	return (
 		<div
-			className={ classnames(
-				'googlesitekit-settings-module__content',
-				{ 'googlesitekit-settings-module__content--open': isOpen }
-			) }
 			id={ `googlesitekit-settings-module__content--${ slug }` }
+			className={ classnames( 'googlesitekit-settings-module__content', { 'googlesitekit-settings-module__content--open': isOpen } ) }
 			role="tabpanel"
 			aria-hidden={ ! isOpen }
 			aria-labelledby={ `googlesitekit-settings-module__header--${ slug }` }
@@ -59,26 +65,19 @@ const ModuleSettingsBody = ( { allowEdit, children, slug } ) => {
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					{ setupComplete &&
-						<Fragment>
-							<div className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12'
-							) }>
-								{ nonFooterChildren }
-							</div>
-						</Fragment>
+						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+							{ nonFooterChildren }
+						</div>
 					}
 					{ allowEdit && ! setupComplete &&
-						<ModuleSetupIncomplete
-							slug={ slug }
-						/>
+						<ModuleSetupIncomplete slug={ slug } />
 					}
 				</div>
 			</div>
 			{ footerChild }
 		</div>
 	);
-};
+}
 
 ModuleSettingsBody.propTypes = {
 	slug: PropTypes.string.isRequired,
