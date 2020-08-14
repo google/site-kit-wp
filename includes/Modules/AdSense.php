@@ -507,22 +507,42 @@ tag_partner: "site_kit"
 					return true;
 				};
 			case 'GET:earnings':
-				$dates = $this->date_range_to_dates( $data['dateRange'] ?: 'last-28-days' );
+				$start_date = $data['startDate'];
+				$end_date   = $data['endDate'];
+				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
+					$dates = $this->date_range_to_dates( $data['dateRange'] ?: 'last-28-days' );
+					if ( is_wp_error( $dates ) ) {
+						return $dates;
+					}
 
-				if ( is_wp_error( $dates ) ) {
-					return $dates;
+					list ( $start_date, $end_date ) = $dates;
 				}
 
-				list ( $start_date, $end_date ) = $dates;
+				$args = array(
+					'start_date' => $start_date,
+					'end_date'   => $end_date,
+				);
 
-				$dimensions = (array) $data['dimensions'];
-				$args       = compact( 'start_date', 'end_date', 'dimensions' );
-
-				if ( isset( $data['limit'] ) ) {
-					$args['row_limit'] = $data['limit'];
+				$metrics = $this->parse_string_list( $data['metrics'] );
+				if ( ! empty( $metrics ) ) {
+					$args['metrics'] = $metrics;
 				}
 
-				return $this->create_adsense_earning_data_request( $args );
+				$dimensions = $this->parse_string_list( $data['dimensions'] );
+				if ( ! empty( $dimensions ) ) {
+					$args['dimensions'] = $dimensions;
+				}
+
+				$orderby = $this->parse_earnings_orderby( $data['orderby'] );
+				if ( ! empty( $orderby ) ) {
+					$args['sort'] = $orderby;
+				}
+
+				if ( ! empty( $data['limit'] ) ) {
+					$args['limit'] = $data['limit'];
+				}
+
+				return $this->create_adsense_earning_data_request( array_filter( $args ) );
 			case 'GET:notifications':
 				return function() {
 					$alerts = $this->get_data( 'alerts' );
@@ -690,6 +710,45 @@ tag_partner: "site_kit"
 	}
 
 	/**
+	 * Parses the orderby value of the data request into an array of earning orderby format.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array|null $orderby Data request orderby value.
+	 * @return string[] An array of reporting orderby strings.
+	 */
+	protected function parse_earnings_orderby( $orderby ) {
+		if ( empty( $orderby ) || ! is_array( $orderby ) ) {
+			return array();
+		}
+
+		$results = array_map(
+			function ( $order_def ) {
+				$order_def = array_merge(
+					array(
+						'fieldName' => '',
+						'sortOrder' => '',
+					),
+					(array) $order_def
+				);
+
+				if ( empty( $order_def['fieldName'] ) || empty( $order_def['sortOrder'] ) ) {
+					return null;
+				}
+
+				return ( 'ASCENDING' === $order_def['sortOrder'] ? '+' : '-' ) . $order_def['fieldName'];
+			},
+			// When just object is passed we need to convert it to an array of objects.
+			wp_is_numeric_array( $orderby ) ? $orderby : array( $orderby )
+		);
+
+		$results = array_filter( $results );
+		$results = array_values( $results );
+
+		return $results;
+	}
+
+	/**
 	 * Gets an array of dates for the given named date range.
 	 *
 	 * @param string $date_range Named date range.
@@ -757,6 +816,7 @@ tag_partner: "site_kit"
 	 *     Optional. Additional arguments.
 	 *
 	 *     @type array  $dimensions List of request dimensions. Default empty array.
+	 *     @type array  $metrics    List of request metrics. Default empty array.
 	 *     @type string $start_date Start date in 'Y-m-d' format. Default empty string.
 	 *     @type string $end_date   End date in 'Y-m-d' format. Default empty string.
 	 *     @type int    $row_limit  Limit of rows to return. Default none (will be skipped).
@@ -768,9 +828,11 @@ tag_partner: "site_kit"
 			$args,
 			array(
 				'dimensions' => array(),
+				'metrics'    => array(),
 				'start_date' => '',
 				'end_date'   => '',
-				'row_limit'  => '',
+				'limit'      => '',
+				'sort'       => array(),
 			)
 		);
 
@@ -788,8 +850,16 @@ tag_partner: "site_kit"
 			$opt_params['dimension'] = (array) $args['dimensions'];
 		}
 
-		if ( ! empty( $args['row_limit'] ) ) {
-			$opt_params['maxResults'] = (int) $args['row_limit'];
+		if ( ! empty( $args['metrics'] ) ) {
+			$opt_params['metric'] = (array) $args['metrics'];
+		}
+
+		if ( ! empty( $args['sort'] ) ) {
+			$opt_params['sort'] = (array) $args['sort'];
+		}
+
+		if ( ! empty( $args['limit'] ) ) {
+			$opt_params['maxResults'] = (int) $args['limit'];
 		}
 
 		$host = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
