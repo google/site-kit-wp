@@ -37,7 +37,7 @@ import { SvgIcon, trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import { useExistingTagEffect } from '../../hooks';
+import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import {
 	AccountCreate,
 	AccountCreateLegacy,
