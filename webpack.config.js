@@ -86,6 +86,8 @@ const resolve = {
 		'@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
 		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
 		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
+		'react__non-shim': require.resolve( 'react' ),
+		react: path.resolve( 'assets/js/react-shim.js' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };

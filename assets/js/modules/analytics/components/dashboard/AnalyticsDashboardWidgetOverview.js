@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -35,6 +34,7 @@ import {
 	getTimeInSeconds,
 	prepareSecondsForDisplay,
 	readableLargeNumber,
+	changeToPercent,
 } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
@@ -45,6 +45,7 @@ import {
 	getAnalyticsErrorMessageFromData,
 	overviewReportDataDefaults,
 	userReportDataDefaults,
+	parseTotalUsersData,
 } from '../../util';
 import PreviewBlock from '../../../../components/preview-block';
 
@@ -53,9 +54,11 @@ class AnalyticsDashboardWidgetOverview extends Component {
 		super( props );
 		this.state = {
 			report: false,
-			directTotalUsers: false,
+			totalUsers: false,
+			previousTotalUsers: false,
 		};
 	}
+
 	// When additional data is returned, componentDidUpdate will fire.
 	componentDidUpdate() {
 		this.processCallbackData();
@@ -76,9 +79,9 @@ class AnalyticsDashboardWidgetOverview extends Component {
 
 	render() {
 		const { selectedStats, handleStatSelection } = this.props;
-		const { report, directTotalUsers } = this.state;
+		const { report, totalUsers, previousTotalUsers } = this.state;
 
-		if ( ! report || ! report.length || ! directTotalUsers ) {
+		if ( ! report || ! report.length || ! totalUsers ) {
 			return null;
 		}
 
@@ -92,17 +95,18 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			totalSessions,
 			averageBounceRate,
 			averageSessionDuration,
-			totalUsersChange,
 			totalSessionsChange,
 			averageBounceRateChange,
 			averageSessionDurationChange,
 		} = overviewData;
 
+		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
+
 		const dataBlocks = [
 			{
 				className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
 				title: __( 'Users', 'google-site-kit' ),
-				datapoint: readableLargeNumber( directTotalUsers ),
+				datapoint: readableLargeNumber( totalUsers ),
 				change: totalUsersChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -212,11 +216,8 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single' ],
 			toState( state, { data } ) {
-				if ( ! state.directTotalUsers ) {
-					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
-					return {
-						directTotalUsers,
-					};
+				if ( false === state.totalUsers ) {
+					return parseTotalUsersData( data );
 				}
 			},
 		},
