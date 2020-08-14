@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: report.
+ * modules/search-console data store: report.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -30,12 +30,12 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidDateRange, isValidOrders, isValidStringularItems } from '../../../util/report-validation';
+import { isValidDateRange, isValidStringularItems } from '../../../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
-		return API.get( 'modules', 'adsense', 'earnings', options );
+		return API.get( 'modules', 'search-console', 'searchanalytics', options );
 	},
 	reducerCallback: ( state, report, { options } ) => {
 		return {
@@ -47,27 +47,14 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
-		invariant( isPlainObject( options ), 'options must be an object.' );
-		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
+		invariant( isPlainObject( options ), 'Options for Search Console report must be an object.' );
+		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Search Console report.' );
 
-		const { orderby, metrics, dimensions } = options;
-
-		invariant(
-			isValidStringularItems( metrics ),
-			'Metrics for an AdSense report must be either a string or an array of strings.',
-		);
-
+		const { dimensions } = options;
 		if ( dimensions ) {
 			invariant(
 				isValidStringularItems( dimensions ),
-				'Dimensions for an AdSense report must be either a string or an array of strings.',
-			);
-		}
-
-		if ( orderby ) {
-			invariant(
-				isValidOrders( orderby ),
-				'Orders for an AdSense report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.',
+				'Dimensions for Search Console report must be either a string or an array of strings',
 			);
 		}
 
@@ -96,25 +83,20 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets a Google AdSense report for the given options.
+	 * Gets a Search Console report for the given options.
 	 *
-	 * The report generated will include the following metrics:
-	 * * 'EARNINGS'
-	 * * 'PAGE_VIEWS_RPM'
-	 * * 'IMPRESSIONS'
+	 * @since n.e.x.t
 	 *
-	 * @since 1.9.0
-	 *
-	 * @param {Object}         state                Data store's state.
-	 * @param {Object}         options              Options for generating the report.
-	 * @param {string}         options.startDate    Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.endDate      Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
-	 * @param {string}         options.dateRange    Required, alternatively to startDate and endDate. A date range string. Default 'last-28-days'.
-	 * @param {Array.<string>} options.metrics      Required. List of {@link https://developers.google.com/adsense/management/metrics-dimensions#metrics|metrics} to query.
-	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/adsense/management/metrics-dimensions#dimensions|dimensions} to group results by.
-	 * @param {Array.<Object>} [options.orderby]    Optional. Order definition objects containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default null.
-	 * @param {number}         [options.limit]      Optional. Maximum number of entries to return. Default 1000.
-	 * @return {(Array.<Object>|undefined)} An AdSense report; `undefined` if not loaded.
+	 * @param {Object}         state                       Data store's state.
+	 * @param {Object}         options                     Options for generating the report.
+	 * @param {string}         options.startDate           Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate             Required, unless dateRange is provided. End date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.dateRange           Required, alternatively to startDate and endDate. A date range string such as 'last-28-days'.
+	 * @param {boolean}        [options.compareDateRanges] Optional. Only relevant with dateRange. Default false.
+	 * @param {Array.<string>} [options.dimensions]        Optional. List of {@link https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension|dimensions} to group results by. Default an empty array.
+	 * @param {string}         [options.url]               Optional. URL to get a report for only this URL. Default an empty string.
+	 * @param {number}         [options.limit]             Optional. Maximum number of entries to return. Default 1000.
+	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
 	 */
 	getReport( state, options = {} ) {
 		const { reports } = state;

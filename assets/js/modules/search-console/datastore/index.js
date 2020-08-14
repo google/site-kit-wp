@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
+import report from './report';
 import service from './service';
 export { STORE_NAME };
 
@@ -36,7 +37,8 @@ const baseModuleStore = Modules.createModuleStore( 'search-console', {
 
 const store = Data.combineStores(
 	baseModuleStore,
-	service
+	report,
+	service,
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;
