@@ -22,6 +22,8 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
+import report from './report';
+import service from './service';
 export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
@@ -35,23 +37,16 @@ const baseModuleStore = Modules.createModuleStore( 'search-console', {
 
 const store = Data.combineStores(
 	baseModuleStore,
+	report,
+	service
 );
 
-const {
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-} = store;
-
-export {
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
 
 // Register this baseModuleStore on the global registry.
 Data.registerStore( STORE_NAME, store );

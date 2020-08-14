@@ -396,7 +396,6 @@ describe( 'modules/analytics accounts', () => {
 				registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'test@gmail.com' } );
 
 				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toMatchQueryParameters( {
-					authuser: 'test@gmail.com',
 					provisioningSignup: 'false',
 				} );
 				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( '#/termsofservice/test-account-ticket-id' );
