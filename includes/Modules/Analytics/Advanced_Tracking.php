@@ -40,13 +40,6 @@ final class Advanced_Tracking {
 	 */
 	private $supported_plugins;
 
-	/**
-	 * List of active plugin event lists.
-	 *
-	 * @since n.e.x.t.
-	 * @var Measurement_Event_List[]
-	 */
-	private $plugin_event_lists;
 
 	/**
 	 * List of event configurations to be tracked.
@@ -161,13 +154,16 @@ final class Advanced_Tracking {
 	 * @param array $active_plugin_configurations The list of active plugin configurations.
 	 */
 	private function register_event_lists( $active_plugin_configurations ) {
-		$this->plugin_event_lists = array();
 		foreach ( $active_plugin_configurations as $plugin_config ) {
 			$plugin_event_list_class = $plugin_config['event_list_class'];
 			$plugin_event_list       = new $plugin_event_list_class();
-			$plugin_event_list->register();
-			$this->plugin_event_lists[] = $plugin_event_list;
+			add_action(
+				'googlesitekit_analytics_register_event_lists',
+				function( $event_list_registry ) use ( $plugin_event_list ) {
+					$event_list_registry->register( $plugin_event_list );
+				});
 		}
+
 		do_action( 'googlesitekit_analytics_register_event_lists', $this->event_list_registry );
 	}
 
@@ -178,13 +174,6 @@ final class Advanced_Tracking {
 	 */
 	private function compile_events() {
 		$this->event_configurations = array();
-		foreach ( $this->plugin_event_lists as $plugin_event_list ) {
-			if ( null !== $plugin_event_list ) {
-				foreach ( $plugin_event_list->get_events() as $measurement_event ) {
-					$this->event_configurations[] = $measurement_event;
-				}
-			}
-		}
 
 		foreach ( $this->event_list_registry->get_active_event_lists() as $registry_event_list ) {
 			foreach ( $registry_event_list->get_events() as $measurement_event ) {
