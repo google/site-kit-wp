@@ -366,6 +366,10 @@ const baseResolvers = {
 	},
 };
 
+function isSettingsMode( ...modes ) {
+	return createRegistrySelector( ( select ) => ( state, slug ) => modes.includes( select( STORE_NAME ).getSettingsDisplayMode( slug ) ) );
+}
+
 const baseSelectors = {
 	/**
 	 * Gets the list of modules registered for use with Site Kit.
@@ -492,16 +496,7 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {boolean} True if module exists and settings are being edited, false if not.
 	 */
-	isEditingSettings: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const modules = select( STORE_NAME ).getModules();
-
-		// Return `undefined` if modules haven't been loaded yet.
-		if ( modules === undefined ) {
-			return false;
-		}
-
-		return modules[ slug ]?.displayMode === 'edit';
-	} ),
+	isEditingSettings: isSettingsMode( 'edit' ),
 
 	/**
 	 * Checks if a module's settings are open.
@@ -515,16 +510,7 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {boolean} True if module exists and settings are open, false if not.
 	 */
-	isSettingsOpen: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const modules = select( STORE_NAME ).getModules();
-
-		// Return `undefined` if modules haven't been loaded yet.
-		if ( modules === undefined ) {
-			return false;
-		}
-
-		return modules[ slug ]?.displayMode === 'view';
-	} ),
+	isSettingsOpen: isSettingsMode( 'view', 'edit' ),
 
 	/**
 	 * Checks if a module's settings are being saved.
@@ -535,16 +521,7 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {boolean} True if module exists and settings are open, false if not.
 	 */
-	isSavingSettings: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const modules = select( STORE_NAME ).getModules();
-
-		// Return `undefined` if modules haven't been loaded yet.
-		if ( modules === undefined ) {
-			return false;
-		}
-
-		return modules[ slug ]?.displayMode === 'saving';
-	} ),
+	isSavingSettings: isSettingsMode( 'saving' ),
 
 	/**
 	 * Checks a module's activation status.
