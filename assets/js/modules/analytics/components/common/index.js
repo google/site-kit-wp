@@ -21,7 +21,6 @@ export { default as AccountCreate } from './AccountCreate';
 export { default as AccountSelect } from './AccountSelect';
 export { default as AdSenseLinkCTA } from './AdSenseLinkCTA';
 export { default as AnonymizeIPSwitch } from './AnonymizeIPSwitch';
-export { default as ErrorNotice } from './ErrorNotice';
 export { default as ExistingGTMPropertyError } from './ExistingGTMPropertyError';
 export { default as ExistingGTMPropertyNotice } from './ExistingGTMPropertyNotice';
 export { default as ExistingTagError } from './ExistingTagError';

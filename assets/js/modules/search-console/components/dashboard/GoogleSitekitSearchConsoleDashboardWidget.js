@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -43,27 +43,20 @@ import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import { getCurrentDateRange } from '../../../../util/date-range';
 import HelpLink from '../../../../components/help-link';
-import { getModulesData } from '../../../../util';
+import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-const { withSelect } = Data;
 
-class GoogleSitekitSearchConsoleDashboardWidget extends Component {
-	constructor( props ) {
-		super( props );
+const { useSelect } = Data;
 
-		this.state = {
-			selectedStats: [ 0, 1 ],
-			receivingData: true,
-			error: false,
-			loading: true,
-		};
-
-		this.handleStatSelection = this.handleStatSelection.bind( this );
-		this.buildSeries = this.buildSeries.bind( this );
-		this.buildVAxes = this.buildVAxes.bind( this );
-		this.handleDataError = this.handleDataError.bind( this );
-		this.handleDataSuccess = this.handleDataSuccess.bind( this );
-	}
+const GoogleSitekitSearchConsoleDashboardWidget = () => {
+	const [ selectedStats, setSelectedStats ] = useState( [ 0, 1 ] );
+	const [ receivingData, setReceivingData ] = useState( true );
+	const [ error, setError ] = useState( false );
+	const [ errorObj, setErrorObject ] = useState();
+	const [ loading, setLoading ] = useState( true );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
 
 	/**
 	 * Handle data errors from the contained AdSense component(s).
@@ -75,30 +68,25 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	 * If the component detects no data - in this case all 0s - the callback is called without an error message,
 	 * resulting in the display of a CTA.
 	 *
-	 * @param {string} error    A potential error string.
-	 * @param {Object} errorObj Full error object.
+	 * @param {string} receivedError    A potential error string.
+	 * @param {Object} receivedErrorObj Full error object.
 	 */
-	handleDataError( error, errorObj ) {
-		this.setState( {
-			receivingData: false,
-			error,
-			errorObj,
-			loading: false,
-		} );
-	}
+	const handleDataError = ( receivedError, receivedErrorObj ) => {
+		setReceivingData( false );
+		setError( receivedError );
+		setErrorObject( receivedErrorObj );
+		setLoading( false );
+	};
 
 	/**
 	 * Loading is set to false until data starts to resolve.
 	 */
-	handleDataSuccess() {
-		this.setState( {
-			receivingData: true,
-			loading: false,
-		} );
-	}
+	const handleDataSuccess = () => {
+		setReceivingData( true );
+		setLoading( false );
+	};
 
-	handleStatSelection( stat ) {
-		const { selectedStats } = this.state;
+	const handleStatSelection = ( stat ) => {
 		let newStats = selectedStats.slice();
 
 		if ( selectedStats.includes( stat ) ) {
@@ -110,13 +98,10 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 		if ( 0 === newStats.length ) {
 			return;
 		}
+		setSelectedStats( newStats );
+	};
 
-		this.setState( { selectedStats: newStats } );
-	}
-
-	buildSeries() {
-		const { selectedStats } = this.state;
-
+	const buildSeries = () => {
 		const colorMap = {
 			0: '#4285f4',
 			1: '#27bcd4',
@@ -127,11 +112,9 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 		return selectedStats.map( function( stat, i ) {
 			return { color: colorMap[ stat ], targetAxisIndex: i };
 		} );
-	}
+	};
 
-	buildVAxes() {
-		const { selectedStats } = this.state;
-
+	const buildVAxes = () => {
 		const vAxesMap = {
 			0: __( 'Clicks', 'google-site-kit' ),
 			1: __( 'Impressions', 'google-site-kit' ),
@@ -150,104 +133,84 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 
 			return { title: vAxesMap[ stat ], ...otherSettings };
 		} );
-	}
+	};
 
-	render() {
-		const {
-			selectedStats,
-			receivingData,
-			error,
-			errorObj,
-			loading,
-		} = this.state;
+	const series = buildSeries();
+	const vAxes = buildVAxes();
 
-		const {
-			dateRange,
-		} = this.props;
+	// Hide AdSense data display when we don't have data.
+	const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
+	const currentDateRange = getCurrentDateRange( dateRange );
 
-		const series = this.buildSeries();
-		const vAxes = this.buildVAxes();
-
-		// Hide AdSense data display when we don't have data.
-		const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
-		const currentDateRange = getCurrentDateRange( dateRange );
-
-		const searchConsoleDeepLink = sprintf( 'https://search.google.com/search-console?resource_id=%s', getModulesData()[ 'search-console' ].settings.propertyID );
-
-		return (
-			<Fragment>
-				<Header />
-				<Alert module="search-console" />
-				<div className="googlesitekit-module-page googlesitekit-module-page--search-console">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
+	return (
+		<Fragment>
+			<Header />
+			<Alert module="search-console" />
+			<div className="googlesitekit-module-page googlesitekit-module-page--search-console">
+				<div className="mdc-layout-grid">
+					<div className="mdc-layout-grid__inner">
+						<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-								<PageHeader title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) } icon iconWidth="23" iconHeight="21" iconID="search-console" status="connected" statusText={ __( 'Search Console is connected', 'google-site-kit' ) } />
-								{ loading && <ProgressBar /> }
-							</div>
-							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
-							{ ! receivingData && (
-								error ? getDataErrorComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
-							) }
-							<div className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12',
-								wrapperClass
-							) }>
-								<Layout
-									header
-									/* translators: %s: date range */
-									title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), currentDateRange ) }
-									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
-									headerCtaLink={ searchConsoleDeepLink }
-								>
-									<SearchConsoleDashboardWidgetOverview
-										selectedStats={ selectedStats }
-										handleStatSelection={ this.handleStatSelection }
-										handleDataError={ this.handleDataError }
-										handleDataSuccess={ this.handleDataSuccess }
-									/>
-									<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
-								</Layout>
-							</div>
-							<div className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12',
-								wrapperClass
-							) }>
-								<Layout
-									/* translators: %s: date range */
-									title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), currentDateRange ) }
-									header
-									footer
-									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
-									headerCtaLink={ searchConsoleDeepLink }
-									footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-									footerCtaLink={ searchConsoleDeepLink }
-								>
-									<SearchConsoleDashboardWidgetKeywordTable />
-								</Layout>
-							</div>
-							<div className="
+							<PageHeader title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) } icon iconWidth="23" iconHeight="21" iconID="search-console" status="connected" statusText={ __( 'Search Console is connected', 'google-site-kit' ) } />
+							{ loading && <ProgressBar /> }
+						</div>
+						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
+						{ ! receivingData && (
+							error ? getDataErrorComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
+						) }
+						<div className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-12',
+							wrapperClass
+						) }>
+							<Layout
+								header
+								/* translators: %s: date range */
+								title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), currentDateRange ) }
+								headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
+								headerCtaLink={ searchConsoleDeepLink }
+							>
+								<SearchConsoleDashboardWidgetOverview
+									selectedStats={ selectedStats }
+									handleStatSelection={ handleStatSelection }
+									handleDataError={ handleDataError }
+									handleDataSuccess={ handleDataSuccess }
+								/>
+								<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
+							</Layout>
+						</div>
+						<div className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-12',
+							wrapperClass
+						) }>
+							<Layout
+								/* translators: %s: date range */
+								title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), currentDateRange ) }
+								header
+								footer
+								headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
+								headerCtaLink={ searchConsoleDeepLink }
+								footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+								footerCtaLink={ searchConsoleDeepLink }
+							>
+								<SearchConsoleDashboardWidgetKeywordTable />
+							</Layout>
+						</div>
+						<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 								mdc-layout-grid__cell--align-right
 							">
-								<HelpLink />
-							</div>
+							<HelpLink />
 						</div>
 					</div>
 				</div>
-			</Fragment>
-		);
-	}
-}
+			</div>
+		</Fragment>
+	);
+};
 
-export default withSelect(
-	( select ) => ( {
-		dateRange: select( CORE_USER ).getDateRange(),
-	} ),
-)( GoogleSitekitSearchConsoleDashboardWidget );
+export default GoogleSitekitSearchConsoleDashboardWidget;

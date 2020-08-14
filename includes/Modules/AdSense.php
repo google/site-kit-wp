@@ -63,27 +63,6 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 
 		$this->register_screen_hook();
 
-		add_action( // For non-AMP, plus AMP Native and Transitional.
-			'wp_head',
-			function() {
-				$this->output_adsense_script();
-			}
-		);
-
-		add_filter( // For AMP Reader, and AMP Native and Transitional (as fallback).
-			'the_content',
-			function( $content ) {
-				return $this->amp_content_add_auto_ads( $content );
-			}
-		);
-
-		add_filter( // Load amp-auto-ads component for AMP Reader.
-			'amp_post_template_data',
-			function( $data ) {
-				return $this->amp_data_load_auto_ads_component( $data );
-			}
-		);
-
 		if ( $this->is_connected() ) {
 			/**
 			 * Release filter forcing unlinked state.
@@ -101,6 +80,88 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 				}
 			);
 		}
+
+		// AdSense tag placement logic.
+		add_action(
+			'template_redirect',
+			function() {
+				// Bail early if we are checking for the tag presence from the back end.
+				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+					return;
+				}
+
+				$use_snippet = $this->get_data( 'use-snippet' );
+				if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
+					return;
+				}
+
+				$client_id = $this->get_data( 'client-id' );
+				if ( is_wp_error( $client_id ) || ! $client_id ) {
+					return;
+				}
+
+				// Web Stories support neither <amp-auto-ads> nor the script.
+				// TODO: 'amp_story' support can be phased out in the long term.
+				if ( is_singular( array( 'web-story', 'amp_story' ) ) ) {
+					return;
+				}
+
+				// At this point, we know the tag should be rendered, so let's take care of it
+				// for AMP and non-AMP.
+				if ( $this->context->is_amp() ) {
+					add_action( // For AMP Reader, and AMP Native and Transitional (if `wp_body_open` supported).
+						'wp_body_open',
+						function() use ( $client_id ) {
+							$this->print_amp_auto_ads( $client_id );
+						},
+						-9999
+					);
+
+					add_filter( // For AMP Reader, and AMP Native and Transitional (as fallback).
+						'the_content',
+						function( $content ) use ( $client_id ) {
+							return $this->amp_content_add_auto_ads( $content, $client_id );
+						}
+					);
+
+					add_filter( // Load amp-auto-ads component for AMP Reader.
+						'amp_post_template_data',
+						function( $data ) {
+							return $this->amp_data_load_auto_ads_component( $data );
+						}
+					);
+
+					/**
+					 * Fires when the AdSense tag for AMP has been initialized.
+					 *
+					 * This means that the tag will be rendered in the current request.
+					 *
+					 * @since 1.14.0
+					 *
+					 * @param string $client_id AdSense client ID used in the tag.
+					 */
+					do_action( 'googlesitekit_adsense_init_tag_amp', $client_id );
+				} else {
+					add_action( // For non-AMP.
+						'wp_head',
+						function() use ( $client_id ) {
+							$this->output_adsense_script( $client_id );
+						}
+					);
+
+					/**
+					 * Fires when the AdSense tag has been initialized.
+					 *
+					 * This means that the tag will be rendered in the current request.
+					 *
+					 * @since 1.14.0
+					 *
+					 * @param string $client_id AdSense client ID used in the tag.
+					 */
+					do_action( 'googlesitekit_adsense_init_tag', $client_id );
+				}
+			}
+		);
 	}
 
 	/**
@@ -179,58 +240,19 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	}
 
 	/**
-	 * Adds the AdSense script tag as soon as the client id is available.
-	 *
-	 * Used for account verification and ad display.
+	 * Outputs the AdSense script tag.
 	 *
 	 * @since 1.0.0
+	 * @since 1.14.0 The `$client_id` parameter was added.
+	 *
+	 * @param string $client_id AdSense client ID to use in the snippet.
 	 */
-	protected function output_adsense_script() {
-
-		// Bail early if we are checking for the tag presence from the back end.
-		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-			return;
-		}
-
-		// Bail if we don't have a client ID.
-		$client_id = $this->get_data( 'client-id' );
-		if ( is_wp_error( $client_id ) || ! $client_id ) {
-			return;
-		}
-
-		$tag_enabled = $this->get_data( 'use-snippet' );
-
-		// If we have client id default behaviour should be placing the tag unless the user has opted out.
-		if ( false === $tag_enabled ) {
-			return;
-		}
-
-		// On AMP, preferably use the new 'wp_body_open' hook, falling back to 'the_content' below.
-		if ( $this->context->is_amp() ) {
-			// TODO: 'amp_story' support can be phased out in the long term.
-			if ( is_singular( array( 'web-story', 'amp_story' ) ) ) {
-				return;
-			}
-			add_action(
-				'wp_body_open',
-				function() use ( $client_id ) {
-					if ( $this->adsense_tag_printed ) {
-						return;
-					}
-
-					?>
-					<amp-auto-ads type="adsense" data-ad-client="<?php echo esc_attr( $client_id ); ?>"></amp-auto-ads>
-					<?php
-					$this->adsense_tag_printed = true;
-				},
-				-9999
-			);
-			return;
-		}
-
+	protected function output_adsense_script( $client_id ) {
 		if ( $this->adsense_tag_printed ) {
 			return;
 		}
+
+		$this->adsense_tag_printed = true;
 
 		// If we haven't completed the account connection yet, we still insert the AdSense tag
 		// because it is required for account verification.
@@ -244,7 +266,25 @@ tag_partner: "site_kit"
 });
 </script>
 		<?php
+	}
+
+	/**
+	 * Outputs the <amp-auto-ads> tag.
+	 *
+	 * @since 1.14.0
+	 *
+	 * @param string $client_id AdSense client ID to use in the snippet.
+	 */
+	protected function print_amp_auto_ads( $client_id ) {
+		if ( $this->adsense_tag_printed ) {
+			return;
+		}
+
 		$this->adsense_tag_printed = true;
+
+		?>
+		<amp-auto-ads type="adsense" data-ad-client="<?php echo esc_attr( $client_id ); ?>"></amp-auto-ads>
+		<?php
 	}
 
 	/**
@@ -291,21 +331,6 @@ tag_partner: "site_kit"
 	 * @return array Filtered $data.
 	 */
 	protected function amp_data_load_auto_ads_component( $data ) {
-		// Bail early if we are checking for the tag presence from the back end.
-		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-			return $data;
-		}
-
-		$tag_enabled = $this->get_data( 'use-snippet' );
-		if ( is_wp_error( $tag_enabled ) || ! $tag_enabled ) {
-			return $data;
-		}
-
-		$client_id = $this->get_data( 'client-id' );
-		if ( is_wp_error( $client_id ) || ! $client_id ) {
-			return $data;
-		}
-
 		$data['amp_component_scripts']['amp-auto-ads'] = 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js';
 		return $data;
 	}
@@ -314,31 +339,13 @@ tag_partner: "site_kit"
 	 * Adds the AMP auto ads tag if opted in.
 	 *
 	 * @since 1.0.0
+	 * @since 1.14.0 The `$client_id` parameter was added.
 	 *
-	 * @param string $content The page content.
+	 * @param string $content   The page content.
+	 * @param string $client_id AdSense client ID to use in the snippet.
 	 * @return string Filtered $content.
 	 */
-	protected function amp_content_add_auto_ads( $content ) {
-		// TODO: 'amp_story' support can be phased out in the long term.
-		if ( ! $this->context->is_amp() || is_singular( array( 'web-story', 'amp_story' ) ) ) {
-			return $content;
-		}
-
-		// Bail early if we are checking for the tag presence from the back end.
-		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-			return $content;
-		}
-
-		$tag_enabled = $this->get_data( 'use-snippet' );
-		if ( is_wp_error( $tag_enabled ) || ! $tag_enabled ) {
-			return $content;
-		}
-
-		$client_id = $this->get_data( 'client-id' );
-		if ( is_wp_error( $client_id ) || ! $client_id ) {
-			return $content;
-		}
-
+	protected function amp_content_add_auto_ads( $content, $client_id ) {
 		if ( $this->adsense_tag_printed ) {
 			return $content;
 		}
@@ -428,8 +435,12 @@ tag_partner: "site_kit"
 			case 'GET:account-url':
 				return function() {
 					$account_id = $this->get_data( 'account-id' );
-					if ( ! is_wp_error( $account_id ) && $account_id ) {
-						return sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id );
+					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
+						$profile_email = $this->authentication->profile()->get()['email'];
+						return add_query_arg(
+							array( 'authuser' => $profile_email ),
+							sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id )
+						);
 					}
 					return 'https://www.google.com/adsense/signup/new';
 				};
@@ -569,8 +580,12 @@ tag_partner: "site_kit"
 			case 'GET:reports-url':
 				return function() {
 					$account_id = $this->get_data( 'account-id' );
-					if ( ! is_wp_error( $account_id ) && $account_id ) {
-						return sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id );
+					if ( ! is_wp_error( $account_id ) && $account_id && $this->authentication->profile()->has() ) {
+						$profile_email = $this->authentication->profile()->get()['email'];
+						return add_query_arg(
+							array( 'authuser' => $profile_email ),
+							sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id )
+						);
 					}
 					return 'https://www.google.com/adsense/start';
 				};

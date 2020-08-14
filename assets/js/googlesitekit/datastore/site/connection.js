@@ -85,6 +85,20 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Gets information about connected admins.
+	 *
+	 * @since 1.14.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} TRUE if there are connected admins, otherwise FALSE or undefined if information is not available yet.
+	 */
+	hasConnectedAdmins: createRegistrySelector( ( select ) => () => {
+		const { hasConnectedAdmins } = select( STORE_NAME ).getConnection() || {};
+
+		return hasConnectedAdmins;
+	} ),
+
+	/**
 	 * Gets the Site Kit connection status for this site.
 	 *
 	 * Returns `true` if the site is connected to Site Kit, `false` if

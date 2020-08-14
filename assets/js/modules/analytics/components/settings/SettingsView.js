@@ -26,12 +26,11 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/display-setting';
-import { escapeURI } from '../../../../util/escape-uri';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
-import { ExistingTagError, ExistingTagNotice, ErrorNotice } from '../common';
+import { ExistingTagError, ExistingTagNotice } from '../common';
+import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -45,15 +44,17 @@ export default function SettingsView() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-
-	const editViewSettingsUrl = escapeURI`https://analytics.google.com/analytics/web/?authuser=${ userEmail }#/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`;
+	const editViewSettingsUrl = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
+		}
+	) );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 
-			{ /* Prevent showing ExistingTagError and general ErrorNotice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <ErrorNotice /> }
+			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice storeName={ STORE_NAME } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 

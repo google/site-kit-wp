@@ -38,7 +38,6 @@ import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/fo
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import {
 	AccountSelect,
-	ErrorNotice,
 	ExistingGTMPropertyNotice,
 	ExistingGTMPropertyError,
 	ExistingTagNotice,
@@ -46,6 +45,7 @@ import {
 	PropertySelect,
 	ProfileNameTextField,
 } from '../common';
+import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 import { trackEvent } from '../../../../util';
 import { isValidPropertyID } from '../../util';
 import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
@@ -97,8 +97,7 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-analytics-setup__form"
 			onSubmit={ submitForm }
 		>
-			<ErrorNotice />
-
+			<StoreErrorNotice storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 
 			{ gtmTagNotice }

@@ -753,12 +753,6 @@ final class Assets {
 			'currentAdminPage' => ( is_admin() && $page ) ? sanitize_key( $page ) : null,
 			'resetSession'     => $input->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
 			'reAuth'           => $input->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN ),
-			'userData'         => array(
-				'id'      => $current_user->ID,
-				'email'   => $current_user->user_email,
-				'name'    => $current_user->display_name,
-				'picture' => get_avatar_url( $current_user->user_email ),
-			),
 			'ampEnabled'       => (bool) $this->context->get_amp_mode(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'homeURL'          => home_url(),
