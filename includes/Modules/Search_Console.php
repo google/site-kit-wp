@@ -371,14 +371,28 @@ final class Search_Console extends Module
 		if ( ! empty( $args['end_date'] ) ) {
 			$request->setEndDate( $args['end_date'] );
 		}
+
+		// Only include data for URLs that are part of the current site.
+		$filter = new Google_Service_Webmasters_ApiDimensionFilter();
+		$filter->setDimension( 'page' );
+		$filter->setOperator( 'contains' );
+		$filter->setExpression( esc_url_raw( untrailingslashit( $this->context->get_reference_site_url() ) ) );
+		$filters = array( $filter );
+
+		// Limit data to a specific URL.
 		if ( ! empty( $args['page'] ) ) {
 			$filter = new Google_Service_Webmasters_ApiDimensionFilter();
 			$filter->setDimension( 'page' );
+			$filter->setOperator( 'equals' );
 			$filter->setExpression( esc_url_raw( $args['page'] ) );
-			$filters = new Google_Service_Webmasters_ApiDimensionFilterGroup();
-			$filters->setFilters( array( $filter ) );
-			$request->setDimensionFilterGroups( array( $filters ) );
+			$filters[] = $filter;
 		}
+
+		$filter_group = new Google_Service_Webmasters_ApiDimensionFilterGroup();
+		$filter_group->setGroupType( 'and' );
+		$filter_group->setFilters( $filters );
+		$request->setDimensionFilterGroups( array( $filter_group ) );
+
 		if ( ! empty( $args['row_limit'] ) ) {
 			$request->setRowLimit( $args['row_limit'] );
 		}
