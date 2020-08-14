@@ -25,7 +25,7 @@ import { addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { getTimeInSeconds, getQueryParameter, getModulesData } from '../../util';
-import { overviewReportDataDefaults } from '../../modules/analytics/util';
+import { userReportDataDefaults, overviewReportDataDefaults } from '../../modules/analytics/util';
 import { TYPE_MODULES } from '../data';
 import * as publisherWinCallbacks from './callbacks';
 
@@ -146,7 +146,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 						identifier: 'analytics',
 						datapoint: 'report',
 						data: {
-							...overviewReportDataDefaults,
+							...userReportDataDefaults,
 							url: global._googlesitekitLegacyData.permaLink,
 						},
 						priority: 1,

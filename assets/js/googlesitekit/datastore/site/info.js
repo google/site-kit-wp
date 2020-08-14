@@ -305,7 +305,7 @@ export const selectors = {
 	/**
 	 * Gets proxy setup URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return {string} Proxy setup URL if available, otherwise an empty string.
 	 */
@@ -314,7 +314,7 @@ export const selectors = {
 	/**
 	 * Gets proxy permissions URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return {string} Proxy permissions URL if available, otherwise an empty string.
 	 */

@@ -130,7 +130,7 @@ final class Authentication {
 	/**
 	 * Has_Connected_Admins instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 * @var Has_Connected_Admins
 	 */
 	protected $has_connected_admins;
@@ -635,19 +635,6 @@ final class Authentication {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_admin_data( $data ) {
-		if ( ! isset( $data['userData'] ) ) {
-			$current_user     = wp_get_current_user();
-			$data['userData'] = array(
-				'email'   => $current_user->user_email,
-				'picture' => get_avatar_url( $current_user->user_email ),
-			);
-		}
-		$profile_data = $this->profile->get();
-		if ( $profile_data ) {
-			$data['userData']['email']   = $profile_data['email'];
-			$data['userData']['picture'] = $profile_data['photo'];
-		}
-
 		$data['connectURL']    = esc_url_raw( $this->get_connect_url() );
 		$data['disconnectURL'] = esc_url_raw( $this->get_disconnect_url() );
 
