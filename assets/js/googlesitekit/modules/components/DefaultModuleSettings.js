@@ -17,21 +17,22 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
-import {
-	ModuleSettings,
-	ModuleSettingsHeader,
-	ModuleSettingsBody,
-	ModuleSettingsFooter,
-} from '.';
+import ModuleSettings from './ModuleSettings';
+import ModuleSettingsHeader from './ModuleSettingsHeader';
+import ModuleSettingsBody from './ModuleSettingsBody';
+import ModuleSettingsFooter from './ModuleSettingsFooter';
 const { useSelect } = Data;
 
-import PropTypes from 'prop-types';
-
-const DefaultModuleSettings = ( { slug } ) => {
+function DefaultModuleSettings( { slug } ) {
 	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
 
 	return (
@@ -44,11 +45,10 @@ const DefaultModuleSettings = ( { slug } ) => {
 			}
 		</ModuleSettings>
 	);
-};
+}
 
 DefaultModuleSettings.propTypes = {
 	slug: PropTypes.string.isRequired,
 };
 
 export default DefaultModuleSettings;
-
