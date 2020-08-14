@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WooCommerce_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
@@ -161,9 +160,9 @@ final class Advanced_Tracking {
 				'googlesitekit_analytics_register_event_lists',
 				function( $event_list_registry ) use ( $plugin_event_list ) {
 					$event_list_registry->register( $plugin_event_list );
-				});
+				}
+			);
 		}
-
 		do_action( 'googlesitekit_analytics_register_event_lists', $this->event_list_registry );
 	}
 
@@ -174,7 +173,6 @@ final class Advanced_Tracking {
 	 */
 	private function compile_events() {
 		$this->event_configurations = array();
-
 		foreach ( $this->event_list_registry->get_active_event_lists() as $registry_event_list ) {
 			foreach ( $registry_event_list->get_events() as $measurement_event ) {
 				$this->event_configurations[] = $measurement_event;
