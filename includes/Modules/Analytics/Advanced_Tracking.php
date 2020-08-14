@@ -168,7 +168,7 @@ final class Advanced_Tracking {
 			$plugin_event_list->register();
 			$this->plugin_event_lists[] = $plugin_event_list;
 		}
-		do_action( 'googlesitekit_analytics_register_event_list', $this->event_list_registry );
+		do_action( 'googlesitekit_analytics_register_event_lists', $this->event_list_registry );
 	}
 
 	/**
