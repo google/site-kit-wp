@@ -19,47 +19,49 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/SearchConsoleDashboardWidgetKeywordTable';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import Layout from '../../../../components/layout/layout';
-import { getModulesData } from '../../../../util';
+import { STORE_NAME } from '../../datastore/constants';
 
-class DashboardDetailsWidgetKeywordsTable extends Component {
-	render() {
-		return (
-			<Fragment>
-				<div className="
+const { useSelect } = Data;
+
+const DashboardDetailsWidgetKeywordsTable = () => {
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const footerCtaLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
+
+	return (
+		<Fragment>
+			<div className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
 				">
-					<DashboardModuleHeader
-						title={ __( 'Top Queries', 'google-site-kit' ) }
-						description={ __( 'What people searched for to find your page.', 'google-site-kit' ) }
-					/>
-				</div>
-				<div className="
+				<DashboardModuleHeader
+					title={ __( 'Top Queries', 'google-site-kit' ) }
+					description={ __( 'What people searched for to find your page.', 'google-site-kit' ) }
+				/>
+			</div>
+			<div className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
 				">
-					<Layout
-						footer
-						footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-						footerCtaLink={
-							sprintf( 'https://search.google.com/search-console?resource_id=%s', getModulesData()[ 'search-console' ].settings.propertyID )
-						}
-					>
-						<SearchConsoleDashboardWidgetKeywordTable />
-					</Layout>
-				</div>
-			</Fragment>
-		);
-	}
-}
+				<Layout
+					footer
+					footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+					footerCtaLink={ footerCtaLink }
+				>
+					<SearchConsoleDashboardWidgetKeywordTable />
+				</Layout>
+			</div>
+		</Fragment>
+	);
+};
 
 export default DashboardDetailsWidgetKeywordsTable;
