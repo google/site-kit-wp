@@ -157,6 +157,7 @@ const baseActions = {
 
 		const { response, error } = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
 		if ( error ) {
+			// Store error manually since createAccount signature differs from fetchCreateAccount.
 			yield registry.dispatch( STORE_NAME ).receiveError( error, 'createAccount', [] );
 		}
 
@@ -244,6 +245,7 @@ const baseResolvers = {
 			}
 
 			if ( error ) {
+				// Store error manually since getAccounts signature differs from fetchGetAccountsPropertiesProfiles.
 				dispatch( STORE_NAME ).receiveError( error, 'getAccounts', [] );
 			}
 

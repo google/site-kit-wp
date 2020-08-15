@@ -173,6 +173,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 			const { response, error } = yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
 			if ( error ) {
+				// Store error manually since saveSettings signature differs from fetchSaveSettings.
 				registry.dispatch( STORE_NAME ).receiveError( error, 'saveSettings' );
 			}
 
