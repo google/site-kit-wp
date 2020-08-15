@@ -33,6 +33,7 @@ const { createRegistrySelector } = Data;
 
 const fetchGetLiveContainerVersionStore = createFetchStore( {
 	baseName: 'getLiveContainerVersion',
+	storeName: STORE_NAME,
 	argsToParams: ( accountID, internalContainerID ) => {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to fetch or receive a live container version.' );
 		invariant( isValidInternalContainerID( internalContainerID ), 'A valid accountID is required to fetch or receive a live container version.' );

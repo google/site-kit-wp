@@ -52,6 +52,8 @@ export const actions = {
 	 * @return {Object} Empty object on success, object with `error` property on failure.
 	 */
 	*submitChanges() {
+		const registry = yield Data.commonActions.getRegistry();
+
 		yield {
 			payload: {},
 			type: START_SUBMIT_CHANGES,
@@ -61,6 +63,10 @@ export const actions = {
 			payload: {},
 			type: SUBMIT_CHANGES,
 		};
+
+		if ( result.error ) {
+			yield registry.dispatch( STORE_NAME ).receiveError( result.error, 'submitChanges', [] );
+		}
 
 		yield {
 			payload: {},

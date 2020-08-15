@@ -36,6 +36,7 @@ const { createRegistrySelector } = Data;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getAccountsPropertiesProfiles',
+	storeName: STORE_NAME,
 	controlCallback: ( { data } ) => {
 		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', data, {
 			useCache: false,
@@ -57,6 +58,7 @@ const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 
 const fetchCreateAccountStore = createFetchStore( {
 	baseName: 'createAccount',
+	storeName: STORE_NAME,
 	controlCallback: ( { data } ) => {
 		return API.set( 'modules', 'analytics', 'create-account-ticket', data );
 	},
@@ -154,6 +156,11 @@ const baseActions = {
 		};
 
 		const { response, error } = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
+		if ( error ) {
+			// Store error manually since createAccount signature differs from fetchCreateAccount.
+			yield registry.dispatch( STORE_NAME ).receiveError( error, 'createAccount', [] );
+		}
+
 		return { response, error };
 	},
 };
@@ -210,7 +217,7 @@ const baseResolvers = {
 				existingTagPermission = registry.select( STORE_NAME ).getTagPermission( existingTag );
 			}
 
-			const { response } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
+			const { response, error } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
 				existingPropertyID: existingTag,
 				existingAccountID: existingTagPermission?.accountID,
 			} );
@@ -235,6 +242,11 @@ const baseResolvers = {
 				}
 
 				( { matchedProperty } = response );
+			}
+
+			if ( error ) {
+				// Store error manually since getAccounts signature differs from fetchGetAccountsPropertiesProfiles.
+				dispatch( STORE_NAME ).receiveError( error, 'getAccounts', [] );
 			}
 
 			dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
@@ -266,34 +278,6 @@ const baseSelectors = {
 		const { accounts } = state;
 
 		return accounts;
-	},
-
-	/**
-	 * Gets an error encountered by this store or its side effects.
-	 *
-	 * Returns an object with the shape when there is an error:
-	 * ```
-	 * {
-	 *   code,
-	 *   message,
-	 * }
-	 * ```
-	 *
-	 * Returns `null` if there was no error.
-	 *
-	 * Marked as private, because in the future we'll have more robust error
-	 * handling.
-	 *
-	 * @since 1.8.0
-	 * @private
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Any error encountered with requests in state.
-	 */
-	getError( state ) {
-		const { error } = state;
-
-		return error || null;
 	},
 
 	/**
