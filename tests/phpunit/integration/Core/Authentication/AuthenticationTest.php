@@ -107,9 +107,6 @@ class AuthenticationTest extends TestCase {
 			array(
 				'connectURL',
 				'disconnectURL',
-				'proxySetupURL',
-				'proxyPermissionsURL',
-				'userData',
 			),
 			array_keys( $data )
 		);

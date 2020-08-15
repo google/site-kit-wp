@@ -28,6 +28,7 @@ const { createRegistrySelector } = Data;
 
 const fetchGetConnectionStore = createFetchStore( {
 	baseName: 'getConnection',
+	storeName: STORE_NAME,
 	controlCallback: () => {
 		return API.get( 'core', 'site', 'connection', undefined, {
 			useCache: false,
@@ -83,6 +84,20 @@ const baseSelectors = {
 
 		return connection;
 	},
+
+	/**
+	 * Gets information about connected admins.
+	 *
+	 * @since 1.14.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} TRUE if there are connected admins, otherwise FALSE or undefined if information is not available yet.
+	 */
+	hasConnectedAdmins: createRegistrySelector( ( select ) => () => {
+		const { hasConnectedAdmins } = select( STORE_NAME ).getConnection() || {};
+
+		return hasConnectedAdmins;
+	} ),
 
 	/**
 	 * Gets the Site Kit connection status for this site.

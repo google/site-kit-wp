@@ -27,22 +27,17 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/link';
-import { getAccountURL } from '../../util/url';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountDisapproved() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
+	const accountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountURL() );
 
-	if ( undefined === accountID || ! userEmail ) {
+	if ( undefined === accountID || ! accountURL ) {
 		return null;
 	}
-
-	const accountURL = getAccountURL( { accountID, userEmail } );
-
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">

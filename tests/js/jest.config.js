@@ -41,6 +41,7 @@ module.exports = {
 	],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
+		'react__non-shim': 'react',
 		'@wordpress/element__non-shim': '@wordpress/element',
 		// New (JSR) modules.
 		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
