@@ -25,7 +25,7 @@ import isPlainObject from 'lodash/isPlainObject';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { createErrorStore } from './create-error-store';
 import { camelCaseToPascalCase, camelCaseToConstantCase } from './transform-case';
 import { stringifyObject } from '../../util';
 
@@ -38,6 +38,11 @@ const defaultArgsToParams = () => {
 };
 
 const defaultValidateParams = () => {};
+
+// Get access to error store action creators.
+// If the parent store doesn't include the error store,
+// yielded error actions will be a no-op.
+const { clearError, receiveError } = createErrorStore.actions;
 
 /**
  * Creates a store object implementing the necessary infrastructure for a
@@ -74,7 +79,6 @@ const defaultValidateParams = () => {};
  *
  * @param {Object}   args                   Arguments for creating the fetch store.
  * @param {string}   args.baseName          The base name to use for all the created infrastructure.
- * @param {string}   args.storeName         The store name to use for error handling.
  * @param {Function} args.controlCallback   Callback function to issue the API request. Will be used inside the
  *                                          control. The function receives a params object based on argsToParams,
  *                                          i.e. the respective values passed to the action.
@@ -93,14 +97,12 @@ const defaultValidateParams = () => {};
  */
 export const createFetchStore = ( {
 	baseName,
-	storeName,
 	controlCallback,
 	reducerCallback = defaultReducerCallback,
 	argsToParams = defaultArgsToParams,
 	validateParams = defaultValidateParams,
 } ) => {
 	invariant( baseName, 'baseName is required.' );
-	invariant( storeName, 'storeName is required.' );
 	invariant( 'function' === typeof controlCallback, 'controlCallback is required and must be a function.' );
 	invariant( 'function' === typeof reducerCallback, 'reducerCallback must be a function.' );
 	invariant( 'function' === typeof argsToParams, 'argsToParams must be a function.' );
@@ -142,11 +144,7 @@ export const createFetchStore = ( {
 			type: START_FETCH,
 		};
 
-		const registry = yield Data.commonActions.getRegistry();
-		const { clearError } = registry ? registry.dispatch( storeName ) : {};
-		if ( clearError ) {
-			yield clearError( baseName, args );
-		}
+		yield clearError( baseName, args );
 
 		try {
 			response = yield {
@@ -163,13 +161,10 @@ export const createFetchStore = ( {
 		} catch ( e ) {
 			error = e;
 
-			const { receiveError } = registry ? registry.dispatch( storeName ) : {};
-			if ( receiveError ) {
-				yield receiveError( error, baseName, args );
+			yield receiveError( error, baseName, args );
 
-				// @TODO: Remove the following once all instances of the legacy behavior have been removed.
-				yield receiveError( error );
-			}
+			// @TODO: Remove the following once all instances of the legacy behavior have been removed.
+			yield receiveError( error );
 
 			yield {
 				payload: { params },
