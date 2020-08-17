@@ -49,12 +49,9 @@ function ModuleSettingsHeader( { slug } ) {
 	} );
 
 	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
-	const handleAccordion = useCallback( ( e ) => {
-		// Set focus on heading when clicked.
-		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
-		// If module is already open, close it, else set status to "view".
+	const handleAccordion = useCallback( () => {
 		setSettingsDisplayMode( slug, isOpen ? 'closed' : 'view' );
-	}, [ slug ] );
+	}, [ slug, isOpen ] );
 
 	let moduleStatus, moduleStatusForReader;
 

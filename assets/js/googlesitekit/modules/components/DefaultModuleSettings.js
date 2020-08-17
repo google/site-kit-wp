@@ -30,18 +30,49 @@ import ModuleSettings from './ModuleSettings';
 import ModuleSettingsHeader from './ModuleSettingsHeader';
 import ModuleSettingsBody from './ModuleSettingsBody';
 import ModuleSettingsFooter from './ModuleSettingsFooter';
+import ModuleSettingsContainer from './ModuleSettingsContainer';
 const { useSelect } = Data;
 
-function DefaultModuleSettings( { slug } ) {
-	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
+function DefaultModuleSettings( { slug, provides, allowEdit, onView, onEdit, onSave, onRemove } ) {
+	const {
+		isOpen,
+		isEdit,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			isOpen: store.isSettingsOpen( slug ),
+			isEdit: store.isEditingSettings( slug ),
+		};
+	} );
+
+	let settingsComponent = null;
+	if ( isOpen ) {
+		if ( isEdit ) {
+			if ( onEdit ) {
+				settingsComponent = onEdit();
+			}
+		} else if ( onView ) {
+			settingsComponent = onView();
+		}
+	}
 
 	return (
 		<ModuleSettings slug={ slug }>
 			<ModuleSettingsHeader slug={ slug } />
 			{ isOpen &&
-				<ModuleSettingsBody slug={ slug }>
-					<ModuleSettingsFooter slug={ slug } />
-				</ModuleSettingsBody>
+				<ModuleSettingsContainer slug={ slug }>
+					<ModuleSettingsBody slug={ slug } allowEdit={ allowEdit }>
+						{ settingsComponent }
+					</ModuleSettingsBody>
+
+					<ModuleSettingsFooter
+						slug={ slug }
+						allowEdit={ allowEdit }
+						provides={ provides }
+						onSave={ onSave }
+						onRemove={ onRemove }
+					/>
+				</ModuleSettingsContainer>
 			}
 		</ModuleSettings>
 	);
@@ -49,6 +80,17 @@ function DefaultModuleSettings( { slug } ) {
 
 DefaultModuleSettings.propTypes = {
 	slug: PropTypes.string.isRequired,
+	provides: PropTypes.arrayOf( PropTypes.string ),
+	allowEdit: PropTypes.bool,
+	onView: PropTypes.func,
+	onEdit: PropTypes.func,
+	onSave: PropTypes.func,
+	onRemove: PropTypes.func,
+};
+
+DefaultModuleSettings.defaultProps = {
+	allowEdit: false,
+	provides: [],
 };
 
 export default DefaultModuleSettings;

@@ -27,17 +27,22 @@ import SettingsAdmin from './settings-admin';
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
+import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Header from '../header';
 import PageHeader from '../page-header';
 import Layout from '../layout/layout';
 import HelpLink from '../help-link';
 import SettingsModules from './settings-modules';
 import { getModulesData } from '../../util';
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+
+const { withSelect, withDispatch } = Data;
 
 // tabID to tabIndex
 const tabToIndex = {
@@ -71,21 +76,22 @@ class SettingsApp extends Component {
 	}
 
 	componentDidMount() {
-		this.updateFragment();
+		const { moduleSlug, moduleState } = this.state;
+		if ( moduleSlug && moduleState ) {
+			this.props.setSettingsDisplayMode( moduleSlug, moduleState );
+		}
 	}
+
 	componentDidUpdate() {
 		this.updateFragment();
 	}
 
 	updateFragment() {
-		const {
-			activeTabID,
-			moduleSlug,
-			moduleState,
-		} = this.state;
+		const { activeTabID } = this.state;
 		const fragments = [ activeTabID ];
 
 		if ( activeTabID === 'settings' ) {
+			const { moduleSlug, moduleState } = this.props;
 			// eslint-disable-next-line no-unused-expressions
 			moduleSlug && fragments.push( moduleSlug );
 			// eslint-disable-next-line no-unused-expressions
@@ -96,14 +102,14 @@ class SettingsApp extends Component {
 	}
 
 	handleTabUpdate( tabIndex ) {
-		this.setState( {
-			activeTabID: tabIDsByIndex[ tabIndex ],
-		} );
+		this.setState( { activeTabID: tabIDsByIndex[ tabIndex ] } );
 	}
 
 	render() {
+		const { moduleSlug, moduleState } = this.props;
 		const { activeTabID } = this.state;
 		const activeTab = tabToIndex[ activeTabID ];
+
 		return (
 			<Fragment>
 				<Header />
@@ -134,10 +140,10 @@ class SettingsApp extends Component {
 							{ ( [ 'settings', 'connect' ].includes( activeTabID ) ) && // TODO Refactor SettingsModules into separate components.
 								<SettingsModules
 									activeTab={ activeTab }
-									activeModule={ this.state.moduleSlug }
-									moduleState={ this.state.moduleState }
-									setActiveModule={ ( moduleSlug ) => this.setState( { moduleSlug } ) }
-									setModuleState={ ( moduleState ) => this.setState( { moduleState } ) }
+									activeModule={ moduleSlug }
+									moduleState={ moduleState }
+									setActiveModule={ ( slug ) => this.props.setSettingsDisplayMode( slug || moduleSlug, slug ? ( moduleState || 'view' ) : 'closed' ) }
+									setModuleState={ ( state ) => this.props.setSettingsDisplayMode( moduleSlug, state ) }
 								/>
 							}
 							{ 'admin' === activeTabID && <SettingsAdmin /> }
@@ -156,4 +162,20 @@ class SettingsApp extends Component {
 	}
 }
 
-export default SettingsApp;
+export default compose(
+	withSelect( ( select ) => {
+		const store = select( CORE_MODULES );
+		const moduleSlug = store.getModuleSlugWithActiveSettings();
+		const moduleState = moduleSlug ? store.getSettingsDisplayMode( moduleSlug ) : '';
+
+		return {
+			moduleSlug,
+			moduleState,
+		};
+	} ),
+	withDispatch( ( dispatch ) => ( {
+		setSettingsDisplayMode( moduleSlug, moduleState ) {
+			dispatch( CORE_MODULES ).setSettingsDisplayMode( moduleSlug, moduleState );
+		},
+	} ) ),
+)( SettingsApp );

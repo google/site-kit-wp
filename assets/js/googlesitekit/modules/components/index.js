@@ -21,3 +21,6 @@ export { default as ModuleSettings } from './ModuleSettings';
 export { default as ModuleSettingsBody } from './ModuleSettingsBody';
 export { default as ModuleSettingsFooter } from './ModuleSettingsFooter';
 export { default as ModuleSettingsHeader } from './ModuleSettingsHeader';
+export { default as ModuleSettingsDialog } from './ModuleSettingsDialog';
+export { default as ModuleSettingsContainer } from './ModuleSettingsContainer';
+export { default as ModuleSettingsOverlay } from './ModuleSettingsOverlay';

@@ -25,8 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment, useCallback } from '@wordpress/element';
-import { applyFilters } from '@wordpress/hooks';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,9 +37,12 @@ import Link from '../../../components/link';
 import Spinner from '../../../components/spinner';
 import SvgIcon from '../../../util/svg-icon';
 import { STORE_NAME } from '../datastore/constants';
+import ModuleSettingsDialog from './ModuleSettingsDialog';
 const { useDispatch, useSelect } = Data;
 
-function ModuleSettingsFooter( { allowEdit, handleDialog, slug } ) {
+function ModuleSettingsFooter( { slug, provides, allowEdit, onSave, onRemove } ) {
+	const [ dialogActive, setDialogActive ] = useState( false );
+
 	const {
 		module,
 		isEditing,
@@ -54,12 +56,16 @@ function ModuleSettingsFooter( { allowEdit, handleDialog, slug } ) {
 		};
 	} );
 
+	const toggleDialogState = useCallback( () => {
+		setDialogActive( ! dialogActive );
+	}, [ dialogActive ] );
+
 	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
 	const handleEdit = useCallback( ( action ) => {
 		if ( action === 'confirm' ) {
-			const modulePromise = applyFilters( 'googlekit.SettingsConfirmed', false, slug );
 			setSettingsDisplayMode( slug, 'saving' );
 
+			const modulePromise = onSave();
 			if ( ! modulePromise ) {
 				// Clears session and local storage on successful setting.
 				clearWebStorage();
@@ -77,19 +83,17 @@ function ModuleSettingsFooter( { allowEdit, handleDialog, slug } ) {
 				// Change status from 'saving' to 'view'.
 				setSettingsDisplayMode( slug, 'view' );
 			} );
-
-			setSettingsDisplayMode( slug, 'view' );
 		} else {
 			// TODO: Set error to false.
 			setSettingsDisplayMode( slug, action === 'cancel' ? 'view' : 'edit' );
 		}
 	}, [ slug ] );
 
-	const { autoActivate, homepage, name, setupComplete } = module;
+	const { autoActivate, homepage, name, connected } = module;
 
 	// Set button text based on state.
 	let buttonText = __( 'Close', 'google-site-kit' );
-	if ( allowEdit && setupComplete ) {
+	if ( allowEdit && connected && onSave ) {
 		buttonText = isSavingModuleSettings
 			? __( 'Saving…', 'google-site-kit' )
 			: __( 'Confirm Changes', 'google-site-kit' );
@@ -103,14 +107,14 @@ function ModuleSettingsFooter( { allowEdit, handleDialog, slug } ) {
 						{ isEditing || isSavingModuleSettings ? (
 							<Fragment>
 								<Button
-									id={ allowEdit && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
-									onClick={ () => handleEdit( allowEdit && setupComplete ? 'confirm' : 'cancel' ) }
+									id={ allowEdit && connected ? `confirm-changes-${ slug }` : `close-${ slug }` }
+									onClick={ () => handleEdit( allowEdit && connected ? 'confirm' : 'cancel' ) }
 									disabled={ isSavingModuleSettings }
 								>
 									{ buttonText }
 								</Button>
 								<Spinner isSaving={ isSavingModuleSettings } />
-								{ allowEdit &&
+								{ allowEdit && connected &&
 									<Link className="googlesitekit-settings-module__footer-cancel" inherit onClick={ () => handleEdit( 'cancel' ) }>
 										{ __( 'Cancel', 'google-site-kit' ) }
 									</Link>
@@ -129,8 +133,8 @@ function ModuleSettingsFooter( { allowEdit, handleDialog, slug } ) {
 						) }
 					</div>
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right-desktop">
-						{ isEditing && ! autoActivate && (
-							<Link className="googlesitekit-settings-module__remove-button" inherit danger onClick={ handleDialog }>
+						{ isEditing && ! autoActivate && onRemove && (
+							<Link className="googlesitekit-settings-module__remove-button" inherit danger onClick={ toggleDialogState }>
 								{
 									/* translators: %s: module name */
 									sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
@@ -152,6 +156,14 @@ function ModuleSettingsFooter( { allowEdit, handleDialog, slug } ) {
 							</Link>
 						) }
 					</div>
+					{ dialogActive && (
+						<ModuleSettingsDialog
+							slug={ slug }
+							provides={ provides }
+							toggleDialogState={ toggleDialogState }
+							onRemove={ onRemove }
+						/>
+					) }
 				</div>
 			</div>
 		</footer>
@@ -160,11 +172,15 @@ function ModuleSettingsFooter( { allowEdit, handleDialog, slug } ) {
 
 ModuleSettingsFooter.propTypes = {
 	slug: PropTypes.string.isRequired,
+	provides: PropTypes.arrayOf( PropTypes.string ),
 	allowEdit: PropTypes.bool,
+	onSave: PropTypes.func,
+	onRemove: PropTypes.func,
 };
 
 ModuleSettingsFooter.defaultProps = {
 	allowEdit: false,
+	provides: [],
 };
 
 export default ModuleSettingsFooter;

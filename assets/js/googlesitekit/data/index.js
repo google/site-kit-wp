@@ -26,6 +26,7 @@ import {
 	useSelect,
 	useDispatch,
 	useRegistry,
+	withDispatch,
 	withSelect,
 	RegistryProvider,
 } from '@wordpress/data';
@@ -53,6 +54,7 @@ Data.createRegistrySelector = createRegistrySelector;
 Data.useSelect = useSelect;
 Data.useDispatch = useDispatch;
 Data.useRegistry = useRegistry;
+Data.withDispatch = withDispatch;
 Data.withSelect = withSelect;
 Data.RegistryProvider = RegistryProvider;
 

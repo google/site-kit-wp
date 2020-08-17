@@ -20,12 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
-
-/**
- * WordPress dependencies
- */
-import { Children } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,56 +30,32 @@ import ModuleSetupIncomplete from '../../../components/settings/module-setup-inc
 const { useSelect } = Data;
 
 function ModuleSettingsBody( { allowEdit, children, slug } ) {
-	const {
-		module,
-		isOpen,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			module: store.getModule( slug ),
-			isOpen: store.isSettingsOpen( slug ),
-		};
-	} );
-
-	const { setupComplete } = module;
-
-	// Separate footer child and non-footer children.
-	const childArray = Children.toArray( children );
-	const footerChild = childArray.filter( ( child ) => child.type.name === 'ModuleSettingsFooter' );
-	const nonFooterChildren = childArray.filter( ( child ) => child.type.name !== 'ModuleSettingsFooter' );
+	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
+	const { connected } = module || {};
 
 	return (
-		<div
-			id={ `googlesitekit-settings-module__content--${ slug }` }
-			className={ classnames( 'googlesitekit-settings-module__content', { 'googlesitekit-settings-module__content--open': isOpen } ) }
-			role="tabpanel"
-			aria-hidden={ ! isOpen }
-			aria-labelledby={ `googlesitekit-settings-module__header--${ slug }` }
-		>
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					{ setupComplete &&
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-							{ nonFooterChildren }
-						</div>
-					}
-					{ allowEdit && ! setupComplete &&
-						<ModuleSetupIncomplete slug={ slug } />
-					}
-				</div>
+		<div className="mdc-layout-grid">
+			<div className="mdc-layout-grid__inner">
+				{ connected &&
+					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						{ children }
+					</div>
+				}
+				{ allowEdit && ! connected &&
+					<ModuleSetupIncomplete slug={ slug } />
+				}
 			</div>
-			{ footerChild }
 		</div>
 	);
 }
 
 ModuleSettingsBody.propTypes = {
 	slug: PropTypes.string.isRequired,
+	allowEdit: PropTypes.bool,
 	children: PropTypes.oneOfType( [
 		PropTypes.arrayOf( PropTypes.node ),
 		PropTypes.node,
-	] ).isRequired,
-	allowEdit: PropTypes.bool,
+	] ),
 };
 
 ModuleSettingsBody.defaultProps = {

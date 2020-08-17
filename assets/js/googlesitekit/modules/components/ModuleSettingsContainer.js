@@ -1,5 +1,5 @@
 /**
- * ModuleSettings component.
+ * ModuleSettingsBody component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -27,38 +27,30 @@ import classnames from 'classnames';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
-import ModuleSettingsOverlay from './ModuleSettingsOverlay';
 const { useSelect } = Data;
 
-function ModuleSettings( { children, error, slug } ) {
-	const mode = useSelect( ( select ) => select( STORE_NAME ).getSettingsDisplayMode( slug ) );
-	const isEditing = mode === 'edit';
-	const overlay = mode === 'locked' ? <ModuleSettingsOverlay compress /> : null;
+function ModuleSettingsContainer( { children, slug } ) {
+	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
 
 	return (
-		<div className={ classnames(
-			'googlesitekit-settings-module',
-			'googlesitekit-settings-module--active',
-			`googlesitekit-settings-module--${ slug }`,
-			{ 'googlesitekit-settings-module--error': error && isEditing }
-		) }>
-			{ overlay }
+		<div
+			id={ `googlesitekit-settings-module__content--${ slug }` }
+			className={ classnames( 'googlesitekit-settings-module__content', { 'googlesitekit-settings-module__content--open': isOpen } ) }
+			role="tabpanel"
+			aria-hidden={ ! isOpen }
+			aria-labelledby={ `googlesitekit-settings-module__header--${ slug }` }
+		>
 			{ children }
 		</div>
 	);
 }
 
-ModuleSettings.propTypes = {
+ModuleSettingsContainer.propTypes = {
+	slug: PropTypes.string.isRequired,
 	children: PropTypes.oneOfType( [
 		PropTypes.arrayOf( PropTypes.node ),
 		PropTypes.node,
 	] ).isRequired,
-	slug: PropTypes.string.isRequired,
-	error: PropTypes.bool,
 };
 
-ModuleSettings.defaultProps = {
-	error: false,
-};
-
-export default ModuleSettings;
+export default ModuleSettingsContainer;

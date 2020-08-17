@@ -71,9 +71,7 @@ class SettingsModules extends Component {
 
 		// If same as activeModule, toggle closed, otherwise it is open.
 		const isOpen = module !== activeModule || ! moduleState;
-
 		this.props.setActiveModule( isOpen ? module : null );
-		this.props.setModuleState( isOpen ? 'view' : null );
 	}
 
 	/**

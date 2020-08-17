@@ -251,9 +251,11 @@ const baseActions = {
 	 * @param {string} status The settings status, one of: "closed", "view", "edit", "locked" or "saving".
 	 * @return {Object} Redux-style action.
 	 */
-	setSettingsDisplayMode( slug, status ) {
+	*setSettingsDisplayMode( slug, status ) {
 		invariant( slug, 'slug is required.' );
 		invariant( [ 'closed', 'view', 'edit', 'locked', 'saving' ].includes( status ), 'status is one of "closed", "view", "edit", "locked" or "saving".' );
+
+		yield actions.waitForModules();
 
 		return {
 			payload: { slug, status },
@@ -524,6 +526,19 @@ const baseSelectors = {
 	 * @return {boolean} True if module exists and settings are open, false if not.
 	 */
 	isSavingSettings: isSettingsMode( 'saving' ),
+
+	/**
+	 * Gets a module slug that has open settigns (with either open, view or saving state).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string|undefined} Module slug if there is a module with open settings, otherwise undefined.
+	 */
+	getModuleSlugWithActiveSettings: createRegistrySelector( ( select ) => () => {
+		const modules = select( STORE_NAME ).getModules();
+		return ( modules ? Object.values( modules ) : [] ).find( ( { displayMode } ) => [ 'edit', 'view', 'saving' ].includes( displayMode ) )?.slug;
+	} ),
 
 	/**
 	 * Checks a module's activation status.
