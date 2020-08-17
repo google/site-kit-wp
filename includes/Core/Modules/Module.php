@@ -862,4 +862,44 @@ abstract class Module {
 
 		return new WP_Error( $code, $message, $data );
 	}
+
+	/**
+	 * Parses the string list into an array of strings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|array $items Items to parse.
+	 * @return array An array of string items.
+	 */
+	protected function parse_string_list( $items ) {
+		if ( is_string( $items ) ) {
+			$items = explode( ',', $items );
+		}
+
+		if ( ! is_array( $items ) || empty( $items ) ) {
+			return array();
+		}
+
+		$items = array_map(
+			function( $item ) {
+				if ( ! is_string( $item ) ) {
+					return false;
+				}
+
+				$item = trim( $item );
+				if ( empty( $item ) ) {
+					return false;
+				}
+
+				return $item;
+			},
+			$items
+		);
+
+		$items = array_filter( $items );
+		$items = array_values( $items );
+
+		return $items;
+	}
+
 }

@@ -165,7 +165,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( registry.select( STORE_NAME ).getTagPermission( containerID ) ).toEqual( undefined );
-				expect( registry.select( STORE_NAME ).getError() ).toEqual( errorResponse );
+				expect( registry.select( STORE_NAME ).getErrorForSelector( 'getTagPermission', [ containerID ] ) ).toEqual( errorResponse );
 			} );
 		} );
 
