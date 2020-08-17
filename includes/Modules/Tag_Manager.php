@@ -80,7 +80,7 @@ final class Tag_Manager extends Module
 	/**
 	 * Internal flag set after print_amp_gtm is invoked for the first time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 * @var bool
 	 */
 	private $did_amp_gtm = false;
@@ -145,7 +145,7 @@ final class Tag_Manager extends Module
 					 *
 					 * This means that the tag will be rendered in the current request.
 					 *
-					 * @since n.e.x.t
+					 * @since 1.14.0
 					 *
 					 * @param string $container_id Tag Manager container ID used in the tag.
 					 */
@@ -171,7 +171,7 @@ final class Tag_Manager extends Module
 					 *
 					 * This means that the tag will be rendered in the current request.
 					 *
-					 * @since n.e.x.t
+					 * @since 1.14.0
 					 *
 					 * @param string $container_id Tag Manager container ID used in the tag.
 					 */
@@ -300,7 +300,7 @@ final class Tag_Manager extends Module
 	 * Outputs Tag Manager script.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t The `$container_id` parameter was added.
+	 * @since 1.14.0 The `$container_id` parameter was added.
 	 *
 	 * @param string $container_id Tag Manager container ID to use in the snippet.
 	 */
@@ -325,7 +325,7 @@ final class Tag_Manager extends Module
 	 * Outputs Tag Manager iframe for when the browser has JavaScript disabled.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t The `$container_id` parameter was added.
+	 * @since 1.14.0 The `$container_id` parameter was added.
 	 *
 	 * @param string $container_id Tag Manager container ID to use in the snippet.
 	 */
@@ -350,7 +350,7 @@ final class Tag_Manager extends Module
 	 * Outputs Tag Manager <amp-analytics> tag.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t The `$container_id` parameter was added.
+	 * @since 1.14.0 The `$container_id` parameter was added.
 	 *
 	 * @param string $container_id Tag Manager container ID to use in the snippet.
 	 */

@@ -27,23 +27,16 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/link';
-import { getAccountSiteURL } from '../../util/url';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountPending() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
-	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
+	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSiteURL() );
 
-	if ( ! siteURL || ! userEmail ) {
+	if ( ! accountSiteURL ) {
 		return null;
 	}
-
-	const accountSiteURL = getAccountSiteURL( { accountID, siteURL, userEmail } );
 
 	return (
 		<Fragment>

@@ -36,6 +36,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
+	storeName: STORE_NAME,
 	controlCallback: ( { strategy, url } ) => {
 		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', { strategy, url } );
 	},
