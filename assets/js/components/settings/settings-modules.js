@@ -31,12 +31,15 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { clearWebStorage, getModulesData } from '../../util';
+import Data from 'googlesitekit-data';
+import { clearWebStorage } from '../../util';
 import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import SettingsModule from './settings-module';
 import SettingsOverlay from './settings-overlay';
 import { isPermissionScopeError } from '../../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+const { withSelect } = Data;
 
 class SettingsModules extends Component {
 	constructor( props ) {
@@ -51,13 +54,6 @@ class SettingsModules extends Component {
 		this.updateModulesList = this.updateModulesList.bind( this );
 		this.handleButtonAction = this.handleButtonAction.bind( this );
 		this.handleAccordion = this.handleAccordion.bind( this );
-	}
-
-	componentDidMount() {
-		const modulesData = getModulesData();
-		if ( global._googlesitekitLegacyData.editmodule && modulesData[ global._googlesitekitLegacyData.editmodule ].active ) {
-			this.handleButtonAction( `${ global._googlesitekitLegacyData.editmodule }-module`, 'edit' );
-		}
 	}
 
 	updateModulesList() {
@@ -127,10 +123,12 @@ class SettingsModules extends Component {
 	}
 
 	settingsModuleComponent( module, isSaving ) {
-		const { activeModule, moduleState } = this.props;
-		const modulesData = getModulesData();
-		const isCurrentModule = activeModule === module.slug;
+		const { activeModule, moduleState, modules: modulesData } = this.props;
+		if ( ! modulesData ) {
+			return null;
+		}
 
+		const isCurrentModule = activeModule === module.slug;
 		const { provides } = modulesData[ module.slug ];
 		const { error } = this.state;
 
@@ -143,7 +141,7 @@ class SettingsModules extends Component {
 				homepage={ module.homepage }
 				learnmore={ module.learnMore }
 				active={ module.active }
-				setupComplete={ module.setupComplete }
+				setupComplete={ module.connected }
 				hasSettings={ !! module.settings && 'search-console' !== module.slug }
 				autoActivate={ module.autoActivate }
 				updateModulesList={ this.updateModulesList }
@@ -195,7 +193,10 @@ class SettingsModules extends Component {
 	}
 
 	render() {
-		const modulesData = getModulesData();
+		const { modules: modulesData } = this.props;
+		if ( ! modulesData ) {
+			return null;
+		}
 
 		const { isEditing } = this.state;
 		const { activeTab } = this.props;
@@ -295,4 +296,4 @@ class SettingsModules extends Component {
 	}
 }
 
-export default SettingsModules;
+export default withSelect( ( select ) => ( { modules: select( CORE_MODULES ).getModules() } ) )( SettingsModules );

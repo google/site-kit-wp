@@ -418,6 +418,7 @@ const baseSelectors = {
 		if ( registryKey === undefined ) {
 			return undefined;
 		}
+
 		// Sorting the modules object by order property.
 		const sortedModules = sortByProperty( Object.values( modules ), 'order' );
 		const mappedModules = sortedModules.map( ( module ) => {
@@ -433,6 +434,7 @@ const baseSelectors = {
 
 			return moduleWithComponent;
 		} );
+
 		return convertArrayListToKeyedObjectMap( mappedModules, 'slug' );
 	} ),
 
