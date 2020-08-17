@@ -36,7 +36,6 @@ const { useSelect } = Data;
 function DefaultModuleSettings( props ) {
 	const {
 		slug,
-		provides,
 		onView,
 		onEdit,
 		onSave,
@@ -80,7 +79,6 @@ function DefaultModuleSettings( props ) {
 					<ModuleSettingsFooter
 						slug={ slug }
 						allowEdit={ !! onEdit }
-						provides={ provides }
 						onSave={ onSave }
 						canSave={ canSave }
 						canDisconnect={ canDisconnect }
@@ -93,7 +91,6 @@ function DefaultModuleSettings( props ) {
 
 DefaultModuleSettings.propTypes = {
 	slug: PropTypes.string.isRequired,
-	provides: PropTypes.arrayOf( PropTypes.string ),
 	onView: PropTypes.func,
 	onEdit: PropTypes.func,
 	onSave: PropTypes.func,
@@ -104,7 +101,6 @@ DefaultModuleSettings.propTypes = {
 DefaultModuleSettings.defaultProps = {
 	canSave: false,
 	canDisconnect: false,
-	provides: [],
 };
 
 export default DefaultModuleSettings;

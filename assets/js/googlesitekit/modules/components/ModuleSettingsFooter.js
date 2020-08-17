@@ -42,7 +42,7 @@ import { STORE_NAME } from '../datastore/constants';
 import ModuleSettingsDialog from './ModuleSettingsDialog';
 const { useDispatch, useSelect } = Data;
 
-function ModuleSettingsFooter( { slug, provides, allowEdit, onSave, canSave, canDisconnect } ) {
+function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave, canDisconnect } ) {
 	const [ dialogActive, setDialogActive ] = useState( false );
 
 	const {
@@ -109,7 +109,13 @@ function ModuleSettingsFooter( { slug, provides, allowEdit, onSave, canSave, can
 		}
 	}, [] );
 
-	const { autoActivate, homepage, name, connected } = module;
+	const {
+		autoActivate,
+		homepage,
+		name,
+		connected,
+		provides,
+	} = module;
 
 	const buttons = [];
 	if ( isEditing || isSavingModuleSettings ) {
@@ -178,7 +184,7 @@ function ModuleSettingsFooter( { slug, provides, allowEdit, onSave, canSave, can
 					{ dialogActive && (
 						<ModuleSettingsDialog
 							slug={ slug }
-							provides={ provides }
+							provides={ provides || [] }
 							toggleDialogState={ toggleDialogState }
 							onRemove={ handleRemove }
 						/>
@@ -191,7 +197,6 @@ function ModuleSettingsFooter( { slug, provides, allowEdit, onSave, canSave, can
 
 ModuleSettingsFooter.propTypes = {
 	slug: PropTypes.string.isRequired,
-	provides: PropTypes.arrayOf( PropTypes.string ),
 	allowEdit: PropTypes.bool,
 	onSave: PropTypes.func,
 	canSave: PropTypes.bool,
@@ -202,7 +207,6 @@ ModuleSettingsFooter.defaultProps = {
 	allowEdit: false,
 	canSave: false,
 	canDisconnect: false,
-	provides: [],
 };
 
 export default ModuleSettingsFooter;

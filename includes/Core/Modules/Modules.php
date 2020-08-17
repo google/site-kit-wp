@@ -804,14 +804,17 @@ final class Modules {
 	 * @return array Module REST response data.
 	 */
 	private function prepare_module_data_for_response( Module $module ) {
+		$module_info = $module->prepare_info_for_js();
+
 		return array(
 			'slug'         => $module->slug,
-			'name'         => $module->name,
-			'description'  => $module->description,
-			'homepage'     => $module->homepage,
-			'internal'     => $module->internal,
-			'order'        => $module->order,
-			'autoActivate' => $module->force_active,
+			'name'         => isset( $module_info['name'] ) ? $module_info['name'] : $module->name,
+			'description'  => isset( $module_info['description'] ) ? $module_info['description'] : $module->description,
+			'homepage'     => isset( $module_info['homepage'] ) ? $module_info['homepage'] : $module->homepage,
+			'internal'     => isset( $module_info['internal'] ) && $module_info['internal'],
+			'order'        => isset( $module_info['sort'] ) ? $module_info['sort'] : $module->order,
+			'provides'     => isset( $module_info['provides'] ) ? $module_info['provides'] : array(),
+			'autoActivate' => isset( $module_info['autoActivate'] ) && $module_info['autoActivate'],
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
