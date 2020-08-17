@@ -41,6 +41,7 @@ import { createFetchStore } from './create-fetch-store';
 const STORE_NAME = 'test/some-data';
 const STORE_PARAMS = {
 	baseName: 'getSomeData',
+	storeName: STORE_NAME,
 	argsToParams: ( objParam, aParam ) => {
 		return {
 			objParam,
@@ -103,6 +104,7 @@ describe( 'createFetchStore store', () => {
 		it( 'includes the expected actions', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
+				storeName: STORE_NAME,
 				controlCallback: async () => true,
 			} );
 
@@ -130,6 +132,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for an arguments error', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
+					storeName: STORE_NAME,
 					controlCallback: async () => true,
 					argsToParams: ( requiredParam ) => {
 						return {
@@ -149,12 +152,14 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for a success request', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
+					storeName: STORE_NAME,
 					controlCallback: async () => true,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
 
 				expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
+				expect( action.next().value.type ).toEqual( 'GET_REGISTRY' );
 				expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
 				expect( action.next( 42 ).value.type ).toEqual( 'RECEIVE_SAVE_SOME_DATA' );
 				expect( action.next().value.type ).toEqual( 'FINISH_FETCH_SAVE_SOME_DATA' );
@@ -167,6 +172,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for an error request', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
+					storeName: STORE_NAME,
 					controlCallback: async () => true,
 				} );
 
@@ -178,6 +184,7 @@ describe( 'createFetchStore store', () => {
 				};
 
 				expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
+				expect( action.next().value.type ).toEqual( 'GET_REGISTRY' );
 				expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
 				expect( action.throw( error ).value.type ).toEqual( 'CATCH_FETCH_SAVE_SOME_DATA' );
 				expect( action.next().value ).toEqual( {
@@ -257,6 +264,7 @@ describe( 'createFetchStore store', () => {
 				} );
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
+					storeName: STORE_NAME,
 					controlCallback: async () => true,
 					argsToParams: ( requiredParam ) => {
 						return {
@@ -293,6 +301,7 @@ describe( 'createFetchStore store', () => {
 				const validateParams = jest.fn();
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
+					storeName: STORE_NAME,
 					controlCallback: async () => true,
 					reducerCallback: ( state ) => state,
 					argsToParams: () => ( {} ),
@@ -313,6 +322,7 @@ describe( 'createFetchStore store', () => {
 		it( 'includes the expected selectors', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
+				storeName: STORE_NAME,
 				controlCallback: async () => true,
 			} );
 

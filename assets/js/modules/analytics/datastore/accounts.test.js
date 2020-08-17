@@ -117,7 +117,7 @@ describe( 'modules/analytics accounts', () => {
 				muteConsole( 'error' ); // Request will log an error.
 				await registry.dispatch( STORE_NAME ).createAccount();
 
-				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'createAccount' ) ).toMatchObject( response );
 			} );
 		} );
 
@@ -280,7 +280,7 @@ describe( 'modules/analytics accounts', () => {
 
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).getAccounts() !== undefined ||
-					registry.select( STORE_NAME ).getError()
+					registry.select( STORE_NAME ).getErrorForSelector( 'getAccounts' )
 				);
 
 				// Ensure the proper parameters were sent.
@@ -396,7 +396,6 @@ describe( 'modules/analytics accounts', () => {
 				registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'test@gmail.com' } );
 
 				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toMatchQueryParameters( {
-					authuser: 'test@gmail.com',
 					provisioningSignup: 'false',
 				} );
 				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( '#/termsofservice/test-account-ticket-id' );

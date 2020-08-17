@@ -76,6 +76,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const fetchGetSettingsStore = createFetchStore( {
 		baseName: 'getSettings',
+		storeName: STORE_NAME,
 		controlCallback: () => {
 			return API.get( type, identifier, datapoint, {}, {
 				useCache: false,
@@ -98,6 +99,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const fetchSaveSettingsStore = createFetchStore( {
 		baseName: 'saveSettings',
+		storeName: STORE_NAME,
 		controlCallback: ( params ) => {
 			const { values } = params;
 			return API.set( type, identifier, datapoint, values );
@@ -169,7 +171,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			const registry = yield Data.commonActions.getRegistry();
 			const values = registry.select( STORE_NAME ).getSettings();
 
-			return yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
+			const { response, error } = yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
+			if ( error ) {
+				// Store error manually since saveSettings signature differs from fetchSaveSettings.
+				registry.dispatch( STORE_NAME ).receiveError( error, 'saveSettings' );
+			}
+
+			return { response, error };
 		},
 	};
 

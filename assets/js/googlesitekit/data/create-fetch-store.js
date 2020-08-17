@@ -25,10 +25,8 @@ import isPlainObject from 'lodash/isPlainObject';
 /**
  * Internal dependencies
  */
-import {
-	camelCaseToPascalCase,
-	camelCaseToConstantCase,
-} from './transform-case';
+import Data from 'googlesitekit-data';
+import { camelCaseToPascalCase, camelCaseToConstantCase } from './transform-case';
 import { stringifyObject } from '../../util';
 
 const defaultReducerCallback = ( state ) => {
@@ -76,6 +74,7 @@ const defaultValidateParams = () => {};
  *
  * @param {Object}   args                   Arguments for creating the fetch store.
  * @param {string}   args.baseName          The base name to use for all the created infrastructure.
+ * @param {string}   args.storeName         The store name to use for error handling.
  * @param {Function} args.controlCallback   Callback function to issue the API request. Will be used inside the
  *                                          control. The function receives a params object based on argsToParams,
  *                                          i.e. the respective values passed to the action.
@@ -94,12 +93,14 @@ const defaultValidateParams = () => {};
  */
 export const createFetchStore = ( {
 	baseName,
+	storeName,
 	controlCallback,
 	reducerCallback = defaultReducerCallback,
 	argsToParams = defaultArgsToParams,
 	validateParams = defaultValidateParams,
 } ) => {
 	invariant( baseName, 'baseName is required.' );
+	invariant( storeName, 'storeName is required.' );
 	invariant( 'function' === typeof controlCallback, 'controlCallback is required and must be a function.' );
 	invariant( 'function' === typeof reducerCallback, 'reducerCallback must be a function.' );
 	invariant( 'function' === typeof argsToParams, 'argsToParams must be a function.' );
@@ -132,7 +133,7 @@ export const createFetchStore = ( {
 		[ isFetching ]: {},
 	};
 
-	function *fetchGenerator( params ) {
+	function *fetchGenerator( params, args ) {
 		let response;
 		let error;
 
@@ -140,6 +141,12 @@ export const createFetchStore = ( {
 			payload: { params },
 			type: START_FETCH,
 		};
+
+		const registry = yield Data.commonActions.getRegistry();
+		const { clearError } = registry ? registry.dispatch( storeName ) : {};
+		if ( clearError ) {
+			yield clearError( baseName, args );
+		}
 
 		try {
 			response = yield {
@@ -156,8 +163,16 @@ export const createFetchStore = ( {
 		} catch ( e ) {
 			error = e;
 
+			const { receiveError } = registry ? registry.dispatch( storeName ) : {};
+			if ( receiveError ) {
+				yield receiveError( error, baseName, args );
+
+				// @TODO: Remove the following once all instances of the legacy behavior have been removed.
+				yield receiveError( error );
+			}
+
 			yield {
-				payload: { error, params },
+				payload: { params },
 				type: CATCH_FETCH,
 			};
 		}
@@ -174,7 +189,7 @@ export const createFetchStore = ( {
 
 			// The normal fetch action generator is invoked as the return here
 			// to preserve asynchronous behavior without registering another action creator.
-			return fetchGenerator( params );
+			return fetchGenerator( params, args );
 		},
 
 		[ receiveCreator ]( response, params ) {
@@ -229,10 +244,9 @@ export const createFetchStore = ( {
 			}
 
 			case CATCH_FETCH: {
-				const { error, params } = payload;
+				const { params } = payload;
 				return {
 					...state,
-					error,
 					[ isFetching ]: {
 						...state[ isFetching ],
 						[ stringifyObject( params ) ]: false,

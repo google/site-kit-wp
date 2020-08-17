@@ -24,8 +24,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, readableLargeNumber, getModulesData } from '../../util';
-import { calculateOverviewData } from '../../modules/analytics/util';
+import { getTimeInSeconds, readableLargeNumber, getModulesData, changeToPercent } from '../../util';
+import { parseTotalUsersData } from '../../../js/modules/analytics/util';
 
 const trafficIncrease = ( reports, id ) => {
 	const modulesData = getModulesData();
@@ -38,13 +38,9 @@ const trafficIncrease = ( reports, id ) => {
 		return false;
 	}
 
-	const overviewData = calculateOverviewData( reports );
-
-	if ( ! overviewData ) {
-		return false;
-	}
-
-	const { totalUsersChange, totalUsers } = overviewData;
+	const totals = reports?.[0]?.data?.totals || [];
+	const { totalUsers, previousTotalUsers } = parseTotalUsersData( totals );
+	const totalUsersChange = Number( changeToPercent( previousTotalUsers, totalUsers ) );
 
 	// Adds threshold to show data only between 10-100 percent change.
 	if ( 10 > totalUsersChange || 100 < totalUsersChange ) {
