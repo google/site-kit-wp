@@ -34,6 +34,7 @@ import { isValidDateRange, isValidOrders, isValidStringularItems } from '../../.
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
+	storeName: STORE_NAME,
 	controlCallback: ( { options } ) => {
 		return API.get( 'modules', 'adsense', 'earnings', options );
 	},

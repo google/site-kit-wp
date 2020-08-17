@@ -34,6 +34,7 @@ import { isValidDateRange, isValidStringularItems } from '../../../util/report-v
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
+	storeName: STORE_NAME,
 	controlCallback: ( { options } ) => {
 		return API.get( 'modules', 'search-console', 'searchanalytics', options );
 	},

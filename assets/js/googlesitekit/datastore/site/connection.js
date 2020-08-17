@@ -28,6 +28,7 @@ const { createRegistrySelector } = Data;
 
 const fetchGetConnectionStore = createFetchStore( {
 	baseName: 'getConnection',
+	storeName: STORE_NAME,
 	controlCallback: () => {
 		return API.get( 'core', 'site', 'connection', undefined, {
 			useCache: false,
