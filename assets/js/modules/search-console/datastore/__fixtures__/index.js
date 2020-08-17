@@ -1,5 +1,5 @@
 /**
- * core/widgets data store
+ * Search Console Datastore Fixtures.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,25 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import areas from './areas';
-import { STORE_NAME } from './constants';
-import widgets from './widgets';
-import { createErrorStore } from '../../data/create-error-store';
-
-export { STORE_NAME };
-
-const store = Data.combineStores(
-	Data.commonStore,
-	areas,
-	widgets,
-	createErrorStore(),
-);
-
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
-
-export default store;
+export { default as report } from './report';
