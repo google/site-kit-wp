@@ -123,14 +123,18 @@ class SettingsModules extends Component {
 	}
 
 	settingsModuleComponent( module, isSaving ) {
-		const { activeModule, moduleState, modules: modulesData } = this.props;
-		if ( ! modulesData ) {
+		const { activeTab, activeModule, moduleState, modules } = this.props;
+		if ( ! modules ) {
 			return null;
 		}
 
 		const isCurrentModule = activeModule === module.slug;
-		const { provides } = modulesData[ module.slug ];
+		const { settingsComponent: SettingsComponent, provides } = modules[ module.slug ];
 		const { error } = this.state;
+
+		if ( activeTab === 0 && SettingsComponent ) {
+			return <SettingsComponent slug={ module.slug } />;
+		}
 
 		return (
 			<SettingsModule

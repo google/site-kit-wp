@@ -25,13 +25,15 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment, useCallback, useState } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { clearWebStorage } from '../../../util';
+import { clearWebStorage, activateOrDeactivateModule, getReAuthURL } from '../../../util';
+import { refreshAuthentication } from '../../../util/refresh-authentication';
+import restApiClient, { TYPE_MODULES } from '../../../components/data';
 import Button from '../../../components/button';
 import Link from '../../../components/link';
 import Spinner from '../../../components/spinner';
@@ -40,7 +42,7 @@ import { STORE_NAME } from '../datastore/constants';
 import ModuleSettingsDialog from './ModuleSettingsDialog';
 const { useDispatch, useSelect } = Data;
 
-function ModuleSettingsFooter( { slug, provides, allowEdit, onSave, onRemove } ) {
+function ModuleSettingsFooter( { slug, provides, allowEdit, onSave, canSave, canDisconnect } ) {
 	const [ dialogActive, setDialogActive ] = useState( false );
 
 	const {
@@ -61,42 +63,85 @@ function ModuleSettingsFooter( { slug, provides, allowEdit, onSave, onRemove } )
 	}, [ dialogActive ] );
 
 	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
-	const handleEdit = useCallback( ( action ) => {
-		if ( action === 'confirm' ) {
+
+	const handleSave = useCallback( () => {
+		setSettingsDisplayMode( slug, 'saving' );
+
+		const modulePromise = onSave();
+		if ( ! modulePromise ) {
+			// Clears session and local storage on successful setting.
+			clearWebStorage();
+			return;
+		}
+
+		modulePromise.then( () => {
+			// Clears session and local storage on every successful setting.
+			clearWebStorage();
+			// TODO Set error to false
+			// Change status from 'saving' to 'view'.
+			setSettingsDisplayMode( slug, 'view' );
+		} ).catch( () => {
+			// TODO: Set error in store.
+			// Change status from 'saving' to 'view'.
+			setSettingsDisplayMode( slug, 'view' );
+		} );
+	}, [] );
+
+	const handleEdit = useCallback( () => {
+		setSettingsDisplayMode( slug, 'edit' );
+	}, [] );
+
+	const handleCancel = useCallback( () => {
+		setSettingsDisplayMode( slug, 'view' );
+	}, [] );
+
+	const handleRemove = useCallback( async () => {
+		try {
 			setSettingsDisplayMode( slug, 'saving' );
 
-			const modulePromise = onSave();
-			if ( ! modulePromise ) {
-				// Clears session and local storage on successful setting.
-				clearWebStorage();
-				return;
-			}
-
-			modulePromise.then( () => {
-				// Clears session and local storage on every successful setting.
-				clearWebStorage();
-				// TODO Set error to false
-				// Change status from 'saving' to 'view'.
-				setSettingsDisplayMode( slug, 'view' );
-			} ).catch( () => {
-				// TODO: Set error in store.
-				// Change status from 'saving' to 'view'.
-				setSettingsDisplayMode( slug, 'view' );
-			} );
-		} else {
-			// TODO: Set error to false.
-			setSettingsDisplayMode( slug, action === 'cancel' ? 'view' : 'edit' );
+			await activateOrDeactivateModule( restApiClient, slug, false );
+			await refreshAuthentication();
+			restApiClient.invalidateCacheGroup( TYPE_MODULES, slug );
+			global.location = getReAuthURL( slug, false );
+		} catch ( err ) {
+			// @TODO: properly handle error state.
+			setSettingsDisplayMode( slug, 'view' );
 		}
-	}, [ slug ] );
+	}, [] );
 
 	const { autoActivate, homepage, name, connected } = module;
 
-	// Set button text based on state.
-	let buttonText = __( 'Close', 'google-site-kit' );
-	if ( allowEdit && connected && onSave ) {
-		buttonText = isSavingModuleSettings
-			? __( 'Saving…', 'google-site-kit' )
-			: __( 'Confirm Changes', 'google-site-kit' );
+	const buttons = [];
+	if ( isEditing || isSavingModuleSettings ) {
+		if ( onSave && connected ) {
+			buttons.push(
+				<Button key="save-btn" onClick={ () => handleSave() } disabled={ isSavingModuleSettings || ! canSave }>
+					{ isSavingModuleSettings ? __( 'Saving…', 'google-site-kit' ) : __( 'Confirm Changes', 'google-site-kit' ) }
+				</Button>,
+				<Spinner key="saving-spinner" isSaving={ isSavingModuleSettings } />,
+				<Link key="cancel-btn" className="googlesitekit-settings-module__footer-cancel" inherit onClick={ () => handleCancel() }>
+					{ __( 'Cancel', 'google-site-kit' ) }
+				</Link>
+			);
+		} else {
+			buttons.push(
+				<Button key="close-btn" onClick={ () => handleCancel() }>
+					{ __( 'Close', 'google-site-kit' ) }
+				</Button>
+			);
+		}
+	} else if ( allowEdit || ! autoActivate ) {
+		buttons.push(
+			<Link key="edit-btn" className="googlesitekit-settings-module__edit-button" inherit onClick={ () => handleEdit() }>
+				{ __( 'Edit', 'google-site-kit' ) }
+				<SvgIcon
+					className="googlesitekit-settings-module__edit-button-icon"
+					id="pencil"
+					width="10"
+					height="10"
+				/>
+			</Link>
+		);
 	}
 
 	return (
@@ -104,36 +149,10 @@ function ModuleSettingsFooter( { slug, provides, allowEdit, onSave, onRemove } )
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone">
-						{ isEditing || isSavingModuleSettings ? (
-							<Fragment>
-								<Button
-									id={ allowEdit && connected ? `confirm-changes-${ slug }` : `close-${ slug }` }
-									onClick={ () => handleEdit( allowEdit && connected ? 'confirm' : 'cancel' ) }
-									disabled={ isSavingModuleSettings }
-								>
-									{ buttonText }
-								</Button>
-								<Spinner isSaving={ isSavingModuleSettings } />
-								{ allowEdit && connected &&
-									<Link className="googlesitekit-settings-module__footer-cancel" inherit onClick={ () => handleEdit( 'cancel' ) }>
-										{ __( 'Cancel', 'google-site-kit' ) }
-									</Link>
-								}
-							</Fragment>
-						) : ( ( allowEdit || ! autoActivate ) &&
-							<Link className="googlesitekit-settings-module__edit-button" inherit onClick={ () => handleEdit( 'edit' ) }>
-								{ __( 'Edit', 'google-site-kit' ) }
-								<SvgIcon
-									className="googlesitekit-settings-module__edit-button-icon"
-									id="pencil"
-									width="10"
-									height="10"
-								/>
-							</Link>
-						) }
+						{ buttons }
 					</div>
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right-desktop">
-						{ isEditing && ! autoActivate && onRemove && (
+						{ isEditing && ! autoActivate && canDisconnect && (
 							<Link className="googlesitekit-settings-module__remove-button" inherit danger onClick={ toggleDialogState }>
 								{
 									/* translators: %s: module name */
@@ -161,7 +180,7 @@ function ModuleSettingsFooter( { slug, provides, allowEdit, onSave, onRemove } )
 							slug={ slug }
 							provides={ provides }
 							toggleDialogState={ toggleDialogState }
-							onRemove={ onRemove }
+							onRemove={ handleRemove }
 						/>
 					) }
 				</div>
@@ -175,11 +194,14 @@ ModuleSettingsFooter.propTypes = {
 	provides: PropTypes.arrayOf( PropTypes.string ),
 	allowEdit: PropTypes.bool,
 	onSave: PropTypes.func,
-	onRemove: PropTypes.func,
+	canSave: PropTypes.bool,
+	canDisconnect: PropTypes.bool,
 };
 
 ModuleSettingsFooter.defaultProps = {
 	allowEdit: false,
+	canSave: false,
+	canDisconnect: false,
 	provides: [],
 };
 

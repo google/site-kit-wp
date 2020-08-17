@@ -811,6 +811,7 @@ final class Modules {
 			'homepage'     => $module->homepage,
 			'internal'     => $module->internal,
 			'order'        => $module->order,
+			'autoActivate' => $module->force_active,
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),

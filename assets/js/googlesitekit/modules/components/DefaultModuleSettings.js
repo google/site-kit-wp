@@ -33,21 +33,33 @@ import ModuleSettingsFooter from './ModuleSettingsFooter';
 import ModuleSettingsContainer from './ModuleSettingsContainer';
 const { useSelect } = Data;
 
-function DefaultModuleSettings( { slug, provides, allowEdit, onView, onEdit, onSave, onRemove } ) {
+function DefaultModuleSettings( props ) {
+	const {
+		slug,
+		provides,
+		onView,
+		onEdit,
+		onSave,
+		canSave,
+		canDisconnect,
+	} = props;
+
 	const {
 		isOpen,
 		isEdit,
+		isSaving,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
 			isOpen: store.isSettingsOpen( slug ),
 			isEdit: store.isEditingSettings( slug ),
+			isSaving: store.isSavingSettings( slug ),
 		};
 	} );
 
 	let settingsComponent = null;
 	if ( isOpen ) {
-		if ( isEdit ) {
+		if ( isEdit || isSaving ) {
 			if ( onEdit ) {
 				settingsComponent = onEdit();
 			}
@@ -61,16 +73,17 @@ function DefaultModuleSettings( { slug, provides, allowEdit, onView, onEdit, onS
 			<ModuleSettingsHeader slug={ slug } />
 			{ isOpen &&
 				<ModuleSettingsContainer slug={ slug }>
-					<ModuleSettingsBody slug={ slug } allowEdit={ allowEdit }>
+					<ModuleSettingsBody slug={ slug } allowEdit={ !! onEdit }>
 						{ settingsComponent }
 					</ModuleSettingsBody>
 
 					<ModuleSettingsFooter
 						slug={ slug }
-						allowEdit={ allowEdit }
+						allowEdit={ !! onEdit }
 						provides={ provides }
 						onSave={ onSave }
-						onRemove={ onRemove }
+						canSave={ canSave }
+						canDisconnect={ canDisconnect }
 					/>
 				</ModuleSettingsContainer>
 			}
@@ -81,15 +94,16 @@ function DefaultModuleSettings( { slug, provides, allowEdit, onView, onEdit, onS
 DefaultModuleSettings.propTypes = {
 	slug: PropTypes.string.isRequired,
 	provides: PropTypes.arrayOf( PropTypes.string ),
-	allowEdit: PropTypes.bool,
 	onView: PropTypes.func,
 	onEdit: PropTypes.func,
 	onSave: PropTypes.func,
-	onRemove: PropTypes.func,
+	canSave: PropTypes.bool,
+	canDisconnect: PropTypes.bool,
 };
 
 DefaultModuleSettings.defaultProps = {
-	allowEdit: false,
+	canSave: false,
+	canDisconnect: false,
 	provides: [],
 };
 

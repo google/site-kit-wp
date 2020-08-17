@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
-import { addFilter, removeFilter } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -44,7 +43,6 @@ export default function SettingsEdit() {
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
-	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
@@ -62,39 +60,6 @@ export default function SettingsEdit() {
 			selectProperty( existingTag );
 		}
 	}, [ hasExistingTag, existingTag, existingTagPermission ] );
-
-	// Toggle disabled state of legacy confirm changes button.
-	useEffect( () => {
-		const confirm = global.document.getElementById( 'confirm-changes-analytics' );
-		if ( confirm ) {
-			confirm.disabled = ! canSubmitChanges;
-		}
-	}, [ canSubmitChanges ] );
-
-	const { submitChanges } = useDispatch( STORE_NAME );
-	useEffect( () => {
-		addFilter(
-			'googlekit.SettingsConfirmed',
-			'googlekit.AnalyticsSettingsConfirmed',
-			async ( chain, module ) => {
-				if ( 'analytics-module' === module ) {
-					const { error } = await submitChanges();
-					if ( error ) {
-						return Promise.reject( error );
-					}
-					return Promise.resolve();
-				}
-				return chain;
-			}
-		);
-
-		return () => {
-			removeFilter(
-				'googlekit.SettingsConfirmed',
-				'googlekit.AnalyticsSettingsConfirmed',
-			);
-		};
-	}, [] );
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below

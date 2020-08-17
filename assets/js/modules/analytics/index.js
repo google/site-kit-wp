@@ -17,18 +17,22 @@
  */
 
 /**
- * Internal dependencies
- */
-import './datastore';
-import { fillFilterWithComponent } from '../../util';
-import { SetupMain as AnalyticsSetup } from './components/setup';
-import { SettingsMain as AnalyticsSettings } from './components/settings';
-
-/**
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
+import domReady from '@wordpress/dom-ready';
+
+/**
+ * Internal dependencies
+ */
+import './datastore';
+import Data from 'googlesitekit-data';
+import { fillFilterWithComponent } from '../../util';
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { SetupMain as AnalyticsSetup } from './components/setup';
+import { SettingsMain as AnalyticsSettings } from './components/settings';
+const { dispatch } = Data;
 
 addFilter(
 	'googlesitekit.ModuleSetup-analytics',
@@ -36,8 +40,6 @@ addFilter(
 	compose( fillFilterWithComponent )( AnalyticsSetup )
 );
 
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-analytics',
-	'googlesitekit.AnalyticsModuleSettings',
-	compose( fillFilterWithComponent )( AnalyticsSettings )
-);
+domReady( () => {
+	dispatch( CORE_MODULES ).setSettingsComponent( 'analytics', AnalyticsSettings );
+} );

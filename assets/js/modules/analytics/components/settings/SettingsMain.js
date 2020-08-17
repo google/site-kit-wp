@@ -25,29 +25,45 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { DefaultModuleSettings } from '../../../../googlesitekit/modules/components';
 import SettingsEdit from './SettingsEdit';
 import SettingsView from './SettingsView';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function SettingsMain( { isOpen, isEditing } ) {
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-	const haveSettingsChanged = useSelect( ( select ) => select( STORE_NAME ).haveSettingsChanged() );
+export default function SettingsMain( { slug } ) {
+	const {
+		canSubmitChanges,
+		isDoingSubmitChanges,
+		haveSettingsChanged,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			canSubmitChanges: store.canSubmitChanges(),
+			isDoingSubmitChanges: store.isDoingSubmitChanges(),
+			haveSettingsChanged: store.haveSettingsChanged(),
+		};
+	} );
+
+	const isEditing = useSelect( ( select ) => select( CORE_MODULES ).isEditingSettings( slug ) );
+	const { submitChanges, rollbackSettings } = useDispatch( STORE_NAME );
+
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
-	const { rollbackSettings } = useDispatch( STORE_NAME );
 	useEffect( () => {
 		if ( haveSettingsChanged && ! isDoingSubmitChanges && ! isEditing ) {
 			rollbackSettings();
 		}
 	}, [ haveSettingsChanged, isDoingSubmitChanges, isEditing ] );
 
-	if ( ! isOpen ) {
-		return null;
-	}
-
-	if ( isEditing ) {
-		return <SettingsEdit />;
-	}
-
-	return <SettingsView />;
+	return (
+		<DefaultModuleSettings
+			slug={ slug }
+			onEdit={ () => <SettingsEdit /> }
+			onView={ () => <SettingsView /> }
+			onSave={ submitChanges }
+			canSave={ canSubmitChanges }
+			canDisconnect
+		/>
+	);
 }

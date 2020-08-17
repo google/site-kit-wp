@@ -50,8 +50,14 @@ const { commonActions, createRegistrySelector, createRegistryControl } = Data;
  */
 export const ModuleComponents = {};
 
+// Helpers.
+function isSettingsMode( ...modes ) {
+	return createRegistrySelector( ( select ) => ( state, slug ) => modes.includes( select( STORE_NAME ).getSettingsDisplayMode( slug ) ) );
+}
+
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
+const SET_SETTINGS_COMPONENT = 'SET_SETTINGS_COMPONENT';
 const SET_SETTINGS_DISPLAY_MODE = 'SET_SETTINGS_DISPLAY_MODE';
 const REGISTER_MODULE = 'REGISTER_MODULE';
 const WAIT_FOR_MODULES = 'WAIT_FOR_MODULES';
@@ -224,9 +230,11 @@ const baseActions = {
 		if ( ModuleComponents[ registryKey ] === undefined ) {
 			ModuleComponents[ registryKey ] = {};
 		}
+
 		if ( ModuleComponents[ registryKey ][ slug ] === undefined ) {
 			ModuleComponents[ registryKey ][ slug ] = settingsComponent;
 		}
+
 		// Ensure that active and connected properties are not passed here.
 		delete settings.active;
 		delete settings.connected;
@@ -239,6 +247,39 @@ const baseActions = {
 		return {
 			payload: { slug, settings: mergedModuleSettings },
 			type: REGISTER_MODULE,
+		};
+	},
+
+	/**
+	 * Sets settings component for a module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug                 Module slug.
+	 * @param {WPElement} settingsComponent React component to render the settings panel. Default is the DefaultModuleSettings component.
+	 * @return {Object} Redux-style action.
+	 */
+	*setSettingsComponent( slug, settingsComponent ) {
+		invariant( slug, 'module slug is required' );
+
+		const registry = yield commonActions.getRegistry();
+		yield actions.waitForModules();
+		const registryKey = registry.select( CORE_SITE ).getRegistryKey();
+
+		// We do this assignment in the action rather than the reducer because we can't send a
+		// payload that includes a React component to the reducer; we'll get an error about
+		// payloads needing to be plain objects.
+		if ( ModuleComponents[ registryKey ] === undefined ) {
+			ModuleComponents[ registryKey ] = {};
+		}
+
+		if ( ModuleComponents[ registryKey ][ slug ] === undefined ) {
+			ModuleComponents[ registryKey ][ slug ] = settingsComponent;
+		}
+
+		return {
+			payload: { slug },
+			type: SET_SETTINGS_COMPONENT,
 		};
 	},
 
@@ -315,6 +356,11 @@ const baseReducer = ( state, { type, payload } ) => {
 				},
 			};
 		}
+		case SET_SETTINGS_COMPONENT: {
+			return {
+				...state,
+			};
+		}
 		case SET_SETTINGS_DISPLAY_MODE: {
 			const { slug, status } = payload;
 			const { modules: existingModules } = state;
@@ -370,10 +416,6 @@ const baseResolvers = {
 	},
 };
 
-function isSettingsMode( ...modes ) {
-	return createRegistrySelector( ( select ) => ( state, slug ) => modes.includes( select( STORE_NAME ).getSettingsDisplayMode( slug ) ) );
-}
-
 const baseSelectors = {
 	/**
 	 * Gets the list of modules registered for use with Site Kit.
@@ -423,13 +465,12 @@ const baseSelectors = {
 		const sortedModules = sortByProperty( Object.values( modules ), 'order' );
 		const mappedModules = sortedModules.map( ( module ) => {
 			const moduleWithComponent = { ...module };
-			if ( ModuleComponents[ registryKey ] ) {
-				// If there is a settingsComponent that was passed use it, otherwise set to the default.
-				if ( ModuleComponents[ registryKey ][ module.slug ] ) {
-					moduleWithComponent.settingsComponent = ModuleComponents[ registryKey ][ module.slug ];
-				} else {
-					moduleWithComponent.settingsComponent = DefaultModuleSettings;
-				}
+
+			// If there is a settingsComponent that was passed use it, otherwise set to the default.
+			if ( ModuleComponents[ registryKey ] && ModuleComponents[ registryKey ][ module.slug ] ) {
+				moduleWithComponent.settingsComponent = ModuleComponents[ registryKey ][ module.slug ];
+			} else {
+				moduleWithComponent.settingsComponent = undefined;
 			}
 
 			return moduleWithComponent;
@@ -516,7 +557,7 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {boolean} True if module exists and settings are open, false if not.
 	 */
-	isSettingsOpen: isSettingsMode( 'view', 'edit' ),
+	isSettingsOpen: isSettingsMode( 'view', 'edit', 'saving' ),
 
 	/**
 	 * Checks if a module's settings are being saved.
