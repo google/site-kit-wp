@@ -475,7 +475,7 @@ export const getTopPagesReportDataDefaults = () => {
 /**
  * Returns the extracted total and past user data.
  *
- * @since n.e.x.t
+ * @since 1.14.0
  *
  * @param {Array} data The data returned from the Analytics API call.
  * @return {Object} The extracted user data in the form { totalUsers, previousTotalUsers }.
