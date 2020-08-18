@@ -808,13 +808,13 @@ final class Modules {
 
 		return array(
 			'slug'         => $module->slug,
-			'name'         => isset( $module_info['name'] ) ? $module_info['name'] : $module->name,
-			'description'  => isset( $module_info['description'] ) ? $module_info['description'] : $module->description,
-			'homepage'     => isset( $module_info['homepage'] ) ? $module_info['homepage'] : $module->homepage,
-			'internal'     => isset( $module_info['internal'] ) && $module_info['internal'],
-			'order'        => isset( $module_info['sort'] ) ? $module_info['sort'] : $module->order,
+			'name'         => $module->name,
+			'description'  => $module->description,
+			'homepage'     => $module->homepage,
+			'internal'     => $module->internal,
+			'order'        => $module->order,
 			'provides'     => isset( $module_info['provides'] ) ? $module_info['provides'] : array(),
-			'autoActivate' => isset( $module_info['autoActivate'] ) && $module_info['autoActivate'],
+			'forceActive'  => $module->force_active,
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
@@ -864,6 +864,10 @@ final class Modules {
 				'active'       => array(
 					'type'        => 'boolean',
 					'description' => __( 'Whether the module is active.', 'google-site-kit' ),
+				),
+				'forceActive'  => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the module is forced to be active.', 'google-site-kit' ),
 				),
 				'connected'    => array(
 					'type'        => 'boolean',

@@ -110,13 +110,13 @@ function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave } ) {
 	}, [] );
 
 	const {
-		autoActivate,
+		forceActive,
 		homepage,
 		name,
 		connected,
 		provides,
 	} = module;
-	const canDisconnect = ! autoActivate;
+	const canDisconnect = ! forceActive;
 
 	const buttons = [];
 	if ( isEditing || isSavingModuleSettings ) {

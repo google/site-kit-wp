@@ -120,7 +120,7 @@ class SettingsModule extends Component {
 	}
 
 	deactivate() {
-		if ( this.props.autoActivate ) {
+		if ( this.props.forceActive ) {
 			return;
 		}
 		this.activateOrDeactivate();
@@ -181,7 +181,7 @@ class SettingsModule extends Component {
 			handleEdit,
 			description,
 			hasSettings,
-			autoActivate,
+			forceActive,
 			provides,
 			isSaving,
 			error,
@@ -371,7 +371,7 @@ class SettingsModule extends Component {
 													</Link>
 													}
 												</Fragment>
-											) : ( ( hasSettings || ! autoActivate ) &&
+											) : ( ( hasSettings || ! forceActive ) &&
 											<Link
 												className="googlesitekit-settings-module__edit-button"
 												onClick={ () => {
@@ -397,7 +397,7 @@ class SettingsModule extends Component {
 											mdc-layout-grid__cell--align-middle
 											mdc-layout-grid__cell--align-right-desktop
 										">
-											{ isEditing[ moduleKey ] && ! autoActivate && (
+											{ isEditing[ moduleKey ] && ! forceActive && (
 												<Link
 													className="googlesitekit-settings-module__remove-button"
 													onClick={ this.handleDialog }
@@ -478,7 +478,7 @@ SettingsModule.propTypes = {
 	isEditing: PropTypes.object,
 	handleEdit: PropTypes.func,
 	handleDialog: PropTypes.func,
-	autoActivate: PropTypes.bool,
+	forceActive: PropTypes.bool,
 	hasSettings: PropTypes.bool,
 	required: PropTypes.array,
 	active: PropTypes.bool,

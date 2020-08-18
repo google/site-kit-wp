@@ -147,7 +147,7 @@ class SettingsModules extends Component {
 				active={ module.active }
 				setupComplete={ module.connected }
 				hasSettings={ !! module.settings && 'search-console' !== module.slug }
-				autoActivate={ module.autoActivate }
+				forceActive={ module.forceActive }
 				updateModulesList={ this.updateModulesList }
 				handleEdit={ this.handleButtonAction }
 				handleConfirm
