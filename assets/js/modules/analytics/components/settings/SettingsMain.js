@@ -63,7 +63,6 @@ export default function SettingsMain( { slug } ) {
 			onView={ () => <SettingsView /> }
 			onSave={ submitChanges }
 			canSave={ canSubmitChanges }
-			canDisconnect
 		/>
 	);
 }

@@ -42,7 +42,7 @@ import { STORE_NAME } from '../datastore/constants';
 import ModuleSettingsDialog from './ModuleSettingsDialog';
 const { useDispatch, useSelect } = Data;
 
-function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave, canDisconnect } ) {
+function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave } ) {
 	const [ dialogActive, setDialogActive ] = useState( false );
 
 	const {
@@ -95,7 +95,7 @@ function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave, canDisconnect
 		setSettingsDisplayMode( slug, 'view' );
 	}, [] );
 
-	const handleRemove = useCallback( async () => {
+	const handleDisconnect = useCallback( async () => {
 		try {
 			setSettingsDisplayMode( slug, 'saving' );
 
@@ -116,6 +116,7 @@ function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave, canDisconnect
 		connected,
 		provides,
 	} = module;
+	const canDisconnect = ! autoActivate;
 
 	const buttons = [];
 	if ( isEditing || isSavingModuleSettings ) {
@@ -136,7 +137,7 @@ function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave, canDisconnect
 				</Button>
 			);
 		}
-	} else if ( allowEdit || ! autoActivate ) {
+	} else if ( allowEdit || canDisconnect ) {
 		buttons.push(
 			<Link key="edit-btn" className="googlesitekit-settings-module__edit-button" inherit onClick={ () => handleEdit() }>
 				{ __( 'Edit', 'google-site-kit' ) }
@@ -158,7 +159,7 @@ function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave, canDisconnect
 						{ buttons }
 					</div>
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right-desktop">
-						{ isEditing && ! autoActivate && canDisconnect && (
+						{ isEditing && canDisconnect && (
 							<Link className="googlesitekit-settings-module__remove-button" inherit danger onClick={ toggleDialogState }>
 								{
 									/* translators: %s: module name */
@@ -186,7 +187,7 @@ function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave, canDisconnect
 							slug={ slug }
 							provides={ provides || [] }
 							toggleDialogState={ toggleDialogState }
-							onRemove={ handleRemove }
+							onRemove={ handleDisconnect }
 						/>
 					) }
 				</div>
@@ -200,13 +201,11 @@ ModuleSettingsFooter.propTypes = {
 	allowEdit: PropTypes.bool,
 	onSave: PropTypes.func,
 	canSave: PropTypes.bool,
-	canDisconnect: PropTypes.bool,
 };
 
 ModuleSettingsFooter.defaultProps = {
 	allowEdit: false,
 	canSave: false,
-	canDisconnect: false,
 };
 
 export default ModuleSettingsFooter;

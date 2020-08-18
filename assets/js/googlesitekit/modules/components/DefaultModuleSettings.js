@@ -40,7 +40,6 @@ function DefaultModuleSettings( props ) {
 		onEdit,
 		onSave,
 		canSave,
-		canDisconnect,
 	} = props;
 
 	const {
@@ -81,7 +80,6 @@ function DefaultModuleSettings( props ) {
 						allowEdit={ !! onEdit }
 						onSave={ onSave }
 						canSave={ canSave }
-						canDisconnect={ canDisconnect }
 					/>
 				</ModuleSettingsContainer>
 			}
@@ -95,12 +93,10 @@ DefaultModuleSettings.propTypes = {
 	onEdit: PropTypes.func,
 	onSave: PropTypes.func,
 	canSave: PropTypes.bool,
-	canDisconnect: PropTypes.bool,
 };
 
 DefaultModuleSettings.defaultProps = {
 	canSave: false,
-	canDisconnect: false,
 };
 
 export default DefaultModuleSettings;
