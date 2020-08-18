@@ -22,10 +22,11 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'modules/tagmanager/data/accounts',
 			array(
-				'methods'  => 'GET',
-				'callback' => function () {
+				'methods'             => 'GET',
+				'callback'            => function () {
 					return array();
 				},
+				'permission_callback' => '__return_true',
 			),
 			true
 		);
@@ -34,8 +35,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/setup/tagmanager/account-created',
 			array(
-				'methods'  => 'POST',
-				'callback' => function () {
+				'methods'             => 'POST',
+				'callback'            => function () {
 					require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 					deactivate_plugins( plugin_basename( __FILE__ ), true );
@@ -46,6 +47,7 @@ add_action(
 						'result'  => 'account-created',
 					);
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 
