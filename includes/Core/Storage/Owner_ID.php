@@ -54,6 +54,23 @@ class Owner_ID extends Setting {
 	}
 
 	/**
+	 * Sets Owner ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $value Owner ID.
+	 * @return bool True on success, false on failure.
+	 */
+	public function set( $value ) {
+		return parent::set(
+			call_user_func(
+				$this->get_sanitize_callback(),
+				$value
+			)
+		);
+	}
+
+	/**
 	 * Gets the default value using legacy "googlesitekit_first_admin" option. If
 	 * this option doesn't exist, this function will return 0.
 	 *

@@ -29,29 +29,48 @@ class Owner_IDTest extends TestCase {
 	 */
 	private $owner_id;
 
+	/**
+	 * Options object.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
 	public function setUp() {
 		parent::setUp();
 
-		$options        = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->owner_id = new Owner_ID( $options );
+		$this->options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->owner_id = new Owner_ID( $this->options );
 	}
 
 	public function test_get() {
 		$this->assertEquals( 0, $this->owner_id->get() );
 
-		$this->owner_id->set( 1 );
+		$this->options->set( Owner_ID::OPTION, 1 );
 		$this->assertEquals( 1, $this->owner_id->get() );
+
+		$this->options->set( Owner_ID::OPTION, 'xxx' );
+		$this->assertTrue( is_int( $this->owner_id->get() ) );
+		$this->assertEquals( 0, $this->owner_id->get() );
 	}
 
 	public function test_set() {
 		$this->assertTrue( $this->owner_id->set( 1 ) );
-		$this->assertEquals( 1, $this->owner_id->get() );
+		$this->assertTrue( is_int( $this->options->get( Owner_ID::OPTION ) ) );
+		$this->assertEquals( 1, $this->options->get( Owner_ID::OPTION ) );
+
+		$this->owner_id->set( 'xxx' );
+		$this->assertTrue( is_int( $this->options->get( Owner_ID::OPTION ) ) );
+		$this->assertEquals( 0, $this->options->get( Owner_ID::OPTION ) );
 	}
 
 	public function test_has() {
 		$this->assertFalse( $this->owner_id->has() );
 
 		$this->owner_id->set( 1 );
+		$this->assertTrue( $this->owner_id->has() );
+
+		$this->owner_id->set( 'xxx' );
 		$this->assertTrue( $this->owner_id->has() );
 	}
 
