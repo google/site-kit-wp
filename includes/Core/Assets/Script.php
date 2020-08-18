@@ -68,12 +68,14 @@ class Script extends Asset {
 		$version = $this->args['version'];
 
 		$filename = '';
-		if ( isset( Manifest::$assets[ $this->handle ] ) ) {
-			$filename = Manifest::$assets[ $this->handle ];
-		} else {
-			$handle = str_replace( 'googlesitekit-', '', $this->handle );
-			if ( isset( Manifest::$assets[ $handle ] ) ) {
-				$filename = Manifest::$assets[ $handle ];
+		if ( class_exists( '\Google\Site_Kit\Core\Assets\Manifest' ) ) {
+			if ( isset( Manifest::$assets[ $this->handle ] ) ) {
+				$filename = Manifest::$assets[ $this->handle ];
+			} else {
+				$handle = str_replace( 'googlesitekit-', '', $this->handle );
+				if ( isset( Manifest::$assets[ $handle ] ) ) {
+					$filename = Manifest::$assets[ $handle ];
+				}
 			}
 		}
 
