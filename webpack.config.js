@@ -152,7 +152,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-dashboard-splash': './assets/js/googlesitekit-dashboard-splash.js',
 				'googlesitekit-wp-dashboard': './assets/js/googlesitekit-wp-dashboard.js',
 				'googlesitekit-adminbar-loader': './assets/js/googlesitekit-adminbar-loader.js',
-				'googlesitekit-admin': './assets/js/googlesitekit-admin.js',
+				'googlesitekit-base': './assets/js/googlesitekit-base.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
 				// Needed to test if a browser extension blocks this by naming convention.
 				'pagead2.ads': './assets/js/pagead2.ads.js',

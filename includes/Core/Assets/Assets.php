@@ -325,7 +325,7 @@ final class Assets {
 	 * @since 1.0.0
 	 */
 	private function enqueue_minimal_admin_script() {
-		$this->enqueue_asset( 'googlesitekit-admin' );
+		$this->enqueue_asset( 'googlesitekit-base' );
 	}
 
 	/**
@@ -347,7 +347,7 @@ final class Assets {
 		$dependencies = array(
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
-			'googlesitekit-admin',
+			'googlesitekit-base',
 			'googlesitekit-data',
 			'googlesitekit-datastore-forms',
 			'googlesitekit-datastore-site',
@@ -373,7 +373,7 @@ final class Assets {
 				)
 			),
 			new Script_Data(
-				'googlesitekit-admin-data',
+				'googlesitekit-base-data',
 				array(
 					'global'        => '_googlesitekitBaseData',
 					'data_callback' => function () {
@@ -438,10 +438,10 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-admin',
+				'googlesitekit-base',
 				array(
 					'version'      => null,
-					'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-admin-data' ),
+					'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-base-data' ),
 					'execution'    => 'defer',
 				)
 			),
@@ -485,7 +485,7 @@ final class Assets {
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
-						'googlesitekit-admin-data',
+						'googlesitekit-base-data',
 						'googlesitekit-entity-data',
 					),
 				)
