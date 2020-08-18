@@ -186,8 +186,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'modules/analytics/data/accounts-properties-profiles',
 			array(
-				'methods'  => 'GET',
-				'callback' => function () use ( $accounts, $properties, $profiles ) {
+				'methods'             => 'GET',
+				'callback'            => function () use ( $accounts, $properties, $profiles ) {
 					$response = array(
 						'accounts'   => $accounts,
 						'properties' => filter_by_account_id( $properties, $accounts[0]['id'] ),
@@ -207,6 +207,7 @@ add_action(
 
 					return $response;
 				},
+				'permission_callback' => '__return_true',
 			),
 			true
 		);
@@ -216,8 +217,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'modules/analytics/data/properties-profiles',
 			array(
-				'methods'  => 'GET',
-				'callback' => function ( \WP_REST_Request $request ) use ( $properties, $profiles ) {
+				'methods'             => 'GET',
+				'callback'            => function ( \WP_REST_Request $request ) use ( $properties, $profiles ) {
 					$filtered_properties = filter_by_account_id( $properties, $request->get_param( 'accountID' ) );
 
 					return array(
@@ -225,6 +226,7 @@ add_action(
 						'profiles'   => filter_by_property_id( $profiles, $filtered_properties[0]['id'] ),
 					);
 				},
+				'permission_callback' => '__return_true',
 			),
 			true
 		);
@@ -234,12 +236,13 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'modules/analytics/data/profiles',
 			array(
-				'methods'  => 'GET',
-				'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
+				'methods'             => 'GET',
+				'callback'            => function ( \WP_REST_Request $request ) use ( $profiles ) {
 					$profiles = filter_by_property_id( $profiles, $request->get_param( 'propertyID' ) );
 
 					return $profiles;
 				},
+				'permission_callback' => '__return_true',
 			),
 			true
 		);
@@ -248,8 +251,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/reference-url',
 			array(
-				'methods'  => 'POST',
-				'callback' => function ( \WP_REST_Request $request ) {
+				'methods'             => 'POST',
+				'callback'            => function ( \WP_REST_Request $request ) {
 					$url = $request->get_param( 'url' );
 					update_option( 'googlesitekit_e2e_reference_url', $url );
 
@@ -258,6 +261,7 @@ add_action(
 						'url'     => $url,
 					);
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 	},

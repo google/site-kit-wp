@@ -24,8 +24,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/auth/access-token',
 			array(
-				'methods'  => WP_REST_Server::EDITABLE,
-				'callback' => function ( WP_REST_Request $request ) {
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => function ( WP_REST_Request $request ) {
 					( new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )
 						->set_access_token( $request['token'], HOUR_IN_SECONDS );
 
@@ -34,8 +34,9 @@ add_action(
 						'token'   => $request['token'],
 					);
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 	},
-	0 
+	0
 );

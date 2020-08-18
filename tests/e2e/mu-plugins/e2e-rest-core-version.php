@@ -22,8 +22,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/wp/version',
 			array(
-				'methods'  => 'GET',
-				'callback' => function () {
+				'methods'             => 'GET',
+				'callback'            => function () {
 					$version = get_bloginfo( 'version' );
 					list( $major, $minor ) = explode( '.', $version );
 
@@ -33,6 +33,7 @@ add_action(
 						'minor'   => (int) $minor,
 					);
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 	},
