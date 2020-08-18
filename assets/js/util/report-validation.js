@@ -88,3 +88,23 @@ export function isValidOrders( orders ) {
 	// Arguably this should fail/throw, because none of our allowed types were encountered.
 	return false;
 }
+
+/**
+ * Verifies that provided parameter is either a string or an array of strings.
+ *
+ * @since n.e.x.t
+ *
+ * @param {(string|Array.<string>)} items Items to validate.
+ * @return {boolean} TRUE if items are either a string or an array of strings, otherwise FALSE.
+ */
+export function isValidStringularItems( items ) {
+	if ( typeof items === 'string' ) {
+		return true;
+	}
+
+	if ( Array.isArray( items ) ) {
+		return items.every( ( item ) => typeof item === 'string' );
+	}
+
+	return false;
+}

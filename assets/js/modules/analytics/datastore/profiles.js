@@ -33,6 +33,7 @@ const { createRegistrySelector } = Data;
 
 const fetchGetProfilesStore = createFetchStore( {
 	baseName: 'getProfiles',
+	storeName: STORE_NAME,
 	controlCallback: ( { accountID, propertyID } ) => {
 		return API.get( 'modules', 'analytics', 'profiles', {
 			accountID,
@@ -59,6 +60,7 @@ const fetchGetProfilesStore = createFetchStore( {
 
 const fetchCreateProfileStore = createFetchStore( {
 	baseName: 'createProfile',
+	storeName: STORE_NAME,
 	controlCallback: ( { accountID, propertyID, profileName } ) => {
 		return API.set( 'modules', 'analytics', 'create-profile', {
 			accountID,

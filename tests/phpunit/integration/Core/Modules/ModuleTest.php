@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Exception;
+use ReflectionMethod;
 
 /**
  * @group Modules
@@ -236,6 +237,42 @@ class ModuleTest extends TestCase {
 			),
 			$error->get_error_data()
 		);
+	}
+
+	public function test_parse_string_list() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$reflected_parse_string_list_method = new ReflectionMethod( 'Google\Site_Kit\Tests\Core\Modules\FakeModule', 'parse_string_list' );
+		$reflected_parse_string_list_method->setAccessible( true );
+
+		$empty_values = array( array(), '', 5 );
+		foreach ( $empty_values as $empty_value ) {
+			$result = $reflected_parse_string_list_method->invoke( $module, $empty_value );
+			$this->assertTrue( is_array( $result ) );
+			$this->assertEmpty( $result );
+		}
+
+		$result = $reflected_parse_string_list_method->invoke( $module, 'one,two,, , three' );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 3, count( $result ) );
+		$this->assertEquals( 'one', $result[0] );
+		$this->assertEquals( 'two', $result[1] );
+		$this->assertEquals( 'three', $result[2] );
+
+		$data   = array(
+			'one',
+			5,
+			array(),
+			'two ',
+			'          three              ',
+			null,
+		);
+		$result = $reflected_parse_string_list_method->invoke( $module, $data );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 3, count( $result ) );
+		$this->assertEquals( 'one', $result[0] );
+		$this->assertEquals( 'two', $result[1] );
+		$this->assertEquals( 'three', $result[2] );
 	}
 
 	/**
