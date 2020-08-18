@@ -935,10 +935,13 @@ tag_partner: "site_kit"
 	 * @return Asset[] List of Asset objects.
 	 */
 	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
 		return array(
 			new Script(
 				'googlesitekit-modules-adsense',
 				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-adsense.js',
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',

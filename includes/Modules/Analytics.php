@@ -1570,10 +1570,13 @@ final class Analytics extends Module
 	 * @return Asset[] List of Asset objects.
 	 */
 	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
 		return array(
 			new Script(
 				'googlesitekit-modules-analytics',
 				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-analytics.js',
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
