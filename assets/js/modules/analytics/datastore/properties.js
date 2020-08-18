@@ -50,8 +50,10 @@ const fetchGetPropertiesProfilesStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( accountID ) => {
-		invariant( accountID, 'accountID is required.' );
 		return { accountID };
+	},
+	validateParams: ( { accountID } = {} ) => {
+		invariant( accountID, 'accountID is required.' );
 	},
 } );
 
@@ -73,8 +75,10 @@ const fetchCreatePropertyStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( accountID ) => {
-		invariant( accountID, 'accountID is required.' );
 		return { accountID };
+	},
+	validateParams: ( { accountID } = {} ) => {
+		invariant( accountID, 'accountID is required.' );
 	},
 } );
 

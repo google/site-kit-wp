@@ -60,8 +60,10 @@ const fetchSaveUseSnippetStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( useSnippet ) => {
-		invariant( useSnippet !== undefined, 'useSnippet is required.' );
 		return { useSnippet };
+	},
+	validateParams: ( { useSnippet } = {} ) => {
+		invariant( useSnippet !== undefined, 'useSnippet is required.' );
 	},
 } );
 

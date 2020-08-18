@@ -115,10 +115,12 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			};
 		},
 		argsToParams: ( values ) => {
-			invariant( isPlainObject( values ), 'values is required.' );
 			return {
 				values,
 			};
+		},
+		validateParams: ( { values } = {} ) => {
+			invariant( isPlainObject( values ), 'values is required.' );
 		},
 	} );
 

@@ -50,8 +50,10 @@ const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( data ) => {
-		invariant( isPlainObject( data ), 'data must be an object.' );
 		return { data };
+	},
+	validateParams: ( { data } = {} ) => {
+		invariant( isPlainObject( data ), 'data must be an object.' );
 	},
 } );
 
@@ -68,8 +70,10 @@ const fetchCreateAccountStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( data ) => {
-		invariant( isPlainObject( data ), 'data must be an object.' );
 		return { data };
+	},
+	validateParams: ( { data } = {} ) => {
+		invariant( isPlainObject( data ), 'data must be an object.' );
 	},
 } );
 

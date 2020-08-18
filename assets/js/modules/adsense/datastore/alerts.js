@@ -50,8 +50,10 @@ const fetchGetAlertsStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( accountID ) => {
-		invariant( accountID, 'accountID is required.' );
 		return { accountID };
+	},
+	validateParams: ( { accountID } = {} ) => {
+		invariant( accountID, 'accountID is required.' );
 	},
 } );
 

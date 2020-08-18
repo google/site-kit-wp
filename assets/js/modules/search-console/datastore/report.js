@@ -48,6 +48,9 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
+		return { options };
+	},
+	validateParams: ( { options } = {} ) => {
 		invariant( isPlainObject( options ), 'Options for Search Console report must be an object.' );
 		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Search Console report.' );
 
@@ -58,8 +61,6 @@ const fetchGetReportStore = createFetchStore( {
 				'Dimensions for Search Console report must be either a string or an array of strings',
 			);
 		}
-
-		return { options };
 	},
 } );
 

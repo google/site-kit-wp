@@ -47,6 +47,9 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
+		return { options };
+	},
+	validateParams: ( { options } = {} ) => {
 		invariant( isPlainObject( options ), 'options must be an object.' );
 		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
 
@@ -70,8 +73,6 @@ const fetchGetReportStore = createFetchStore( {
 				'Orders for an AdSense report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.',
 			);
 		}
-
-		return { options };
 	},
 } );
 

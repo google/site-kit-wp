@@ -37,9 +37,10 @@ const { createRegistrySelector } = Data;
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
 	argsToParams: ( containerID ) => {
-		invariant( isValidContainerID( containerID ), 'A valid containerID is required to for fetching permission.' );
-
 		return { containerID };
+	},
+	validateParams: ( { containerID } = {} ) => {
+		invariant( isValidContainerID( containerID ), 'A valid containerID is required to for fetching permission.' );
 	},
 	controlCallback: ( { containerID } ) => API.get( 'modules', 'tagmanager', 'tag-permission', { containerID }, { useCache: false } ),
 	reducerCallback: ( state, { accountID, permission }, { containerID } ) => {
