@@ -33,7 +33,7 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { moduleIcon } from '../../../util';
-import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME, SETTINGS_DISPLAY_MODES } from '../datastore/constants';
 const { useDispatch, useSelect } = Data;
 
 function ModuleSettingsHeader( { slug } ) {
@@ -50,7 +50,7 @@ function ModuleSettingsHeader( { slug } ) {
 
 	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
 	const handleAccordion = useCallback( () => {
-		setSettingsDisplayMode( slug, isOpen ? 'closed' : 'view' );
+		setSettingsDisplayMode( slug, isOpen ? SETTINGS_DISPLAY_MODES.CLOSED : SETTINGS_DISPLAY_MODES.VIEW );
 	}, [ slug, isOpen ] );
 
 	let moduleStatus, moduleStatusForReader;

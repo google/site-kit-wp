@@ -26,14 +26,14 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME, SETTINGS_DISPLAY_MODES } from '../datastore/constants';
 import ModuleSettingsOverlay from './ModuleSettingsOverlay';
 const { useSelect } = Data;
 
 function ModuleSettings( { children, error, slug } ) {
 	const mode = useSelect( ( select ) => select( STORE_NAME ).getSettingsDisplayMode( slug ) );
-	const isEditing = mode === 'edit';
-	const overlay = mode === 'locked' ? <ModuleSettingsOverlay compress /> : null;
+	const isEditing = mode === SETTINGS_DISPLAY_MODES.EDIT;
+	const overlay = mode === SETTINGS_DISPLAY_MODES.LOCKED ? <ModuleSettingsOverlay compress /> : null;
 
 	return (
 		<div className={ classnames(
