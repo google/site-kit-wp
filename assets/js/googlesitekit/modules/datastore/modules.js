@@ -512,7 +512,7 @@ const baseSelectors = {
 	/**
 	 * Gets the display mode for module's settings.
 	 *
-	 * Returns one of: "closed", "view", "edit", or "locked".
+	 * Returns one of: "view", "edit", "saving", "closed" or "locked".
 	 *
 	 * @since n.e.x.t
 	 *

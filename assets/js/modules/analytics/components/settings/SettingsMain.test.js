@@ -17,11 +17,17 @@
  */
 
 /**
+ * External dependencies
+ */
+import { act } from 'react-dom/test-utils';
+
+/**
  * Internal dependencies
  */
 import { render, fireEvent, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULES, SETTINGS_DISPLAY_MODES } from '../../../../googlesitekit/modules/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import SettingsMain from './SettingsMain';
 
@@ -36,64 +42,51 @@ describe( 'SettingsMain', () => {
 		anonymizeIP: true,
 	};
 
+	const coreModules = [
+		{
+			slug: 'analytics',
+			name: 'Analytics',
+			description: 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.',
+			homepage: 'https://analytics.google.com/analytics/web',
+			internal: false,
+			active: true,
+			forceActive: false,
+			connected: true,
+			dependencies: [],
+			dependants: [ 'optimize', 'tagmanager' ],
+			displayMode: 'closed',
+			order: 10,
+		},
+	];
+
 	it( 'rolls back settings if settings have changed and is not editing', async () => {
-		fetchMock.get(
-			/accounts-properties-profiles/,
-			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
-		);
+		fetchMock.get( /accounts-properties-profiles/, { body: fixtures.accountsPropertiesProfiles, status: 200 } );
+		fetchMock.get( /modules\/data\/list/, { body: coreModules, status: 200 } );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {} );
+			dispatch( CORE_MODULES ).setSettingsDisplayMode( 'analytics', SETTINGS_DISPLAY_MODES.VIEW );
 			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 		};
 
-		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
+		const { registry, container } = render( <SettingsMain slug="analytics" />, { setupRegistry } );
 		const { select } = registry;
 
 		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );
 
-		rerender( <SettingsMain isOpen={ true } isEditing={ true } /> );
+		act( () => {
+			registry.dispatch( CORE_MODULES ).setSettingsDisplayMode( 'analytics', SETTINGS_DISPLAY_MODES.EDIT );
+		} );
 
 		await waitFor( () => container.querySelector( '.googlesitekit-analytics-usesnippet' ) );
 		fireEvent.click( container.querySelector( '.googlesitekit-analytics-usesnippet [role="switch"]' ) );
 		expect( select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
 
-		rerender( <SettingsMain isOpen={ true } isEditing={ false } /> );
-
-		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );
-	} );
-
-	it( 'does not roll back settings if settings have changed and is editing', async () => {
-		fetchMock.get(
-			/accounts-properties-profiles/,
-			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
-		);
-
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
-		};
-
-		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
-		const { select } = registry;
-
-		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );
-
-		rerender( <SettingsMain isOpen={ true } isEditing={ true } /> );
-
-		await waitFor( () => container.querySelector( '.googlesitekit-analytics-usesnippet' ) );
-		fireEvent.click( container.querySelector( '.googlesitekit-analytics-usesnippet [role="switch"]' ) );
-		await waitFor( () => select( STORE_NAME ).haveSettingsChanged() === true );
-
-		// Rendering with isOpen: false and isEditing: true is possible by clicking the module header.
-		// Rerendering here manually for clarity.
-		rerender( <SettingsMain isOpen={ false } isEditing={ true } /> );
-
-		expect( select( STORE_NAME ).getSettings() ).toEqual( {
-			...initialSettings,
-			useSnippet: ! initialSettings.useSnippet, // toggled
+		act( () => {
+			registry.dispatch( CORE_MODULES ).setSettingsDisplayMode( 'analytics', SETTINGS_DISPLAY_MODES.VIEW );
 		} );
+
+		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );
 	} );
 } );
