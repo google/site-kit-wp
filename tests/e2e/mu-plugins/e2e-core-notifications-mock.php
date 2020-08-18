@@ -121,8 +121,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/core/site/notifications',
 			array(
-				'methods'  => 'POST',
-				'callback' => function ( WP_REST_Request $request ) {
+				'methods'             => 'POST',
+				'callback'            => function ( WP_REST_Request $request ) {
 					$notifications = get_notifications();
 					$notification  = $request->get_json_params();
 					array_push( $notifications, $notification );
@@ -130,7 +130,8 @@ add_action(
 
 					return compact( 'success' );
 				},
-				'args'     => array(
+				'permission_callback' => '__return_true',
+				'args'                => array(
 					'id'      => array(
 						'type'     => 'string',
 						'required' => true,
