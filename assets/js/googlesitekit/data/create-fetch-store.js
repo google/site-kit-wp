@@ -25,7 +25,7 @@ import isPlainObject from 'lodash/isPlainObject';
 /**
  * Internal dependencies
  */
-import { createErrorStore } from './create-error-store';
+import { actions as errorStoreActions } from './create-error-store';
 import { camelCaseToPascalCase, camelCaseToConstantCase } from './transform-case';
 import { stringifyObject } from '../../util';
 
@@ -42,7 +42,7 @@ const defaultValidateParams = () => {};
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
 // yielded error actions will be a no-op.
-const { clearError, receiveError } = createErrorStore.actions;
+const { clearError, receiveError } = errorStoreActions;
 
 /**
  * Creates a store object implementing the necessary infrastructure for a

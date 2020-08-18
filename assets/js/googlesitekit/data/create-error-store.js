@@ -34,7 +34,7 @@ function generateErrorKey( baseName, args ) {
 	return key;
 }
 
-const actions = {
+export const actions = {
 	receiveError( error, baseName, args ) {
 		invariant( error, 'error is required.' );
 
@@ -205,6 +205,3 @@ export function createErrorStore() {
 		selectors,
 	};
 }
-
-// Expose unbound actions to be yielded by other actions.
-createErrorStore.actions = { ...actions };
