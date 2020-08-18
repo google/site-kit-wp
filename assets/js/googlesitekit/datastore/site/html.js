@@ -37,7 +37,6 @@ const { createRegistryControl } = Data;
 
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',
-	storeName: STORE_NAME,
 	argsToParams: ( url ) => {
 		invariant( isURL( url ), 'a valid url is required to fetch HTML.' );
 		return { url };

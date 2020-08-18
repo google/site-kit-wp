@@ -35,7 +35,6 @@ import { isValidDimensions, isValidMetrics } from '../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	storeName: STORE_NAME,
 	controlCallback: ( { options } ) => {
 		return API.get( 'modules', 'analytics', 'report', options );
 	},

@@ -36,7 +36,6 @@ const WAIT_FOR_CONTAINERS = 'WAIT_FOR_CONTAINERS';
 
 const fetchGetContainersStore = createFetchStore( {
 	baseName: 'getContainers',
-	storeName: STORE_NAME,
 	argsToParams: ( accountID ) => {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to fetch containers.' );
 
@@ -62,7 +61,6 @@ const fetchGetContainersStore = createFetchStore( {
 
 const fetchCreateContainerStore = createFetchStore( {
 	baseName: 'createContainer',
-	storeName: STORE_NAME,
 	argsToParams( accountID, usageContext ) {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
 		invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );

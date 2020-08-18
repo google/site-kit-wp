@@ -33,7 +33,6 @@ const { createRegistrySelector, createRegistryControl } = Data;
 
 const fetchGetPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getPropertiesProfiles',
-	storeName: STORE_NAME,
 	controlCallback: ( { accountID } ) => {
 		return API.get( 'modules', 'analytics', 'properties-profiles', { accountID }, {
 			useCache: false,
@@ -58,7 +57,6 @@ const fetchGetPropertiesProfilesStore = createFetchStore( {
 
 const fetchCreatePropertyStore = createFetchStore( {
 	baseName: 'createProperty',
-	storeName: STORE_NAME,
 	controlCallback: ( { accountID } ) => {
 		return API.set( 'modules', 'analytics', 'create-property', { accountID } );
 	},

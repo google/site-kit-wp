@@ -39,7 +39,6 @@ const { commonActions, createRegistrySelector, createRegistryControl } = Data;
 
 const fetchSaveUseSnippetStore = createFetchStore( {
 	baseName: 'saveUseSnippet',
-	storeName: STORE_NAME,
 	controlCallback: ( { useSnippet } ) => {
 		return API.set( 'modules', 'adsense', 'use-snippet', { useSnippet } );
 	},

@@ -36,7 +36,6 @@ const { createRegistrySelector } = Data;
 
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
-	storeName: STORE_NAME,
 	argsToParams: ( containerID ) => {
 		invariant( isValidContainerID( containerID ), 'A valid containerID is required to for fetching permission.' );
 

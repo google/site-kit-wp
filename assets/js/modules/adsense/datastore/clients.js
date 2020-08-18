@@ -35,7 +35,6 @@ const RESET_CLIENTS = 'RESET_CLIENTS';
 
 const fetchGetClientsStore = createFetchStore( {
 	baseName: 'getClients',
-	storeName: STORE_NAME,
 	controlCallback: ( { accountID } ) => {
 		return API.get( 'modules', 'adsense', 'clients', { accountID }, {
 			useCache: false,
