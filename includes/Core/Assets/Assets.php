@@ -523,7 +523,7 @@ final class Assets {
 			),
 			// End JSR Assets.
 			new Script(
-				'pagead2.ads',
+				'googlesitekit-pagead2.ads',
 				array(
 					'src' => $base_url . 'js/pagead2.ads.js',
 				)

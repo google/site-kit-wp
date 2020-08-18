@@ -67,8 +67,18 @@ class Script extends Asset {
 		$src     = $this->args['src'];
 		$version = $this->args['version'];
 
+		$filename = '';
 		if ( isset( Manifest::$assets[ $this->handle ] ) ) {
-			$src     = $context->url( 'dist/assets/js/' . Manifest::$assets[ $this->handle ] );
+			$filename = Manifest::$assets[ $this->handle ];
+		} else {
+			$handle = str_replace( 'googlesitekit-', '', $this->handle );
+			if ( isset( Manifest::$assets[ $handle ] ) ) {
+				$filename = Manifest::$assets[ $handle ];
+			}
+		}
+
+		if ( ! empty( $filename ) ) {
+			$src     = $context->url( 'dist/assets/js/' . $filename );
 			$version = null;
 		}
 
