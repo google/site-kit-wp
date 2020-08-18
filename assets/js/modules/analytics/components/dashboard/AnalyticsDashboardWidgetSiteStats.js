@@ -91,6 +91,8 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 					italic: false,
 				},
 			},
+			tooltip: { isHtml: true },
+			focusTarget: 'category',
 		};
 
 		options.series = series;
@@ -123,6 +125,31 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 							selectedStats={ selectedStats }
 							data={ dataMap }
 							options={ options }
+							controls={ [
+								{
+									controlType: 'StringFilter',
+									options: {
+										filterColumnIndex: 0,
+										matchType: 'any', // 'prefix' | 'exact',
+										ui: {
+											label: 'Search by name',
+										},
+									},
+								},
+								{
+									controlType: 'NumberRangeFilter',
+									controlID: 'age-filter',
+									options: {
+										filterColumnIndex: 1,
+										ui: {
+											labelStacking: 'vertical',
+											label: 'Age Selection:',
+											allowTyping: false,
+											allowMultiple: false,
+										},
+									},
+								},
+							] }
 						/>
 					</div>
 				</div>

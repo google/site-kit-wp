@@ -19,12 +19,13 @@
 /**
  * External dependencies
  */
+import { format } from 'date-fns';
 import { each } from 'lodash';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -141,7 +142,8 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 
 	const dataMap = [
 		[
-			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
+			{ type: 'date' },
+			{ type: 'string', role: 'tooltip', p: { html: true } },
 			{ type: 'number', label: dataLabels[ selectedStats ] },
 			{ type: 'number', label: __( 'Previous period', 'google-site-kit' ) },
 		],
@@ -154,8 +156,22 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, selectedStats );
 	each( lastMonthData, ( row, i ) => {
 		if ( row[ 0 ] && row[ 1 ] && previousMonthData[ i ] ) {
+			const difference = ( row[ 1 ] / previousMonthData[ i ][ 1 ] * 100 ).toFixed( 2 );
+
+			const label = sprintf(
+				/* translators: %1$s: Date for user stats, %2$s: Previous date for user stats comparison, %3$s: Number of users , %4$s: Up or down arrow , %5$s: different change in percentage, %6$s: percent symbol */
+				__( '%1$s vs %2$s<br /><strong>Users:</strong> %3$s %4$s %5$s%6$s', 'google-site-kit' ),
+				format( row[ 0 ], 'EEE d MMM' ),
+				format( previousMonthData[ i ][ 0 ], 'EEE d MMM' ),
+				row[ 1 ].toLocaleString(),
+				difference >= 100 ? __( '⬆️', 'google-site-kit' ) : __( '⬇️', 'google-site-kit' ),
+				difference,
+				__( '%', 'google-site-kit' ),
+			);
+
 			dataMap.push( [
 				row[ 0 ],
+				label,
 				row[ 1 ],
 				previousMonthData[ i ][ 1 ],
 			] );
