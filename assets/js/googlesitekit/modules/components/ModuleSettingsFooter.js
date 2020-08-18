@@ -38,7 +38,7 @@ import Button from '../../../components/button';
 import Link from '../../../components/link';
 import Spinner from '../../../components/spinner';
 import SvgIcon from '../../../util/svg-icon';
-import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME, SETTINGS_DISPLAY_MODES } from '../datastore/constants';
 import ModuleSettingsDialog from './ModuleSettingsDialog';
 const { useDispatch, useSelect } = Data;
 
@@ -65,7 +65,7 @@ function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave } ) 
 	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
 
 	const handleSave = useCallback( () => {
-		setSettingsDisplayMode( slug, 'saving' );
+		setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.SAVING );
 
 		const modulePromise = onSave();
 		if ( ! modulePromise ) {
@@ -79,25 +79,25 @@ function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave } ) 
 			clearWebStorage();
 			// TODO Set error to false
 			// Change status from 'saving' to 'view'.
-			setSettingsDisplayMode( slug, 'view' );
+			setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.VIEW );
 		} ).catch( () => {
 			// TODO: Set error in store.
 			// Change status from 'saving' to 'view'.
-			setSettingsDisplayMode( slug, 'view' );
+			setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.VIEW );
 		} );
 	}, [] );
 
 	const handleEdit = useCallback( () => {
-		setSettingsDisplayMode( slug, 'edit' );
+		setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.EDIT );
 	}, [] );
 
 	const handleCancel = useCallback( () => {
-		setSettingsDisplayMode( slug, 'view' );
+		setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.VIEW );
 	}, [] );
 
 	const handleDisconnect = useCallback( async () => {
 		try {
-			setSettingsDisplayMode( slug, 'saving' );
+			setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.SAVING );
 
 			await activateOrDeactivateModule( restApiClient, slug, false );
 			await refreshAuthentication();
@@ -105,7 +105,7 @@ function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave } ) 
 			global.location = getReAuthURL( slug, false );
 		} catch ( err ) {
 			// @TODO: properly handle error state.
-			setSettingsDisplayMode( slug, 'view' );
+			setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.VIEW );
 		}
 	}, [] );
 

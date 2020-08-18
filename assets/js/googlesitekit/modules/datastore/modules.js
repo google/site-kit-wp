@@ -31,7 +31,7 @@ import { WPElement } from '@wordpress/element';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, SETTINGS_DISPLAY_MODES } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -294,7 +294,7 @@ const baseActions = {
 	 */
 	*setSettingsDisplayMode( slug, status ) {
 		invariant( slug, 'slug is required.' );
-		invariant( [ 'closed', 'view', 'edit', 'locked', 'saving' ].includes( status ), 'status is one of "closed", "view", "edit", "locked" or "saving".' );
+		invariant( Object.values( SETTINGS_DISPLAY_MODES ).includes( status ), 'status is one of "closed", "view", "edit", "locked" or "saving".' );
 
 		yield actions.waitForModules();
 
@@ -369,19 +369,19 @@ const baseReducer = ( state, { type, payload } ) => {
 			const updatedModules = JSON.parse( JSON.stringify( existingModules ) );
 
 			// If status is "view", set all other modules to "closed".
-			if ( status === 'view' ) {
+			if ( status === SETTINGS_DISPLAY_MODES.VIEW ) {
 				Object.keys( updatedModules ).forEach( ( currentSlug ) => {
 					if ( updatedModules[ currentSlug ] !== slug ) {
-						updatedModules[ currentSlug ].displayMode = 'closed';
+						updatedModules[ currentSlug ].displayMode = SETTINGS_DISPLAY_MODES.CLOSED;
 					}
 				} );
 			}
 
 			// If status is "edit", set all other modules to "locked".
-			if ( status === 'edit' ) {
+			if ( status === SETTINGS_DISPLAY_MODES.EDIT ) {
 				Object.keys( updatedModules ).forEach( ( currentSlug ) => {
 					if ( updatedModules[ currentSlug ] !== slug ) {
-						updatedModules[ currentSlug ].displayMode = 'locked';
+						updatedModules[ currentSlug ].displayMode = SETTINGS_DISPLAY_MODES.LOCKED;
 					}
 				} );
 			}
@@ -525,10 +525,10 @@ const baseSelectors = {
 
 		// Return `undefined` if modules haven't been loaded yet.
 		if ( modules === undefined ) {
-			return 'closed';
+			return SETTINGS_DISPLAY_MODES.CLOSED;
 		}
 
-		return modules[ slug ]?.displayMode || 'closed';
+		return modules[ slug ]?.displayMode || SETTINGS_DISPLAY_MODES.CLOSED;
 	} ),
 
 	/**
@@ -543,7 +543,7 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {boolean} True if module exists and settings are being edited, false if not.
 	 */
-	isEditingSettings: isSettingsMode( 'edit' ),
+	isEditingSettings: isSettingsMode( SETTINGS_DISPLAY_MODES.EDIT ),
 
 	/**
 	 * Checks if a module's settings are open.
@@ -557,7 +557,7 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {boolean} True if module exists and settings are open, false if not.
 	 */
-	isSettingsOpen: isSettingsMode( 'view', 'edit', 'saving' ),
+	isSettingsOpen: isSettingsMode( SETTINGS_DISPLAY_MODES.VIEW, SETTINGS_DISPLAY_MODES.EDIT, SETTINGS_DISPLAY_MODES.SAVING ),
 
 	/**
 	 * Checks if a module's settings are being saved.
@@ -568,7 +568,7 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {boolean} True if module exists and settings are open, false if not.
 	 */
-	isSavingSettings: isSettingsMode( 'saving' ),
+	isSavingSettings: isSettingsMode( SETTINGS_DISPLAY_MODES.SAVING ),
 
 	/**
 	 * Gets a module slug that has open settigns (with either open, view or saving state).
@@ -580,7 +580,13 @@ const baseSelectors = {
 	 */
 	getModuleSlugWithActiveSettings: createRegistrySelector( ( select ) => () => {
 		const modules = select( STORE_NAME ).getModules();
-		return ( modules ? Object.values( modules ) : [] ).find( ( { displayMode } ) => [ 'edit', 'view', 'saving' ].includes( displayMode ) )?.slug;
+		const openModes = [
+			SETTINGS_DISPLAY_MODES.EDIT,
+			SETTINGS_DISPLAY_MODES.VIEW,
+			SETTINGS_DISPLAY_MODES.SAVING,
+		];
+
+		return ( modules ? Object.values( modules ) : [] ).find( ( { displayMode } ) => openModes.includes( displayMode ) )?.slug;
 	} ),
 
 	/**

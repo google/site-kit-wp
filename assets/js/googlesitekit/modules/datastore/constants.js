@@ -17,3 +17,11 @@
  */
 
 export const STORE_NAME = 'core/modules';
+
+export const SETTINGS_DISPLAY_MODES = {
+	VIEW: 'view',
+	EDIT: 'edit',
+	SAVING: 'saving',
+	CLOSED: 'closed',
+	LOCKED: 'locked',
+};
