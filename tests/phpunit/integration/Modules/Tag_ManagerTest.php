@@ -221,7 +221,7 @@ class Tag_ManagerTest extends TestCase {
 				'feature',
 				'module_tags',
 				'required',
-				'autoActivate',
+				'forceActive',
 				'internal',
 				'screenID',
 				'settings',

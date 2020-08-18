@@ -140,7 +140,7 @@ class AnalyticsTest extends TestCase {
 				'feature',
 				'module_tags',
 				'required',
-				'autoActivate',
+				'forceActive',
 				'internal',
 				'screenID',
 				'settings',

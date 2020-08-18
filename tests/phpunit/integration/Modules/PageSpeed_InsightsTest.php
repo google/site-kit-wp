@@ -48,7 +48,7 @@ class PageSpeed_InsightsTest extends TestCase {
 				'feature',
 				'module_tags',
 				'required',
-				'autoActivate',
+				'forceActive',
 				'internal',
 				'screenID',
 				'settings',
