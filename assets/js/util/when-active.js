@@ -48,7 +48,7 @@ export default function whenActive( { moduleName, fallbackComponent = null } ) {
 
 		whenActiveComponent.displayName = `When${ kebabCaseToPascalCase( moduleName ) }Active`;
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
-			whenActiveComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name || 'Component' })`;
+			whenActiveComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
 		}
 
 		return whenActiveComponent;

@@ -19,10 +19,33 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { trafficSourcesReportDataDefaults } from '../../util';
 import whenActive from '../../../../util/when-active';
+import AcquisitionPieChart from '../common/AcquisitionPieChart';
+import AcquisitionSources from '../common/AcquisitionSources';
+const { useSelect } = Data;
 
 function DashboardAllTrafficWidget() {
-	return null;
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( { ...trafficSourcesReportDataDefaults, dateRange, url } ) );
+
+	return (
+		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+			<div className="mdc-layout-grid__inner">
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
+					<AcquisitionPieChart data={ report } />
+				</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
+					<AcquisitionSources data={ report } />
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export default whenActive( { moduleName: 'analytics' } )( DashboardAllTrafficWidget );
