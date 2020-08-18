@@ -804,8 +804,6 @@ final class Modules {
 	 * @return array Module REST response data.
 	 */
 	private function prepare_module_data_for_response( Module $module ) {
-		$module_info = $module->prepare_info_for_js();
-
 		return array(
 			'slug'         => $module->slug,
 			'name'         => $module->name,
@@ -813,7 +811,6 @@ final class Modules {
 			'homepage'     => $module->homepage,
 			'internal'     => $module->internal,
 			'order'        => $module->order,
-			'provides'     => isset( $module_info['provides'] ) ? $module_info['provides'] : array(),
 			'forceActive'  => $module->force_active,
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),

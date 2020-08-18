@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -63,6 +64,11 @@ export default function SettingsMain( { slug } ) {
 			onView={ () => <SettingsView /> }
 			onSave={ submitChanges }
 			canSave={ canSubmitChanges }
+			provides={ [
+				__( 'Audience overview', 'google-site-kit' ),
+				__( 'Top pages', 'google-site-kit' ),
+				__( 'Top acquisition channels', 'google-site-kit' ),
+			] }
 		/>
 	);
 }

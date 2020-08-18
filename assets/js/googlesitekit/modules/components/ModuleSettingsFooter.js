@@ -42,7 +42,7 @@ import { STORE_NAME } from '../datastore/constants';
 import ModuleSettingsDialog from './ModuleSettingsDialog';
 const { useDispatch, useSelect } = Data;
 
-function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave } ) {
+function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave } ) {
 	const [ dialogActive, setDialogActive ] = useState( false );
 
 	const {
@@ -109,13 +109,7 @@ function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave } ) {
 		}
 	}, [] );
 
-	const {
-		forceActive,
-		homepage,
-		name,
-		connected,
-		provides,
-	} = module;
+	const { forceActive, homepage, name, connected } = module;
 	const canDisconnect = ! forceActive;
 
 	const buttons = [];
@@ -199,12 +193,14 @@ function ModuleSettingsFooter( { slug, allowEdit, onSave, canSave } ) {
 ModuleSettingsFooter.propTypes = {
 	slug: PropTypes.string.isRequired,
 	allowEdit: PropTypes.bool,
+	provides: PropTypes.arrayOf( PropTypes.string ),
 	onSave: PropTypes.func,
 	canSave: PropTypes.bool,
 };
 
 ModuleSettingsFooter.defaultProps = {
 	allowEdit: false,
+	provides: [],
 	canSave: false,
 };
 
