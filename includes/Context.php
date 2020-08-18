@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit;
 
+use AMP_Options_Manager;
 use AMP_Theme_Support;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\Entity;
@@ -357,14 +358,38 @@ final class Context {
 			return false;
 		}
 
-		$exposes_support_mode = method_exists( 'AMP_Theme_Support', 'get_support_mode' )
-			&& defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
+		$exposes_support_mode = defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
 			&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
 			&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
 
+		if ( defined( 'AMP__VERSION' ) ) {
+			$amp_plugin_version = AMP__VERSION;
+			if ( strpos( $amp_plugin_version, '-' ) !== false ) {
+				$amp_plugin_version = explode( '-', $amp_plugin_version )[0];
+			}
+
+			$amp_plugin_version_2_or_higher = version_compare( $amp_plugin_version, '2.0.0', '>=' );
+		} else {
+			$amp_plugin_version_2_or_higher = false;
+		}
+
+		if ( $amp_plugin_version_2_or_higher ) {
+			$exposes_support_mode = class_exists( 'AMP_Options_Manager' )
+				&& method_exists( 'AMP_Options_Manager', 'get_option' )
+				&& $exposes_support_mode;
+		} else {
+			$exposes_support_mode = class_exists( 'AMP_Theme_Support' )
+				&& method_exists( 'AMP_Theme_Support', 'get_support_mode' )
+				&& $exposes_support_mode;
+		}
+
 		if ( $exposes_support_mode ) {
 			// If recent version, we can properly detect the mode.
-			$mode = AMP_Theme_Support::get_support_mode();
+			if ( $amp_plugin_version_2_or_higher ) {
+				$mode = AMP_Options_Manager::get_option( 'theme_support' );
+			} else {
+				$mode = AMP_Theme_Support::get_support_mode();
+			}
 
 			if ( AMP_Theme_Support::STANDARD_MODE_SLUG === $mode ) {
 				return self::AMP_MODE_PRIMARY;

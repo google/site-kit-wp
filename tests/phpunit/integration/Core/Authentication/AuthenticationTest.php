@@ -107,7 +107,6 @@ class AuthenticationTest extends TestCase {
 			array(
 				'connectURL',
 				'disconnectURL',
-				'userData',
 			),
 			array_keys( $data )
 		);

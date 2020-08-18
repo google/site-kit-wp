@@ -28,6 +28,7 @@ const { createRegistrySelector } = Data;
 
 const fetchDisconnectStore = createFetchStore( {
 	baseName: 'disconnect',
+	storeName: STORE_NAME,
 	controlCallback: () => {
 		return API.set( 'core', 'user', 'disconnect' );
 	},

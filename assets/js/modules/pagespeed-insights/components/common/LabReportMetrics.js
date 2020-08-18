@@ -34,11 +34,22 @@ import ReportMetric from './ReportMetric';
 import ReportDetailsLink from './ReportDetailsLink';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../../util';
+import ErrorText from '../../../../components/error-text';
 
-export default function LabReportMetrics( { data } ) {
+export default function LabReportMetrics( { data, error } ) {
 	const totalBlockingTime = data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
 	const largestContentfulPaint = data?.lighthouseResult?.audits?.[ 'largest-contentful-paint' ];
 	const cumulativeLayoutShift = data?.lighthouseResult?.audits?.[ 'cumulative-layout-shift' ];
+
+	if ( error ) {
+		return (
+			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
+				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
+					<ErrorText message={ error.message } />
+				</div>
+			</div>
+		);
+	}
 
 	if ( ! totalBlockingTime || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
 		return null;
@@ -98,5 +109,6 @@ export default function LabReportMetrics( { data } ) {
 }
 
 LabReportMetrics.propTypes = {
-	data: PropTypes.object.isRequired,
+	data: PropTypes.object,
+	error: PropTypes.object,
 };
