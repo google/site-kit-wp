@@ -1574,7 +1574,6 @@ final class Analytics extends Module
 			new Script(
 				'googlesitekit-modules-analytics',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',

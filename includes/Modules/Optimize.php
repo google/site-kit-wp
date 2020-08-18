@@ -339,7 +339,6 @@ final class Optimize extends Module
 			new Script(
 				'googlesitekit-modules-optimize',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',

@@ -154,7 +154,6 @@ final class PageSpeed_Insights extends Module
 			new Script(
 				'googlesitekit-modules-pagespeed-insights',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',

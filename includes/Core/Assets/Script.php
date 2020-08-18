@@ -64,16 +64,19 @@ class Script extends Asset {
 			return;
 		}
 
-		$src = $this->args['src'];
-		if ( class_exists( '\Google\Site_Kit\Core\Assets\Manifest' ) && isset( Manifest::$assets[ $this->get_handle() ] ) ) {
-			$src = $context->url( 'dist/assets/js/' . Manifest::$assets[ $this->get_handle() ] );
+		$src     = $this->args['src'];
+		$version = $this->args['version'];
+
+		if ( isset( Manifest::$assets[ $this->handle ] ) ) {
+			$src     = $context->url( 'dist/assets/js/' . Manifest::$assets[ $this->handle ] );
+			$version = null;
 		}
 
 		wp_register_script(
 			$this->handle,
 			$src,
 			(array) $this->args['dependencies'],
-			$this->args['version'],
+			$version,
 			$this->args['in_footer']
 		);
 

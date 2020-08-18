@@ -894,7 +894,6 @@ final class Tag_Manager extends Module
 			new Script(
 				'googlesitekit-modules-tagmanager',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',

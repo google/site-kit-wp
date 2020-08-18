@@ -553,7 +553,6 @@ final class Search_Console extends Module
 			new Script(
 				'googlesitekit-modules-search-console',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',

@@ -433,14 +433,12 @@ final class Assets {
 			new Script(
 				'googlesitekit-activation',
 				array(
-					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
 				'googlesitekit-base',
 				array(
-					'version'      => null,
 					'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-base-data' ),
 					'execution'    => 'defer',
 				)
@@ -449,7 +447,6 @@ final class Assets {
 			new Script(
 				'googlesitekit-api',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-apifetch-data',
@@ -459,7 +456,6 @@ final class Assets {
 			new Script(
 				'googlesitekit-data',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
@@ -469,7 +465,6 @@ final class Assets {
 			new Script(
 				'googlesitekit-datastore-user',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-api',
@@ -480,7 +475,6 @@ final class Assets {
 			new Script(
 				'googlesitekit-datastore-site',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
@@ -493,7 +487,6 @@ final class Assets {
 			new Script(
 				'googlesitekit-datastore-forms',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-data',
 					),
@@ -502,7 +495,6 @@ final class Assets {
 			new Script(
 				'googlesitekit-modules',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
@@ -515,51 +507,40 @@ final class Assets {
 			new Script(
 				'googlesitekit-widgets',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-data',
 					),
 				)
 			),
 			// End JSR Assets.
-			new Script(
-				'pagead2.ads',
-				array(
-					'version' => null,
-				)
-			),
+			new Script( 'pagead2.ads' ),
 			new Script(
 				'googlesitekit-dashboard-splash',
 				array(
-					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
 				'googlesitekit-dashboard-details',
 				array(
-					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
 				'googlesitekit-dashboard',
 				array(
-					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
 				'googlesitekit-module',
 				array(
-					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
 				'googlesitekit-settings',
 				array(
-					'version'      => null,
 					'dependencies' => $dependencies,
 				)
 			),
@@ -573,7 +554,6 @@ final class Assets {
 			new Script(
 				'googlesitekit-wp-dashboard',
 				array(
-					'version'      => null,
 					'dependencies' => $dependencies,
 					'execution'    => 'defer',
 				)
@@ -588,7 +568,6 @@ final class Assets {
 			new Script(
 				'googlesitekit-adminbar-loader',
 				array(
-					'version'      => null,
 					'dependencies' => $dependencies,
 					'execution'    => 'defer',
 					'before_print' => function( $handle ) use ( $base_url ) {

@@ -939,7 +939,6 @@ tag_partner: "site_kit"
 			new Script(
 				'googlesitekit-modules-adsense',
 				array(
-					'version'      => null,
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
