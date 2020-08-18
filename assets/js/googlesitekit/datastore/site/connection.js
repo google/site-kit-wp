@@ -91,7 +91,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {string|undefined} Owner ID if it exists, otherwise undefined.
+	 * @return {number|undefined} Owner ID if it exists, otherwise undefined.
 	 */
 	getOwnerID: createRegistrySelector( ( select ) => () => {
 		const { ownerID } = select( STORE_NAME ).getConnection() || {};

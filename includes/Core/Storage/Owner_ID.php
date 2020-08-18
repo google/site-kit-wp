@@ -46,7 +46,7 @@ class Owner_ID extends Setting {
 	 */
 	public function get() {
 		$owner_id = parent::get();
-		if ( false === $owner_id ) {
+		if ( ! $this->has() ) {
 			$owner_id = $this->get_default();
 		}
 
@@ -54,7 +54,8 @@ class Owner_ID extends Setting {
 	}
 
 	/**
-	 * Gets the default value.
+	 * Gets the default value using legacy "googlesitekit_first_admin" option. If
+	 * this option doesn't exist, this function will return 0.
 	 *
 	 * @since n.e.x.t
 	 *

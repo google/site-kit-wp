@@ -36,7 +36,7 @@ describe( 'core/site connection', () => {
 		resettable: true,
 		setupCompleted: true,
 		hasConnectedAdmins: true,
-		ownerID: '123',
+		ownerID: 123,
 	};
 
 	let registry;

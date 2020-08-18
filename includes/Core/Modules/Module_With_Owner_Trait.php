@@ -25,7 +25,7 @@ trait Module_With_Owner_Trait {
 	 * Owner_ID instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Owner_ID|null
+	 * @var Owner_ID
 	 */
 	protected $owner_id;
 
