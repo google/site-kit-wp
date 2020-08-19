@@ -165,9 +165,9 @@ final class Advanced_Tracking {
 		}
 
 		/**
-		 * Fires after Site Kit and third parties have added their event lists for registration.
+		 * Fires when the Advanced_Tracking class is ready to receive event lists.
 		 *
-		 * This means that Advanced_Tracking class registers the event lists through the Event_List_Registry instance.
+		 * This means that Advanced_Tracking class stores the event lists in the Event_List_Registry instance.
 		 *
 		 * @since n.e.x.t.
 		 *
