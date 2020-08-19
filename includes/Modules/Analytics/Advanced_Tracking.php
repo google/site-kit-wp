@@ -165,7 +165,7 @@ final class Advanced_Tracking {
 		}
 
 		/**
-		 * Fires after third parties have added their event lists for registration.
+		 * Fires after Site Kit and third parties have added their event lists for registration.
 		 *
 		 * This means that Advanced_Tracking class registers the event lists through the Event_List_Registry instance.
 		 *
