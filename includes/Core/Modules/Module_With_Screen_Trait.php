@@ -48,7 +48,7 @@ trait Module_With_Screen_Trait {
 					'title'            => $this->name,
 					'capability'       => Permissions::VIEW_MODULE_DETAILS,
 					'enqueue_callback' => function( Assets $assets ) {
-						$assets->enqueue_asset( 'googlesitekit-module-page' );
+						$assets->enqueue_asset( 'googlesitekit-module' );
 					},
 					'render_callback'  => function( Context $context ) {
 						$module_info = $this->prepare_info_for_js();
