@@ -28,13 +28,14 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import whenActive from '../../../../util/when-active';
-import ErrorText from '../../../../components/error-text';
-import DataBlock from '../../../../components/data-block';
+import { extractForSparkline, getSiteKitAdminURL } from '../../../../util';
+import { trackEvent } from '../../../../util/tracking';
 import { extractSearchConsoleDashboardData } from '../../util';
+import whenActive from '../../../../util/when-active';
+import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import PreviewBlock from '../../../../components/preview-block';
-import { extractForSparkline, getSiteKitAdminURL } from '../../../../util';
+import CTA from '../../../../components/notifications/cta';
 const { useSelect } = Data;
 
 function DashboardClicksWidget() {
@@ -58,15 +59,23 @@ function DashboardClicksWidget() {
 	} );
 
 	if ( error ) {
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ error.message } />
-			</div>
-		);
+		trackEvent( 'plugin_setup', 'search_console_error', error.message );
+		return <CTA title={ __( 'Something went wrong', 'google-site-kit' ) } description={ error.message } error />;
 	}
 
 	if ( ! data ) {
 		return <PreviewBlock width="100%" height="202px" />;
+	}
+
+	if ( ! data.length ) {
+		return (
+			<CTA
+				title={ __( 'Search Console Data Empty', 'google-site-kit' ) }
+				description={ __( 'Search Console data is not yet available, please check back later.', 'google-site-kit' ) }
+				ctaLink={ '' }
+				ctaLabel={ '' }
+			/>
+		);
 	}
 
 	const href = getSiteKitAdminURL( 'googlesitekit-module-search-console', {} );
