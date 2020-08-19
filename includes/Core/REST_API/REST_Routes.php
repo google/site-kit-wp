@@ -93,6 +93,33 @@ final class REST_Routes {
 				$this->register_routes( $server );
 			}
 		);
+
+		add_filter(
+			'do_parse_request',
+			function( $do_parse_request, $wp ) {
+				add_filter(
+					'query_vars',
+					function( $vars ) use ( $wp ) {
+						// Unsets standard public query vars to escape conflicts between WorPress core
+						// and Google Site Kit APIs which happen when WordPress incorrectly parses request
+						// arguments.
+						$namespace = rest_get_url_prefix() . '/' . self::REST_ROOT;
+						if ( substr( $wp->request, 0, strlen( $namespace ) ) === $namespace ) {
+							// List of variable names to remove from public query variables list.
+							$unset_vars = array( 'orderby' );
+							foreach ( $unset_vars as $unset_var ) {
+								unset( $vars[ array_search( $unset_var, $vars ) ] );
+							}
+						}
+
+						return $vars;
+					}
+				);
+				return $do_parse_request;
+			},
+			10,
+			2
+		);
 	}
 
 	/**
