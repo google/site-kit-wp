@@ -426,12 +426,10 @@ export const trafficSourcesReportDataDefaults = {
 			alias: 'New Users',
 		},
 	],
-	orderby: [
-		{
-			fieldName: 'ga:users',
-			sortOrder: 'DESCENDING',
-		},
-	],
+	orderby: {
+		fieldName: 'ga:users',
+		sortOrder: 'DESCENDING',
+	},
 	limit: 10,
 };
 

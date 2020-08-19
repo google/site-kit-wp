@@ -22,20 +22,67 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import PreviewTable from '../../../../components/preview-table';
+import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import MiniChart from '../../../../components/mini-chart';
 
 function AcquisitionSources( { data } ) {
 	if ( ! data ) {
 		return <PreviewTable rows={ 3 } rowHeight={ 50 } />;
 	}
 
-	return null;
+	const hasTotals = Array.isArray( data[ 0 ].data.totals ) && data[ 0 ].data.totals.length;
+	const hasRows = Array.isArray( data[ 0 ].data.rows ) && data[ 0 ].data.rows.length;
+	if ( ! hasTotals || ! hasRows ) {
+		return null;
+	}
+
+	const headers = [
+		{
+			title: __( 'Source', 'google-site-kit' ),
+			primary: true,
+		},
+		{
+			title: __( 'Percent', 'google-site-kit' ),
+		},
+	];
+
+	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
+	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
+		const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
+
+		return [
+			row.dimensions[ 0 ],
+			<div key={ 'minichart-' + i } className="googlesitekit-table__body-item-chart-wrap">
+				{ `${ percent.toFixed( 2 ) }% ` }
+				<MiniChart percent={ percent.toFixed( 1 ) } index={ i } />
+			</div>,
+		];
+	} );
+
+	const options = {
+		hideHeader: true,
+		chartsEnabled: true,
+	};
+
+	return (
+		<div className="googlesitekit-alltraffic-widget">
+			<TableOverflowContainer>
+				{ getDataTableFromData( dataMapped, headers, options ) }
+			</TableOverflowContainer>
+		</div>
+	);
 }
 
 AcquisitionSources.propTypes = {
-	data: PropTypes.shape( {} ),
+	data: PropTypes.arrayOf( PropTypes.object ),
 };
 
 export default AcquisitionSources;

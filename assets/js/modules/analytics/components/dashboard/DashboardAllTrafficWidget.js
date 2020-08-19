@@ -31,19 +31,17 @@ import AcquisitionSources from '../common/AcquisitionSources';
 const { useSelect } = Data;
 
 function DashboardAllTrafficWidget() {
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-
-	const {
-		report,
-		error,
-	} = useSelect( ( select ) => {
+	const { report, error } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
 			...trafficSourcesReportDataDefaults,
-			dateRange,
-			url,
+			dateRange: select( CORE_USER ).getDateRange(),
 		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
 
 		return {
 			report: store.getReport( args ),
@@ -63,7 +61,7 @@ function DashboardAllTrafficWidget() {
 		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 			<div className="mdc-layout-grid__inner">
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
-					<AcquisitionPieChart data={ report } />
+					<AcquisitionPieChart data={ report } source />
 				</div>
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
 					<AcquisitionSources data={ report } />
