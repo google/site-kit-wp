@@ -25,6 +25,7 @@ import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/sit
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { trafficSourcesReportDataDefaults } from '../../util';
 import whenActive from '../../../../util/when-active';
+import ErrorText from '../../../../components/error-text';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
 const { useSelect } = Data;
@@ -32,7 +33,31 @@ const { useSelect } = Data;
 function DashboardAllTrafficWidget() {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const report = useSelect( ( select ) => select( STORE_NAME ).getReport( { ...trafficSourcesReportDataDefaults, dateRange, url } ) );
+
+	const {
+		report,
+		error,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		const args = {
+			...trafficSourcesReportDataDefaults,
+			dateRange,
+			url,
+		};
+
+		return {
+			report: store.getReport( args ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
+		};
+	} );
+
+	if ( error ) {
+		return (
+			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<ErrorText message={ error.message } />
+			</div>
+		);
+	}
 
 	return (
 		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
