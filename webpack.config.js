@@ -159,7 +159,7 @@ const webpackConfig = ( mode ) => {
 			},
 			externals,
 			output: {
-				filename: '[name].[hash].js',
+				filename: '[name].[contenthash].js',
 				path: __dirname + '/dist/assets/js',
 				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
@@ -236,7 +236,7 @@ const webpackConfig = ( mode ) => {
 						vendor: {
 							chunks: 'initial',
 							name: 'googlesitekit-vendor',
-							filename: 'googlesitekit-vendor.js',
+							filename: 'googlesitekit-vendor.[contenthash].js',
 							enforce: true,
 							test: /[\\/]node_modules[\\/]/,
 						},
