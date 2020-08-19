@@ -15,7 +15,7 @@ import { __, _x } from '@wordpress/i18n';
 import Layout from '../assets/js/components/layout/layout';
 import AnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetOverview';
 import AnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetSiteStats';
-import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/DashboardAcquisitionPieChart';
+import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
 import AnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopAcquisitionSources';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import {
@@ -258,7 +258,7 @@ storiesOf( 'Analytics Module', module )
 								mdc-layout-grid__cell--span-8-tablet
 								mdc-layout-grid__cell--span-4-phone
 							">
-								<DashboardAcquisitionPieChart />
+								<LegacyDashboardAcquisitionPieChart />
 							</div>
 							<div className="
 								mdc-layout-grid__cell
