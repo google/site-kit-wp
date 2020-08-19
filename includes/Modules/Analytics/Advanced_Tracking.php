@@ -174,6 +174,10 @@ final class Advanced_Tracking {
 		 * @param Event_List_Registry $event_list_registry
 		 */
 		do_action( 'googlesitekit_analytics_register_event_lists', $this->event_list_registry );
+
+		foreach ( $this->event_list_registry->get_all() as $registry_event_list ) {
+			$registry_event_list->register();
+		}
 	}
 
 	/**

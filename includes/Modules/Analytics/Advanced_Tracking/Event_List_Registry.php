@@ -47,7 +47,6 @@ class Event_List_Registry {
 	 * @throws \Exception Thrown when $event_list is not an instance of Measurement_Event_List.
 	 */
 	public function register( Measurement_Event_List $event_list ) {
-		$event_list->register();
 		$this->event_lists[] = $event_list;
 	}
 
