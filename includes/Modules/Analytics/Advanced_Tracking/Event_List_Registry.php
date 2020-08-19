@@ -27,7 +27,7 @@ class Event_List_Registry {
 	 * @since n.e.x.t.
 	 * @var Measurement_Event_List[]
 	 */
-	private $active_event_lists;
+	private $event_lists;
 
 	/**
 	 * Event_List_Registry constructor.
@@ -35,7 +35,7 @@ class Event_List_Registry {
 	 * @since n.e.x.t.
 	 */
 	public function __construct() {
-		$this->active_event_lists = array();
+		$this->event_lists = array();
 	}
 
 	/**
@@ -52,7 +52,7 @@ class Event_List_Registry {
 		}
 
 		$event_list->register();
-		$this->active_event_lists[] = $event_list;
+		$this->event_lists[] = $event_list;
 	}
 
 	/**
@@ -62,8 +62,8 @@ class Event_List_Registry {
 	 *
 	 * @return Measurement_Event_List[] The list of active event lists.
 	 */
-	public function get_active_event_lists() {
-		return $this->active_event_lists;
+	public function get_event_lists() {
+		return $this->event_lists;
 	}
 
 
