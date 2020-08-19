@@ -22,10 +22,10 @@
 import { withFilters } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 
-class DashboardSearchFunnelInner extends Component {
+class LegacyDashboardSearchFunnelInner extends Component {
 	render() {
 		return null;
 	}
 }
 
-export default withFilters( 'googlesitekit.DashboardSearchFunnel' )( DashboardSearchFunnelInner );
+export default withFilters( 'googlesitekit.DashboardSearchFunnel' )( LegacyDashboardSearchFunnelInner );

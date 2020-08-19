@@ -42,7 +42,7 @@ import {
 } from '../../../../util';
 import CTA from '../../../../components/notifications/cta';
 
-class SearchConsoleDashboardWidgetTopLevel extends Component {
+class LegacySearchConsoleDashboardWidgetTopLevel extends Component {
 	render() {
 		const { data } = this.props;
 
@@ -161,7 +161,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 }
 
 export default withData(
-	SearchConsoleDashboardWidgetTopLevel,
+	LegacySearchConsoleDashboardWidgetTopLevel,
 	[
 		{
 			type: TYPE_MODULES,
