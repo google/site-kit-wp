@@ -58,7 +58,7 @@ class Event_List_Registry {
 	 *
 	 * @return Measurement_Event_List[] The list of active event lists.
 	 */
-	public function get_event_lists() {
+	public function get_all() {
 		return $this->event_lists;
 	}
 }

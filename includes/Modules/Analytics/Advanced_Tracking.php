@@ -183,7 +183,7 @@ final class Advanced_Tracking {
 	 */
 	private function compile_events() {
 		$this->event_configurations = array();
-		foreach ( $this->event_list_registry->get_event_lists() as $registry_event_list ) {
+		foreach ( $this->event_list_registry->get_all() as $registry_event_list ) {
 			foreach ( $registry_event_list->get_events() as $measurement_event ) {
 				$this->event_configurations[] = $measurement_event;
 			}
