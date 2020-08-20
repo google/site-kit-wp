@@ -92,7 +92,7 @@ function DashboardUniqueVisitorsWidget() {
 	return (
 		<DataBlock
 			className="overview-total-users"
-			title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
+			title={ __( 'Unique Visitors', 'google-site-kit' ) }
 			datapoint={ readableLargeNumber( totalUsers ) }
 			change={ totalUsersChange }
 			changeDataUnit="%"

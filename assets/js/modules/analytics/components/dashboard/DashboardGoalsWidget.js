@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __, _x } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -26,10 +31,19 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import whenActive from '../../../../util/when-active';
 import ErrorText from '../../../../components/error-text';
 import PreviewBlock from '../../../../components/preview-block';
+import DataBlock from '../../../../components/data-block';
+import Sparkline from '../../../../components/sparkline';
+import { siteAnalyticsReportDataDefaults, extractAnalyticsDashboardSparklineData } from '../../util';
+import { extractForSparkline, getSiteKitAdminURL, readableLargeNumber, changeToPercent } from '../../../../util';
 const { useSelect } = Data;
 
 function DashboardGoalsWidget() {
-	const { report, error } = useSelect( ( select ) => {
+	const {
+		sparkData,
+		sparkDataError,
+		goalsData,
+		goalsDataError,
+	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
@@ -40,25 +54,67 @@ function DashboardGoalsWidget() {
 			args.url = url;
 		}
 
+		const sparkDataArgs = {
+			...siteAnalyticsReportDataDefaults,
+			...args,
+		};
+
+		const goalsDataArgs = {
+			...args,
+			multiDateRange: 1,
+			dimensions: 'ga:date',
+			metrics: [ { expression: 'ga:goalCompletionsAll', alias: 'Goal Completions' } ],
+			limit: 10,
+		};
+
 		return {
-			report: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			sparkData: store.getReport( sparkDataArgs ),
+			sparkDataError: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ),
+			goalsData: store.getReport( goalsDataArgs ),
+			goalsDataError: store.getErrorForSelector( 'getReport', [ goalsDataArgs ] ),
 		};
 	} );
 
-	if ( error ) {
+	if ( goalsDataError || sparkDataError ) {
 		return (
 			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ error.message } />
+				<ErrorText message={ ( goalsDataError || sparkDataError ).message } />
 			</div>
 		);
 	}
 
-	if ( ! report ) {
+	if ( ! goalsData || ! sparkData ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
-	return 'DashboardGoalsWidget';
+	const extractedAnalytics = extractAnalyticsDashboardSparklineData( sparkData );
+
+	const { totals } = goalsData[ 0 ].data;
+	const lastMonth = totals[ 0 ].values;
+	const previousMonth = totals[ 1 ].values;
+	const goalCompletions = lastMonth[ 0 ];
+	const goalCompletionsChange = changeToPercent( previousMonth[ 0 ], lastMonth[ 0 ] );
+
+	return (
+		<DataBlock
+			className="overview-goals-completed"
+			title={ __( 'Goals Completed', 'google-site-kit' ) }
+			datapoint={ readableLargeNumber( goalCompletions ) }
+			change={ goalCompletionsChange }
+			changeDataUnit="%"
+			source={ {
+				name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
+				link: getSiteKitAdminURL( 'googlesitekit-module-analytics', {} ),
+			} }
+			sparkline={
+				extractedAnalytics &&
+				<Sparkline
+					data={ extractForSparkline( extractedAnalytics, 3 ) }
+					change={ goalCompletionsChange }
+				/>
+			}
+		/>
+	);
 }
 
 export default whenActive( { moduleName: 'analytics' } )( DashboardGoalsWidget );
