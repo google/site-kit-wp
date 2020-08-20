@@ -192,6 +192,7 @@ final class Authentication {
 		$this->verification_file()->register();
 		$this->verification_meta()->register();
 		$this->has_connected_admins->register();
+		$this->owner_id->register();
 
 		add_action(
 			'init',

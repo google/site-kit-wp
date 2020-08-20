@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Core\Storage;
 
-use Google\Site_Kit\Core\Storage\Setting;
-
 /**
  * Owner_ID class.
  *
@@ -54,25 +52,10 @@ class Owner_ID extends Setting {
 	}
 
 	/**
-	 * Sets Owner ID.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param int $value Owner ID.
-	 * @return bool True on success, false on failure.
-	 */
-	public function set( $value ) {
-		return parent::set(
-			call_user_func(
-				$this->get_sanitize_callback(),
-				$value
-			)
-		);
-	}
-
-	/**
-	 * Gets the default value using legacy "googlesitekit_first_admin" option. If
-	 * this option doesn't exist, this function will return 0.
+	 * Gets the default value.
+	 * 
+	 * We use the old "googlesitekit_first_admin" option here as it used to store the ID
+	 * of the first admin user to use the plugin. If this option doesn't exist, it will return 0.
 	 *
 	 * @since n.e.x.t
 	 *

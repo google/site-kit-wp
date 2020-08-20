@@ -13,14 +13,14 @@ namespace Google\Site_Kit\Tests\Core\Storage;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Owner_ID;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
  * Owner_IDTest
  *
  * @group Storage
  */
-class Owner_IDTest extends TestCase {
+class Owner_IDTest extends SettingsTestCase {
 
 	/**
 	 * Owner_ID object.
@@ -41,6 +41,7 @@ class Owner_IDTest extends TestCase {
 
 		$this->options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$this->owner_id = new Owner_ID( $this->options );
+		$this->owner_id->register();
 	}
 
 	public function test_get() {
@@ -59,7 +60,7 @@ class Owner_IDTest extends TestCase {
 		$this->assertTrue( is_int( $this->options->get( Owner_ID::OPTION ) ) );
 		$this->assertEquals( 1, $this->options->get( Owner_ID::OPTION ) );
 
-		$this->owner_id->set( 'xxx' );
+		$this->assertTrue( $this->owner_id->set( 'xxx' ) );
 		$this->assertTrue( is_int( $this->options->get( Owner_ID::OPTION ) ) );
 		$this->assertEquals( 0, $this->options->get( Owner_ID::OPTION ) );
 	}
@@ -72,6 +73,13 @@ class Owner_IDTest extends TestCase {
 
 		$this->owner_id->set( 'xxx' );
 		$this->assertTrue( $this->owner_id->has() );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function get_option_name() {
+		return Owner_ID::OPTION;
 	}
 
 }

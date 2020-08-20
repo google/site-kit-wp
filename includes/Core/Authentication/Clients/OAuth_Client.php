@@ -693,7 +693,7 @@ final class OAuth_Client {
 		}
 
 		$current_user_id = get_current_user_id();
-		if ( $this->is_owner_must_be_changed( $this->owner_id->get(), $current_user_id ) ) {
+		if ( $this->should_update_owner_id( $current_user_id ) ) {
 			$this->owner_id->set( $current_user_id );
 		}
 
@@ -766,31 +766,6 @@ final class OAuth_Client {
 
 		wp_safe_redirect( $redirect_url );
 		exit();
-	}
-
-	/**
-	 * Determines whether the current owner ID must be changed or not.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param int $current_owner_id Current owner ID.
-	 * @param int $current_user_id Current user ID.
-	 * @return bool TRUE if owner needs to be changed, otherwise FALSE.
-	 */
-	private function is_owner_must_be_changed( $current_owner_id, $current_user_id ) {
-		if ( $current_owner_id == $current_user_id ) {
-			return false;
-		}
-
-		if ( ! empty( $current_owner_id ) && user_can( $current_owner_id, Permissions::MANAGE_OPTIONS ) ) {
-			return false;
-		}
-
-		if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
@@ -898,6 +873,31 @@ final class OAuth_Client {
 		$query_params['hl']               = get_user_locale();
 
 		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
+	}
+
+	/**
+	 * Determines whether the current owner ID must be changed or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id Current user ID.
+	 * @return bool TRUE if owner needs to be changed, otherwise FALSE.
+	 */
+	private function should_update_owner_id( $user_id ) {
+		$current_owner_id = $this->owner_id->get();
+		if ( $current_owner_id == $user_id ) {
+			return false;
+		}
+
+		if ( ! empty( $current_owner_id ) && user_can( $current_owner_id, Permissions::MANAGE_OPTIONS ) ) {
+			return false;
+		}
+
+		if ( ! user_can( $user_id, Permissions::MANAGE_OPTIONS ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
