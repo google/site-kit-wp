@@ -18,7 +18,7 @@ import Layout from '../assets/js/components/layout/layout';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
 import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 import DashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/DashboardSearchFunnelInner';
-import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopLevel';
+import LegacyAnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetTopLevel';
 import PostSearcher from '../assets/js/components/post-searcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
@@ -115,13 +115,13 @@ storiesOf( 'Dashboard', module )
 	.add( 'Search Funnel', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
-		const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
+		const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
 		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
 
 		removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
 		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.Analytics',
-			addAnalyticsDashboardWidgetTopLevel, 11 );
+			addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
 
 		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.SearchConsoleSearchFunnel',
