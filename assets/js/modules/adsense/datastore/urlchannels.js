@@ -31,7 +31,6 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 
 const fetchGetURLChannelsStore = createFetchStore( {
 	baseName: 'getURLChannels',
-	storeName: STORE_NAME,
 	controlCallback: ( { accountID, clientID } ) => {
 		return API.get( 'modules', 'adsense', 'urlchannels', { accountID, clientID }, {
 			useCache: false,
@@ -47,9 +46,11 @@ const fetchGetURLChannelsStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( accountID, clientID ) => {
+		return { accountID, clientID };
+	},
+	validateParams: ( { accountID, clientID } = {} ) => {
 		invariant( accountID, 'accountID is required.' );
 		invariant( clientID, 'clientID is required.' );
-		return { accountID, clientID };
 	},
 } );
 
