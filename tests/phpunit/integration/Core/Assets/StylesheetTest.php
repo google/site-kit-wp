@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Core\Assets;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Stylesheet;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -36,7 +37,7 @@ class StylesheetTest extends TestCase {
 
 		$this->assertFalse( wp_style_is( 'test-handle', 'registered' ) );
 
-		$style->register();
+		$style->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertTrue( wp_style_is( 'test-handle', 'registered' ) );
 	}
@@ -66,7 +67,7 @@ class StylesheetTest extends TestCase {
 			)
 		);
 
-		$style->register();
+		$style->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$expected_src = add_query_arg( 'ver', GOOGLESITEKIT_VERSION, $src );
 		$mock         = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
@@ -88,7 +89,7 @@ class StylesheetTest extends TestCase {
 			)
 		);
 
-		$style->register();
+		$style->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$mock = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
 		$mock->expects( $this->once() )
@@ -109,7 +110,7 @@ class StylesheetTest extends TestCase {
 		// Must be registered first
 		$this->assertFalse( wp_style_is( 'test-handle', 'enqueued' ) );
 
-		$style->register();
+		$style->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$style->enqueue();
 
 		$this->assertTrue( wp_style_is( 'test-handle', 'enqueued' ) );

@@ -51,10 +51,28 @@ const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
 	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
-	const reportMobile = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_MOBILE ) );
-	const reportDesktop = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_DESKTOP ) );
 	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
 	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) ) || DATA_SRC_LAB;
+
+	const {
+		isFetchingMobile,
+		isFetchingDesktop,
+		reportMobile,
+		reportDesktop,
+		errorMobile,
+		errorDesktop,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+
+		return {
+			isFetchingMobile: store.isFetchingGetReport( referenceURL, STRATEGY_MOBILE ),
+			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
+			errorMobile: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
+			isFetchingDesktop: store.isFetchingGetReport( referenceURL, STRATEGY_DESKTOP ),
+			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
+			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
+		};
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const setStrategyMobile = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_MOBILE } ), [] );
@@ -86,7 +104,7 @@ export default function DashboardPageSpeed() {
 		}
 	}, [ reportMobile, reportDesktop ] );
 
-	if ( ! referenceURL || ! reportMobile || ! reportDesktop || ! dataSrc ) {
+	if ( ! referenceURL || isFetchingMobile || isFetchingDesktop || ! dataSrc ) {
 		return (
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
@@ -102,6 +120,7 @@ export default function DashboardPageSpeed() {
 	}
 
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
+	const reportError = strategy === STRATEGY_MOBILE ? errorMobile : errorDesktop;
 
 	return (
 		<Fragment>
@@ -143,8 +162,8 @@ export default function DashboardPageSpeed() {
 				</div>
 			</header>
 			<section>
-				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } /> }
-				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } /> }
+				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } error={ reportError } /> }
+				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } error={ reportError } /> }
 			</section>
 		</Fragment>
 	);

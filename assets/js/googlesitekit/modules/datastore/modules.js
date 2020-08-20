@@ -90,12 +90,14 @@ const fetchSetModuleActivationStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( slug, active ) => {
-		invariant( slug, 'slug is required.' );
-		invariant( active !== undefined, 'active is required.' );
 		return {
 			slug,
 			active,
 		};
+	},
+	validateParams: ( { slug, active } = {} ) => {
+		invariant( slug, 'slug is required.' );
+		invariant( active !== undefined, 'active is required.' );
 	},
 } );
 

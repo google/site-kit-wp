@@ -117,7 +117,7 @@ describe( 'modules/analytics accounts', () => {
 				muteConsole( 'error' ); // Request will log an error.
 				await registry.dispatch( STORE_NAME ).createAccount();
 
-				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'createAccount' ) ).toMatchObject( response );
 			} );
 		} );
 
@@ -133,7 +133,7 @@ describe( 'modules/analytics accounts', () => {
 					trackingDisabled: [],
 					anonymizeIP: true,
 				} );
-				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].internalWebPropertyId;
+				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
 				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
@@ -280,7 +280,7 @@ describe( 'modules/analytics accounts', () => {
 
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).getAccounts() !== undefined ||
-					registry.select( STORE_NAME ).getError()
+					registry.select( STORE_NAME ).getErrorForSelector( 'getAccounts' )
 				);
 
 				// Ensure the proper parameters were sent.

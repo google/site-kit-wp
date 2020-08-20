@@ -22,6 +22,7 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
+use ReflectionMethod;
 
 /**
  * @group Modules
@@ -264,4 +265,69 @@ class AdSenseTest extends TestCase {
 	protected function get_module_with_settings() {
 		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
+
+	public function test_parse_earnings_orderby() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$reflected_parse_earnings_orderby_method = new ReflectionMethod( 'Google\Site_Kit\Modules\AdSense', 'parse_earnings_orderby' );
+		$reflected_parse_earnings_orderby_method->setAccessible( true );
+
+		// When there is no orderby in the request.
+		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, array() );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEmpty( $result );
+
+		// When a single order object is used.
+		$order  = array(
+			'fieldName' => 'views',
+			'sortOrder' => 'ASCENDING',
+		);
+		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $order );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 1, count( $result ) );
+		$this->assertEquals( '+views', $result[0] );
+
+		// When multiple orders are passed.
+		$orders = array(
+			array(
+				'fieldName' => 'pages',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => 'sessions',
+				'sortOrder' => 'ASCENDING',
+			),
+		);
+		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $orders );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 2, count( $result ) );
+		$this->assertEquals( '-pages', $result[0] );
+		$this->assertEquals( '+sessions', $result[1] );
+
+		// Check that it skips invalid orders.
+		$orders = array(
+			array(
+				'fieldName' => 'views',
+				'sortOrder' => '',
+			),
+			array(
+				'fieldName' => 'pages',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => '',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => 'sessions',
+				'sortOrder' => 'ASCENDING',
+			),
+		);
+		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $orders );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 2, count( $result ) );
+		$this->assertEquals( '-pages', $result[0] );
+		$this->assertEquals( '+sessions', $result[1] );
+	}
+
 }

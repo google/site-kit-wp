@@ -195,6 +195,7 @@
     "webpack-bundle-analyzer": "^3.8.0",
     "webpack-cli": "^3.3.12",
     "webpack-feature-flags-plugin": "^1.0.1",
+    "webpack-manifest-plugin": "^2.2.0",
     "webpack-stream": "^5.2.1",
     "webpackbar": "^4.0.0"
   }

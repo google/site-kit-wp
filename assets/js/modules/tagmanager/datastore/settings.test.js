@@ -156,7 +156,7 @@ describe( 'modules/tagmanager settings', () => {
 					);
 
 					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( CONTAINER_CREATE );
-					expect( registry.select( STORE_NAME ).getError() ).toEqual( WPError );
+					expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( WPError );
 				} );
 
 				it( 'dispatches saveSettings', async () => {
