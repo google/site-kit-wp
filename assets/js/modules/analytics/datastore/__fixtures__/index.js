@@ -19,6 +19,7 @@
 export { default as accountsPropertiesProfiles } from './accounts-properties-profiles';
 export { default as createProfile } from './create-profile';
 export { default as createProperty } from './create-property';
+export { default as goals } from './goals';
 export { default as profiles } from './profiles';
 export { default as propertiesProfiles } from './properties-profiles';
 export { default as getTagPermissionsAccess } from './tag-permissions-access';
