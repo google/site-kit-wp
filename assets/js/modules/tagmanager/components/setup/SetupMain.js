@@ -72,7 +72,7 @@ export default function SetupMain( { finishSetup } ) {
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreate />;
 	} else {
-		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } />;
+		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } setIsNavigating={ setIsNavigating } />;
 	}
 
 	return (
