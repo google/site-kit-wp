@@ -17,19 +17,24 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/button';
 import { STORE_NAME, FORM_SETUP, EDIT_SCOPE } from '../../datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 import {
 	AccountSelect,
@@ -38,39 +43,67 @@ import {
 	WebContainerSelect,
 } from '../common';
 import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import SetupFormSubmitButtons from './SetupFormSubmitButtons';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupForm( { finishSetup } ) {
-	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
+export default function SetupForm( { finishSetup, setIsNavigating } ) {
+	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
+	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
+	const submitMode = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ) );
+	const analyticsModuleReauthURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAdminReauthURL() );
 
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { activateModule } = useDispatch( CORE_MODULES );
 	const { submitChanges } = useDispatch( STORE_NAME );
-	const submitForm = useCallback( async ( event ) => {
-		event.preventDefault();
+	const dispatchAnalytics = useDispatch( MODULES_ANALYTICS );
+	const submitForm = useCallback( async ( { submitMode } ) => { // eslint-disable-line no-shadow
+		// We'll use form state to persist the chosen submit choice
+		// in order to preserve support for auto-submit.
+		setValues( FORM_SETUP, { submitMode } );
+
 		const { error } = await submitChanges();
+
 		if ( isPermissionScopeError( error ) ) {
 			setValues( FORM_SETUP, { autoSubmit: true } );
-		}
-		if ( ! error ) {
+		} else if ( ! error ) {
 			setValues( FORM_SETUP, { autoSubmit: false } );
+			// If the property ID is set in GTM and Analytics is active,
+			// we disable the snippet output via Analyics to prevent duplicate measurement.
+			if ( gtmAnalyticsPropertyID && analyticsModuleActive ) {
+				dispatchAnalytics.setUseSnippet( false );
+				await dispatchAnalytics.saveSettings();
+			}
+			// If submitting with Analytics setup, and Analytics is not active,
+			// activate it, and navigate to its reauth/setup URL to proceed with its setup.
+			if ( submitMode === 'with_analytics_setup' && ! analyticsModuleActive ) {
+				setIsNavigating( true );
+				await activateModule( 'analytics' );
+				global.location.assign( analyticsModuleReauthURL );
+				// Don't call finishSetup as this navigates to a different location.
+				return;
+			}
 			finishSetup();
 		}
-	}, [ canSubmitChanges, finishSetup ] );
+	}, [ finishSetup, dispatchAnalytics, gtmAnalyticsPropertyID, analyticsModuleActive, analyticsModuleReauthURL ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
 		if ( autoSubmit && hasEditScope ) {
-			submitForm( { preventDefault: () => {} } );
+			submitForm( { submitMode } );
 		}
-	}, [ hasEditScope, autoSubmit, submitForm ] );
+	}, [ hasEditScope, autoSubmit, submitForm, submitMode ] );
+
+	// Form submit behavior now varies based on which button is clicked,
+	// so we no longer support the generic form submit event.
+	const preventDefaultFormSubmit = useCallback( ( event ) => event.preventDefault() );
 
 	return (
 		<form
 			className="googlesitekit-tagmanager-setup__form"
-			onSubmit={ submitForm }
+			onSubmit={ preventDefaultFormSubmit }
 		>
 			<StoreErrorNotice storeName={ STORE_NAME } />
 			<FormInstructions />
@@ -83,11 +116,12 @@ export default function SetupForm( { finishSetup } ) {
 				<AMPContainerSelect />
 			</div>
 
-			<div className="googlesitekit-setup-module__action">
-				<Button disabled={ ! canSubmitChanges }>
-					{ __( 'Confirm & Continue', 'google-site-kit' ) }
-				</Button>
-			</div>
+			<SetupFormSubmitButtons submitForm={ submitForm } />
 		</form>
 	);
 }
+
+SetupForm.propTypes = {
+	finishSetup: PropTypes.func,
+	setIsNavigating: PropTypes.func,
+};
