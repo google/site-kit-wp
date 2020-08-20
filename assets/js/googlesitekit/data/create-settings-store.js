@@ -76,7 +76,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const fetchGetSettingsStore = createFetchStore( {
 		baseName: 'getSettings',
-		storeName: STORE_NAME,
 		controlCallback: () => {
 			return API.get( type, identifier, datapoint, {}, {
 				useCache: false,
@@ -99,7 +98,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const fetchSaveSettingsStore = createFetchStore( {
 		baseName: 'saveSettings',
-		storeName: STORE_NAME,
 		controlCallback: ( params ) => {
 			const { values } = params;
 			return API.set( type, identifier, datapoint, values );
@@ -117,10 +115,12 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			};
 		},
 		argsToParams: ( values ) => {
-			invariant( isPlainObject( values ), 'values is required.' );
 			return {
 				values,
 			};
+		},
+		validateParams: ( { values } = {} ) => {
+			invariant( isPlainObject( values ), 'values is required.' );
 		},
 	} );
 
