@@ -71,7 +71,6 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 
 	const fetchGetNotificationsStore = createFetchStore( {
 		baseName: 'getNotifications',
-		storeName: STORE_NAME,
 		controlCallback: () => {
 			return API.get( type, identifier, datapoint );
 		},

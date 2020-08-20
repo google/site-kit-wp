@@ -39,7 +39,6 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
 const fetchGetAccountsStore = createFetchStore( {
 	baseName: 'getAccounts',
-	storeName: STORE_NAME,
 	controlCallback: () => API.get( 'modules', 'tagmanager', 'accounts', null, { useCache: false } ),
 	reducerCallback: ( state, accounts ) => {
 		return {

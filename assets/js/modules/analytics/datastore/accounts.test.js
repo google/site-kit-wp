@@ -133,7 +133,7 @@ describe( 'modules/analytics accounts', () => {
 					trackingDisabled: [],
 					anonymizeIP: true,
 				} );
-				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].internalWebPropertyId;
+				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
 				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );

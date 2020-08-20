@@ -35,7 +35,6 @@ const RESET_CLIENTS = 'RESET_CLIENTS';
 
 const fetchGetClientsStore = createFetchStore( {
 	baseName: 'getClients',
-	storeName: STORE_NAME,
 	controlCallback: ( { accountID } ) => {
 		return API.get( 'modules', 'adsense', 'clients', { accountID }, {
 			useCache: false,
@@ -51,8 +50,10 @@ const fetchGetClientsStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( accountID ) => {
-		invariant( accountID, 'accountID is required.' );
 		return { accountID };
+	},
+	validateParams: ( { accountID } = {} ) => {
+		invariant( accountID, 'accountID is required.' );
 	},
 } );
 
