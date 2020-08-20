@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { createElement } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -35,20 +40,24 @@ const { useSelect } = Data;
  * @return {Function} Enhancing function.
  */
 export default function whenActive( { moduleName, fallbackComponent = null } ) {
-	return ( WrappedComponent ) => {
+	return ( wrappedComponent ) => {
 		const whenActiveComponent = ( props ) => {
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const moduleInfo = useSelect( ( select ) => select( MODULES_STORE ).getModule( moduleName ) );
-			if ( ! moduleInfo || ! moduleInfo.active || ! moduleInfo.connected ) {
-				return fallbackComponent;
+			if ( ! moduleInfo ) {
+				return null;
 			}
 
-			return <WrappedComponent { ...props } />;
+			if ( ! moduleInfo.active || ! moduleInfo.connected ) {
+				return fallbackComponent ? createElement( fallbackComponent ) : fallbackComponent;
+			}
+
+			return createElement( wrappedComponent, props );
 		};
 
 		whenActiveComponent.displayName = `When${ kebabCaseToPascalCase( moduleName ) }Active`;
-		if ( WrappedComponent.displayName || WrappedComponent.name ) {
-			whenActiveComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
+		if ( wrappedComponent.displayName || wrappedComponent.name ) {
+			whenActiveComponent.displayName += `(${ wrappedComponent.displayName || wrappedComponent.name })`;
 		}
 
 		return whenActiveComponent;

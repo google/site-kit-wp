@@ -33,6 +33,7 @@ import ErrorText from '../../../../components/error-text';
 import PreviewBlock from '../../../../components/preview-block';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
+import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
 import { siteAnalyticsReportDataDefaults, extractAnalyticsDashboardSparklineData } from '../../util';
 import { extractForSparkline, getSiteKitAdminURL, changeToPercent } from '../../../../util';
 const { useSelect } = Data;
@@ -119,4 +120,7 @@ function DashboardBounceRateWidget() {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics' } )( DashboardBounceRateWidget );
+export default whenActive( {
+	moduleName: 'analytics',
+	fallbackComponent: AnalyticsInactiveCTA,
+} )( DashboardBounceRateWidget );

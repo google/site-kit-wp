@@ -33,6 +33,7 @@ import ErrorText from '../../../../components/error-text';
 import PreviewBlock from '../../../../components/preview-block';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
+import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
 import { siteAnalyticsReportDataDefaults, extractAnalyticsDashboardSparklineData, userReportDataDefaults, parseTotalUsersData } from '../../util';
 import { extractForSparkline, getSiteKitAdminURL, changeToPercent, readableLargeNumber } from '../../../../util';
 const { useSelect } = Data;
@@ -111,4 +112,7 @@ function DashboardUniqueVisitorsWidget() {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics' } )( DashboardUniqueVisitorsWidget );
+export default whenActive( {
+	moduleName: 'analytics',
+	fallbackComponent: AnalyticsInactiveCTA,
+} )( DashboardUniqueVisitorsWidget );

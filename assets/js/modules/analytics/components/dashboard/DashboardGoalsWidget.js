@@ -33,6 +33,8 @@ import ErrorText from '../../../../components/error-text';
 import PreviewBlock from '../../../../components/preview-block';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
+import CTA from '../../../../components/notifications/cta';
+import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
 import { siteAnalyticsReportDataDefaults, extractAnalyticsDashboardSparklineData } from '../../util';
 import { extractForSparkline, getSiteKitAdminURL, readableLargeNumber, changeToPercent } from '../../../../util';
 const { useSelect } = Data;
@@ -43,6 +45,7 @@ function DashboardGoalsWidget() {
 		sparkDataError,
 		goalsData,
 		goalsDataError,
+		goals,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
@@ -72,6 +75,7 @@ function DashboardGoalsWidget() {
 			sparkDataError: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ),
 			goalsData: store.getReport( goalsDataArgs ),
 			goalsDataError: store.getErrorForSelector( 'getReport', [ goalsDataArgs ] ),
+			goals: store.getGoals(),
 		};
 	} );
 
@@ -85,6 +89,17 @@ function DashboardGoalsWidget() {
 
 	if ( ! goalsData || ! sparkData ) {
 		return <PreviewBlock width="100%" height="202px" />;
+	}
+
+	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
+		return (
+			<CTA
+				title={ __( 'Use goals to measure success.', 'google-site-kit' ) }
+				description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
+				ctaLink="https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals"
+				ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
+			/>
+		);
 	}
 
 	const extractedAnalytics = extractAnalyticsDashboardSparklineData( sparkData );
@@ -117,4 +132,7 @@ function DashboardGoalsWidget() {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics' } )( DashboardGoalsWidget );
+export default whenActive( {
+	moduleName: 'analytics',
+	fallbackComponent: AnalyticsInactiveCTA,
+} )( DashboardGoalsWidget );
