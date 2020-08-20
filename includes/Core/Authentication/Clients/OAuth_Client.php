@@ -692,11 +692,6 @@ final class OAuth_Client {
 			exit();
 		}
 
-		$current_user_id = get_current_user_id();
-		if ( $this->should_update_owner_id( $current_user_id ) ) {
-			$this->owner_id->set( $current_user_id );
-		}
-
 		$this->set_access_token(
 			$token_response['access_token'],
 			isset( $token_response['expires_in'] ) ? $token_response['expires_in'] : '',
@@ -729,6 +724,11 @@ final class OAuth_Client {
 			}
 		);
 		$this->set_granted_scopes( $scopes );
+
+		$current_user_id = get_current_user_id();
+		if ( $this->should_update_owner_id( $current_user_id ) ) {
+			$this->owner_id->set( $current_user_id );
+		}
 
 		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
