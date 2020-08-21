@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-import invariant from 'invariant';
 import castArray from 'lodash/castArray';
 import mapValues from 'lodash/mapValues';
 import fetchMock from 'fetch-mock';
@@ -41,30 +40,6 @@ export const createTestRegistry = () => {
 	registerAllStoresOn( registry );
 
 	return registry;
-};
-
-/**
- * Creates a strict version of registry.select for use in testing.
- *
- * Given the registry.select function instance, a new function is returned
- * with the same API as `select()` but will throw an error if the result
- * of the selector function is `undefined`.
- *
- * @since n.e.x.t
- * @private
- *
- * @param {Function} select The registry.select function.
- * @return {Function} The strict version of registry.select.
- */
-export const createStrictSelect = ( select ) => ( storeName ) => {
-	return mapValues(
-		select( storeName ),
-		( selector, selectorName ) => ( ...args ) => {
-			const returnValue = selector( ...args );
-			invariant( returnValue !== undefined, `${ selectorName }(...) is not resolved` );
-			return returnValue;
-		}
-	);
 };
 
 /**
