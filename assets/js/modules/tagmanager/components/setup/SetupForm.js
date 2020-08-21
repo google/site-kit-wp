@@ -56,7 +56,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
-	const { submitChanges } = useDispatch( STORE_NAME );
+	const { submitChanges, receiveError } = useDispatch( STORE_NAME );
 	const dispatchAnalytics = useDispatch( MODULES_ANALYTICS );
 	const submitForm = useCallback( async ( { submitMode } ) => { // eslint-disable-line no-shadow
 		// We'll use form state to persist the chosen submit choice
@@ -73,20 +73,28 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 			// we disable the snippet output via Analyics to prevent duplicate measurement.
 			if ( gtmAnalyticsPropertyID && analyticsModuleActive ) {
 				dispatchAnalytics.setUseSnippet( false );
-				await dispatchAnalytics.saveSettings();
+				const saveAnalyticsSettings = await dispatchAnalytics.saveSettings();
+				if ( saveAnalyticsSettings.error ) {
+					receiveError( saveAnalyticsSettings.error );
+					return;
+				}
 			}
 			// If submitting with Analytics setup, and Analytics is not active,
 			// activate it, and navigate to its reauth/setup URL to proceed with its setup.
 			if ( submitMode === 'with_analytics_setup' && ! analyticsModuleActive ) {
 				setIsNavigating( true );
-				await activateModule( 'analytics' );
+				const activateAnalytics = await activateModule( 'analytics' );
+				if ( activateAnalytics.error ) {
+					receiveError( activateAnalytics.error );
+					return;
+				}
 				global.location.assign( analyticsModuleReauthURL );
 				// Don't call finishSetup as this navigates to a different location.
 				return;
 			}
 			finishSetup();
 		}
-	}, [ finishSetup, dispatchAnalytics, gtmAnalyticsPropertyID, analyticsModuleActive, analyticsModuleReauthURL ] );
+	}, [ finishSetup, dispatchAnalytics, gtmAnalyticsPropertyID, analyticsModuleActive, analyticsModuleReauthURL, receiveError ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
