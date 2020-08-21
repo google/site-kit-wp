@@ -46,9 +46,11 @@ const fetchGetURLChannelsStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( accountID, clientID ) => {
+		return { accountID, clientID };
+	},
+	validateParams: ( { accountID, clientID } = {} ) => {
 		invariant( accountID, 'accountID is required.' );
 		invariant( clientID, 'clientID is required.' );
-		return { accountID, clientID };
 	},
 } );
 

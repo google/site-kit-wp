@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: report tests.
+ * modules/search-console data store: report tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -40,48 +40,42 @@ describe( 'modules/adsense report', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
 	afterEach( () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {
-
+	afterAll( () => {
+		API.setUsingCache( true );
 	} );
 
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
-			const options = {
-				dateRange: 'last-90-days',
-				metrics: 'test',
-				dimensions: [ 'DATE' ],
-			};
-
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
+					/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
 					{ body: fixtures.report, status: 200 }
 				);
 
-				const initialReport = registry.select( STORE_NAME ).getReport( options );
+				const initialReport = registry.select( STORE_NAME ).getReport( {
+					dateRange: 'last-90-days',
+				} );
 
 				expect( initialReport ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getReport( options ) !== undefined
-					),
-				);
+				await subscribeUntil( registry, () => (
+					registry.select( STORE_NAME ).getReport( { dateRange: 'last-90-days' } ) !== undefined
+				) );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry.select( STORE_NAME ).getReport( { dateRange: 'last-90-days' } );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
 			} );
 
 			it( 'does not make a network request if report for given options is already present', async () => {
+				const options = {
+					dateRange: 'last-90-days',
+				};
+
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.report, { options } );
@@ -103,14 +97,20 @@ describe( 'modules/adsense report', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
+
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
+					/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
 					{ body: response, status: 500 }
 				);
 
+				const options = {
+					dateRange: 'last-90-days',
+				};
+
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getReport( options );
-				await subscribeUntil( registry,
+				await subscribeUntil(
+					registry,
 					() => registry.select( STORE_NAME ).isFetchingGetReport( options ) === false,
 				);
 
