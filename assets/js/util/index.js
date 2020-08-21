@@ -19,13 +19,11 @@
 /**
  * External dependencies
  */
-import {
-	map,
-	isEqual,
-	isFinite,
-	get,
-	unescape,
-} from 'lodash';
+import map from 'lodash/map';
+import isEqual from 'lodash/isEqual';
+import isFinite from 'lodash/isFinite';
+import get from 'lodash/get';
+import unescape from 'lodash/unescape';
 
 /**
  * WordPress dependencies

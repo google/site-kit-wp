@@ -21,10 +21,8 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import {
-	each,
-	debounce,
-} from 'lodash';
+import each from 'lodash/each';
+import debounce from 'lodash/debounce';
 
 /**
  * WordPress dependencies

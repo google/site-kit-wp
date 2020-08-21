@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { __ } from '@wordpress/i18n';
 import { Component, createRef } from '@wordpress/element';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 
 /**
  * Internal dependencies
