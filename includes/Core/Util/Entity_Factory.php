@@ -228,6 +228,8 @@ final class Entity_Factory {
 	 * @return Entity The entity for the front blog archive.
 	 */
 	private static function create_entity_for_front_blog() {
+		// The translation string intentionally omits the 'google-site-kit' text domain since it should use
+		// WordPress core translations.
 		return new Entity(
 			user_trailingslashit( home_url() ),
 			array(
@@ -250,14 +252,15 @@ final class Entity_Factory {
 		// the 'google-site-kit' text domain since they should use WordPress core translations.
 		switch ( $term->taxonomy ) {
 			case 'category':
-				$title  = _x( 'Category:', 'category archive title prefix' );
-				$title .= " {$term->name}";
+				$title  = $term->name;
+				$prefix = _x( 'Category:', 'category archive title prefix' );
 				break;
 			case 'post_tag':
-				$title  = _x( 'Tag:', 'tag archive title prefix' );
-				$title .= " {$term->name}";
+				$title  = $term->name;
+				$prefix = _x( 'Tag:', 'tag archive title prefix' );
 				break;
 			case 'post_format':
+				$prefix = '';
 				switch ( $term->slug ) {
 					case 'post-format-aside':
 						$title = _x( 'Asides', 'post format archive title' );
@@ -289,20 +292,20 @@ final class Entity_Factory {
 				}
 				break;
 			default:
-				$tax   = get_taxonomy( $term->taxonomy );
-				$title = sprintf(
+				$tax    = get_taxonomy( $term->taxonomy );
+				$title  = $term->name;
+				$prefix = sprintf(
 					/* translators: %s: Taxonomy singular name. */
 					_x( '%s:', 'taxonomy term archive title prefix' ),
 					$tax->labels->singular_name
 				);
-				$title .= " {$term->name}";
 		}
 
 		return new Entity(
 			get_term_link( $term ),
 			array(
 				'type'  => 'term',
-				'title' => $title,
+				'title' => self::prefix_title( $title, $prefix ),
 				'id'    => $term->term_id,
 			)
 		);
@@ -319,14 +322,14 @@ final class Entity_Factory {
 	private static function create_entity_for_author( WP_User $user ) {
 		// See WordPress's `get_the_archive_title()` function for this behavior. The string here intentionally omits
 		// the 'google-site-kit' text domain since it should use WordPress core translations.
-		$title  = _x( 'Author:', 'author archive title prefix' );
-		$title .= " {$user->display_name}";
+		$title  = $user->display_name;
+		$prefix = _x( 'Author:', 'author archive title prefix' );
 
 		return new Entity(
 			get_author_posts_url( $user->ID, $user->user_nicename ),
 			array(
 				'type'  => 'user',
-				'title' => $title,
+				'title' => self::prefix_title( $title, $prefix ),
 				'id'    => $user->ID,
 			)
 		);
@@ -343,14 +346,14 @@ final class Entity_Factory {
 	private static function create_entity_for_post_type( WP_Post_Type $post_type ) {
 		// See WordPress's `get_the_archive_title()` function for this behavior. The string here intentionally omits
 		// the 'google-site-kit' text domain since it should use WordPress core translations.
-		$title  = _x( 'Archives:', 'post type archive title prefix' );
-		$title .= " {$post_type->labels->name}";
+		$title  = $post_type->labels->name;
+		$prefix = _x( 'Archives:', 'post type archive title prefix' );
 
 		return new Entity(
 			get_post_type_archive_link( $post_type->name ),
 			array(
 				'type'  => 'post_type',
-				'title' => $title,
+				'title' => self::prefix_title( $title, $prefix ),
 			)
 		);
 	}
@@ -372,26 +375,26 @@ final class Entity_Factory {
 		// the 'google-site-kit' text domain since they should use WordPress core translations.
 		switch ( $type ) {
 			case 'year':
-				$title           = _x( 'Year:', 'date archive title prefix' );
+				$prefix          = _x( 'Year:', 'date archive title prefix' );
 				$format          = _x( 'Y', 'yearly archives date format' );
 				$url_func        = 'get_year_link';
 				$url_func_format = 'Y';
 				break;
 			case 'month':
-				$title           = _x( 'Month:', 'date archive title prefix' );
+				$prefix          = _x( 'Month:', 'date archive title prefix' );
 				$format          = _x( 'F Y', 'monthly archives date format' );
 				$url_func        = 'get_month_link';
 				$url_func_format = 'Y/m';
 				break;
 			default:
 				$type            = 'day';
-				$title           = _x( 'Day:', 'date archive title prefix' );
+				$prefix          = _x( 'Day:', 'date archive title prefix' );
 				$format          = _x( 'F j, Y', 'daily archives date format' );
 				$url_func        = 'get_day_link';
 				$url_func_format = 'Y/m/j';
 		}
 
-		$title .= ' ' . get_post_time( $format, false, $queried_post, true );
+		$title = get_post_time( $format, false, $queried_post, true );
 
 		$url_func_args = get_post_time( $url_func_format, false, $queried_post );
 		if ( ! $url_func_args ) {
@@ -403,7 +406,7 @@ final class Entity_Factory {
 			call_user_func_array( $url_func, $url_func_args ),
 			array(
 				'type'  => $type,
-				'title' => $title,
+				'title' => self::prefix_title( $title, $prefix ),
 			)
 		);
 	}
@@ -454,5 +457,31 @@ final class Entity_Factory {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Combines an entity title and prefix.
+	 *
+	 * This is based on the WordPress core function `get_the_archive_title()`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $title  The title.
+	 * @param string $prefix The prefix to add, should end in a colon.
+	 * @return string Resulting entity title.
+	 */
+	private static function prefix_title( $title, $prefix ) {
+		if ( empty( $prefix ) ) {
+			return $title;
+		}
+
+		// See WordPress's `get_the_archive_title()` function for this behavior. The string here intentionally omits
+		// the 'google-site-kit' text domain since it should use WordPress core translations.
+		return sprintf(
+			/* translators: 1: Title prefix. 2: Title. */
+			_x( '%1$s %2$s', 'archive title' ),
+			$prefix,
+			$title
+		);
 	}
 }
