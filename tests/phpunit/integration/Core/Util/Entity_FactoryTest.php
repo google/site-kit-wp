@@ -179,29 +179,10 @@ class Entity_FactoryTest extends TestCase {
 	public static function wpTearDownAfterClass() {
 		global $wp_rewrite;
 
+		// No need to actually delete the added DB content here since core's testcase class takes care of that.
 		update_option( 'show_on_front', self::$orig_show_on_front );
 		update_option( 'page_on_front', self::$orig_page_on_front );
 		update_option( 'page_for_posts', self::$orig_page_for_posts );
-
-		foreach ( self::$post_titles_to_ids as $post_id ) {
-			wp_delete_post( $post_id, true );
-		}
-
-		if ( ! self::$skip_delete_uncategorized ) {
-			wp_delete_term( self::$term_names_to_ids['Uncategorized'], 'category' );
-		}
-		wp_delete_term( self::$term_names_to_ids['Sub Cat'], 'category' );
-		wp_delete_term( self::$term_names_to_ids['Food'], 'post_tag' );
-		wp_delete_term( self::$term_names_to_ids['Images'], 'post_format' );
-		wp_delete_term( self::$term_names_to_ids['Coffee'], 'customtaxonomy' );
-
-		foreach ( self::$user_display_names_to_ids as $user_id ) {
-			if ( is_multisite() ) {
-				wpmu_delete_user( $user_id );
-			} else {
-				wp_delete_user( $user_id );
-			}
-		}
 
 		unregister_post_type( 'customposttype' );
 		unregister_taxonomy( 'customtaxonomy' );

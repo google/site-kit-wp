@@ -209,9 +209,17 @@ final class WP_Query_Factory {
 			}
 		}
 
+		// Depending on whether WordPress already parsed the main request (and thus filtered 'query_vars'), we should
+		// either manually trigger the filter or not.
+		if ( did_action( 'parse_request' ) ) {
+			$public_query_vars = $wp->public_query_vars;
+		} else {
+			$public_query_vars = apply_filters( 'query_vars', $wp->public_query_vars );
+		}
+
 		// Populate `WP_Query` arguments.
 		$query_args = array();
-		foreach ( $wp->public_query_vars as $wpvar ) {
+		foreach ( $public_query_vars as $wpvar ) {
 			if ( isset( $url_query_vars[ $wpvar ] ) ) {
 				$query_args[ $wpvar ] = $url_query_vars[ $wpvar ];
 			} elseif ( isset( $url_path_vars[ $wpvar ] ) ) {

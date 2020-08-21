@@ -447,7 +447,7 @@ final class Entity_Factory {
 			return null;
 		}
 
-		$post = $query->posts[ array_keys( $query->posts )[0] ];
+		$post = reset( $query->posts );
 		if ( $post instanceof WP_Post ) {
 			return $post;
 		}
