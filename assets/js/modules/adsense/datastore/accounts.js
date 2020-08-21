@@ -29,7 +29,6 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
 const fetchGetAccountsStore = createFetchStore( {
 	baseName: 'getAccounts',
-	storeName: STORE_NAME,
 	controlCallback: () => {
 		return API.get( 'modules', 'adsense', 'accounts', undefined, {
 			useCache: false,
