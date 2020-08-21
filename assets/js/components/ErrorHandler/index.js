@@ -24,13 +24,16 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
+import { Component, createRef } from '@wordpress/element';
+import { Dashicon } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Notification from '../notifications/notification';
+import Link from '../link';
+import Button from '../button';
 
 class ErrorHandler extends Component {
 	constructor( props ) {
@@ -39,9 +42,12 @@ class ErrorHandler extends Component {
 		this.state = {
 			error: null,
 			info: null,
+			copied: false,
 		};
 
-		this.errorClickHandler = this.onErrorClick.bind( this );
+		this.errorElement = createRef();
+		this.onErrorClick = this.onErrorClick.bind( this );
+		this.toggleCopiedState = this.toggleCopiedState.bind( this );
 	}
 
 	componentDidCatch( error, info ) {
@@ -50,18 +56,33 @@ class ErrorHandler extends Component {
 		this.setState( { error, info } );
 	}
 
-	onErrorClick( e ) {
+	onErrorClick() {
+		if ( ! this.errorElement || ! this.errorElement.current ) {
+			return;
+		}
+
 		const range = document.createRange();
-		range.selectNodeContents( e.target );
+		range.selectNodeContents( this.errorElement.current );
 
 		const selection = global.getSelection();
 		selection.removeAllRanges();
 		selection.addRange( range );
+
+		document.execCommand( 'copy' );
+
+		selection.removeAllRanges();
+
+		this.toggleCopiedState();
+		setTimeout( this.toggleCopiedState, 1500 );
+	}
+
+	toggleCopiedState() {
+		this.setState( ( { copied } ) => ( { copied: ! copied } ) );
 	}
 
 	render() {
 		const { children } = this.props;
-		const { error, info } = this.state;
+		const { error, info, copied } = this.state;
 
 		// If there is no caught error, render the children components normally.
 		if ( ! error ) {
@@ -69,16 +90,16 @@ class ErrorHandler extends Component {
 		}
 
 		const reportLink = (
-			<a href="https://wordpress.org/support/plugin/google-site-kit/" target="_blank" rel="noopener noreferrer">
+			<Link href="https://wordpress.org/support/plugin/google-site-kit/" external>
 				{ __( 'Report this problem', 'google-site-kit' ) }
-			</a>
+			</Link>
 		);
 
-		const errorInfo = (
-			// eslint-disable-next-line
-			<pre onClick={ this.errorClickHandler } style={ { overflow: 'auto' } }>
-				{ error.message + info.componentStack }
-			</pre>
+		const icon = (
+			<Dashicon
+				className="googlesitekit-margin-right-1 googlesitekit-dashicons-fill-white"
+				icon={ copied ? 'yes' : 'clipboard' }
+			/>
 		);
 
 		return (
@@ -90,7 +111,13 @@ class ErrorHandler extends Component {
 				format="small"
 				type="win-error"
 			>
-				{ errorInfo }
+				<pre className="googlesitekit-overflow-auto" ref={ this.errorElement }>
+					{ error.message }
+					{ info.componentStack }
+				</pre>
+				<Button icon={ icon } onClick={ this.onErrorClick }>
+					{ __( 'Copy error to clipboard', 'google-site-kit' ) }
+				</Button>
 			</Notification>
 		);
 	}

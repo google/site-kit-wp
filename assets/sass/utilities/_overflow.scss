@@ -1,5 +1,5 @@
 /**
- * Margin utility styles.
+ * Overflow utility styles.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -18,11 +18,7 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-margin-right-1 {
-		margin-right: 0.5rem;
-	}
-
-	.googlesitekit-margin-bottom-0 {
-		margin-bottom: 0 !important;
+	.googlesitekit-overflow-auto {
+		overflow: auto;
 	}
 }
