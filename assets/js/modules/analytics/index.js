@@ -26,11 +26,12 @@ import domReady from '@wordpress/dom-ready';
  */
 import './datastore';
 import Widgets from 'googlesitekit-widgets';
-import { AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC } from '../../googlesitekit/widgets/default-areas';
+import { AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC, AREA_DASHBOARD_POPULARITY } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain as AnalyticsSetup } from './components/setup';
 import { SettingsMain as AnalyticsSettings } from './components/settings';
 import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
+import DashboardPopularPagesWidget from './components/dashboard/DashboardPopularPagesWidget';
 
 /**
  * WordPress dependencies
@@ -62,6 +63,18 @@ domReady( () => {
 		[
 			AREA_DASHBOARD_ALL_TRAFFIC,
 			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+		],
+	);
+	Widgets.registerWidget(
+		'analyticsPopularPages',
+		{
+			component: DashboardPopularPagesWidget,
+			width: Widgets.WIDGET_WIDTHS.HALF,
+			priority: 2,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_POPULARITY,
 		],
 	);
 } );
