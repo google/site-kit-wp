@@ -39,10 +39,10 @@ import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user
 import {
 	AccountSelect,
 	AMPContainerSelect,
-	FormInstructions,
 	WebContainerSelect,
 } from '../common';
 import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import SetupFormInstructions from './SetupFormInstructions';
 import SetupFormSubmitButtons from './SetupFormSubmitButtons';
 const { useSelect, useDispatch } = Data;
 
@@ -114,7 +114,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 			onSubmit={ preventDefaultFormSubmit }
 		>
 			<StoreErrorNotice storeName={ STORE_NAME } />
-			<FormInstructions />
+			<SetupFormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
