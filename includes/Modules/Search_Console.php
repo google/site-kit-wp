@@ -361,6 +361,8 @@ final class Search_Console extends Module
 			)
 		);
 
+		$property_id = $this->get_property_id();
+
 		$request = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
 		if ( ! empty( $args['dimensions'] ) ) {
 			$request->setDimensions( (array) $args['dimensions'] );
@@ -372,26 +374,33 @@ final class Search_Console extends Module
 			$request->setEndDate( $args['end_date'] );
 		}
 
-		// Only include data for URLs that are part of the current site.
-		$filter = new Google_Service_Webmasters_ApiDimensionFilter();
-		$filter->setDimension( 'page' );
-		$filter->setOperator( 'contains' );
-		$filter->setExpression( esc_url_raw( untrailingslashit( $this->context->get_reference_site_url() ) ) );
-		$filters = array( $filter );
+		$filters = array();
 
-		// Limit data to a specific URL.
-		if ( ! empty( $args['page'] ) ) {
-			$filter = new Google_Service_Webmasters_ApiDimensionFilter();
-			$filter->setDimension( 'page' );
-			$filter->setOperator( 'equals' );
-			$filter->setExpression( esc_url_raw( $args['page'] ) );
-			$filters[] = $filter;
+		// If domain property, limit data to URLs that are part of the current site.
+		if ( 0 === strpos( $property_id, 'sc-domain:' ) ) {
+			$scope_site_filter = new Google_Service_Webmasters_ApiDimensionFilter();
+			$scope_site_filter->setDimension( 'page' );
+			$scope_site_filter->setOperator( 'contains' );
+			$scope_site_filter->setExpression( esc_url_raw( $this->context->get_reference_site_url() ) );
+			$filters[] = $scope_site_filter;
 		}
 
-		$filter_group = new Google_Service_Webmasters_ApiDimensionFilterGroup();
-		$filter_group->setGroupType( 'and' );
-		$filter_group->setFilters( $filters );
-		$request->setDimensionFilterGroups( array( $filter_group ) );
+		// If specific URL requested, limit data to that URL.
+		if ( ! empty( $args['page'] ) ) {
+			$single_url_filter = new Google_Service_Webmasters_ApiDimensionFilter();
+			$single_url_filter->setDimension( 'page' );
+			$single_url_filter->setOperator( 'equals' );
+			$single_url_filter->setExpression( esc_url_raw( $args['page'] ) );
+			$filters[] = $single_url_filter;
+		}
+
+		// If there are relevant filters, add them to the request.
+		if ( ! empty( $filters ) ) {
+			$filter_group = new Google_Service_Webmasters_ApiDimensionFilterGroup();
+			$filter_group->setGroupType( 'and' );
+			$filter_group->setFilters( $filters );
+			$request->setDimensionFilterGroups( array( $filter_group ) );
+		}
 
 		if ( ! empty( $args['row_limit'] ) ) {
 			$request->setRowLimit( $args['row_limit'] );
@@ -399,7 +408,7 @@ final class Search_Console extends Module
 
 		return $this->get_webmasters_service()
 			->searchanalytics
-			->query( $this->get_property_id(), $request );
+			->query( $property_id, $request );
 	}
 
 	/**
