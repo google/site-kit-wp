@@ -60,6 +60,7 @@ export default function SetupFormSubmitButtons( { submitForm } ) {
 						{ __( 'Continue to Analytics setup', 'google-site-kit' ) }
 					</Button>
 					<Link
+						className="googlesitekit-setup-module__sub-action"
 						onClick={ submitFormNoAnalytics }
 						disabled={ ! canSubmitChanges }
 						inherit
