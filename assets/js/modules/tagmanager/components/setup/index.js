@@ -19,3 +19,4 @@
 export { default as SetupMain } from './SetupMain';
 export { default as SetupForm } from './SetupForm';
 export { default as SetupFormInstructions } from './SetupFormInstructions';
+export { default as SetupFormSubmitButtons } from './SetupFormSubmitButtons';
