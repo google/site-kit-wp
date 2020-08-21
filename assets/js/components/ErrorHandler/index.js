@@ -46,8 +46,11 @@ class ErrorHandler extends Component {
 		};
 
 		this.errorElement = createRef();
+		this.timeoutId = 0;
+
 		this.onErrorClick = this.onErrorClick.bind( this );
-		this.toggleCopiedState = this.toggleCopiedState.bind( this );
+		this.setCopiedState = this.changeCopiedState.bind( this, true );
+		this.unsetCopiedState = this.changeCopiedState.bind( this, false );
 	}
 
 	componentDidCatch( error, info ) {
@@ -72,12 +75,16 @@ class ErrorHandler extends Component {
 
 		selection.removeAllRanges();
 
-		this.toggleCopiedState();
-		setTimeout( this.toggleCopiedState, 1500 );
+		if ( this.timeoutId ) {
+			clearTimeout( this.timeoutId );
+		}
+
+		this.setCopiedState();
+		this.timeoutId = setTimeout( this.unsetCopiedState, 1500 );
 	}
 
-	toggleCopiedState() {
-		this.setState( ( { copied } ) => ( { copied: ! copied } ) );
+	changeCopiedState( copied ) {
+		this.setState( { copied } );
 	}
 
 	render() {
