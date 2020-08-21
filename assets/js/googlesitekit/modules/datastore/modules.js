@@ -57,7 +57,6 @@ const WAIT_FOR_MODULES = 'WAIT_FOR_MODULES';
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
-	storeName: STORE_NAME,
 	controlCallback: () => {
 		return API.get( 'core', 'modules', 'list', null, {
 			useCache: false,
@@ -76,7 +75,6 @@ const fetchGetModulesStore = createFetchStore( {
 
 const fetchSetModuleActivationStore = createFetchStore( {
 	baseName: 'setModuleActivation',
-	storeName: STORE_NAME,
 	controlCallback: ( { slug, active } ) => {
 		return API.set( 'core', 'modules', 'activation', {
 			slug,
@@ -92,12 +90,14 @@ const fetchSetModuleActivationStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( slug, active ) => {
-		invariant( slug, 'slug is required.' );
-		invariant( active !== undefined, 'active is required.' );
 		return {
 			slug,
 			active,
 		};
+	},
+	validateParams: ( { slug, active } = {} ) => {
+		invariant( slug, 'slug is required.' );
+		invariant( active !== undefined, 'active is required.' );
 	},
 } );
 
