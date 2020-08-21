@@ -1,5 +1,5 @@
 /**
- * DashboardPopularity component.
+ * LegacyDashboardPopularity component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -25,10 +25,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DashboardPopularityInner from './DashboardPopularityInner';
+import LegacyDashboardPopularityInner from './LegacyDashboardPopularityInner';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 
-class DashboardPopularity extends Component {
+class LegacyDashboardPopularity extends Component {
 	render() {
 		return (
 			<Fragment>
@@ -41,10 +41,10 @@ class DashboardPopularity extends Component {
 						description={ __( 'Your most popular pages and how people found them from Search.', 'google-site-kit' ) }
 					/>
 				</div>
-				<DashboardPopularityInner />
+				<LegacyDashboardPopularityInner />
 			</Fragment>
 		);
 	}
 }
 
-export default DashboardPopularity;
+export default LegacyDashboardPopularity;

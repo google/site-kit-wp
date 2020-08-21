@@ -1,5 +1,5 @@
 /**
- * DashboardWidgetPopularKeywordsTable component.
+ * LegacyDashboardWidgetPopularKeywordsTable component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -38,7 +38,7 @@ import {
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
-const DashboardWidgetPopularKeywordsTable = ( props ) => {
+const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics', query: { resource_id: domain, num_of_days: 28 } } ) );
@@ -105,7 +105,7 @@ const DashboardWidgetPopularKeywordsTable = ( props ) => {
 };
 
 export default withData(
-	DashboardWidgetPopularKeywordsTable,
+	LegacyDashboardWidgetPopularKeywordsTable,
 	[
 		{
 			type: TYPE_MODULES,
@@ -127,4 +127,3 @@ export default withData(
 	},
 	isDataZeroSearchConsole
 );
-

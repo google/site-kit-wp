@@ -1,5 +1,5 @@
 /**
- * SearchConsoleDashboardWidgetKeywordTable component.
+ * LegacySearchConsoleDashboardWidgetKeywordTable component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -34,7 +34,7 @@ import PreviewTable from '../../../../components/preview-table';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
-const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
+const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics', query: { resource_id: domain, num_of_days: 28 } } ) );
@@ -86,7 +86,7 @@ const SearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 };
 
 export default withData(
-	SearchConsoleDashboardWidgetKeywordTable,
+	LegacySearchConsoleDashboardWidgetKeywordTable,
 	[
 		{
 			type: TYPE_MODULES,
