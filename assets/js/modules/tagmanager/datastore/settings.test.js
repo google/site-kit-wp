@@ -22,6 +22,8 @@
 import API from 'googlesitekit-api';
 import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY, AMP_MODE_PRIMARY } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import defaultModules from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import { accountBuilder, containerBuilder } from './__factories__';
 import {
@@ -32,6 +34,8 @@ import {
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
+import fetchMock from 'fetch-mock';
+import { validateCanSubmitChanges } from './settings';
 
 describe( 'modules/tagmanager settings', () => {
 	let registry;
@@ -322,8 +326,12 @@ describe( 'modules/tagmanager settings', () => {
 		describe( 'canSubmitChanges', () => {
 			describe( 'with no AMP', () => {
 				beforeEach( () => {
+					const { accountID, internalContainerID } = validSettings;
+					registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } );
 					registry.dispatch( STORE_NAME ).setSettings( validSettings );
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( fixtures.liveContainerVersion, { accountID, internalContainerID } );
+					registry.dispatch( CORE_MODULES ).receiveGetModules( defaultModules );
 				} );
 
 				it( 'requires a valid accountID', () => {
@@ -332,6 +340,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid accountID is required to submit changes' );
 				} );
 
 				it( 'requires a valid containerID', () => {
@@ -340,6 +350,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid containerID selection is required to submit changes' );
 				} );
 
 				it( 'requires a valid internal container ID', () => {
@@ -348,6 +360,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setInternalContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid internalContainerID is required to submit changes' );
 				} );
 
 				it( 'requires permissions for an existing tag when present', () => {
@@ -359,6 +373,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).receiveGetTagPermission( { permission: false }, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'existing tag permission is required to submit changes' );
 				} );
 
 				it( 'supports creating a web container', () => {
@@ -377,8 +393,12 @@ describe( 'modules/tagmanager settings', () => {
 			describe( 'with primary AMP', () => {
 				beforeEach( () => {
 					setPrimaryAMP();
+					const { accountID, internalAMPContainerID: internalContainerID } = validSettingsAMP;
 					registry.dispatch( STORE_NAME ).setSettings( validSettingsAMP );
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( fixtures.liveContainerVersion, { accountID, internalContainerID } );
+					registry.dispatch( CORE_MODULES ).receiveGetModules( defaultModules );
+					fetchMock.catch();
 				} );
 
 				it( 'requires a valid accountID', () => {
@@ -387,6 +407,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid accountID is required to submit changes' );
 				} );
 
 				it( 'requires a valid AMP containerID', () => {
@@ -399,6 +421,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setAMPContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid ampContainerID selection is required to submit changes' );
 				} );
 
 				it( 'requires a valid internal AMP container ID', () => {
@@ -411,6 +435,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid internalAMPContainerID is required to submit changes' );
 				} );
 
 				it( 'supports creating an AMP container', () => {
@@ -429,12 +455,16 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).receiveGetTagPermission( { permission: false }, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'existing tag permission is required to submit changes' );
 				} );
 
 				it( 'does not support creating an account', () => {
 					registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid accountID is required to submit changes' );
 				} );
 			} );
 
@@ -445,7 +475,19 @@ describe( 'modules/tagmanager settings', () => {
 						...validSettings,
 						...validSettingsAMP,
 					} );
+					const { accountID, internalContainerID } = validSettings;
+					const { internalAMPContainerID } = validSettingsAMP;
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+					registry.dispatch( CORE_MODULES ).receiveGetModules( defaultModules );
+					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion(
+						fixtures.liveContainerVersions.web.noGAWithVariable,
+						{ accountID, internalContainerID }
+					);
+					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion(
+						fixtures.liveContainerVersions.amp.noGA,
+						{ accountID, internalContainerID: internalAMPContainerID }
+					);
 				} );
 
 				it( 'requires a valid accountID', () => {
@@ -454,6 +496,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid accountID is required to submit changes' );
 				} );
 
 				it( 'requires valid containerID', () => {
@@ -462,6 +506,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid containerID selection is required to submit changes' );
 				} );
 
 				it( 'requires a valid AMP containerID', () => {
@@ -470,6 +516,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setAMPContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid ampContainerID selection is required to submit changes' );
 				} );
 
 				it( 'requires a valid internal container ID', () => {
@@ -478,6 +526,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setInternalContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid internalContainerID is required to submit changes' );
 				} );
 
 				it( 'requires a valid internal AMP container ID', () => {
@@ -486,6 +536,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid internalAMPContainerID is required to submit changes' );
 				} );
 
 				it( 'supports creating a web container', () => {
@@ -520,12 +572,16 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).receiveGetTagPermission( { permission: false }, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'existing tag permission is required to submit changes' );
 				} );
 
 				it( 'does not support creating an account', () => {
 					registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( 'a valid accountID is required to submit changes' );
 				} );
 			} );
 		} );
