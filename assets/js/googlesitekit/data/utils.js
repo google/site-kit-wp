@@ -303,16 +303,10 @@ export const commonStore = {
 export const createStrictSelect = ( select ) => ( storeName ) => {
 	return mapValues(
 		select( storeName ),
-		( selector, selectorName ) => {
-			const strictSelector = ( ...args ) => {
-				const returnValue = selector( ...args );
-				invariant( returnValue !== undefined, `${ selectorName }(...) is not resolved` );
-				return returnValue;
-			};
-			// Preserve the function's name by setting it on the new function.
-			// Function.name is read-only so we must use Object.defineProperty.
-			Object.defineProperty( strictSelector, 'name', { value: selectorName } );
-			return strictSelector;
+		( selector, selectorName ) => ( ...args ) => {
+			const returnValue = selector( ...args );
+			invariant( returnValue !== undefined, `${ selectorName }(...) is not resolved` );
+			return returnValue;
 		}
 	);
 };
