@@ -234,7 +234,7 @@ final class Entity_Factory {
 			user_trailingslashit( home_url() ),
 			array(
 				'type'  => 'blog',
-				'title' => __( 'Home' ),
+				'title' => __( 'Home', 'default' ),
 			)
 		);
 	}
@@ -253,41 +253,41 @@ final class Entity_Factory {
 		switch ( $term->taxonomy ) {
 			case 'category':
 				$title  = $term->name;
-				$prefix = _x( 'Category:', 'category archive title prefix' );
+				$prefix = _x( 'Category:', 'category archive title prefix', 'default' );
 				break;
 			case 'post_tag':
 				$title  = $term->name;
-				$prefix = _x( 'Tag:', 'tag archive title prefix' );
+				$prefix = _x( 'Tag:', 'tag archive title prefix', 'default' );
 				break;
 			case 'post_format':
 				$prefix = '';
 				switch ( $term->slug ) {
 					case 'post-format-aside':
-						$title = _x( 'Asides', 'post format archive title' );
+						$title = _x( 'Asides', 'post format archive title', 'default' );
 						break;
 					case 'post-format-gallery':
-						$title = _x( 'Galleries', 'post format archive title' );
+						$title = _x( 'Galleries', 'post format archive title', 'default' );
 						break;
 					case 'post-format-image':
-						$title = _x( 'Images', 'post format archive title' );
+						$title = _x( 'Images', 'post format archive title', 'default' );
 						break;
 					case 'post-format-video':
-						$title = _x( 'Videos', 'post format archive title' );
+						$title = _x( 'Videos', 'post format archive title', 'default' );
 						break;
 					case 'post-format-quote':
-						$title = _x( 'Quotes', 'post format archive title' );
+						$title = _x( 'Quotes', 'post format archive title', 'default' );
 						break;
 					case 'post-format-link':
-						$title = _x( 'Links', 'post format archive title' );
+						$title = _x( 'Links', 'post format archive title', 'default' );
 						break;
 					case 'post-format-status':
-						$title = _x( 'Statuses', 'post format archive title' );
+						$title = _x( 'Statuses', 'post format archive title', 'default' );
 						break;
 					case 'post-format-audio':
-						$title = _x( 'Audio', 'post format archive title' );
+						$title = _x( 'Audio', 'post format archive title', 'default' );
 						break;
 					case 'post-format-chat':
-						$title = _x( 'Chats', 'post format archive title' );
+						$title = _x( 'Chats', 'post format archive title', 'default' );
 						break;
 				}
 				break;
@@ -296,7 +296,7 @@ final class Entity_Factory {
 				$title  = $term->name;
 				$prefix = sprintf(
 					/* translators: %s: Taxonomy singular name. */
-					_x( '%s:', 'taxonomy term archive title prefix' ),
+					_x( '%s:', 'taxonomy term archive title prefix', 'default' ),
 					$tax->labels->singular_name
 				);
 		}
@@ -323,7 +323,7 @@ final class Entity_Factory {
 		// See WordPress's `get_the_archive_title()` function for this behavior. The string here intentionally omits
 		// the 'google-site-kit' text domain since it should use WordPress core translations.
 		$title  = $user->display_name;
-		$prefix = _x( 'Author:', 'author archive title prefix' );
+		$prefix = _x( 'Author:', 'author archive title prefix', 'default' );
 
 		return new Entity(
 			get_author_posts_url( $user->ID, $user->user_nicename ),
@@ -347,7 +347,7 @@ final class Entity_Factory {
 		// See WordPress's `get_the_archive_title()` function for this behavior. The string here intentionally omits
 		// the 'google-site-kit' text domain since it should use WordPress core translations.
 		$title  = $post_type->labels->name;
-		$prefix = _x( 'Archives:', 'post type archive title prefix' );
+		$prefix = _x( 'Archives:', 'post type archive title prefix', 'default' );
 
 		return new Entity(
 			get_post_type_archive_link( $post_type->name ),
@@ -375,21 +375,21 @@ final class Entity_Factory {
 		// the 'google-site-kit' text domain since they should use WordPress core translations.
 		switch ( $type ) {
 			case 'year':
-				$prefix          = _x( 'Year:', 'date archive title prefix' );
-				$format          = _x( 'Y', 'yearly archives date format' );
+				$prefix          = _x( 'Year:', 'date archive title prefix', 'default' );
+				$format          = _x( 'Y', 'yearly archives date format', 'default' );
 				$url_func        = 'get_year_link';
 				$url_func_format = 'Y';
 				break;
 			case 'month':
-				$prefix          = _x( 'Month:', 'date archive title prefix' );
-				$format          = _x( 'F Y', 'monthly archives date format' );
+				$prefix          = _x( 'Month:', 'date archive title prefix', 'default' );
+				$format          = _x( 'F Y', 'monthly archives date format', 'default' );
 				$url_func        = 'get_month_link';
 				$url_func_format = 'Y/m';
 				break;
 			default:
 				$type            = 'day';
-				$prefix          = _x( 'Day:', 'date archive title prefix' );
-				$format          = _x( 'F j, Y', 'daily archives date format' );
+				$prefix          = _x( 'Day:', 'date archive title prefix', 'default' );
+				$format          = _x( 'F j, Y', 'daily archives date format', 'default' );
 				$url_func        = 'get_day_link';
 				$url_func_format = 'Y/m/j';
 		}
@@ -479,7 +479,7 @@ final class Entity_Factory {
 		// the 'google-site-kit' text domain since it should use WordPress core translations.
 		return sprintf(
 			/* translators: 1: Title prefix. 2: Title. */
-			_x( '%1$s %2$s', 'archive title' ),
+			_x( '%1$s %2$s', 'archive title', 'default' ),
 			$prefix,
 			$title
 		);
