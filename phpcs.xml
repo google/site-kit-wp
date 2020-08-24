@@ -36,6 +36,7 @@
 	<rule ref="WordPressVIPMinimum.Performance"/>
 	<rule ref="WordPressVIPMinimum.Files">
 		<exclude name="WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant"/>
+		<exclude name="WordPressVIPMinimum.Files.IncludingFile.UsingVariable"/>
 	</rule>
 	<rule ref="WordPressVIPMinimum.UserExperience"/>
 	<rule ref="WordPressVIPMinimum.Security"/>

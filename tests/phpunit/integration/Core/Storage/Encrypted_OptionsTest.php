@@ -25,10 +25,10 @@ class Encrypted_OptionsTest extends TestCase {
 	public function test_get() {
 		$encrypted_options = $this->new_encrypted_options();
 
-		update_option( 'test-option', base64_encode( 'test-value' ) );
+		update_option( 'test-option', base64_encode( 'test-value' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		$this->assertEquals( 'test-value', $encrypted_options->get( 'test-option' ) );
 
-		update_option( 'test-serialized-option', base64_encode( serialize( array( 'test-value' ) ) ) );
+		update_option( 'test-serialized-option', base64_encode( serialize( array( 'test-value' ) ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		$this->assertEquals( array( 'test-value' ), $encrypted_options->get( 'test-serialized-option' ) );
 	}
 
@@ -38,10 +38,10 @@ class Encrypted_OptionsTest extends TestCase {
 		$this->assertFalse( get_option( 'test-serialized-option' ) );
 
 		$encrypted_options->set( 'test-option', 'test-value' );
-		$this->assertEquals( base64_encode( 'test-value' ), get_option( 'test-option' ) );
+		$this->assertEquals( base64_encode( 'test-value' ), get_option( 'test-option' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 
 		$encrypted_options->set( 'test-serialized-option', array( 'test-value' ) );
-		$this->assertEquals( base64_encode( serialize( array( 'test-value' ) ) ), get_option( 'test-serialized-option' ) );
+		$this->assertEquals( base64_encode( serialize( array( 'test-value' ) ) ), get_option( 'test-serialized-option' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	}
 
 	public function test_delete() {

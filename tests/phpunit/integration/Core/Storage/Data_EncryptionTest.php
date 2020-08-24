@@ -27,8 +27,7 @@ class Data_EncryptionTest extends TestCase {
 
 		// The result is base64_encoded.
 		$encrypted       = $encryption->encrypt( 'test-value' );
-		$base_64_decoded = base64_decode( $encrypted, true );
-		$this->assertNotFalse( $base_64_decoded );
+		$base_64_decoded = base64_decode( $encrypted, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 
 		// Decrypt.
 		$iv_len    = openssl_cipher_iv_length( self::METHOD );
@@ -49,7 +48,7 @@ class Data_EncryptionTest extends TestCase {
 		$iv_len          = openssl_cipher_iv_length( self::METHOD );
 		$iv              = openssl_random_pseudo_bytes( $iv_len );
 		$encrypted       = openssl_encrypt( 'test-value' . 'test-salt', self::METHOD, 'test-key', 0, $iv ); // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
-		$encrypted_value = base64_encode( $iv . $encrypted );
+		$encrypted_value = base64_encode( $iv . $encrypted ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		$decrypted_value = $encryption->decrypt( $encrypted_value );
 
 		$this->assertEquals( 'test-value', $decrypted_value );

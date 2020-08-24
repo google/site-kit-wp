@@ -28,11 +28,11 @@ class Encrypted_User_OptionsTest extends TestCase {
 		$encrypted_user_options = $this->new_encrypted_user_options();
 
 		// Get returns the decrypted value.
-		update_user_option( $user_id, 'test-option', base64_encode( 'test-value' ) );
+		update_user_option( $user_id, 'test-option', base64_encode( 'test-value' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		$this->assertEquals( 'test-value', $encrypted_user_options->get( 'test-option' ) );
 
 		// Get returns the unserialized value.
-		update_user_option( $user_id, 'test-serialized-option', base64_encode( serialize( array( 'test-value' ) ) ) );
+		update_user_option( $user_id, 'test-serialized-option', base64_encode( serialize( array( 'test-value' ) ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		$this->assertEquals( array( 'test-value' ), $encrypted_user_options->get( 'test-serialized-option' ) );
 	}
 
@@ -46,11 +46,11 @@ class Encrypted_User_OptionsTest extends TestCase {
 
 		// Set encrypts the raw value before persisting it.
 		$encrypted_user_options->set( 'test-option', 'test-value' );
-		$this->assertEquals( base64_encode( 'test-value' ), get_user_option( 'test-option', $user_id ) );
+		$this->assertEquals( base64_encode( 'test-value' ), get_user_option( 'test-option', $user_id ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 
 		// Non-scalar values are serialized before encrypting.
 		$encrypted_user_options->set( 'test-serialized-option', array( 'test-value' ) );
-		$this->assertEquals( base64_encode( serialize( array( 'test-value' ) ) ), get_user_option( 'test-serialized-option', $user_id ) );
+		$this->assertEquals( base64_encode( serialize( array( 'test-value' ) ) ), get_user_option( 'test-serialized-option', $user_id ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	}
 
 	public function test_delete() {
@@ -64,7 +64,7 @@ class Encrypted_User_OptionsTest extends TestCase {
 		$this->assertTrue( $encrypted_user_options->delete( 'test-option' ) );
 		$this->assertFalse( get_user_option( 'test-option', $user_id ) );
 
-		update_user_option( $user_id, 'test-serialized-option', base64_encode( serialize( array( 'test-value' ) ) ) );
+		update_user_option( $user_id, 'test-serialized-option', base64_encode( serialize( array( 'test-value' ) ) ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		$this->assertNotEmpty( get_user_option( 'test-serialized-option', $user_id ) );
 		$this->assertTrue( $encrypted_user_options->delete( 'test-serialized-option' ) );
 		$this->assertFalse( get_user_option( 'test-serialized-option', $user_id ) );
