@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Component, createRef } from '@wordpress/element';
+import { Component, createRef, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Icon, check, stack } from '@wordpress/icons';
 
@@ -96,12 +96,6 @@ class ErrorHandler extends Component {
 			return children;
 		}
 
-		const reportLink = (
-			<Link href="https://wordpress.org/support/plugin/google-site-kit/" external>
-				{ __( 'Report this problem', 'google-site-kit' ) }
-			</Link>
-		);
-
 		const icon = <Icon
 			className="mdc-button__icon"
 			icon={ copied ? check : stack }
@@ -111,7 +105,16 @@ class ErrorHandler extends Component {
 			<Notification
 				id="googlesitekit-error"
 				title={ __( 'Site Kit encountered an error', 'google-site-kit' ) }
-				description={ reportLink }
+				description={ (
+					<Fragment>
+						<Button trailingIcon={ icon } onClick={ this.onErrorClick }>
+							{ __( 'Copy error to clipboard', 'google-site-kit' ) }
+						</Button>
+						<Link href="https://wordpress.org/support/plugin/google-site-kit/" external>
+							{ __( 'Report this problem', 'google-site-kit' ) }
+						</Link>
+					</Fragment>
+				) }
 				isDismissable={ false }
 				format="small"
 				type="win-error"
@@ -120,9 +123,6 @@ class ErrorHandler extends Component {
 					{ error.message }
 					{ info.componentStack }
 				</pre>
-				<Button trailingIcon={ icon } onClick={ this.onErrorClick }>
-					{ __( 'Copy error to clipboard', 'google-site-kit' ) }
-				</Button>
 			</Notification>
 		);
 	}
