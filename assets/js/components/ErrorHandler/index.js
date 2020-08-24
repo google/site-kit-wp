@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Component, createRef, Fragment } from '@wordpress/element';
+import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Icon, check, stack } from '@wordpress/icons';
 
@@ -34,6 +34,7 @@ import { Icon, check, stack } from '@wordpress/icons';
 import Notification from '../notifications/notification';
 import Link from '../link';
 import Button from '../button';
+import copyToClipboard from '../../util/copy-to-clipboard';
 
 class ErrorHandler extends Component {
 	constructor( props ) {
@@ -45,12 +46,7 @@ class ErrorHandler extends Component {
 			copied: false,
 		};
 
-		this.errorElement = createRef();
-		this.timeoutId = 0;
-
 		this.onErrorClick = this.onErrorClick.bind( this );
-		this.setCopiedState = this.changeCopiedState.bind( this, true );
-		this.unsetCopiedState = this.changeCopiedState.bind( this, false );
 	}
 
 	componentDidCatch( error, info ) {
@@ -60,31 +56,12 @@ class ErrorHandler extends Component {
 	}
 
 	onErrorClick() {
-		if ( ! this.errorElement || ! this.errorElement.current ) {
-			return;
-		}
+		const { error, info } = this.state;
 
-		const range = document.createRange();
-		range.selectNodeContents( this.errorElement.current );
+		// Copy message with wrapping backticks for code block formatting on wp.org.
+		copyToClipboard( `\`${ error?.message }\n${ info?.componentStack }\`` );
 
-		const selection = global.getSelection();
-		selection.removeAllRanges();
-		selection.addRange( range );
-
-		document.execCommand( 'copy' );
-
-		selection.removeAllRanges();
-
-		if ( this.timeoutId ) {
-			clearTimeout( this.timeoutId );
-		}
-
-		this.setCopiedState();
-		this.timeoutId = setTimeout( this.unsetCopiedState, 1500 );
-	}
-
-	changeCopiedState( copied ) {
-		this.setState( { copied } );
+		this.setState( { copied: true } );
 	}
 
 	render() {
@@ -119,7 +96,7 @@ class ErrorHandler extends Component {
 				format="small"
 				type="win-error"
 			>
-				<pre className="googlesitekit-overflow-auto" ref={ this.errorElement }>
+				<pre className="googlesitekit-overflow-auto">
 					{ error.message }
 					{ info.componentStack }
 				</pre>
