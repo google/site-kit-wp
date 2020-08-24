@@ -102,7 +102,10 @@ class ErrorHandler extends Component {
 			</Link>
 		);
 
-		const icon = <Icon icon={ copied ? check : stack } />;
+		const icon = <Icon
+			className="mdc-button__icon"
+			icon={ copied ? check : stack }
+		/>;
 
 		return (
 			<Notification
@@ -117,7 +120,7 @@ class ErrorHandler extends Component {
 					{ error.message }
 					{ info.componentStack }
 				</pre>
-				<Button icon={ icon } onClick={ this.onErrorClick }>
+				<Button trailingIcon={ icon } onClick={ this.onErrorClick }>
 					{ __( 'Copy error to clipboard', 'google-site-kit' ) }
 				</Button>
 			</Notification>
