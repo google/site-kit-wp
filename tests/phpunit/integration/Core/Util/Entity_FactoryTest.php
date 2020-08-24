@@ -286,8 +286,8 @@ class Entity_FactoryTest extends TestCase {
 	 * @param array       $query_args      Query arguments.
 	 * @param Entity|null $expected_entity Expected entity, or null.
 	 */
-	public function test_from_wp_query( array $query_args, Entity $expected_entity = null ) {
-		global $wp_rewrite;
+	public function test_from_wp_query( array $query_args, \Closure $get_expected_entity ) {
+		$expected_entity = $get_expected_entity();
 
 		add_filter(
 			'option_home',
@@ -314,23 +314,6 @@ class Entity_FactoryTest extends TestCase {
 
 		$entity = Entity_Factory::from_wp_query( $query );
 		if ( $expected_entity ) {
-			// Fill in entity IDs because they are unknown to the data provider.
-			if ( in_array( $expected_entity->get_type(), array( 'post', 'blog' ), true ) && ! $expected_entity->get_id() ) {
-				$title = $this->extract_wp_entity_title_from_url_entity_title( $expected_entity->get_title() );
-				if ( isset( self::$post_titles_to_ids[ $title ] ) ) {
-					$this->force_set_property( $expected_entity, 'id', (int) self::$post_titles_to_ids[ $title ] );
-				}
-			} elseif ( 'term' === $expected_entity->get_type() ) {
-				$title = $this->extract_wp_entity_title_from_url_entity_title( $expected_entity->get_title() );
-				if ( isset( self::$term_names_to_ids[ $title ] ) ) {
-					$this->force_set_property( $expected_entity, 'id', (int) self::$term_names_to_ids[ $title ] );
-				}
-			} elseif ( 'user' === $expected_entity->get_type() ) {
-				$title = $this->extract_wp_entity_title_from_url_entity_title( $expected_entity->get_title() );
-				if ( isset( self::$user_display_names_to_ids[ $title ] ) ) {
-					$this->force_set_property( $expected_entity, 'id', (int) self::$user_display_names_to_ids[ $title ] );
-				}
-			}
 			$this->assertEntity( $expected_entity, $entity );
 		} else {
 			$this->assertNull( $entity );
@@ -355,156 +338,178 @@ class Entity_FactoryTest extends TestCase {
 		// * 'term' (taxonomy 'post_format', slug 'post-format-image', title 'post-format-image')
 		// * 'term' (taxonomy 'customtaxonomy', slug 'coffee', title 'Coffee')
 		// * 'user' (slug 'johndoe', title 'John Doe')
+		// phpcs:disable WordPressVIPMinimum.Variables.VariableAnalysis.SelfInsideClosure
 		return array(
 			'front page'                   => array(
 				array(),
-				new Entity(
-					'https://example.com/',
-					array(
-						'type'  => 'post',
-						'title' => 'Home',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/',
+						array(
+							'type'  => 'post',
+							'title' => 'Home',
+							'id'    => self::$post_titles_to_ids['Home'],
+						)
+					);
+				},
 			),
 			'blog page'                    => array(
 				array(
 					'pagename' => 'blog',
 				),
-				new Entity(
-					'https://example.com/blog/',
-					array(
-						'type'  => 'blog',
-						'title' => 'Blog',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/',
+						array(
+							'type'  => 'blog',
+							'title' => 'Blog',
+							'id'    => self::$post_titles_to_ids['Blog'],
+						)
+					);
+				},
 			),
 			'blog page, page 3'            => array(
 				array(
 					'pagename' => 'blog',
 					'paged'    => '3',
 				),
-				// TODO: This should be 'https://example.com/blog/page/3/'.
-				new Entity(
-					'https://example.com/blog/',
-					array(
-						'type'  => 'blog',
-						'title' => 'Blog',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/page/3/'.
+					return new Entity(
+						'https://example.com/blog/',
+						array(
+							'type'  => 'blog',
+							'title' => 'Blog',
+							'id'    => self::$post_titles_to_ids['Blog'],
+						)
+					);
+				},
 			),
 			'single post'                  => array(
 				array(
 					'name' => 'some-post',
 				),
-				new Entity(
-					'https://example.com/blog/some-post/',
-					array(
-						'type'  => 'post',
-						'title' => 'Some Post',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/some-post/',
+						array(
+							'type'  => 'post',
+							'title' => 'Some Post',
+							'id'    => self::$post_titles_to_ids['Some Post'],
+						)
+					);
+				},
 			),
 			'single post, paginated'       => array(
 				array(
 					'name' => 'some-post',
 					'page' => '2',
 				),
-				// TODO: This should be 'https://example.com/blog/some-post/2/'.
-				new Entity(
-					'https://example.com/blog/some-post/',
-					array(
-						'type'  => 'post',
-						'title' => 'Some Post',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/some-post/2/'.
+					return new Entity(
+						'https://example.com/blog/some-post/',
+						array(
+							'type'  => 'post',
+							'title' => 'Some Post',
+							'id'    => self::$post_titles_to_ids['Some Post'],
+						)
+					);
+				},
 			),
 			'single page'                  => array(
 				array(
 					'pagename' => 'some-page',
 				),
-				new Entity(
-					'https://example.com/some-page/',
-					array(
-						'type'  => 'post',
-						'title' => 'Some Page',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/some-page/',
+						array(
+							'type'  => 'post',
+							'title' => 'Some Page',
+							'id'    => self::$post_titles_to_ids['Some Page'],
+						)
+					);
+				},
 			),
 			'category archives'            => array(
 				array(
 					'category_name' => 'uncategorized',
 				),
-				new Entity(
-					'https://example.com/blog/category/uncategorized/',
-					array(
-						'type'  => 'term',
-						'title' => 'Category: Uncategorized',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/category/uncategorized/',
+						array(
+							'type'  => 'term',
+							'title' => 'Category: Uncategorized',
+							'id'    => self::$term_names_to_ids['Uncategorized'],
+						)
+					);
+				},
 			),
 			'sub-category archives'        => array(
 				array(
 					'category_name' => 'uncategorized/subcat',
 				),
-				new Entity(
-					'https://example.com/blog/category/uncategorized/subcat/',
-					array(
-						'type'  => 'term',
-						'title' => 'Category: Sub Cat',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/category/uncategorized/subcat/',
+						array(
+							'type'  => 'term',
+							'title' => 'Category: Sub Cat',
+							'id'    => self::$term_names_to_ids['Sub Cat'],
+						)
+					);
+				},
 			),
 			'category archives, page 3'    => array(
 				array(
 					'category_name' => 'uncategorized',
 					'paged'         => '3',
 				),
-				// TODO: This should be 'https://example.com/blog/category/uncategorized/page/3/'.
-				new Entity(
-					'https://example.com/blog/category/uncategorized/',
-					array(
-						'type'  => 'term',
-						'title' => 'Category: Uncategorized',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/category/uncategorized/page/3/'.
+					return new Entity(
+						'https://example.com/blog/category/uncategorized/',
+						array(
+							'type'  => 'term',
+							'title' => 'Category: Uncategorized',
+							'id'    => self::$term_names_to_ids['Uncategorized'],
+						)
+					);
+				},
 			),
 			'tag archives'                 => array(
-				//'https://example.com/blog/tag/food/',
 				array(
 					'tag' => 'food',
 				),
-				new Entity(
-					'https://example.com/blog/tag/food/',
-					array(
-						'type'  => 'term',
-						'title' => 'Tag: Food',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/tag/food/',
+						array(
+							'type'  => 'term',
+							'title' => 'Tag: Food',
+							'id'    => self::$term_names_to_ids['Food'],
+						)
+					);
+				},
 			),
 			'tag archives, page 3'         => array(
 				array(
 					'tag'   => 'food',
 					'paged' => '3',
 				),
-				// TODO: This should be 'https://example.com/blog/tag/food/page/3/'.
-				new Entity(
-					'https://example.com/blog/tag/food/',
-					array(
-						'type'  => 'term',
-						'title' => 'Tag: Food',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/tag/food/page/3/'.
+					return new Entity(
+						'https://example.com/blog/tag/food/',
+						array(
+							'type'  => 'term',
+							'title' => 'Tag: Food',
+							'id'    => self::$term_names_to_ids['Food'],
+						)
+					);
+				},
 			),
 			'post format archives'         => array(
 				array(
@@ -513,14 +518,16 @@ class Entity_FactoryTest extends TestCase {
 					'post_format' => 'post-format-image',
 					'post_type'   => array( 'post' ),
 				),
-				new Entity(
-					'https://example.com/blog/type/image/',
-					array(
-						'type'  => 'term',
-						'title' => 'Images',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/type/image/',
+						array(
+							'type'  => 'term',
+							'title' => 'Images',
+							'id'    => self::$term_names_to_ids['Images'],
+						)
+					);
+				},
 			),
 			'post format archives, page 2' => array(
 				array(
@@ -530,82 +537,94 @@ class Entity_FactoryTest extends TestCase {
 					'post_type'   => array( 'post' ),
 					'paged'       => '2',
 				),
-				// TODO: This should be 'https://example.com/blog/type/image/page/2/'.
-				new Entity(
-					'https://example.com/blog/type/image/',
-					array(
-						'type'  => 'term',
-						'title' => 'Images',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/type/image/page/2/'.
+					return new Entity(
+						'https://example.com/blog/type/image/',
+						array(
+							'type'  => 'term',
+							'title' => 'Images',
+							'id'    => self::$term_names_to_ids['Images'],
+						)
+					);
+				},
 			),
 			'author archives'              => array(
 				array(
 					'author_name' => 'johndoe',
 				),
-				new Entity(
-					'https://example.com/blog/author/johndoe/',
-					array(
-						'type'  => 'user',
-						'title' => 'Author: John Doe',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/author/johndoe/',
+						array(
+							'type'  => 'user',
+							'title' => 'Author: John Doe',
+							'id'    => self::$user_display_names_to_ids['John Doe'],
+						)
+					);
+				},
 			),
 			'author archives, page 2'      => array(
 				array(
 					'author_name' => 'johndoe',
 					'paged'       => '2',
 				),
-				// TODO: This should be 'https://example.com/blog/author/johndoe/page/2/'.
-				new Entity(
-					'https://example.com/blog/author/johndoe/',
-					array(
-						'type'  => 'user',
-						'title' => 'Author: John Doe',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/author/johndoe/page/2/'.
+					return new Entity(
+						'https://example.com/blog/author/johndoe/',
+						array(
+							'type'  => 'user',
+							'title' => 'Author: John Doe',
+							'id'    => self::$user_display_names_to_ids['John Doe'],
+						)
+					);
+				},
 			),
 			'year archives'                => array(
 				array(
 					'year' => '2020',
 				),
-				new Entity(
-					'https://example.com/blog/2020/',
-					array(
-						'type'  => 'year',
-						'title' => 'Year: 2020',
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/2020/',
+						array(
+							'type'  => 'year',
+							'title' => 'Year: 2020',
+						)
+					);
+				},
 			),
 			'year archives, page 3'        => array(
 				array(
 					'year'  => '2020',
 					'paged' => '3',
 				),
-				// TODO: This should be 'https://example.com/blog/2020/page/3/'.
-				new Entity(
-					'https://example.com/blog/2020/',
-					array(
-						'type'  => 'year',
-						'title' => 'Year: 2020',
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/2020/page/3/'.
+					return new Entity(
+						'https://example.com/blog/2020/',
+						array(
+							'type'  => 'year',
+							'title' => 'Year: 2020',
+						)
+					);
+				},
 			),
 			'month archives'               => array(
 				array(
 					'year'     => '2020',
 					'monthnum' => '08',
 				),
-				new Entity(
-					'https://example.com/blog/2020/08/',
-					array(
-						'type'  => 'month',
-						'title' => 'Month: August 2020',
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/2020/08/',
+						array(
+							'type'  => 'month',
+							'title' => 'Month: August 2020',
+						)
+					);
+				},
 			),
 			'month archives, page 3'       => array(
 				array(
@@ -613,14 +632,16 @@ class Entity_FactoryTest extends TestCase {
 					'monthnum' => '08',
 					'paged'    => '3',
 				),
-				// TODO: This should be 'https://example.com/blog/2020/08/page/3/'.
-				new Entity(
-					'https://example.com/blog/2020/08/',
-					array(
-						'type'  => 'month',
-						'title' => 'Month: August 2020',
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/2020/08/page/3/'.
+					return new Entity(
+						'https://example.com/blog/2020/08/',
+						array(
+							'type'  => 'month',
+							'title' => 'Month: August 2020',
+						)
+					);
+				},
 			),
 			'day archives'                 => array(
 				array(
@@ -628,13 +649,15 @@ class Entity_FactoryTest extends TestCase {
 					'monthnum' => '08',
 					'day'      => '04',
 				),
-				new Entity(
-					'https://example.com/blog/2020/08/04/',
-					array(
-						'type'  => 'day',
-						'title' => 'Day: August 4, 2020',
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/2020/08/04/',
+						array(
+							'type'  => 'day',
+							'title' => 'Day: August 4, 2020',
+						)
+					);
+				},
 			),
 			'day archives, page 3'         => array(
 				array(
@@ -643,14 +666,16 @@ class Entity_FactoryTest extends TestCase {
 					'day'      => '04',
 					'paged'    => '3',
 				),
-				// TODO: This should be 'https://example.com/blog/2020/08/04/page/3/'.
-				new Entity(
-					'https://example.com/blog/2020/08/04/',
-					array(
-						'type'  => 'day',
-						'title' => 'Day: August 4, 2020',
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/2020/08/04/page/3/'.
+					return new Entity(
+						'https://example.com/blog/2020/08/04/',
+						array(
+							'type'  => 'day',
+							'title' => 'Day: August 4, 2020',
+						)
+					);
+				},
 			),
 			'custom post type post'        => array(
 				array(
@@ -659,70 +684,81 @@ class Entity_FactoryTest extends TestCase {
 					'name'           => 'coffee',
 					'page'           => '',
 				),
-				new Entity(
-					'https://example.com/blog/customposttype/coffee/',
-					array(
-						'type'  => 'post',
-						'title' => 'Coffee',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/customposttype/coffee/',
+						array(
+							'type'  => 'post',
+							'title' => 'Coffee',
+							'id'    => self::$post_titles_to_ids['Coffee'],
+						)
+					);
+				},
 			),
 			'post type archives'           => array(
 				array(
 					'post_type' => 'customposttype',
 				),
-				new Entity(
-					'https://example.com/blog/customposttype/',
-					array(
-						'type'  => 'post_type',
-						'title' => 'Archives: Custom Post Type',
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/customposttype/',
+						array(
+							'type'  => 'post_type',
+							'title' => 'Archives: Custom Post Type',
+						)
+					);
+				},
 			),
 			'post type archives, page 3'   => array(
 				array(
 					'post_type' => 'customposttype',
 					'paged'     => '3',
 				),
-				// TODO: This should be 'https://example.com/blog/customposttype/page/3/'.
-				new Entity(
-					'https://example.com/blog/customposttype/',
-					array(
-						'type'  => 'post_type',
-						'title' => 'Archives: Custom Post Type',
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/customposttype/page/3/'.
+					return new Entity(
+						'https://example.com/blog/customposttype/',
+						array(
+							'type'  => 'post_type',
+							'title' => 'Archives: Custom Post Type',
+						)
+					);
+				},
 			),
 			'taxonomy archives'            => array(
 				array(
 					'customtaxonomy' => 'coffee',
 				),
-				new Entity(
-					'https://example.com/blog/customtaxonomy/coffee/',
-					array(
-						'type'  => 'term',
-						'title' => 'Custom Taxonomy: Coffee',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/customtaxonomy/coffee/',
+						array(
+							'type'  => 'term',
+							'title' => 'Custom Taxonomy: Coffee',
+							'id'    => self::$term_names_to_ids['Coffee'],
+						)
+					);
+				},
 			),
 			'taxonomy archives, page 3'    => array(
 				array(
 					'customtaxonomy' => 'coffee',
 					'paged'          => '3',
 				),
-				// TODO: This should be 'https://example.com/blog/customtaxonomy/coffee/page/3/'.
-				new Entity(
-					'https://example.com/blog/customtaxonomy/coffee/',
-					array(
-						'type'  => 'term',
-						'title' => 'Custom Taxonomy: Coffee',
-						'id'    => 0, // Filled via title lookup.
-					)
-				),
+				function () {
+					// TODO: This should be 'https://example.com/blog/customtaxonomy/coffee/page/3/'.
+					return new Entity(
+						'https://example.com/blog/customtaxonomy/coffee/',
+						array(
+							'type'  => 'term',
+							'title' => 'Custom Taxonomy: Coffee',
+							'id'    => self::$term_names_to_ids['Coffee'],
+						)
+					);
+				},
 			),
 		);
+		// phpcs:enable WordPressVIPMinimum.Variables.VariableAnalysis.SelfInsideClosure
 	}
 
 	protected function assertEntity( Entity $expected, $actual ) {
@@ -744,22 +780,5 @@ class Entity_FactoryTest extends TestCase {
 		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$authentication->verification()->set( true );
 		$authentication->get_oauth_client()->set_access_token( 'test-access-token', HOUR_IN_SECONDS );
-	}
-
-	/**
-	 * Extracts the title of a WordPress entity (e.g. a post, term or user) from a Site Kit entity.
-	 *
-	 * Site Kit entities are based on URLs and therefore use the real title for those URLs, which often have a prefix
-	 * separated by the real entity title with ': '. This method strips out the prefix.
-	 *
-	 * @param string $title Site Kit entity title (potentially including ': ').
-	 * @return string Actual WordPress entity title.
-	 */
-	private function extract_wp_entity_title_from_url_entity_title( $title ) {
-		if ( false !== strpos( $title, ': ' ) ) {
-			return explode( ': ', $title, 2 )[1];
-		}
-
-		return $title;
 	}
 }
