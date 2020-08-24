@@ -134,7 +134,7 @@ class PostSearcher extends Component {
 
 	onClick() {
 		const { match } = this.state;
-		if ( match && match.permalink ) {
+		if ( match?.permalink ) {
 			global.location.assign( getSiteKitAdminURL(
 				'googlesitekit-dashboard',
 				{
