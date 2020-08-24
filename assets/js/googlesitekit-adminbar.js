@@ -45,7 +45,7 @@ import Root from './components/root';
 import { STORE_NAME as CORE_SITE } from './googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
-const GoogleSitekitAdminbar = () => {
+export const GoogleSitekitAdminbar = () => {
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
