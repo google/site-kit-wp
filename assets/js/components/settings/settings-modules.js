@@ -19,9 +19,7 @@
 /**
  * External dependencies
  */
-import map from 'lodash/map';
-import filter from 'lodash/filter';
-import sortBy from 'lodash/sortBy';
+import { map, filter, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies

@@ -20,8 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import filter from 'lodash/filter';
-import map from 'lodash/map';
+import { filter, map } from 'lodash';
 import classnames from 'classnames';
 
 /**

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import punycode from 'punycode';
-import delay from 'lodash/delay';
+import { delay } from 'lodash';
 
 /**
  * WordPress dependencies

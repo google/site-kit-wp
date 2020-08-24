@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import map from 'lodash/map';
+import { map } from 'lodash';
 import classnames from 'classnames';
 
 /**

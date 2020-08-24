@@ -42,10 +42,6 @@ const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
 
-function filterPlugins( ...plugins ) {
-	return plugins.filter( ( plugin ) => !! plugin );
-}
-
 const manifestTemplate = `<?php
 /**
  * Class Google\\Site_Kit\\Core\\Assets\\Manifest
@@ -129,7 +125,7 @@ const resolve = {
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
-const webpackConfig = ( mode, { analyze } ) => {
+const webpackConfig = ( mode ) => {
 	return [
 		// Build the settings js..
 		{
@@ -181,13 +177,14 @@ const webpackConfig = ( mode, { analyze } ) => {
 			module: {
 				rules,
 			},
-			plugins: filterPlugins(
+			plugins: [
 				new ProvidePlugin( {
 					React: 'react',
 				} ),
-				analyze !== 'true'
-					? new WebpackBar( { name: 'Module Entry Points', color: '#fbbc05' } )
-					: undefined,
+				new WebpackBar( {
+					name: 'Module Entry Points',
+					color: '#fbbc05',
+				} ),
 				new CircularDependencyPlugin( {
 					exclude: /node_modules/,
 					failOnError: true,
@@ -214,7 +211,7 @@ const webpackConfig = ( mode, { analyze } ) => {
 						return manifestTemplate.replace( '{{assets}}', files.join( '\n\t\t' ) );
 					},
 				} ),
-			),
+			],
 			optimization: {
 				minimizer: [
 					new TerserPlugin( {
@@ -280,19 +277,20 @@ const webpackConfig = ( mode, { analyze } ) => {
 					},
 				],
 			},
-			plugins: filterPlugins(
+			plugins: [
 				new MiniCssExtractPlugin( {
 					filename: '/assets/css/[name].css',
 				} ),
-				analyze !== 'true'
-					? new WebpackBar( { name: 'Plugin CSS', color: '#4285f4' } )
-					: undefined,
-			),
+				new WebpackBar( {
+					name: 'Plugin CSS',
+					color: '#4285f4',
+				} ),
+			],
 		},
 	];
 };
 
-const testBundle = ( { analyze } ) => {
+const testBundle = () => {
 	return {
 		entry: {
 			'e2e-api-fetch': './tests/e2e/assets/e2e-api-fetch.js',
@@ -307,11 +305,12 @@ const testBundle = ( { analyze } ) => {
 		module: {
 			rules,
 		},
-		plugins: filterPlugins(
-			analyze !== 'true'
-				? new WebpackBar( { name: 'Test files', color: '#34a853' } )
-				: undefined,
-		),
+		plugins: [
+			new WebpackBar( {
+				name: 'Test files',
+				color: '#34a853',
+			} ),
+		],
 		externals,
 		resolve,
 	};
@@ -327,12 +326,12 @@ module.exports = {
 };
 
 module.exports.default = ( ...args ) => {
-	const { includeTests, mode, env } = args[ 1 ];
-	const config = webpackConfig( mode, env || {} );
+	const { includeTests, mode } = args[ 1 ];
+	const config = webpackConfig( mode );
 
 	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.
-		config.push( testBundle( env || {} ) );
+		config.push( testBundle() );
 	}
 
 	return config;

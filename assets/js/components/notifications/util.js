@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { applyFilters } from '@wordpress/hooks';
-import camelCase from 'lodash/camelCase';
+import { camelCase } from 'lodash';
 
 /**
  * Internal dependencies

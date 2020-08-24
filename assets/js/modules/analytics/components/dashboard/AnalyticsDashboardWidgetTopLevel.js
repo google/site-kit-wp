@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import isEmpty from 'lodash/isEmpty';
+import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies

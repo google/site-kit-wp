@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { parse as pslParse } from 'psl';
+
+/**
  * Parse a URL to retrieve the domain
  *
  * @param {string} url The url to parse
@@ -24,10 +29,6 @@
  */
 export const parseDomain = ( url ) => {
 	const urlObj = new URL( url );
-	const domain = urlObj.hostname.split( '.' );
-	if ( domain.length >= 2 ) {
-		return `${ domain[ domain.length - 2 ] }.${ domain[ domain.length - 1 ] }`;
-	}
-
-	return domain.pop();
+	const { domain } = pslParse( urlObj.hostname );
+	return domain;
 };

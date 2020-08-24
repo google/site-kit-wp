@@ -19,9 +19,11 @@
 /**
  * External dependencies
  */
-import map from 'lodash/map';
-import debounce from 'lodash/debounce';
-import trim from 'lodash/trim';
+import {
+	map,
+	debounce,
+	trim,
+} from 'lodash';
 import Autocomplete from 'accessible-autocomplete/react';
 
 /**

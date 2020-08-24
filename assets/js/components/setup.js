@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import delay from 'lodash/delay';
+import { delay } from 'lodash';
 
 /**
  * WordPress dependencies

@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import each from 'lodash/each';
-import sortBy from 'lodash/sortBy';
+import { each, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies
