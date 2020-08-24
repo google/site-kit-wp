@@ -352,7 +352,10 @@ final class Analytics extends Module
 			'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}'
 		);
 
-		$gtag_opt = array();
+		$gtag_opt = array(
+			// Site Kit developer ID.
+			'developer_id' => 'dZTNiMT',
+		);
 
 		if ( $this->context->get_amp_mode() ) {
 			$gtag_opt['linker'] = array(
@@ -392,11 +395,13 @@ final class Analytics extends Module
 			'gtag(\'js\', new Date());'
 		);
 
-		// Site Kit developer ID.
-		wp_add_inline_script(
-			'google_gtagjs',
-			'gtag(\'set\', \'developer_id.dZTNiMT\', true);'
-		);
+		if ( ! empty( $gtag_opt['developer_id'] ) ) {
+			wp_add_inline_script(
+				'google_gtagjs',
+				'gtag(\'set\', \'developer_id.' . esc_attr( $gtag_opt['developer_id'] ) . '\', true);'
+			);
+		}
+		unset( $gtag_opt['developer_id'] );
 
 		if ( empty( $gtag_opt ) ) {
 			wp_add_inline_script(
