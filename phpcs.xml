@@ -6,8 +6,11 @@
 	</rule>
 
 	<rule ref="WordPress-Extra">
-		<!-- Forget about file names -->
+		<!-- Ignore WordPress core file naming conventions since Site Kit uses PSR-4 -->
 		<exclude name="WordPress.Files.FileName"/>
+		<!-- Site Kit doesn't use base64 encoding functions to "obfuscate code" -->
+		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode"/>
+		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode"/>
 		<!-- Allow short ternary -->
 		<exclude name="WordPress.PHP.DisallowShortTernary" />
 		<!-- Prevent this from showing up as a warning on every run. See WordPress/WordPress-Coding-Standards#1425 -->

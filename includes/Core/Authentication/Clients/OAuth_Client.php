@@ -230,7 +230,7 @@ final class OAuth_Client {
 				// The "Authorization" header is used to authenticate the end request; use the dedicated proxy header.
 				$http_client->setDefaultOption(
 					'headers/Proxy-Authorization',
-					'Basic ' . base64_encode( $this->http_proxy->authentication() ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+					'Basic ' . base64_encode( $this->http_proxy->authentication() )
 				);
 			}
 
