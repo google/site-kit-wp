@@ -25,10 +25,8 @@ import isPlainObject from 'lodash/isPlainObject';
 /**
  * Internal dependencies
  */
-import {
-	camelCaseToPascalCase,
-	camelCaseToConstantCase,
-} from './transform-case';
+import { actions as errorStoreActions } from './create-error-store';
+import { camelCaseToPascalCase, camelCaseToConstantCase } from './transform-case';
 import { stringifyObject } from '../../util';
 
 const defaultReducerCallback = ( state ) => {
@@ -38,6 +36,13 @@ const defaultReducerCallback = ( state ) => {
 const defaultArgsToParams = () => {
 	return {};
 };
+
+const defaultValidateParams = () => {};
+
+// Get access to error store action creators.
+// If the parent store doesn't include the error store,
+// yielded error actions will be a no-op.
+const { clearError, receiveError } = errorStoreActions;
 
 /**
  * Creates a store object implementing the necessary infrastructure for a
@@ -82,11 +87,12 @@ const defaultArgsToParams = () => {
  *                                          object as first parameter, the API response as second parameter, and the
  *                                          params object for the request (see above) as third parameter. If not
  *                                          provided, the default will return the unmodified state.
- * @param {Function} [args.argsToParams]    Optional. Function that should validate expected arguments for the
- *                                          internal fetch action and parse them into an named parameters object,
- *                                          with the argument names used as keys. If not provided, the default
- *                                          function will return an empty object, essentially indicating that no
- *                                          arguments are supported/required.
+ * @param {Function} [args.argsToParams]    Optional. Function that reduces the given list of arguments
+ *                                          into a object of key/value parameters, with the argument names used as keys.
+ *                                          If not provided, the default function will return an empty object,
+ *                                          essentially indicating that no arguments are supported/required.
+ * @param {Function} [args.validateParams]  Optional. Function that validates the given parameters object created by `argsToParams`.
+ *                                          Any invalid parameters should cause a respective error to be thrown.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
 export const createFetchStore = ( {
@@ -94,17 +100,19 @@ export const createFetchStore = ( {
 	controlCallback,
 	reducerCallback = defaultReducerCallback,
 	argsToParams = defaultArgsToParams,
+	validateParams = defaultValidateParams,
 } ) => {
 	invariant( baseName, 'baseName is required.' );
 	invariant( 'function' === typeof controlCallback, 'controlCallback is required and must be a function.' );
 	invariant( 'function' === typeof reducerCallback, 'reducerCallback must be a function.' );
 	invariant( 'function' === typeof argsToParams, 'argsToParams must be a function.' );
+	invariant( 'function' === typeof validateParams, 'validateParams must be a function.' );
 
-	// If argsToParams without any arguments does not result in an error, we
+	// If validating the result of argsToParams without any arguments does not result in an error, we
 	// know params is okay to be empty.
 	let requiresParams;
 	try {
-		argsToParams();
+		validateParams( argsToParams() );
 		requiresParams = false;
 	} catch ( error ) {
 		requiresParams = true;
@@ -127,55 +135,63 @@ export const createFetchStore = ( {
 		[ isFetching ]: {},
 	};
 
-	const actions = {
-		*[ fetchCreator ]( ...args ) {
-			let response;
-			let error;
-			let params;
+	function *fetchGenerator( params, args ) {
+		let response;
+		let error;
 
-			try {
-				params = argsToParams( ...args );
-			} catch ( err ) {
-				// Parameters should never be invalid here, this needs to be
-				// strict and inform the developer of the issue.
-				global.console.error( err.message );
-				error = err;
-				return { response, error };
-			}
+		yield {
+			payload: { params },
+			type: START_FETCH,
+		};
+
+		yield clearError( baseName, args );
+
+		try {
+			response = yield {
+				payload: { params },
+				type: FETCH,
+			};
+
+			yield actions[ receiveCreator ]( response, params );
 
 			yield {
 				payload: { params },
-				type: START_FETCH,
+				type: FINISH_FETCH,
 			};
+		} catch ( e ) {
+			error = e;
 
-			try {
-				response = yield {
-					payload: { params },
-					type: FETCH,
-				};
+			yield receiveError( error, baseName, args );
 
-				yield actions[ receiveCreator ]( response, params );
+			// @TODO: Remove the following once all instances of the legacy behavior have been removed.
+			yield receiveError( error );
 
-				yield {
-					payload: { params },
-					type: FINISH_FETCH,
-				};
-			} catch ( e ) {
-				error = e;
+			yield {
+				payload: { params },
+				type: CATCH_FETCH,
+			};
+		}
 
-				yield {
-					payload: { error, params },
-					type: CATCH_FETCH,
-				};
-			}
+		return { response, error };
+	}
 
-			return { response, error };
+	const actions = {
+		[ fetchCreator ]( ...args ) {
+			const params = argsToParams( ...args );
+			// In order for params validation to throw an error as expected,
+			// this function cannot be a generator.
+			validateParams( params );
+
+			// The normal fetch action generator is invoked as the return here
+			// to preserve asynchronous behavior without registering another action creator.
+			return fetchGenerator( params, args );
 		},
 
 		[ receiveCreator ]( response, params ) {
 			invariant( response !== undefined, 'response is required.' );
 			if ( requiresParams ) {
 				invariant( isPlainObject( params ), 'params is required.' );
+				validateParams( params );
 			} else {
 				params = {};
 			}
@@ -223,10 +239,9 @@ export const createFetchStore = ( {
 			}
 
 			case CATCH_FETCH: {
-				const { error, params } = payload;
+				const { params } = payload;
 				return {
 					...state,
-					error,
 					[ isFetching ]: {
 						...state[ isFetching ],
 						[ stringifyObject( params ) ]: false,
@@ -249,6 +264,7 @@ export const createFetchStore = ( {
 			let params;
 			try {
 				params = argsToParams( ...args );
+				validateParams( params );
 			} catch ( err ) {
 				// If parameters are invalid, fail silently here. It likely is
 				// because some dependency selector is still resolving.

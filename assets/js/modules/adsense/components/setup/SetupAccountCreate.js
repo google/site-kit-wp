@@ -31,7 +31,6 @@ import Link from '../../../../components/link';
 import { trackEvent } from '../../../../util';
 import { sanitizeHTML } from '../../../../util/sanitize';
 import { parseAccountID } from '../../util/parsing';
-import { getCreateAccountURL } from '../../util/url';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
@@ -45,8 +44,7 @@ export default function SetupAccountCreate() {
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
 	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-
-	const signUpURL = getCreateAccountURL( { siteURL } );
+	const signUpURL = useSelect( ( select ) => select( STORE_NAME ).getServiceCreateAccountURL() );
 
 	const createAccountHandler = useCallback( async ( event ) => {
 		event.preventDefault();

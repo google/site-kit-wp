@@ -281,7 +281,7 @@ final class Assets {
 		$assets = $this->get_assets();
 
 		foreach ( $assets as $asset ) {
-			$asset->register();
+			$asset->register( $this->context );
 		}
 	}
 
@@ -440,7 +440,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-base',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-admin.js',
+					'src'          => $base_url . 'js/googlesitekit-base.js',
 					'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-base-data' ),
 					'execution'    => 'defer',
 				)
@@ -523,7 +523,7 @@ final class Assets {
 			),
 			// End JSR Assets.
 			new Script(
-				'googlesitekit-ads-detect',
+				'googlesitekit-pagead2.ads',
 				array(
 					'src' => $base_url . 'js/pagead2.ads.js',
 				)
@@ -550,7 +550,7 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-module-page',
+				'googlesitekit-module',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-module.js',
 					'dependencies' => $dependencies,
@@ -753,12 +753,6 @@ final class Assets {
 			'currentAdminPage' => ( is_admin() && $page ) ? sanitize_key( $page ) : null,
 			'resetSession'     => $input->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
 			'reAuth'           => $input->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN ),
-			'userData'         => array(
-				'id'      => $current_user->ID,
-				'email'   => $current_user->user_email,
-				'name'    => $current_user->display_name,
-				'picture' => get_avatar_url( $current_user->user_email ),
-			),
 			'ampEnabled'       => (bool) $this->context->get_amp_mode(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'homeURL'          => home_url(),

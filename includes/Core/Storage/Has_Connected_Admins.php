@@ -19,7 +19,7 @@ use WP_User;
 /**
  * Has_Connected_Admins class.
  *
- * @since n.e.x.t
+ * @since 1.14.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class Has_Connected_Admins extends Setting {
 	/**
 	 * User options instance implementing User_Options_Interface.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 * @var User_Options_Interface
 	 */
 	protected $user_options;
@@ -41,7 +41,7 @@ class Has_Connected_Admins extends Setting {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @param Options_Interface      $options      Options instance.
 	 * @param User_Options_Interface $user_options User options instance.
@@ -54,7 +54,7 @@ class Has_Connected_Admins extends Setting {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 */
 	public function register() {
 		parent::register();
@@ -88,7 +88,7 @@ class Has_Connected_Admins extends Setting {
 	 * Gets the value of the setting. If the option is not set yet, it pulls connected
 	 * admins from the database and sets the option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return boolean TRUE if the site kit already has connected admins, otherwise FALSE.
 	 */
@@ -109,7 +109,7 @@ class Has_Connected_Admins extends Setting {
 	/**
 	 * Queries connected admins and returns an array of connected admin IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return array The array of connected admin IDs.
 	 */
@@ -128,7 +128,7 @@ class Has_Connected_Admins extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.14.0
 	 *
 	 * @return string The type name.
 	 */
