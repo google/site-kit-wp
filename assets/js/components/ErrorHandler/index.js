@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Component, createRef } from '@wordpress/element';
-import { Dashicon } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { Icon, check, stack } from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -102,12 +102,7 @@ class ErrorHandler extends Component {
 			</Link>
 		);
 
-		const icon = (
-			<Dashicon
-				className="googlesitekit-margin-right-1 googlesitekit-dashicons-fill-white"
-				icon={ copied ? 'yes' : 'clipboard' }
-			/>
-		);
+		const icon = <Icon icon={ copied ? check : stack } />;
 
 		return (
 			<Notification
