@@ -183,7 +183,7 @@ final class Screen {
 
 		// Helps detection of enabled ad blockers to warn users before activating or setup AdSense module.
 		if ( $this->is_ad_blocker_detection_required() ) {
-			$assets->enqueue_asset( 'googlesitekit-ads-detect' );
+			$assets->enqueue_asset( 'googlesitekit-pagead2.ads' );
 		}
 
 		if ( $this->args['enqueue_callback'] ) {

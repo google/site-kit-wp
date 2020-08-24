@@ -34,34 +34,34 @@ function generateErrorKey( baseName, args ) {
 	return key;
 }
 
+export const actions = {
+	receiveError( error, baseName, args ) {
+		invariant( error, 'error is required.' );
+
+		return {
+			type: RECEIVE_ERROR,
+			payload: {
+				error,
+				baseName,
+				args,
+			},
+		};
+	},
+	clearError( baseName, args ) {
+		return {
+			type: CLEAR_ERROR,
+			payload: {
+				baseName,
+				args,
+			},
+		};
+	},
+};
+
 export function createErrorStore() {
 	const INITIAL_STATE = {
 		errors: {},
 		error: undefined,
-	};
-
-	const actions = {
-		receiveError( error, baseName, args ) {
-			invariant( error, 'error is required.' );
-
-			return {
-				type: RECEIVE_ERROR,
-				payload: {
-					error,
-					baseName,
-					args,
-				},
-			};
-		},
-		clearError( baseName, args ) {
-			return {
-				type: CLEAR_ERROR,
-				payload: {
-					baseName,
-					args,
-				},
-			};
-		},
 	};
 
 	function reducer( state, { type, payload } ) {

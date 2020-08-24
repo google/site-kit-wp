@@ -24,14 +24,15 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'modules/analytics/data/accounts-properties-profiles',
 			array(
-				'methods'  => 'GET',
-				'callback' => function () {
+				'methods'             => 'GET',
+				'callback'            => function () {
 					return array(
 						'accounts'   => array(),
 						'properties' => array(),
 						'profiles'   => array(),
 					);
 				},
+				'permission_callback' => '__return_true',
 			),
 			true
 		);
@@ -40,8 +41,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/setup/analytics/account-created',
 			array(
-				'methods'  => 'POST',
-				'callback' => function () {
+				'methods'             => 'POST',
+				'callback'            => function () {
 					require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 					deactivate_plugins( plugin_basename( __FILE__ ), true );
@@ -49,6 +50,7 @@ add_action(
 
 					return array( 'success' => true );
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 

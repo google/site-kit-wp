@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Assets;
 
+use Google\Site_Kit\Context;
+
 /**
  * Class representing a single asset.
  *
@@ -80,8 +82,11 @@ abstract class Asset {
 	 * Registers the asset.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Adds $context parameter.
+	 *
+	 * @param Context $context Plugin context.
 	 */
-	abstract public function register();
+	abstract public function register( Context $context );
 
 	/**
 	 * Enqueues the asset.

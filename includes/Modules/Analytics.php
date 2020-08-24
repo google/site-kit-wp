@@ -103,15 +103,15 @@ final class Analytics extends Module
 			}
 		);
 
-		add_action(
-			'wp_head',
-			function () {
-				if ( $this->is_tracking_disabled() ) {
-					$this->print_tracking_opt_out();
-				}
-			},
-			0
-		);
+		$print_tracking_opt_out = function () {
+			if ( $this->is_tracking_disabled() ) {
+				$this->print_tracking_opt_out();
+			}
+		};
+		// For non-AMP and AMP.
+		add_action( 'wp_head', $print_tracking_opt_out, 0 );
+		// For Web Stories plugin.
+		add_action( 'web_stories_story_head', $print_tracking_opt_out, 0 );
 
 		// Analytics tag placement logic.
 		add_action(
