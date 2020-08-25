@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint camelcase:[0] */
-
 /**
  * External dependencies
  */
