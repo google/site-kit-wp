@@ -26,7 +26,7 @@ class Base64_Encryption {
 	 * @return string
 	 */
 	public function encrypt( $value ) {
-		return base64_encode( $value ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+		return base64_encode( $value );
 	}
 
 	/**
@@ -37,6 +37,6 @@ class Base64_Encryption {
 	 * @return bool|string
 	 */
 	public function decrypt( $value ) {
-		return base64_decode( $value ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+		return base64_decode( $value );
 	}
 }
