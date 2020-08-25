@@ -53,7 +53,7 @@ export const GoogleSitekitAdminbar = () => {
 	const onMoreDetailsClick = useCallback( async () => {
 		const detailsURL = addQueryArgs( dashboardURL, { permaLink: currentEntityURL } );
 		await trackEvent( 'admin_bar', 'post_details_click' );
-		document.location = detailsURL;
+		document.location.assign( detailsURL );
 	}, [ dashboardURL, currentEntityURL ] );
 
 	if ( ! dashboardURL || ! currentEntityURL ) {
