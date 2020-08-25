@@ -418,9 +418,9 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_should_update_owner_id() {
-		$user_id_1 = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$user_id_2 = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id_1 );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$owner_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
 
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -429,6 +429,10 @@ class OAuth_ClientTest extends TestCase {
 		$class  = new \ReflectionClass( OAuth_Client::class );
 		$method = $class->getMethod( 'should_update_owner_id' );
 		$method->setAccessible( true );
+
+		$should_update_owner_id = function ( ...$args ) use ( $method, $client ) {
+			return $method->invoke( $client, $args );
+		};
 
 		$map_meta_cap = function( $user_id ) {
 			return function( $caps, $cap, $uid ) use ( $user_id ) {
@@ -440,22 +444,22 @@ class OAuth_ClientTest extends TestCase {
 		};
 
 		// Should return FALSE when user is already an owner.
-		$options->set( Owner_ID::OPTION, $user_id_2 );
-		$this->assertFalse( $method->invoke( $client, array( $user_id_2 ) ) );
+		$options->set( Owner_ID::OPTION, $owner_id );
+		$this->assertFalse( $should_update_owner_id( $owner_id ) );
 
 		// Should return FALSE when the current owner is set and has MANAGE_OPTIONS permissions.
-		$map_user_id_2_meta_cap = $map_meta_cap( $user_id_2 );
-		add_filter( 'map_meta_cap', $map_user_id_2_meta_cap, 99, 3 );
-		$this->assertFalse( $method->invoke( $client, array( $user_id_1 ) ) );
-		remove_filter( 'map_meta_cap', $map_user_id_2_meta_cap, 99, 3 );
+		$map_owner_id_meta_cap = $map_meta_cap( $owner_id );
+		add_filter( 'map_meta_cap', $map_owner_id_meta_cap, 99, 3 );
+		$this->assertFalse( $should_update_owner_id( $admin_id ) );
+		remove_filter( 'map_meta_cap', $map_owner_id_meta_cap, 99, 3 );
 
 		// Should return FALSE when passed user has no MANAGE_OPTIONS permssions.
-		$this->assertFalse( $method->invoke( $client, array( $user_id_1 ) ) );
+		$this->assertFalse( $should_update_owner_id( $admin_id ) );
 
 		// Should return TRUE when the current owner has appropriate permissions and not equals to provided user who has appropriate permissions too.
-		$map_user_id_1_meta_cap = $map_meta_cap( $user_id_1 );
-		add_filter( 'map_meta_cap', $map_user_id_1_meta_cap, 99, 3 );
-		$this->assertFalse( $method->invoke( $client, array( $user_id_1 ) ) );
+		$map_admin_id_meta_cap = $map_meta_cap( $admin_id );
+		add_filter( 'map_meta_cap', $map_admin_id_meta_cap, 99, 3 );
+		$this->assertFalse( $should_update_owner_id( $admin_id ) );
 	}
 
 	public function test_refresh_profile_data() {

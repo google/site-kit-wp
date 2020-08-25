@@ -26,7 +26,7 @@ trait Module_With_Owner_ContractTests {
 		$testcase = $this->get_testcase();
 		$module   = $this->get_module_with_owner();
 
-		// By default, ownerID is 0.
+		// By default ownerID is 0.
 		$testcase->assertEquals( 0, $module->get_owner_id() );
 	}
 }
