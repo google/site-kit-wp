@@ -82,9 +82,9 @@ class Button extends Component {
 				aria-controls={ ariaControls }
 				role={ 'a' === SemanticButton ? 'button' : undefined }
 			>
-				{ icon && icon }
+				{ icon }
 				<span className="mdc-button__label">{ children }</span>
-				{ trailingIcon && trailingIcon }
+				{ trailingIcon }
 			</SemanticButton>
 		);
 	}
