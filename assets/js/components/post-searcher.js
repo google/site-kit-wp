@@ -133,14 +133,12 @@ class PostSearcher extends Component {
 	}
 
 	onClick() {
-		const { selection, match } = this.state;
-		if ( match && match.ID ) {
+		const { match } = this.state;
+		if ( match?.permalink ) {
 			global.location.assign( getSiteKitAdminURL(
 				'googlesitekit-dashboard',
 				{
-					id: match.ID,
 					permaLink: match.permalink,
-					pageTitle: selection,
 				}
 			) );
 		}

@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Core\Util;
 
-use Google\Site_Kit\Context;
-
 /**
  * Class representing an entity.
  *
