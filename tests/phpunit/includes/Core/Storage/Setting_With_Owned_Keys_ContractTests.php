@@ -23,39 +23,38 @@ trait Setting_With_Owned_Keys_ContractTests {
 	abstract protected function get_setting_with_owned_keys();
 
 	public function test_owner_id_is_set() {
-		$testcase    = $this->get_testcase();
-		$options_key = $this->get_option_name();
-
+		$testcase = $this->get_testcase();
 		$settings = $this->get_setting_with_owned_keys();
 		$settings->register();
 
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$user_id = $testcase->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$fields = $settings->get_owned_keys();
+		$options_key = $testcase->get_option_name();
+		$fields      = $settings->get_owned_keys();
 		foreach ( $fields as $field ) {
 			delete_option( $options_key );
 
 			$options = $settings->get();
-			$this->assertTrue( empty( $options['ownerID'] ) );
+			$testcase->assertTrue( empty( $options['ownerID'] ) );
 
 			$options[ $field ] = 'test-value';
 			$settings->set( $options );
 
 			$options = get_option( $options_key );
-			$this->assertEquals( $user_id, $options['ownerID'] );
+			$testcase->assertEquals( $user_id, $options['ownerID'] );
 		}
 	}
 
 	public function test_owner_id_is_not_set() {
-		$testcase    = $this->get_testcase();
-		$options_key = $this->get_option_name();
-
+		$testcase = $this->get_testcase();
 		$settings = $this->get_setting_with_owned_keys();
 		$settings->register();
 
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$user_id = $testcase->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
+
+		$options_key = $testcase->get_option_name();
 
 		add_option(
 			$options_key,
@@ -65,13 +64,13 @@ trait Setting_With_Owned_Keys_ContractTests {
 		);
 
 		$options = $settings->get();
-		$this->assertTrue( empty( $options['ownerID'] ) );
+		$testcase->assertTrue( empty( $options['ownerID'] ) );
 
 		$options['not-owned-key'] = 'new-value';
 		$settings->set( $options );
 
 		$options = get_option( $options_key );
-		$this->assertNotEquals( $user_id, $options['ownerID'] );
+		$testcase->assertNotEquals( $user_id, $options['ownerID'] );
 	}
 
 }
