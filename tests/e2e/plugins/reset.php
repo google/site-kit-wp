@@ -23,5 +23,5 @@ register_activation_hook(
 		}
 
 		( new Reset( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )->all();
-	} 
+	}
 );
