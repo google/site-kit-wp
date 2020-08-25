@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
+use Closure;
 use Google\Site_Kit\Core\Util\Entity_Factory;
 use Google\Site_Kit\Core\Util\Entity;
 use Google\Site_Kit\Context;
@@ -283,10 +284,10 @@ class Entity_FactoryTest extends TestCase {
 	/**
 	 * @dataProvider data_from_wp_query
 	 *
-	 * @param array       $query_args      Query arguments.
-	 * @param Entity|null $expected_entity Expected entity, or null.
+	 * @param array   $query_args          Query arguments.
+	 * @param Closure $get_expected_entity Function that returns the expected Entity.
 	 */
-	public function test_from_wp_query( array $query_args, \Closure $get_expected_entity ) {
+	public function test_from_wp_query( array $query_args, Closure $get_expected_entity ) {
 		$expected_entity = $get_expected_entity();
 
 		add_filter(
