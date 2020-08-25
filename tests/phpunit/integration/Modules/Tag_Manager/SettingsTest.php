@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Tag_Manager;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
+use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
@@ -20,6 +21,8 @@ use Google\Site_Kit\Tests\Modules\SettingsTestCase;
  * @group Tag_Manager
  */
 class SettingsTest extends SettingsTestCase {
+
+	use Setting_With_Owned_Keys_ContractTests;
 
 	public function test_get_default() {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
@@ -65,55 +68,12 @@ class SettingsTest extends SettingsTestCase {
 		}
 	}
 
-	public function test_owner_id_is_set() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$settings->register();
-
-		$fields = array(
-			'accountID'      => 'test-account-id',
-			'containerID'    => 'test-container-id',
-			'ampContainerID' => 'test-amp-container-id',
-		);
-
-		foreach ( $fields as $key => $value ) {
-			delete_option( Settings::OPTION );
-
-			$options = $settings->get();
-			$this->assertTrue( empty( $options['ownerID'] ) );
-
-			$options[ $key ] = $value;
-			$settings->set( $options );
-
-			$options = get_option( Settings::OPTION );
-			$this->assertEquals( $user_id, $options['ownerID'] );
-		}
+	protected function get_testcase() {
+		return $this;
 	}
 
-	public function test_owner_id_is_not_set() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		add_option(
-			Settings::OPTION,
-			array(
-				'useSnippet' => 'old-use-snippet',
-			)
-		);
-
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$settings->register();
-
-		$options = $settings->get();
-		$this->assertTrue( empty( $options['ownerID'] ) );
-
-		$options['useSnippet'] = 'new-use-snippet';
-		$settings->set( $options );
-
-		$options = get_option( Settings::OPTION );
-		$this->assertNotEquals( $user_id, $options['ownerID'] );
+	protected function get_setting_with_owned_keys() {
+		return new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 	}
 
 	/**

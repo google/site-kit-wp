@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface
+ * Interface Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface
  *
  * @package   Google\Site_Kit\Core\Storage
  * @copyright 2020 Google LLC
