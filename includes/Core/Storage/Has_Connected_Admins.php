@@ -116,7 +116,7 @@ class Has_Connected_Admins extends Setting {
 	protected function query_connected_admins() {
 		return get_users(
 			array(
-				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.VIP.SlowDBQuery.slow_db_query_meta_key
+				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_compare' => 'EXISTS',
 				'role'         => 'administrator',
 				'number'       => 1,
