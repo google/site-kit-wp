@@ -25,20 +25,25 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { trackEvent } from '../../util';
 import { ActivationMain } from './activation-main';
 import NotificationCounter from '../notifications/notification-counter';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER, PERMISSION_VIEW_DASHBOARD } from '../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
 export function ActivationApp() {
-	const { proxySetupURL, splashURL } = global._googlesitekitBaseData;
-	const { canViewDashboard } = global._googlesitekitLegacyData.permissions;
-	const { dashboardPermalink } = global._googlesitekitLegacyData;
+	const proxySetupURL = useSelect( ( select ) => select( CORE_SITE ).getProxySetupURL() );
+	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
+	const splashURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash' ) );
+	const canViewDashboard = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD ) );
 
 	let buttonURL = proxySetupURL || splashURL;
 	let buttonLabel = __( 'Start setup', 'google-site-kit' );
 
 	if ( canViewDashboard ) {
-		buttonURL = dashboardPermalink;
+		buttonURL = dashboardURL;
 		buttonLabel = __( 'Go to Dashboard', 'google-site-kit' );
 	}
 
@@ -46,7 +51,11 @@ export function ActivationApp() {
 		event.preventDefault();
 		await trackEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 		global.location.assign( buttonURL );
-	} );
+	}, [ proxySetupURL, buttonURL ] );
+
+	if ( ! buttonURL ) {
+		return null;
+	}
 
 	return (
 		<Fragment>

@@ -14,8 +14,7 @@ use AMP_Options_Manager;
 use AMP_Theme_Support;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\Entity;
-use WP_Post;
-use WP_Screen;
+use Google\Site_Kit\Core\Util\Entity_Factory;
 
 /**
  * Class representing the context in which the plugin is running.
@@ -190,47 +189,16 @@ final class Context {
 	 * @return Entity|null The current entity, or null if none could be determined.
 	 */
 	public function get_reference_entity() {
-		// If currently in WP admin, run admin-specific checks.
-		if ( is_admin() ) {
-			// Support specific URL stats being checked in Site Kit dashboard details view.
-			if ( 'googlesitekit-dashboard' === $this->input()->filter( INPUT_GET, 'page' ) ) {
-				$entity_url_query_param = $this->input()->filter( INPUT_GET, 'permaLink' );
-				if ( ! empty( $entity_url_query_param ) ) {
-					return $this->get_reference_entity_from_url( $entity_url_query_param );
-				}
-				return null;
+		// Support specific URL stats being checked in Site Kit dashboard details view.
+		if ( is_admin() && 'googlesitekit-dashboard' === $this->input()->filter( INPUT_GET, 'page' ) ) {
+			$entity_url_query_param = $this->input()->filter( INPUT_GET, 'permaLink' );
+			if ( ! empty( $entity_url_query_param ) ) {
+				return $this->get_reference_entity_from_url( $entity_url_query_param );
 			}
-
-			$screen = get_current_screen();
-			if ( ! $screen instanceof WP_Screen || 'post' !== $screen->base ) {
-				return null;
-			}
-
-			$post = get_post();
-			if ( $post instanceof WP_Post ) {
-				return $this->create_entity_for_post( $post );
-			}
-
-			return null;
 		}
 
-		// Otherwise, run frontend-specific checks.
-		if ( is_singular() || is_home() && ! is_front_page() ) {
-			$post = get_queried_object();
-			if ( $post instanceof WP_Post ) {
-				return $this->create_entity_for_post( $post );
-			}
-			return null;
-		}
-
-		// If not singular (see above) but front page, this is the blog archive.
-		if ( is_front_page() ) {
-			return $this->create_entity_for_home_blog();
-		}
-
-		// TODO: This is not comprehensive, but will be expanded in the future.
-		// Related: https://github.com/google/site-kit-wp/issues/174.
-		return null;
+		$entity = Entity_Factory::from_context();
+		return $this->filter_entity_reference_url( $entity );
 	}
 
 	/**
@@ -254,35 +222,8 @@ final class Context {
 			$url
 		);
 
-		if ( function_exists( 'wpcom_vip_url_to_postid' ) ) {
-			$post_id = wpcom_vip_url_to_postid( $url );
-		} else {
-			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions
-			$post_id = url_to_postid( $url );
-		}
-
-		// url_to_postid() does not support detecting the posts page, hence
-		// this code covers up for it.
-		$page_for_posts_id = (int) get_option( 'page_for_posts' );
-		if ( ! $post_id && $page_for_posts_id && get_permalink( $page_for_posts_id ) === $url ) {
-			$post_id = $page_for_posts_id;
-		}
-
-		if ( $post_id ) {
-			$post = get_post( $post_id );
-			if ( $post instanceof WP_Post ) {
-				return $this->create_entity_for_post( $post );
-			}
-			// If we got here, either the post doesn't exist or isn't public.
-			return null;
-		}
-
-		$path = str_replace( untrailingslashit( home_url() ), '', $url );
-		if ( empty( $path ) || '/' === $path ) {
-			return $this->create_entity_for_home_blog();
-		}
-
-		return null;
+		$entity = Entity_Factory::from_url( $url );
+		return $this->filter_entity_reference_url( $entity );
 	}
 
 	/**
@@ -435,51 +376,25 @@ final class Context {
 	}
 
 	/**
-	 * Creates the entity for a given post object.
+	 * Filters the given entity's reference URL, effectively creating a copy of
+	 * the entity with the reference URL accounted for.
 	 *
-	 * @since 1.7.0
+	 * @since n.e.x.t
 	 *
-	 * @param WP_Post $post A WordPress post object.
-	 * @return Entity|null The entity for the post or null if the given post is not publicly available.
+	 * @param Entity|null $entity Entity to filter reference ID for, or null.
+	 * @return Entity|null Filtered entity or null, based on $entity.
 	 */
-	private function create_entity_for_post( WP_Post $post ) {
-		if ( ! is_post_type_viewable( $post->post_type ) || 'publish' !== get_post_status( $post ) ) {
+	private function filter_entity_reference_url( Entity $entity = null ) {
+		if ( ! $entity ) {
 			return null;
 		}
 
-		$type = 'post';
-		// If this post is assigned as the posts page, it is actually the blog archive.
-		if ( (int) get_option( 'page_for_posts' ) === (int) $post->ID ) {
-			$type = 'blog';
-		}
-
 		return new Entity(
-			$this->filter_reference_url( get_permalink( $post ) ),
+			$this->filter_reference_url( $entity->get_url() ),
 			array(
-				'type'  => $type,
-				'title' => $post->post_title,
-				'id'    => $post->ID,
-			)
-		);
-	}
-
-	/**
-	 * Creates the entity for the home blog archive.
-	 *
-	 * This method should only be used when the home page is set to display the
-	 * blog archive, i.e. is not technically a post itself. Otherwise, it
-	 * should be handled through {@see Context::create_entity_for_post()}.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @return Entity The entity for the home blog archive.
-	 */
-	private function create_entity_for_home_blog() {
-		return new Entity(
-			user_trailingslashit( $this->get_reference_site_url() ),
-			array(
-				'type'  => 'blog',
-				'title' => __( 'Home', 'google-site-kit' ),
+				'type'  => $entity->get_type(),
+				'title' => $entity->get_title(),
+				'id'    => $entity->get_id(),
 			)
 		);
 	}
