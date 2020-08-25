@@ -27,7 +27,6 @@ import './modules';
  * WordPress dependencies
  */
 import { render, Fragment, useCallback } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -46,17 +45,16 @@ import { STORE_NAME as CORE_SITE } from './googlesitekit/datastore/site/constant
 const { useSelect } = Data;
 
 export const GoogleSitekitAdminbar = () => {
-	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
+	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
 
 	const onMoreDetailsClick = useCallback( async () => {
-		const detailsURL = addQueryArgs( dashboardURL, { permaLink: currentEntityURL } );
 		await trackEvent( 'admin_bar', 'post_details_click' );
 		document.location.assign( detailsURL );
-	}, [ dashboardURL, currentEntityURL ] );
+	}, [ detailsURL ] );
 
-	if ( ! dashboardURL || ! currentEntityURL ) {
+	if ( ! detailsURL || ! currentEntityURL ) {
 		return null;
 	}
 
