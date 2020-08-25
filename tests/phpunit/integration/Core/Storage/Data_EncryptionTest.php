@@ -28,6 +28,7 @@ class Data_EncryptionTest extends TestCase {
 		// The result is base64_encoded.
 		$encrypted       = $encryption->encrypt( 'test-value' );
 		$base_64_decoded = base64_decode( $encrypted, true );
+		$this->assertNotFalse( $base_64_decoded );
 
 		// Decrypt.
 		$iv_len    = openssl_cipher_iv_length( self::METHOD );
