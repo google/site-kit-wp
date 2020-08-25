@@ -24,14 +24,15 @@ trait Setting_With_Owned_Keys_Trait {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $keys An array of keys to check.
+	 * @param array  $keys An array of keys to check.
+	 * @param string $ownerID_key Optional. A key to use for storing owner ID setting.
 	 */
-	protected function register_owned_keys( array $keys ) {
+	protected function register_owned_keys( array $keys, $ownerID_key = 'ownerID' ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 		add_action(
 			'add_option_' . static::OPTION,
 			function ( $option, $value ) use ( $keys ) {
 				if ( is_array( $value ) && count( array_intersect( array_keys( $value ), $keys ) ) > 0 ) {
-					$this->merge( array( 'ownerID' => get_current_user_id() ) );
+					$this->merge( array( $ownerID_key => get_current_user_id() ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 				}
 			},
 			10,
@@ -44,7 +45,7 @@ trait Setting_With_Owned_Keys_Trait {
 				if ( is_array( $value ) && is_array( $old_value ) ) {
 					foreach ( $keys as $key ) {
 						if ( isset( $value[ $key ], $old_value[ $key ] ) && $value[ $key ] !== $old_value[ $key ] ) {
-							$value['ownerID'] = get_current_user_id();
+							$value[ $ownerID_key ] = get_current_user_id(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 							break;
 						}
 					}
