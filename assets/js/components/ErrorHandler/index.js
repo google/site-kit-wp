@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import copyToClipboard from 'clipboard-copy';
 import PropTypes from 'prop-types';
 
 /**
@@ -34,7 +35,6 @@ import { Icon, check, stack } from '@wordpress/icons';
 import Notification from '../notifications/notification';
 import Link from '../link';
 import Button from '../button';
-import copyToClipboard from '../../util/copy-to-clipboard';
 
 class ErrorHandler extends Component {
 	constructor( props ) {
