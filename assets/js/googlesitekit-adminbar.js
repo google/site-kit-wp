@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint camelcase:[0] */
-
 /**
  * External dependencies
  */
@@ -26,109 +24,90 @@ import './modules';
 /**
  * WordPress dependencies
  */
-import { Component, render, Fragment } from '@wordpress/element';
+import { render, Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies.
  */
+import Data from 'googlesitekit-data';
 import {
 	decodeHtmlEntity,
-	getSiteKitAdminURL,
 	loadTranslations,
 	trackEvent,
 } from './util';
 import Link from './components/link';
 import AdminbarModules from './components/adminbar/adminbar-modules';
 import Root from './components/root';
+import { STORE_NAME as CORE_SITE } from './googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
-export class GoogleSitekitAdminbar extends Component {
-	constructor( props ) {
-		super( props );
+export const GoogleSitekitAdminbar = () => {
+	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
+	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
 
-		this.handleMoreDetailsLink = this.handleMoreDetailsLink.bind( this );
-	}
-
-	async handleMoreDetailsLink() {
-		const {
-			permaLink,
-			postID,
-			postType,
-			pageTitle,
-		} = global._googlesitekitLegacyData;
-		const href = getSiteKitAdminURL(
-			'googlesitekit-dashboard',
-			{
-				permaLink,
-				id: postID,
-				postType,
-				pageTitle,
-			}
-		);
-
+	const onMoreDetailsClick = useCallback( async () => {
 		await trackEvent( 'admin_bar', 'post_details_click' );
-		document.location = href;
+		document.location.assign( detailsURL );
+	}, [ detailsURL ] );
+
+	if ( ! detailsURL || ! currentEntityURL ) {
+		return null;
 	}
 
-	render() {
-		const {
-			pageTitle,
-			permaLink,
-		} = global._googlesitekitLegacyData;
-
-		return (
-			<Fragment>
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-3
-							mdc-layout-grid__cell--align-middle
-						">
-							<div className="googlesitekit-adminbar__subtitle">{ __( 'Stats for', 'google-site-kit' ) }</div>
-							<div className="googlesitekit-adminbar__title">
-								{ pageTitle
-									? decodeHtmlEntity( pageTitle )
-									: permaLink
-								}
-							</div>
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-8-tablet
-							mdc-layout-grid__cell--span-7-desktop
-							mdc-layout-grid__cell--align-middle
-						">
-							<div className="mdc-layout-grid__inner">
-								<AdminbarModules />
-							</div>
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-2
-							mdc-layout-grid__cell--align-middle
-						">
-							<Link
-								className="googlesitekit-adminbar__link"
-								href="#"
-								onClick={ this.handleMoreDetailsLink }
-							>
-								{ __( 'More details', 'google-site-kit' ) }
-							</Link>
+	return (
+		<Fragment>
+			<div className="mdc-layout-grid">
+				<div className="mdc-layout-grid__inner">
+					<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-3
+						mdc-layout-grid__cell--align-middle
+					">
+						<div className="googlesitekit-adminbar__subtitle">{ __( 'Stats for', 'google-site-kit' ) }</div>
+						<div className="googlesitekit-adminbar__title">
+							{ currentEntityTitle
+								? decodeHtmlEntity( currentEntityTitle )
+								: currentEntityURL
+							}
 						</div>
 					</div>
+					<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-8-tablet
+						mdc-layout-grid__cell--span-7-desktop
+						mdc-layout-grid__cell--align-middle
+					">
+						<div className="mdc-layout-grid__inner">
+							<AdminbarModules />
+						</div>
+					</div>
+					<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-2
+						mdc-layout-grid__cell--align-middle
+					">
+						<Link
+							className="googlesitekit-adminbar__link"
+							href="#"
+							onClick={ onMoreDetailsClick }
+						>
+							{ __( 'More details', 'google-site-kit' ) }
+						</Link>
+					</div>
 				</div>
-				<Link
-					className="googlesitekit-adminbar__link googlesitekit-adminbar__link--mobile"
-					href="#"
-					onClick={ this.handleMoreDetailsLink }
-				>
-					{ __( 'More details', 'google-site-kit' ) }
-				</Link>
-			</Fragment>
-		);
-	}
-}
+			</div>
+			<Link
+				className="googlesitekit-adminbar__link googlesitekit-adminbar__link--mobile"
+				href="#"
+				onClick={ onMoreDetailsClick }
+			>
+				{ __( 'More details', 'google-site-kit' ) }
+			</Link>
+		</Fragment>
+	);
+};
 
 // Initialize the whole adminbar app.
 export function init() {
