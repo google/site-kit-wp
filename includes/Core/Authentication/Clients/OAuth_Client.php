@@ -885,7 +885,7 @@ final class OAuth_Client {
 	 */
 	private function should_update_owner_id( $user_id ) {
 		$current_owner_id = $this->owner_id->get();
-		if ( $current_owner_id == $user_id ) {
+		if ( $current_owner_id === $user_id ) {
 			return false;
 		}
 

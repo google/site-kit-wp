@@ -53,7 +53,7 @@ class Owner_ID extends Setting {
 
 	/**
 	 * Gets the default value.
-	 * 
+	 *
 	 * We use the old "googlesitekit_first_admin" option here as it used to store the ID
 	 * of the first admin user to use the plugin. If this option doesn't exist, it will return 0.
 	 *
