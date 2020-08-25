@@ -17,11 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -35,31 +39,40 @@ import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
 
 const { useSelect } = Data;
 
-const PostSearcher = () => {
+function PostSearcher() {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
-	const adminURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
+	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
-	const onClick = () => {
-		if ( match && match.ID && adminURL ) {
-			const { ID: id, permalink: permaLink, post_title: pageTitle } = match;
-			global.location.assign( addQueryArgs( adminURL, {
-				id,
-				permaLink,
-				pageTitle,
-			} ) );
+	const adminURL = useSelect( ( select ) => {
+		const args = {};
+
+		if ( match && match.ID ) {
+			const {
+				ID: id,
+				permalink: permaLink,
+				post_title: pageTitle,
+			} = match;
+
+			args.id = id;
+			args.permaLink = permaLink;
+			args.pageTitle = pageTitle;
 		}
-	};
 
-	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
-	// Set column width full if Analytics active, half otherwise.
-	const classNameForColumn = modules?.analytics?.active
-		? 'mdc-layout-grid__cell mdc-layout-grid__cell--span-12'
-		: 'mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop';
+		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', args );
+	} );
+
+	const onClick = useCallback( () => {
+		global.location.assign( adminURL );
+	}, [ adminURL ] );
 
 	return (
 		<div
-			className={ classNameForColumn }
+			className={ classnames( 'mdc-layout-grid__cell', {
+				'mdc-layout-grid__cell--span-12': analyticsModuleActive,
+				'mdc-layout-grid__cell--span-4-tablet': ! analyticsModuleActive,
+				'mdc-layout-grid__cell--span-6-desktop': ! analyticsModuleActive,
+			} ) }
 		>
 			<Layout
 				title={ __( 'Search for individual page or post information', 'google-site-kit' ) }
@@ -92,6 +105,6 @@ const PostSearcher = () => {
 			</Layout>
 		</div>
 	);
-};
+}
 
 export default PostSearcher;

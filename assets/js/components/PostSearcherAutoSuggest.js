@@ -30,51 +30,29 @@ import {
 /**
  * WordPress dependencies
  */
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-
-/**
- * useDebounce hook
- *
- * @param {string} value The value to be debounced.
- * @param {number} delay Number of milliseconds to debounce
- * @return {string} The update value after the delay
- */
-const useDebounce = ( value, delay ) => {
-	const [ debouncedValue, setDebouncedValue ] = useState( value );
-
-	useEffect(
-		() => {
-			// Update debounced value after the delay
-			const timeout = setTimeout( () => {
-				setDebouncedValue( value );
-			}, delay );
-
-			return () => {
-				clearTimeout( timeout );
-			};
-		},
-		[ value, delay ]
-	);
-
-	return debouncedValue;
-};
+import { useDebouncedState } from '../hooks/useDebouncedState';
 
 const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
-	const debouncedValue = useDebounce( searchTerm, 200 );
+	const debouncedValue = useDebouncedState( searchTerm, 200 );
 	const [ results, setResults ] = useState( [] );
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
 
 	const postSearch = async ( query ) => {
 		try {
-			const queryResults = await API.get( 'core', 'search', 'post-search', { query: encodeURIComponent( query ) } );
-			if ( 0 < queryResults.length ) {
+			const queryResults = await API.get( 'core', 'search', 'post-search',
+				{ query: encodeURIComponent( query ) },
+				{ useCache: false }
+			);
+
+			if ( Array.isArray( queryResults ) ) {
 				setResults( queryResults );
 			} else {
 				setResults( [] );
@@ -84,6 +62,23 @@ const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
 		}
 	};
 
+	const onSelectCallback = useCallback( ( value ) => {
+		if ( Array.isArray( results ) && value !== noResultsMessage ) {
+			const foundMatch = results.find( ( post ) => post.post_title === value );
+			if ( foundMatch ) {
+				setCanSubmit( true );
+				setMatch( foundMatch );
+			}
+		} else {
+			setCanSubmit( false );
+		}
+	}, [ results ] );
+
+	const onInputChange = useCallback( ( event ) => {
+		setCanSubmit( false );
+		setSearchTerm( event.target.value );
+	}, [] );
+
 	useEffect( () => {
 		if ( debouncedValue !== '' ) {
 			postSearch( debouncedValue );
@@ -91,28 +86,12 @@ const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
 	}, [ debouncedValue ] );
 
 	return (
-		<Combobox
-			className="autocomplete__wrapper"
-			onSelect={ ( value ) => {
-				if ( Array.isArray( results ) && value !== noResultsMessage ) {
-					const foundMatch = results.find( ( post ) => post.post_title === value );
-					if ( foundMatch ) {
-						setCanSubmit( true );
-						setMatch( foundMatch );
-					}
-				} else {
-					setCanSubmit( false );
-				}
-			} }
-		>
+		<Combobox className="autocomplete__wrapper" onSelect={ onSelectCallback }>
 			<ComboboxInput
 				id="autocomplete"
 				className="autocomplete__input autocomplete__input--default"
 				type="text"
-				onChange={ ( evt ) => {
-					setCanSubmit( false );
-					setSearchTerm( evt.target.value );
-				} }
+				onChange={ onInputChange }
 			/>
 
 			{ ( debouncedValue !== '' ) && (
@@ -121,7 +100,7 @@ const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
 						{ results.length > 0 ? (
 							results.map( ( { ID, post_title: title } ) => <ComboboxOption key={ ID } value={ title } className="autocomplete__option" /> )
 						) : (
-							<ComboboxOption value={ 'No results found' } className="autocomplete__option" />
+							<ComboboxOption value={ noResultsMessage } className="autocomplete__option" />
 						) }
 					</ComboboxList>
 				</ComboboxPopover>
