@@ -24,7 +24,7 @@ class MutableInput extends Input {
 			INPUT_GET    => $_GET,
 			INPUT_POST   => $_POST,
 			INPUT_SERVER => $_SERVER,
-			INPUT_COOKIE => $_COOKIE,
+			INPUT_COOKIE => $_COOKIE, // phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 			INPUT_ENV    => $_ENV,
 		);
 
