@@ -108,7 +108,7 @@ final class REST_Routes {
 							// List of variable names to remove from public query variables list.
 							$unset_vars = array( 'orderby' );
 							foreach ( $unset_vars as $unset_var ) {
-								unset( $vars[ array_search( $unset_var, $vars ) ] );
+								unset( $vars[ array_search( $unset_var, $vars, true ) ] );
 							}
 						}
 
