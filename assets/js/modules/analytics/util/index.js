@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { format } from 'date-fns';
 import { each } from 'lodash';
 
 /**
@@ -30,6 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
 
@@ -154,6 +154,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const previousMonthRows = rows.slice( 0, rows.length - days );
 	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, selectedStats );
 	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, selectedStats );
+	const locale = getLocale();
 	each( lastMonthData, ( row, i ) => {
 		if ( row[ 0 ] && row[ 1 ] && previousMonthData[ i ] ) {
 			const difference = ( row[ 1 ] / previousMonthData[ i ][ 1 ] * 100 ).toFixed( 2 );
@@ -161,8 +162,8 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			const label = sprintf(
 				/* translators: %1$s: Date for user stats, %2$s: Previous date for user stats comparison, %3$s: Number of users , %4$s: Up or down arrow , %5$s: different change in percentage, %6$s: percent symbol */
 				__( '%1$s vs %2$s<br /><strong>Users:</strong> %3$s %4$s %5$s%6$s', 'google-site-kit' ),
-				format( row[ 0 ], 'EEE d MMM' ),
-				format( previousMonthData[ i ][ 0 ], 'EEE d MMM' ),
+				row[ 0 ].toLocaleDateString( locale, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' } ),
+				previousMonthData[ i ][ 0 ].toLocaleDateString( locale, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' } ),
 				row[ 1 ].toLocaleString(),
 				difference >= 100 ? __( '⬆️', 'google-site-kit' ) : __( '⬇️', 'google-site-kit' ),
 				difference,

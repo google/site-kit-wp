@@ -111,7 +111,6 @@
     "accessible-autocomplete": "^2.0.3",
     "autoprefixer": "^9.8.5",
     "classnames": "^2.2.6",
-    "date-fns": "^2.15.0",
     "dompurify": "^2.0.12",
     "element-closest": "^3.0.2",
     "focus-trap-react": "^6.0.0",
