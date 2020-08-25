@@ -58,7 +58,7 @@ class ScreensTest extends TestCase {
 			$this->screens,
 			array(
 				$GLOBALS['hook_suffix'] => true,
-			) 
+			)
 		);
 
 		$output_notice = function() {

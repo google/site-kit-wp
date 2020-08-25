@@ -43,6 +43,8 @@ class AnalyticsTest extends TestCase {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'googlesitekit_module_screens' );
 		remove_all_filters( 'googlesitekit_analytics_adsense_linked' );
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'web_stories_story_head' );
 
 		$analytics->register();
 
@@ -60,6 +62,10 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertFalse( get_option( 'googlesitekit_analytics_adsense_linked' ) );
 		$this->assertFalse( $analytics->is_connected() );
+
+		// Test actions for tracking opt-out are added.
+		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'web_stories_story_head' ) );
 	}
 
 	public function test_register_template_redirect_amp() {

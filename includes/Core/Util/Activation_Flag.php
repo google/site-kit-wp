@@ -177,7 +177,7 @@ final class Activation_Flag {
 		$count = count( $query->posts );
 		if ( 1 === $count && 1 === $query->posts[0] ) {
 			$first_post = get_post( $query->posts[0] );
-			if ( __( 'Hello world!' ) === $first_post->post_title ) { // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
+			if ( __( 'Hello world!', 'default' ) === $first_post->post_title ) {
 				$count = 0;
 			}
 		}
