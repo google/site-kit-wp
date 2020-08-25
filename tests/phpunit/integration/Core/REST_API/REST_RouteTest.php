@@ -50,7 +50,7 @@ class REST_RouteTest extends TestCase {
 			'test-uri',
 			array(
 				'args' => array(),
-			) 
+			)
 		);
 		$this->assertCount( 1, $route->get_args() );
 		$single_route_args = $route->get_args()[0];
@@ -65,7 +65,7 @@ class REST_RouteTest extends TestCase {
 				'args' => array(
 					'args' => array(),
 				),
-			) 
+			)
 		);
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -91,7 +91,7 @@ class REST_RouteTest extends TestCase {
 						'default'           => true,
 					),
 				),
-			) 
+			)
 		);
 		$this->assertEqualSetsWithIndex(
 			array(
