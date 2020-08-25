@@ -24,14 +24,13 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import PreviewBlock from '../../../../components/preview-block';
 import GoogleChart from '../../../../components/google-chart';
-import Link from '../../../../components/link';
 import { getSiteKitAdminURL } from '../../../../util';
 import { extractAnalyticsDataForTrafficChart } from '../../util';
 
@@ -66,6 +65,16 @@ function AcquisitionPieChart( { data, source } ) {
 		return <PreviewBlock width="282px" height="282px" shape="circular" />;
 	}
 
+	let sourceMessage = '';
+	if ( source ) {
+		sourceMessage = sprintf(
+			/* translators: %1$s: URL to Analytics Module page in Site Kit Admin, %2$s: Analytics (Service Name) */
+			__( 'Source: <a class="googlesitekit-cta-link googlesitekit-cta-link--inherit" href="%1$s">%2$s</a>', 'google-site-kit' ),
+			getSiteKitAdminURL( 'googlesitekit-module-analytics' ),
+			_x( 'Analytics', 'Service name', 'google-site-kit' ),
+		);
+	}
+
 	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">
 			<GoogleChart
@@ -77,13 +86,7 @@ function AcquisitionPieChart( { data, source } ) {
 			/>
 
 			{ source && (
-				<div className="googlesitekit-chart__source">
-					{ __( 'Source:', 'google-site-kit' ) }
-					{ ' ' }
-					<Link href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) } inherit>
-						{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					</Link>
-				</div>
+				<div className="googlesitekit-chart__source" dangerouslySetInnerHTML={ { __html: sourceMessage } } />
 			) }
 		</div>
 	);

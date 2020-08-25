@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -60,8 +60,12 @@ function AcquisitionSources( { data } ) {
 
 		return [
 			row.dimensions[ 0 ],
-			<div key={ 'minichart-' + i } className="googlesitekit-table__body-item-chart-wrap">
-				{ `${ percent.toFixed( 2 ) }% ` }
+			<div key={ `minichart-${ i }` } className="googlesitekit-table__body-item-chart-wrap">
+				{
+					/* translators: %s: acquisition source percentage */
+					sprintf( __( '%1$s%%', 'google-site-kit' ), percent.toFixed( 2 ) )
+				}
+				{ ' ' }
 				<MiniChart percent={ percent.toFixed( 1 ) } index={ i } />
 			</div>,
 		];
