@@ -9,7 +9,8 @@
  */
 
 // Checks if the current commit message is generated for a merge, then adds a dot at the end of the commit message.
-$message = explode( PHP_EOL, file_get_contents( $argv[1] ) ); // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
+// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents,WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
+$message = explode( PHP_EOL, file_get_contents( $argv[1] ) );
 if ( ! empty( $message[0] ) ) {
 	$tokens = preg_split( '/\s+/', trim( $message[0] ) );
 
@@ -20,5 +21,6 @@ if ( ! empty( $message[0] ) ) {
 
 	$message[0] = implode( ' ', $tokens );
 
-	file_put_contents( $argv[1], implode( PHP_EOL, $message ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents
+	file_put_contents( $argv[1], implode( PHP_EOL, $message ) );
 }
