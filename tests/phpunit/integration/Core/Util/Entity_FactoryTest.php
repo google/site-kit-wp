@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FixWPCoreEntityRewriteTrait;
+use WP_Query;
 
 /**
  * @group Util
@@ -202,7 +203,7 @@ class Entity_FactoryTest extends TestCase {
 
 		// Set up a global public post.
 		$public_post_id = $this->factory()->post->create();
-		( new \WP_Query( array( 'p' => $public_post_id ) ) )->the_post();
+		( new WP_Query( array( 'p' => $public_post_id ) ) )->the_post();
 		$this->assertEquals( $public_post_id, get_post()->ID );
 
 		// The entity is null by default.
@@ -224,7 +225,7 @@ class Entity_FactoryTest extends TestCase {
 
 		// Set up a global private post.
 		$private_post_id = $this->factory()->post->create( array( 'post_status' => 'private' ) );
-		( new \WP_Query( array( 'p' => $private_post_id ) ) )->the_post();
+		( new WP_Query( array( 'p' => $private_post_id ) ) )->the_post();
 		$this->assertEquals( $private_post_id, get_post()->ID );
 
 		// The entity is null despite editing a post, because that post is private.
@@ -242,7 +243,7 @@ class Entity_FactoryTest extends TestCase {
 
 		// Set up main `WP_Query` to query default 'posts' home page archive.
 		update_option( 'show_on_front', 'posts' );
-		$wp_the_query = new \WP_Query();
+		$wp_the_query = new WP_Query();
 		$wp_the_query->query( array() );
 		$this->assertFalse( $wp_the_query->is_singular() );
 		$this->assertTrue( $wp_the_query->is_home() );
@@ -298,7 +299,7 @@ class Entity_FactoryTest extends TestCase {
 		);
 
 		// Run the actual query.
-		$query = new \WP_Query();
+		$query = new WP_Query();
 		$query->query( $query_args );
 
 		// For date-based archive, set a fake post as query result because these archives only exist when there is
