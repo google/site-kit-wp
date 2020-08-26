@@ -43,12 +43,15 @@ export default function whenActive( { moduleName, fallbackComponent = null } ) {
 	return ( wrappedComponent ) => {
 		const whenActiveComponent = ( props ) => {
 			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const moduleInfo = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleName ) );
-			if ( ! moduleInfo ) {
+			const isConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleName ) );
+
+			// Return null if the module is not loaded yet or doesn't exist.
+			if ( typeof isConnected === 'undefined' || isConnected === null ) {
 				return null;
 			}
 
-			if ( ! moduleInfo.active || ! moduleInfo.connected ) {
+			// Return a fallback if the module isn't connected yet.
+			if ( ! isConnected ) {
 				return fallbackComponent ? createElement( fallbackComponent ) : fallbackComponent;
 			}
 
