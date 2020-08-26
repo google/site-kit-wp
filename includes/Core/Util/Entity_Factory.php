@@ -28,7 +28,7 @@ use WP_Screen;
  * Instead of relying on this class directly, use {@see Context::get_reference_entity()} or
  * {@see Context::get_reference_entity_from_url()}.
  *
- * @since n.e.x.t
+ * @since 1.15.0
  * @access private
  * @ignore
  */
@@ -37,7 +37,7 @@ final class Entity_Factory {
 	/**
 	 * Gets the entity for the current WordPress context, if available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @return Entity|null The entity for the current context, or null if none could be determined.
 	 */
@@ -70,7 +70,7 @@ final class Entity_Factory {
 	 *
 	 * Calling this method is expensive, so it should only be used in certain admin contexts where this is acceptable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param string $url URL to determine the entity from.
 	 * @return Entity|null The entity for the URL, or null if none could be determined.
@@ -89,7 +89,7 @@ final class Entity_Factory {
 	/**
 	 * Gets the entity for the given `WP_Query` object, if available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param WP_Query $query WordPress query object. Must already have run the actual database query.
 	 * @return Entity|null The entity for the query, or null if none could be determined.
@@ -169,7 +169,7 @@ final class Entity_Factory {
 	/**
 	 * Creates the entity for a given post object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param WP_Post $post A WordPress post object.
 	 * @return Entity The entity for the post.
@@ -192,7 +192,7 @@ final class Entity_Factory {
 	 * to 'page' and the 'page_for_posts' option is set. In this case the blog is technically a post itself, therefore
 	 * its entity also includes an ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @return Entity|null The entity for the posts blog archive, or null if not set.
 	 */
@@ -223,7 +223,7 @@ final class Entity_Factory {
 	 * This method should only be used when the front page is set to display the
 	 * blog archive, i.e. is not technically a post itself.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @return Entity The entity for the front blog archive.
 	 */
@@ -242,7 +242,7 @@ final class Entity_Factory {
 	/**
 	 * Creates the entity for a given term object, i.e. for a taxonomy term archive.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param WP_Term $term A WordPress term object.
 	 * @return Entity The entity for the term.
@@ -314,7 +314,7 @@ final class Entity_Factory {
 	/**
 	 * Creates the entity for a given user object, i.e. for an author archive.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param WP_User $user A WordPress user object.
 	 * @return Entity The entity for the user.
@@ -338,7 +338,7 @@ final class Entity_Factory {
 	/**
 	 * Creates the entity for a given post type object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param WP_Post_Type $post_type A WordPress post type object.
 	 * @return Entity The entity for the post type.
@@ -363,7 +363,7 @@ final class Entity_Factory {
 	 *
 	 * The post specified has to any post from the query, in order to extract the relevant date information.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param WP_Post $queried_post A WordPress post object from the query.
 	 * @param string  $type         Optional. Type of the date-based archive. Either 'year', 'month', or 'day'.
@@ -414,7 +414,7 @@ final class Entity_Factory {
 	/**
 	 * Checks whether a given post is public, i.e. has a public URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param WP_Post $post A WordPress post object.
 	 * @return bool True if the post is public, false otherwise.
@@ -437,7 +437,7 @@ final class Entity_Factory {
 	/**
 	 * Gets the first post from a WordPress query.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param WP_Query $query WordPress query object. Must already have run the actual database query.
 	 * @return WP_Post|null WordPress post object, or null if none found.
@@ -464,7 +464,7 @@ final class Entity_Factory {
 	 *
 	 * This is based on the WordPress core function `get_the_archive_title()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param string $title  The title.
 	 * @param string $prefix The prefix to add, should end in a colon.
