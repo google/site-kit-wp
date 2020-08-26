@@ -22,14 +22,24 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 trait Setting_With_Owned_Keys_Trait {
 
 	/**
+	 * Returns keys for owned settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array An array of keys for owned settings.
+	 */
+	abstract public function get_owned_keys();
+
+	/**
 	 * Registers hooks to determine an owner ID for a module.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array  $keys                   An array of keys to check.
-	 * @param string $owner_id_key Optional. The key to use for storing owner ID setting.
+	 * @param string $owner_id_key Optional. The key to use for storing owner ID setting. Default 'ownerID'.
 	 */
-	protected function register_owned_keys( array $keys, $owner_id_key = 'ownerID' ) {
+	protected function register_owned_keys( $owner_id_key = 'ownerID' ) {
+		$keys = $this->get_owned_keys();
+
 		add_action(
 			'add_option_' . static::OPTION,
 			function ( $option, $value ) use ( $keys, $owner_id_key ) {

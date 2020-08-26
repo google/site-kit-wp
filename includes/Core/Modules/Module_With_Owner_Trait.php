@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
-use Google\Site_Kit\Core\Storage\Owner_ID;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
 
 /**
  * Trait for a module that includes an owner ID.
@@ -22,14 +22,6 @@ use Google\Site_Kit\Core\Storage\Owner_ID;
 trait Module_With_Owner_Trait {
 
 	/**
-	 * Owner_ID instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Owner_ID
-	 */
-	protected $owner_id;
-
-	/**
 	 * Gets an owner ID for the module.
 	 *
 	 * @since n.e.x.t
@@ -37,11 +29,16 @@ trait Module_With_Owner_Trait {
 	 * @return int Owner ID.
 	 */
 	public function get_owner_id() {
-		if ( is_null( $this->owner_id ) ) {
-			$this->owner_id = new Owner_ID( $this->options );
+		if ( ! $this instanceof Module_With_Settings ) {
+			return 0;
 		}
 
-		return $this->owner_id->get();
+		$settings = $this->get_settings()->get();
+		if ( empty( $settings['ownerID'] ) ) {
+			return 0;
+		}
+
+		return $settings['ownerID'];
 	}
 
 }

@@ -90,7 +90,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			)
 		);
 
-		$this->register_owned_keys( $this->get_owned_keys() );
+		$this->register_owned_keys();
 
 		add_filter(
 			'option_' . self::OPTION,

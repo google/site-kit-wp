@@ -44,7 +44,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			)
 		);
 
-		$this->register_owned_keys( $this->get_owned_keys() );
+		$this->register_owned_keys();
 
 		// Backwards compatibility with previous dedicated option.
 		add_filter(
@@ -141,8 +141,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	public function get_owned_keys() {
 		return array(
 			'accountID',
-			'propertyID',
+			'internalWebPropertyID',
 			'profileID',
+			'propertyID',
 		);
 	}
 
