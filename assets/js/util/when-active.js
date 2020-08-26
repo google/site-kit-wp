@@ -43,7 +43,7 @@ export default function whenActive( { moduleName, fallbackComponent = null } ) {
 	return ( wrappedComponent ) => {
 		const whenActiveComponent = ( props ) => {
 			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const moduleInfo = useSelect( ( select ) => select( MODULES_STORE ).getModule( moduleName ) );
+			const moduleInfo = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleName ) );
 			if ( ! moduleInfo ) {
 				return null;
 			}

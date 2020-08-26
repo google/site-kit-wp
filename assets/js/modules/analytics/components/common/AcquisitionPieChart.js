@@ -31,7 +31,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import PreviewBlock from '../../../../components/preview-block';
 import GoogleChart from '../../../../components/google-chart';
-import { getSiteKitAdminURL } from '../../../../util';
+import { getSiteKitAdminURL, sanitizeHTML } from '../../../../util';
 import { extractAnalyticsDataForTrafficChart } from '../../util';
 
 const GOOGLE_CHART_PIE_SETTINGS = {
@@ -86,7 +86,13 @@ function AcquisitionPieChart( { data, source } ) {
 			/>
 
 			{ source && (
-				<div className="googlesitekit-chart__source" dangerouslySetInnerHTML={ { __html: sourceMessage } } />
+				<div className="googlesitekit-chart__source" dangerouslySetInnerHTML={ sanitizeHTML(
+					sourceMessage,
+					{
+						ALLOWED_TAGS: [ 'a' ],
+						ALLOWED_ATTR: [ 'href', 'class' ],
+					}
+				) } />
 			) }
 		</div>
 	);
