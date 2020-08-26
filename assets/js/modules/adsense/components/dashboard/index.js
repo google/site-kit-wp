@@ -17,3 +17,4 @@
  */
 
 export { default as DashboardZeroData } from './DashboardZeroData';
+export { default as DashboardSummaryWidget } from './DashboardSummaryWidget';
