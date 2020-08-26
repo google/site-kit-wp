@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Storage\Owner_IDTest
+ * Class Google\Site_Kit\Core\Authentication\Owner_IDTest
  *
  * @package   Google\Site_Kit
  * @copyright 2020 Google LLC
@@ -8,17 +8,17 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Storage;
+namespace Google\Site_Kit\Tests\Core\Authentication;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Storage\Owner_ID;
+use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
  * Owner_IDTest
  *
- * @group Storage
+ * @group Authentication
  */
 class Owner_IDTest extends SettingsTestCase {
 
