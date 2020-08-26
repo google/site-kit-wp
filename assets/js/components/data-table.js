@@ -36,16 +36,19 @@ import { Component, createRef } from '@wordpress/element';
  */
 import SourceLink from './source-link';
 import Link from './link';
+import { getSiteKitAdminURL } from '../util';
 
 // Construct a table component from a data object.
 export const getDataTableFromData = ( data, headers, options ) => {
 	const dataRows = [];
 
-	const { links, source, showURLs } = options;
+	const { links, source, showURLs, useAdminURLs = false } = options;
 
 	if ( options.cap ) {
 		data = data.slice( 0, options.cap );
 	}
+
+	const siteURL = global._googlesitekitLegacyData.admin.siteURL;
 
 	each( data, ( row, j ) => {
 		const cells = [];
@@ -71,8 +74,13 @@ export const getDataTableFromData = ( data, headers, options ) => {
 						? <div className="googlesitekit-table__body-item-content">
 							<Link
 								className="googlesitekit-table__body-item-link"
-								href={ link }
-								external
+								href={ useAdminURLs ? getSiteKitAdminURL(
+									'googlesitekit-dashboard',
+									{
+										permaLink: siteURL + link,
+									}
+								) : link }
+								external={ ! useAdminURLs }
 								inherit
 							>
 								{ cell }
