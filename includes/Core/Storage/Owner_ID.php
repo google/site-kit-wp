@@ -62,7 +62,7 @@ class Owner_ID extends Setting {
 	 * @return int The default value.
 	 */
 	protected function get_default() {
-		return intval( get_option( 'googlesitekit_first_admin' ) );
+		return intval( $this->options->get( 'googlesitekit_first_admin' ) );
 	}
 
 	/**

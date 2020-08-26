@@ -72,7 +72,7 @@ describe( 'trackEvent', () => {
 			referenceSiteURL: 'https://www.example.com/',
 			userIDHash: 'a1b2c3',
 			trackingID: 'UA-12345678-1',
-			isOwner: true,
+			isFirstAdmin: true,
 			trackingEnabled: true,
 		};
 

@@ -6,7 +6,7 @@ import createEnableTracking from './createEnableTracking';
 import createTrackEvent from './createTrackEvent';
 
 const DEFAULT_CONFIG = {
-	isOwner: false,
+	isFirstAdmin: false,
 	trackingEnabled: false,
 	trackingID: '',
 	referenceSiteURL: '',
