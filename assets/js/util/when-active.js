@@ -42,6 +42,9 @@ const { useSelect } = Data;
 export default function whenActive( { moduleName, fallbackComponent = null } ) {
 	return ( wrappedComponent ) => {
 		const whenActiveComponent = ( props ) => {
+			// The following eslint rule is disabled because it treats the following hook as such that doesn't adhere
+			// the "rules of hooks" which is incorrect because the following hook is a valid one.
+
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const isConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleName ) );
 
