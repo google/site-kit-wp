@@ -27,6 +27,17 @@ class Owner_ID extends Setting {
 	const OPTION = 'googlesitekit_owner_id';
 
 	/**
+	 * Gets the value of the setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return mixed Value set for the option, or registered default if not set.
+	 */
+	public function get() {
+		return (int) parent::get();
+	}
+
+	/**
 	 * Gets the expected value type.
 	 *
 	 * @since n.e.x.t
