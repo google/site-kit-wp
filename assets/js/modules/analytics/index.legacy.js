@@ -35,7 +35,7 @@ import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/d
 import WPAnalyticsDashboardWidgetTopPagesTable from './components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
 import AnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/AnalyticsAdSenseDashboardWidgetTopPagesTable';
 import AnalyticsDashboardWidgetPopularPagesTable from './components/dashboard/AnalyticsDashboardWidgetPopularPagesTable';
-import AdSenseDashboardWidgetTopPagesTableSmall from './components/dashboard/AdSenseDashboardWidgetTopPagesTableSmall';
+import LegacyAdSenseDashboardWidgetTopPagesTableSmall from './components/dashboard/LegacyAdSenseDashboardWidgetTopPagesTableSmall';
 
 const slug = 'analytics';
 
@@ -78,7 +78,7 @@ if ( modulesData.analytics.active ) {
 	const addAnalyticsDashboardDetailsWidget = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
 	const addAnalyticsAdSenseTopPagesWidget = createAddToFilter( <AnalyticsAdSenseDashboardWidgetTopPagesTable /> );
 	const addAnalyticsDashboardWidgetPopularPagesTable = createAddToFilter( <AnalyticsDashboardWidgetPopularPagesTable /> );
-	const addAnalyticsDashboardWidgetPopularPagesTableSmall = createAddToFilter( <AdSenseDashboardWidgetTopPagesTableSmall /> );
+	const addLegacyAdSenseDashboardWidgetTopPagesTableSmall = createAddToFilter( <LegacyAdSenseDashboardWidgetTopPagesTableSmall /> );
 
 	/**
 	 * Add components to the Site Kit Dashboard.
@@ -94,7 +94,7 @@ if ( modulesData.analytics.active ) {
 		addAnalyticsDashboardWidgetPopularPagesTable, 20 );
 	addFilter( 'googlesitekit.AnalyticsAdSenseTopPagesTableSmall',
 		'googlesitekit.Analytics',
-		addAnalyticsDashboardWidgetPopularPagesTableSmall, 20 );
+		addLegacyAdSenseDashboardWidgetTopPagesTableSmall, 20 );
 
 	/**
 	 * Add components to the Site Kit URL Details Dashboard.
