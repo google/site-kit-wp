@@ -1,5 +1,141 @@
+/**
+ * DashboardTopEarningPagesWidget component.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { __, _x } from '@wordpress/i18n';
+import { compose } from '@wordpress/compose';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME as ANALYTICS_STORE } from '../../../analytics/datastore/constants';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import whenActive from '../../../../util/when-active';
+import ErrorText from '../../../../components/error-text';
+import PreviewTable from '../../../../components/preview-table';
+import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import Layout from '../../../../components/layout/layout';
+import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
+const { useSelect } = Data;
+
 function DashboardTopEarningPagesWidget() {
-	return 'DashboardTopEarningPagesWidget';
+	const {
+		data,
+		error,
+	} = useSelect( ( select ) => {
+		const store = select( ANALYTICS_STORE );
+		const args = {
+			dateRange: select( CORE_USER ).getDateRange(),
+			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+			metrics: [
+				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+				{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+				{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
+			],
+			orderby: {
+				fieldName: 'ga:adsenseRevenue',
+				sortOrder: 'DESCENDING',
+			},
+			limit: 10,
+		};
+
+		return {
+			data: store.getReport( args ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
+		};
+	} );
+
+	if ( error ) {
+		// Specifically looking for string "badRequest"
+		if ( 'badRequest' === error?.data?.reason ) {
+			return (
+				<Layout className="googlesitekit-top-earnings-pages" fill>
+					<AdSenseLinkCTA />
+				</Layout>
+			);
+		}
+
+		return (
+			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<ErrorText message={ error.message } />
+			</div>
+		);
+	}
+
+	if ( ! data ) {
+		return (
+			<PreviewTable rows={ 5 } padding />
+		);
+	}
+
+	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+		return null;
+	}
+
+	const headers = [
+		{
+			title: __( 'Top Earning Pages', 'google-site-kit' ),
+			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
+			primary: true,
+		},
+		{
+			title: __( 'Revenue', 'google-site-kit' ),
+			tooltip: __( 'Revenue', 'google-site-kit' ),
+		},
+	];
+
+	const links = [];
+	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
+		links[ i ] = row.dimensions[ 1 ];
+		return [
+			row.dimensions[ 0 ],
+			Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
+		];
+	} );
+
+	const options = {
+		hideHeader: false,
+		chartsEnabled: false,
+		cap: 5,
+		links,
+	};
+
+	const dataTable = getDataTableFromData( dataMapped, headers, options );
+
+	return (
+		<Layout
+			className="googlesitekit-top-earnings-pages"
+			footer
+			footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+			footerCtaLink="http://analytics.google.com"
+			fill
+		>
+			<TableOverflowContainer>
+				{ dataTable }
+			</TableOverflowContainer>
+		</Layout>
+	);
 }
 
-export default DashboardTopEarningPagesWidget;
+export default compose(
+	whenActive( { moduleName: 'adsence' } ),
+	whenActive( { moduleName: 'analytics' } ),
+)( DashboardTopEarningPagesWidget );
