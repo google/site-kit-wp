@@ -32,40 +32,36 @@ trait Module_With_Owner_ContractTests {
 
 		// By default ownerID is 0.
 		$testcase->assertEquals( 0, $module->get_owner_id() );
+		$testcase->assertInstanceOf( Module_With_Settings::class, $module );
 
-		if ( $module instanceof Module_With_Settings ) {
-			$settings = $module->get_settings();
+		$settings = $module->get_settings();
+		$testcase->assertInstanceOf( Setting::class, $settings );
+		$testcase->assertInstanceOf( Setting_With_Owned_Keys_Interface::class, $settings );
 
-			if ( $settings instanceof Setting ) {
-				$settings->register();
-			}
+		$user_id = $testcase->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
+		add_filter(
+			'map_meta_cap',
+			function( $caps, $cap ) {
+				if ( Permissions::MANAGE_OPTIONS === $cap ) {
+					return array( 'manage_options' );
+				}
+				return $caps;
+			},
+			99,
+			2
+		);
 
-			if ( $settings instanceof Setting_With_Owned_Keys_Interface ) {
-				$user_id = $testcase->factory()->user->create( array( 'role' => 'administrator' ) );
-				wp_set_current_user( $user_id );
-				// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
-				add_filter(
-					'map_meta_cap',
-					function( $caps, $cap ) {
-						if ( Permissions::MANAGE_OPTIONS === $cap ) {
-							return array( 'manage_options' );
-						}
-						return $caps;
-					},
-					99,
-					2
-				);
+		$settings->register();
+		$keys = $settings->get_owned_keys();
+		$key  = current( $keys );
 
-				$keys = $settings->get_owned_keys();
-				$key  = current( $keys );
+		$options         = $settings->get();
+		$options[ $key ] = 'new-value';
+		$settings->set( $options );
 
-				$options         = $settings->get();
-				$options[ $key ] = 'new-value';
-				$settings->set( $options );
-
-				$this->assertEquals( $user_id, $module->get_owner_id() );
-			}
-		}
+		$this->assertEquals( $user_id, $module->get_owner_id() );
 	}
 
 }
