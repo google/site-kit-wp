@@ -83,7 +83,7 @@ script:
   - |
     if [[ "$E2E" == "1" ]]; then
       npm run build:test || exit 1 # Build for tests.
-      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
+      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer run autoload-includes
       npm run env:start || exit 1
       npm run test:e2e:ci || exit 1 # E2E tests.
     fi
