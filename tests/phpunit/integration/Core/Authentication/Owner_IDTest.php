@@ -57,12 +57,15 @@ class Owner_IDTest extends SettingsTestCase {
 
 	public function test_set() {
 		$this->assertTrue( $this->owner_id->set( 1 ) );
-		$this->assertTrue( is_int( $this->options->get( Owner_ID::OPTION ) ) );
-		$this->assertEquals( 1, $this->options->get( Owner_ID::OPTION ) );
+		$this->assertSame( 1, $this->options->get( Owner_ID::OPTION ) );
 
+		// Setting with a string value is sanitized as an integer.
+		$this->assertTrue( $this->owner_id->set( '2' ) );
+		$this->assertSame( 2, $this->options->get( Owner_ID::OPTION ) );
+
+		// An invalid value will result in a 0 as a result of sanitization.
 		$this->assertTrue( $this->owner_id->set( 'xxx' ) );
-		$this->assertTrue( is_int( $this->options->get( Owner_ID::OPTION ) ) );
-		$this->assertEquals( 0, $this->options->get( Owner_ID::OPTION ) );
+		$this->assertSame( 0, $this->options->get( Owner_ID::OPTION ) );
 	}
 
 	public function test_has() {
