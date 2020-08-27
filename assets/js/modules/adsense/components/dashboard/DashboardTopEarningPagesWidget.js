@@ -136,6 +136,6 @@ function DashboardTopEarningPagesWidget() {
 }
 
 export default compose(
-	whenActive( { moduleName: 'adsence' } ),
+	whenActive( { moduleName: 'adsense' } ),
 	whenActive( { moduleName: 'analytics' } ),
 )( DashboardTopEarningPagesWidget );

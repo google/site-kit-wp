@@ -106,7 +106,7 @@ domReady( () => {
 			component: DashboardTopEarningPagesWidget,
 			width: Widgets.WIDGET_WIDTHS.HALF,
 			priority: 2,
-			wrapWidget: true,
+			wrapWidget: false,
 		},
 		[
 			AREA_DASHBOARD_EARNINGS,
