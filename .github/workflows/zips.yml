@@ -55,6 +55,7 @@ jobs:
         run: mkdir -p ${{ github.ref }}
       - name: Build develop version
         run: |
+          chown -Rf runner:docker includes/vendor
           ls -l includes/vendor/composer/
           ls -l includes
           npm run dev-zip
