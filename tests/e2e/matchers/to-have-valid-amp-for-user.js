@@ -53,7 +53,9 @@ export async function toHaveValidAMPForUser( path ) {
 	const html = await fetchPageContent( urlToFetch );
 	const jsDoc = new JSDOM( html ).window.document;
 	try {
-		expect( jsDoc.querySelector( '#amp-admin-bar-item-status-icon' ).textContent ).toMatch( '✅' );
+		expect( jsDoc.querySelector( '#amp-admin-bar-item-status-icon' ).textContent ).toBe( true );
+		//expect( jsDoc.querySelector( '#amp-admin-bar-item-status-icon' ).textContent ).toMatch( '✅' );
+		await expect( page ).toMatchElement( '.amp-valid' );
 		pass = true;
 		message = () => 'Expected logged-in user not to have valid AMP';
 	} catch ( error ) {

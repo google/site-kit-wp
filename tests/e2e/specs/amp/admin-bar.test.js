@@ -22,7 +22,7 @@
 import { deactivatePlugin, activatePlugin, createURL } from '@wordpress/e2e-test-utils';
 
 /**
- * Internal depedencies
+ * Internal dependencies
  */
 import {
 	activateAMPWithMode,
@@ -38,7 +38,8 @@ describe( 'AMP Admin Bar compatibility', () => {
 	beforeAll( async () => {
 		await setupSiteKit();
 		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
-		await activateAMPWithMode( 'primary' );
+		await activatePlugin( 'amp' );
+		//await activateAMPWithMode( 'primary' );
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {

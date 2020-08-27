@@ -52,7 +52,7 @@ export const setAMPMode = async ( mode ) => {
 	expect( allowedAMPModes ).toHaveProperty( mode );
 	// Set the AMP mode
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
-	await expect( page ).toClick( `#theme_support_${ allowedAMPModes[ mode ] }` );
-	await expect( page ).toClick( '#submit' );
+	await expect( page ).toClick( `#template-mode-${ allowedAMPModes[ mode ] }-container` );
+	await expect( page ).toClick( '.components-button', { text: 'Save changes' } );
 	await page.waitForNavigation();
 };
