@@ -31,9 +31,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        uses: php-actions/composer@v2
-        with:
-          dev: no
+        run: composer install
+      # - name: Composer Install
+      #   uses: php-actions/composer@v2
+      #   with:
+      #     dev: no
       - name: Read .nvmrc
         run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
         id: nvm
@@ -54,28 +56,12 @@ jobs:
       - name: Create destination directory
         run: mkdir -p ${{ github.ref }}
       - name: Build develop version
-        run: npm run build:dev
-      - name: Update autoload list
-        uses: php-actions/composer@v2
-        with:
-          command: run autoload-includes
-      - name: Create develop release
         run: |
-          ls -l includes
-          cat includes/vendor/composer/autoload_classmap.php
-          npx gulp release
+          npm run dev-zip
           mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
       - name: Build release version
-        run: npm run build
-      - name: Update autoload list
-        uses: php-actions/composer@v2
-        with:
-          command: run autoload-includes
-      - name: Create release version
         run: |
-          ls -l includes
-          cat includes/vendor/composer/autoload_classmap.php
-          npx gulp release
+          npm run release-zip
           mv *.zip ${{ github.ref }}/google-site-kit.zip
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
