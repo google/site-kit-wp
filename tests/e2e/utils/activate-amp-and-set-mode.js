@@ -22,6 +22,11 @@
 import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
+ * Internal dependencies
+ */
+import { wpApiFetch } from './';
+
+/**
  * The allow list of AMP modes.
  */
 export const allowedAMPModes = {
@@ -53,15 +58,25 @@ export const setAMPMode = async ( mode ) => {
 	const ampMode = allowedAMPModes[ mode ];
 	// Set the AMP mode
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
-	// Compound selector for mode for compatibility between AMP versions (v1,v2)
-	await expect( page ).toClick(
-		`#theme_support_${ ampMode },#template-mode-${ ampMode }`
-	);
-	// In AMP v2, the submit button is disabled until settings have changed.
-	const submitDisabled = await page.$eval( '#amp-settings button[type="submit"]', ( { disabled } ) => disabled );
-	// If disabled, it is already configured to use the mode we want.
-	if ( ! submitDisabled ) {
-		await expect( page ).toClick( '#amp-settings button[type="submit"]' );
-		await page.waitForNavigation();
+
+	// AMP v2
+	const optionsRESTPath = await page.evaluate( () => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH );
+	if ( optionsRESTPath ) {
+		await Promise.all( [
+			page.waitForResponse( ( res ) => res.url().match( optionsRESTPath ) ),
+			wpApiFetch( {
+				method: 'post',
+				path: optionsRESTPath,
+				data: {
+					theme_support: ampMode,
+				},
+			} ),
+		] );
+		return;
 	}
+
+	// AMP v1
+	await expect( page ).toClick( `#theme_support_${ ampMode }` );
+	await expect( page ).toClick( '#submit' );
+	await page.waitForNavigation();
 };
