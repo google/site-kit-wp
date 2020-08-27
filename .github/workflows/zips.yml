@@ -31,11 +31,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        run: composer install
-      # - name: Composer Install
-      #   uses: php-actions/composer@v2
-      #   with:
-      #     dev: no
+        run: composer install --no-interaction --no-suggest --no-progress
       - name: Read .nvmrc
         run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
         id: nvm
