@@ -54,15 +54,28 @@ jobs:
       - name: Create destination directory
         run: mkdir -p ${{ github.ref }}
       - name: Build develop version
+        run: npm run build:dev
+      - name: Update autoload list
+        uses: php-actions/composer@v2
+        with:
+          command: run autoload-includes
+      - name: Create develop release
         run: |
-          chown -Rf runner:docker includes/vendor
-          ls -l includes/vendor/composer/
           ls -l includes
-          npm run dev-zip
+          cat includes/vendor/composer/autoload_classmap.php
+          npx gulp release
           mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
       - name: Build release version
+        run: npm run build
+      - name: Update autoload list
+        uses: php-actions/composer@v2
+        with:
+          command: run autoload-includes
+      - name: Create release version
         run: |
-          npm run release-zip
+          ls -l includes
+          cat includes/vendor/composer/autoload_classmap.php
+          npx gulp release
           mv *.zip ${{ github.ref }}/google-site-kit.zip
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
