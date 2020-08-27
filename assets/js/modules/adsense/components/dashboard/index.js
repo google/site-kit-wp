@@ -18,3 +18,4 @@
 
 export { default as DashboardZeroData } from './DashboardZeroData';
 export { default as DashboardSummaryWidget } from './DashboardSummaryWidget';
+export { default as DashboardTopEarningPagesWidget } from './DashboardTopEarningPagesWidget';

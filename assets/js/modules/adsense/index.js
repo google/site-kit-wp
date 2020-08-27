@@ -35,7 +35,11 @@ import {
 	SettingsSetupIncomplete,
 } from './components/settings';
 import { AdBlockerWarning } from './components/common';
-import { DashboardZeroData, DashboardSummaryWidget } from './components/dashboard';
+import {
+	DashboardZeroData,
+	DashboardSummaryWidget,
+	DashboardTopEarningPagesWidget,
+} from './components/dashboard';
 
 addFilter(
 	'googlesitekit.ModuleSetup-adsense',
@@ -90,6 +94,18 @@ domReady( () => {
 			component: DashboardSummaryWidget,
 			width: Widgets.WIDGET_WIDTHS.HALF,
 			priority: 1,
+			wrapWidget: true,
+		},
+		[
+			AREA_DASHBOARD_EARNINGS,
+		],
+	);
+	Widgets.registerWidget(
+		'adsenseTopEarningPages',
+		{
+			component: DashboardTopEarningPagesWidget,
+			width: Widgets.WIDGET_WIDTHS.HALF,
+			priority: 2,
 			wrapWidget: true,
 		},
 		[
