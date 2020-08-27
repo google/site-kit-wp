@@ -55,7 +55,7 @@ class ProfileTest extends TestCase {
 			array(
 				'email' => 'user@example.com',
 				'photo' => '',
-			) 
+			)
 		);
 		$this->assertFalse( $profile->has() );
 		$user_options->set(
@@ -63,7 +63,7 @@ class ProfileTest extends TestCase {
 			array(
 				'email' => '',
 				'photo' => '',
-			) 
+			)
 		);
 		$this->assertFalse( $profile->has() );
 		$user_options->set(
@@ -71,7 +71,7 @@ class ProfileTest extends TestCase {
 			array(
 				'email' => '',
 				'photo' => 'test-photo.jpg',
-			) 
+			)
 		);
 		$this->assertFalse( $profile->has() );
 
@@ -80,7 +80,7 @@ class ProfileTest extends TestCase {
 			array(
 				'email' => 'user@example.com',
 				'photo' => 'test-photo.jpg',
-			) 
+			)
 		);
 		$this->assertTrue( $profile->has() );
 	}
@@ -97,7 +97,7 @@ class ProfileTest extends TestCase {
 			array(
 				'email' => 'user@example.com',
 				'photo' => 'test-photo.jpg',
-			) 
+			)
 		);
 
 		$this->assertEquals(

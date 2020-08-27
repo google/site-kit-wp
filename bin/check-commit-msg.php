@@ -56,10 +56,12 @@ function echo_error_if( $condition, $message ) {
 	if ( $condition ) {
 		$has_color_support = has_color_support();
 
-		$has_color_support && fwrite( STDERR, "\033[31m" ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite
-		fwrite( STDERR, '- ' . $message ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite
-		$has_color_support && fwrite( STDERR, "\033[0m" ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite
-		fwrite( STDERR, PHP_EOL ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_read_fwrite,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite
+		$has_color_support && fwrite( STDERR, "\033[31m" );
+		fwrite( STDERR, '- ' . $message );
+		$has_color_support && fwrite( STDERR, "\033[0m" );
+		fwrite( STDERR, PHP_EOL );
+		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_read_fwrite,WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite
 
 		return $current_code;
 	}
@@ -90,7 +92,8 @@ if ( $error_code ) {
 }
 
 // read file and prepare commit message.
-$message    = explode( PHP_EOL, file_get_contents( $argv[1] ) ); // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
+// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents,WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
+$message    = explode( PHP_EOL, file_get_contents( $argv[1] ) );
 $message    = trim( implode( ' ', array_filter( $message, 'is_not_comment' ) ) );
 $words      = array_filter( array_map( 'trim', preg_split( '/[^A-Za-z-]+/', $message ) ) );
 $first_word = current( $words );
