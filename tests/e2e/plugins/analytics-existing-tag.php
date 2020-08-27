@@ -35,6 +35,7 @@ add_action(
 			return;
 		}
 
+		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 		echo <<<HTML
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=$UA_CODE"></script>

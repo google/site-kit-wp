@@ -41,7 +41,7 @@ class Script_DataTest extends TestCase {
 				'data_callback' => function () use ( $data ) {
 					return $data;
 				},
-			) 
+			)
 		);
 		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$this->assertEmpty( wp_scripts()->get_data( 'test-handle', 'data' ) );
