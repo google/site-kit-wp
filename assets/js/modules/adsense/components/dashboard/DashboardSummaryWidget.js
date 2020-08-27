@@ -17,12 +17,17 @@
  */
 
 /**
+ * External dependencies
+ */
+import moment from 'moment';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-// import whenActive from '../../../../util/when-active';
+import whenActive from '../../../../util/when-active';
 import ErrorText from '../../../../components/error-text';
 import PreviewBlock from '../../../../components/preview-block';
 const { useSelect } = Data;
@@ -37,26 +42,30 @@ function DashboardSummaryWidget() {
 		lastMonthError,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
+		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
 
-		const now = new Date();
-		const today = `${ now.getFullYear() }-${ now.getMonth() + 1 }-${ now.getDate() }`;
+		const format = 'YYYY-MM-DD';
+		const today = moment().format( format );
+		const lastMonth = moment().subtract( 1, 'month' ).format( format );
 
-		now.setMonth( now.getMonth() - 1 );
-		const lastMonth = `${ now.getFullYear() }-${ now.getMonth() + 1 }-${ now.getDate() }`;
+		global.console.log( today, lastMonth );
 
 		const todayArgs = {
 			startDate: today,
 			endDate: today,
+			metrics,
 		};
 
 		const rangeArgs = {
 			dateRange: select( CORE_USER ).getDateRange(),
+			metrics,
 		};
 
 		const lastMonthArgs = {
-			startDate: today,
-			endDate: lastMonth,
+			startDate: lastMonth,
+			endDate: today,
 			dimensions: [ 'DATE' ],
+			metrics,
 		};
 
 		return {
@@ -84,5 +93,4 @@ function DashboardSummaryWidget() {
 	return 'DashboardSummaryWidget';
 }
 
-export default DashboardSummaryWidget;
-// export default whenActive( { moduleName: 'adsence' } )( DashboardSummaryWidget );
+export default whenActive( { moduleName: 'adsence' } )( DashboardSummaryWidget );

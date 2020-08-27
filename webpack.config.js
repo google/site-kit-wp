@@ -32,6 +32,7 @@ const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const MomentLocalesPlugin = require( 'moment-locales-webpack-plugin' );
 
 /**
  * Internal dependencies
@@ -178,6 +179,7 @@ const webpackConfig = ( mode ) => {
 				rules,
 			},
 			plugins: [
+				new MomentLocalesPlugin(),
 				new ProvidePlugin( {
 					React: 'react',
 				} ),
