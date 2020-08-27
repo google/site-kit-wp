@@ -31,9 +31,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        uses: php-actions/composer@v1
+        uses: php-actions/composer@v2
         with:
-          args: install
+          dev: no
       - name: Read .nvmrc
         run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
         id: nvm
@@ -55,6 +55,7 @@ jobs:
         run: mkdir -p ${{ github.ref }}
       - name: Build develop version
         run: |
+          ls -l includes/vendor/composer/
           npm run dev-zip
           mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
       - name: Build release version
