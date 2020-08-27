@@ -229,6 +229,7 @@ class ContextTest extends TestCase {
 
 		// Use a dedicated page for the blog home.
 		$blog_home_id = $this->factory()->post->create( array( 'post_type' => 'page' ) );
+		update_option( 'show_on_front', 'page' );
 		update_option( 'page_for_posts', $blog_home_id );
 		$this->go_to( get_permalink( $blog_home_id ) );
 		$entity = $context->get_reference_entity();

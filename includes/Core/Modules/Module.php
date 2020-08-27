@@ -866,7 +866,7 @@ abstract class Module {
 	/**
 	 * Parses the string list into an array of strings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param string|array $items Items to parse.
 	 * @return array An array of string items.
