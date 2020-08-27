@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Util\Developer_Plugin_Installer;
 use Google\Site_Kit\Core\Util\Reset;
 use WP_Post;
@@ -60,14 +59,6 @@ final class REST_Routes {
 	protected $modules;
 
 	/**
-	 * Input access abstraction.
-	 *
-	 * @since n.e.x.t
-	 * @var Input
-	 */
-	protected $input;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -88,7 +79,6 @@ final class REST_Routes {
 			$modules = new Modules( $this->context, null, null, $this->authentication );
 		}
 		$this->modules = $modules;
-		$this->input   = new Input();
 	}
 
 	/**
@@ -115,7 +105,7 @@ final class REST_Routes {
 						// arguments.
 
 						$unset_vars = ( $wp->request && stripos( $wp->request, trailingslashit( rest_get_url_prefix() ) . self::REST_ROOT ) !== false ) // Check regular permalinks.
-							|| ( empty( $wp->request ) && stripos( $this->input->filter( INPUT_GET, 'rest_route' ), self::REST_ROOT ) !== false ); // Check plain permalinks.
+							|| ( empty( $wp->request ) && stripos( $this->context->input()->filter( INPUT_GET, 'rest_route' ), self::REST_ROOT ) !== false ); // Check plain permalinks.
 
 						if ( $unset_vars ) {
 							// List of variable names to remove from public query variables list.
