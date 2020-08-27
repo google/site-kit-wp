@@ -15,7 +15,7 @@ use WP_Query;
 /**
  * Class creating `WP_Query` instances.
  *
- * @since n.e.x.t
+ * @since 1.15.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ final class WP_Query_Factory {
 	 * covering non-post URLs. It follows logic used in `WP::parse_request()` to cover the other kinds of URLs. The
 	 * majority of the code is a direct copy of certain parts of these functions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param string $url URL to get WordPress query object for.
 	 * @return WP_Query|null WordPress query instance, or null if unable to parse query from URL.
@@ -56,7 +56,7 @@ final class WP_Query_Factory {
 	/**
 	 * Normalizes the URL for further processing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param string $url URL to normalize.
 	 * @return string Normalized URL, or empty string if URL is irrelevant for parsing into `WP_Query` arguments.
@@ -89,7 +89,7 @@ final class WP_Query_Factory {
 	 * This code is mostly a partial copy of `WP::parse_request()` which is used to parse the current request URL
 	 * into variables in a similar way.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param string $url URL to parse path vars from.
 	 * @return array Associative array of path vars.
@@ -167,7 +167,7 @@ final class WP_Query_Factory {
 	 * The variables returned from this method are not necessarily all relevant for a `WP_Query`, they will still need
 	 * to go through sanitization against the available public query vars from WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param string $url URL to parse query vars from.
 	 * @return array Associative array of query vars.
@@ -192,7 +192,7 @@ final class WP_Query_Factory {
 	 * This code is mostly a partial copy of `WP::parse_request()` which is used to parse the current request URL
 	 * into query arguments in a similar way.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param array $url_path_vars  Associative array as returned from {@see WP_Query_Factory::get_url_path_vars()}.
 	 * @param array $url_query_vars Associative array as returned from {@see WP_Query_Factory::get_url_query_vars()}.
