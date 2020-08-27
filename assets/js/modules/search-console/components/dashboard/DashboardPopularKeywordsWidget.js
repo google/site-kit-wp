@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -34,6 +34,7 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../../compon
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/preview-table';
 import ErrorText from '../../../../components/error-text';
+import Layout from '../../../../components/layout/layout';
 const { useSelect } = Data;
 
 function DashboardPopularKeywordsWidget() {
@@ -41,8 +42,10 @@ function DashboardPopularKeywordsWidget() {
 		data,
 		error,
 		baseServiceURL,
+		searchConsolePropertyMainURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
+		const domain = store.getPropertyID();
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
 			dimensions: 'query',
@@ -60,8 +63,13 @@ function DashboardPopularKeywordsWidget() {
 			baseServiceURL: store.getServiceURL( {
 				path: '/performance/search-analytics',
 				query: {
-					resource_id: store.getPropertyID(),
+					resource_id: domain,
 					num_of_days: 28,
+				},
+			} ),
+			searchConsolePropertyMainURL: store.getServiceURL( {
+				query: {
+					resource_id: domain,
 				},
 			} ),
 		};
@@ -119,9 +127,17 @@ function DashboardPopularKeywordsWidget() {
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 	return (
-		<TableOverflowContainer>
-			{ dataTable }
-		</TableOverflowContainer>
+		<Layout
+			className="googlesitekit-popular-content"
+			footer
+			footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+			footerCtaLink={ searchConsolePropertyMainURL }
+			fill
+		>
+			<TableOverflowContainer>
+				{ dataTable }
+			</TableOverflowContainer>
+		</Layout>
 	);
 }
 
