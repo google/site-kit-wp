@@ -103,11 +103,20 @@ final class REST_Routes {
 						// Unsets standard public query vars to escape conflicts between WordPress core
 						// and Google Site Kit APIs which happen when WordPress incorrectly parses request
 						// arguments.
-						$namespace = rest_get_url_prefix() . '/' . self::REST_ROOT;
-						if ( substr( $wp->request, 0, strlen( $namespace ) ) === $namespace ) {
+
+						$unset_vars = ( $wp->request && stripos( $wp->request, trailingslashit( rest_get_url_prefix() ) . self::REST_ROOT ) !== false ) // Check regular permalinks.
+							|| ( empty( $wp->request ) && stripos( $this->context->input()->filter( INPUT_GET, 'rest_route' ), self::REST_ROOT ) !== false ); // Check plain permalinks.
+
+						if ( $unset_vars ) {
 							// List of variable names to remove from public query variables list.
-							$unset_vars = array( 'orderby' );
-							return array_values( array_diff( $vars, $unset_vars ) );
+							return array_values(
+								array_diff(
+									$vars,
+									array(
+										'orderby',
+									)
+								)
+							);
 						}
 
 						return $vars;
