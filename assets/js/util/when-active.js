@@ -32,6 +32,11 @@ const { useSelect } = Data;
 /**
  * Higher-Order Component to render wrapped components when selected module is active and connected.
  *
+ * A higher-order component is used here instead of hooks because there is potential for
+ * related selectors in components this HOC wraps to call out to resolvers that call endpoints
+ * for modules that aren't active. This would cause 404s at best and possibly errors, so
+ * it's better to wrap them in HOCs and "return early".
+ *
  * @since n.e.x.t
  *
  * @param {Object}   options                     Options for enhancing function.
@@ -42,6 +47,9 @@ const { useSelect } = Data;
 export default function whenActive( { moduleName, fallbackComponent = null } ) {
 	return ( wrappedComponent ) => {
 		const whenActiveComponent = ( props ) => {
+			// The following eslint rule is disabled because it treats the following hook as such that doesn't adhere
+			// the "rules of hooks" which is incorrect because the following hook is a valid one.
+
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const isConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleName ) );
 

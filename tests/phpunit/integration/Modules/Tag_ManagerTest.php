@@ -11,10 +11,12 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -23,6 +25,7 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Tag_ManagerTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
+	use Module_With_Owner_ContractTests;
 
 	public function test_register() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -319,6 +322,13 @@ class Tag_ManagerTest extends TestCase {
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {
+		return new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return Module_With_Owner
+	 */
+	protected function get_module_with_owner() {
 		return new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 }

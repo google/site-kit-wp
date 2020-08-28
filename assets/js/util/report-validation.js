@@ -92,7 +92,7 @@ export function isValidOrders( orders ) {
 /**
  * Verifies that provided parameter is either a string or an array of strings.
  *
- * @since n.e.x.t
+ * @since 1.15.0
  *
  * @param {(string|Array.<string>)} items Items to validate.
  * @return {boolean} TRUE if items are either a string or an array of strings, otherwise FALSE.
