@@ -136,11 +136,6 @@ const baseActions = {
 	*activateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, true );
 
-		yield {
-			payload: {},
-			type: REFETCH_AUTHENTICATION,
-		};
-
 		return { response, error };
 	},
 
@@ -156,11 +151,6 @@ const baseActions = {
 	 */
 	*deactivateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, false );
-
-		yield {
-			payload: {},
-			type: REFETCH_AUTHENTICATION,
-		};
 
 		return { response, error };
 	},
