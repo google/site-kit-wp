@@ -39,24 +39,11 @@ import { __ } from '@wordpress/i18n';
 import API from 'googlesitekit-api';
 import { useDebouncedState } from '../hooks/useDebouncedState';
 
-const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
+function PostSearcherAutoSuggest( { setCanSubmit, setMatch } ) {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 	const debouncedValue = useDebouncedState( searchTerm, 200 );
 	const [ results, setResults ] = useState( [] );
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
-
-	const postSearch = async ( query ) => {
-		try {
-			const queryResults = await API.get( 'core', 'search', 'post-search',
-				{ query: encodeURIComponent( query ) },
-				{ useCache: false }
-			);
-
-			setResults( queryResults );
-		} catch ( err ) {
-			setResults( [] );
-		}
-	};
 
 	const onSelectCallback = useCallback( ( value ) => {
 		if ( Array.isArray( results ) && value !== noResultsMessage ) {
@@ -77,9 +64,16 @@ const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
 
 	useEffect( () => {
 		if ( debouncedValue !== '' ) {
-			postSearch( debouncedValue );
+			const request = API.get(
+				'core', 'search', 'post-search',
+				{ query: encodeURIComponent( debouncedValue ) },
+				{ useCache: false },
+			);
+
+			request.then( setResults )
+				.catch( () => setResults( [] ) );
 		}
-	}, [ debouncedValue ] );
+	}, [ debouncedValue, setResults ] );
 
 	return (
 		<Combobox className="autocomplete__wrapper" onSelect={ onSelectCallback }>
@@ -103,6 +97,6 @@ const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
 			) }
 		</Combobox>
 	);
-};
+}
 
 export default PostSearcherAutoSuggest;
