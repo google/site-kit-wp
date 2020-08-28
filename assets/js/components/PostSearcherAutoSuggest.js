@@ -77,7 +77,7 @@ const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
 	const onInputChange = useCallback( ( event ) => {
 		setCanSubmit( false );
 		setSearchTerm( event.target.value );
-	}, [] );
+	}, [ setCanSubmit ] );
 
 	useEffect( () => {
 		if ( debouncedValue !== '' ) {
