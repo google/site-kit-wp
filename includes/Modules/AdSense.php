@@ -714,7 +714,7 @@ tag_partner: "site_kit"
 	/**
 	 * Parses the orderby value of the data request into an array of earning orderby format.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param array|null $orderby Data request orderby value.
 	 * @return string[] An array of reporting orderby strings.
