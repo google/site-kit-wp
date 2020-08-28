@@ -33,6 +33,10 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../../compon
 import MiniChart from '../../../../components/mini-chart';
 
 function AcquisitionSources( { data } ) {
+	if ( ! data ) {
+		return null;
+	}
+
 	const hasTotals = Array.isArray( data[ 0 ].data.totals ) && data[ 0 ].data.totals.length;
 	const hasRows = Array.isArray( data[ 0 ].data.rows ) && data[ 0 ].data.rows.length;
 	if ( ! hasTotals || ! hasRows ) {

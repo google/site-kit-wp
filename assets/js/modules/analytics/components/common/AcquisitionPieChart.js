@@ -60,6 +60,10 @@ const GOOGLE_CHART_PIE_SETTINGS = {
 };
 
 function AcquisitionPieChart( { data, source } ) {
+	if ( ! data ) {
+		return null;
+	}
+
 	let sourceMessage = '';
 	if ( source ) {
 		sourceMessage = sprintf(
