@@ -18,6 +18,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
@@ -34,8 +36,8 @@ use WP_Error;
  * @ignore
  */
 final class Optimize extends Module
-	implements Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets {
-	use Module_With_Settings_Trait, Module_With_Assets_Trait;
+	implements Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Owner {
+	use Module_With_Settings_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
