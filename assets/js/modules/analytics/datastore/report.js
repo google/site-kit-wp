@@ -35,10 +35,10 @@ import { isValidDimensions, isValidMetrics } from '../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { options } ) => {
+	controlCallback: ( options ) => {
 		return API.get( 'modules', 'analytics', 'report', options );
 	},
-	reducerCallback: ( state, report, { options } ) => {
+	reducerCallback: ( state, report, options ) => {
 		return {
 			...state,
 			reports: {
@@ -48,9 +48,9 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
-		return { options };
+		return options;
 	},
-	validateParams: ( { options } = {} ) => {
+	validateParams: ( options = {} ) => {
 		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
 		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Analytics report.' );
 

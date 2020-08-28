@@ -41,20 +41,15 @@ const { useSelect } = Data;
 
 function DashboardAllTrafficWidget() {
 	const {
-		report,
 		loading,
+		report,
+		reportArgs,
 		error,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
 			dimensions: 'ga:channelGrouping',
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-			],
 			orderby: {
 				fieldName: 'ga:users',
 				sortOrder: 'DESCENDING',
@@ -65,11 +60,33 @@ function DashboardAllTrafficWidget() {
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			args.url = url;
+			args.metrics = [
+				{
+					expression: 'ga:sessions',
+					alias: 'Sessions',
+				},
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+				{
+					expression: 'ga:newUsers',
+					alias: 'New Users',
+				},
+			];
+		} else {
+			args.metrics = [
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+			];
 		}
 
 		return {
-			report: store.getReport( args ),
 			loading: store.isResolving( 'getReport', [ args ] ),
+			report: store.getReport( args ),
+			reportArgs: args,
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 		};
 	} );
@@ -89,13 +106,13 @@ function DashboardAllTrafficWidget() {
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
 						{ loading
 							? <PreviewBlock width="282px" height="282px" shape="circular" />
-							: <AcquisitionPieChart data={ report } source />
+							: <AcquisitionPieChart data={ report } args={ reportArgs } source />
 						}
 					</div>
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
 						{ loading
 							? <PreviewTable rows={ 3 } rowHeight={ 50 } />
-							: <AcquisitionSources data={ report } />
+							: <AcquisitionSources data={ report } args={ reportArgs } />
 						}
 					</div>
 				</div>
