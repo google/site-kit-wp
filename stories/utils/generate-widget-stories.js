@@ -19,7 +19,8 @@
 /**
  * External dependencies
  */
-import { storiesOf } from '@storybook/react';
+import { storiesOf, Story } from '@storybook/react';
+import { Component } from 'react';
 
 /**
  * Internal dependencies
@@ -28,7 +29,17 @@ import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore
 import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import { WithTestRegistry } from '../../tests/js/utils';
 
-function registrySetup( url, cb = () => {} ) {
+/**
+ * Generates a function to set up registry for widget stories.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} moduleSlug Module slug.
+ * @param {string|null} url Current entity URL.
+ * @param {Function} cb Callback for additional setup.
+ * @return {Function} A function to set up registry for widget stories.
+ */
+function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
 	return ( { dispatch } ) => {
 		cb( { dispatch } );
 
@@ -39,7 +50,7 @@ function registrySetup( url, cb = () => {} ) {
 
 		dispatch( CORE_MODULES ).receiveGetModules( [
 			{
-				slug: 'analytics',
+				slug: moduleSlug,
 				active: true,
 				connected: true,
 			},
@@ -47,7 +58,28 @@ function registrySetup( url, cb = () => {} ) {
 	};
 }
 
-export function generateWidgetStories( { datastore, group, data, options, component: Component } ) {
+/**
+ * Generates stories for a report based widget using provided data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} args              Widget arguments.
+ * @param {string} args.moduleSlug   Module slug.
+ * @param {string} args.datastore    Module datastore name.
+ * @param {string} args.group        Stories group name.
+ * @param {Array}  args.data         Widget data.
+ * @param {Object} args.options      Arguments for report requests.
+ * @param {Component} args.component Widget component.
+ * @return {Story} Generated story.
+ */
+export function generateReportBasedWidgetStories( {
+	moduleSlug,
+	datastore,
+	group,
+	data,
+	options,
+	component: Widget,
+} ) {
 	const stories = storiesOf( group, module );
 
 	const variants = {
@@ -71,9 +103,11 @@ export function generateWidgetStories( { datastore, group, data, options, compon
 
 	Object.keys( variants ).forEach( ( variant ) => {
 		stories.add( variant, () => (
-			<WithTestRegistry callback={ registrySetup( options.url || null, variants[ variant ] ) }>
-				<Component />
+			<WithTestRegistry callback={ getSetupRegistry( moduleSlug, options.url || null, variants[ variant ] ) }>
+				<Widget />
 			</WithTestRegistry>
 		) );
 	} );
+
+	return stories;
 }

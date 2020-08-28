@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { generateWidgetStories } from './utils/generate-widget-stories';
+import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidget';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
 import {
@@ -29,7 +29,8 @@ import {
 	pageDashboardAllTrafficData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
-generateWidgetStories( {
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget',
 	data: dashboardAllTrafficData,
@@ -37,7 +38,8 @@ generateWidgetStories( {
 	component: DashboardAllTrafficWidget,
 } );
 
-generateWidgetStories( {
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
 	data: pageDashboardAllTrafficData,
