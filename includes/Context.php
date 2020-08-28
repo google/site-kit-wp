@@ -379,7 +379,7 @@ final class Context {
 	 * Filters the given entity's reference URL, effectively creating a copy of
 	 * the entity with the reference URL accounted for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param Entity|null $entity Entity to filter reference ID for, or null.
 	 * @return Entity|null Filtered entity or null, based on $entity.

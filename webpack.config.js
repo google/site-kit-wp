@@ -58,7 +58,7 @@ namespace Google\\Site_Kit\\Core\\Assets;
 /**
  * Assets manifest.
  *
- * @since n.e.x.t
+ * @since 1.15.0
  * @access private
  * @ignore
  */

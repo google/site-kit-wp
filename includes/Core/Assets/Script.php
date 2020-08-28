@@ -55,7 +55,7 @@ class Script extends Asset {
 	 * Registers the script.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Adds $context parameter.
+	 * @since 1.15.0 Adds $context parameter.
 	 *
 	 * @param Context $context Plugin context.
 	 */

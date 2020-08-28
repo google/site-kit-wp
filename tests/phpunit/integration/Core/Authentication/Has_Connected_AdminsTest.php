@@ -8,17 +8,17 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Storage;
+namespace Google\Site_Kit\Tests\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Has_Connected_Admins;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Storage\Has_Connected_Admins;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
- * @group Storage
+ * @group Authentication
  */
 class Has_Connected_AdminsTest extends TestCase {
 
