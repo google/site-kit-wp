@@ -32,6 +32,10 @@ export default function createTrackEvent( config, dataLayerTarget ) {
 			userIDHash,
 		} = config;
 
+		if ( global._gaUserPrefs?.ioo() ) {
+			return;
+		}
+
 		if ( ! trackingEnabled ) {
 			// Resolve immediately if tracking is disabled.
 			return;
