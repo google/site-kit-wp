@@ -26,11 +26,12 @@ import classnames from 'classnames';
  */
 import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import AdSenseEstimateEarningsWidget from './AdSenseEstimateEarningsWidget';
 import AdSensePerformanceWidget from './AdSensePerformanceWidget';
 import Alert from '../../../../components/alert';
@@ -43,9 +44,13 @@ import { isAdsenseConnectedAnalytics } from '../../util';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
 import HelpLink from '../../../../components/help-link';
+import { getCurrentDateRange } from '../../../../util/date-range';
 import Header from '../../../../components/header';
 import PageHeader from '../../../../components/page-header';
 import Layout from '../../../../components/layout/layout';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+
+const { withSelect } = Data;
 
 // Empty component to allow filtering in refactored version.
 const AdSenseDashboardZeroData = withFilters( 'googlesitekit.AdSenseDashboardZeroData' )( () => null );
@@ -136,10 +141,16 @@ class AdSenseDashboardWidget extends Component {
 			isAdSenseConnected,
 			zeroData,
 		} = this.state;
+
+		const {
+			dateRange,
+		} = this.props;
+
 		const { homepage } = modulesData.adsense;
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
+		const currentDateRange = getCurrentDateRange( dateRange );
 
 		return (
 			<Fragment>
@@ -201,7 +212,8 @@ class AdSenseDashboardWidget extends Component {
 							) }>
 								<Layout
 									header
-									title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
+									/* translators: %s: date range */
+									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
 									headerCtaLink={ homepage }
 								>
@@ -240,4 +252,8 @@ class AdSenseDashboardWidget extends Component {
 	}
 }
 
-export default AdSenseDashboardWidget;
+export default withSelect(
+	( select ) => ( {
+		dateRange: select( CORE_USER ).getDateRange(),
+	} ),
+)( AdSenseDashboardWidget );
