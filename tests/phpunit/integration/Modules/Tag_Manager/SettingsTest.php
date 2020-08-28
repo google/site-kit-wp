@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Tag_Manager;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
+use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
@@ -20,6 +21,8 @@ use Google\Site_Kit\Tests\Modules\SettingsTestCase;
  * @group Tag_Manager
  */
 class SettingsTest extends SettingsTestCase {
+
+	use Setting_With_Owned_Keys_ContractTests;
 
 	public function test_get_default() {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
@@ -33,6 +36,7 @@ class SettingsTest extends SettingsTestCase {
 				'useSnippet'             => true,
 				'internalContainerID'    => '',
 				'internalAMPContainerID' => '',
+				'ownerID'                => 0,
 			),
 			get_option( Settings::OPTION )
 		);
@@ -62,6 +66,14 @@ class SettingsTest extends SettingsTestCase {
 		foreach ( array_keys( $legacy_option ) as $legacy_key ) {
 			$this->assertArrayNotHasKey( $legacy_key, $option );
 		}
+	}
+
+	protected function get_testcase() {
+		return $this;
+	}
+
+	protected function get_setting_with_owned_keys() {
+		return new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 	}
 
 	/**
