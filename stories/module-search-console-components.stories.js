@@ -17,19 +17,12 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
+import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardClicksWidget from '../assets/js/modules/search-console/components/dashboard/DashboardClicksWidget';
 import DashboardImpressionsWidget from '../assets/js/modules/search-console/components/dashboard/DashboardImpressionsWidget';
 import { STORE_NAME } from '../assets/js/modules/search-console/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { WithTestRegistry } from '../tests/js/utils';
 import {
 	clicksAndImpressionsWidgetData,
 	dashboardClicksWidgetArgs,
@@ -38,58 +31,38 @@ import {
 	pageDashboardImpressionsArgs,
 } from '../assets/js/modules/search-console/datastore/__fixtures__';
 
-function registrySetup( url, cb = () => {} ) {
-	return ( { dispatch } ) => {
-		cb( { dispatch } );
+generateReportBasedWidgetStories( {
+	moduleSlug: 'search-console',
+	datastore: STORE_NAME,
+	group: 'Search Console Module/Components/Dashboard/Clicks Widget',
+	data: clicksAndImpressionsWidgetData,
+	options: dashboardClicksWidgetArgs,
+	component: DashboardClicksWidget,
+} );
 
-		dispatch( CORE_SITE ).receiveSiteInfo( {
-			referenceSiteURL: null,
-			currentEntityURL: url,
-		} );
+generateReportBasedWidgetStories( {
+	moduleSlug: 'search-console',
+	datastore: STORE_NAME,
+	group: 'Search Console Module/Components/Page Dashboard/Clicks Widget',
+	data: clicksAndImpressionsWidgetData,
+	options: pageDashboardClicksWidgetArgs,
+	component: DashboardClicksWidget,
+} );
 
-		dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: 'search-console',
-				active: true,
-				connected: true,
-			},
-		] );
-	};
-}
+generateReportBasedWidgetStories( {
+	moduleSlug: 'search-console',
+	datastore: STORE_NAME,
+	group: 'Search Console Module/Components/Dashboard/Impressions Widget',
+	data: clicksAndImpressionsWidgetData,
+	options: dashboardImpressionsWidgetArgs,
+	component: DashboardImpressionsWidget,
+} );
 
-function setupStories( name, data, options, Component ) {
-	const stories = storiesOf( `Search Console Module/Components/Dashboard/${ name }`, module );
-
-	const variants = {
-		Loaded: ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport( data, { options } )
-		},
-		'Data Unavailable': ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport( [], { options } );
-		},
-		Error: ( { dispatch } ) => {
-			const error = {
-				code: 'missing_required_param',
-				message: 'Request parameter is empty: metrics.',
-				data: {},
-			};
-
-			dispatch( STORE_NAME ).receiveError( error, 'getReport', [ options ] );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
-		},
-	};
-
-	Object.keys( variants ).forEach( ( variant ) => {
-		stories.add( variant, () => (
-			<WithTestRegistry callback={ registrySetup( options.url || null, variants[ variant ] ) }>
-				<Component />
-			</WithTestRegistry>
-		) );
-	} );
-}
-
-setupStories( 'Clicks Widget', clicksAndImpressionsWidgetData, dashboardClicksWidgetArgs, DashboardClicksWidget );
-setupStories( 'Clicks Widget', clicksAndImpressionsWidgetData, pageDashboardClicksWidgetArgs, DashboardClicksWidget );
-
-setupStories( 'Impressions Widget', clicksAndImpressionsWidgetData, dashboardImpressionsWidgetArgs, DashboardImpressionsWidget );
-setupStories( 'Impressions Widget', clicksAndImpressionsWidgetData, pageDashboardImpressionsArgs, DashboardImpressionsWidget );
+generateReportBasedWidgetStories( {
+	moduleSlug: 'search-console',
+	datastore: STORE_NAME,
+	group: 'Search Console Module/Components/Page Dashboard/Impressions Widget',
+	data: clicksAndImpressionsWidgetData,
+	options: pageDashboardImpressionsArgs,
+	component: DashboardImpressionsWidget,
+} );
