@@ -103,7 +103,7 @@ export default class ResetButton extends Component {
 						handleConfirm={ this.handleUnlinkConfirm }
 						handleDialog={ this.handleDialog }
 						title={ __( 'Reset Site Kit', 'google-site-kit' ) }
-						subtitle={ __( 'Resetting this site will remove access to all services. After disconnecting, you will need to re-authorize your access to restore service.', 'google-site-kit' ) }
+						subtitle={ __( 'Resetting will remove access to all services for all users who have Site Kit set up. If you choose to proceed, you and all other users will need to re-authorize their access to restore the service.', 'google-site-kit' ) }
 						confirmButton={ __( 'Reset', 'google-site-kit' ) }
 						provides={ [] }
 						danger
