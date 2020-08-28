@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\AdSense;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\AdSense\Settings;
+use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
@@ -20,6 +21,8 @@ use Google\Site_Kit\Tests\Modules\SettingsTestCase;
  * @group AdSense
  */
 class SettingsTest extends SettingsTestCase {
+
+	use Setting_With_Owned_Keys_ContractTests;
 
 	public function test_register_filters() {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
@@ -59,6 +62,7 @@ class SettingsTest extends SettingsTestCase {
 				'accountSetupComplete' => false,
 				'siteSetupComplete'    => false,
 				'useSnippet'           => true,
+				'ownerID'              => 0,
 			),
 			get_option( Settings::OPTION )
 		);
@@ -104,6 +108,14 @@ class SettingsTest extends SettingsTestCase {
 		$option = $settings->get();
 		$this->assertEquals( 'test-current-account-id', $option['accountID'] );
 		$this->assertArrayNotHasKey( 'account_id', $option );
+	}
+
+	protected function get_testcase() {
+		return $this;
+	}
+
+	protected function get_setting_with_owned_keys() {
+		return new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 	}
 
 	/**

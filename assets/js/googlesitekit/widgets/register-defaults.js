@@ -56,7 +56,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea( AREA_DASHBOARD_SEARCH_FUNNEL, {
 		title: __( 'Search Funnel', 'google-site-kit' ),
 		subtitle: __( 'How your site appeared in Search results and how many visitors you got from Search.', 'google-site-kit' ),
-		style: WIDGET_AREA_STYLES.BOXES,
+		style: WIDGET_AREA_STYLES.COMPOSITE,
 		priority: 2,
 	}, CONTEXT_DASHBOARD );
 
@@ -91,7 +91,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea( AREA_PAGE_DASHBOARD_ALL_TRAFFIC, {
 		title: __( 'All Traffic', 'google-site-kit' ),
 		subtitle: __( 'How people found your page.', 'google-site-kit' ),
-		style: WIDGET_AREA_STYLES.COMPOSITE,
+		style: WIDGET_AREA_STYLES.BOXES,
 		priority: 2,
 	}, CONTEXT_PAGE_DASHBOARD );
 

@@ -27,7 +27,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import Layout from '../../../../components/layout/layout';
-import AnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/AnalyticsDashboardWidgetTopAcquisitionSources';
+import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import LegacyDashboardAcquisitionPieChart from '../dashboard/LegacyDashboardAcquisitionPieChart';
 
 class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
@@ -71,7 +71,7 @@ class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 									mdc-layout-grid__cell--span-8-tablet
 									mdc-layout-grid__cell--span-4-phone
 								">
-									<AnalyticsDashboardWidgetTopAcquisitionSources />
+									<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
 								</div>
 							</div>
 						</div>

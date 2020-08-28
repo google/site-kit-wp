@@ -22,6 +22,11 @@
 import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
+ * Internal dependencies
+ */
+import { wpApiFetch } from './';
+
+/**
  * The allow list of AMP modes.
  */
 export const allowedAMPModes = {
@@ -50,9 +55,28 @@ export const activateAMPWithMode = async ( mode ) => {
 export const setAMPMode = async ( mode ) => {
 	// Test to be sure that the passed mode is known.
 	expect( allowedAMPModes ).toHaveProperty( mode );
+	const ampMode = allowedAMPModes[ mode ];
 	// Set the AMP mode
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
-	await expect( page ).toClick( `#theme_support_${ allowedAMPModes[ mode ] }` );
+
+	// AMP v2
+	const optionsRESTPath = await page.evaluate( () => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH );
+	if ( optionsRESTPath ) {
+		await Promise.all( [
+			page.waitForResponse( ( res ) => res.url().match( optionsRESTPath ) ),
+			wpApiFetch( {
+				method: 'post',
+				path: optionsRESTPath,
+				data: {
+					theme_support: ampMode,
+				},
+			} ),
+		] );
+		return;
+	}
+
+	// AMP v1
+	await expect( page ).toClick( `#theme_support_${ ampMode }` );
 	await expect( page ).toClick( '#submit' );
 	await page.waitForNavigation();
 };
