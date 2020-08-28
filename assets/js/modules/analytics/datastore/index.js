@@ -43,6 +43,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 		'internalWebPropertyID',
 		'useSnippet',
 		'trackingDisabled',
+		'ownerID',
 	],
 	adminPage: 'googlesitekit-module-analytics',
 } );

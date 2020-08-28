@@ -14,8 +14,10 @@ use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
@@ -126,6 +128,14 @@ final class OAuth_Client {
 	private $http_proxy;
 
 	/**
+	 * Owner_ID instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Owner_ID
+	 */
+	private $owner_id;
+
+	/**
 	 * Access token for communication with Google APIs, for temporary storage.
 	 *
 	 * @since 1.0.0
@@ -180,6 +190,7 @@ final class OAuth_Client {
 		$this->google_proxy           = $google_proxy ?: new Google_Proxy( $this->context );
 		$this->profile                = $profile ?: new Profile( $this->user_options );
 		$this->http_proxy             = $http_proxy ?: new WP_HTTP_Proxy();
+		$this->owner_id               = new Owner_ID( $this->options );
 	}
 
 	/**
@@ -714,6 +725,11 @@ final class OAuth_Client {
 		);
 		$this->set_granted_scopes( $scopes );
 
+		$current_user_id = get_current_user_id();
+		if ( $this->should_update_owner_id( $current_user_id ) ) {
+			$this->owner_id->set( $current_user_id );
+		}
+
 		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
 		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
@@ -857,6 +873,31 @@ final class OAuth_Client {
 		$query_params['hl']               = get_user_locale();
 
 		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
+	}
+
+	/**
+	 * Determines whether the current owner ID must be changed or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id Current user ID.
+	 * @return bool TRUE if owner needs to be changed, otherwise FALSE.
+	 */
+	private function should_update_owner_id( $user_id ) {
+		$current_owner_id = $this->owner_id->get();
+		if ( $current_owner_id === $user_id ) {
+			return false;
+		}
+
+		if ( ! empty( $current_owner_id ) && user_can( $current_owner_id, Permissions::MANAGE_OPTIONS ) ) {
+			return false;
+		}
+
+		if ( ! user_can( $user_id, Permissions::MANAGE_OPTIONS ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

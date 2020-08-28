@@ -29,13 +29,14 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import PreviewTable from '../../../../components/preview-table';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import MiniChart from '../../../../components/mini-chart';
+import { numberFormat } from '../../../../util/i18n';
+import { getCurrentDateRange } from '../../../../util/date-range';
 
-function AcquisitionSources( { data } ) {
+function AcquisitionSources( { data, args } ) {
 	if ( ! data ) {
-		return <PreviewTable rows={ 3 } rowHeight={ 50 } />;
+		return null;
 	}
 
 	const hasTotals = Array.isArray( data[ 0 ].data.totals ) && data[ 0 ].data.totals.length;
@@ -44,7 +45,13 @@ function AcquisitionSources( { data } ) {
 		return null;
 	}
 
-	const headers = [
+	const options = {
+		hideHeader: true,
+		chartsEnabled: true,
+	};
+
+	let keyColumnIndex = 0;
+	let headers = [
 		{
 			title: __( 'Source', 'google-site-kit' ),
 			primary: true,
@@ -54,27 +61,61 @@ function AcquisitionSources( { data } ) {
 		},
 	];
 
-	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
-	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
+	const { dateRange, url } = args;
+	if ( url ) {
+		const currentRange = getCurrentDateRange( dateRange );
 
-		return [
-			row.dimensions[ 0 ],
+		keyColumnIndex = 1;
+		options.hideHeader = false;
+		options.chartsEnabled = false;
+
+		headers = [
+			{
+				title: __( 'Channel', 'google-site-kit' ),
+				tooltip: __( 'Channel refers to where your traffic originated from', 'google-site-kit' ),
+			},
+			{
+				title: __( 'Users', 'google-site-kit' ),
+				tooltip: __( 'Number of users that originated from that traffic', 'google-site-kit' ),
+			},
+			{
+				title: __( 'New Users', 'google-site-kit' ),
+				/* translators: %s: date range */
+				tooltip: sprintf( __( 'Number of new users to visit your page over last %s', 'google-site-kit' ), currentRange ),
+			},
+			{
+				title: __( 'Sessions', 'google-site-kit' ),
+				/* translators: %s: date range */
+				tooltip: sprintf( __( 'Number of sessions users had on your website over last %s', 'google-site-kit' ), currentRange ),
+			},
+			{
+				title: __( 'Percentage', 'google-site-kit' ),
+				tooltip: __( 'Percentage of sessions', 'google-site-kit' ),
+			},
+		];
+	}
+
+	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ keyColumnIndex ];
+	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
+		const percent = ( row.metrics[ 0 ].values[ keyColumnIndex ] / totalUsers * 100 );
+		const cells = [ row.dimensions[ 0 ] ];
+
+		if ( row.metrics[ 0 ].values.length > 1 ) {
+			cells.push( ...row.metrics[ 0 ].values.map( ( value ) => numberFormat( value ) ) );
+		}
+
+		cells.push(
 			<div key={ `minichart-${ i }` } className="googlesitekit-table__body-item-chart-wrap">
 				{
-					/* translators: %s: acquisition source percentage */
+					/* translators: %1$s: acquisition source percentage */
 					sprintf( __( '%1$s%%', 'google-site-kit' ), percent.toFixed( 2 ) )
 				}
-				{ ' ' }
 				<MiniChart percent={ percent.toFixed( 1 ) } index={ i } />
-			</div>,
-		];
-	} );
+			</div>
+		);
 
-	const options = {
-		hideHeader: true,
-		chartsEnabled: true,
-	};
+		return cells;
+	} );
 
 	return (
 		<div className="googlesitekit-alltraffic-widget">
@@ -87,6 +128,10 @@ function AcquisitionSources( { data } ) {
 
 AcquisitionSources.propTypes = {
 	data: PropTypes.arrayOf( PropTypes.object ),
+	args: PropTypes.shape( {
+		url: PropTypes.string,
+		dateRange: PropTypes.string,
+	} ).isRequired,
 };
 
 export default AcquisitionSources;

@@ -37,7 +37,7 @@ export { calculateOverviewData };
 export { default as parsePropertyID } from './parse-property-id';
 export * from './validation';
 
-export const extractAnalyticsDataForTrafficChart = ( reports ) => {
+export const extractAnalyticsDataForTrafficChart = ( reports, idx = 1 ) => {
 	if ( ! reports || ! reports.length ) {
 		return null;
 	}
@@ -45,13 +45,13 @@ export const extractAnalyticsDataForTrafficChart = ( reports ) => {
 	const data = reports[ 0 ].data;
 	const rows = data.rows;
 
-	const totalUsers = data.totals[ 0 ].values[ 1 ];
+	const totalUsers = data.totals[ 0 ].values[ idx ];
 	const dataMap = [
 		[ 'Source', 'Percent' ],
 	];
 
 	each( rows, ( row ) => {
-		const users = row.metrics[ 0 ].values[ 1 ];
+		const users = row.metrics[ 0 ].values[ idx ];
 		const percent = ( users / totalUsers );
 
 		const source = row.dimensions[ 0 ];

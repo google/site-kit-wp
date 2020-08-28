@@ -53,7 +53,13 @@ export async function toHaveValidAMPForUser( path ) {
 	const html = await fetchPageContent( urlToFetch );
 	const jsDoc = new JSDOM( html ).window.document;
 	try {
-		expect( jsDoc.querySelector( '#amp-admin-bar-item-status-icon' ).textContent ).toMatch( '✅' );
+		const iconElement = jsDoc.querySelector( '#amp-admin-bar-item-status-icon' );
+		// AMP v2 uses an amp-icon class, as well as additional classes for validity.
+		if ( iconElement.classList.contains( 'amp-icon' ) ) {
+			expect( iconElement.classList.contains( 'amp-valid' ) ).toBe( true );
+		} else { // AMP v1
+			expect( iconElement.textContent ).toMatch( '✅' );
+		}
 		pass = true;
 		message = () => 'Expected logged-in user not to have valid AMP';
 	} catch ( error ) {

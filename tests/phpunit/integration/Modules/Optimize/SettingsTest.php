@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Optimize;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Optimize\Settings;
+use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
@@ -20,6 +21,8 @@ use Google\Site_Kit\Tests\Modules\SettingsTestCase;
  * @group Optimize
  */
 class SettingsTest extends SettingsTestCase {
+
+	use Setting_With_Owned_Keys_ContractTests;
 
 	public function test_get_default() {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
@@ -29,6 +32,7 @@ class SettingsTest extends SettingsTestCase {
 			array(
 				'optimizeID'        => '',
 				'ampExperimentJSON' => '',
+				'ownerID'           => 0,
 			),
 			get_option( Settings::OPTION )
 		);
@@ -104,6 +108,14 @@ class SettingsTest extends SettingsTestCase {
 			),
 			$option
 		);
+	}
+
+	protected function get_testcase() {
+		return $this;
+	}
+
+	protected function get_setting_with_owned_keys() {
+		return new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 	}
 
 	/**
