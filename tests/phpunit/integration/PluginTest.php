@@ -50,7 +50,7 @@ class PluginTest extends TestCase {
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'login_head' );
 		$GLOBALS['wp_actions'] = array();
-		
+
 		$plugin->register();
 
 		$this->assertActionRendersGeneratorTag( 'wp_head' );

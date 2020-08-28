@@ -32,7 +32,7 @@ class Exit_HandlerTest extends TestCase {
 				return function () use ( $spy ) {
 					$spy->invoke();
 				};
-			} 
+			}
 		);
 		$this->assertArrayNotHasKey( 'invoke', $spy->invocations );
 

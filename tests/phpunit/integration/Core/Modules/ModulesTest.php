@@ -27,7 +27,7 @@ class ModulesTest extends TestCase {
 			function ( $instance ) {
 				return get_class( $instance );
 			},
-			$modules->get_available_modules() 
+			$modules->get_available_modules()
 		);
 
 		$this->assertEqualSets(
@@ -223,7 +223,7 @@ class ModulesTest extends TestCase {
 		$fake_module->set_on_activation_callback(
 			function () use ( &$activation_invocations ) {
 				$activation_invocations++;
-			} 
+			}
 		);
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
@@ -251,7 +251,7 @@ class ModulesTest extends TestCase {
 		$fake_module->set_on_deactivation_callback(
 			function () use ( &$deactivation_invocations ) {
 				$deactivation_invocations++;
-			} 
+			}
 		);
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );

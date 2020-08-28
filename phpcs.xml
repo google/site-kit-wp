@@ -1,28 +1,55 @@
 <?xml version="1.0"?>
 <ruleset name="Site Kit by Google Project Rules">
 
-	<rule ref="WordPress-VIP-Go" />
-
-	<rule ref="WordPress-Core">
-		<exclude name="WordPress.PHP.DisallowShortTernary" />
-		<!-- Prevent this from showing up as a warning on every run. See WordPress/WordPress-Coding-Standards#1425 -->
-		<exclude name="WordPress.WP.TimezoneChange.DeprecatedSniff"/>
-	</rule>
-
 	<rule ref="WordPress-Docs">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress-Extra">
-		<!-- Forget about file names -->
+		<!-- Ignore WordPress core file naming conventions since Site Kit uses PSR-4 -->
 		<exclude name="WordPress.Files.FileName"/>
+		<!-- Site Kit doesn't use base64 encoding functions to "obfuscate code" -->
+		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode"/>
+		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode"/>
+		<!-- Allow short ternary -->
+		<exclude name="WordPress.PHP.DisallowShortTernary" />
+		<!-- Prevent this from showing up as a warning on every run. See WordPress/WordPress-Coding-Standards#1425 -->
+		<exclude name="WordPress.WP.TimezoneChange.DeprecatedSniff"/>
 	</rule>
 
 	<!-- Use correct textdomain -->
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" value="google-site-kit" />
+			<property name="text_domain" type="array">
+				<element value="google-site-kit"/>
+				<!-- Use default text domain when relying on WP core strings. -->
+				<element value="default"/>
+			</property>
 		</properties>
+	</rule>
+
+	<!-- Include only WordPress-VIP-Go rules but not the ruleset since it makes WPCS less strict -->
+	<rule ref="WordPressVIPMinimum.Functions">
+		<!-- Allow user meta since for Site Kit there is no alternative -->
+		<exclude name="WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_add_user_meta"/>
+		<exclude name="WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_delete_user_meta"/>
+		<exclude name="WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_get_user_meta"/>
+		<exclude name="WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_update_user_meta"/>
+	</rule>
+	<rule ref="WordPressVIPMinimum.Performance"/>
+	<rule ref="WordPressVIPMinimum.Files">
+		<exclude name="WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant"/>
+		<exclude name="WordPressVIPMinimum.Files.IncludingFile.UsingVariable"/>
+	</rule>
+	<rule ref="WordPressVIPMinimum.UserExperience"/>
+	<rule ref="WordPressVIPMinimum.Security"/>
+	<rule ref="WordPressVIPMinimum.Variables">
+		<!-- This sniff is severely broken, flaggin e.g. $this as undefined variable -->
+		<exclude name="WordPressVIPMinimum.Variables.VariableAnalysis.UndefinedVariable"/>
+		<!-- This sniff flags unused exception variables which cannot be avoided -->
+		<exclude name="WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable"/>
+		<!-- Site Kit needs to use user meta, see above -->
+		<exclude name="WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__usermeta"/>
 	</rule>
 
 	<!-- Show details about violated sniffs -->
@@ -32,7 +59,7 @@
 	<arg name="extensions" value="php"/>
 	<file>.</file>
 
-	<!-- Rule specific exclusions -->
+	<!-- Test-specific exclusions -->
 	<rule ref="WordPress.DB.DirectDatabaseQuery">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
@@ -60,11 +87,9 @@
 	<rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
-	<rule ref="WordPressVIPMinimum.Variables.RestrictedVariables">
-		<exclude-pattern>tests/*</exclude-pattern>
-	</rule>
 
-	<!-- Third-party code -->
+	<!-- Third-party and generated code -->
+	<exclude-pattern>includes/Core/Assets/Manifest.php</exclude-pattern>
 	<exclude-pattern>node_modules/*</exclude-pattern>
 	<exclude-pattern>third-party/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
