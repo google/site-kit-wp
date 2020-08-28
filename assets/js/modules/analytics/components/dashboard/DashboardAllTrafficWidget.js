@@ -23,7 +23,6 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { trafficSourcesReportDataDefaults } from '../../util';
 import whenActive from '../../../../util/when-active';
 import ErrorText from '../../../../components/error-text';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
@@ -34,8 +33,19 @@ function DashboardAllTrafficWidget() {
 	const { report, error } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
-			...trafficSourcesReportDataDefaults,
 			dateRange: select( CORE_USER ).getDateRange(),
+			dimensions: 'ga:channelGrouping',
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+			],
+			orderby: {
+				fieldName: 'ga:users',
+				sortOrder: 'DESCENDING',
+			},
+			limit: 10,
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();

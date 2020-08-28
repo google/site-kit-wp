@@ -78,7 +78,7 @@ function AcquisitionPieChart( { data, source } ) {
 	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">
 			<GoogleChart
-				data={ extractAnalyticsDataForTrafficChart( data ) }
+				data={ extractAnalyticsDataForTrafficChart( data, 0 ) }
 				options={ GOOGLE_CHART_PIE_SETTINGS }
 				chartType="pie"
 				id="overview-piechart"

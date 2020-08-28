@@ -54,9 +54,9 @@ function AcquisitionSources( { data } ) {
 		},
 	];
 
-	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 1 ];
+	const totalUsers = data[ 0 ].data.totals[ 0 ].values[ 0 ];
 	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const percent = ( row.metrics[ 0 ].values[ 1 ] / totalUsers * 100 );
+		const percent = ( row.metrics[ 0 ].values[ 0 ] / totalUsers * 100 );
 
 		return [
 			row.dimensions[ 0 ],
