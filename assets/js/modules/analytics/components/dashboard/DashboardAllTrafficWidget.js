@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { _x } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -24,11 +29,14 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
-import ErrorText from '../../../../components/error-text';
+import Layout from '../../../../components/layout/layout';
 import PreviewBlock from '../../../../components/preview-block';
 import PreviewTable from '../../../../components/preview-table';
+import getNoDataComponent from '../../../../components/notifications/nodata';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
+import { isDataZeroForReporting } from '../../util';
 const { useSelect } = Data;
 
 function DashboardAllTrafficWidget() {
@@ -67,30 +75,32 @@ function DashboardAllTrafficWidget() {
 	} );
 
 	if ( error ) {
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ error.message } />
-			</div>
-		);
+		return getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error.code, true, true, false, error );
+	}
+
+	if ( ! loading && isDataZeroForReporting( report ) ) {
+		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, false );
 	}
 
 	return (
-		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-			<div className="mdc-layout-grid__inner">
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
-					{ loading
-						? <PreviewBlock width="282px" height="282px" shape="circular" />
-						: <AcquisitionPieChart data={ report } source />
-					}
-				</div>
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
-					{ loading
-						? <PreviewTable rows={ 3 } rowHeight={ 50 } />
-						: <AcquisitionSources data={ report } />
-					}
+		<Layout className="googlesitekit-dashboard-all-traffic">
+			<div className="mdc-layout-grid">
+				<div className="mdc-layout-grid__inner">
+					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
+						{ loading
+							? <PreviewBlock width="282px" height="282px" shape="circular" />
+							: <AcquisitionPieChart data={ report } source />
+						}
+					</div>
+					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
+						{ loading
+							? <PreviewTable rows={ 3 } rowHeight={ 50 } />
+							: <AcquisitionSources data={ report } />
+						}
+					</div>
 				</div>
 			</div>
-		</div>
+		</Layout>
 	);
 }
 
