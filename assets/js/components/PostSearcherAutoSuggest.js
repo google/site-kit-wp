@@ -52,11 +52,7 @@ const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
 				{ useCache: false }
 			);
 
-			if ( Array.isArray( queryResults ) ) {
-				setResults( queryResults );
-			} else {
-				setResults( [] );
-			}
+			setResults( queryResults );
 		} catch ( err ) {
 			setResults( [] );
 		}
