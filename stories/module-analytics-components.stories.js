@@ -68,7 +68,7 @@ storiesOf( 'Analytics Module/Components/Dashboard/All Traffic Widget', module )
 		const setupRegistry = dashboardAllTrafficRegistrySetup( ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetReport(
 				dashboardAllTrafficData,
-				dashboardAllTrafficArgs,
+				{ options: dashboardAllTrafficArgs },
 			);
 		} );
 
@@ -82,7 +82,7 @@ storiesOf( 'Analytics Module/Components/Dashboard/All Traffic Widget', module )
 		const setupRegistry = dashboardAllTrafficRegistrySetup( ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetReport(
 				[],
-				dashboardAllTrafficArgs,
+				{ options: dashboardAllTrafficArgs },
 			);
 		} );
 
@@ -116,7 +116,7 @@ storiesOf( 'Analytics Module/Components/Page Dashboard/All Traffic Widget', modu
 		const setupRegistry = pageDashboardAllTrafficRegistrySetup( ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetReport(
 				pageDashboardAllTrafficData,
-				pageDashboardAllTrafficArgs,
+				{ options: pageDashboardAllTrafficArgs },
 			);
 		} );
 
@@ -130,7 +130,7 @@ storiesOf( 'Analytics Module/Components/Page Dashboard/All Traffic Widget', modu
 		const setupRegistry = pageDashboardAllTrafficRegistrySetup( ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetReport(
 				[],
-				pageDashboardAllTrafficArgs,
+				{ options: pageDashboardAllTrafficArgs },
 			);
 		} );
 
