@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * WordPress dependencies
  */
-import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
+import { addFilter, removeAllFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -19,6 +19,7 @@ import { createAddToFilter } from '../assets/js/util/helpers';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
+import CollectModuleData from '../assets/js/components/data/collect-module-data';
 
 storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {
@@ -54,14 +55,6 @@ storiesOf( 'Global', module )
 			'googlesitekit.SearchConsole',
 			addGoogleSitekitSearchConsoleAdminbarWidget );
 
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Adminbar'
-			);
-		}, 1250 );
-
 		return (
 			<div id="wpadminbar">
 				<div className="googlesitekit-plugin">
@@ -69,14 +62,11 @@ storiesOf( 'Global', module )
 						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
 							<WithTestRegistry callback={ setupRegistry }>
 								<GoogleSitekitAdminbar />
+								<CollectModuleData context="Adminbar" />
 							</WithTestRegistry>
 						</section>
 					</div>
 				</div>
 			</div>
 		);
-	}, {
-		options: {
-			readySelector: '.googlesitekit-data-block',
-		},
 	} );

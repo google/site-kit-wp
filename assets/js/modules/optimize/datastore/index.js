@@ -32,6 +32,7 @@ let baseModuleStore = Modules.createModuleStore( 'optimize', {
 	settingSlugs: [
 		'ampExperimentJSON',
 		'optimizeID',
+		'ownerID',
 	],
 } );
 
