@@ -17,18 +17,11 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
+import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidget';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { WithTestRegistry } from '../tests/js/utils';
 import {
 	dashboardAllTrafficArgs,
 	dashboardAllTrafficData,
@@ -36,125 +29,20 @@ import {
 	pageDashboardAllTrafficData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
-function allTrafficWidgetRegistrySetup( url, cb = () => {} ) {
-	return ( { dispatch } ) => {
-		cb( { dispatch } );
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
+	datastore: STORE_NAME,
+	group: 'Analytics Module/Components/Dashboard/All Traffic Widget',
+	data: dashboardAllTrafficData,
+	options: dashboardAllTrafficArgs,
+	component: DashboardAllTrafficWidget,
+} );
 
-		dispatch( CORE_SITE ).receiveSiteInfo( {
-			referenceSiteURL: null,
-			currentEntityURL: url,
-		} );
-
-		dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-		] );
-	};
-}
-
-function dashboardAllTrafficRegistrySetup( cb ) {
-	return allTrafficWidgetRegistrySetup( null, cb );
-}
-
-function pageDashboardAllTrafficRegistrySetup( cb ) {
-	return allTrafficWidgetRegistrySetup( pageDashboardAllTrafficArgs.url, cb );
-}
-
-storiesOf( 'Analytics Module/Components/Dashboard/All Traffic Widget', module )
-	.add( 'Loaded', () => {
-		const setupRegistry = dashboardAllTrafficRegistrySetup( ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport(
-				dashboardAllTrafficData,
-				{ options: dashboardAllTrafficArgs },
-			);
-		} );
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardAllTrafficWidget />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Data Unavailable', () => {
-		const setupRegistry = dashboardAllTrafficRegistrySetup( ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport(
-				[],
-				{ options: dashboardAllTrafficArgs },
-			);
-		} );
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardAllTrafficWidget />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Error', () => {
-		const setupRegistry = dashboardAllTrafficRegistrySetup( ( { dispatch } ) => {
-			const error = {
-				code: 'missing_required_param',
-				message: 'Request parameter is empty: metrics.',
-				data: {},
-			};
-
-			dispatch( STORE_NAME ).receiveError( error, 'getReport', [ dashboardAllTrafficArgs ] );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ dashboardAllTrafficArgs ] );
-		} );
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardAllTrafficWidget />
-			</WithTestRegistry>
-		);
-	} );
-
-storiesOf( 'Analytics Module/Components/Page Dashboard/All Traffic Widget', module )
-	.add( 'Loaded', () => {
-		const setupRegistry = pageDashboardAllTrafficRegistrySetup( ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport(
-				pageDashboardAllTrafficData,
-				{ options: pageDashboardAllTrafficArgs },
-			);
-		} );
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardAllTrafficWidget />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Data Unavailable', () => {
-		const setupRegistry = pageDashboardAllTrafficRegistrySetup( ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport(
-				[],
-				{ options: pageDashboardAllTrafficArgs },
-			);
-		} );
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardAllTrafficWidget />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Error', () => {
-		const setupRegistry = pageDashboardAllTrafficRegistrySetup( ( { dispatch } ) => {
-			const error = {
-				code: 'missing_required_param',
-				message: 'Request parameter is empty: metrics.',
-				data: {},
-			};
-
-			dispatch( STORE_NAME ).receiveError( error, 'getReport', [ pageDashboardAllTrafficArgs ] );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ pageDashboardAllTrafficArgs ] );
-		} );
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardAllTrafficWidget />
-			</WithTestRegistry>
-		);
-	} );
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
+	datastore: STORE_NAME,
+	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
+	data: pageDashboardAllTrafficData,
+	options: pageDashboardAllTrafficArgs,
+	component: DashboardAllTrafficWidget,
+} );
