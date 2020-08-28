@@ -29,15 +29,10 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import PreviewTable from '../../../../components/preview-table';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import MiniChart from '../../../../components/mini-chart';
 
 function AcquisitionSources( { data } ) {
-	if ( ! data ) {
-		return <PreviewTable rows={ 3 } rowHeight={ 50 } />;
-	}
-
 	const hasTotals = Array.isArray( data[ 0 ].data.totals ) && data[ 0 ].data.totals.length;
 	const hasRows = Array.isArray( data[ 0 ].data.rows ) && data[ 0 ].data.rows.length;
 	if ( ! hasTotals || ! hasRows ) {

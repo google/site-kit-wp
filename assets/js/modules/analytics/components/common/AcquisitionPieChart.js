@@ -29,7 +29,6 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import PreviewBlock from '../../../../components/preview-block';
 import GoogleChart from '../../../../components/google-chart';
 import { getSiteKitAdminURL, sanitizeHTML } from '../../../../util';
 import { extractAnalyticsDataForTrafficChart } from '../../util';
@@ -61,10 +60,6 @@ const GOOGLE_CHART_PIE_SETTINGS = {
 };
 
 function AcquisitionPieChart( { data, source } ) {
-	if ( ! data ) {
-		return <PreviewBlock width="282px" height="282px" shape="circular" />;
-	}
-
 	let sourceMessage = '';
 	if ( source ) {
 		sourceMessage = sprintf(
