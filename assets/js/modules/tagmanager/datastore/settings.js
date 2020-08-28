@@ -199,7 +199,7 @@ export const validateCanSubmitChanges = ( select ) => {
 	const strictSelect = createStrictSelect( select );
 	// Strict select will cause all selector functions to throw an error
 	// if `undefined` is returned, otherwise it behaves the same as `select`.
-	// This ensures that the function returns `false` until all data dependencies are resolved.
+	// This ensures that the selector returns `false` until all data dependencies are resolved.
 	const {
 		getAccountID,
 		getContainerID,
