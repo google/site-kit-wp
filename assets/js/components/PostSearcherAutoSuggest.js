@@ -72,7 +72,7 @@ const PostSearcherAutoSuggest = ( { setCanSubmit, setMatch } ) => {
 		} else {
 			setCanSubmit( false );
 		}
-	}, [ results ] );
+	}, [ results, setCanSubmit, setMatch ] );
 
 	const onInputChange = useCallback( ( event ) => {
 		setCanSubmit( false );
