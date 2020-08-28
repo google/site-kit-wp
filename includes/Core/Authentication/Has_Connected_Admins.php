@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Storage\Has_Connected_Admins
+ * Class Google\Site_Kit\Core\Authentication\Has_Connected_Admins
  *
- * @package   Google\Site_Kit\Core\Storage
+ * @package   Google\Site_Kit\Core\Authentication
  * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Storage;
+namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options_Interface;
