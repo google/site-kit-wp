@@ -92,7 +92,7 @@ function DashboardAllTrafficWidget() {
 	} );
 
 	if ( ! loading && error ) {
-		return getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error.code, true, true, false, error );
+		return getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error.message, true, true, false, error );
 	}
 
 	if ( ! loading && isDataZeroForReporting( report ) ) {
