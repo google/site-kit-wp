@@ -40,6 +40,8 @@ export * from './validation';
 /**
  * Extracts data required for a pie chart from the Analytics report information.
  *
+ * @since n.e.x.t Added keyColumnIndex argument.
+ *
  * @param {Array} reports         The array with reports data.
  * @param {number} keyColumnIndex The number of a column to extract metrics data from.
  * @return {Array} Extracted data.
