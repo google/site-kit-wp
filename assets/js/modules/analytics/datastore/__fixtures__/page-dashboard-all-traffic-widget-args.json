@@ -1,0 +1,24 @@
+{
+	"dateRange": "last-28-days",
+	"dimensions": "ga:channelGrouping",
+	"orderby": {
+		"fieldName": "ga:users",
+		"sortOrder": "DESCENDING"
+	},
+	"limit": 10,
+	"url": "https://www.example.com/plans-pricing/",
+	"metrics": [
+		{
+			"expression": "ga:sessions",
+			"alias": "Sessions"
+		},
+		{
+			"expression": "ga:users",
+			"alias": "Users"
+		},
+		{
+			"expression": "ga:newUsers",
+			"alias": "New Users"
+		}
+	]
+}

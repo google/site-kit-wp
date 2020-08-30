@@ -15,8 +15,8 @@ import DashboardModuleHeader from '../assets/js/components/dashboard/dashboard-m
 import CTA from '../assets/js/components/notifications/cta';
 import { createAddToFilter } from '../assets/js/util/helpers';
 import Layout from '../assets/js/components/layout/layout';
-import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/DashboardAcquisitionPieChart';
-import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
+import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
+import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 import DashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/DashboardSearchFunnelInner';
 import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopLevel';
 import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetTopLevel';
@@ -50,7 +50,7 @@ storiesOf( 'Dashboard', module )
 							mdc-layout-grid__cell--span-4-tablet
 							mdc-layout-grid__cell--span-4-phone
 						">
-							<DashboardAcquisitionPieChart source />
+							<LegacyDashboardAcquisitionPieChart source />
 						</div>
 						<div className="
 							mdc-layout-grid__cell
@@ -58,7 +58,7 @@ storiesOf( 'Dashboard', module )
 							mdc-layout-grid__cell--span-4-tablet
 							mdc-layout-grid__cell--span-4-phone
 						">
-							<AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
+							<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
 						</div>
 					</div>
 				</div>

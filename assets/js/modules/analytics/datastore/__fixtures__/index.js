@@ -25,3 +25,7 @@ export { default as getTagPermissionsAccess } from './tag-permissions-access';
 export { default as getTagPermissionsNoAccess } from './tag-permissions-no-access';
 export { default as createAccount } from './create-account';
 export { default as report } from './report';
+export { default as dashboardAllTrafficArgs } from './dashboard-all-traffic-widget-args.json';
+export { default as dashboardAllTrafficData } from './dashboard-all-traffic-widget-data.json';
+export { default as pageDashboardAllTrafficArgs } from './page-dashboard-all-traffic-widget-args.json';
+export { default as pageDashboardAllTrafficData } from './page-dashboard-all-traffic-widget-data.json';

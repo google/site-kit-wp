@@ -1,0 +1,96 @@
+[
+	{
+		"nextPageToken": null,
+		"columnHeader": {
+			"dimensions": [
+				"ga:channelGrouping"
+			],
+			"metricHeader": {
+				"metricHeaderEntries": [
+					{
+						"name": "Users",
+						"type": "INTEGER"
+					}
+				]
+			}
+		},
+		"data": {
+			"dataLastRefreshed": null,
+			"isDataGolden": null,
+			"rowCount": 4,
+			"samplesReadCounts": null,
+			"samplingSpaceSizes": null,
+			"rows": [
+				{
+					"dimensions": [
+						"Direct"
+					],
+					"metrics": [
+						{
+							"values": [
+								"866"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Organic Search"
+					],
+					"metrics": [
+						{
+							"values": [
+								"412"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Referral"
+					],
+					"metrics": [
+						{
+							"values": [
+								"47"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Social"
+					],
+					"metrics": [
+						{
+							"values": [
+								"4"
+							]
+						}
+					]
+				}
+			],
+			"totals": [
+				{
+					"values": [
+						"1329"
+					]
+				}
+			],
+			"minimums": [
+				{
+					"values": [
+						"4"
+					]
+				}
+			],
+			"maximums": [
+				{
+					"values": [
+						"866"
+					]
+				}
+			]
+		}
+	}
+]
