@@ -91,7 +91,7 @@ function DashboardAllTrafficWidget() {
 		};
 	} );
 
-	if ( error ) {
+	if ( ! loading && error ) {
 		return getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error.code, true, true, false, error );
 	}
 
