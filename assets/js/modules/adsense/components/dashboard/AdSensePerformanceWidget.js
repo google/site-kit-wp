@@ -137,6 +137,7 @@ export default withData(
 			datapoint: 'earnings',
 			data: {
 				dateRange: 'last-28-days',
+				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
