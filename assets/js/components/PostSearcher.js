@@ -49,11 +49,9 @@ function PostSearcher() {
 
 		if ( match && match.ID ) {
 			const {
-				ID: id,
 				permalink: permaLink,
 			} = match;
 
-			args.id = id;
 			args.permaLink = permaLink;
 		}
 
