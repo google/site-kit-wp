@@ -64,14 +64,14 @@ function PostSearcherAutoSuggest( { setCanSubmit, setMatch } ) {
 
 	useEffect( () => {
 		if ( debouncedValue !== '' ) {
-			const request = API.get(
+			API.get(
 				'core', 'search', 'post-search',
 				{ query: encodeURIComponent( debouncedValue ) },
 				{ useCache: false },
-			);
-
-			request.then( setResults )
-				.catch( () => setResults( [] ) );
+			)
+				.then( setResults )
+				.catch( () => setResults( [] ) )
+			;
 		}
 	}, [ debouncedValue, setResults ] );
 
