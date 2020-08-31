@@ -47,8 +47,12 @@ final class WP_Query_Factory {
 
 		$query_args = self::parse_wp_query_args( $url_path_vars, $url_query_vars );
 
+		WP_Context_Switcher::switch_context( WP_Context_Switcher::CONTEXT_FRONT );
+
 		$query = new WP_Query();
 		$query->parse_query( $query_args );
+
+		WP_Context_Switcher::restore_context();
 
 		return $query;
 	}

@@ -269,6 +269,9 @@ class Entity_FactoryTest extends TestCase {
 		// Set 'show_on_front' to 'posts' home page archive.
 		update_option( 'show_on_front', 'posts' );
 
+		// Pretend we're in the admin. The URL-based logic should ignore that.
+		set_current_screen( 'edit.php' );
+
 		// Expect home 'blog' entity for home URL (and the above 'show_on_front').
 		$this->assertEntity(
 			new Entity(

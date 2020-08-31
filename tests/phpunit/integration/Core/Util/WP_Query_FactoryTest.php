@@ -992,6 +992,9 @@ class WP_Query_FactoryTest extends TestCase {
 
 		flush_rewrite_rules();
 
+		// Pretend we're in the admin. The URL-based logic should ignore that.
+		set_current_screen( 'edit.php' );
+
 		$query = WP_Query_Factory::from_url( $url );
 		$query->get_posts();
 
