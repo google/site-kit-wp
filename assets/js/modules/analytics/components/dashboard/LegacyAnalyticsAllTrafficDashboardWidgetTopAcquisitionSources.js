@@ -1,5 +1,5 @@
 /**
- * AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources component.
+ * LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -33,7 +33,7 @@ import MiniChart from '../../../../components/mini-chart';
 import PreviewTable from '../../../../components/preview-table';
 import { trafficSourcesReportDataDefaults } from '../../util';
 
-class AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component {
+class LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component {
 	render() {
 		const { data } = this.props;
 		if ( ! data || ! data.length ) {
@@ -85,7 +85,7 @@ class AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component 
 }
 
 export default withData(
-	AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources,
+	LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources,
 	[
 		{
 			type: TYPE_MODULES,
