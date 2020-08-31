@@ -45,17 +45,9 @@ function PostSearcher() {
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
 	const detailsURL = useSelect( ( select ) => {
-		const args = {};
-
-		if ( match && match.ID ) {
-			const {
-				permalink: permaLink,
-			} = match;
-
-			args.permaLink = permaLink;
-		}
-
-		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', args );
+		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			permaLink: match?.permalink,
+		} );
 	} );
 
 	const onClick = useCallback( () => {
