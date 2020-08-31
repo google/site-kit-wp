@@ -1,5 +1,5 @@
 /**
- * DashboardAcquisitionPieChart component.
+ * LegacyDashboardAcquisitionPieChart component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -38,7 +38,7 @@ import Link from '../../../../components/link';
 import PreviewBlock from '../../../../components/preview-block';
 import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
 
-class DashboardAcquisitionPieChart extends Component {
+class LegacyDashboardAcquisitionPieChart extends Component {
 	render() {
 		const {
 			data,
@@ -49,7 +49,7 @@ class DashboardAcquisitionPieChart extends Component {
 			return null;
 		}
 
-		const processedData = extractAnalyticsDataForTrafficChart( data );
+		const processedData = extractAnalyticsDataForTrafficChart( data, 1 );
 		const options = {
 			chartArea: {
 				width: '100%',
@@ -105,16 +105,16 @@ class DashboardAcquisitionPieChart extends Component {
 	}
 }
 
-DashboardAcquisitionPieChart.defaultProps = {
+LegacyDashboardAcquisitionPieChart.defaultProps = {
 	source: false,
 };
 
-DashboardAcquisitionPieChart.propTypes = {
+LegacyDashboardAcquisitionPieChart.propTypes = {
 	source: PropTypes.bool,
 };
 
 export default withData(
-	DashboardAcquisitionPieChart,
+	LegacyDashboardAcquisitionPieChart,
 	[
 		{
 			type: TYPE_MODULES,
