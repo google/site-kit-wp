@@ -81,11 +81,7 @@ final class Entity_Factory {
 			return null;
 		}
 
-		WP_Context_Switcher::switch_context( WP_Context_Switcher::CONTEXT_FRONT );
-
-		$query->get_posts();
-
-		WP_Context_Switcher::restore_context();
+		WP_Query_Factory::run_query( $query );
 
 		return self::from_wp_query( $query );
 	}
