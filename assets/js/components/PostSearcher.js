@@ -51,12 +51,10 @@ function PostSearcher() {
 			const {
 				ID: id,
 				permalink: permaLink,
-				post_title: pageTitle,
 			} = match;
 
 			args.id = id;
 			args.permaLink = permaLink;
-			args.pageTitle = pageTitle;
 		}
 
 		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', args );
