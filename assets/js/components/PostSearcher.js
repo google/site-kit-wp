@@ -44,7 +44,7 @@ function PostSearcher() {
 	const [ match, setMatch ] = useState( {} );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
-	const adminURL = useSelect( ( select ) => {
+	const detailsURL = useSelect( ( select ) => {
 		const args = {};
 
 		if ( match && match.ID ) {
@@ -61,8 +61,8 @@ function PostSearcher() {
 	} );
 
 	const onClick = useCallback( () => {
-		global.location.assign( adminURL );
-	}, [ adminURL ] );
+		global.location.assign( detailsURL );
+	}, [ detailsURL ] );
 
 	return (
 		<div
