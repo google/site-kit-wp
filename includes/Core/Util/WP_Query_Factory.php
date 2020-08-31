@@ -47,12 +47,12 @@ final class WP_Query_Factory {
 
 		$query_args = self::parse_wp_query_args( $url_path_vars, $url_query_vars );
 
-		WP_Context_Switcher::switch_context( WP_Context_Switcher::CONTEXT_FRONT );
+		$restore_context = WP_Context_Switcher::with_frontend_context();
 
 		$query = new WP_Query();
 		$query->parse_query( $query_args );
 
-		WP_Context_Switcher::restore_context();
+		$restore_context();
 
 		return $query;
 	}
@@ -70,11 +70,11 @@ final class WP_Query_Factory {
 	 * @param WP_Query $query WordPress query instance to run the query on.
 	 */
 	public static function run_query( WP_Query $query ) {
-		WP_Context_Switcher::switch_context( WP_Context_Switcher::CONTEXT_FRONT );
+		$restore_context = WP_Context_Switcher::with_frontend_context();
 
 		$query->get_posts();
 
-		WP_Context_Switcher::restore_context();
+		$restore_context();
 
 		// Check if this is a single paginated post query.
 		if ( $query->posts && $query->is_singular() && $query->post && ! empty( $query->query_vars['page'] ) ) {

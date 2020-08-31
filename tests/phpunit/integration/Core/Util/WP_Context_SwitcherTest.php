@@ -18,39 +18,39 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class WP_Context_SwitcherTest extends TestCase {
 
-	public function test_switch_context_front() {
+	public function test_with_frontend_context() {
 		$this->go_to( '/' );
 		$this->assertFalse( is_admin() );
 
 		// No need to switch to 'front' context when already in frontend.
-		$this->assertFalse( WP_Context_Switcher::switch_context( WP_Context_Switcher::CONTEXT_FRONT ) );
+		$restore_context = WP_Context_Switcher::with_frontend_context();
 		$this->assertFalse( is_admin() );
-		$this->assertFalse( WP_Context_Switcher::restore_context() );
+		$this->assertFalse( $restore_context() );
 
 		set_current_screen( 'edit.php' );
 		$this->assertTrue( is_admin() );
 
 		// Switch from admin to 'front' context.
-		$this->assertTrue( WP_Context_Switcher::switch_context( WP_Context_Switcher::CONTEXT_FRONT ) );
+		$restore_context = WP_Context_Switcher::with_frontend_context();
 		$this->assertFalse( is_admin() );
-		$this->assertTrue( WP_Context_Switcher::restore_context() );
+		$this->assertTrue( $restore_context() );
 	}
 
-	public function test_switch_context_admin() {
+	public function test_with_admin_context() {
 		$this->go_to( '/' );
 		$this->assertFalse( is_admin() );
 
 		// Switch from frontend to 'admin' context.
-		$this->assertTrue( WP_Context_Switcher::switch_context( WP_Context_Switcher::CONTEXT_ADMIN ) );
+		$restore_context = WP_Context_Switcher::with_admin_context();
 		$this->assertTrue( is_admin() );
-		$this->assertTrue( WP_Context_Switcher::restore_context() );
+		$this->assertTrue( $restore_context() );
 
 		set_current_screen( 'edit.php' );
 		$this->assertTrue( is_admin() );
 
 		// No need to switch to 'admin' context when already in admin.
-		$this->assertFalse( WP_Context_Switcher::switch_context( WP_Context_Switcher::CONTEXT_ADMIN ) );
+		$restore_context = WP_Context_Switcher::with_admin_context();
 		$this->assertTrue( is_admin() );
-		$this->assertFalse( WP_Context_Switcher::restore_context() );
+		$this->assertFalse( $restore_context() );
 	}
 }

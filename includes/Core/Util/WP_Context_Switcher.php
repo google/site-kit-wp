@@ -18,8 +18,6 @@ namespace Google\Site_Kit\Core\Util;
  * @ignore
  */
 class WP_Context_Switcher {
-	const CONTEXT_FRONT = 'front';
-	const CONTEXT_ADMIN = 'admin';
 
 	/**
 	 * Stack of original contexts switched from.
@@ -30,58 +28,84 @@ class WP_Context_Switcher {
 	private static $context_stack = array();
 
 	/**
-	 * Switches WordPress context if necessary.
+	 * Switches to WordPress frontend context if necessary.
 	 *
-	 * Context is only switched if WordPress is not already in the given context. Context should only ever be switched
-	 * temporarily. Call {@see WP_Context_Switcher::restore_context()} as soon as possible after to restore the
-	 * original context.
+	 * Context is only switched if WordPress is not already in frontend context. Context should only ever be switched
+	 * temporarily. Call the returned closure as soon as possible after to restore the original context.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $context WordPress context to switch to. Either 'front' or 'admin'.
-	 * @return boolean True if context was switched, false otherwise.
+	 * @return callable Closure that restores context and returns true if context was restored or false otherwise.
 	 */
-	public static function switch_context( $context ) {
+	public static function with_frontend_context() {
 		global $current_screen;
 
-		switch ( $context ) {
-			case self::CONTEXT_ADMIN:
-				if ( is_admin() ) {
-					return false;
-				}
-				self::load_wp_screen_api();
-				self::$context_stack[] = $current_screen;
-				$current_screen        = \WP_Screen::get( 'index' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-				return true;
-			case self::CONTEXT_FRONT:
-				if ( ! is_admin() ) {
-					return false;
-				}
-				self::load_wp_screen_api();
-				self::$context_stack[] = $current_screen;
-				$current_screen        = \WP_Screen::get( 'front' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-				return true;
+		if ( ! is_admin() ) {
+			return function() {
+				return false;
+			};
 		}
 
-		return false;
+		self::switch_current_screen( 'front' );
+		return self::get_restore_closure();
 	}
 
 	/**
-	 * Restores previous WordPress context if it has been switched.
+	 * Switches to WordPress admin context if necessary.
+	 *
+	 * Context is only switched if WordPress is not already in admin context. Context should only ever be switched
+	 * temporarily. Call the returned closure as soon as possible after to restore the original context.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return boolean True if context was restored, false otherwise.
+	 * @return callable Closure that restores context and returns true if context was restored or false otherwise.
 	 */
-	public static function restore_context() {
+	public static function with_admin_context() {
 		global $current_screen;
 
-		if ( empty( self::$context_stack ) ) {
-			return false;
+		if ( is_admin() ) {
+			return function() {
+				return false;
+			};
 		}
 
-		$current_screen = array_pop( self::$context_stack ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		return true;
+		self::switch_current_screen( 'index' );
+		return self::get_restore_closure();
+	}
+
+	/**
+	 * Switches the current WordPress screen via the given screen ID or hook name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $screen_id WordPress screen ID.
+	 */
+	private static function switch_current_screen( $screen_id ) {
+		global $current_screen;
+
+		self::load_wp_screen_api();
+		self::$context_stack[] = $current_screen;
+		$current_screen        = \WP_Screen::get( $screen_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+	}
+
+	/**
+	 * Gets closure to restore previous WordPress context if it has been switched.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable Closure that restores context and returns true if context was restored or false otherwise.
+	 */
+	private static function get_restore_closure() {
+		return static function() {
+			global $current_screen;
+
+			if ( empty( self::$context_stack ) ) { // phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.SelfInsideClosure
+				return false;
+			}
+
+			$current_screen = array_pop( self::$context_stack ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited, WordPressVIPMinimum.Variables.VariableAnalysis.SelfInsideClosure
+			return true;
+		};
 	}
 
 	/**
