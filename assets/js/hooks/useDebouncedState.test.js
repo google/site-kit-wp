@@ -17,13 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import { renderHook, act } from '@testing-library/react-hooks';
-
-/**
  * Internal dependencies
  */
+import { renderHook, actHook as act } from '../../../tests/js/test-utils';
 import { useDebouncedState } from './useDebouncedState';
 
 describe( 'useDebouncedState', () => {
