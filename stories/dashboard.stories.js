@@ -20,8 +20,10 @@ import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../as
 import LegacyDashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/LegacyDashboardSearchFunnelInner';
 import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopLevel';
 import LegacySearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
-import PostSearcher from '../assets/js/components/post-searcher';
+import PostSearcher from '../assets/js/components/PostSearcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
+import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Dashboard', module )
 	.add( 'Module Header', () => (
@@ -66,9 +68,23 @@ storiesOf( 'Dashboard', module )
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
-	.add( 'Post Searcher', () => (
-		<PostSearcher />
-	) )
+	.add( 'Post Searcher', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				usingProxy: true,
+				referenceSiteURL: 'http://example.com',
+				adminURL: 'http://example.com/wp-admin',
+				timezone: 'America/Detroit',
+				siteName: 'My Site Name',
+			} );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry } >
+				<PostSearcher />
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Search Funnel Analytics Inactive', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
