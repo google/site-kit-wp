@@ -17,12 +17,20 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import domReady from '@wordpress/dom-ready';
+
+/**
  * Internal dependencies
  */
 import './datastore';
+import Widgets from 'googlesitekit-widgets';
+import { AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain as AnalyticsSetup } from './components/setup';
 import { SettingsMain as AnalyticsSettings } from './components/settings';
+import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
 
 /**
  * WordPress dependencies
@@ -41,3 +49,19 @@ addFilter(
 	'googlesitekit.AnalyticsModuleSettings',
 	compose( fillFilterWithComponent )( AnalyticsSettings )
 );
+
+domReady( () => {
+	Widgets.registerWidget(
+		'analyticsAllTraffic',
+		{
+			component: DashboardAllTrafficWidget,
+			width: Widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_ALL_TRAFFIC,
+			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+		],
+	);
+} );
