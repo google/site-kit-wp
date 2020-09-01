@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Util\WP_Context_SwitcherTest
+ * Class Google\Site_Kit\Tests\Core\Util\WP_Context_Switcher_TraitTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2020 Google LLC
@@ -10,13 +10,13 @@
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
-use Google\Site_Kit\Core\Util\WP_Context_Switcher;
+use Google\Site_Kit\Tests\Core\Util\WP_Context_Switcher;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Util
  */
-class WP_Context_SwitcherTest extends TestCase {
+class WP_Context_Switcher_TraitTest extends TestCase {
 
 	public function test_with_frontend_context() {
 		$this->go_to( '/' );

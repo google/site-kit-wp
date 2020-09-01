@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\WP_Context_Switcher
+ * Trait Google\Site_Kit\Core\Util\WP_Context_Switcher_Trait
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2020 Google LLC
@@ -11,13 +11,13 @@
 namespace Google\Site_Kit\Core\Util;
 
 /**
- * Class for temporarily switching WordPress context, e.g. from admin to frontend.
+ * Trait for temporarily switching WordPress context, e.g. from admin to frontend.
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-class WP_Context_Switcher {
+trait WP_Context_Switcher_Trait {
 
 	/**
 	 * Switches to WordPress frontend context if necessary.
@@ -29,7 +29,7 @@ class WP_Context_Switcher {
 	 *
 	 * @return callable Closure that restores context and returns true if context was restored or false otherwise.
 	 */
-	public static function with_frontend_context() {
+	protected static function with_frontend_context() {
 		global $current_screen;
 
 		if ( ! is_admin() ) {
