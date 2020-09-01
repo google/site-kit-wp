@@ -37,7 +37,16 @@ export { calculateOverviewData };
 export { default as parsePropertyID } from './parse-property-id';
 export * from './validation';
 
-export const extractAnalyticsDataForTrafficChart = ( reports, idx = 1 ) => {
+/**
+ * Extracts data required for a pie chart from the Analytics report information.
+ *
+ * @since n.e.x.t Added keyColumnIndex argument.
+ *
+ * @param {Array} reports         The array with reports data.
+ * @param {number} keyColumnIndex The number of a column to extract metrics data from.
+ * @return {Array} Extracted data.
+ */
+export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex ) {
 	if ( ! reports || ! reports.length ) {
 		return null;
 	}
@@ -45,13 +54,13 @@ export const extractAnalyticsDataForTrafficChart = ( reports, idx = 1 ) => {
 	const data = reports[ 0 ].data;
 	const rows = data.rows;
 
-	const totalUsers = data.totals[ 0 ].values[ idx ];
+	const totalUsers = data.totals[ 0 ].values[ keyColumnIndex ];
 	const dataMap = [
 		[ 'Source', 'Percent' ],
 	];
 
 	each( rows, ( row ) => {
-		const users = row.metrics[ 0 ].values[ idx ];
+		const users = row.metrics[ 0 ].values[ keyColumnIndex ];
 		const percent = ( users / totalUsers );
 
 		const source = row.dimensions[ 0 ];
@@ -60,7 +69,7 @@ export const extractAnalyticsDataForTrafficChart = ( reports, idx = 1 ) => {
 	} );
 
 	return dataMap;
-};
+}
 
 /**
  * Reduce and process an array of analytics row data.

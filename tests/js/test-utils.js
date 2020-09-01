@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { render } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, act as actHook } from '@testing-library/react-hooks';
 import invariant from 'invariant';
 
 /**
@@ -99,3 +99,5 @@ export * from '@testing-library/react';
 export { customRender as render };
 // Override @testing-library/react-hooks's renderHook method with our own.
 export { customRenderHook as renderHook };
+// Hooks need to use the `act` from @testing-library/react-hooks.
+export { actHook };

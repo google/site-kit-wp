@@ -49,7 +49,7 @@ class LegacyDashboardAcquisitionPieChart extends Component {
 			return null;
 		}
 
-		const processedData = extractAnalyticsDataForTrafficChart( data );
+		const processedData = extractAnalyticsDataForTrafficChart( data, 1 );
 		const options = {
 			chartArea: {
 				width: '100%',
