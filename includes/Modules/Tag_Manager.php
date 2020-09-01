@@ -27,6 +27,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
@@ -94,6 +95,18 @@ final class Tag_Manager extends Module
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				$modules_routes = array(
+					// Preload Analytics settings in case it isn't active.
+					'/' . REST_Routes::REST_ROOT . '/modules/analytics/data/settings',
+				);
+
+				return array_merge( $paths, $modules_routes );
+			}
+		);
 
 		// Tag Manager tag placement logic.
 		add_action(

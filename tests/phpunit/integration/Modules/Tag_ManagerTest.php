@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
@@ -30,12 +31,18 @@ class Tag_ManagerTest extends TestCase {
 	public function test_register() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
 		$tagmanager->register();
 
 		$this->assertEqualSets(
 			$tagmanager->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
+		);
+
+		$this->assertContains(
+			'/' . REST_Routes::REST_ROOT . '/modules/analytics/data/settings',
+			apply_filters( 'googlesitekit_apifetch_preload_paths', array() )
 		);
 	}
 
