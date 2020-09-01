@@ -904,6 +904,7 @@ final class Tag_Manager extends Module
 						'googlesitekit-data',
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
+						'googlesitekit-modules-analytics',
 					),
 				)
 			),
