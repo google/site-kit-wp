@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Modules;
@@ -336,7 +337,7 @@ class Debug_Data {
 		$users = new \WP_User_Query(
 			array(
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_key' => 'wp_googlesitekit_access_token',
+				'meta_key' => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ),
 				'fields'   => 'ID',
 				'compare'  => 'EXISTS',
 			)
