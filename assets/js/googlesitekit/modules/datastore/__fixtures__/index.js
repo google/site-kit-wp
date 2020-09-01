@@ -21,6 +21,8 @@
  */
 import modules from '../fixtures.json'; // TODO: move into this directory.
 
+const alwaysActive = [ 'search-console', 'site-verification' ];
+
 /**
  * Makes a copy of the modules with the given module activation set.
  *
@@ -28,10 +30,11 @@ import modules from '../fixtures.json'; // TODO: move into this directory.
  * @return {Object[]} Array of module objects.
  */
 export const withActive = ( ...slugs ) => {
+	const activeSlugs = alwaysActive.concat( slugs );
 	return modules.map( ( module ) => {
-		return { ...module, active: slugs.includes( module.slug ) };
+		return { ...module, active: activeSlugs.includes( module.slug ) };
 	} );
 };
 
 // Only Search Console and Site Verification are active by default.
-export default withActive( 'search-console', 'site-verification' );
+export default withActive();
