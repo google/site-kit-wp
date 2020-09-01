@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
@@ -26,6 +27,8 @@ use Google\Site_Kit\Tests\Modules\SettingsTestCase;
  * @group Analytics
  */
 class SettingsTest extends SettingsTestCase {
+
+	use Setting_With_Owned_Keys_ContractTests;
 
 	public function test_register_option_filters() {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
@@ -99,6 +102,7 @@ class SettingsTest extends SettingsTestCase {
 				'profileID'             => '',
 				'internalWebPropertyID' => '',
 				'useSnippet'            => true,
+				'ownerID'               => 0,
 				'anonymizeIP'           => true,
 				'trackingDisabled'      => array( 'loggedinUsers' ),
 				'adsenseLinked'         => false,
@@ -229,6 +233,14 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertNotWPError( $data );
 
 		$this->assertTrue( $settings->get()['adsenseLinked'] );
+	}
+
+	protected function get_testcase() {
+		return $this;
+	}
+
+	protected function get_setting_with_owned_keys() {
+		return new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 	}
 
 	/**
