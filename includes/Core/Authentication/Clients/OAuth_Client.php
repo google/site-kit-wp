@@ -237,15 +237,9 @@ final class OAuth_Client {
 
 		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
 		if ( $this->http_proxy->is_enabled() ) {
-			if ( $this->http_proxy->use_authentication() ) {
-				// The "Authorization" header is used to authenticate the end request; use the dedicated proxy header.
-				$http_client->setDefaultOption(
-					'headers/Proxy-Authorization',
-					'Basic ' . base64_encode( $this->http_proxy->authentication() )
-				);
-			}
-
-			$http_client->setDefaultOption( 'proxy', $this->http_proxy->host() . ':' . $this->http_proxy->port() );
+			// See http://docs.guzzlephp.org/en/5.3/clients.html#proxy for reference.
+			$auth = $this->http_proxy->use_authentication() ? "{$this->http_proxy->authentication()}@" : '';
+			$http_client->setDefaultOption( 'proxy', "{$auth}{$this->http_proxy->host()}:{$this->http_proxy->port()}" );
 			$ssl_verify = $http_client->getDefaultOption( 'verify' );
 			// Allow SSL verification to be filtered, as is often necessary with HTTP proxies.
 			$http_client->setDefaultOption(
