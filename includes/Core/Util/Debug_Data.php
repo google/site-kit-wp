@@ -147,27 +147,28 @@ class Debug_Data {
 	 */
 	protected function get_fields() {
 		$fields = array(
-			'version'         => array(
+			'version'              => array(
 				'label' => __( 'Version', 'google-site-kit' ),
 				'value' => GOOGLESITEKIT_VERSION,
 			),
-			'php_version'     => array(
+			'php_version'          => array(
 				'label' => __( 'PHP Version', 'google-site-kit' ),
 				'value' => PHP_VERSION,
 			),
-			'wp_version'      => array(
+			'wp_version'           => array(
 				'label' => __( 'WordPress Version', 'google-site-kit' ),
 				'value' => get_bloginfo( 'version' ),
 			),
-			'reference_url'   => array(
+			'reference_url'        => array(
 				'label' => __( 'Reference Site URL', 'google-site-kit' ),
 				'value' => $this->context->get_reference_site_url(),
 			),
-			'amp_mode'        => $this->get_amp_mode_field(),
-			'site_status'     => $this->get_site_status_field(),
-			'user_status'     => $this->get_user_status_field(),
-			'active_modules'  => $this->get_active_modules_field(),
-			'required_scopes' => $this->get_required_scopes_field(),
+			'amp_mode'             => $this->get_amp_mode_field(),
+			'site_status'          => $this->get_site_status_field(),
+			'user_status'          => $this->get_user_status_field(),
+			'connected_user_count' => $this->get_connected_user_count_field(),
+			'active_modules'       => $this->get_active_modules_field(),
+			'required_scopes'      => $this->get_required_scopes_field(),
 		);
 		$none   = __( 'None', 'google-site-kit' );
 
@@ -322,5 +323,27 @@ class Debug_Data {
 		);
 
 		return array_merge( array(), ...$fields_by_module );
+	}
+
+	/**
+	 * Gets the number of users with a Site Kit token.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	private function get_connected_user_count_field() {
+		$users = new \WP_User_Query(
+			array(
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_key' => 'wp_googlesitekit_access_token',
+				'fields'   => 'ID',
+				'compare'  => 'EXISTS',
+			)
+		);
+		return array(
+			'label' => __( 'Connected user count', 'google-site-kit' ),
+			'value' => $users->get_total(),
+		);
 	}
 }
