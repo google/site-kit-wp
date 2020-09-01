@@ -49,7 +49,7 @@ describe( 'all modules', () => {
 			it( 'has an index module with all components exported', () => {
 				// eslint-disable-next-line no-unused-vars
 				const { default: _, ...indexExports } = require( `${ componentDirPath }/index.js` );
-				const indexExportNames = Object.keys( indexExports ).sort();
+				const indexExportNames = Object.keys( indexExports );
 				const componentNames = getComponentNames( componentDirPath ).sort();
 				expect( indexExportNames ).toEqual( componentNames );
 			} );
