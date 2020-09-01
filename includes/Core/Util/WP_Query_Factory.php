@@ -80,7 +80,7 @@ final class WP_Query_Factory {
 		if ( $query->posts && $query->is_singular() && $query->post && ! empty( $query->query_vars['page'] ) ) {
 			// If the post is actually paged and the 'page' query var is within bounds, it's all good.
 			$next = '<!--nextpage-->';
-			if ( false !== strpos( $query->post->post_content, $next ) || (int) trim( $query->query_vars['page'], '/' ) <= ( substr_count( $query->post->post_content, $next ) + 1 ) ) {
+			if ( false !== strpos( $query->post->post_content, $next ) && (int) trim( $query->query_vars['page'], '/' ) <= ( substr_count( $query->post->post_content, $next ) + 1 ) ) {
 				return;
 			}
 

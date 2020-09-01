@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Core\Util\WP_Query_Factory;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FixWPCoreEntityRewriteTrait;
+use WP_Query;
 
 /**
  * @group Util
@@ -1112,5 +1113,192 @@ class WP_Query_FactoryTest extends TestCase {
 				array(),
 			),
 		);
+	}
+
+	public function test_run_query_singular() {
+		// Existing page.
+		$query = new WP_Query();
+		$query->parse_query( array( 'pagename' => 'home' ) );
+		WP_Query_Factory::run_query( $query );
+		$this->assertTrue( $query->is_page() );
+		$this->assertFalse( $query->is_404() );
+
+		// Non-existing page.
+		$query = new WP_Query();
+		$query->parse_query( array( 'pagename' => 'invalid-page-slug' ) );
+		WP_Query_Factory::run_query( $query );
+		$this->assertFalse( $query->is_page() );
+		$this->assertTrue( $query->is_404() );
+
+		// Create paginated page.
+		self::factory()->post->create(
+			array(
+				'post_title'   => 'Paginated Page',
+				'post_name'    => 'paginated-page',
+				'post_type'    => 'page',
+				'post_content' => "Page 1\n<!--nextpage-->\nPage 2\n<!--nextpage-->\nPage 3",
+			)
+		);
+
+		// Paginated content queried without pagination.
+		$query = new WP_Query();
+		$query->parse_query( array( 'pagename' => 'paginated-page' ) );
+		WP_Query_Factory::run_query( $query );
+		$this->assertTrue( $query->is_page() );
+		$this->assertFalse( $query->is_404() );
+
+		// Paginated content queried with pagination within bounds.
+		$query = new WP_Query();
+		$query->parse_query(
+			array(
+				'pagename' => 'paginated-page',
+				'page'     => '3',
+			)
+		);
+		WP_Query_Factory::run_query( $query );
+		$this->assertTrue( $query->is_page() );
+		$this->assertFalse( $query->is_404() );
+
+		// Paginated content queried with pagination out of bounds.
+		$query = new WP_Query();
+		$query->parse_query(
+			array(
+				'pagename' => 'paginated-page',
+				'page'     => '4',
+			)
+		);
+		WP_Query_Factory::run_query( $query );
+		$this->assertFalse( $query->is_page() );
+		$this->assertTrue( $query->is_404() );
+
+		// Paginated content queried with pagination when the content is not paginated at all.
+		$query = new WP_Query();
+		$query->parse_query(
+			array(
+				'pagename' => 'home',
+				'page'     => '2',
+			)
+		);
+		WP_Query_Factory::run_query( $query );
+		$this->assertFalse( $query->is_page() );
+		$this->assertTrue( $query->is_404() );
+	}
+
+	public function test_run_query_home() {
+		// Blog page without pagination.
+		$query = new WP_Query();
+		$query->parse_query( array( 'pagename' => 'blog' ) );
+		WP_Query_Factory::run_query( $query );
+		$this->assertTrue( $query->is_home() );
+		$this->assertFalse( $query->is_404() );
+
+		// Blog page with pagination out of bounds.
+		$query = new WP_Query();
+		$query->parse_query(
+			array(
+				'pagename' => 'blog',
+				'paged'    => '2', // This would only work if there were more than 10 posts.
+			)
+		);
+		WP_Query_Factory::run_query( $query );
+		$this->assertFalse( $query->is_home() );
+		$this->assertTrue( $query->is_404() );
+	}
+
+	public function test_run_query_taxonomy_archive() {
+		// Create empty category.
+		self::factory()->category->create(
+			array(
+				'name' => 'Empty category',
+				'slug' => 'empty-category',
+			)
+		);
+
+		// Category with content, without pagination.
+		$query = new WP_Query();
+		$query->parse_query( array( 'category_name' => 'uncategorized' ) );
+		WP_Query_Factory::run_query( $query );
+		$this->assertTrue( $query->is_category() );
+		$this->assertFalse( $query->is_404() );
+
+		// Category without content, without pagination.
+		$query = new WP_Query();
+		$query->parse_query( array( 'category_name' => 'empty-category' ) );
+		WP_Query_Factory::run_query( $query );
+		$this->assertTrue( $query->is_category() );
+		$this->assertFalse( $query->is_404() );
+
+		// Non-existing category, without pagination.
+		$query = new WP_Query();
+		$query->parse_query( array( 'category_name' => 'invalid-category-slug' ) );
+		WP_Query_Factory::run_query( $query );
+		$this->assertFalse( $query->is_category() );
+		$this->assertTrue( $query->is_404() );
+
+		// Category with content, with pagination out of bounds.
+		$query = new WP_Query();
+		$query->parse_query(
+			array(
+				'category_name' => 'uncategorized',
+				'paged'         => '2',
+			)
+		);
+		WP_Query_Factory::run_query( $query );
+		$this->assertFalse( $query->is_category() );
+		$this->assertTrue( $query->is_404() );
+	}
+
+	public function test_run_query_author_archive() {
+		// Create user with posts.
+		$posts_user_id = self::factory()->user->create(
+			array(
+				'role'         => 'editor',
+				'display_name' => 'Johnny Withposts',
+				'user_login'   => 'johnnywithposts',
+			)
+		);
+		self::factory()->post->create( array( 'post_author' => $posts_user_id ) );
+
+		// Create user without posts.
+		$noposts_user_id = self::factory()->user->create(
+			array(
+				'role'         => 'editor',
+				'display_name' => 'Johnny Noposts',
+				'user_login'   => 'johnnynoposts',
+			)
+		);
+
+		// User with content, without pagination.
+		$query = new WP_Query();
+		$query->parse_query( array( 'author' => $posts_user_id ) );
+		WP_Query_Factory::run_query( $query );
+		$this->assertTrue( $query->is_author() );
+		$this->assertFalse( $query->is_404() );
+
+		// User without content, without pagination.
+		$query = new WP_Query();
+		$query->parse_query( array( 'author' => $noposts_user_id ) );
+		WP_Query_Factory::run_query( $query );
+		$this->assertTrue( $query->is_author() );
+		$this->assertFalse( $query->is_404() );
+
+		// Non-existing user, without pagination.
+		$query = new WP_Query();
+		$query->parse_query( array( 'author' => 6789 ) );
+		WP_Query_Factory::run_query( $query );
+		$this->assertFalse( $query->is_author() );
+		$this->assertTrue( $query->is_404() );
+
+		// User with content, with pagination out of bounds.
+		$query = new WP_Query();
+		$query->parse_query(
+			array(
+				'author' => $posts_user_id,
+				'paged'  => '2',
+			)
+		);
+		WP_Query_Factory::run_query( $query );
+		$this->assertFalse( $query->is_author() );
+		$this->assertTrue( $query->is_404() );
 	}
 }
