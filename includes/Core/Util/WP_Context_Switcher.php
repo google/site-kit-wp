@@ -20,14 +20,6 @@ namespace Google\Site_Kit\Core\Util;
 class WP_Context_Switcher {
 
 	/**
-	 * Stack of original contexts switched from.
-	 *
-	 * @since n.e.x.t
-	 * @var array
-	 */
-	private static $context_stack = array();
-
-	/**
 	 * Switches to WordPress frontend context if necessary.
 	 *
 	 * Context is only switched if WordPress is not already in frontend context. Context should only ever be switched
@@ -46,8 +38,7 @@ class WP_Context_Switcher {
 			};
 		}
 
-		self::switch_current_screen( 'front' );
-		return self::get_restore_closure();
+		return self::switch_current_screen( 'front' );
 	}
 
 	/**
@@ -69,8 +60,7 @@ class WP_Context_Switcher {
 			};
 		}
 
-		self::switch_current_screen( 'index' );
-		return self::get_restore_closure();
+		return self::switch_current_screen( 'index' );
 	}
 
 	/**
@@ -79,46 +69,22 @@ class WP_Context_Switcher {
 	 * @since n.e.x.t
 	 *
 	 * @param string $screen_id WordPress screen ID.
+	 * @return callable Closure that restores context and returns true.
 	 */
 	private static function switch_current_screen( $screen_id ) {
 		global $current_screen;
 
-		self::load_wp_screen_api();
-		self::$context_stack[] = $current_screen;
-		$current_screen        = \WP_Screen::get( $screen_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-	}
-
-	/**
-	 * Gets closure to restore previous WordPress context if it has been switched.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return callable Closure that restores context and returns true if context was restored or false otherwise.
-	 */
-	private static function get_restore_closure() {
-		return static function() {
-			global $current_screen;
-
-			if ( empty( self::$context_stack ) ) { // phpcs:ignore WordPressVIPMinimum.Variables.VariableAnalysis.SelfInsideClosure
-				return false;
-			}
-
-			$current_screen = array_pop( self::$context_stack ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited, WordPressVIPMinimum.Variables.VariableAnalysis.SelfInsideClosure
-			return true;
-		};
-	}
-
-	/**
-	 * Loads the WordPress Screen API if needed.
-	 *
-	 * @since n.e.x.t
-	 */
-	private static function load_wp_screen_api() {
-		if ( class_exists( 'WP_Screen' ) && function_exists( 'get_current_screen' ) ) {
-			return;
-		}
-
 		require_once ABSPATH . 'wp-admin/includes/class-wp-screen.php';
 		require_once ABSPATH . 'wp-admin/includes/screen.php';
+
+		$original_screen = $current_screen;
+		$current_screen  = \WP_Screen::get( $screen_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+
+		return static function() use ( $original_screen ) {
+			global $current_screen;
+
+			$current_screen = $original_screen; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			return true;
+		};
 	}
 }
