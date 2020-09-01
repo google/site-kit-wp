@@ -35,22 +35,4 @@ class WP_Context_SwitcherTest extends TestCase {
 		$this->assertFalse( is_admin() );
 		$this->assertTrue( $restore_context() );
 	}
-
-	public function test_with_admin_context() {
-		$this->go_to( '/' );
-		$this->assertFalse( is_admin() );
-
-		// Switch from frontend to 'admin' context.
-		$restore_context = WP_Context_Switcher::with_admin_context();
-		$this->assertTrue( is_admin() );
-		$this->assertTrue( $restore_context() );
-
-		set_current_screen( 'edit.php' );
-		$this->assertTrue( is_admin() );
-
-		// No need to switch to 'admin' context when already in admin.
-		$restore_context = WP_Context_Switcher::with_admin_context();
-		$this->assertTrue( is_admin() );
-		$this->assertFalse( $restore_context() );
-	}
 }

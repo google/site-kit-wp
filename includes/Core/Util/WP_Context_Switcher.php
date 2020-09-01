@@ -42,28 +42,6 @@ class WP_Context_Switcher {
 	}
 
 	/**
-	 * Switches to WordPress admin context if necessary.
-	 *
-	 * Context is only switched if WordPress is not already in admin context. Context should only ever be switched
-	 * temporarily. Call the returned closure as soon as possible after to restore the original context.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return callable Closure that restores context and returns true if context was restored or false otherwise.
-	 */
-	public static function with_admin_context() {
-		global $current_screen;
-
-		if ( is_admin() ) {
-			return function() {
-				return false;
-			};
-		}
-
-		return self::switch_current_screen( 'index' );
-	}
-
-	/**
 	 * Switches the current WordPress screen via the given screen ID or hook name.
 	 *
 	 * @since n.e.x.t
