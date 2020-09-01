@@ -25,7 +25,7 @@ final class WP_Query_Factory {
 	 * Creates a `WP_Query` instance to use for a given URL.
 	 *
 	 * The `WP_Query` instance returned is initialized with the correct query arguments, but the actual query will not
-	 * have run yet. The {@see WP_Query_Factory::run_query()} method should be used to do that.
+	 * have run yet. The `WP_Query::get_posts()` method should be used to do that.
 	 *
 	 * This is an expensive function that works similarly to WordPress core's `url_to_postid()` function, however also
 	 * covering non-post URLs. It follows logic used in `WP::parse_request()` to cover the other kinds of URLs. The
@@ -49,75 +49,14 @@ final class WP_Query_Factory {
 
 		$restore_context = WP_Context_Switcher::with_frontend_context();
 
-		$query = new WP_Query();
+		// Return extended version of `WP_Query` with self-contained 404 detection.
+		$query = new Synthetic_WP_Query();
 		$query->parse_query( $query_args );
+		$query->enable_404_detection( true );
 
 		$restore_context();
 
 		return $query;
-	}
-
-	/**
-	 * Runs the query for the given `WP_Query` instance.
-	 *
-	 * This method should be used in favor of calling `WP_Query::get_posts()` on custom `WP_Query` instances, to ensure
-	 * that supplemental logic such as detecting a 404 state is run as well.
-	 *
-	 * The majority of the code is a copy of `WP::handle_404()`.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param WP_Query $query WordPress query instance to run the query on.
-	 */
-	public static function run_query( WP_Query $query ) {
-		$restore_context = WP_Context_Switcher::with_frontend_context();
-
-		$query->get_posts();
-
-		$restore_context();
-
-		// Check if this is a single paginated post query.
-		if ( $query->posts && $query->is_singular() && $query->post && ! empty( $query->query_vars['page'] ) ) {
-			// If the post is actually paged and the 'page' query var is within bounds, it's all good.
-			$next = '<!--nextpage-->';
-			if ( false !== strpos( $query->post->post_content, $next ) && (int) trim( $query->query_vars['page'], '/' ) <= ( substr_count( $query->post->post_content, $next ) + 1 ) ) {
-				return;
-			}
-
-			// Otherwise, this query is out of bounds, so set a 404.
-			$query->set_404();
-			return;
-		}
-
-		// If no posts were found, this is technically a 404.
-		if ( ! $query->posts ) {
-			// If this is a paginated query (i.e. out of bounds), always consider it a 404.
-			if ( $query->is_paged() ) {
-				$query->set_404();
-				return;
-			}
-
-			// If this is an author archive, don't consider it a 404 if the author exists.
-			if ( $query->is_author() ) {
-				$author = $query->get( 'author' );
-				if ( is_numeric( $author ) && $author > 0 && is_user_member_of_blog( $author ) ) {
-					return;
-				}
-			}
-
-			// If this is a valid taxonomy or post type archive, don't consider it a 404.
-			if ( ( $query->is_category() || $query->is_tag() || $query->is_tax() || $query->is_post_type_archive() ) && $query->get_queried_object() ) {
-				return;
-			}
-
-			// If this is a search results page or the home index, don't consider it a 404.
-			if ( $query->is_home() || $query->is_search() ) {
-				return;
-			}
-
-			// Otherwise, set a 404.
-			$query->set_404();
-		}
 	}
 
 	/**

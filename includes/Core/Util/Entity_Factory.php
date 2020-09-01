@@ -81,7 +81,7 @@ final class Entity_Factory {
 			return null;
 		}
 
-		WP_Query_Factory::run_query( $query );
+		$query->get_posts();
 
 		return self::from_wp_query( $query );
 	}
