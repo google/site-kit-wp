@@ -25,7 +25,8 @@ class WP_Context_Switcher_TraitTest extends TestCase {
 		// No need to switch to 'front' context when already in frontend.
 		$restore_context = WP_Context_Switcher::with_frontend_context();
 		$this->assertFalse( is_admin() );
-		$this->assertFalse( $restore_context() );
+		$restore_context();
+		$this->assertFalse( is_admin() );
 
 		set_current_screen( 'edit.php' );
 		$this->assertTrue( is_admin() );
@@ -33,6 +34,7 @@ class WP_Context_Switcher_TraitTest extends TestCase {
 		// Switch from admin to 'front' context.
 		$restore_context = WP_Context_Switcher::with_frontend_context();
 		$this->assertFalse( is_admin() );
-		$this->assertTrue( $restore_context() );
+		$restore_context();
+		$this->assertTrue( is_admin() );
 	}
 }

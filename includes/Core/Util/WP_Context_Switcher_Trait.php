@@ -27,18 +27,19 @@ trait WP_Context_Switcher_Trait {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return callable Closure that restores context and returns true if context was restored or false otherwise.
+	 * @return callable Closure that restores context.
 	 */
 	protected static function with_frontend_context() {
 		global $current_screen;
 
+		$restore = self::get_restore_closure();
+
 		if ( ! is_admin() ) {
-			return function() {
-				return false;
-			};
+			return $restore;
 		}
 
-		return self::switch_current_screen( 'front' );
+		self::switch_current_screen( 'front' );
+		return $restore;
 	}
 
 	/**
@@ -47,7 +48,6 @@ trait WP_Context_Switcher_Trait {
 	 * @since n.e.x.t
 	 *
 	 * @param string $screen_id WordPress screen ID.
-	 * @return callable Closure that restores context and returns true.
 	 */
 	private static function switch_current_screen( $screen_id ) {
 		global $current_screen;
@@ -55,14 +55,28 @@ trait WP_Context_Switcher_Trait {
 		require_once ABSPATH . 'wp-admin/includes/class-wp-screen.php';
 		require_once ABSPATH . 'wp-admin/includes/screen.php';
 
+		$current_screen = \WP_Screen::get( $screen_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+	}
+
+	/**
+	 * Returns the closure to restore the current screen.
+	 *
+	 * Calling the closure will restore the `$current_screen` global to what it was set to at the time of calling
+	 * this method.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable Closure that restores context.
+	 */
+	private static function get_restore_closure() {
+		global $current_screen;
+
 		$original_screen = $current_screen;
-		$current_screen  = \WP_Screen::get( $screen_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 		return static function() use ( $original_screen ) {
 			global $current_screen;
 
 			$current_screen = $original_screen; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-			return true;
 		};
 	}
 }
