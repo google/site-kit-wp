@@ -39,7 +39,8 @@ import { STORE_NAME, ACCOUNT_CREATE } from '../assets/js/modules/tagmanager/data
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import defaultModules, * as modulesFixtures from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import * as modulesFixtures from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import { parseLiveContainerVersionIDs } from '../assets/js/modules/tagmanager/datastore/__factories__/utils';
 
 function Setup( props ) {
 	global._googlesitekitLegacyData.setup.moduleToSetup = 'tagmanager';
@@ -145,8 +146,9 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			ampContainerVersion.container,
 		], { accountID } );
-		const [ ampContainer ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID: ampContainer.containerId } );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
 
 		return <Setup registry={ registry } />;
 	} )
@@ -194,10 +196,12 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 			webContainerVersion.container,
 			ampContainerVersion.container,
 		], { accountID } );
-		const [ webContainer ] = registry.select( STORE_NAME ).getWebContainers( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID: webContainer.containerId } );
-		const [ ampContainer ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID: ampContainer.containerId } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+		} );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
 
 		return <Setup registry={ registry } />;
 	} )
@@ -211,10 +215,12 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 			webContainerVersion.container,
 			ampContainerVersion.container,
 		], { accountID } );
-		const [ webContainer ] = registry.select( STORE_NAME ).getWebContainers( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID: webContainer.containerId } );
-		const [ ampContainer ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID: ampContainer.containerId } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+		} );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
 
 		return <Setup registry={ registry } />;
 	} )
