@@ -29,17 +29,20 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as ANALYTICS_STORE } from '../../../analytics/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
-import ErrorText from '../../../../components/error-text';
 import PreviewTable from '../../../../components/preview-table';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import Layout from '../../../../components/layout/layout';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/notifications/nodata';
+
 const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidget() {
 	const {
 		data,
 		error,
+		loading,
 	} = useSelect( ( select ) => {
 		const store = select( ANALYTICS_STORE );
 		const args = {
@@ -60,8 +63,15 @@ function DashboardTopEarningPagesWidget() {
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			loading: store.isResolving( 'getReport', [ args ] ),
 		};
 	} );
+
+	if ( loading ) {
+		return (
+			<PreviewTable rows={ 5 } padding />
+		);
+	}
 
 	if ( error ) {
 		// Specifically looking for string "badRequest"
@@ -72,22 +82,11 @@ function DashboardTopEarningPagesWidget() {
 				</Layout>
 			);
 		}
-
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ error.message } />
-			</div>
-		);
+		return getDataErrorComponent( __( 'Analytics and AdSense', 'google-site-kit' ), error.message );
 	}
 
-	if ( ! data ) {
-		return (
-			<PreviewTable rows={ 5 } padding />
-		);
-	}
-
-	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
-		return null;
+	if ( ! data || ! Array.isArray( data[ 0 ].data.rows ) ) {
+		return getNoDataComponent( __( 'Analytics and AdSense', 'google-site-kit' ) );
 	}
 
 	const headers = [
