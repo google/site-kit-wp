@@ -36,7 +36,7 @@ import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import PreviewBlock from '../../../../components/preview-block';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import noDataComponent from '../../../../components/notifications/nodata';
+import getNoDataComponent from '../../../../components/notifications/nodata';
 
 const { useSelect } = Data;
 
@@ -71,7 +71,7 @@ function DashboardClicksWidget() {
 	}
 
 	if ( ! data || ! data.length ) {
-		return noDataComponent( __( 'Search Console', 'google-site-kit' ) );
+		return getNoDataComponent( __( 'Search Console', 'google-site-kit' ) );
 	}
 
 	const href = getSiteKitAdminURL( 'googlesitekit-module-search-console', {} );
