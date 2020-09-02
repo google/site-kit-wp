@@ -294,6 +294,11 @@ export const commonStore = {
  * with the same API as `select()` but will throw an error if the result
  * of the selector function is `undefined`.
  *
+ * Ideally this would use something like `hasFinishedResolution` instead,
+ * but there is no way to traverse the selectors used internally to identify
+ * dependent selectors that have resolvers as many selectors are composed of
+ * higher-level selectors internally which is where a resolver is normally implemented.
+ *
  * @since n.e.x.t
  * @private
  *
