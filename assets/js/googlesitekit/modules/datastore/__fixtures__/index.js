@@ -21,6 +21,7 @@
  */
 import modules from '../fixtures.json'; // TODO: move into this directory.
 
+// Only Search Console and Site Verification are always active.
 const alwaysActive = [ 'search-console', 'site-verification' ];
 
 /**
@@ -36,5 +37,4 @@ export const withActive = ( ...slugs ) => {
 	} );
 };
 
-// Only Search Console and Site Verification are active by default.
 export default withActive();
