@@ -29,25 +29,35 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
-import ErrorText from '../../../../components/error-text';
 import PreviewBlock from '../../../../components/preview-block';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
-import { siteAnalyticsReportDataDefaults, extractAnalyticsDashboardSparklineData } from '../../util';
+import { extractAnalyticsDashboardSparklineData } from '../../util';
 import { extractForSparkline, getSiteKitAdminURL, changeToPercent } from '../../../../util';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import noDataComponent from '../../../../components/notifications/nodata';
+
 const { useSelect } = Data;
 
 function DashboardBounceRateWidget() {
 	const {
-		sparkData,
-		sparkDataError,
-		bounceData,
-		bounceDataError,
+		data,
+		loading,
+		error,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
+			multiDateRange: 1,
+			dimensions: 'ga:date',
+			metrics: [
+				{
+					expression: 'ga:bounceRate',
+					alias: 'Bounce Rate',
+				},
+			],
+			limit: 10,
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
@@ -55,42 +65,28 @@ function DashboardBounceRateWidget() {
 			args.url = url;
 		}
 
-		const sparkDataArgs = {
-			...siteAnalyticsReportDataDefaults,
-			...args,
-		};
-
-		const bounceDataArgs = {
-			...args,
-			multiDateRange: 1,
-			dimensions: 'ga:date',
-			metrics: [ { expression: 'ga:bounceRate', alias: 'Bounce Rate' } ],
-			limit: 10,
-		};
-
 		return {
-			sparkData: store.getReport( sparkDataArgs ),
-			sparkDataError: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ),
-			bounceData: store.getReport( bounceDataArgs ),
-			bounceDataError: store.getErrorForSelector( 'getReport', [ bounceDataArgs ] ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			data: store.getReport( args ),
+			loading: store.isResolving( 'getReport', [ args ] ),
 		};
 	} );
 
-	if ( bounceDataError || sparkDataError ) {
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ ( bounceDataError || sparkDataError ).message } />
-			</div>
-		);
-	}
-
-	if ( ! bounceData || ! sparkData ) {
+	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
-	const extractedAnalytics = extractAnalyticsDashboardSparklineData( sparkData );
+	if ( error ) {
+		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
+	}
 
-	const { totals } = bounceData[ 0 ].data;
+	if ( ! data || ! data.length ) {
+		return noDataComponent( __( 'Analytics', 'google-site-kit' ) );
+	}
+
+	const extractedAnalytics = extractAnalyticsDashboardSparklineData( data );
+
+	const { totals } = data[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const averageBounceRate = lastMonth[ 0 ];

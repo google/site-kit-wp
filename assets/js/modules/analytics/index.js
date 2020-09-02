@@ -104,6 +104,7 @@ domReady( () => {
 			wrapWidget: true,
 		},
 		[
+			AREA_DASHBOARD_ALL_TRAFFIC, // this is required to have this widget appear
 			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 		],
 	);

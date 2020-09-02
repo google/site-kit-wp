@@ -26,69 +26,60 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
-import ErrorText from '../../../../components/error-text';
 import PreviewBlock from '../../../../components/preview-block';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import CTA from '../../../../components/notifications/cta';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
-import { siteAnalyticsReportDataDefaults, extractAnalyticsDashboardSparklineData } from '../../util';
+import { extractAnalyticsDashboardSparklineData } from '../../util';
 import { extractForSparkline, getSiteKitAdminURL, readableLargeNumber, changeToPercent } from '../../../../util';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import noDataComponent from '../../../../components/notifications/nodata';
+
 const { useSelect } = Data;
 
 function DashboardGoalsWidget() {
 	const {
-		sparkData,
-		sparkDataError,
-		goalsData,
-		goalsDataError,
+		data,
+		error,
+		loading,
 		goals,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
-
-		const sparkDataArgs = {
-			...siteAnalyticsReportDataDefaults,
-			...args,
-		};
-
-		const goalsDataArgs = {
-			...args,
-			multiDateRange: 1,
+			compareDateRanges: 1,
 			dimensions: 'ga:date',
-			metrics: [ { expression: 'ga:goalCompletionsAll', alias: 'Goal Completions' } ],
+			multiDateRange: 1,
+			metrics: [
+				{
+					expression: 'ga:goalCompletionsAll',
+					alias: 'Goal Completions',
+				},
+			],
 			limit: 10,
 		};
 
 		return {
-			sparkData: store.getReport( sparkDataArgs ),
-			sparkDataError: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ),
-			goalsData: store.getReport( goalsDataArgs ),
-			goalsDataError: store.getErrorForSelector( 'getReport', [ goalsDataArgs ] ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			data: store.getReport( args ),
 			goals: store.getGoals(),
+			loading: store.isResolving( 'getReport', [ args ] ),
 		};
 	} );
 
-	if ( goalsDataError || sparkDataError ) {
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ ( goalsDataError || sparkDataError ).message } />
-			</div>
-		);
+	if ( loading ) {
+		return <PreviewBlock width="100%" height="202px" />;
 	}
 
-	if ( ! goalsData || ! sparkData ) {
-		return <PreviewBlock width="100%" height="202px" />;
+	if ( error ) {
+		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
+	}
+
+	if ( ! data || ! data.length ) {
+		return noDataComponent( __( 'Analytics', 'google-site-kit' ) );
 	}
 
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
@@ -102,9 +93,9 @@ function DashboardGoalsWidget() {
 		);
 	}
 
-	const extractedAnalytics = extractAnalyticsDashboardSparklineData( sparkData );
+	const extractedAnalytics = extractAnalyticsDashboardSparklineData( data );
 
-	const { totals } = goalsData[ 0 ].data;
+	const { totals } = data[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const goalCompletions = lastMonth[ 0 ];
