@@ -123,6 +123,7 @@ describe( 'modules/analytics properties', () => {
 				expect( properties ).toEqual( undefined );
 			} );
 		} );
+
 		describe( 'selectProperty', () => {
 			it( 'requires a valid propertyID', () => {
 				expect( () => {
@@ -141,7 +142,7 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBeUndefined();
 			} );
 
-			it( 'selects the property', async () => {
+			it( 'selects the property and its default profile when set', async () => {
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 					{ body: fixtures.propertiesProfiles, status: 200 }
@@ -149,13 +150,8 @@ describe( 'modules/analytics properties', () => {
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId;
 				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
 				registry.dispatch( STORE_NAME ).setAccountID( accountID );
-				registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getProperties( accountID ) !== undefined
-					),
-				);
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( propertyID );
 				expect( registry.select( STORE_NAME ).getProperties( accountID ) ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId );
