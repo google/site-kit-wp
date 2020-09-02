@@ -106,7 +106,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 
 	// Form submit behavior now varies based on which button is clicked,
 	// so we no longer support the generic form submit event.
-	const preventDefaultFormSubmit = useCallback( ( event ) => event.preventDefault() );
+	const preventDefaultFormSubmit = useCallback( ( event ) => event.preventDefault(), [] );
 
 	return (
 		<form
