@@ -258,6 +258,28 @@ class Debug_Data {
 	}
 
 	/**
+	 * Gets the number of users with a Site Kit token.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	private function get_connected_user_count_field() {
+		$users = new \WP_User_Query(
+			array(
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_key' => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ),
+				'fields'   => 'ID',
+				'compare'  => 'EXISTS',
+			)
+		);
+		return array(
+			'label' => __( 'Connected user count', 'google-site-kit' ),
+			'value' => $users->get_total(),
+		);
+	}
+
+	/**
 	 * Gets the field definition for the active_modules field.
 	 *
 	 * @since 1.5.0
@@ -324,27 +346,5 @@ class Debug_Data {
 		);
 
 		return array_merge( array(), ...$fields_by_module );
-	}
-
-	/**
-	 * Gets the number of users with a Site Kit token.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array
-	 */
-	private function get_connected_user_count_field() {
-		$users = new \WP_User_Query(
-			array(
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_key' => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ),
-				'fields'   => 'ID',
-				'compare'  => 'EXISTS',
-			)
-		);
-		return array(
-			'label' => __( 'Connected user count', 'google-site-kit' ),
-			'value' => $users->get_total(),
-		);
 	}
 }
