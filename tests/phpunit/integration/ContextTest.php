@@ -192,7 +192,7 @@ class ContextTest extends TestCase {
 		$_GET['page'] = 'googlesitekit-dashboard';
 		$this->assertNull( $context->get_reference_entity() );
 		// We can probably safely assume that 987654 is not a valid post ID in the test environment, but let's make sure.
-		$this->assertFalse( WP_Post::get_instance( 987654 ) );
+		$this->assertFalse( \WP_Post::get_instance( 987654 ) );
 		$_GET['permaLink'] = add_query_arg( 'p', '987654', home_url( '/' ) );
 		$this->assertNull( $context->get_reference_entity() );
 		$_GET['permaLink'] = get_permalink( $public_post_id );
