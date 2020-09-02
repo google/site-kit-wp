@@ -17,9 +17,9 @@ import { createAddToFilter } from '../assets/js/util/helpers';
 import Layout from '../assets/js/components/layout/layout';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
 import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
-import DashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/DashboardSearchFunnelInner';
+import LegacyDashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/LegacyDashboardSearchFunnelInner';
 import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopLevel';
-import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetTopLevel';
+import LegacySearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
 import PostSearcher from '../assets/js/components/PostSearcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
@@ -88,7 +88,7 @@ storiesOf( 'Dashboard', module )
 	.add( 'Search Funnel Analytics Inactive', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
-		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
+		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
 		removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
 
@@ -108,7 +108,7 @@ storiesOf( 'Dashboard', module )
 			<Layout className="googlesitekit-analytics-search-funnel">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<DashboardSearchFunnelInner />
+						<LegacyDashboardSearchFunnelInner />
 						<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-4-phone
@@ -132,7 +132,7 @@ storiesOf( 'Dashboard', module )
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
 		const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
-		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
+		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
 		removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
 		addFilter( 'googlesitekit.DashboardSearchFunnel',
@@ -165,7 +165,7 @@ storiesOf( 'Dashboard', module )
 			<Layout className="googlesitekit-analytics-search-funnel">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<DashboardSearchFunnelInner />
+						<LegacyDashboardSearchFunnelInner />
 					</div>
 				</div>
 			</Layout>
