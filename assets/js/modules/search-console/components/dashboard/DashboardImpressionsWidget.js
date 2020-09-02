@@ -35,11 +35,13 @@ import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import PreviewBlock from '../../../../components/preview-block';
-import CTA from '../../../../components/notifications/cta';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/notifications/nodata';
+
 const { useSelect } = Data;
 
 function DashboardImpressionsWidget() {
-	const { data, error } = useSelect( ( select ) => {
+	const { data, error, loading } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
 			dimensions: 'date',
@@ -55,27 +57,21 @@ function DashboardImpressionsWidget() {
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			loading: store.isResolving( 'getReport', [ args ] ),
 		};
 	} );
 
-	if ( error ) {
-		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return <CTA title={ __( 'Something went wrong', 'google-site-kit' ) } description={ error.message } error />;
-	}
-
-	if ( ! data ) {
+	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
-	if ( ! data.length ) {
-		return (
-			<CTA
-				title={ __( 'Search Console Data Empty', 'google-site-kit' ) }
-				description={ __( 'Search Console data is not yet available, please check back later.', 'google-site-kit' ) }
-				ctaLink={ '' }
-				ctaLabel={ '' }
-			/>
-		);
+	if ( error ) {
+		trackEvent( 'plugin_setup', 'search_console_error', error.message );
+		return getDataErrorComponent( __( 'Search Console', 'google-site-kit' ), error.message );
+	}
+
+	if ( ! data || ! data.length ) {
+		return getNoDataComponent( __( 'Search Console', 'google-site-kit' ) );
 	}
 
 	const href = getSiteKitAdminURL( 'googlesitekit-module-search-console', {} );

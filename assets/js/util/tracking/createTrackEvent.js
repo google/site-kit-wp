@@ -9,9 +9,10 @@ import createDataLayerPush from './createDataLayerPush';
  *
  * @param {Object} config Tracking configuration.
  * @param {Object} dataLayerTarget Data layer parent object.
+ * @param {Object} _global The global window object.
  * @return {Function} Function that tracks an event.
  */
-export default function createTrackEvent( config, dataLayerTarget ) {
+export default function createTrackEvent( config, dataLayerTarget, _global ) {
 	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 
 	/**
@@ -31,6 +32,10 @@ export default function createTrackEvent( config, dataLayerTarget ) {
 			trackingID,
 			userIDHash,
 		} = config;
+
+		if ( _global._gaUserPrefs?.ioo?.() ) {
+			return;
+		}
 
 		if ( ! trackingEnabled ) {
 			// Resolve immediately if tracking is disabled.

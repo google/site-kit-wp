@@ -2,7 +2,7 @@ const { preset } = require( '@wordpress/scripts/config/jest-unit.config' );
 
 module.exports = {
 	preset,
-	collectCoverage: true,
+	collectCoverage: false, // Enable with `--coverage=true` flag.
 	collectCoverageFrom: [
 		'assets/**/**.js',
 	],
