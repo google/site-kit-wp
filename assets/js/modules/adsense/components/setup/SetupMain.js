@@ -98,14 +98,17 @@ export default function SetupMain( { finishSetup } ) {
 	// Get additional information to determine account and site status.
 	const alerts = useSelect( ( select ) => select( STORE_NAME ).getAlerts( accountID ) );
 	const urlChannels = useSelect( ( select ) => select( STORE_NAME ).getURLChannels( accountID, clientID ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
+	const accountsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAccounts' ) );
+	const alertsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAlerts', [ accountID ] ) );
+	const error = accountsError || alertsError;
 
 	// Determine account and site status.
 	const accountStatus = determineAccountStatus( {
 		accounts,
 		clients,
 		alerts,
-		error,
+		accountsError,
+		alertsError,
 		previousAccountID,
 		previousClientID,
 	} );
@@ -302,7 +305,7 @@ export default function SetupMain( { finishSetup } ) {
 				viewComponent = <SetupAccountApproved />;
 				break;
 			default:
-				if ( error ) {
+				if ( alertsError ) {
 					viewComponent = <ErrorNotice />;
 				} else {
 					viewComponent = <ErrorText message={ sprintf(
