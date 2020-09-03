@@ -33,19 +33,18 @@ import PreviewBlock from '../../../../components/preview-block';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
-import { extractAnalyticsDashboardSparklineData } from '../../util';
-import { extractForSparkline, getSiteKitAdminURL, changeToPercent } from '../../../../util';
+import { getSiteKitAdminURL, changeToPercent } from '../../../../util';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 
 const { useSelect } = Data;
 
 function DashboardBounceRateWidget() {
 	const {
+		data,
 		error,
 		loading,
-		sparkData,
-		bounceData,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
@@ -57,48 +56,17 @@ function DashboardBounceRateWidget() {
 			args.url = url;
 		}
 
-		const sparkDataArgs = {
-			compareDateRanges: 1,
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-				{
-					expression: 'ga:sessions',
-					alias: 'Sessions',
-				},
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-				{
-					expression: 'ga:avgSessionDuration',
-					alias: 'Average Session Duration',
-				},
-				{
-					expression: 'ga:goalCompletionsAll',
-					alias: 'Goal Completions',
-				},
-			],
-			limit: 180,
-			...args,
-		};
-
-		const bounceDataArgs = {
-			...args,
+		const dataArgs = {
 			multiDateRange: 1,
 			dimensions: 'ga:date',
 			metrics: [ { expression: 'ga:bounceRate', alias: 'Bounce Rate' } ],
-			limit: 10,
+			...args,
 		};
 
 		return {
-			error: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ) || store.getErrorForSelector( 'getReport', [ bounceDataArgs ] ),
-			loading: store.isResolving( 'getReport', [ sparkDataArgs ] ) || store.isResolving( 'getReport', [ bounceDataArgs ] ),
-			sparkData: store.getReport( sparkDataArgs ),
-			bounceData: store.getReport( bounceDataArgs ),
+			data: store.getReport( dataArgs ),
+			error: store.getErrorForSelector( 'getReport', [ dataArgs ] ),
+			loading: store.isResolving( 'getReport', [ dataArgs ] ),
 		};
 	} );
 
@@ -110,13 +78,31 @@ function DashboardBounceRateWidget() {
 		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
 	}
 
-	if ( ( ! sparkData || ! sparkData.length ) && ( ! bounceData || ! bounceData.length ) ) {
+	if ( ! data || ! data.length ) {
 		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
 	}
 
-	const extractedAnalytics = extractAnalyticsDashboardSparklineData( sparkData );
+	const sparkLineData = [
+		[
+			{ type: 'date', label: 'Day' },
+			{ type: 'number', label: 'Bounce Rate' },
+		],
+	];
 
-	const { totals } = bounceData[ 0 ].data;
+	const dataRows = data[ 0 ].data.rows;
+
+	// We only want half the date range, having `multiDateRange` in the query doubles the range.
+	for ( let i = Math.ceil( dataRows.length / 2 ); i < dataRows.length; i++ ) {
+		const { values } = dataRows[ i ].metrics[ 0 ];
+		const dateString = dataRows[ i ].dimensions[ 0 ];
+		const date = parseDimensionStringToDate( dateString );
+		sparkLineData.push( [
+			date,
+			values[ 0 ],
+		] );
+	}
+
+	const { totals } = data[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const averageBounceRate = lastMonth[ 0 ];
@@ -136,9 +122,9 @@ function DashboardBounceRateWidget() {
 				link: getSiteKitAdminURL( 'googlesitekit-module-analytics', {} ),
 			} }
 			sparkline={
-				extractedAnalytics &&
+				sparkLineData &&
 					<Sparkline
-						data={ extractForSparkline( extractedAnalytics, 2 ) }
+						data={ sparkLineData }
 						change={ averageBounceRateChange }
 					/>
 			}
