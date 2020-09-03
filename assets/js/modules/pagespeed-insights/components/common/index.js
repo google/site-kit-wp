@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights Settings components.
+ * PageSpeed Insights common components.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,5 +16,8 @@
  * limitations under the License.
  */
 
-export { default as SettingsMain } from './SettingsMain';
-export { default as SettingsView } from './SettingsView';
+export { default as FieldReportMetrics } from './FieldReportMetrics';
+export { default as LabReportMetrics } from './LabReportMetrics';
+export { default as MetricsLearnMoreLink } from './MetricsLearnMoreLink';
+export { default as ReportDetailsLink } from './ReportDetailsLink';
+export { default as ReportMetric } from './ReportMetric';
