@@ -32,7 +32,7 @@ import { addFilter } from '@wordpress/hooks';
  */
 import './datastore';
 import Widgets from 'googlesitekit-widgets';
-import { AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC } from '../../googlesitekit/widgets/default-areas';
+import { AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC, AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain as AnalyticsSetup } from './components/setup';
 import { SettingsMain as AnalyticsSettings } from './components/settings';
@@ -77,7 +77,7 @@ domReady( () => {
 			wrapWidget: true,
 		},
 		[
-			AREA_DASHBOARD_ALL_TRAFFIC,
+			AREA_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
 
@@ -90,8 +90,8 @@ domReady( () => {
 			wrapWidget: true,
 		},
 		[
-			AREA_DASHBOARD_ALL_TRAFFIC,
-			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
 
@@ -104,8 +104,8 @@ domReady( () => {
 			wrapWidget: true,
 		},
 		[
-			AREA_DASHBOARD_ALL_TRAFFIC, // this is required to have this widget appear
-			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
 } );
