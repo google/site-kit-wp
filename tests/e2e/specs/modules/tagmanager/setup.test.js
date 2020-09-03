@@ -31,11 +31,11 @@ import {
  */
 import {
 	deactivateUtilityPlugins,
-	resetSiteKit,
-	useRequestInterception,
-	setSearchConsoleProperty,
-	setAMPMode,
 	pageWait,
+	resetSiteKit,
+	setAMPMode,
+	setupSiteKit,
+	useRequestInterception,
 } from '../../../utils';
 
 async function proceedToTagManagerSetup() {
@@ -70,10 +70,7 @@ describe( 'Tag Manager module setup', () => {
 	} );
 
 	beforeEach( async () => {
-		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
-		await activatePlugin( 'e2e-tests-site-verification-plugin' );
-		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-		await setSearchConsoleProperty();
+		await setupSiteKit();
 	} );
 
 	afterEach( async () => {
