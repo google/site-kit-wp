@@ -235,14 +235,14 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'AMP Container' } );
 			} );
 			it( 'validates homepage AMP for logged-in users', async () => {
-				await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
+				await expect( page ).toClick( 'button:not(:disabled)', { text: /confirm \& continue/i } );
 				await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 				await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
 				await page.goto( createURL( '/', 'amp' ), { waitUntil: 'load' } );
 				await expect( page ).toHaveValidAMPForUser();
 			} );
 			it( 'validates homepage AMP for non-logged-in users', async () => {
-				await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
+				await expect( page ).toClick( 'button:not(:disabled)', { text: /confirm \& continue/i } );
 				await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 				await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
 				await page.goto( createURL( '/', 'amp' ), { waitUntil: 'load' } );
