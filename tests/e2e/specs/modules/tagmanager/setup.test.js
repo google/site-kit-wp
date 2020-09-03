@@ -59,10 +59,11 @@ describe( 'Tag Manager module setup', () => {
 				request.respond( {
 					status: 200,
 				} );
+			} else if ( request.url().match( 'modules/tagmanager/data/live-container-version' ) ) {
+				// A 404 is returned for containers without a published version.
+				request.respond( { status: 404, body: JSON.stringify( { code: 404 } ) } );
 			} else if ( request.url().match( /^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/ ) ) {
-				request.respond( {
-					status: 200,
-				} );
+				request.respond( { status: 200 } );
 			} else {
 				request.continue();
 			}
