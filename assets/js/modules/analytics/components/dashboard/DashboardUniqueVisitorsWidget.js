@@ -29,21 +29,23 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
-import ErrorText from '../../../../components/error-text';
 import PreviewBlock from '../../../../components/preview-block';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
-import { siteAnalyticsReportDataDefaults, extractAnalyticsDashboardSparklineData, userReportDataDefaults, parseTotalUsersData } from '../../util';
+import { extractAnalyticsDashboardSparklineData, parseTotalUsersData } from '../../util';
 import { extractForSparkline, getSiteKitAdminURL, changeToPercent, readableLargeNumber } from '../../../../util';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/notifications/nodata';
+
 const { useSelect } = Data;
 
 function DashboardUniqueVisitorsWidget() {
 	const {
+		loading,
+		error,
 		sparkData,
-		sparkDataError,
 		visitorsData,
-		visitorsDataError,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
@@ -56,33 +58,64 @@ function DashboardUniqueVisitorsWidget() {
 		}
 
 		const sparkDataArgs = {
-			...siteAnalyticsReportDataDefaults,
+			compareDateRanges: 1,
+			dimensions: 'ga:date',
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+				{
+					expression: 'ga:sessions',
+					alias: 'Sessions',
+				},
+				{
+					expression: 'ga:bounceRate',
+					alias: 'Bounce Rate',
+				},
+				{
+					expression: 'ga:avgSessionDuration',
+					alias: 'Average Session Duration',
+				},
+				{
+					expression: 'ga:goalCompletionsAll',
+					alias: 'Goal Completions',
+				},
+			],
+			limit: 180,
 			...args,
 		};
 
 		const visitorsDataArgs = {
-			...userReportDataDefaults,
+			multiDateRange: 1,
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Total Users',
+				},
+			],
 			...args,
 		};
 
 		return {
+			loading: store.isResolving( 'getReport', [ sparkDataArgs ] ) || store.isResolving( 'getReport', [ visitorsDataArgs ] ),
+			error: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ) || store.getErrorForSelector( 'getReport', [ visitorsDataArgs ] ),
+			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparkDataArgs ),
-			sparkDataError: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ),
 			visitorsData: store.getReport( visitorsDataArgs ),
-			visitorsDataError: store.getErrorForSelector( 'getReport', [ visitorsDataArgs ] ),
 		};
 	} );
 
-	if ( visitorsDataError || sparkDataError ) {
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ ( visitorsDataError || sparkDataError ).message } />
-			</div>
-		);
+	if ( loading ) {
+		return <PreviewBlock width="100%" height="202px" />;
 	}
 
-	if ( ! visitorsData || ! sparkData ) {
-		return <PreviewBlock width="100%" height="202px" />;
+	if ( error ) {
+		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
+	}
+
+	if ( ( ! sparkData || ! sparkData.length ) && ( ! visitorsData || ! visitorsData.length ) ) {
+		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
 	}
 
 	const extractedAnalytics = extractAnalyticsDashboardSparklineData( sparkData );
