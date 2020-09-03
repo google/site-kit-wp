@@ -34,7 +34,6 @@ import {
 	resetSiteKit,
 	useRequestInterception,
 	setSearchConsoleProperty,
-	setupAnalytics,
 	setAMPMode,
 	pageWait,
 } from '../../../utils';
@@ -75,7 +74,6 @@ describe( 'Tag Manager module setup', () => {
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setSearchConsoleProperty();
-		await setupAnalytics();
 	} );
 
 	afterEach( async () => {
