@@ -21,12 +21,15 @@
  */
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidget';
+import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
 import {
 	dashboardAllTrafficArgs,
 	dashboardAllTrafficData,
 	pageDashboardAllTrafficArgs,
 	pageDashboardAllTrafficData,
+	dashboardBounceRateWidgetArgs,
+	dashboardBounceRateWidgetData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
 generateReportBasedWidgetStories( {
@@ -45,4 +48,13 @@ generateReportBasedWidgetStories( {
 	data: pageDashboardAllTrafficData,
 	options: pageDashboardAllTrafficArgs,
 	component: DashboardAllTrafficWidget,
+} );
+
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
+	datastore: STORE_NAME,
+	group: 'Analytics Module/Components/Dashboard/Bounce Rate Widget',
+	data: dashboardBounceRateWidgetData,
+	options: dashboardBounceRateWidgetArgs,
+	component: DashboardBounceRateWidget,
 } );
