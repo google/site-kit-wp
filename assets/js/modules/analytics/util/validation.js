@@ -62,7 +62,7 @@ export function isValidAccountSelection( value ) {
  * @return {boolean} Whether or not the given property ID is valid.
  */
 export function isValidPropertyID( propertyID ) {
-	return typeof propertyID === 'string' && propertyID.match( /^UA-\d+-\d+$/ );
+	return typeof propertyID === 'string' && /^UA-\d+-\d+$/.test( propertyID );
 }
 
 /**

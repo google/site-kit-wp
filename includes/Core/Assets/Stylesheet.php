@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Assets;
 
+use Google\Site_Kit\Context;
+
 /**
  * Class representing a single stylesheet.
  *
@@ -51,8 +53,11 @@ final class Stylesheet extends Asset {
 	 * Registers the stylesheet.
 	 *
 	 * @since 1.0.0
+	 * @since 1.15.0 Adds $context parameter.
+	 *
+	 * @param Context $context Plugin context.
 	 */
-	public function register() {
+	public function register( Context $context ) {
 		if ( $this->args['fallback'] && wp_style_is( $this->handle, 'registered' ) ) {
 			return;
 		}

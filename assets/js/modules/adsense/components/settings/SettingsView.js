@@ -27,9 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/display-setting';
 import Link from '../../../../components/link';
-import { getAccountSiteURL } from '../../util/url';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	ACCOUNT_STATUS_DISAPPROVED,
 	ACCOUNT_STATUS_GRAYLISTED,
@@ -46,10 +44,7 @@ export default function SettingsView() {
 	const accountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
-
-	// Site status is only displayed in sites list view, so do not pass siteURL here.
-	const siteStatusURL = getAccountSiteURL( { accountID, userEmail } );
+	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSitesURL() );
 
 	let accountStatusLabel;
 	switch ( accountStatus ) {

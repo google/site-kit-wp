@@ -19,51 +19,51 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Logo from './logo';
 import UserMenu from './user-menu';
 import ErrorNotification from '../components/notifications/error-notification';
+import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
-class Header extends Component {
-	render() {
-		const { isAuthenticated } = global._googlesitekitLegacyData.setup;
+const Header = () => {
+	const isAuthenticated = useSelect( ( select ) => select( CORE_USER ).isAuthenticated() );
 
-		return (
-			<Fragment>
-				<header className="googlesitekit-header">
-					<section className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--align-middle
-								mdc-layout-grid__cell--span-3-phone
-								mdc-layout-grid__cell--span-4-tablet
-								mdc-layout-grid__cell--span-6-desktop
-							">
-								<Logo />
-							</div>
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--align-middle
-								mdc-layout-grid__cell--align-right-phone
-								mdc-layout-grid__cell--span-1-phone
-								mdc-layout-grid__cell--span-4-tablet
-								mdc-layout-grid__cell--span-6-desktop
-							">
-								{ isAuthenticated && <UserMenu /> }
-							</div>
+	return (
+		<Fragment>
+			<header className="googlesitekit-header">
+				<section className="mdc-layout-grid">
+					<div className="mdc-layout-grid__inner">
+						<div className="
+							mdc-layout-grid__cell
+							mdc-layout-grid__cell--align-middle
+							mdc-layout-grid__cell--span-3-phone
+							mdc-layout-grid__cell--span-4-tablet
+							mdc-layout-grid__cell--span-6-desktop
+						">
+							<Logo />
 						</div>
-					</section>
-				</header>
-				<ErrorNotification />
-			</Fragment>
-
-		);
-	}
-}
+						<div className="
+							mdc-layout-grid__cell
+							mdc-layout-grid__cell--align-middle
+							mdc-layout-grid__cell--align-right-phone
+							mdc-layout-grid__cell--span-1-phone
+							mdc-layout-grid__cell--span-4-tablet
+							mdc-layout-grid__cell--span-6-desktop
+						">
+							{ isAuthenticated && <UserMenu /> }
+						</div>
+					</div>
+				</section>
+			</header>
+			<ErrorNotification />
+		</Fragment>
+	);
+};
 
 export default Header;

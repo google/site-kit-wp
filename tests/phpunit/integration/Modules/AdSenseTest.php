@@ -12,16 +12,19 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
+use ReflectionMethod;
 
 /**
  * @group Modules
@@ -30,6 +33,7 @@ class AdSenseTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Screen_ContractTests;
 	use Module_With_Settings_ContractTests;
+	use Module_With_Owner_ContractTests;
 
 	public function test_register() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -43,6 +47,60 @@ class AdSenseTest extends TestCase {
 
 		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
 		$this->assertContains( $adsense->get_screen(), apply_filters( 'googlesitekit_module_screens', array() ) );
+	}
+
+	public function test_register_template_redirect_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
+
+		$adsense = new AdSense( $context );
+		$this->force_set_property( $adsense, 'context', $mock_context );
+
+		remove_all_actions( 'template_redirect' );
+		$adsense->register();
+
+		remove_all_actions( 'wp_body_open' );
+		remove_all_filters( 'the_content' );
+		remove_all_filters( 'amp_post_template_data' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_body_open' ) );
+		$this->assertFalse( has_filter( 'the_content' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_body_open' ) );
+		$this->assertTrue( has_filter( 'the_content' ) );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+	}
+
+	public function test_register_template_redirect_non_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
+
+		$adsense = new AdSense( $context );
+		$this->force_set_property( $adsense, 'context', $mock_context );
+
+		remove_all_actions( 'template_redirect' );
+		$adsense->register();
+
+		remove_all_actions( 'wp_head' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_head' ) );
+
+		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_head' ) );
 	}
 
 	public function test_get_module_scope() {
@@ -210,4 +268,76 @@ class AdSenseTest extends TestCase {
 	protected function get_module_with_settings() {
 		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
+
+	/**
+	 * @return Module_With_Owner
+	 */
+	protected function get_module_with_owner() {
+		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	public function test_parse_earnings_orderby() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$reflected_parse_earnings_orderby_method = new ReflectionMethod( 'Google\Site_Kit\Modules\AdSense', 'parse_earnings_orderby' );
+		$reflected_parse_earnings_orderby_method->setAccessible( true );
+
+		// When there is no orderby in the request.
+		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, array() );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEmpty( $result );
+
+		// When a single order object is used.
+		$order  = array(
+			'fieldName' => 'views',
+			'sortOrder' => 'ASCENDING',
+		);
+		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $order );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 1, count( $result ) );
+		$this->assertEquals( '+views', $result[0] );
+
+		// When multiple orders are passed.
+		$orders = array(
+			array(
+				'fieldName' => 'pages',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => 'sessions',
+				'sortOrder' => 'ASCENDING',
+			),
+		);
+		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $orders );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 2, count( $result ) );
+		$this->assertEquals( '-pages', $result[0] );
+		$this->assertEquals( '+sessions', $result[1] );
+
+		// Check that it skips invalid orders.
+		$orders = array(
+			array(
+				'fieldName' => 'views',
+				'sortOrder' => '',
+			),
+			array(
+				'fieldName' => 'pages',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => '',
+				'sortOrder' => 'DESCENDING',
+			),
+			array(
+				'fieldName' => 'sessions',
+				'sortOrder' => 'ASCENDING',
+			),
+		);
+		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $orders );
+		$this->assertTrue( is_array( $result ) );
+		$this->assertEquals( 2, count( $result ) );
+		$this->assertEquals( '-pages', $result[0] );
+		$this->assertEquals( '+sessions', $result[1] );
+	}
+
 }

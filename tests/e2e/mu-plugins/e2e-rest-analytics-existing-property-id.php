@@ -22,8 +22,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/analytics/existing-property-id',
 			array(
-				'methods'  => WP_REST_Server::EDITABLE,
-				'callback' => function ( WP_REST_Request $request ) {
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => function ( WP_REST_Request $request ) {
 					if ( $request['id'] ) {
 						update_option( 'googlesitekit_e2e_analytics_existing_property_id', $request['id'] );
 					} else {
@@ -35,9 +35,10 @@ add_action(
 						'id'      => $request['id'],
 					);
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 	},
-	0 
+	0
 );
 

@@ -39,7 +39,7 @@ export const actions = {
 	/**
 	 * Sets the registryKey in the data store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 *
 	 * @param {string} registryKey The registryKey for a given store.
 	 * @return {Object} Redux-style action.
@@ -85,7 +85,7 @@ export const selectors = {
 	/**
 	 * Returns the registry key being used for a given store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

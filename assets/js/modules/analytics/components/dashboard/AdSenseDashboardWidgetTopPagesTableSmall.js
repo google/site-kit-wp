@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -70,6 +65,10 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 			return null;
 		}
 
+		if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+			return null;
+		}
+
 		const headers = [
 			{
 				title: __( 'Top Earning Pages', 'google-site-kit' ),
@@ -83,7 +82,7 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 		];
 
 		const links = [];
-		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
+		const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
 			links[ i ] = row.dimensions[ 1 ];
 			return [
 				row.dimensions[ 0 ],

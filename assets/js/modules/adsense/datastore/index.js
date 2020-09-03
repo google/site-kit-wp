@@ -33,7 +33,7 @@ import tags from './tags';
 import urlchannels from './urlchannels';
 import settings from './settings';
 import adblocker from './adblocker';
-import error from './error';
+import service from './service';
 import { STORE_NAME } from './constants';
 
 export { STORE_NAME };
@@ -48,6 +48,7 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 		'siteStatus',
 		'accountSetupComplete',
 		'siteSetupComplete',
+		'ownerID',
 	],
 	adminPage: 'googlesitekit-module-adsense',
 } );
@@ -62,7 +63,7 @@ const store = Data.combineStores(
 	urlchannels,
 	settings,
 	adblocker,
-	error,
+	service
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;

@@ -19,7 +19,7 @@
 /**
  * Sorts an array of objects based on numeric order/priority key.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  *
  * @param {Array} arrayData  Array containing objects to be sorted
  * @param {string} property The object key to use for matching.

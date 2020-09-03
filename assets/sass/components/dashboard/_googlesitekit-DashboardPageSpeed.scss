@@ -135,6 +135,10 @@
 			line-height: 1.25rem;
 		}
 
+		.googlesitekit-error-text p {
+			color: $c-error;
+		}
+
 		&--first {
 
 			padding: 12px $grid-gap-phone 8px $grid-gap-phone;

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,131 +29,115 @@ import Layout from '../layout/layout';
 import OptIn from '../optin';
 import ResetButton from '../reset-button';
 
-class SettingsAdmin extends Component {
-	constructor() {
-		super();
-
-		const { userData: { email = '', picture = '', name = '' } } = global._googlesitekitLegacyData.admin;
-
-		this.state = {
-			data: {
-				email,
-				img: picture,
-				user: name,
-			},
-		};
-	}
-
-	render() {
-		return (
-			<Fragment>
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
-					<Layout>
-						<div className="
-							googlesitekit-settings-module
-							googlesitekit-settings-module--active
-						">
-							<div className="mdc-layout-grid">
-								<div className="mdc-layout-grid__inner">
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-6-desktop
-										mdc-layout-grid__cell--span-4-tablet
-										mdc-layout-grid__cell--span-4-phone
+const SettingsAdmin = () => {
+	return (
+		<Fragment>
+			<div className="
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--span-12
+			">
+				<Layout>
+					<div className="
+						googlesitekit-settings-module
+						googlesitekit-settings-module--active
+					">
+						<div className="mdc-layout-grid">
+							<div className="mdc-layout-grid__inner">
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-6-desktop
+									mdc-layout-grid__cell--span-4-tablet
+									mdc-layout-grid__cell--span-4-phone
+								">
+									<h3 className="
+										googlesitekit-heading-4
+										googlesitekit-settings-module__title
 									">
-										<h3 className="
-											googlesitekit-heading-4
-											googlesitekit-settings-module__title
-										">
-											{ __( 'Plugin Status', 'google-site-kit' ) }
-										</h3>
-									</div>
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-6-desktop
-										mdc-layout-grid__cell--span-4-tablet
-										mdc-layout-grid__cell--span-4-phone
-										mdc-layout-grid__cell--align-middle
-										mdc-layout-grid__cell--align-right-tablet
-									">
-									</div>
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-									">
-										<div className="googlesitekit-settings-module__meta-items">
-											<p className="googlesitekit-settings-module__status">
-												{ __( 'Site Kit is connected', 'google-site-kit' ) }
-												<span className="
-													googlesitekit-settings-module__status-icon
-													googlesitekit-settings-module__status-icon--connected
-												">
-													<span className="screen-reader-text">
-														{ __( 'Connected', 'google-site-kit' ) }
-													</span>
-												</span>
-											</p>
-										</div>
-									</div>
+										{ __( 'Plugin Status', 'google-site-kit' ) }
+									</h3>
 								</div>
-							</div>
-							<footer className="googlesitekit-settings-module__footer">
-								<div className="mdc-layout-grid">
-									<div className="mdc-layout-grid__inner">
-										<div className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-12
-											mdc-layout-grid__cell--span-8-tablet
-											mdc-layout-grid__cell--span-4-phone
-										">
-											<ResetButton />
-										</div>
-									</div>
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-6-desktop
+									mdc-layout-grid__cell--span-4-tablet
+									mdc-layout-grid__cell--span-4-phone
+									mdc-layout-grid__cell--align-middle
+									mdc-layout-grid__cell--align-right-tablet
+								">
 								</div>
-							</footer>
-						</div>
-					</Layout>
-				</div>
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
-					<Layout
-						header
-						title={ __( 'Tracking', 'google-site-kit' ) }
-						className="googlesitekit-settings-meta"
-						fill
-					>
-						<div className="
-							googlesitekit-settings-module
-							googlesitekit-settings-module--active
-						">
-							<div className="mdc-layout-grid">
-								<div className="mdc-layout-grid__inner">
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-									">
-										<div className="googlesitekit-settings-module__meta-items">
-											<div className="
-												googlesitekit-settings-module__meta-item
-												googlesitekit-settings-module__meta-item--nomargin
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-12
+								">
+									<div className="googlesitekit-settings-module__meta-items">
+										<p className="googlesitekit-settings-module__status">
+											{ __( 'Site Kit is connected', 'google-site-kit' ) }
+											<span className="
+												googlesitekit-settings-module__status-icon
+												googlesitekit-settings-module__status-icon--connected
 											">
-												<OptIn optinAction="analytics_optin_settings_page" />
-											</div>
+												<span className="screen-reader-text">
+													{ __( 'Connected', 'google-site-kit' ) }
+												</span>
+											</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<footer className="googlesitekit-settings-module__footer">
+							<div className="mdc-layout-grid">
+								<div className="mdc-layout-grid__inner">
+									<div className="
+										mdc-layout-grid__cell
+										mdc-layout-grid__cell--span-12
+										mdc-layout-grid__cell--span-8-tablet
+										mdc-layout-grid__cell--span-4-phone
+									">
+										<ResetButton />
+									</div>
+								</div>
+							</div>
+						</footer>
+					</div>
+				</Layout>
+			</div>
+			<div className="
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--span-12
+			">
+				<Layout
+					header
+					title={ __( 'Tracking', 'google-site-kit' ) }
+					className="googlesitekit-settings-meta"
+					fill
+				>
+					<div className="
+						googlesitekit-settings-module
+						googlesitekit-settings-module--active
+					">
+						<div className="mdc-layout-grid">
+							<div className="mdc-layout-grid__inner">
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-12
+								">
+									<div className="googlesitekit-settings-module__meta-items">
+										<div className="
+											googlesitekit-settings-module__meta-item
+											googlesitekit-settings-module__meta-item--nomargin
+										">
+											<OptIn optinAction="analytics_optin_settings_page" />
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</Layout>
-				</div>
-			</Fragment>
-		);
-	}
-}
+					</div>
+				</Layout>
+			</div>
+		</Fragment>
+	);
+};
 
 export default SettingsAdmin;

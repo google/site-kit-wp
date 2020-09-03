@@ -26,19 +26,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ErrorNotice from './ErrorNotice';
+import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 import Link from '../../../../components/link';
 import Button from '../../../../components/button';
 import ProgressBar from '../../../../components/progress-bar';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user';
-import { escapeURI } from '../../../../util/escape-uri';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreate() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: 'admin/accounts/create' } ) );
 
 	const { resetAccounts } = useDispatch( STORE_NAME );
 	const refetchAccountsHandler = useCallback( () => {
@@ -47,8 +47,8 @@ export default function AccountCreate() {
 
 	const createAccountHandler = useCallback( () => {
 		// Need to use window.open for this to allow for stubbing in E2E.
-		global.window.open( escapeURI`https://tagmanager.google.com/?authuser=${ userEmail }#/admin/accounts/create`, '_blank' );
-	}, [ userEmail ] );
+		global.window.open( createAccountURL, '_blank' );
+	}, [ createAccountURL ] );
 
 	if ( undefined === accounts || isDoingGetAccounts || ! userEmail ) {
 		return <ProgressBar />;
@@ -56,7 +56,7 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			<ErrorNotice />
+			<StoreErrorNotice storeName={ STORE_NAME } />
 
 			<p>
 				{ __( 'To create a new account, click the button below which will open the Google Tag Manager account creation screen in a new window.', 'google-site-kit' ) }

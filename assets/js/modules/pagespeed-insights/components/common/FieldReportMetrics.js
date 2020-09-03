@@ -33,13 +33,24 @@ import { __ } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import ReportDetailsLink from './ReportDetailsLink';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
+import ErrorText from '../../../../components/error-text';
 
-export default function FieldReportMetrics( { data } ) {
+export default function FieldReportMetrics( { data, error } ) {
 	const {
 		FIRST_INPUT_DELAY_MS: firstInputDelay,
 		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
 		CUMULATIVE_LAYOUT_SHIFT_SCORE: cumulativeLayoutShift,
 	} = data?.loadingExperience?.metrics || {};
+
+	if ( error ) {
+		return (
+			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
+				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
+					<ErrorText message={ error.message } />
+				</div>
+			</div>
+		);
+	}
 
 	if ( ! firstInputDelay || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
 		return (
@@ -115,5 +126,6 @@ export default function FieldReportMetrics( { data } ) {
 }
 
 FieldReportMetrics.propTypes = {
-	data: PropTypes.object.isRequired,
+	data: PropTypes.object,
+	error: PropTypes.object,
 };

@@ -23,7 +23,7 @@ import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import settings from './settings';
-import error from './error';
+import service from './service';
 
 export { STORE_NAME };
 
@@ -32,6 +32,7 @@ let baseModuleStore = Modules.createModuleStore( 'optimize', {
 	settingSlugs: [
 		'ampExperimentJSON',
 		'optimizeID',
+		'ownerID',
 	],
 } );
 
@@ -56,7 +57,7 @@ baseModuleStore = ( ( { actions, selectors, ...store } ) => {
 const store = Data.combineStores(
 	baseModuleStore,
 	settings,
-	error,
+	service
 );
 
 // Register this store on the global registry.

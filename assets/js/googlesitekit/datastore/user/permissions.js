@@ -35,7 +35,7 @@ const RECEIVE_CAPABILITIES = 'RECEIVE_CAPABILITIES';
 
 export const INITIAL_STATE = {
 	permissionError: null,
-	capabilities: {},
+	capabilities: undefined,
 };
 
 export const actions = {
@@ -75,7 +75,7 @@ export const actions = {
 	/**
 	 * Sets user capabilities.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 * @private
 	 *
 	 * @param {Object} capabilities User capabilities.
@@ -126,6 +126,12 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getCapabilities() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( STORE_NAME ).getCapabilities() ) {
+			return;
+		}
+
 		if ( ! global._googlesitekitUserData?.permissions ) {
 			global.console.error( 'Could not load core/user permissions.' );
 		}
@@ -152,7 +158,7 @@ export const selectors = {
 	/**
 	 * Gets capabilities of the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Capabilities object. Returns undefined if it is not loaded yet.
@@ -165,7 +171,7 @@ export const selectors = {
 	/**
 	 * Checks if the current user has the specified capability or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} capability Capability name to check.

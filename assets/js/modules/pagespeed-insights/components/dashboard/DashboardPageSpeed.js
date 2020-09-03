@@ -25,7 +25,7 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,7 +34,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/progress-bar';
-import Layout from '../../../../components/layout/layout';
 import LabReportMetrics from '../common/LabReportMetrics';
 import FieldReportMetrics from '../common/FieldReportMetrics';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
@@ -52,10 +51,28 @@ const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
 	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
-	const reportMobile = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_MOBILE ) );
-	const reportDesktop = useSelect( ( select ) => select( STORE_NAME ).getReport( referenceURL, STRATEGY_DESKTOP ) );
 	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
 	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) ) || DATA_SRC_LAB;
+
+	const {
+		isFetchingMobile,
+		isFetchingDesktop,
+		reportMobile,
+		reportDesktop,
+		errorMobile,
+		errorDesktop,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+
+		return {
+			isFetchingMobile: store.isFetchingGetReport( referenceURL, STRATEGY_MOBILE ),
+			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
+			errorMobile: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
+			isFetchingDesktop: store.isFetchingGetReport( referenceURL, STRATEGY_DESKTOP ),
+			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
+			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
+		};
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const setStrategyMobile = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_MOBILE } ), [] );
@@ -87,27 +104,26 @@ export default function DashboardPageSpeed() {
 		}
 	}, [ reportMobile, reportDesktop ] );
 
-	if ( ! referenceURL || ! reportMobile || ! reportDesktop || ! dataSrc ) {
+	if ( ! referenceURL || isFetchingMobile || isFetchingDesktop || ! dataSrc ) {
 		return (
-			<Layout className="googlesitekit-pagespeed-widget">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-							<ProgressBar />
-							<p className="googlesitekit-text-align-center">
-								{ __( 'PageSpeed Insights is preparing data…', 'google-site-kit' ) }
-							</p>
-						</div>
+			<div className="mdc-layout-grid">
+				<div className="mdc-layout-grid__inner">
+					<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<ProgressBar />
+						<p className="googlesitekit-text-align-center">
+							{ __( 'PageSpeed Insights is preparing data…', 'google-site-kit' ) }
+						</p>
 					</div>
 				</div>
-			</Layout>
+			</div>
 		);
 	}
 
 	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
+	const reportError = strategy === STRATEGY_MOBILE ? errorMobile : errorDesktop;
 
 	return (
-		<Layout className="googlesitekit-pagespeed-widget">
+		<Fragment>
 			<header className="googlesitekit-pagespeed-widget__header">
 				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
 					<TabBar
@@ -146,9 +162,9 @@ export default function DashboardPageSpeed() {
 				</div>
 			</header>
 			<section>
-				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } /> }
-				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } /> }
+				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } error={ reportError } /> }
+				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } error={ reportError } /> }
 			</section>
-		</Layout>
+		</Fragment>
 	);
 }

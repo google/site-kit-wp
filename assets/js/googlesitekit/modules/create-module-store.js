@@ -25,15 +25,10 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	createNotificationsStore,
-} from '../data/create-notifications-store';
-import {
-	createSettingsStore,
-} from '../data/create-settings-store';
-import {
-	createInfoStore,
-} from './create-info-store';
+import { createNotificationsStore } from '../data/create-notifications-store';
+import { createSettingsStore } from '../data/create-settings-store';
+import { createInfoStore } from './create-info-store';
+import { createErrorStore } from '../data/create-error-store';
 
 /**
  * Creates a base store object for a Site Kit module.
@@ -93,12 +88,14 @@ export const createModuleStore = ( slug, {
 			notificationsStore,
 			settingsStore,
 			infoStore,
+			createErrorStore(),
 		);
 	} else {
 		combinedStore = Data.combineStores(
 			Data.commonStore,
 			notificationsStore,
 			infoStore,
+			createErrorStore(),
 		);
 	}
 

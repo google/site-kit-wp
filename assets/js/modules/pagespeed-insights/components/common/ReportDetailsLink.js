@@ -20,19 +20,19 @@
  * WordPress dependencies
  */
 import { sprintf, __, _x } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { sanitizeHTML } from '../../../../util';
 const { useSelect } = Data;
 
 export default function ReportDetailsLink() {
 	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
-	const pagespeedInsightsURL = addQueryArgs( 'https://developers.google.com/speed/pagespeed/insights/', { url: referenceURL } );
+	const pagespeedInsightsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { url: referenceURL } } ) );
 
 	const footerLinkHTML = sprintf(
 		/* translators: %s: link with translated service name */

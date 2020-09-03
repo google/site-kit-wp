@@ -50,11 +50,9 @@ describe( 'date range filtering on dashboard views', () => {
 
 	it( 'loads new data when the date range is changed on the module dashboard', async () => {
 		const { last28Days, last14Days } = modulePageRequests;
-
 		mockBatchResponse = last28Days;
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-module-analytics' );
 		const TOTAL_SESSIONS_28_DAYS = await getTotalSessions();
-
 		mockBatchResponse = last14Days;
 		await Promise.all( [
 			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),

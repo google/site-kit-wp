@@ -2,7 +2,7 @@ const { preset } = require( '@wordpress/scripts/config/jest-unit.config' );
 
 module.exports = {
 	preset,
-	collectCoverage: true,
+	collectCoverage: false, // Enable with `--coverage=true` flag.
 	collectCoverageFrom: [
 		'assets/**/**.js',
 	],
@@ -41,6 +41,7 @@ module.exports = {
 	],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
+		'react__non-shim': 'react',
 		'@wordpress/element__non-shim': '@wordpress/element',
 		// New (JSR) modules.
 		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',

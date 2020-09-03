@@ -385,4 +385,80 @@ export const analytics = {
 			},
 		},
 	],
+	'modules::analytics::report::496f658b8e46bb38941674350513301e': [
+		{
+			nextPageToken: null,
+			columnHeader: {
+				dimensions: null,
+				metricHeader: {
+					metricHeaderEntries: [
+						{
+							name: 'Total Users',
+							type: 'INTEGER',
+						},
+					],
+				},
+			},
+			data: {
+				dataLastRefreshed: null,
+				isDataGolden: null,
+				rowCount: 1,
+				samplesReadCounts: null,
+				samplingSpaceSizes: null,
+				rows: [
+					{
+						dimensions: null,
+						metrics: [
+							{
+								values: [
+									'10660',
+								],
+							},
+							{
+								values: [
+									'2346',
+								],
+							},
+						],
+					},
+				],
+				totals: [
+					{
+						values: [
+							'10660',
+						],
+					},
+					{
+						values: [
+							'2346',
+						],
+					},
+				],
+				minimums: [
+					{
+						values: [
+							'10660',
+						],
+					},
+					{
+						values: [
+							'2346',
+						],
+					},
+				],
+				maximums: [
+					{
+						values: [
+							'10660',
+						],
+					},
+					{
+						values: [
+							'2346',
+						],
+					},
+				],
+			},
+		},
+	],
 };

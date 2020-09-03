@@ -104,12 +104,9 @@ describe( 'modules/adsense settings', () => {
 
 		describe( 'fetchSaveUseSnippet', () => {
 			it( 'requires the useSnippet param', () => {
-				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
-				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).fetchSaveUseSnippet();
-				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'useSnippet is required.' );
-
-				consoleErrorSpy.mockClear();
+				expect( () => {
+					registry.dispatch( STORE_NAME ).fetchSaveUseSnippet();
+				} ).toThrow( 'useSnippet is required.' );
 			} );
 
 			it( 'sets isDoingSaveUseSnippet', () => {
@@ -196,7 +193,7 @@ describe( 'modules/adsense settings', () => {
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).getSettings() ).toEqual( validSettings );
-				expect( registry.select( STORE_NAME ).getError() ).toEqual( wpError );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( wpError );
 			} );
 
 			it( 'invalidates AdSense API cache on success', async () => {

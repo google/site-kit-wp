@@ -119,12 +119,20 @@ final class Authentication {
 	protected $profile;
 
 	/**
-	 * First_Admin instance.
+	 * Owner_ID instance.
 	 *
-	 * @since 1.0.0
-	 * @var First_Admin
+	 * @since n.e.x.t
+	 * @var Owner_ID
 	 */
-	protected $first_admin;
+	protected $owner_id;
+
+	/**
+	 * Has_Connected_Admins instance.
+	 *
+	 * @since 1.14.0
+	 * @var Has_Connected_Admins
+	 */
+	protected $has_connected_admins;
 
 	/**
 	 * Google_Proxy instance.
@@ -157,17 +165,18 @@ final class Authentication {
 		User_Options $user_options = null,
 		Transients $transients = null
 	) {
-		$this->context           = $context;
-		$this->options           = $options ?: new Options( $this->context );
-		$this->user_options      = $user_options ?: new User_Options( $this->context );
-		$this->transients        = $transients ?: new Transients( $this->context );
-		$this->google_proxy      = new Google_Proxy( $this->context );
-		$this->credentials       = new Credentials( new Encrypted_Options( $this->options ) );
-		$this->verification      = new Verification( $this->user_options );
-		$this->verification_meta = new Verification_Meta( $this->user_options );
-		$this->verification_file = new Verification_File( $this->user_options );
-		$this->profile           = new Profile( $this->user_options );
-		$this->first_admin       = new First_Admin( $this->options );
+		$this->context              = $context;
+		$this->options              = $options ?: new Options( $this->context );
+		$this->user_options         = $user_options ?: new User_Options( $this->context );
+		$this->transients           = $transients ?: new Transients( $this->context );
+		$this->google_proxy         = new Google_Proxy( $this->context );
+		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
+		$this->verification         = new Verification( $this->user_options );
+		$this->verification_meta    = new Verification_Meta( $this->user_options );
+		$this->verification_file    = new Verification_File( $this->user_options );
+		$this->profile              = new Profile( $this->user_options );
+		$this->owner_id             = new Owner_ID( $this->options );
+		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
 	}
 
 	/**
@@ -180,6 +189,8 @@ final class Authentication {
 		$this->verification()->register();
 		$this->verification_file()->register();
 		$this->verification_meta()->register();
+		$this->has_connected_admins->register();
+		$this->owner_id->register();
 
 		add_action(
 			'init',
@@ -402,6 +413,9 @@ final class Authentication {
 		$user_id = $this->user_options->get_user_id();
 		$prefix  = $this->user_options->get_meta_key( 'googlesitekit\_%' );
 
+		// Reset Has_Connected_Admins setting.
+		$this->has_connected_admins->delete();
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
 			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE user_id = %d AND meta_key LIKE %s", $user_id, $prefix )
@@ -489,7 +503,7 @@ final class Authentication {
 	/**
 	 * Refreshes user profile data in the background.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.13.0
 	 *
 	 * @param int $user_id User ID to refresh profile data for.
 	 */
@@ -588,18 +602,14 @@ final class Authentication {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_base_data( $data ) {
-		$first_admin_id  = (int) $this->first_admin->get();
-		$current_user_id = get_current_user_id();
-
-		// If no first admin is stored yet and the current user is one, consider them the first.
-		if ( ! $first_admin_id && current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-			$first_admin_id = $current_user_id;
-		}
-		$data['isFirstAdmin'] = ( $current_user_id === $first_admin_id );
-		$data['splashURL']    = esc_url_raw( $this->context->admin_url( 'splash' ) );
-
-		$auth_client = $this->get_oauth_client();
+		$data['isOwner']             = $this->owner_id->get() === get_current_user_id();
+		$data['isFirstAdmin']        = $data['isOwner'] || ( ! $this->owner_id->get() && current_user_can( Permissions::MANAGE_OPTIONS ) );
+		$data['splashURL']           = esc_url_raw( $this->context->admin_url( 'splash' ) );
+		$data['proxySetupURL']       = '';
+		$data['proxyPermissionsURL'] = '';
+		$data['usingProxy']          = false;
 		if ( $this->credentials->using_proxy() ) {
+			$auth_client                 = $this->get_oauth_client();
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
@@ -618,26 +628,6 @@ final class Authentication {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_admin_data( $data ) {
-		if ( ! isset( $data['userData'] ) ) {
-			$current_user     = wp_get_current_user();
-			$data['userData'] = array(
-				'email'   => $current_user->user_email,
-				'picture' => get_avatar_url( $current_user->user_email ),
-			);
-		}
-		$profile_data = $this->profile->get();
-		if ( $profile_data ) {
-			$data['userData']['email']   = $profile_data['email'];
-			$data['userData']['picture'] = $profile_data['photo'];
-		}
-
-		$auth_client = $this->get_oauth_client();
-		if ( $this->credentials->using_proxy() ) {
-			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
-			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
-		}
-
 		$data['connectURL']    = esc_url_raw( $this->get_connect_url() );
 		$data['disconnectURL'] = esc_url_raw( $this->get_disconnect_url() );
 
@@ -678,15 +668,6 @@ final class Authentication {
 		} else {
 			$data['isVerified'] = false;
 		}
-
-		// Flag the first admin user.
-		$first_admin_id  = (int) $this->first_admin->get();
-		$current_user_id = get_current_user_id();
-		if ( ! $first_admin_id && current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-			$first_admin_id = $current_user_id;
-			$this->first_admin->set( $first_admin_id );
-		}
-		$data['isFirstAdmin'] = ( $current_user_id === $first_admin_id );
 
 		// The actual data for this is passed in from the Search Console module.
 		if ( ! isset( $data['hasSearchConsoleProperty'] ) ) {
@@ -740,9 +721,11 @@ final class Authentication {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$data = array(
-								'connected'      => $this->credentials->has(),
-								'resettable'     => $this->options->has( Credentials::OPTION ),
-								'setupCompleted' => $this->is_setup_completed(),
+								'connected'          => $this->credentials->has(),
+								'resettable'         => $this->options->has( Credentials::OPTION ),
+								'setupCompleted'     => $this->is_setup_completed(),
+								'hasConnectedAdmins' => $this->has_connected_admins->get(),
+								'ownerID'            => $this->owner_id->get(),
 							);
 
 							return new WP_REST_Response( $data );

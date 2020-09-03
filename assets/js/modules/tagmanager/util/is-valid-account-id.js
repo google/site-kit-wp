@@ -5,7 +5,7 @@
  * @return {boolean} Whether or not the given account ID is valid.
  */
 export default function isValidAccountID( accountID ) {
-	const accountInt = parseInt( accountID ) || 0;
+	const accountInt = parseInt( accountID, 10 ) || 0;
 
 	return accountInt > 0;
 }

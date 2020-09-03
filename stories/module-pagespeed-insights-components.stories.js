@@ -24,9 +24,11 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import DashboardPageSpeed from '../assets/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeed';
+import DashboardPageSpeedWidget from '../assets/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget';
 import { STORE_NAME } from '../assets/js/modules/pagespeed-insights/datastore';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../assets/js/googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';
 import { STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
 import { WithTestRegistry, freezeFetch } from '../tests/js/utils';
@@ -41,10 +43,17 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				referenceSiteURL: url,
 				currentEntityURL: null,
 			} );
+			dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'pagespeed-insights',
+					active: true,
+					connected: true,
+				},
+			] );
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeed />
+				<DashboardPageSpeedWidget />
 			</WithTestRegistry>
 		);
 	} )
@@ -59,10 +68,17 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				referenceSiteURL: url,
 				currentEntityURL: null,
 			} );
+			dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'pagespeed-insights',
+					active: true,
+					connected: true,
+				},
+			] );
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeed />
+				<DashboardPageSpeedWidget />
 			</WithTestRegistry>
 		);
 	} )
@@ -75,10 +91,74 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				referenceSiteURL: url,
 				currentEntityURL: null,
 			} );
+			dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'pagespeed-insights',
+					active: true,
+					connected: true,
+				},
+			] );
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeed />
+				<DashboardPageSpeedWidget />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Dashboard widget (Errors for Mobile and Desktop)', () => {
+		const url = fixtures.pagespeedMobile.loadingExperience.id;
+		const setupRegistry = ( { dispatch } ) => {
+			const mobileError = {
+				code: 'fetching_mobile_data_failed',
+				message: 'Fetching PageSpeed Insights report with strategy mobile failed.',
+			};
+			const desktopError = {
+				code: 'fetching_desktop_data_failed',
+				message: 'Fetching PageSpeed Insights report with strategy desktop failed.',
+			};
+			dispatch( STORE_NAME ).receiveError( mobileError, 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( STORE_NAME ).receiveError( desktopError, 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				referenceSiteURL: url,
+				currentEntityURL: null,
+			} );
+			dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'pagespeed-insights',
+					active: true,
+					connected: true,
+				},
+			] );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<DashboardPageSpeedWidget />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Dashboard widget (CTA)', () => {
+		const url = fixtures.pagespeedMobile.loadingExperience.id;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				referenceSiteURL: url,
+				currentEntityURL: null,
+			} );
+			dispatch( CORE_USER ).receiveCapabilities( {
+				[ PERMISSION_MANAGE_OPTIONS ]: true,
+			} );
+			dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'pagespeed-insights',
+					active: false,
+					connected: false,
+				},
+			] );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<DashboardPageSpeedWidget />
 			</WithTestRegistry>
 		);
 	} )

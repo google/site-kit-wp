@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { isEmpty, get } from 'lodash';
+import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -35,6 +35,7 @@ import {
 	readableLargeNumber,
 	extractForSparkline,
 	getSiteKitAdminURL,
+	changeToPercent,
 } from '../../../../util';
 import {
 	calculateOverviewData,
@@ -44,6 +45,7 @@ import {
 	overviewReportDataDefaults,
 	isDataZeroForReporting,
 	userReportDataDefaults,
+	parseTotalUsersData,
 } from '../../util';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
@@ -58,7 +60,8 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		this.state = {
 			accounts: false,
 			goals: false,
-			directTotalUsers: false,
+			totalUsers: false,
+			previousTotalUsers: false,
 		};
 	}
 
@@ -90,7 +93,8 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			overview,
 			extractedAnalytics,
 			goals,
-			directTotalUsers,
+			totalUsers,
+			previousTotalUsers,
 		} = this.state;
 
 		const { permaLink } = global._googlesitekitLegacyData;
@@ -98,19 +102,19 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		const href = getSiteKitAdminURL( 'googlesitekit-module-analytics', {} );
 		const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
 
-		let totalUsersChange = '',
-			goalCompletions = '',
+		let goalCompletions = '',
 			goalCompletionsChange = '',
 			averageBounceRate = '',
 			averageBounceRateChange = '';
 
 		if ( overview ) {
-			totalUsersChange = overview.totalUsersChange;
 			goalCompletions = overview.goalCompletions;
 			goalCompletionsChange = overview.goalCompletionsChange;
 			averageBounceRate = overview.averageBounceRate;
 			averageBounceRateChange = overview.averageBounceRateChange;
 		}
+
+		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
 
 		return (
 			<Fragment>
@@ -124,7 +128,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 					<DataBlock
 						className="overview-total-users"
 						title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( directTotalUsers ) }
+						datapoint={ readableLargeNumber( totalUsers ) }
 						change={ totalUsersChange }
 						changeDataUnit="%"
 						source={ {
@@ -258,13 +262,10 @@ export default withData(
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Dashboard' ],
+			context: 'Dashboard',
 			toState( state, { data } ) {
-				if ( ! state.directTotalUsers ) {
-					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
-					return {
-						directTotalUsers,
-					};
+				if ( false === state.totalUsers ) {
+					return parseTotalUsersData( data );
 				}
 			},
 		},

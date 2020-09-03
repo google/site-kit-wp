@@ -11,10 +11,12 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -23,6 +25,7 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Tag_ManagerTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
+	use Module_With_Owner_ContractTests;
 
 	public function test_register() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -36,11 +39,150 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_is_connected() {
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	public function test_register_template_redirect_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
 
-		// is_connected relies on get_data so it isn't currently possible to test a connected state.
+		$tagmanager = new Tag_Manager( $context );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		remove_all_actions( 'template_redirect' );
+		$tagmanager->register();
+
+		remove_all_actions( 'amp_print_analytics' );
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'amp_post_template_footer' );
+		remove_all_filters( 'amp_post_template_data' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'amp_print_analytics' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+	}
+
+	public function test_register_template_redirect_non_amp() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
+		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
+		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
+
+		$tagmanager = new Tag_Manager( $context );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		remove_all_actions( 'template_redirect' );
+		$tagmanager->register();
+
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'wp_body_open' );
+		remove_all_actions( 'wp_footer' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_head' ) );
+		$this->assertFalse( has_action( 'wp_body_open' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+
+		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'wp_body_open' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+	}
+
+	public function test_is_connected_web() {
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
+		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( false ) );
+
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
 		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+
+		$this->assertTrue( $tagmanager->is_connected() );
+	}
+
+	public function test_is_connected_primary_amp() {
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
+		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( Context::AMP_MODE_PRIMARY ) );
+
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		$this->assertTrue( $tagmanager->is_connected() );
+	}
+
+	public function test_is_connected_secondary_amp() {
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
+		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( Context::AMP_MODE_SECONDARY ) );
+
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tagmanager, 'context', $mock_context );
+
+		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+
+		// Should still fail because both 'web' and 'amp' containers are required.
+		$this->assertFalse( $tagmanager->is_connected() );
+
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		$this->assertTrue( $tagmanager->is_connected() );
 	}
 
 	public function test_on_deactivation() {
@@ -115,34 +257,6 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_amp_data_load_analytics_component() {
-		remove_all_filters( 'amp_post_template_data' );
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$tagmanager->register();
-
-		$data = array( 'amp_component_scripts' => array() );
-
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertSame( $data, $result );
-
-		$set_data_response = $tagmanager->set_data( 'container-id', array( 'containerID' => '12345678' ) );
-		$this->assertNotWPError( $set_data_response );
-
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertArrayNotHasKey( 'amp-analytics', $result['amp_component_scripts'] );
-
-		$set_data_response = $tagmanager->set_data(
-			'container-id',
-			array(
-				'containerID'  => '99999999',
-				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
-			)
-		);
-		$this->assertNotWPError( $set_data_response );
-		$result = apply_filters( 'amp_post_template_data', $data );
-		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );
-	}
-
 	/**
 	 * @param string $input String to sanitize
 	 * @param string $expected Expected output
@@ -208,6 +322,13 @@ class Tag_ManagerTest extends TestCase {
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {
+		return new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return Module_With_Owner
+	 */
+	protected function get_module_with_owner() {
 		return new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 }

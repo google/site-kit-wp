@@ -54,7 +54,6 @@ describe( 'calculateOverviewData', () => {
 	];
 	it.each( rangeData )( 'calculating data overview', ( data, expected ) => {
 		const overviewData = calculateOverviewData( data );
-		expect( overviewData.totalUsersChange ).toEqual( expected[ 0 ] );
 		expect( overviewData.totalSessionsChange ).toEqual( expected[ 1 ] );
 		expect( overviewData.averageBounceRateChange ).toEqual( expected[ 2 ] );
 		expect( overviewData.averageSessionDurationChange ).toEqual( expected[ 3 ] );

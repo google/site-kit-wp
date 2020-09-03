@@ -51,8 +51,10 @@ const fetchGetTagPermissionStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( clientID ) => {
-		invariant( clientID, 'clientID is required.' );
 		return { clientID };
+	},
+	validateParams: ( { clientID } = {} ) => {
+		invariant( clientID, 'clientID is required.' );
 	},
 } );
 

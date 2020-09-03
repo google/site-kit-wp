@@ -17,121 +17,107 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Component } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import Layout from '../../../../components/layout/layout';
 import PreviewTable from '../../../../components/preview-table';
 import ctaWrapper from '../../../../components/notifications/cta-wrapper';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../util';
+import { STORE_NAME } from '../../datastore/constants';
+import AnalyticsAdSenseDashboardWidgetLayout from './AnalyticsAdSenseDashboardWidgetLayout';
 
-class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
-	static renderLayout( component ) {
-		const { accountURL } = getModulesData().adsense;
-		return (
-			<Layout
-				header
-				title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
-				headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
-				headerCtaLink={ accountURL }
-			>
-				{ component }
-			</Layout>
-		);
+const { useSelect } = Data;
+
+const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
+
+	const adsenseDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=[]&_r.drilldown=analytics.pagePath:~2F` }
+	) );
+	// Do not return zero data callout here since it will already be
+	// present on the page from other sources.
+	if ( isDataZeroForReporting( data ) ) {
+		return null;
 	}
 
-	render() {
-		const { data } = this.props;
+	if ( ! data || ! data.length ) {
+		return null;
+	}
 
-		// Do not return zero data callout here since it will already be
-		// present on the page from other sources.
-		if ( isDataZeroForReporting( data ) ) {
-			return null;
-		}
+	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+		return null;
+	}
 
-		const headers = [
-			{
-				title: __( 'Page Title', 'google-site-kit' ),
-				tooltip: __( 'Page Title', 'google-site-kit' ),
-				primary: true,
-			},
-			{
-				title: __( 'Earnings', 'google-site-kit' ),
-				tooltip: __( 'Earnings', 'google-site-kit' ),
-			},
-			{
-				title: __( 'Page RPM', 'google-site-kit' ),
-				tooltip: __( 'Page RPM', 'google-site-kit' ),
-			},
-			{
-				title: __( 'Impressions', 'google-site-kit' ),
-				tooltip: __( 'Impressions', 'google-site-kit' ),
-			},
+	const headers = [
+		{
+			title: __( 'Page Title', 'google-site-kit' ),
+			tooltip: __( 'Page Title', 'google-site-kit' ),
+			primary: true,
+		},
+		{
+			title: __( 'Earnings', 'google-site-kit' ),
+			tooltip: __( 'Earnings', 'google-site-kit' ),
+		},
+		{
+			title: __( 'Page RPM', 'google-site-kit' ),
+			tooltip: __( 'Page RPM', 'google-site-kit' ),
+		},
+		{
+			title: __( 'Impressions', 'google-site-kit' ),
+			tooltip: __( 'Impressions', 'google-site-kit' ),
+		},
+	];
+
+	const dataMapped = data[ 0 ].data.rows.map( ( row ) => {
+		/**
+		 * dimensions[0] = ga:pageTitle
+		 * dimensions[1] = ga:pagePath
+		 *
+		 * metrics[0] = ga:adsenseECPM
+		 * metrics[1] = ga:adsensePageImpressions
+		 * metrics[2] = ga:adsenseRevenue
+		 */
+		return [
+			row.dimensions[ 0 ],
+			Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
+			Number( row.metrics[ 0 ].values[ 1 ] ).toFixed( 2 ),
+			numberFormat( row.metrics[ 0 ].values[ 2 ] ),
 		];
+	} );
 
-		const dataMapped = map( data[ 0 ].data.rows, ( row ) => {
-			/**
-			 * dimensions[0] = ga:pageTitle
-			 * dimensions[1] = ga:pagePath
-			 *
-			 * metrics[0] = ga:adsenseECPM
-			 * metrics[1] = ga:adsensePageImpressions
-			 * metrics[2] = ga:adsenseRevenue
-			 */
-			return [
-				row.dimensions[ 0 ],
-				Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
-				Number( row.metrics[ 0 ].values[ 1 ] ).toFixed( 2 ),
-				numberFormat( row.metrics[ 0 ].values[ 2 ] ),
-			];
-		} );
+	const linksMapped = data[ 0 ].data.rows.map( ( row ) => {
+		const pagePath = row.dimensions[ 1 ].replace( /\//g, '~2F' );
+		return encodeURI( adsenseDeepLink + pagePath );
+	} );
 
-		const {
-			accountID,
-			internalWebPropertyID,
-			profileID,
-		} = getModulesData().analytics.settings;
+	const options = {
+		hideHeader: false,
+		chartsEnabled: false,
+		links: linksMapped,
+	};
 
-		// Construct a deep link.
-		const adsenseDeepLink = `https://analytics.google.com/analytics/web/?pli=1#/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:~2F`;
+	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
-		const linksMapped = map( data[ 0 ].data.rows, ( row ) => {
-			const pagePath = row.dimensions[ 1 ].replace( /\//g, '~2F' );
-			return adsenseDeepLink + pagePath;
-		} );
-
-		const options = {
-			hideHeader: false,
-			chartsEnabled: false,
-			links: linksMapped,
-		};
-
-		const dataTable = getDataTableFromData( dataMapped, headers, options );
-
-		return (
-			AnalyticsAdSenseDashboardWidgetTopPagesTable.renderLayout(
-				<TableOverflowContainer>
-					{ dataTable }
-				</TableOverflowContainer>
-			)
-		);
-	}
-}
+	return (
+		<AnalyticsAdSenseDashboardWidgetLayout>
+			<TableOverflowContainer>
+				{ dataTable }
+			</TableOverflowContainer>
+		</AnalyticsAdSenseDashboardWidgetLayout>
+	);
+};
 
 /**
  * Check error data response, and handle the INVALID_ARGUMENT specifically.
@@ -141,15 +127,17 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
  * @return {(string|boolean|null)}  Returns a string with an error message if there is an error. Returns `false` when there is no data and no error message. Will return `null` when arguments are invalid.
  *                            string   data error message if it exists or unidentified error.
  *                            false    if no data and no error message
- *                            null     if invalid agument
+ *                            null     if invalid argument
  *
  */
 const getDataError = ( data ) => {
 	if ( data.code && data.message && data.data && data.data.status ) {
 		// Specifically looking for string "badRequest"
 		if ( 'badRequest' === data.data.reason ) {
-			return AnalyticsAdSenseDashboardWidgetTopPagesTable.renderLayout(
-				ctaWrapper( <AdSenseLinkCTA />, false, false, true )
+			return (
+				<AnalyticsAdSenseDashboardWidgetLayout>
+					{ ctaWrapper( <AdSenseLinkCTA />, false, false, true ) }
+				</AnalyticsAdSenseDashboardWidgetLayout>
 			);
 		}
 
@@ -190,9 +178,9 @@ export default withData(
 			context: 'Single',
 		},
 	],
-	AnalyticsAdSenseDashboardWidgetTopPagesTable.renderLayout(
+	<AnalyticsAdSenseDashboardWidgetLayout>
 		<PreviewTable padding />
-	),
+	</AnalyticsAdSenseDashboardWidgetLayout>,
 	{ createGrid: true },
 	// Force isDataZero to false since it is handled within the component.
 	() => false,

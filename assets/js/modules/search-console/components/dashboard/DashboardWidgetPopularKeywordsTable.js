@@ -17,20 +17,16 @@
  */
 
 /**
- * External dependencies
- */
-import { map } from 'lodash';
-
-/**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
-import { Component } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import Data from 'googlesitekit-data';
+import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
@@ -38,86 +34,75 @@ import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
 import {
 	isDataZeroSearchConsole,
-} from '../../dashboard/util';
+} from '../../util';
+import { STORE_NAME } from '../../datastore/constants';
+const { useSelect } = Data;
 
-class DashboardWidgetPopularKeywordsTable extends Component {
-	static renderLayout( component ) {
-		return (
-			<div className="
+const DashboardWidgetPopularKeywordsTable = ( props ) => {
+	const { data } = props;
+	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics', query: { resource_id: domain, num_of_days: 28 } } ) );
+	const searchConsolePropertyMainURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: domain } } ) );
+
+	if ( ! data || ! data.length ) {
+		return null;
+	}
+
+	const headers = [
+		{
+			title: __( 'Top search queries for your site', 'google-site-kit' ),
+			tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
+			primary: true,
+		},
+		{
+			title: __( 'Clicks', 'google-site-kit' ),
+			tooltip: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
+		},
+		{
+			title: __( 'Impressions', 'google-site-kit' ),
+			tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
+		},
+	];
+	const links = [];
+
+	const dataMapped = data.map( ( row, i ) => {
+		const query = row.keys[ 0 ];
+		links[ i ] = addQueryArgs( baseServiceURL, { query } );
+		return [
+			query,
+			numberFormat( row.clicks ),
+			numberFormat( row.impressions ),
+		];
+	} );
+
+	const options = {
+		hideHeader: false,
+		chartsEnabled: false,
+		links,
+	};
+
+	const dataTable = getDataTableFromData( dataMapped, headers, options );
+
+	return (
+		<div className="
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-6-desktop
 				mdc-layout-grid__cell--span-4-tablet
 			">
-				<Layout
-					className="googlesitekit-popular-content"
-					footer
-					footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-					footerCtaLink={
-						sprintf( 'https://search.google.com/search-console?resource_id=%s', getModulesData()[ 'search-console' ].settings.propertyID )
-					}
-					fill
-				>
-					{ component }
-				</Layout>
-			</div>
-		);
-	}
-
-	render() {
-		const { data } = this.props;
-
-		if ( ! data || ! data.length ) {
-			return null;
-		}
-
-		const headers = [
-			{
-				title: __( 'Top search queries for your site', 'google-site-kit' ),
-				tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
-				primary: true,
-			},
-			{
-				title: __( 'Clicks', 'google-site-kit' ),
-				tooltip: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
-			},
-			{
-				title: __( 'Impressions', 'google-site-kit' ),
-				tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
-			},
-		];
-		const domain = getModulesData()[ 'search-console' ].settings.propertyID;
-		const links = [];
-		const dataMapped = map( data, ( row, i ) => {
-			const query = row.keys[ 0 ];
-			links[ i ] = sprintf(
-				'https://search.google.com/search-console/performance/search-analytics?resource_id=%1$s&query=!%2$s&num_of_days=28',
-				domain,
-				query
-			);
-			return [
-				query,
-				numberFormat( row.clicks ),
-				numberFormat( row.impressions ),
-			];
-		} );
-
-		const options = {
-			hideHeader: false,
-			chartsEnabled: false,
-			links,
-		};
-
-		const dataTable = getDataTableFromData( dataMapped, headers, options );
-
-		return (
-			DashboardWidgetPopularKeywordsTable.renderLayout(
+			<Layout
+				className="googlesitekit-popular-content"
+				footer
+				footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+				footerCtaLink={ searchConsolePropertyMainURL }
+				fill
+			>
 				<TableOverflowContainer>
 					{ dataTable }
 				</TableOverflowContainer>
-			)
-		);
-	}
-}
+			</Layout>
+		</div>
+	);
+};
 
 export default withData(
 	DashboardWidgetPopularKeywordsTable,
@@ -135,9 +120,7 @@ export default withData(
 			context: [ 'Dashboard' ],
 		},
 	],
-	DashboardWidgetPopularKeywordsTable.renderLayout(
-		<PreviewTable padding />
-	),
+	<PreviewTable padding />,
 	{
 		inGrid: true,
 		createGrid: true,

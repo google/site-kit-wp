@@ -37,24 +37,20 @@ const calculateOverviewData = ( reports ) => {
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 
-	const totalUsers = lastMonth[ 0 ];
 	const totalSessions = lastMonth[ 1 ];
 	const averageBounceRate = lastMonth[ 2 ];
 	const averageSessionDuration = lastMonth[ 3 ];
 	const goalCompletions = lastMonth[ 4 ];
 	const totalPageViews = lastMonth[ 5 ];
-	const totalUsersChange = changeToPercent( previousMonth[ 0 ], lastMonth[ 0 ] );
 	const totalSessionsChange = changeToPercent( previousMonth[ 1 ], lastMonth[ 1 ] );
 	const averageBounceRateChange = changeToPercent( previousMonth[ 2 ], lastMonth[ 2 ] );
 	const averageSessionDurationChange = changeToPercent( previousMonth[ 3 ], lastMonth[ 3 ] );
 	const goalCompletionsChange = changeToPercent( previousMonth[ 4 ], lastMonth[ 4 ] );
 	const totalPageViewsChange = changeToPercent( previousMonth[ 5 ], lastMonth[ 5 ] );
 	return {
-		totalUsers,
 		totalSessions,
 		averageBounceRate,
 		averageSessionDuration,
-		totalUsersChange,
 		totalSessionsChange,
 		averageBounceRateChange,
 		averageSessionDurationChange,
