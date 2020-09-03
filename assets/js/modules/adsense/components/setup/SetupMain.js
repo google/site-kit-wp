@@ -305,7 +305,7 @@ export default function SetupMain( { finishSetup } ) {
 				viewComponent = <SetupAccountApproved />;
 				break;
 			default:
-				if ( alertsError ) {
+				if ( error ) {
 					viewComponent = <ErrorNotice />;
 				} else {
 					viewComponent = <ErrorText message={ sprintf(
