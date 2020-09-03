@@ -16,13 +16,15 @@
  * limitations under the License.
  */
 
+export { default as DashboardClicksWidget } from './DashboardClicksWidget';
+export { default as DashboardImpressionsWidget } from './DashboardImpressionsWidget';
 export { default as DashboardPopularity } from './DashboardPopularity';
 export { default as DashboardPopularityInner } from './DashboardPopularityInner';
-export { default as DashboardSearchFunnel } from './DashboardSearchFunnel';
-export { default as DashboardSearchFunnelInner } from './DashboardSearchFunnelInner';
 export { default as DashboardWidgetPopularKeywordsTable } from './DashboardWidgetPopularKeywordsTable';
 export { default as GoogleSitekitSearchConsoleDashboardWidget } from './GoogleSitekitSearchConsoleDashboardWidget';
+export { default as LegacyDashboardSearchFunnel } from './LegacyDashboardSearchFunnel';
+export { default as LegacyDashboardSearchFunnelInner } from './LegacyDashboardSearchFunnelInner';
+export { default as LegacySearchConsoleDashboardWidgetTopLevel } from './LegacySearchConsoleDashboardWidgetTopLevel';
 export { default as SearchConsoleDashboardWidgetKeywordTable } from './SearchConsoleDashboardWidgetKeywordTable';
 export { default as SearchConsoleDashboardWidgetOverview } from './SearchConsoleDashboardWidgetOverview';
 export { default as SearchConsoleDashboardWidgetSiteStats } from './SearchConsoleDashboardWidgetSiteStats';
-export { default as SearchConsoleDashboardWidgetTopLevel } from './SearchConsoleDashboardWidgetTopLevel';
