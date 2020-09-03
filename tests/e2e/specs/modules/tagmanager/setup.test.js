@@ -196,44 +196,51 @@ describe( 'Tag Manager module setup', () => {
 	} );
 
 	describe( 'Setup with AMP active', () => {
-		beforeEach( async () => {
+		beforeAll( async () => {
 			await activatePlugin( 'amp' );
-			await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
 		} );
 
-		afterEach( async () => {
+		beforeEach( async () => {
+			await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
+			await proceedToTagManagerSetup();
+		} );
+
+		afterAll( async () => {
 			await deactivatePlugin( 'amp' );
 		} );
 
 		describe( 'with Primary AMP', () => {
-			beforeEach( async () => {
+			beforeAll( async () => {
 				await setAMPMode( 'primary' );
-				await proceedToTagManagerSetup();
 			} );
+
 			it( 'renders only the AMP container select menu', async () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'Container' } );
 				await expect( page ).not.toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
 			} );
+
 			it( 'validates Homepage AMP for logged-in users', async () => {
 				await expect( '/' ).toHaveValidAMPForUser();
 			} );
+
 			it( 'validates Homepage AMP for non-logged-in users', async () => {
 				await expect( '/' ).toHaveValidAMPForVisitor();
 			} );
 		} );
 
 		describe( 'with Secondary AMP', () => {
-			beforeEach( async () => {
+			beforeAll( async () => {
 				await setAMPMode( 'secondary' );
-				await proceedToTagManagerSetup();
 			} );
+
 			it( 'renders both the AMP and web container select menus', async () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web .mdc-floating-label', { text: 'Web Container' } );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'AMP Container' } );
 			} );
+
 			it( 'validates homepage AMP for logged-in users', async () => {
 				await expect( page ).toClick( 'button:not(:disabled)', { text: /confirm \& continue/i } );
 				await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
@@ -241,6 +248,7 @@ describe( 'Tag Manager module setup', () => {
 				await page.goto( createURL( '/', 'amp' ), { waitUntil: 'load' } );
 				await expect( page ).toHaveValidAMPForUser();
 			} );
+
 			it( 'validates homepage AMP for non-logged-in users', async () => {
 				await expect( page ).toClick( 'button:not(:disabled)', { text: /confirm \& continue/i } );
 				await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
