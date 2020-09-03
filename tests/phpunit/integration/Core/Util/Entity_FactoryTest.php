@@ -280,6 +280,10 @@ class Entity_FactoryTest extends TestCase {
 			),
 			Entity_Factory::from_url( home_url() )
 		);
+
+		// High-level assertion to ensure 404s are considered as expected.
+		// In this example, it is a valid taxonomy term archive, but the pagination is out of bounds.
+		$this->assertNull( Entity_Factory::from_url( trailingslashit( get_term_link( self::$term_names_to_ids['Food'] ) ) . 'page/2/' ) );
 	}
 
 	/**

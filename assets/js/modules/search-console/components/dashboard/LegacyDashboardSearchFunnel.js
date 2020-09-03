@@ -1,5 +1,5 @@
 /**
- * DashboardSearchFunnel component.
+ * LegacyDashboardSearchFunnel component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -34,9 +34,9 @@ import { getModulesData } from '../../../../util';
 import Layout from '../../../../components/layout/layout';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
-import DashboardSearchFunnelInner from './DashboardSearchFunnelInner';
+import LegacyDashboardSearchFunnelInner from './LegacyDashboardSearchFunnelInner';
 
-class DashboardSearchFunnel extends Component {
+class LegacyDashboardSearchFunnel extends Component {
 	render() {
 		const modulesData = getModulesData();
 		const { canManageOptions } = global._googlesitekitLegacyData.permissions;
@@ -62,7 +62,7 @@ class DashboardSearchFunnel extends Component {
 					<Layout className="googlesitekit-analytics-search-funnel">
 						<div className="mdc-layout-grid">
 							<div className="mdc-layout-grid__inner">
-								<DashboardSearchFunnelInner />
+								<LegacyDashboardSearchFunnelInner />
 								{ // Show the Analytics CTA if analytics is not enabled.
 									( ! modulesData.analytics.active ) &&
 									<div className="
@@ -83,4 +83,4 @@ class DashboardSearchFunnel extends Component {
 	}
 }
 
-export default DashboardSearchFunnel;
+export default LegacyDashboardSearchFunnel;
