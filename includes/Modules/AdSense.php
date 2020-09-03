@@ -22,6 +22,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
@@ -42,8 +44,8 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait;
+final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
 
 	/**
 	 * Internal flag for whether the AdSense tag has been printed.
@@ -712,7 +714,7 @@ tag_partner: "site_kit"
 	/**
 	 * Parses the orderby value of the data request into an array of earning orderby format.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param array|null $orderby Data request orderby value.
 	 * @return string[] An array of reporting orderby strings.

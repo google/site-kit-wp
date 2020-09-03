@@ -34,34 +34,34 @@ function generateErrorKey( baseName, args ) {
 	return key;
 }
 
+export const actions = {
+	receiveError( error, baseName, args ) {
+		invariant( error, 'error is required.' );
+
+		return {
+			type: RECEIVE_ERROR,
+			payload: {
+				error,
+				baseName,
+				args,
+			},
+		};
+	},
+	clearError( baseName, args ) {
+		return {
+			type: CLEAR_ERROR,
+			payload: {
+				baseName,
+				args,
+			},
+		};
+	},
+};
+
 export function createErrorStore() {
 	const INITIAL_STATE = {
 		errors: {},
 		error: undefined,
-	};
-
-	const actions = {
-		receiveError( error, baseName, args ) {
-			invariant( error, 'error is required.' );
-
-			return {
-				type: RECEIVE_ERROR,
-				payload: {
-					error,
-					baseName,
-					args,
-				},
-			};
-		},
-		clearError( baseName, args ) {
-			return {
-				type: CLEAR_ERROR,
-				payload: {
-					baseName,
-					args,
-				},
-			};
-		},
 	};
 
 	function reducer( state, { type, payload } ) {
@@ -115,7 +115,7 @@ export function createErrorStore() {
 		 * }
 		 * ```
 		 *
-		 * @since n.e.x.t
+		 * @since 1.15.0
 		 *
 		 * @param {Object} state        Data store's state.
 		 * @param {string} selectorName Selector name.
@@ -138,7 +138,7 @@ export function createErrorStore() {
 		 * }
 		 * ```
 		 *
-		 * @since n.e.x.t
+		 * @since 1.15.0
 		 *
 		 * @param {Object} state        Data store's state.
 		 * @param {string} actionName   Action name.
@@ -161,7 +161,7 @@ export function createErrorStore() {
 		 * }
 		 * ```
 		 *
-		 * @since n.e.x.t
+		 * @since 1.15.0
 		 * @private
 		 *
 		 * @param {Object} state        Data store's state.
@@ -185,7 +185,7 @@ export function createErrorStore() {
 		/**
 		 * Determines whether the datastore has errors or not.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.15.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {boolean} TRUE if the datastore has errors, otherwise FALSE.

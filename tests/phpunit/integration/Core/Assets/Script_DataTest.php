@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Core\Assets;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script_Data;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -40,9 +41,9 @@ class Script_DataTest extends TestCase {
 				'data_callback' => function () use ( $data ) {
 					return $data;
 				},
-			) 
+			)
 		);
-		$script->register();
+		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$this->assertEmpty( wp_scripts()->get_data( 'test-handle', 'data' ) );
 
 		$script->before_print();

@@ -19,12 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { decodeHtmlEntity } from '../../util';
 import Header from '../header';
 import Link from '../link';
@@ -34,98 +35,100 @@ import WidgetContextRenderer from '../../googlesitekit/widgets/components/Widget
 import DateRangeSelector from '../date-range-selector';
 import HelpLink from '../help-link';
 import DashboardDetailsModules from './dashboard-details-modules';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
-class DashboardDetailsApp extends Component {
-	constructor( props ) {
-		super( props );
+const DashboardDetailsApp = () => {
+	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
+	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 
-		this.state = {};
+	if ( ! dashboardURL ) {
+		return null;
 	}
 
-	render() {
-		return (
-			<Fragment>
-				<Header />
-				<div className="googlesitekit-module-page">
-					<div className="googlesitekit-dashboard-single-url">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-2-phone
-									mdc-layout-grid__cell--span-4-tablet
-									mdc-layout-grid__cell--span-8-desktop
-								">
-									<Link href={ global._googlesitekitLegacyData.dashboardPermalink } inherit back small>
-										{ __( 'Back to the Site Kit Dashboard', 'google-site-kit' ) }
-									</Link>
-									<PageHeader
-										title={ __( 'Detailed Page Stats', 'google-site-kit' ) }
-										className="
-											googlesitekit-heading-2
-											googlesitekit-dashboard-single-url__heading
-										"
-										fullWidth
-									/>
-								</div>
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-2-phone
-									mdc-layout-grid__cell--span-4-tablet
-									mdc-layout-grid__cell--span-4-desktop
-									mdc-layout-grid__cell--align-right
-									mdc-layout-grid__cell--align-bottom
-								">
-									<DateRangeSelector />
-								</div>
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-12
-								">
-									<Layout>
-										<div className="mdc-layout-grid">
-											<div className="mdc-layout-grid__inner">
-												<div className="
-													mdc-layout-grid__cell
-													mdc-layout-grid__cell--span-12
-												">
-													<h3 className="
-															googlesitekit-heading-3
-															googlesitekit-dashboard-single-url__title
-														">
-														{ decodeHtmlEntity( global._googlesitekitLegacyData.pageTitle ) }
-													</h3>
-													<Link href={ global._googlesitekitLegacyData.permaLink } inherit external>
-														{ global._googlesitekitLegacyData.permaLink }
-													</Link>
-												</div>
+	return (
+		<Fragment>
+			<Header />
+			<div className="googlesitekit-module-page">
+				<div className="googlesitekit-dashboard-single-url">
+					<div className="mdc-layout-grid">
+						<div className="mdc-layout-grid__inner">
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-2-phone
+								mdc-layout-grid__cell--span-4-tablet
+								mdc-layout-grid__cell--span-8-desktop
+							">
+								<Link href={ dashboardURL } inherit back small>
+									{ __( 'Back to the Site Kit Dashboard', 'google-site-kit' ) }
+								</Link>
+								<PageHeader
+									title={ __( 'Detailed Page Stats', 'google-site-kit' ) }
+									className="
+										googlesitekit-heading-2
+										googlesitekit-dashboard-single-url__heading
+									"
+									fullWidth
+								/>
+							</div>
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-2-phone
+								mdc-layout-grid__cell--span-4-tablet
+								mdc-layout-grid__cell--span-4-desktop
+								mdc-layout-grid__cell--align-right
+								mdc-layout-grid__cell--align-bottom
+							">
+								<DateRangeSelector />
+							</div>
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-12
+							">
+								<Layout>
+									<div className="mdc-layout-grid">
+										<div className="mdc-layout-grid__inner">
+											<div className="
+												mdc-layout-grid__cell
+												mdc-layout-grid__cell--span-12
+											">
+												<h3 className="
+														googlesitekit-heading-3
+														googlesitekit-dashboard-single-url__title
+													">
+													{ decodeHtmlEntity( currentEntityTitle ) }
+												</h3>
+												<Link href={ currentEntityURL } inherit external>
+													{ currentEntityURL }
+												</Link>
 											</div>
 										</div>
-									</Layout>
-								</div>
-								{ featureFlags.widgets.pageDashboard.enabled && (
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-									">
-										<WidgetContextRenderer slug="pageDashboard" />
 									</div>
-								) }
-								<DashboardDetailsModules />
+								</Layout>
+							</div>
+							{ featureFlags.widgets.pageDashboard.enabled && (
 								<div className="
 									mdc-layout-grid__cell
 									mdc-layout-grid__cell--span-12
-									mdc-layout-grid__cell--align-right
 								">
-									<HelpLink />
+									<WidgetContextRenderer slug="pageDashboard" />
 								</div>
+							) }
+							<DashboardDetailsModules />
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-12
+								mdc-layout-grid__cell--align-right
+							">
+								<HelpLink />
 							</div>
 						</div>
 					</div>
 				</div>
-			</Fragment>
-		);
-	}
-}
+			</div>
+		</Fragment>
+	);
+};
 
 export default DashboardDetailsApp;

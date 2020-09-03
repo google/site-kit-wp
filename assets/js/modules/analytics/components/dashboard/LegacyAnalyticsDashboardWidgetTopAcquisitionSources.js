@@ -1,5 +1,5 @@
 /**
- * AnalyticsDashboardWidgetTopAcquisitionSources component.
+ * LegacyAnalyticsDashboardWidgetTopAcquisitionSources component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -40,7 +40,7 @@ import { trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
-function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
+function LegacyAnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
 	if ( ! data || ! data.length ) {
@@ -109,7 +109,7 @@ function AnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 }
 
 export default withData(
-	AnalyticsDashboardWidgetTopAcquisitionSources,
+	LegacyAnalyticsDashboardWidgetTopAcquisitionSources,
 	[
 		{
 			type: TYPE_MODULES,

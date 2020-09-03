@@ -12,12 +12,14 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
@@ -31,6 +33,7 @@ class AdSenseTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Screen_ContractTests;
 	use Module_With_Settings_ContractTests;
+	use Module_With_Owner_ContractTests;
 
 	public function test_register() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -263,6 +266,13 @@ class AdSenseTest extends TestCase {
 	 * @return Module|Module_With_Settings
 	 */
 	protected function get_module_with_settings() {
+		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return Module_With_Owner
+	 */
+	protected function get_module_with_owner() {
 		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 

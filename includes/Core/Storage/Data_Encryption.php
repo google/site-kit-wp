@@ -69,7 +69,7 @@ final class Data_Encryption {
 			return false;
 		}
 
-		return base64_encode( $iv . $raw_value ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+		return base64_encode( $iv . $raw_value );
 	}
 
 	/**
@@ -87,7 +87,7 @@ final class Data_Encryption {
 			return $raw_value;
 		}
 
-		$raw_value = base64_decode( $raw_value, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+		$raw_value = base64_decode( $raw_value, true );
 
 		$method = 'aes-256-ctr';
 		$ivlen  = openssl_cipher_iv_length( $method );

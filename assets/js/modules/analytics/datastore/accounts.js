@@ -36,7 +36,6 @@ const { createRegistrySelector } = Data;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getAccountsPropertiesProfiles',
-	storeName: STORE_NAME,
 	controlCallback: ( { data } ) => {
 		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', data, {
 			useCache: false,
@@ -51,14 +50,15 @@ const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( data ) => {
-		invariant( isPlainObject( data ), 'data must be an object.' );
 		return { data };
+	},
+	validateParams: ( { data } = {} ) => {
+		invariant( isPlainObject( data ), 'data must be an object.' );
 	},
 } );
 
 const fetchCreateAccountStore = createFetchStore( {
 	baseName: 'createAccount',
-	storeName: STORE_NAME,
 	controlCallback: ( { data } ) => {
 		return API.set( 'modules', 'analytics', 'create-account-ticket', data );
 	},
@@ -70,8 +70,10 @@ const fetchCreateAccountStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( data ) => {
-		invariant( isPlainObject( data ), 'data must be an object.' );
 		return { data };
+	},
+	validateParams: ( { data } = {} ) => {
+		invariant( isPlainObject( data ), 'data must be an object.' );
 	},
 } );
 

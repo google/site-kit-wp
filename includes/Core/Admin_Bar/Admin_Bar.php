@@ -173,39 +173,34 @@ final class Admin_Bar {
 			return false;
 		}
 
-		// Gets post object. On front area we need to use get_queried_object to get the current post object.
-		if ( $this->is_admin_post_screen() ) {
-			$post        = get_post();
-			$current_url = $this->context->get_reference_permalink( $post );
-		} else {
-			$post        = get_queried_object();
-			$current_url = $this->context->get_reference_canonical();
-		}
-
-		// No URL was identified - don't display the admin bar menu.
-		if ( ! $current_url ) {
+		// In the admin, never show the admin bar except for the post editing screen.
+		if ( is_admin() && ! $this->is_admin_post_screen() ) {
 			return false;
 		}
 
-		// Checks for post objects.
-		if ( $post instanceof \WP_Post ) {
+		$entity = $this->context->get_reference_entity();
 
-			// Ensure the user can view post insights for this post.
-			if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, $post->ID ) ) {
-				return false;
-			}
+		// No entity was identified - don't display the admin bar menu.
+		if ( ! $entity ) {
+			return false;
+		}
 
-			// Only published posts show the menu.
-			if ( 'publish' !== $post->post_status ) {
+		// Check permissions for viewing post data.
+		if ( in_array( $entity->get_type(), array( 'post', 'blog' ), true ) && $entity->get_id() ) {
+
+			// If a post entity, check permissions for that post.
+			if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, $entity->get_id() ) ) {
 				return false;
 			}
 		} else {
 
-			// Only admins can see non-post admin bar data.
+			// Otherwise use more general permission check (typically admin-only).
 			if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 				return false;
 			}
 		}
+
+		$current_url = $entity->get_url();
 
 		$display = false;
 		foreach ( $this->modules->get_active_modules() as $module ) {

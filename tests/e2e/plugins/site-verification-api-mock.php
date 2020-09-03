@@ -39,18 +39,19 @@ add_action(
 			'modules/site-verification/data/verification',
 			array(
 				array(
-					'methods'  => WP_REST_Server::READABLE,
-					'callback' => function () {
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => function () {
 						return array(
 							'type'       => 'SITE',
 							'identifier' => home_url( '/' ),
 							'verified'   => (bool) get_transient( 'gsk_e2e_site_verified' ),
 						);
 					},
+					'permission_callback' => '__return_true',
 				),
 				array(
-					'methods'  => WP_REST_Server::CREATABLE,
-					'callback' => function ( WP_REST_Request $request ) {
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => function ( WP_REST_Request $request ) {
 						$data = $request->get_param( 'data' );
 
 						update_user_option(
@@ -65,6 +66,7 @@ add_action(
 							'verified'   => true,
 						);
 					},
+					'permission_callback' => '__return_true',
 				),
 			),
 			true
@@ -74,8 +76,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'modules/search-console/data/matched-sites',
 			array(
-				'methods'  => 'GET',
-				'callback' => function () {
+				'methods'             => 'GET',
+				'callback'            => function () {
 					return array(
 						array(
 							'siteURL'         => home_url( '/' ),
@@ -83,6 +85,7 @@ add_action(
 						),
 					);
 				},
+				'permission_callback' => '__return_true',
 			),
 			true
 		);
@@ -91,11 +94,11 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'modules/search-console/data/site',
 			array(
-				'methods'  => 'POST',
-				'callback' => function ( WP_REST_Request $request ) {
+				'methods'             => 'POST',
+				'callback'            => function ( WP_REST_Request $request ) {
 					$data = $request->get_param( 'data' );
 
-					$settings = get_option( Settings::OPTION );
+					$settings               = get_option( Settings::OPTION );
 					$settings['propertyID'] = $data['siteURL'];
 					update_option( Settings::OPTION, $settings );
 
@@ -104,6 +107,7 @@ add_action(
 						'permissionLevel' => 'siteOwner',
 					);
 				},
+				'permission_callback' => '__return_true',
 			),
 			true
 		);
@@ -112,12 +116,13 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/verify-site',
 			array(
-				'methods'  => 'POST',
-				'callback' => function () {
+				'methods'             => 'POST',
+				'callback'            => function () {
 					set_transient( 'gsk_e2e_site_verified', true );
 
 					return array( 'success' => true );
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 
@@ -125,12 +130,13 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/sc-site-exists',
 			array(
-				'methods'  => 'POST',
-				'callback' => function () {
+				'methods'             => 'POST',
+				'callback'            => function () {
 					set_transient( 'gsk_e2e_sc_site_exists', true );
 
 					return array( 'success' => true );
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 

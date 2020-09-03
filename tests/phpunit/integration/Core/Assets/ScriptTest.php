@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Core\Assets;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -38,7 +39,7 @@ class ScriptTest extends TestCase {
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ) );
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ) );
 
-		$script->register();
+		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertTrue( wp_script_is( 'test-handle', 'registered' ) );
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ) );
@@ -71,7 +72,7 @@ class ScriptTest extends TestCase {
 		);
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ) );
 
-		$script->register();
+		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEquals( 'async', wp_scripts()->get_data( 'test-handle', 'script_execution' ) );
 	}
@@ -86,7 +87,7 @@ class ScriptTest extends TestCase {
 		// Scripts are registered in footer by default; footer scripts are added to group 1
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ) );
 
-		$script->register();
+		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ) );
 	}
@@ -100,7 +101,7 @@ class ScriptTest extends TestCase {
 			)
 		);
 
-		$script->register();
+		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$expected_src = add_query_arg( 'ver', GOOGLESITEKIT_VERSION, $src );
 		$mock         = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
@@ -120,7 +121,7 @@ class ScriptTest extends TestCase {
 		// Must be registered first
 		$this->assertFalse( wp_script_is( 'test-handle', 'enqueued' ) );
 
-		$script->register();
+		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$script->enqueue();
 
 		$this->assertTrue( wp_script_is( 'test-handle', 'enqueued' ) );

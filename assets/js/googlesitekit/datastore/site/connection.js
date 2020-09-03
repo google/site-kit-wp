@@ -28,7 +28,6 @@ const { createRegistrySelector } = Data;
 
 const fetchGetConnectionStore = createFetchStore( {
 	baseName: 'getConnection',
-	storeName: STORE_NAME,
 	controlCallback: () => {
 		return API.get( 'core', 'site', 'connection', undefined, {
 			useCache: false,
@@ -84,6 +83,20 @@ const baseSelectors = {
 
 		return connection;
 	},
+
+	/**
+	 * Gets owner ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {number|undefined} Owner ID if it exists, otherwise undefined.
+	 */
+	getOwnerID: createRegistrySelector( ( select ) => () => {
+		const { ownerID } = select( STORE_NAME ).getConnection() || {};
+
+		return ownerID;
+	} ),
 
 	/**
 	 * Gets information about connected admins.

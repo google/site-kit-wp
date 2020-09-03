@@ -22,51 +22,71 @@
 import {
 	camelCaseToPascalCase,
 	camelCaseToConstantCase,
+	kebabCaseToPascalCase,
 } from './transform-case';
 
 describe( 'camelCaseToPascalCase', () => {
-	it.each(
+	it.each( [
 		[
-			[
-				'testSetting',
-				'TestSetting',
-			],
-			[
-				'propertyID',
-				'PropertyID',
-			],
-			[
-				// This is an expected "issue" with this function: It does not
-				// transform abbreviations as it should - not a huge concern
-				// for now though, these cases are currently handled manually.
-				// But preferably, this should result in "AMPExperimentJSON",
-				// per Site Kit naming conventions.
-				'ampExperimentJSON',
-				'AmpExperimentJSON',
-			],
-		]
-	)( 'transforms camel-case names to pascal-case', ( name, expected ) => {
+			'testSetting',
+			'TestSetting',
+		],
+		[
+			'propertyID',
+			'PropertyID',
+		],
+		[
+			// This is an expected "issue" with this function: It does not
+			// transform abbreviations as it should - not a huge concern
+			// for now though, these cases are currently handled manually.
+			// But preferably, this should result in "AMPExperimentJSON",
+			// per Site Kit naming conventions.
+			'ampExperimentJSON',
+			'AmpExperimentJSON',
+		],
+	] )( 'transforms "%s" names to "%s"', ( name, expected ) => {
 		expect( camelCaseToPascalCase( name ) ).toEqual( expected );
 	} );
 } );
 
 describe( 'camelCaseToConstantCase', () => {
-	it.each(
+	it.each( [
 		[
-			[
-				'testSetting',
-				'TEST_SETTING',
-			],
-			[
-				'propertyID',
-				'PROPERTY_ID',
-			],
-			[
-				'ampExperimentJSON',
-				'AMP_EXPERIMENT_JSON',
-			],
-		]
-	)( 'transforms camel-case names to constant-case', ( name, expected ) => {
+			'testSetting',
+			'TEST_SETTING',
+		],
+		[
+			'propertyID',
+			'PROPERTY_ID',
+		],
+		[
+			'ampExperimentJSON',
+			'AMP_EXPERIMENT_JSON',
+		],
+	] )( 'transforms "%s" names to "%s"', ( name, expected ) => {
 		expect( camelCaseToConstantCase( name ) ).toEqual( expected );
+	} );
+} );
+
+describe( 'kebab-caseToPascalCase', () => {
+	it.each( [
+		[
+			'test-setting',
+			'TestSetting',
+		],
+		[
+			'property',
+			'Property',
+		],
+		[
+			'ampExperiment-json',
+			'AmpExperimentJson',
+		],
+		[
+			'amp-experiment-json',
+			'AmpExperimentJson',
+		],
+	] )( 'transforms "%s" names to "%s"', ( name, expected ) => {
+		expect( kebabCaseToPascalCase( name ) ).toEqual( expected );
 	} );
 } );

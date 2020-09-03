@@ -1,0 +1,15 @@
+{
+	"dateRange": "last-28-days",
+	"dimensions": "ga:channelGrouping",
+	"orderby": {
+		"fieldName": "ga:users",
+		"sortOrder": "DESCENDING"
+	},
+	"limit": 10,
+	"metrics": [
+		{
+			"expression": "ga:users",
+			"alias": "Users"
+		}
+	]
+}

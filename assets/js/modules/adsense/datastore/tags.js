@@ -36,7 +36,6 @@ const { commonActions, createRegistrySelector } = Data;
 
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
-	storeName: STORE_NAME,
 	controlCallback: ( { clientID } ) => {
 		return API.get( 'modules', 'adsense', 'tag-permission', { clientID }, {
 			useCache: false,
@@ -52,8 +51,10 @@ const fetchGetTagPermissionStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( clientID ) => {
-		invariant( clientID, 'clientID is required.' );
 		return { clientID };
+	},
+	validateParams: ( { clientID } = {} ) => {
+		invariant( clientID, 'clientID is required.' );
 	},
 } );
 
