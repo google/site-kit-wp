@@ -42,10 +42,14 @@ export default function SetupFormSubmitButtons( { submitForm } ) {
 	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 
-	const submitFormWithAnalytics = useCallback( () => {
+	// Prevent default to avoid form submit error on click:
+	// "Form submission canceled because the form is not connected"
+	const submitFormWithAnalytics = useCallback( ( event ) => {
+		event.preventDefault();
 		submitForm( { submitMode: 'with_analytics_setup' } );
 	}, [ submitForm ] );
-	const submitFormNoAnalytics = useCallback( () => {
+	const submitFormNoAnalytics = useCallback( ( event ) => {
+		event.preventDefault();
 		submitForm( { submitMode: 'default' } );
 	}, [ submitForm ] );
 
