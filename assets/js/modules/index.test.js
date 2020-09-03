@@ -22,12 +22,6 @@
 import fs from 'fs';
 import path from 'path';
 
-/**
- * Internal dependencies
- */
-import FIXTURES from '../googlesitekit/modules/datastore/fixtures.json';
-import { convertArrayListToKeyedObjectMap } from '../util/convert-array-to-keyed-object-map';
-
 const directories = ( relativePath ) => fs.readdirSync( path.join( __dirname, relativePath ) )
 	.filter( ( name ) => fs.lstatSync( path.join( __dirname, relativePath, name ) ).isDirectory() );
 
@@ -36,12 +30,6 @@ const getComponentNames = ( componentPath ) => fs.readdirSync( componentPath )
 	.map( ( name ) => name.replace( /\..*/, '' ) );
 
 describe( 'all modules', () => {
-	const fixturesKeyValue = convertArrayListToKeyedObjectMap( FIXTURES, 'slug' );
-
-	beforeAll( () => {
-		global._googlesitekitLegacyData = { modules: fixturesKeyValue };
-	} );
-
 	describe.each( directories( '.' ) )( `%s`, ( moduleSlug ) => {
 		describe.each( directories( `${ moduleSlug }/components` ) )( `components/%s`, ( componentDir ) => {
 			const componentDirPath = path.join( __dirname, moduleSlug, 'components', componentDir );
