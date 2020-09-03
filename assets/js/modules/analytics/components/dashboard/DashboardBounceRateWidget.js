@@ -36,28 +36,20 @@ import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta'
 import { extractAnalyticsDashboardSparklineData } from '../../util';
 import { extractForSparkline, getSiteKitAdminURL, changeToPercent } from '../../../../util';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import noDataComponent from '../../../../components/notifications/nodata';
+import getNoDataComponent from '../../../../components/notifications/nodata';
 
 const { useSelect } = Data;
 
 function DashboardBounceRateWidget() {
 	const {
-		data,
-		loading,
 		error,
+		loading,
+		sparkData,
+		bounceData,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
-			multiDateRange: 1,
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-			],
-			limit: 10,
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
@@ -65,10 +57,48 @@ function DashboardBounceRateWidget() {
 			args.url = url;
 		}
 
+		const sparkDataArgs = {
+			compareDateRanges: 1,
+			dimensions: 'ga:date',
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+				{
+					expression: 'ga:sessions',
+					alias: 'Sessions',
+				},
+				{
+					expression: 'ga:bounceRate',
+					alias: 'Bounce Rate',
+				},
+				{
+					expression: 'ga:avgSessionDuration',
+					alias: 'Average Session Duration',
+				},
+				{
+					expression: 'ga:goalCompletionsAll',
+					alias: 'Goal Completions',
+				},
+			],
+			limit: 180,
+			...args,
+		};
+
+		const bounceDataArgs = {
+			...args,
+			multiDateRange: 1,
+			dimensions: 'ga:date',
+			metrics: [ { expression: 'ga:bounceRate', alias: 'Bounce Rate' } ],
+			limit: 10,
+		};
+
 		return {
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			data: store.getReport( args ),
-			loading: store.isResolving( 'getReport', [ args ] ),
+			error: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ) || store.getErrorForSelector( 'getReport', [ bounceDataArgs ] ),
+			loading: store.isResolving( 'getReport', [ sparkDataArgs ] ) || store.isResolving( 'getReport', [ bounceDataArgs ] ),
+			sparkData: store.getReport( sparkDataArgs ),
+			bounceData: store.getReport( bounceDataArgs ),
 		};
 	} );
 
@@ -80,13 +110,13 @@ function DashboardBounceRateWidget() {
 		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
 	}
 
-	if ( ! data || ! data.length ) {
-		return noDataComponent( __( 'Analytics', 'google-site-kit' ) );
+	if ( ( ! sparkData || ! sparkData.length ) && ( ! bounceData || ! bounceData.length ) ) {
+		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
 	}
 
-	const extractedAnalytics = extractAnalyticsDashboardSparklineData( data );
+	const extractedAnalytics = extractAnalyticsDashboardSparklineData( sparkData );
 
-	const { totals } = data[ 0 ].data;
+	const { totals } = bounceData[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const averageBounceRate = lastMonth[ 0 ];

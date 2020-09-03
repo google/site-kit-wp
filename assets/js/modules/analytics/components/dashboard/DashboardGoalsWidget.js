@@ -36,37 +36,66 @@ import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta'
 import { extractAnalyticsDashboardSparklineData } from '../../util';
 import { extractForSparkline, getSiteKitAdminURL, readableLargeNumber, changeToPercent } from '../../../../util';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import noDataComponent from '../../../../components/notifications/nodata';
+import getNoDataComponent from '../../../../components/notifications/nodata';
 
 const { useSelect } = Data;
 
 function DashboardGoalsWidget() {
 	const {
-		data,
 		error,
 		loading,
+		sparkData,
+		goalsData,
 		goals,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
+		};
+
+		const sparkDataArgs = {
 			compareDateRanges: 1,
 			dimensions: 'ga:date',
-			multiDateRange: 1,
 			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+				{
+					expression: 'ga:sessions',
+					alias: 'Sessions',
+				},
+				{
+					expression: 'ga:bounceRate',
+					alias: 'Bounce Rate',
+				},
+				{
+					expression: 'ga:avgSessionDuration',
+					alias: 'Average Session Duration',
+				},
 				{
 					expression: 'ga:goalCompletionsAll',
 					alias: 'Goal Completions',
 				},
 			],
+			limit: 180,
+			...args,
+		};
+
+		const goalsDataArgs = {
+			...args,
+			multiDateRange: 1,
+			dimensions: 'ga:date',
+			metrics: [ { expression: 'ga:goalCompletionsAll', alias: 'Goal Completions' } ],
 			limit: 10,
 		};
 
 		return {
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			data: store.getReport( args ),
+			error: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ) || store.getErrorForSelector( 'getReport', [ goalsDataArgs ] ),
+			loading: store.isResolving( 'getReport', [ sparkDataArgs ] ) || store.isResolving( 'getReport', [ goalsDataArgs ] ),
+			sparkData: store.getReport( sparkDataArgs ),
+			goalsData: store.getReport( goalsDataArgs ),
 			goals: store.getGoals(),
-			loading: store.isResolving( 'getReport', [ args ] ),
 		};
 	} );
 
@@ -78,8 +107,8 @@ function DashboardGoalsWidget() {
 		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
 	}
 
-	if ( ! data || ! data.length ) {
-		return noDataComponent( __( 'Analytics', 'google-site-kit' ) );
+	if ( ( ! sparkData || ! sparkData.length ) && ( ! goalsData || ! goalsData.length ) ) {
+		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
 	}
 
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
@@ -93,9 +122,9 @@ function DashboardGoalsWidget() {
 		);
 	}
 
-	const extractedAnalytics = extractAnalyticsDashboardSparklineData( data );
+	const extractedAnalytics = extractAnalyticsDashboardSparklineData( sparkData );
 
-	const { totals } = data[ 0 ].data;
+	const { totals } = goalsData[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const goalCompletions = lastMonth[ 0 ];
