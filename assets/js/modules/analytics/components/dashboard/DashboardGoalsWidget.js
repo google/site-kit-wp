@@ -33,8 +33,8 @@ import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import CTA from '../../../../components/notifications/cta';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
-import { extractAnalyticsDashboardSparklineData } from '../../util';
-import { extractForSparkline, getSiteKitAdminURL, readableLargeNumber, changeToPercent } from '../../../../util';
+import { getSiteKitAdminURL, readableLargeNumber, changeToPercent } from '../../../../util';
+import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 
@@ -42,59 +42,24 @@ const { useSelect } = Data;
 
 function DashboardGoalsWidget() {
 	const {
+		data,
 		error,
 		loading,
-		sparkData,
-		goalsData,
 		goals,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
-		const args = {
+
+		const dataArgs = {
 			dateRange: select( CORE_USER ).getDateRange(),
-		};
-
-		const sparkDataArgs = {
-			compareDateRanges: 1,
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-				{
-					expression: 'ga:sessions',
-					alias: 'Sessions',
-				},
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-				{
-					expression: 'ga:avgSessionDuration',
-					alias: 'Average Session Duration',
-				},
-				{
-					expression: 'ga:goalCompletionsAll',
-					alias: 'Goal Completions',
-				},
-			],
-			limit: 180,
-			...args,
-		};
-
-		const goalsDataArgs = {
-			...args,
 			multiDateRange: 1,
 			dimensions: 'ga:date',
 			metrics: [ { expression: 'ga:goalCompletionsAll', alias: 'Goal Completions' } ],
-			limit: 10,
 		};
 
 		return {
-			error: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ) || store.getErrorForSelector( 'getReport', [ goalsDataArgs ] ),
-			loading: store.isResolving( 'getReport', [ sparkDataArgs ] ) || store.isResolving( 'getReport', [ goalsDataArgs ] ),
-			sparkData: store.getReport( sparkDataArgs ),
-			goalsData: store.getReport( goalsDataArgs ),
+			data: store.getReport( dataArgs ),
+			error: store.getErrorForSelector( 'getReport', [ dataArgs ] ),
+			loading: store.isResolving( 'getReport', [ dataArgs ] ),
 			goals: store.getGoals(),
 		};
 	} );
@@ -105,10 +70,6 @@ function DashboardGoalsWidget() {
 
 	if ( error ) {
 		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
-	}
-
-	if ( ( ! sparkData || ! sparkData.length ) && ( ! goalsData || ! goalsData.length ) ) {
-		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
 	}
 
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
@@ -122,9 +83,32 @@ function DashboardGoalsWidget() {
 		);
 	}
 
-	const extractedAnalytics = extractAnalyticsDashboardSparklineData( sparkData );
+	if ( ! data || ! data.length ) {
+		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
+	}
 
-	const { totals } = goalsData[ 0 ].data;
+	const sparkLineData = [
+		[
+			{ type: 'date', label: 'Day' },
+			{ type: 'number', label: 'Bounce Rate' },
+		],
+	];
+
+	if ( data[ 0 ].data.rows ) {
+		const dataRows = data[ 0 ].data.rows;
+		// We only want half the date range, having `multiDateRange` in the query doubles the range.
+		for ( let i = Math.ceil( dataRows.length / 2 ); i < dataRows.length; i++ ) {
+			const { values } = dataRows[ i ].metrics[ 0 ];
+			const dateString = dataRows[ i ].dimensions[ 0 ];
+			const date = parseDimensionStringToDate( dateString );
+			sparkLineData.push( [
+				date,
+				values[ 0 ],
+			] );
+		}
+	}
+
+	const { totals } = data[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const goalCompletions = lastMonth[ 0 ];
@@ -142,9 +126,9 @@ function DashboardGoalsWidget() {
 				link: getSiteKitAdminURL( 'googlesitekit-module-analytics', {} ),
 			} }
 			sparkline={
-				extractedAnalytics &&
+				sparkLineData &&
 				<Sparkline
-					data={ extractForSparkline( extractedAnalytics, 3 ) }
+					data={ sparkLineData }
 					change={ goalCompletionsChange }
 				/>
 			}
