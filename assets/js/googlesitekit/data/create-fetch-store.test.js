@@ -41,7 +41,16 @@ import { createFetchStore } from './create-fetch-store';
 const STORE_NAME = 'test/some-data';
 const STORE_PARAMS = {
 	baseName: 'getSomeData',
-	storeName: STORE_NAME,
+	argsToParams: ( objParam, aParam ) => {
+		return {
+			objParam,
+			aParam,
+		};
+	},
+	validateParams: ( { objParam, aParam } = {} ) => {
+		invariant( isPlainObject( objParam ), 'objParam is required.' );
+		invariant( aParam !== undefined, 'aParam is required.' );
+	},
 	controlCallback: ( params ) => {
 		const { aParam, objParam } = params;
 		return API.get( 'core', 'test', 'some-data', {
@@ -57,14 +66,6 @@ const STORE_PARAMS = {
 				...( state.data || {} ),
 				[ aParam ]: response,
 			},
-		};
-	},
-	argsToParams: ( objParam, aParam ) => {
-		invariant( isPlainObject( objParam ), 'objParam is required.' );
-		invariant( aParam !== undefined, 'aParam is required.' );
-		return {
-			objParam,
-			aParam,
 		};
 	},
 };
@@ -102,7 +103,6 @@ describe( 'createFetchStore store', () => {
 		it( 'includes the expected actions', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
-				storeName: STORE_NAME,
 				controlCallback: async () => true,
 			} );
 
@@ -113,65 +113,49 @@ describe( 'createFetchStore store', () => {
 		} );
 
 		describe( 'fetch', () => {
-			it( 'validates parameters based on argsToParams', () => {
-				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
+			it( 'validates parameters based on validateParams', () => {
+				expect( () => {
+					dispatch.fetchGetSomeData();
+				} ).toThrow( 'objParam is required.' );
 
-				muteConsole( 'error' );
-				dispatch.fetchGetSomeData();
-				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'objParam is required.' );
+				expect( () => {
+					dispatch.fetchGetSomeData( 123 );
+				} ).toThrow( 'objParam is required.' );
 
-				muteConsole( 'error' );
-				dispatch.fetchGetSomeData( 123 );
-				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'objParam is required.' );
-
-				muteConsole( 'error' );
-				dispatch.fetchGetSomeData( {} );
-				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'aParam is required.' );
-
-				consoleErrorSpy.mockClear();
+				expect( () => {
+					dispatch.fetchGetSomeData( {} );
+				} ).toThrow( 'aParam is required.' );
 			} );
 
 			it( 'yields the expected actions for an arguments error', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					storeName: STORE_NAME,
 					controlCallback: async () => true,
 					argsToParams: ( requiredParam ) => {
-						invariant( requiredParam, 'requiredParam is required.' );
 						return {
 							requiredParam,
 						};
 					},
+					validateParams: ( { requiredParam } = {} ) => {
+						invariant( requiredParam, 'requiredParam is required.' );
+					},
 				} );
 
-				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
-
-				// Catch invariant to get exactly the error we expect.
-				let error;
-				try {
-					muteConsole( 'error' );
-					invariant( false, 'requiredParam is required.' );
-				} catch ( err ) {
-					error = err;
-				}
-
-				expect( action.next().value ).toEqual( {
-					response: undefined,
-					error,
-				} );
+				expect( () => {
+					fetchStoreDefinition.actions.fetchSaveSomeData();
+				} ).toThrow( 'requiredParam is required.' );
 			} );
 
 			it( 'yields the expected actions for a success request', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					storeName: STORE_NAME,
 					controlCallback: async () => true,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
 
 				expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
-				expect( action.next().value.type ).toEqual( 'GET_REGISTRY' );
+				expect( action.next().value.type ).toEqual( 'CLEAR_ERROR' );
 				expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
 				expect( action.next( 42 ).value.type ).toEqual( 'RECEIVE_SAVE_SOME_DATA' );
 				expect( action.next().value.type ).toEqual( 'FINISH_FETCH_SAVE_SOME_DATA' );
@@ -184,7 +168,6 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for an error request', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					storeName: STORE_NAME,
 					controlCallback: async () => true,
 				} );
 
@@ -196,9 +179,11 @@ describe( 'createFetchStore store', () => {
 				};
 
 				expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
-				expect( action.next().value.type ).toEqual( 'GET_REGISTRY' );
+				expect( action.next().value.type ).toEqual( 'CLEAR_ERROR' );
 				expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
-				expect( action.throw( error ).value.type ).toEqual( 'CATCH_FETCH_SAVE_SOME_DATA' );
+				expect( action.throw( error ).value.type ).toEqual( 'RECEIVE_ERROR' );
+				expect( action.next().value.type ).toEqual( 'RECEIVE_ERROR' );
+				expect( action.next().value.type ).toEqual( 'CATCH_FETCH_SAVE_SOME_DATA' );
 				expect( action.next().value ).toEqual( {
 					response: undefined,
 					error,
@@ -269,32 +254,56 @@ describe( 'createFetchStore store', () => {
 		} );
 
 		describe( 'receive', () => {
-			it( 'requires params if argsToParams is provided', () => {
+			it( 'requires params if validateParams raises an error with no params', () => {
+				const validateParams = jest.fn();
+				validateParams.mockImplementationOnce( () => {
+					throw new Error( 'anything to require params!' );
+				} );
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					storeName: STORE_NAME,
 					controlCallback: async () => true,
 					argsToParams: ( requiredParam ) => {
-						invariant( requiredParam, 'requiredParam is required.' );
 						return {
 							requiredParam,
 						};
 					},
+					validateParams,
 				} );
+				// validateParams is called once when creating the fetch store to determine if params are required.
+				expect( validateParams ).toHaveBeenCalledTimes( 1 );
+				// Called with the result of argsToParams with no args.
+				expect( validateParams ).toHaveBeenCalledWith( { requiredParam: undefined } );
+				validateParams.mockClear();
 
+				// Now that params are known to be required, an error will be thrown if not provided.
 				expect( () => {
 					const response = {};
 					fetchStoreDefinition.actions.receiveSaveSomeData( response );
 				} ).toThrow( 'params is required.' );
+				expect( validateParams ).not.toHaveBeenCalled();
+
+				// Does not throw `params is required.` when params is provided (other validation still applies);
+				expect( () => {
+					const response = {};
+					const params = {};
+					fetchStoreDefinition.actions.receiveSaveSomeData( response, params );
+				} ).not.toThrow();
+				// It only doesn't throw here because our mock function does not, but normally it would.
+				expect( validateParams ).toHaveBeenCalledTimes( 1 );
+				expect( validateParams ).toHaveBeenCalledWith( { requiredParam: undefined } );
 			} );
 
-			it( 'does not require params if argsToParams is not provided', () => {
+			it( 'does not require params if validateParams does not throw', () => {
+				const validateParams = jest.fn();
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					storeName: STORE_NAME,
 					controlCallback: async () => true,
 					reducerCallback: ( state ) => state,
+					argsToParams: () => ( {} ),
+					validateParams,
 				} );
+				expect( validateParams ).toHaveBeenCalledTimes( 1 );
+				expect( validateParams ).toHaveBeenCalledWith( {} );
 
 				expect( () => {
 					const response = {};
@@ -308,7 +317,6 @@ describe( 'createFetchStore store', () => {
 		it( 'includes the expected selectors', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
-				storeName: STORE_NAME,
 				controlCallback: async () => true,
 			} );
 

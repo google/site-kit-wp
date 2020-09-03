@@ -104,12 +104,9 @@ describe( 'modules/adsense settings', () => {
 
 		describe( 'fetchSaveUseSnippet', () => {
 			it( 'requires the useSnippet param', () => {
-				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
-				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).fetchSaveUseSnippet();
-				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'useSnippet is required.' );
-
-				consoleErrorSpy.mockClear();
+				expect( () => {
+					registry.dispatch( STORE_NAME ).fetchSaveUseSnippet();
+				} ).toThrow( 'useSnippet is required.' );
 			} );
 
 			it( 'sets isDoingSaveUseSnippet', () => {

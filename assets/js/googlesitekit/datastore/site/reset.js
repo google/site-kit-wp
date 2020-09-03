@@ -28,7 +28,6 @@ const { createRegistrySelector } = Data;
 
 const fetchResetStore = createFetchStore( {
 	baseName: 'reset',
-	storeName: STORE_NAME,
 	controlCallback: () => {
 		return API.set( 'core', 'site', 'reset' );
 	},

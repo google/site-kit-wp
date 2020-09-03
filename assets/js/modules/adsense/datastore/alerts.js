@@ -35,7 +35,6 @@ const RESET_ALERTS = 'RESET_ALERTS';
 
 const fetchGetAlertsStore = createFetchStore( {
 	baseName: 'getAlerts',
-	storeName: STORE_NAME,
 	controlCallback: ( { accountID } ) => {
 		return API.get( 'modules', 'adsense', 'alerts', { accountID }, {
 			useCache: false,
@@ -51,8 +50,10 @@ const fetchGetAlertsStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( accountID ) => {
-		invariant( accountID, 'accountID is required.' );
 		return { accountID };
+	},
+	validateParams: ( { accountID } = {} ) => {
+		invariant( accountID, 'accountID is required.' );
 	},
 } );
 

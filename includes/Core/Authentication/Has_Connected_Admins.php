@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Storage\Has_Connected_Admins
+ * Class Google\Site_Kit\Core\Authentication\Has_Connected_Admins
  *
- * @package   Google\Site_Kit\Core\Storage
+ * @package   Google\Site_Kit\Core\Authentication
  * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Storage;
+namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options_Interface;
@@ -116,7 +116,7 @@ class Has_Connected_Admins extends Setting {
 	protected function query_connected_admins() {
 		return get_users(
 			array(
-				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.VIP.SlowDBQuery.slow_db_query_meta_key
+				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_compare' => 'EXISTS',
 				'role'         => 'administrator',
 				'number'       => 1,

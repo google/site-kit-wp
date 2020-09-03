@@ -33,7 +33,6 @@ const { createRegistrySelector } = Data;
 
 const fetchGetProfilesStore = createFetchStore( {
 	baseName: 'getProfiles',
-	storeName: STORE_NAME,
 	controlCallback: ( { accountID, propertyID } ) => {
 		return API.get( 'modules', 'analytics', 'profiles', {
 			accountID,
@@ -52,15 +51,16 @@ const fetchGetProfilesStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( accountID, propertyID ) => {
+		return { accountID, propertyID };
+	},
+	validateParams: ( { accountID, propertyID } = {} ) => {
 		invariant( isValidAccountID( accountID ), 'a valid account ID is required to fetch profiles for.' );
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to fetch profiles for.' );
-		return { accountID, propertyID };
 	},
 } );
 
 const fetchCreateProfileStore = createFetchStore( {
 	baseName: 'createProfile',
-	storeName: STORE_NAME,
 	controlCallback: ( { accountID, propertyID, profileName } ) => {
 		return API.set( 'modules', 'analytics', 'create-profile', {
 			accountID,
@@ -81,10 +81,12 @@ const fetchCreateProfileStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( accountID, propertyID, { profileName } ) => {
+		return { accountID, propertyID, profileName };
+	},
+	validateParams: ( { accountID, propertyID, profileName } = {} ) => {
 		invariant( isValidAccountID( accountID ), 'a valid account ID is required to create a profiles.' );
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
 		invariant( isValidProfileName( profileName ), 'a valid name is required to create a profile.' );
-		return { accountID, propertyID, profileName };
 	},
 } );
 

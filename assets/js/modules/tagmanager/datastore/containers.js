@@ -36,11 +36,11 @@ const WAIT_FOR_CONTAINERS = 'WAIT_FOR_CONTAINERS';
 
 const fetchGetContainersStore = createFetchStore( {
 	baseName: 'getContainers',
-	storeName: STORE_NAME,
 	argsToParams: ( accountID ) => {
-		invariant( isValidAccountID( accountID ), 'A valid accountID is required to fetch containers.' );
-
 		return { accountID };
+	},
+	validateParams: ( { accountID } = {} ) => {
+		invariant( isValidAccountID( accountID ), 'A valid accountID is required to fetch containers.' );
 	},
 	controlCallback: ( { accountID } ) => {
 		// Always request both contexts to prevent filtering on server.
@@ -62,12 +62,12 @@ const fetchGetContainersStore = createFetchStore( {
 
 const fetchCreateContainerStore = createFetchStore( {
 	baseName: 'createContainer',
-	storeName: STORE_NAME,
 	argsToParams( accountID, usageContext ) {
+		return { accountID, usageContext };
+	},
+	validateParams: ( { accountID, usageContext } = {} ) => {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
 		invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );
-
-		return { accountID, usageContext };
 	},
 	controlCallback: ( { accountID, usageContext } ) => {
 		return API.set( 'modules', 'tagmanager', 'create-container', { accountID, usageContext } );

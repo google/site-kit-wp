@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -18,6 +19,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
@@ -37,12 +39,15 @@ class AnalyticsTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Screen_ContractTests;
 	use Module_With_Settings_ContractTests;
+	use Module_With_Owner_ContractTests;
 
 	public function test_register() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'googlesitekit_module_screens' );
 		remove_all_filters( 'googlesitekit_analytics_adsense_linked' );
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'web_stories_story_head' );
 
 		$analytics->register();
 
@@ -60,6 +65,10 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertFalse( get_option( 'googlesitekit_analytics_adsense_linked' ) );
 		$this->assertFalse( $analytics->is_connected() );
+
+		// Test actions for tracking opt-out are added.
+		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'web_stories_story_head' ) );
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -345,6 +354,7 @@ class AnalyticsTest extends TestCase {
 					'anonymizeIP'           => true,
 					'adsenseLinked'         => false,
 					'trackingDisabled'      => array( 'loggedinUsers' ),
+					'ownerID'               => $admin_id,
 				),
 				$analytics->get_settings()->get()
 			);
@@ -505,6 +515,13 @@ class AnalyticsTest extends TestCase {
 	 * @return Module_With_Settings
 	 */
 	protected function get_module_with_settings() {
+		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return Module_With_Owner
+	 */
+	protected function get_module_with_owner() {
 		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 

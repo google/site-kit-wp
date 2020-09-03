@@ -1,0 +1,5 @@
+{
+	"dimensions": "date",
+	"compareDateRanges": true,
+	"dateRange": "last-28-days"
+}

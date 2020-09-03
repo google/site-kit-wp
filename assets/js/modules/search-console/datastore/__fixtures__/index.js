@@ -17,3 +17,8 @@
  */
 
 export { default as report } from './report';
+export { default as clicksAndImpressionsWidgetData } from './clicks-and-impressions-widget-data.json';
+export { default as dashboardClicksWidgetArgs } from './dashboard-clicks-widget-args.json';
+export { default as dashboardImpressionsWidgetArgs } from './dashboard-impressions-widget-args.json';
+export { default as pageDashboardClicksWidgetArgs } from './page-dashboard-clicks-widget-args.json';
+export { default as pageDashboardImpressionsArgs } from './page-dashboard-impressions-widget-args.json';

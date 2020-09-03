@@ -23,14 +23,15 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/setup/search-console-property',
 			array(
-				'methods'  => WP_REST_Server::EDITABLE,
-				'callback' => function ( WP_REST_Request $request ) {
-					$settings = get_option( Settings::OPTION );
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => function ( WP_REST_Request $request ) {
+					$settings               = get_option( Settings::OPTION );
 					$settings['propertyID'] = $request['property'] ?: '';
 					update_option( Settings::OPTION, $settings );
 
 					return array( 'success' => true );
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 	},

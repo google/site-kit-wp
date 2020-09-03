@@ -28,10 +28,13 @@ import domReady from '@wordpress/dom-ready';
  */
 import './datastore';
 import Data from 'googlesitekit-data';
+import Widgets from 'googlesitekit-widgets';
+import { AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { SetupMain as AnalyticsSetup } from './components/setup';
 import { SettingsMain as AnalyticsSettings } from './components/settings';
+import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
 const { dispatch } = Data;
 
 addFilter(
@@ -42,4 +45,18 @@ addFilter(
 
 domReady( () => {
 	dispatch( CORE_MODULES ).setSettingsComponent( 'analytics', AnalyticsSettings );
+
+	Widgets.registerWidget(
+		'analyticsAllTraffic',
+		{
+			component: DashboardAllTrafficWidget,
+			width: Widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_ALL_TRAFFIC,
+			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+		],
+	);
 } );

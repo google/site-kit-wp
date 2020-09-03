@@ -31,7 +31,7 @@
     "description": "Earn money by placing ads on your website. It’s free and easy.",
     "homepage": "https://www.google.com/adsense/start?source=site-kit&url=http://open-clownfish.jurassic.ninja",
     "internal": false,
-    "active": false,
+    "active": true,
     "connected": false,
     "dependencies": [],
     "dependants": [],
