@@ -30,9 +30,7 @@ trait WP_Context_Switcher_Trait {
 	 * @return callable Closure that restores context.
 	 */
 	protected static function with_frontend_context() {
-		global $current_screen;
-
-		$restore = self::get_restore_closure();
+		$restore = self::get_restore_current_screen_closure();
 
 		if ( ! is_admin() ) {
 			return $restore;
@@ -68,7 +66,7 @@ trait WP_Context_Switcher_Trait {
 	 *
 	 * @return callable Closure that restores context.
 	 */
-	private static function get_restore_closure() {
+	private static function get_restore_current_screen_closure() {
 		global $current_screen;
 
 		$original_screen = $current_screen;
