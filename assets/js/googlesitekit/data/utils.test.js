@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistry } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import {
@@ -24,6 +29,7 @@ import {
 	collectReducers,
 	collectName,
 	combineStores,
+	createStrictSelect,
 } from './utils';
 
 describe( 'data utils', () => {
@@ -706,6 +712,72 @@ describe( 'data utils', () => {
 					collectName( storeName, storeName, wrongStoreName, storeName );
 				} ).toThrow( /collectName\(\) must not receive different names./ );
 			} );
+		} );
+	} );
+
+	describe( 'createStrictSelect', () => {
+		let registry;
+		let strictSelect;
+		let strictSelectors;
+
+		const RECEIVE_FOO = 'RECEIVE_FOO';
+		const STORE_NAME = 'test/store';
+		const storeDefinition = {
+			initialState: {
+				foo: undefined,
+			},
+			actions: {
+				receiveFoo( value ) {
+					return {
+						type: RECEIVE_FOO,
+						payload: { value },
+					};
+				},
+			},
+			reducer: ( state, { type, payload } ) => {
+				switch ( type ) {
+					case RECEIVE_FOO:
+						return { ...state, foo: payload.value };
+					default:
+						return state;
+				}
+			},
+			selectors: {
+				getFoo( state ) {
+					return state.foo;
+				},
+			},
+		};
+
+		beforeEach( () => {
+			registry = createRegistry();
+			registry.registerStore( STORE_NAME, storeDefinition );
+			strictSelect = createStrictSelect( registry.select );
+			strictSelectors = strictSelect( STORE_NAME );
+		} );
+
+		it( 'provides all the same selectors as registry.select', () => {
+			const regularSelectors = registry.select( STORE_NAME );
+			expect( Object.keys( strictSelectors ) ).toEqual( Object.keys( regularSelectors ) );
+		} );
+
+		it( 'throws an error if a strict selector returns undefined', () => {
+			expect( registry.select( STORE_NAME ).getFoo() ).toBeUndefined();
+			expect( () => strictSelectors.getFoo() ).toThrow( 'getFoo(...) is not resolved' );
+		} );
+
+		it( 'does not throw an error if a strict selector returns any other falsy value', () => {
+			registry.dispatch( STORE_NAME ).receiveFoo( null );
+			expect( strictSelectors.getFoo() ).toBe( null );
+
+			registry.dispatch( STORE_NAME ).receiveFoo( false );
+			expect( strictSelectors.getFoo() ).toBe( false );
+
+			registry.dispatch( STORE_NAME ).receiveFoo( '' );
+			expect( strictSelectors.getFoo() ).toBe( '' );
+
+			registry.dispatch( STORE_NAME ).receiveFoo( 0 );
+			expect( strictSelectors.getFoo() ).toBe( 0 );
 		} );
 	} );
 } );
