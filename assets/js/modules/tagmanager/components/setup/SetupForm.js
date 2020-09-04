@@ -24,7 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, useCallback } from '@wordpress/element';
+import { Fragment, useEffect, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -42,11 +43,13 @@ import {
 	WebContainerSelect,
 } from '../common';
 import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import Button from '../../../../components/button';
+import Link from '../../../../components/link';
 import SetupFormInstructions from './SetupFormInstructions';
-import SetupFormSubmitButtons from './SetupFormSubmitButtons';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup, setIsNavigating } ) {
+	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
@@ -104,14 +107,16 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 		}
 	}, [ hasEditScope, autoSubmit, submitForm, submitMode ] );
 
-	// Form submit behavior now varies based on which button is clicked,
-	// so we no longer support the generic form submit event.
-	const preventDefaultFormSubmit = useCallback( ( event ) => event.preventDefault(), [] );
+	// Form submit behavior now varies based on which button is clicked.
+	const onSubmit = useCallback( ( event ) => {
+		event.preventDefault();
+		submitForm( { submitMode: event.nativeEvent.submitter.dataset.submitMode } );
+	}, [ submitForm ] );
 
 	return (
 		<form
 			className="googlesitekit-tagmanager-setup__form"
-			onSubmit={ preventDefaultFormSubmit }
+			onSubmit={ onSubmit }
 		>
 			<StoreErrorNotice storeName={ STORE_NAME } />
 			<SetupFormInstructions />
@@ -124,7 +129,30 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 				<AMPContainerSelect />
 			</div>
 
-			<SetupFormSubmitButtons submitForm={ submitForm } />
+			<div className="googlesitekit-setup-module__action">
+				{ gtmAnalyticsPropertyID && ! analyticsModuleActive && (
+					<Fragment>
+						<Button
+							data-submit-mode="with_analytics_setup"
+							disabled={ ! canSubmitChanges }
+						>
+							{ __( 'Continue to Analytics setup', 'google-site-kit' ) }
+						</Button>
+						<Link
+							className="googlesitekit-setup-module__sub-action"
+							disabled={ ! canSubmitChanges }
+							inherit
+						>
+							{ __( 'Complete setup without Analytics', 'google-site-kit' ) }
+						</Link>
+					</Fragment>
+				) }
+				{ ( ! gtmAnalyticsPropertyID || analyticsModuleActive ) && (
+					<Button disabled={ ! canSubmitChanges }>
+						{ __( 'Confirm & Continue', 'google-site-kit' ) }
+					</Button>
+				) }
+			</div>
 		</form>
 	);
 }
