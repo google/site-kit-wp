@@ -1,3 +1,4 @@
+/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * AMP Container Select component tests.
  *

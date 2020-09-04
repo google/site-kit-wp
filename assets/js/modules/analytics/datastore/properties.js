@@ -160,13 +160,15 @@ const baseActions = {
 		const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
 
 		if ( ! internalPropertyID ) {
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			internalPropertyID = property.internalWebPropertyId;
 		}
 
 		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		if ( property.defaultProfileId ) {
-			registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // Capitalization rule exception: defaultProfileId
+			registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/camelcase-acronyms
 			return;
 		}
 
@@ -178,7 +180,7 @@ const baseActions = {
 			return; // Selection will happen in in getProfiles resolver.
 		}
 
-		const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // Capitalization rule exception: webPropertyId
+		const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // eslint-disable-line sitekit/camelcase-acronyms
 
 		registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
 	},
@@ -286,7 +288,9 @@ const baseResolvers = {
 			if ( response ) {
 				dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					const propertyID = response.profiles[ 0 ].webPropertyId;
 					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
 				}
@@ -309,7 +313,7 @@ const baseResolvers = {
 		const propertyID = registry.select( STORE_NAME ).getPropertyID();
 		if ( ! propertyID ) {
 			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-			yield baseActions.selectProperty( property.id, property.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
+			yield baseActions.selectProperty( property.id, property.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
 		}
 	},
 };

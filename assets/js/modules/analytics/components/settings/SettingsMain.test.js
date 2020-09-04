@@ -27,9 +27,11 @@ import SettingsMain from './SettingsMain';
 
 describe( 'SettingsMain', () => {
 	const initialSettings = {
+		/* eslint-disable sitekit/camelcase-acronyms */
 		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId,
 		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId,
 		internalWebPropertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].internalWebPropertyId,
+		/* eslint-enable sitekit/camelcase-acronyms */
 		profileID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].id,
 		useSnippet: true,
 		trackingDisabled: [],

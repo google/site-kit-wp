@@ -1,3 +1,4 @@
+/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * Country and Time Zone utilities.
  *

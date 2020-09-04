@@ -25,7 +25,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { decodeHtmlEntity, getTimeInSeconds } from '../../../../util';
+import { decodeHTMLEntity, getTimeInSeconds } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import GoogleChart from '../../../../components/google-chart.js';
@@ -47,7 +47,7 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 
 		if ( pageTitle && pageTitle.length ) {
 			/* translators: %s: page title */
-			title = sprintf( __( 'Search Traffic Summary for %s', 'google-site-kit' ), decodeHtmlEntity( pageTitle ) );
+			title = sprintf( __( 'Search Traffic Summary for %s', 'google-site-kit' ), decodeHTMLEntity( pageTitle ) );
 		}
 
 		const options = {

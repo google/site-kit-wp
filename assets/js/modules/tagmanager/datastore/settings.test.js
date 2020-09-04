@@ -127,7 +127,9 @@ describe( 'modules/tagmanager settings', () => {
 					);
 
 					expect( result.error ).toBeFalsy();
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( createdContainer.publicId );
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( createdContainer.containerId );
 				} );
 
@@ -222,6 +224,7 @@ describe( 'modules/tagmanager settings', () => {
 						accountID: '12345',
 						ampContainerID: CONTAINER_CREATE,
 					} );
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					const createdAMPContainer = containerBuilder( { accountId: '12345', usageContext: [ CONTEXT_AMP ] } );
 
 					fetchMock.postOnce(
@@ -249,6 +252,7 @@ describe( 'modules/tagmanager settings', () => {
 						}
 					);
 
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( createdAMPContainer.publicId );
 				} );
 			} );
@@ -263,7 +267,9 @@ describe( 'modules/tagmanager settings', () => {
 						containerID: CONTAINER_CREATE,
 						ampContainerID: CONTAINER_CREATE,
 					} );
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					const createdWebContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } );
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					const createdAMPContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } );
 
 					fetchMock.postOnce(
@@ -294,7 +300,9 @@ describe( 'modules/tagmanager settings', () => {
 					const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
 
 					expect( error ).toBe( undefined );
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( createdWebContainer.publicId );
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( createdAMPContainer.publicId );
 				} );
 			} );

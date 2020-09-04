@@ -61,6 +61,7 @@ export default function AccountSelect() {
 		>
 			{ ( accounts || [] )
 				.concat( {
+					/* eslint-disable sitekit/camelcase-acronyms */
 					accountId: ACCOUNT_CREATE,
 					name: __( 'Set up a new account', 'google-site-kit' ),
 				} )
@@ -68,6 +69,7 @@ export default function AccountSelect() {
 					<Option
 						key={ accountId }
 						value={ accountId }
+						/* eslint-enable sitekit/camelcase-acronyms */
 					>
 						{ name }
 					</Option>

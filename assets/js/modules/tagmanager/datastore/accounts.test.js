@@ -1,3 +1,4 @@
+/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * modules/tagmanager data store: accounts tests.
  *

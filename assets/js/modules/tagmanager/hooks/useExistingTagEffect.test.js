@@ -37,15 +37,19 @@ describe( 'useExistingTagEffect', () => {
 
 	it( 'sets the accountID and containerID when there is an existing tag with permission', async () => {
 		const account = factories.accountBuilder();
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const accountID = account.accountId;
 		const containers = factories.buildContainers(
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
 		);
 		const [ firstContainer, existingContainer ] = containers;
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setContainerID( firstContainer.publicId );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setInternalContainerID( firstContainer.containerId );
 
 		let rerender;
@@ -55,20 +59,27 @@ describe( 'useExistingTagEffect', () => {
 			resolve();
 		} ) );
 
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( firstContainer.publicId );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId );
 
 		// Can't seem to prevent an error from updates happening outside of `act()` just for this part.
 		muteConsole( 'error' );
 		await act( () => new Promise( async ( resolve ) => {
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: existingContainer.publicId } );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingContainer.publicId );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			await untilResolved( registry, STORE_NAME ).getTagPermission( existingContainer.publicId );
 			rerender();
 			resolve();
 		} ) );
 
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( existingContainer.publicId );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( existingContainer.containerId );
 	} );
 } );

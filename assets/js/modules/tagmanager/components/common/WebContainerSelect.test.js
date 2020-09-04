@@ -1,3 +1,4 @@
+/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * Web Container Select component tests.
  *
