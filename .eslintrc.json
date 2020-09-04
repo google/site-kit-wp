@@ -13,7 +13,7 @@
   },
   "rules": {
     "sitekit/camelcase-acronyms": [
-      "warn"
+      "error"
     ],
     "no-restricted-globals": [
       "error",
