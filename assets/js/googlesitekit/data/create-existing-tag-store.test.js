@@ -81,40 +81,32 @@ describe( 'createExistingTagStore store', () => {
 				expect( () => {
 					muteConsole( 'error' );
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag();
-				} ).toThrow( 'existingTag must be a valid tag or null.' );
+				} ).toThrow( 'existingTag must be a tag string or null.' );
 			} );
 
-			it( 'requires a non-zero length string tag by default', () => {
-				expect( () => {
-					muteConsole( 'error' );
-					registry.dispatch( STORE_NAME ).receiveGetExistingTag( '' );
-				} ).toThrow( 'existingTag must be a valid tag or null.' );
-
-				expect( () => {
-					registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'a' );
-				} ).not.toThrow();
+			it( 'receives an empty string tag as null', () => {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( '' );
+				expect( store.getState().existingTag ).toBe( null );
 			} );
 
-			it( 'allows custom validation for tags', () => {
+			it( 'allows custom validation for tags, and receives invalid tags as null', () => {
 				const storeName = 'is-valid-tag/store';
 				const isValidTag = ( tag ) => tag === 'valid-tag';
 				const storeDefinition = createExistingTagStore( {
 					storeName,
-					tagMatchers: [ /(\w+)/ ],
+					tagMatchers: [],
 					isValidTag,
 				} );
-				registry.registerStore( storeName, storeDefinition );
+				store = registry.registerStore( storeName, storeDefinition );
 
 				expect( isValidTag( 'invalid-tag' ) ).toBe( false );
-				expect( () => {
-					muteConsole( 'error' );
-					registry.dispatch( storeName ).receiveGetExistingTag( 'invalid-tag' );
-				} ).toThrow( 'existingTag must be a valid tag or null.' );
+
+				registry.dispatch( storeName ).receiveGetExistingTag( 'invalid-tag' );
+				expect( store.getState().existingTag ).toBe( null );
 
 				expect( isValidTag( 'valid-tag' ) ).toBe( true );
-				expect( () => {
-					registry.dispatch( storeName ).receiveGetExistingTag( 'valid-tag' );
-				} ).not.toThrow();
+				registry.dispatch( storeName ).receiveGetExistingTag( 'valid-tag' );
+				expect( store.getState().existingTag ).toBe( 'valid-tag' );
 			} );
 
 			it( 'receives and sets value', () => {

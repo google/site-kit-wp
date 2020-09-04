@@ -31,11 +31,44 @@ const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
+const ManifestPlugin = require( 'webpack-manifest-plugin' );
+
+/**
+ * Internal dependencies
+ */
 const flagsConfig = require( './webpack.feature-flags.config' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
+
+const manifestTemplate = `<?php
+/**
+ * Class Google\\Site_Kit\\Core\\Assets\\Manifest
+ *
+ * @package   Google\Site_Kit
+ * @copyright ${ ( new Date() ).getFullYear() } Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+namespace Google\\Site_Kit\\Core\\Assets;
+
+/**
+ * Assets manifest.
+ *
+ * @since 1.15.0
+ * @access private
+ * @ignore
+ */
+class Manifest {
+
+	public static $assets = array(
+		{{assets}}
+	);
+
+}
+`;
 
 const noAMDParserRule = { parser: { amd: false } };
 
@@ -86,6 +119,8 @@ const resolve = {
 		'@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
 		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
 		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
+		'react__non-shim': require.resolve( 'react' ),
+		react: path.resolve( 'assets/js/react-shim.js' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
@@ -117,14 +152,14 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-dashboard-splash': './assets/js/googlesitekit-dashboard-splash.js',
 				'googlesitekit-wp-dashboard': './assets/js/googlesitekit-wp-dashboard.js',
 				'googlesitekit-adminbar-loader': './assets/js/googlesitekit-adminbar-loader.js',
-				'googlesitekit-admin': './assets/js/googlesitekit-admin.js',
+				'googlesitekit-base': './assets/js/googlesitekit-base.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
 				// Needed to test if a browser extension blocks this by naming convention.
 				'pagead2.ads': './assets/js/pagead2.ads.js',
 			},
 			externals,
 			output: {
-				filename: '[name].js',
+				filename: '[name].[contenthash].js',
 				path: __dirname + '/dist/assets/js',
 				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
@@ -163,6 +198,19 @@ const webpackConfig = ( mode ) => {
 						mode,
 					},
 				),
+				new ManifestPlugin( {
+					fileName: '../../../includes/Core/Assets/Manifest.php',
+					serialize( manifest ) {
+						const files = [];
+						Object.keys( manifest ).forEach( ( key ) => {
+							if ( key.match( /.js$/ ) ) {
+								files.push( `"${ key.replace( '.js', '' ) }" => "${ manifest[ key ] }",` );
+							}
+						} );
+
+						return manifestTemplate.replace( '{{assets}}', files.join( '\n\t\t' ) );
+					},
+				} ),
 			],
 			optimization: {
 				minimizer: [
@@ -188,7 +236,7 @@ const webpackConfig = ( mode ) => {
 						vendor: {
 							chunks: 'initial',
 							name: 'googlesitekit-vendor',
-							filename: 'googlesitekit-vendor.js',
+							filename: 'googlesitekit-vendor.[contenthash].js',
 							enforce: true,
 							test: /[\\/]node_modules[\\/]/,
 						},

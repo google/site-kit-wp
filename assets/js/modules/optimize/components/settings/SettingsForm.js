@@ -29,12 +29,12 @@ import { STORE_NAME } from '../../datastore/constants';
 import { isValidOptimizeID } from '../../util';
 import ErrorText from '../../../../components/error-text';
 import {
-	ErrorNotice,
 	AMPExperimentJSONField,
 	OptimizeIDField,
 	UseSnippetInstructions,
 	OptimizeIDFieldInstructions,
 } from '../common/';
+import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
@@ -42,8 +42,7 @@ export default function SettingsForm() {
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
-			<ErrorNotice />
-
+			<StoreErrorNotice storeName={ STORE_NAME } />
 			<OptimizeIDFieldInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">

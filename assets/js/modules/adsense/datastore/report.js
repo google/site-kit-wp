@@ -30,6 +30,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { isValidDateRange, isValidOrders, isValidStringularItems } from '../../../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -46,8 +47,32 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
-		invariant( isPlainObject( options ), 'options must be an object.' );
 		return { options };
+	},
+	validateParams: ( { options } = {} ) => {
+		invariant( isPlainObject( options ), 'options must be an object.' );
+		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
+
+		const { orderby, metrics, dimensions } = options;
+
+		invariant(
+			isValidStringularItems( metrics ),
+			'Metrics for an AdSense report must be either a string or an array of strings.',
+		);
+
+		if ( dimensions ) {
+			invariant(
+				isValidStringularItems( dimensions ),
+				'Dimensions for an AdSense report must be either a string or an array of strings.',
+			);
+		}
+
+		if ( orderby ) {
+			invariant(
+				isValidOrders( orderby ),
+				'Orders for an AdSense report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.',
+			);
+		}
 	},
 } );
 
@@ -81,11 +106,15 @@ const baseSelectors = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {Object}         state              Data store's state.
-	 * @param {Object}         options            Optional. Options for generating the report.
-	 * @param {string}         options.dateRange  Date range slug. Default 'last-28-days'.
-	 * @param {Array.<string>} options.dimensions Dimensions to use.
-	 * @param {number}         options.limit      Maximum number of rows to include.
+	 * @param {Object}         state                Data store's state.
+	 * @param {Object}         options              Options for generating the report.
+	 * @param {string}         options.startDate    Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate      Required, unless dateRange is provided. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.dateRange    Required, alternatively to startDate and endDate. A date range string. Default 'last-28-days'.
+	 * @param {Array.<string>} options.metrics      Required. List of {@link https://developers.google.com/adsense/management/metrics-dimensions#metrics|metrics} to query.
+	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/adsense/management/metrics-dimensions#dimensions|dimensions} to group results by.
+	 * @param {Array.<Object>} [options.orderby]    Optional. Order definition objects containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default null.
+	 * @param {number}         [options.limit]      Optional. Maximum number of entries to return. Default 1000.
 	 * @return {(Array.<Object>|undefined)} An AdSense report; `undefined` if not loaded.
 	 */
 	getReport( state, options = {} ) {

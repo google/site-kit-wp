@@ -20,111 +20,99 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { map } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Component, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import Data from 'googlesitekit-data';
+import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/preview-table';
 import { getTopPagesReportDataDefaults } from '../../util';
+import { STORE_NAME } from '../../datastore/constants';
+const { useSelect } = Data;
 
-class AnalyticsDashboardWidgetTopPagesTable extends Component {
-	/**
-	 * Add a deep link to Google Analytics Dashboard.
-	 *
-	 * @param {string} url to be used in the deep link.
-	 *
-	 * @return {string} new url.
-	 */
-	static addDeepLink( url ) {
-		const {
-			accountID,
-			internalWebPropertyID,
-			profileID,
-		} = getModulesData().analytics.settings;
+const AnalyticsDashboardWidgetTopPagesTable = ( props ) => {
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{ path: `/report/content-drilldown/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath` }
+	) );
+	const { data, colspan } = props;
 
-		if ( ! accountID ) {
-			return 'https://analytics.google.com/analytics/web/';
-		}
-
-		// The pagePath param requires / to be replaced by ~2F.
-		return `https://analytics.google.com/analytics/web/#/report/content-drilldown/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
+	if ( ! data || ! data.length ) {
+		return null;
 	}
 
-	render() {
-		const { data, colspan } = this.props;
-		if ( ! data || ! data.length ) {
-			return null;
-		}
+	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+		return null;
+	}
 
-		const headers = [
-			{
-				title: __( 'Title', 'google-site-kit' ),
-				tooltip: __( 'Page Title', 'google-site-kit' ),
-				primary: true,
-			},
-			{
-				title: __( 'Pageviews', 'google-site-kit' ),
-				tooltip: __( 'Pageviews', 'google-site-kit' ),
-			},
-			{
-				title: __( 'Unique Pageviews', 'google-site-kit' ),
-				tooltip: __( 'Unique Pageviews', 'google-site-kit' ),
-			},
-			{
-				title: __( 'Bounce Rate', 'google-site-kit' ),
-				tooltip: __( 'Bounce Rate', 'google-site-kit' ),
-			},
+	const headers = [
+		{
+			title: __( 'Title', 'google-site-kit' ),
+			tooltip: __( 'Page Title', 'google-site-kit' ),
+			primary: true,
+		},
+		{
+			title: __( 'Pageviews', 'google-site-kit' ),
+			tooltip: __( 'Pageviews', 'google-site-kit' ),
+		},
+		{
+			title: __( 'Unique Pageviews', 'google-site-kit' ),
+			tooltip: __( 'Unique Pageviews', 'google-site-kit' ),
+		},
+		{
+			title: __( 'Bounce Rate', 'google-site-kit' ),
+			tooltip: __( 'Bounce Rate', 'google-site-kit' ),
+		},
+	];
+
+	const links = [];
+	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
+		const percent = Number( row.metrics[ 0 ].values[ 2 ] );
+		const [ title, url ] = row.dimensions;
+		links[ i ] = `${ baseServiceURL }:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
+		return [
+			title,
+			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
+			numberFormat( row.metrics[ 0 ].values[ 1 ] ),
+			<div className="googlesitekit-table__body-item-chart-wrap" key={ 'minichart-' + i }>{ `${ percent.toFixed( 2 ) }%` }</div>,
 		];
+	} );
 
-		const links = [];
-		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
-			const percent = Number( row.metrics[ 0 ].values[ 2 ] );
-			const [ title, url ] = row.dimensions;
-			links[ i ] = AnalyticsDashboardWidgetTopPagesTable.addDeepLink( url );
-			return [
-				title,
-				numberFormat( row.metrics[ 0 ].values[ 0 ] ),
-				numberFormat( row.metrics[ 0 ].values[ 1 ] ),
-				<Fragment key={ 'minichart-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ `${ percent.toFixed( 2 ) }%` }</div></Fragment>,
-			];
-		} );
+	const options = {
+		hideHeader: false,
+		chartsEnabled: false,
+		links,
+		hideColumns: {
+			mobile: [ 2, 3 ],
+		},
+	};
 
-		const options = {
-			hideHeader: false,
-			chartsEnabled: false,
-			links,
-			hideColumns: {
-				mobile: [ 2, 3 ],
-			},
-		};
+	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
-		const dataTable = getDataTableFromData( dataMapped, headers, options );
+	return (
+		<div className={ classnames(
+			'mdc-layout-grid__cell',
+			`mdc-layout-grid__cell--span-${ colspan }`
+		) }>
+			<TableOverflowContainer>
+				{ dataTable }
+			</TableOverflowContainer>
+		</div>
 
-		return (
-			<div className={ classnames(
-				'mdc-layout-grid__cell',
-				`mdc-layout-grid__cell--span-${ colspan }`
-			) }>
-				<TableOverflowContainer>
-					{ dataTable }
-				</TableOverflowContainer>
-			</div>
-
-		);
-	}
-}
+	);
+};
 
 AnalyticsDashboardWidgetTopPagesTable.propTypes = {
 	data: PropTypes.array,

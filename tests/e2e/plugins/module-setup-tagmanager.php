@@ -100,10 +100,11 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'modules/tagmanager/data/accounts',
 			array(
-				'methods'  => 'GET',
-				'callback' => function () use ( $accounts ) {
+				'methods'             => 'GET',
+				'callback'            => function () use ( $accounts ) {
 					return $accounts;
 				},
+				'permission_callback' => '__return_true',
 			),
 			true
 		);
@@ -112,8 +113,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'modules/tagmanager/data/accounts-containers',
 			array(
-				'methods'  => 'GET',
-				'callback' => function ( $request ) use ( $accounts, $containers ) {
+				'methods'             => 'GET',
+				'callback'            => function ( $request ) use ( $accounts, $containers ) {
 					$account_id = $request['accountID'] ?: $accounts[0]['accountId'];
 					$containers = filter_by_context( $containers, $request['usageContext'] );
 
@@ -122,6 +123,7 @@ add_action(
 						'containers' => filter_by_account_id( $containers, $account_id ),
 					);
 				},
+				'permission_callback' => '__return_true',
 			),
 			true
 		);
@@ -130,12 +132,13 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'modules/tagmanager/data/containers',
 			array(
-				'methods'  => 'GET',
-				'callback' => function ( $request ) use ( $containers ) {
+				'methods'             => 'GET',
+				'callback'            => function ( $request ) use ( $containers ) {
 					$containers = filter_by_context( $containers, $request['usageContext'] );
 
 					return filter_by_account_id( $containers, $request['accountID'] );
 				},
+				'permission_callback' => '__return_true',
 			),
 			true
 		);

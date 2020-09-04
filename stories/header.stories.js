@@ -6,14 +6,31 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import Header from '../assets/js/components/header';
-import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
+import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Global', module )
 	.add( 'Plugin Header', () => {
-		global._googlesitekitLegacyData = dashboardData;
-		global._googlesitekitLegacyData.admin.userData.picture = 'http://gravatar.com/avatar/?s=96&d=mm';
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				usingProxy: true,
+				proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/',
+				proxyPermissionsURL: 'https://sitekit.withgoogle.com/site-management/permissions/',
+				referenceSiteURL: 'http://example.com',
+				siteName: 'My Site Name',
+			} );
+			dispatch( CORE_USER ).receiveGetAuthentication( {
+				authenticated: true,
+				requiredScopes: [],
+				grantedScopes: [],
+			} );
+		};
+
 		return (
-			<Header />
+			<WithTestRegistry callback={ setupRegistry }>
+				<Header />
+			</WithTestRegistry>
 		);
 	}, {
 		options: {

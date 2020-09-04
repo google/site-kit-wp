@@ -19,7 +19,7 @@
 /**
  * Validates data that can be either string or object of the certain type, or array of them.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  *
  * @param {string|string[]|Object|Object[]} data The data to check.
  * @param {Function} verifyFunction The callback to verify an object.
@@ -45,7 +45,7 @@ export function isValidStringsOrObjects( data, verifyFunction ) {
 /**
  * Verifies that either date range or start and end dates are valid.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  *
  * @param {Object} dates           The object containing dates to check.
  * @param {string} dates.dateRange The date range to check.
@@ -65,7 +65,7 @@ export function isValidDateRange( { dateRange, startDate, endDate } ) {
  * Verifies that order definitions are valid. It can be either an object or an array
  * of objects where each object has "fieldName" and valid "sortOrder" properties.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  *
  * @param {Object|Object[]} orders The order definitions to check.
  * @return {boolean} TRUE if order definitions are valid, otherwise FALSE.
@@ -86,5 +86,25 @@ export function isValidOrders( orders ) {
 	}
 
 	// Arguably this should fail/throw, because none of our allowed types were encountered.
+	return false;
+}
+
+/**
+ * Verifies that provided parameter is either a string or an array of strings.
+ *
+ * @since 1.15.0
+ *
+ * @param {(string|Array.<string>)} items Items to validate.
+ * @return {boolean} TRUE if items are either a string or an array of strings, otherwise FALSE.
+ */
+export function isValidStringularItems( items ) {
+	if ( typeof items === 'string' ) {
+		return true;
+	}
+
+	if ( Array.isArray( items ) ) {
+		return items.every( ( item ) => typeof item === 'string' );
+	}
+
 	return false;
 }

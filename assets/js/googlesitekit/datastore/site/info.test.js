@@ -35,6 +35,8 @@ describe( 'core/site site info', () => {
 		ampMode: 'reader',
 		homeURL: 'http://something.test/homepage',
 		referenceSiteURL: 'http://something.test',
+		proxyPermissionsURL: '', // not available until site is authenticated
+		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/', // params omitted
 		siteName: 'Something Test',
 		timezone: 'America/Denver',
 		usingProxy: true,
@@ -171,21 +173,23 @@ describe( 'core/site site info', () => {
 		} );
 
 		describe.each( [
-			[ 'getAdminURL' ],
-			[ 'getAMPMode' ],
-			[ 'getCurrentEntityID' ],
-			[ 'getCurrentEntityTitle' ],
-			[ 'getCurrentEntityType' ],
-			[ 'getCurrentEntityURL' ],
-			[ 'getHomeURL' ],
-			[ 'getReferenceSiteURL' ],
-			[ 'getSiteName' ],
-			[ 'getTimezone' ],
-			[ 'isUsingProxy' ],
-			[ 'isAMP' ],
-			[ 'isPrimaryAMP' ],
-			[ 'isSecondaryAMP' ],
-		] )( `%s`, ( selector ) => {
+			[ 'getAdminURL', 'adminURL' ],
+			[ 'getAMPMode', 'ampMode' ],
+			[ 'getCurrentEntityID', 'currentEntityID' ],
+			[ 'getCurrentEntityTitle', 'currentEntityTitle' ],
+			[ 'getCurrentEntityType', 'currentEntityType' ],
+			[ 'getCurrentEntityURL', 'currentEntityURL' ],
+			[ 'getHomeURL', 'homeURL' ],
+			[ 'getReferenceSiteURL', 'referenceSiteURL' ],
+			[ 'getProxySetupURL', 'proxySetupURL' ],
+			[ 'getProxyPermissionsURL', 'proxyPermissionsURL' ],
+			[ 'getSiteName', 'siteName' ],
+			[ 'getTimezone', 'timezone' ],
+			[ 'isUsingProxy', 'usingProxy' ],
+			[ 'isAMP', 'ampMode' ],
+			[ 'isPrimaryAMP', 'ampMode' ],
+			[ 'isSecondaryAMP', 'ampMode' ],
+		] )( `%s`, ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;
 				global[ entityInfoVar ] = entityInfo;
@@ -196,6 +200,7 @@ describe( 'core/site site info', () => {
 
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
+				expect( info ).toHaveProperty( infoKey );
 				expect( info ).toEqual( { ...baseInfo, ...entityInfo, currentEntityID: 4 } );
 			} );
 

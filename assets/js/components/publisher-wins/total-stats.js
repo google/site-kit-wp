@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { extractSearchConsoleDashboardData } from '../../modules/search-console/dashboard/util';
+import { extractSearchConsoleDashboardData } from '../../modules/search-console/util';
 import { getTimeInSeconds, getDaysBetweenDates } from '../../util';
 
 const totalStats = ( data, id ) => {

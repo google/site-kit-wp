@@ -31,7 +31,7 @@ import Link from '../../../../components/link';
 import ProgressBar from '../../../../components/progress-bar';
 import { trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
-import ErrorNotice from './ErrorNotice';
+import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
@@ -39,12 +39,13 @@ export default function AccountCreateLegacy() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/provision/SignUp' } ) );
 
-	const createAccountHandler = async ( event ) => {
+	const createAccountHandler = useCallback( async ( event ) => {
 		event.preventDefault();
 		await trackEvent( 'analytics_setup', 'new_analytics_account' );
-		global.open( 'https://analytics.google.com/analytics/web/?#/provision/SignUp', '_blank' );
-	};
+		global.open( createAccountURL, '_blank' );
+	}, [ createAccountURL ] );
 
 	const { resetAccounts } = useDispatch( STORE_NAME );
 	const refetchAccountsHandler = useCallback( () => {
@@ -57,8 +58,7 @@ export default function AccountCreateLegacy() {
 
 	return (
 		<div>
-			<ErrorNotice />
-
+			<StoreErrorNotice storeName={ STORE_NAME } />
 			{ ( ! isCreateAccount && ( accounts && accounts.length === 0 ) ) && (
 				<p>
 					{ __( 'Looks like you don\'t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.', 'google-site-kit' ) }

@@ -45,9 +45,9 @@ function DashboardPageSpeedCTA() {
 		return null;
 	}
 
-	const { active, setupComplete } = pagespeedInsightsModule;
+	const { active, connected } = pagespeedInsightsModule;
 
-	if ( ! canManageOptions || ( active && setupComplete ) ) {
+	if ( ! canManageOptions || ( active && connected ) ) {
 		return null;
 	}
 
@@ -72,13 +72,13 @@ function DashboardPageSpeedCTA() {
 			mdc-layout-grid__cell--span-12
 		">
 			<CTA
-				title={ ! setupComplete && active
+				title={ ! connected && active
 					? __( 'Complete PageSpeed Insights activation.', 'google-site-kit' )
 					: __( 'Activate PageSpeed Insights.', 'google-site-kit' )
 				}
 				description={ __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.', 'google-site-kit' ) }
 				ctaLink={ '#' }
-				ctaLabel={ ! setupComplete && active
+				ctaLabel={ ! connected && active
 					? __( 'Complete activation', 'google-site-kit' )
 					: __( 'Activate PageSpeed Insights', 'google-site-kit' )
 				}

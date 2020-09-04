@@ -51,8 +51,10 @@ const fetchGetTagPermissionStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( propertyID ) => {
-		invariant( propertyID, 'propertyID is required.' );
 		return { propertyID };
+	},
+	validateParams: ( { propertyID } = {} ) => {
+		invariant( propertyID, 'propertyID is required.' );
 	},
 } );
 

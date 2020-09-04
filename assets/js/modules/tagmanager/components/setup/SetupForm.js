@@ -34,10 +34,10 @@ import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user
 import {
 	AccountSelect,
 	AMPContainerSelect,
-	ErrorNotice,
 	FormInstructions,
 	WebContainerSelect,
 } from '../common';
+import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -72,8 +72,7 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-tagmanager-setup__form"
 			onSubmit={ submitForm }
 		>
-			<ErrorNotice />
-
+			<StoreErrorNotice storeName={ STORE_NAME } />
 			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">

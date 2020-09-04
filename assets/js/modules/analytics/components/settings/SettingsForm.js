@@ -22,7 +22,6 @@
 import {
 	AccountSelect,
 	AnonymizeIPSwitch,
-	ErrorNotice,
 	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
@@ -30,12 +29,13 @@ import {
 	UseSnippetSwitch,
 	ProfileNameTextField,
 } from '../common';
+import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import { STORE_NAME } from '../../datastore/constants';
 
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
-			<ErrorNotice />
-
+			<StoreErrorNotice storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 
 			<div className="googlesitekit-setup-module__inputs">

@@ -151,7 +151,7 @@ const withData = (
 				'googlesitekit.moduleDataReset',
 				'googlesitekit.moduleDataResetHandler',
 				() => {
-					this.setState( { data: false } );
+					this.setState( { data: false, error: false, zeroData: false } );
 				}
 			);
 
@@ -198,7 +198,7 @@ const withData = (
 					handleDataSuccess();
 				}
 
-				// Resolve the returned data my setting state on the Component.
+				// Resolve the returned data by setting state on the Component.
 				this.setState( {
 					requestDataToState: toState,
 					data: returnedData,

@@ -12,11 +12,15 @@ namespace Google\Site_Kit\Tests;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screens;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Util\Entity;
 
 /**
  * @group Root
  */
 class ContextTest extends TestCase {
+	use Fake_Site_Connection_Trait;
 
 	public function test_path() {
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -152,6 +156,105 @@ class ContextTest extends TestCase {
 		// If the filtered value returns an empty value, it falls back to the home_url.
 		add_filter( 'googlesitekit_site_url', '__return_empty_string' );
 		$this->assertEquals( $home_url, $context->get_reference_site_url() );
+	}
+
+	public function test_get_reference_entity__in_admin_context() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		// The only way to change the current user in bootstrapped Site Kit class instances (e.g. Permissions)
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		// Fake setup and authentication for access to dashboard.
+		$this->fake_proxy_site_connection();
+		remove_all_filters( 'googlesitekit_setup_complete' );
+		$authentication = new Authentication( $context );
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_access_token( 'test-access-token', HOUR_IN_SECONDS );
+		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ) );
+
+		// Set admin context.
+		set_current_screen( 'dashboard' );
+		$this->assertTrue( is_admin() );
+
+		// The reference entity is null by default.
+		$this->assertNull( $context->get_reference_entity() );
+
+		// Set up a global public post.
+		$global_post_id = $this->factory()->post->create();
+		( new \WP_Query( array( 'p' => $global_post_id ) ) )->the_post();
+		$this->assertEquals( $global_post_id, get_post()->ID );
+		$this->assertNull( $context->get_reference_entity() );
+
+		// The Site Kit dashboard only references the entity from the `permaLink` query parameter.
+		$public_post_id = $this->factory()->post->create();
+		set_current_screen( 'toplevel_page_googlesitekit-dashboard' );
+		$_GET['page'] = 'googlesitekit-dashboard';
+		$this->assertNull( $context->get_reference_entity() );
+		// We can probably safely assume that 987654 is not a valid post ID in the test environment, but let's make sure.
+		$this->assertFalse( \WP_Post::get_instance( 987654 ) );
+		$_GET['permaLink'] = add_query_arg( 'p', '987654', home_url( '/' ) );
+		$this->assertNull( $context->get_reference_entity() );
+		$_GET['permaLink'] = get_permalink( $public_post_id );
+		$entity            = $context->get_reference_entity();
+		$this->assertInstanceOf( Entity::class, $entity );
+		$this->assertEquals( 'post', $entity->get_type() );
+		$this->assertEquals( $public_post_id, $entity->get_id() );
+		$this->assertEquals( get_permalink( $public_post_id ), $entity->get_url() );
+		unset( $_GET['page'], $_GET['permaLink'] );
+
+		// The post edit screen should reference the global post.
+		set_current_screen( 'post.php' );
+		$entity = $context->get_reference_entity();
+		$this->assertInstanceOf( Entity::class, $entity );
+		$this->assertEquals( 'post', $entity->get_type() );
+		$this->assertEquals( $global_post_id, $entity->get_id() );
+		$this->assertEquals( get_permalink( $global_post_id ), $entity->get_url() );
+	}
+
+	public function test_get_reference_entity__in_frontend_context() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		// By default, is_admin should be false.
+		$this->assertFalse( is_admin() );
+
+		// Since we haven't gone anywhere, the entity should be null.
+		$this->assertNull( $context->get_reference_entity() );
+
+		// Go to home page, which is the blog home by default.
+		$this->go_to( '/' );
+		$entity = $context->get_reference_entity();
+		$this->assertInstanceOf( Entity::class, $entity );
+		$this->assertEquals( 'blog', $entity->get_type() );
+		$this->assertEquals( 0, $entity->get_id() );
+		$this->assertEquals( home_url(), $entity->get_url() );
+
+		// Use a dedicated page for the blog home.
+		$blog_home_id = $this->factory()->post->create( array( 'post_type' => 'page' ) );
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_for_posts', $blog_home_id );
+		$this->go_to( get_permalink( $blog_home_id ) );
+		$entity = $context->get_reference_entity();
+		$this->assertInstanceOf( Entity::class, $entity );
+		$this->assertEquals( 'blog', $entity->get_type() );
+		$this->assertEquals( $blog_home_id, $entity->get_id() );
+		$this->assertEquals( get_permalink( $blog_home_id ), $entity->get_url() );
+
+		// Use a dedicated page for the home/front page.
+		$front_page_id = $this->factory()->post->create( array( 'post_type' => 'page' ) );
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_on_front', $front_page_id );
+		$this->go_to( get_permalink( $front_page_id ) );
+		$entity = $context->get_reference_entity();
+		$this->assertInstanceOf( Entity::class, $entity );
+		$this->assertEquals( 'post', $entity->get_type() );
+		$this->assertEquals( $front_page_id, $entity->get_id() );
+		$this->assertEquals( get_permalink( $front_page_id ), $entity->get_url() );
+
+		// Entities can only be retrieved for public posts.
+		$non_public_post_id = $this->factory()->post->create( array( 'post_status' => 'private' ) );
+		$this->go_to( get_permalink( $non_public_post_id ) );
+		$this->assertNull( $context->get_reference_entity() );
 	}
 
 	public function test_get_reference_permalink() {

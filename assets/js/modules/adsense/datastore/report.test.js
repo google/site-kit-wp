@@ -54,32 +54,34 @@ describe( 'modules/adsense report', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
+			const options = {
+				dateRange: 'last-90-days',
+				metrics: 'test',
+				dimensions: [ 'DATE' ],
+			};
+
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
 					{ body: fixtures.report, status: 200 }
 				);
 
-				const initialReport = registry.select( STORE_NAME ).getReport( {} );
+				const initialReport = registry.select( STORE_NAME ).getReport( options );
 
 				expect( initialReport ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getReport( {} ) !== undefined
+						registry.select( STORE_NAME ).getReport( options ) !== undefined
 					),
 				);
 
-				const report = registry.select( STORE_NAME ).getReport( {} );
+				const report = registry.select( STORE_NAME ).getReport( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
 			} );
 
 			it( 'does not make a network request if report for given options is already present', async () => {
-				const options = {
-					dateRange: 'last-90-days',
-				};
-
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.report, { options } );
@@ -105,11 +107,6 @@ describe( 'modules/adsense report', () => {
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
 					{ body: response, status: 500 }
 				);
-
-				const options = {
-					dateRange: 'last-90-days',
-					dimensions: [ 'DATE' ],
-				};
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getReport( options );

@@ -23,8 +23,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/auth/client-config',
 			array(
-				'methods'  => WP_REST_Server::EDITABLE,
-				'callback' => function ( WP_REST_Request $request ) {
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => function ( WP_REST_Request $request ) {
 					$credentials = array(
 						'oauth2_client_id'     => sanitize_text_field( $request['clientID'] ),
 						'oauth2_client_secret' => sanitize_text_field( $request['clientSecret'] ),
@@ -37,6 +37,7 @@ add_action(
 
 					return array( 'success' => true );
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 	},

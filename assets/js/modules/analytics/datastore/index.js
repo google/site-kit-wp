@@ -28,6 +28,7 @@ import profiles from './profiles';
 import report from './report';
 import settings from './settings';
 import tags from './tags';
+import service from './service';
 import { STORE_NAME } from './constants';
 
 export { STORE_NAME };
@@ -42,6 +43,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 		'internalWebPropertyID',
 		'useSnippet',
 		'trackingDisabled',
+		'ownerID',
 	],
 	adminPage: 'googlesitekit-module-analytics',
 } );
@@ -55,6 +57,7 @@ const store = Data.combineStores(
 	settings,
 	createSnapshotStore( STORE_NAME ),
 	tags,
+	service
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;

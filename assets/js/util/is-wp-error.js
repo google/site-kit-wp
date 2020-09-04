@@ -24,7 +24,7 @@ import isPlainObject from 'lodash/isPlainObject';
 /**
  * Checks if the provided object is an instance of WP_Error class.
  *
- * @since n.e.x.t
+ * @since 1.13.0
  *
  * @param {Object} obj The object to check.
  * @return {boolean} TRUE if the object has "code", "data" and "message" properties, otherwise FALSE.

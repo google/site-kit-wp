@@ -107,9 +107,6 @@ class AuthenticationTest extends TestCase {
 			array(
 				'connectURL',
 				'disconnectURL',
-				'proxySetupURL',
-				'proxyPermissionsURL',
-				'userData',
 			),
 			array_keys( $data )
 		);
@@ -123,7 +120,6 @@ class AuthenticationTest extends TestCase {
 				'grantedScopes',
 				'hasSearchConsoleProperty',
 				'isAuthenticated',
-				'isFirstAdmin',
 				'isSiteKitConnected',
 				'isVerified',
 				'moduleToSetup',

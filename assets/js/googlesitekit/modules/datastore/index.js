@@ -22,12 +22,14 @@
 import Data from 'googlesitekit-data';
 import modules from './modules';
 import { STORE_NAME } from './constants';
+import { createErrorStore } from '../../data/create-error-store';
 
 export { STORE_NAME };
 
 const store = Data.combineStores(
 	Data.commonStore,
 	modules,
+	createErrorStore(),
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;
