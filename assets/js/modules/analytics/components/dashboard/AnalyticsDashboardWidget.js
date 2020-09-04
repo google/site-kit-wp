@@ -35,10 +35,10 @@ import Header from '../../../../components/header';
 import AnalyticsDashboardWidgetSiteStats from './AnalyticsDashboardWidgetSiteStats';
 import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTopPagesTable';
 import AnalyticsDashboardWidgetOverview from './AnalyticsDashboardWidgetOverview';
-import AnalyticsDashboardWidgetTopAcquisitionSources from './AnalyticsDashboardWidgetTopAcquisitionSources';
+import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import Layout from '../../../../components/layout/layout';
 import PageHeader from '../../../../components/page-header';
-import DashboardAcquisitionPieChart from './DashboardAcquisitionPieChart';
+import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
 import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/progress-bar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
@@ -252,7 +252,7 @@ class AnalyticsDashboardWidget extends Component {
 												mdc-layout-grid__cell--span-8-tablet
 												mdc-layout-grid__cell--span-4-phone
 											">
-												<DashboardAcquisitionPieChart />
+												<LegacyDashboardAcquisitionPieChart />
 											</div>
 											<div className="
 												mdc-layout-grid__cell
@@ -260,7 +260,7 @@ class AnalyticsDashboardWidget extends Component {
 												mdc-layout-grid__cell--span-8-tablet
 												mdc-layout-grid__cell--span-4-phone
 											">
-												<AnalyticsDashboardWidgetTopAcquisitionSources />
+												<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
 											</div>
 										</div>
 									</div>

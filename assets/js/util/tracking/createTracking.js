@@ -18,9 +18,10 @@ const DEFAULT_CONFIG = {
  *
  * @param {Object} newConfig New configuration.
  * @param {Object} dataLayerTarget Data layer parent object.
+ * @param {Object} _global The global window object.
  * @return {Object} Tracking config.
  */
-export default function createTracking( newConfig, dataLayerTarget = global ) {
+export default function createTracking( newConfig, dataLayerTarget = global, _global = global ) {
 	const config = {
 		...DEFAULT_CONFIG,
 		...newConfig,
@@ -38,6 +39,6 @@ export default function createTracking( newConfig, dataLayerTarget = global ) {
 		isTrackingEnabled: function isTrackingEnabled() {
 			return !! config.trackingEnabled;
 		},
-		trackEvent: createTrackEvent( config, dataLayerTarget ),
+		trackEvent: createTrackEvent( config, dataLayerTarget, _global ),
 	};
 }

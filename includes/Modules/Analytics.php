@@ -22,6 +22,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
@@ -67,8 +69,8 @@ use Exception;
  * @ignore
  */
 final class Analytics extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Admin_Bar, Module_With_Debug_Fields {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait;
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Admin_Bar, Module_With_Debug_Fields, Module_With_Owner {
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
@@ -104,15 +106,15 @@ final class Analytics extends Module
 			}
 		);
 
-		add_action(
-			'wp_head',
-			function () {
-				if ( $this->is_tracking_disabled() ) {
-					$this->print_tracking_opt_out();
-				}
-			},
-			0
-		);
+		$print_tracking_opt_out = function () {
+			if ( $this->is_tracking_disabled() ) {
+				$this->print_tracking_opt_out();
+			}
+		};
+		// For non-AMP and AMP.
+		add_action( 'wp_head', $print_tracking_opt_out, 0 );
+		// For Web Stories plugin.
+		add_action( 'web_stories_story_head', $print_tracking_opt_out, 0 );
 
 		// Analytics tag placement logic.
 		add_action(
@@ -393,6 +395,12 @@ final class Analytics extends Module
 		wp_add_inline_script(
 			'google_gtagjs',
 			'gtag(\'js\', new Date());'
+		);
+
+		// Site Kit developer ID.
+		wp_add_inline_script(
+			'google_gtagjs',
+			'gtag(\'set\', \'developer_id.dZTNiMT\', true);'
 		);
 
 		if ( empty( $gtag_opt ) ) {
