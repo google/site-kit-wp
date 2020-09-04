@@ -56,6 +56,7 @@ class Button extends Component {
 			ariaHaspopup,
 			ariaExpanded,
 			ariaControls,
+			...extraProps
 		} = this.props;
 
 		// Use a button if disabled, even if a href is provided to ensure expected behavior.
@@ -81,6 +82,7 @@ class Button extends Component {
 				aria-expanded={ ariaExpanded }
 				aria-controls={ ariaControls }
 				role={ 'a' === SemanticButton ? 'button' : undefined }
+				{ ...extraProps }
 			>
 				{ icon }
 				<span className="mdc-button__label">{ children }</span>
