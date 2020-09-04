@@ -756,33 +756,35 @@ describe( 'data utils', () => {
 			strictSelectors = strictSelect( STORE_NAME );
 		} );
 
-		it( 'provides all the same selectors as registry.select', () => {
-			const regularSelectors = registry.select( STORE_NAME );
-			expect( Object.keys( strictSelectors ) ).toEqual( Object.keys( regularSelectors ) );
-		} );
+		describe( 'strictSelect', () => {
+			it( 'provides all the same selectors as registry.select', () => {
+				const regularSelectors = registry.select( STORE_NAME );
+				expect( Object.keys( strictSelectors ) ).toEqual( Object.keys( regularSelectors ) );
+			} );
 
-		it( 'throws an error if a strict selector returns undefined', () => {
-			expect( registry.select( STORE_NAME ).getFoo() ).toBeUndefined();
-			expect( () => strictSelectors.getFoo() ).toThrow( 'getFoo(...) is not resolved' );
-		} );
+			it( 'throws an error if a strict selector returns undefined', () => {
+				expect( registry.select( STORE_NAME ).getFoo() ).toBeUndefined();
+				expect( () => strictSelectors.getFoo() ).toThrow( 'getFoo(...) is not resolved' );
+			} );
 
-		it( 'does not throw an error if a strict selector returns any other falsy value', () => {
-			registry.dispatch( STORE_NAME ).receiveFoo( null );
-			expect( strictSelectors.getFoo() ).toBe( null );
+			it( 'does not throw an error if a strict selector returns any other falsy value', () => {
+				registry.dispatch( STORE_NAME ).receiveFoo( null );
+				expect( strictSelectors.getFoo() ).toBe( null );
 
-			registry.dispatch( STORE_NAME ).receiveFoo( false );
-			expect( strictSelectors.getFoo() ).toBe( false );
+				registry.dispatch( STORE_NAME ).receiveFoo( false );
+				expect( strictSelectors.getFoo() ).toBe( false );
 
-			registry.dispatch( STORE_NAME ).receiveFoo( '' );
-			expect( strictSelectors.getFoo() ).toBe( '' );
+				registry.dispatch( STORE_NAME ).receiveFoo( '' );
+				expect( strictSelectors.getFoo() ).toBe( '' );
 
-			registry.dispatch( STORE_NAME ).receiveFoo( 0 );
-			expect( strictSelectors.getFoo() ).toBe( 0 );
-		} );
+				registry.dispatch( STORE_NAME ).receiveFoo( 0 );
+				expect( strictSelectors.getFoo() ).toBe( 0 );
+			} );
 
-		it( 'only generates strict selectors once for each store', () => {
-			expect( strictSelect( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
-			expect( createStrictSelect( registry.select )( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
+			it( 'only generates strict selectors once for each store', () => {
+				expect( strictSelect( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
+				expect( createStrictSelect( registry.select )( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
+			} );
 		} );
 	} );
 } );
