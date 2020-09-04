@@ -61,7 +61,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { submitChanges, receiveError } = useDispatch( STORE_NAME );
 	const dispatchAnalytics = useDispatch( MODULES_ANALYTICS );
-	const submitForm = useCallback( async ( { submitMode } ) => { // eslint-disable-line no-shadow
+	const submitForm = useCallback( async ( { submitMode } = {} ) => { // eslint-disable-line no-shadow
 		// We'll use form state to persist the chosen submit choice
 		// in order to preserve support for auto-submit.
 		setValues( FORM_SETUP, { submitMode } );
@@ -107,11 +107,17 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 		}
 	}, [ hasEditScope, autoSubmit, submitForm, submitMode ] );
 
+	const isSetupWithAnalytics = !! ( gtmAnalyticsPropertyID && ! analyticsModuleActive );
+
 	// Form submit behavior now varies based on which button is clicked.
+	// Only the main buttons will trigger the form submit so here we only handle the default action.
 	const onSubmit = useCallback( ( event ) => {
 		event.preventDefault();
-		submitForm( { submitMode: event.nativeEvent.submitter.dataset.submitMode } );
-	}, [ submitForm ] );
+		const mode = isSetupWithAnalytics ? 'with_analytics_setup' : '';
+		submitForm( { submitMode: mode } );
+	}, [ submitForm, isSetupWithAnalytics ] );
+	// Click handler for secondary option when setting up with option to include Analytics.
+	const onSetupWithoutAnalytics = useCallback( () => submitForm(), [ submitForm ] );
 
 	return (
 		<form
@@ -130,16 +136,19 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 			</div>
 
 			<div className="googlesitekit-setup-module__action">
-				{ gtmAnalyticsPropertyID && ! analyticsModuleActive && (
+				{ isSetupWithAnalytics && (
 					<Fragment>
-						<Button
-							data-submit-mode="with_analytics_setup"
-							disabled={ ! canSubmitChanges }
-						>
+						<Button disabled={ ! canSubmitChanges }>
 							{ __( 'Continue to Analytics setup', 'google-site-kit' ) }
 						</Button>
+						{ /*
+						This "link" below will be rendered as a <button> but should not
+						trigger a form submit when clicked, hence the `type="button"`.
+						*/ }
 						<Link
 							className="googlesitekit-setup-module__sub-action"
+							type="button"
+							onClick={ onSetupWithoutAnalytics }
 							disabled={ ! canSubmitChanges }
 							inherit
 						>
@@ -147,7 +156,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 						</Link>
 					</Fragment>
 				) }
-				{ ( ! gtmAnalyticsPropertyID || analyticsModuleActive ) && (
+				{ ! isSetupWithAnalytics && (
 					<Button disabled={ ! canSubmitChanges }>
 						{ __( 'Confirm & Continue', 'google-site-kit' ) }
 					</Button>
