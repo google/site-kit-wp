@@ -135,7 +135,6 @@ module.exports = {
 									return;
 								}
 
-								// console.log( 'ERR', node.parent.object.object.name );
 								report( node );
 							}
 						} );
