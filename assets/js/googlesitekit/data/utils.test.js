@@ -779,5 +779,10 @@ describe( 'data utils', () => {
 			registry.dispatch( STORE_NAME ).receiveFoo( 0 );
 			expect( strictSelectors.getFoo() ).toBe( 0 );
 		} );
+
+		it( 'only generates strict selectors once for each store', () => {
+			expect( strictSelect( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
+			expect( createStrictSelect( registry.select )( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
+		} );
 	} );
 } );

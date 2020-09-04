@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import mapValues from 'lodash/mapValues';
+import memize from 'memize';
 
 /**
  * WordPress dependencies
@@ -306,12 +307,17 @@ export const commonStore = {
  * @return {Function} The strict version of registry.select.
  */
 export const createStrictSelect = ( select ) => ( storeName ) => {
-	return mapValues(
-		select( storeName ),
+	return getStrictSelectors( select( storeName ) );
+};
+
+// Based on {@link https://github.com/WordPress/gutenberg/blob/b1c8026087dfb026eff0a023a5f7febe28c876de/packages/data/src/registry.js#L91}
+const getStrictSelectors = memize(
+	( selectors ) => mapValues(
+		selectors,
 		( selector, selectorName ) => ( ...args ) => {
 			const returnValue = selector( ...args );
 			invariant( returnValue !== undefined, `${ selectorName }(...) is not resolved` );
 			return returnValue;
 		}
-	);
-};
+	)
+);
