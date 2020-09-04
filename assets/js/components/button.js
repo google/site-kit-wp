@@ -42,7 +42,6 @@ class Button extends Component {
 
 	render() {
 		const {
-			onClick,
 			children,
 			href,
 			text,
@@ -50,7 +49,6 @@ class Button extends Component {
 			danger,
 			disabled,
 			target,
-			id,
 			icon,
 			trailingIcon,
 			ariaHaspopup,
@@ -72,12 +70,10 @@ class Button extends Component {
 						'mdc-button--danger': danger,
 					}
 				) }
-				onClick={ onClick }
 				href={ disabled ? undefined : href }
 				ref={ this.buttonRef }
 				disabled={ !! disabled }
 				target={ target || '_self' }
-				id={ id }
 				aria-haspopup={ ariaHaspopup }
 				aria-expanded={ ariaExpanded }
 				aria-controls={ ariaControls }
