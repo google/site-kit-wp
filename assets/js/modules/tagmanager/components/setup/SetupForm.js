@@ -50,7 +50,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup, setIsNavigating } ) {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
-	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
+	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const analyticsModuleReauthURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAdminReauthURL() );
@@ -75,7 +75,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 			setValues( FORM_SETUP, { autoSubmit: false } );
 			// If the property ID is set in GTM and Analytics is active,
 			// we disable the snippet output via Analyics to prevent duplicate measurement.
-			if ( gtmAnalyticsPropertyID && analyticsModuleActive ) {
+			if ( singleAnalyticsPropertyID && analyticsModuleActive ) {
 				dispatchAnalytics.setUseSnippet( false );
 				const saveAnalyticsSettings = await dispatchAnalytics.saveSettings();
 				if ( saveAnalyticsSettings.error ) {
@@ -98,7 +98,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 			}
 			finishSetup();
 		}
-	}, [ finishSetup, dispatchAnalytics, gtmAnalyticsPropertyID, analyticsModuleActive, analyticsModuleReauthURL, receiveError ] );
+	}, [ finishSetup, dispatchAnalytics, singleAnalyticsPropertyID, analyticsModuleActive, analyticsModuleReauthURL, receiveError ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
@@ -108,7 +108,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 		}
 	}, [ hasEditScope, initialAutoSubmit, submitForm, initialSubmitMode ] );
 
-	const isSetupWithAnalytics = !! ( gtmAnalyticsPropertyID && ! analyticsModuleActive );
+	const isSetupWithAnalytics = !! ( singleAnalyticsPropertyID && ! analyticsModuleActive );
 
 	// Form submit behavior now varies based on which button is clicked.
 	// Only the main buttons will trigger the form submit so here we only handle the default action.
