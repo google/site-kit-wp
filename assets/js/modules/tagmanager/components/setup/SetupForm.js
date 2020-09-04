@@ -73,7 +73,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 			setValues( FORM_SETUP, { autoSubmit: true } );
 		} else if ( ! error ) {
 			setValues( FORM_SETUP, { autoSubmit: false } );
-			// If the property ID is set in GTM and Analytics is active,
+			// If a singular property ID is set in the container(s) and Analytics is active,
 			// we disable the snippet output via Analyics to prevent duplicate measurement.
 			if ( singleAnalyticsPropertyID && analyticsModuleActive ) {
 				dispatchAnalytics.setUseSnippet( false );
