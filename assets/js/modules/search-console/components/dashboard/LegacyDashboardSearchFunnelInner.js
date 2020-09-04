@@ -1,7 +1,7 @@
 /**
- * PageSpeed Insights Settings components.
+ * LegacyDashboardSearchFunnelInner component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,5 +16,16 @@
  * limitations under the License.
  */
 
-export { default as SettingsMain } from './SettingsMain';
-export { default as SettingsView } from './SettingsView';
+/**
+ * WordPress dependencies
+ */
+import { withFilters } from '@wordpress/components';
+import { Component } from '@wordpress/element';
+
+class LegacyDashboardSearchFunnelInner extends Component {
+	render() {
+		return null;
+	}
+}
+
+export default withFilters( 'googlesitekit.DashboardSearchFunnel' )( LegacyDashboardSearchFunnelInner );

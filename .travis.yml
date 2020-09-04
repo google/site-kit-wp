@@ -90,6 +90,7 @@ script:
     fi
 
 jobs:
+  fast_finish: true
   allow_failures:
     - env: PHP=1 WP_VERSION=nightly
     - env: E2E=1 WP_VERSION=nightly
