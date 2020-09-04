@@ -45,6 +45,7 @@ class Link extends Component {
 			danger,
 			disabled,
 			id,
+			...extraProps
 		} = this.props;
 		// Note: the disabled attribute does not alter behavior of anchor tags,
 		// so if disabled we force it to be a button.
@@ -75,6 +76,7 @@ class Link extends Component {
 				rel={ external ? 'noopener noreferrer' : undefined }
 				disabled={ disabled }
 				dangerouslySetInnerHTML={ dangerouslySetInnerHTML }
+				{ ...extraProps }
 			>
 				{ children }
 			</SemanticLink>
