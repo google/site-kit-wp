@@ -44,10 +44,9 @@ export default function SetupFormInstructions() {
 
 	// Multiple property IDs implies secondary AMP where selected containers don't reference the same Analytics property ID.
 	if ( hasMultipleAnalyticsPropertyIDs ) {
-		/* translators: %1$s: GTM Analytics property ID, %2$s: Analytics property ID */
 		const message = __( 'Looks like you’re already using Google Analytics within your Google Tag Manager configurations. However, the configured Analytics tags reference different property IDs. You need to configure the same Analytics property in both containers.', 'google-site-kit' );
 
-		return <ErrorText message={ sprintf( message, gtmAnalyticsPropertyID, analyticsPropertyID ) } />;
+		return <ErrorText message={ message } />;
 	}
 
 	if ( analyticsModuleActive ) {
