@@ -55,12 +55,7 @@ export default function SetupMain( { finishSetup } ) {
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 
-	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
 	const [ isNavigating, setIsNavigating ] = useState( false );
-	const finishSetupAndNavigate = ( ...args ) => {
-		finishSetup( ...args );
-		setIsNavigating( true );
-	};
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
@@ -72,7 +67,7 @@ export default function SetupMain( { finishSetup } ) {
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreate />;
 	} else {
-		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } setIsNavigating={ setIsNavigating } />;
+		viewComponent = <SetupForm finishSetup={ finishSetup } setIsNavigating={ setIsNavigating } />;
 	}
 
 	return (

@@ -42,9 +42,9 @@ import {
 	AMPContainerSelect,
 	WebContainerSelect,
 } from '../common';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 import Button from '../../../../components/button';
 import Link from '../../../../components/link';
+import SetupErrorNotice from './SetupErrorNotice';
 import SetupFormInstructions from './SetupFormInstructions';
 const { useSelect, useDispatch } = Data;
 
@@ -60,45 +60,44 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
-	const { submitChanges, receiveError } = useDispatch( STORE_NAME );
+	const { submitChanges } = useDispatch( STORE_NAME );
 	const dispatchAnalytics = useDispatch( MODULES_ANALYTICS );
 	const submitForm = useCallback( async ( { submitMode } = {} ) => {
 		// We'll use form state to persist the chosen submit choice
 		// in order to preserve support for auto-submit.
 		setValues( FORM_SETUP, { submitMode } );
 
-		const { error } = await submitChanges();
+		const { error: submitChangesError } = await submitChanges();
 
-		if ( isPermissionScopeError( error ) ) {
+		if ( isPermissionScopeError( submitChangesError ) ) {
 			setValues( FORM_SETUP, { autoSubmit: true } );
-		} else if ( ! error ) {
+		} else if ( ! submitChangesError ) {
 			setValues( FORM_SETUP, { autoSubmit: false } );
 			// If a singular property ID is set in the container(s) and Analytics is active,
 			// we disable the snippet output via Analyics to prevent duplicate measurement.
 			if ( singleAnalyticsPropertyID && analyticsModuleActive ) {
 				dispatchAnalytics.setUseSnippet( false );
-				const saveAnalyticsSettings = await dispatchAnalytics.saveSettings();
-				if ( saveAnalyticsSettings.error ) {
-					receiveError( saveAnalyticsSettings.error );
+				const { error } = await dispatchAnalytics.saveSettings();
+				if ( error ) {
 					return;
 				}
 			}
 			// If submitting with Analytics setup, and Analytics is not active,
 			// activate it, and navigate to its reauth/setup URL to proceed with its setup.
 			if ( submitMode === 'with_analytics_setup' && ! analyticsModuleActive ) {
-				setIsNavigating( true );
-				const activateAnalytics = await activateModule( 'analytics' );
-				if ( activateAnalytics.error ) {
-					receiveError( activateAnalytics.error );
+				const { error } = await activateModule( 'analytics' );
+				if ( error ) {
 					return;
 				}
+				setIsNavigating( true );
 				global.location.assign( analyticsModuleReauthURL );
 				// Don't call finishSetup as this navigates to a different location.
 				return;
 			}
+			setIsNavigating( true );
 			finishSetup();
 		}
-	}, [ finishSetup, dispatchAnalytics, singleAnalyticsPropertyID, analyticsModuleActive, analyticsModuleReauthURL, receiveError ] );
+	}, [ finishSetup, dispatchAnalytics, singleAnalyticsPropertyID, analyticsModuleActive, analyticsModuleReauthURL ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
@@ -125,7 +124,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 			className="googlesitekit-tagmanager-setup__form"
 			onSubmit={ onSubmit }
 		>
-			<StoreErrorNotice storeName={ STORE_NAME } />
+			<SetupErrorNotice />
 			<SetupFormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
