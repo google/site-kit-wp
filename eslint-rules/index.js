@@ -57,7 +57,6 @@ module.exports = {
 				}
 
 				return {
-					// eslint-disable-next-line sitekit/camelcase-acronyms
 					Identifier( node ) {
 						const name = node.name;
 
