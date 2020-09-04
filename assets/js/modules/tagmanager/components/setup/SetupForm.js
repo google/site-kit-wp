@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_SETUP, EDIT_SCOPE } from '../../datastore/constants';
+import { STORE_NAME, FORM_SETUP, EDIT_SCOPE, SETUP_MODE_WITH_ANALYTICS } from '../../datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -89,7 +89,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 
 			// If submitting with Analytics setup, and Analytics is not active,
 			// activate it, and navigate to its reauth/setup URL to proceed with its setup.
-			if ( submitMode === 'with_analytics_setup' && ! analyticsModuleActive ) {
+			if ( submitMode === SETUP_MODE_WITH_ANALYTICS && ! analyticsModuleActive ) {
 				await throwOnError( () => activateModule( 'analytics' ) );
 
 				global.location.assign( analyticsModuleReauthURL );
@@ -121,7 +121,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 	// Only the main buttons will trigger the form submit so here we only handle the default action.
 	const onSubmit = useCallback( ( event ) => {
 		event.preventDefault();
-		const submitMode = isSetupWithAnalytics ? 'with_analytics_setup' : '';
+		const submitMode = isSetupWithAnalytics ? SETUP_MODE_WITH_ANALYTICS : '';
 		submitForm( { submitMode } );
 	}, [ submitForm, isSetupWithAnalytics ] );
 	// Click handler for secondary option when setting up with option to include Analytics.
