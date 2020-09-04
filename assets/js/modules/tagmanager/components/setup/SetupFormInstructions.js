@@ -53,7 +53,7 @@ export default function SetupFormInstructions() {
 		// If the Analytics module is active, and selected containers reference a different property ID
 		// than is currently set in the Analytics module, display an error explaining why the user is blocked.
 		if ( singleAnalyticsPropertyID && singleAnalyticsPropertyID !== analyticsPropertyID ) {
-			/* translators: %1$s: GTM Analytics property ID, %2$s: Analytics property ID */
+			/* translators: %1$s: Tag Manager Analytics property ID, %2$s: Analytics property ID */
 			const message = __( 'Looks like you’re already using Google Analytics within your Google Tag Manager configuration. However, its Analytics property %1$s is different from the Analytics property %2$s, which is currently selected in the plugin. You need to configure the same Analytics property in both places.', 'google-site-kit' );
 
 			return <ErrorText message={ sprintf( message, singleAnalyticsPropertyID, analyticsPropertyID ) } />;
