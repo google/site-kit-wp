@@ -25,13 +25,13 @@ import {
 	buildLiveContainerVersionAMP,
 } from './builders';
 
-export const parseLiveContainerVersionIDs = ( { accountId, containerId, container: { publicId } }, callback ) => {
+export const parseLiveContainerVersionIDs = ( { accountId, containerId, container }, callback ) => { // Capitalization rule exception: accountId, containerId
 	const ids = {
-		accountID: accountId,
-		containerID: publicId,
-		ampContainerID: publicId,
-		internalContainerID: containerId,
-		internalAMPContainerID: containerId,
+		accountID: accountId, // Capitalization rule exception: accountId
+		containerID: container.publicId, // Capitalization rule exception: publicId
+		ampContainerID: container.publicId, // Capitalization rule exception: publicId
+		internalContainerID: containerId, // Capitalization rule exception: containerId
+		internalAMPContainerID: containerId, // Capitalization rule exception: containerId
 	};
 	if ( callback ) {
 		callback( ids );
