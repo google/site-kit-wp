@@ -53,15 +53,16 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
-	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
-	const submitMode = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ) );
 	const analyticsModuleReauthURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAdminReauthURL() );
+	// Only select the initial autosubmit + submitMode once from form state which will already be set if a snapshot was restored.
+	const initialAutoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ), [] );
+	const initialSubmitMode = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ), [] );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { submitChanges, receiveError } = useDispatch( STORE_NAME );
 	const dispatchAnalytics = useDispatch( MODULES_ANALYTICS );
-	const submitForm = useCallback( async ( { submitMode } = {} ) => { // eslint-disable-line no-shadow
+	const submitForm = useCallback( async ( { submitMode } = {} ) => {
 		// We'll use form state to persist the chosen submit choice
 		// in order to preserve support for auto-submit.
 		setValues( FORM_SETUP, { submitMode } );
@@ -102,10 +103,10 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
-		if ( autoSubmit && hasEditScope ) {
-			submitForm( { submitMode } );
+		if ( initialAutoSubmit && hasEditScope ) {
+			submitForm( { submitMode: initialSubmitMode } );
 		}
-	}, [ hasEditScope, autoSubmit, submitForm, submitMode ] );
+	}, [ hasEditScope, initialAutoSubmit, submitForm, initialSubmitMode ] );
 
 	const isSetupWithAnalytics = !! ( gtmAnalyticsPropertyID && ! analyticsModuleActive );
 
@@ -113,8 +114,8 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 	// Only the main buttons will trigger the form submit so here we only handle the default action.
 	const onSubmit = useCallback( ( event ) => {
 		event.preventDefault();
-		const mode = isSetupWithAnalytics ? 'with_analytics_setup' : '';
-		submitForm( { submitMode: mode } );
+		const submitMode = isSetupWithAnalytics ? 'with_analytics_setup' : '';
+		submitForm( { submitMode } );
 	}, [ submitForm, isSetupWithAnalytics ] );
 	// Click handler for secondary option when setting up with option to include Analytics.
 	const onSetupWithoutAnalytics = useCallback( () => submitForm(), [ submitForm ] );
