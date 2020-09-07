@@ -308,6 +308,26 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 
 		return <Setup registry={ registry } />;
 	} )
+	.add( 'Multiple property IDs, Analytics active', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const ampContainerVersion = fixtures.liveContainerVersions.amp.noGA;
+		const accountID = webContainerVersion.accountId;
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			webContainerVersion.container,
+			ampContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+		} );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
+		const activeModules = modulesFixtures.withActive( 'tagmanager', 'analytics' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+
+		return <Setup registry={ registry } />;
+	} )
 	.add( 'Singular property ID, Analytics active, ID match', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
