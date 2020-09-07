@@ -43,8 +43,6 @@ import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/progress-bar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import AdSenseDashboardOutro from '../../../adsense/components/dashboard/AdSenseDashboardOutro';
-import { isAdsenseConnectedAnalytics } from '../../../adsense/util';
 import { getCurrentDateRange } from '../../../../util/date-range';
 import HelpLink from '../../../../components/help-link';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -59,31 +57,12 @@ class AnalyticsDashboardWidget extends Component {
 			receivingData: true,
 			error: false,
 			loading: true,
-			isAdSenseConnected: true,
 		};
 
 		this.handleStatSelection = this.handleStatSelection.bind( this );
 		this.buildSeries = this.buildSeries.bind( this );
 		this.handleDataError = this.handleDataError.bind( this );
 		this.handleDataSuccess = this.handleDataSuccess.bind( this );
-	}
-
-	componentDidMount() {
-		this.isAdSenseConnected();
-	}
-
-	async isAdSenseConnected() {
-		const adsenseConnect = await isAdsenseConnectedAnalytics();
-
-		if ( adsenseConnect ) {
-			this.setState( {
-				isAdSenseConnected: true,
-			} );
-		} else {
-			this.setState( {
-				isAdSenseConnected: false,
-			} );
-		}
 	}
 
 	handleStatSelection( stat ) {
@@ -153,7 +132,6 @@ class AnalyticsDashboardWidget extends Component {
 			errorObj,
 			receivingData,
 			loading,
-			isAdSenseConnected,
 		} = this.state;
 
 		const {
@@ -276,9 +254,6 @@ class AnalyticsDashboardWidget extends Component {
 						</div>
 					</div>
 				</div>
-				{ ! loading && ! isAdSenseConnected &&
-					<AdSenseDashboardOutro />
-				}
 			</Fragment>
 		);
 	}
