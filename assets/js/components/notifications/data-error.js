@@ -24,7 +24,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { showErrorNotification } from '../../util';
+import { showErrorNotification, getModulesData } from '../../util';
 import { isInsufficientPermissionsError } from '../../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../../util/insufficient-permissions-error-description';
 import ErrorText from '../error-text';
@@ -35,6 +35,7 @@ import InvalidCredentialsWarning from './invalid-credentials-warning';
 /**
  * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
  *
+ * @param {string}  moduleSlug Module slug.
  * @param {string}  moduleName Name of module, translated.
  * @param {string}  error      Description of error.
  * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.
@@ -44,7 +45,7 @@ import InvalidCredentialsWarning from './invalid-credentials-warning';
  *
  * @return {WPElement} CTA component with data error message.
  */
-const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = false, createGrid = false, errorObj = {} ) => {
+function getDataErrorComponent( moduleSlug, moduleName, error, inGrid = false, fullWidth = false, createGrid = false, errorObj = {} ) {
 	/* translators: %s: module name */
 	let title = sprintf( __( 'Data error in %s', 'google-site-kit' ), moduleName );
 	let message = error;
@@ -52,7 +53,9 @@ const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = f
 	if ( isInsufficientPermissionsError( errorObj ) ) {
 		/* translators: %s: module name */
 		title = sprintf( __( 'Insufficient permissions in %s', 'google-site-kit' ), moduleName );
-		message = getInsufficientPermissionsErrorDescription( message, moduleName );
+
+		const modulesData = getModulesData();
+		message = getInsufficientPermissionsErrorDescription( message, moduleName, modulesData[ moduleSlug ]?.owner );
 	}
 
 	const reconnectUrl = errorObj?.data?.reconnectURL;
@@ -65,6 +68,6 @@ const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = f
 	}
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
-};
+}
 
 export default getDataErrorComponent;

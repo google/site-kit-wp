@@ -31,7 +31,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * @param {string} ownerName Module owner name.
  * @return {string} Error description.
  */
-export function getInsufficientPermissionsErrorDescription( error, moduleName, ownerName = '' ) {
+export function getInsufficientPermissionsErrorDescription( error, moduleName, ownerName ) {
 	let message = '';
 	let userInfo = '';
 

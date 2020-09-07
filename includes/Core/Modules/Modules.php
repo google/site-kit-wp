@@ -129,7 +129,15 @@ final class Modules {
 					$data[ $module->slug ]['setupComplete'] = $data[ $module->slug ]['active'] && $this->is_module_connected( $module->slug );
 					$data[ $module->slug ]['dependencies']  = $this->get_module_dependencies( $module->slug );
 					$data[ $module->slug ]['dependants']    = $this->get_module_dependants( $module->slug );
+
+					if ( $module instanceof Module_With_Owner ) {
+						$owner_id = $module->get_owner_id();
+						if ( $owner_id ) {
+							$data[ $module->slug ]['owner'] = get_the_author_meta( 'display_name', $owner_id );
+						}
+					}
 				}
+
 				return $data;
 			}
 		);
