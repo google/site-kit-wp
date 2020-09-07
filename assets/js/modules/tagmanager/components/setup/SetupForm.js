@@ -69,7 +69,11 @@ export default function SetupForm( { finishSetup } ) {
 
 	return (
 		<form className="googlesitekit-tagmanager-setup__form" onSubmit={ submitForm }>
-			<StoreErrorNotice moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+			<StoreErrorNotice
+				module="tagmanager"
+				moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
+				storeName={ STORE_NAME }
+			/>
 
 			<FormInstructions />
 

@@ -135,7 +135,11 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			<StoreErrorNotice moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+			<StoreErrorNotice
+				module="analytics"
+				moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				storeName={ STORE_NAME }
+			/>
 
 			<h3 className="googlesitekit-heading-4">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }

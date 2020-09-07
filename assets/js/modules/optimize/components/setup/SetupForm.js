@@ -59,7 +59,11 @@ export default function SetupForm( { finishSetup } ) {
 
 	return (
 		<form className="googlesitekit-optimize-setup__form" onSubmit={ submitForm }>
-			<StoreErrorNotice moduleName={ _x( 'Optimize', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+			<StoreErrorNotice
+				module="optimize"
+				moduleName={ _x( 'Optimize', 'Service name', 'google-site-kit' ) }
+				storeName={ STORE_NAME }
+			/>
 
 			<OptimizeIDFieldInstructions />
 

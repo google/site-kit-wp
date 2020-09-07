@@ -56,7 +56,11 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			<StoreErrorNotice moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+			<StoreErrorNotice
+				module="tagmanager"
+				moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
+				storeName={ STORE_NAME }
+			/>
 
 			<p>
 				{ __( 'To create a new account, click the button below which will open the Google Tag Manager account creation screen in a new window.', 'google-site-kit' ) }

@@ -58,7 +58,11 @@ export default function AccountCreateLegacy() {
 
 	return (
 		<div>
-			<StoreErrorNotice moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+			<StoreErrorNotice
+				module="analytics"
+				moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				storeName={ STORE_NAME }
+			/>
 
 			{ ( ! isCreateAccount && ( accounts && accounts.length === 0 ) ) && (
 				<p>

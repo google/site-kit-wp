@@ -28,9 +28,10 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  *
  * @param {string} error Original error message.
  * @param {string} moduleName Module name.
+ * @param {string} ownerName Module owner name.
  * @return {string} Error description.
  */
-export function getInsufficientPermissionsErrorDescription( error, moduleName ) {
+export function getInsufficientPermissionsErrorDescription( error, moduleName, ownerName = '' ) {
 	let message = '';
 	let userInfo = '';
 
@@ -54,9 +55,17 @@ export function getInsufficientPermissionsErrorDescription( error, moduleName ) 
 		);
 	}
 
+	if ( ownerName ) {
+		userInfo = sprintf(
+			/* translators: %s: owner name */
+			__( 'This service was originally connected by the administrator "%s" — you can contact them for more information.', 'google-site-kit' ),
+			ownerName,
+		);
+	}
+
 	if ( ! userInfo ) {
 		userInfo = __( 'This service was originally connected by an administrator — you can contact them for more information.', 'google-site-kit' );
 	}
 
-	return `${ message } ${ userInfo }`;
+	return `${ message } ${ userInfo }`.trim();
 }

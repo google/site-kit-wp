@@ -81,7 +81,11 @@ export default function SetupForm( { finishSetup } ) {
 
 	return (
 		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
-			<StoreErrorNotice moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+			<StoreErrorNotice
+				module="analytics"
+				moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				storeName={ STORE_NAME }
+			/>
 
 			<ExistingTagNotice />
 

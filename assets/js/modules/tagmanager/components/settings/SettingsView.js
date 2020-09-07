@@ -50,7 +50,7 @@ export default function SettingsView() {
 		<Fragment>
 
 			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } /> }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice module="tagmanager" moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 

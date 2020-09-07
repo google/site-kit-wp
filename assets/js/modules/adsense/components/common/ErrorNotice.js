@@ -34,6 +34,7 @@ export default function ErrorNotice() {
 
 	return (
 		<StoreErrorNotice
+			module="adsense"
 			moduleName={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
 			storeName={ STORE_NAME }
 			shouldDisplayError={ shouldDisplayError }

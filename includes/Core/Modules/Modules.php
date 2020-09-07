@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -804,7 +805,7 @@ final class Modules {
 	 * @return array Module REST response data.
 	 */
 	private function prepare_module_data_for_response( Module $module ) {
-		return array(
+		$module_data = array(
 			'slug'         => $module->slug,
 			'name'         => $module->name,
 			'description'  => $module->description,
@@ -816,6 +817,15 @@ final class Modules {
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
 			'dependants'   => $this->get_module_dependants( $module->slug ),
 		);
+
+		if ( $module instanceof Module_With_Owner ) {
+			$owner_id = $module->get_owner_id();
+			if ( $owner_id ) {
+				$module_data['owner'] = get_the_author_meta( 'display_name', $owner_id );
+			}
+		}
+
+		return $module_data;
 	}
 
 	/**
@@ -880,6 +890,11 @@ final class Modules {
 					'items'       => array(
 						'type' => 'string',
 					),
+					'readonly'    => true,
+				),
+				'owner'        => array(
+					'type'        => 'string',
+					'description' => __( 'Owner of the module.', 'google-site-kit' ),
 					'readonly'    => true,
 				),
 			),
