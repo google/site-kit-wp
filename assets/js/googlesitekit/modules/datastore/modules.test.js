@@ -300,14 +300,14 @@ describe( 'core/modules modules', () => {
 
 			it( 'registers a module', async () => {
 				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, moduleSettings );
-				const modules = await registry.select( STORE_NAME ).getModules();
+				const modules = registry.select( STORE_NAME ).getModules();
 				expect( modules[ moduleSlug ] ).not.toBeUndefined();
 				expect( modules[ moduleSlug ] ).toEqual( expect.objectContaining( moduleSettings ) );
 			} );
 
 			it( 'does not allow active or connected properties to be set to true', async () => {
 				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, { active: true, connected: true, ...moduleSettings } );
-				const modules = await registry.select( STORE_NAME ).getModules();
+				const modules = registry.select( STORE_NAME ).getModules();
 				expect( modules[ moduleSlug ].active ).toBe( false );
 				expect( modules[ moduleSlug ].connected ).toBe( false );
 			} );
