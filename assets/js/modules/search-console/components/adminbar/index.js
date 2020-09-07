@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights Settings components.
+ * Search Console adminbar components.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,5 +16,5 @@
  * limitations under the License.
  */
 
-export { default as SettingsMain } from './SettingsMain';
-export { default as SettingsView } from './SettingsView';
+export { default as GoogleSitekitSearchConsoleAdminbarWidget } from './GoogleSitekitSearchConsoleAdminbarWidget';
+export { default as SearchConsoleAdminbarWidgetOverview } from './SearchConsoleAdminbarWidgetOverview';
