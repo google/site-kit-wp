@@ -1,5 +1,5 @@
 /**
- * Tests for WP Error Utilities.
+ * Tests for Error Utilities.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { isWPError } from './is-wp-error';
+import {
+	isWPError,
+	isPermissionScopeError,
+	ERROR_CODE_MISSING_REQUIRED_SCOPE,
+} from './errors';
 
 describe( 'isWPError', () => {
 	const code = '';
@@ -58,5 +62,26 @@ describe( 'isWPError', () => {
 		expect( isWPError( true ) ).toBe( false );
 		expect( isWPError( 'error' ) ).toBe( false );
 		expect( isWPError( 123 ) ).toBe( false );
+	} );
+} );
+
+describe( 'isPermissionScopeError', () => {
+	it( 'should return TRUE if a correct error is passed', () => {
+		expect( isPermissionScopeError( { code: ERROR_CODE_MISSING_REQUIRED_SCOPE } ) ).toBe( true );
+	} );
+
+	it( 'should return FALSE if the provided object has wrong code', () => {
+		expect( isPermissionScopeError( { code: 'not_found' } ) ).toBe( false );
+	} );
+
+	it( 'should return FALSE if the passed object does not have the code property', () => {
+		expect( isPermissionScopeError( { message: 'Not Found' } ) ).toBe( false );
+	} );
+
+	it( 'should return FALSE for non-object values', () => {
+		expect( isPermissionScopeError( undefined ) ).toBe( false );
+		expect( isPermissionScopeError( true ) ).toBe( false );
+		expect( isPermissionScopeError( 'error' ) ).toBe( false );
+		expect( isPermissionScopeError( 123 ) ).toBe( false );
 	} );
 } );

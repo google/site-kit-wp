@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { isPermissionScopeError } from '../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import { isPermissionScopeError } from '../util/errors';
 import ErrorText from '../components/error-text';
 const { useSelect } = Data;
 

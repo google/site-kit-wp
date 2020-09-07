@@ -1,5 +1,5 @@
 /**
- * WP Error Utilities.
+ * Error Utilities.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -21,6 +21,9 @@
  */
 import isPlainObject from 'lodash/isPlainObject';
 
+// Error codes and reasons.
+export const ERROR_CODE_MISSING_REQUIRED_SCOPE = 'missing_required_scopes'; // Error code returned when scopes are missing.
+
 /**
  * Checks if the provided object is an instance of WP_Error class.
  *
@@ -34,4 +37,17 @@ export function isWPError( obj ) {
 		obj.hasOwnProperty( 'code' ) && ( typeof obj.code === 'string' || typeof obj.code === 'number' ) &&
 		obj.hasOwnProperty( 'message' ) && typeof obj.message === 'string' &&
 		obj.hasOwnProperty( 'data' ); // We don't check "obj.data" type because it can be anything.
+}
+
+/**
+ * Checks if the given error is a permission scope error.
+ *
+ * @since 1.9.0
+ * @private
+ *
+ * @param {*} error Input to test as a possible permission scope error.
+ * @return {boolean} True if permission scope error, otherwise false.
+ */
+export function isPermissionScopeError( error ) {
+	return error?.code === ERROR_CODE_MISSING_REQUIRED_SCOPE;
 }
