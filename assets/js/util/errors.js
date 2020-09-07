@@ -21,8 +21,9 @@
  */
 import isPlainObject from 'lodash/isPlainObject';
 
-// Error codes and reasons.
-export const ERROR_CODE_MISSING_REQUIRED_SCOPE = 'missing_required_scopes'; // Error code returned when scopes are missing.
+// Export codes and reasons.
+export const ERROR_CODE_MISSING_REQUIRED_SCOPE = 'missing_required_scopes'; // When scopes are missing.
+export const ERROR_REASON_INSUFFICIENT_PERMISSIONS = 'insufficientPermissions';
 
 /**
  * Checks if the provided object is an instance of WP_Error class.
@@ -45,9 +46,21 @@ export function isWPError( obj ) {
  * @since 1.9.0
  * @private
  *
- * @param {*} error Input to test as a possible permission scope error.
- * @return {boolean} True if permission scope error, otherwise false.
+ * @param {Object} error Input to test as a possible permission scope error.
+ * @return {boolean} TRUE if permission scope error, otherwise FALSE.
  */
 export function isPermissionScopeError( error ) {
 	return error?.code === ERROR_CODE_MISSING_REQUIRED_SCOPE;
+}
+
+/**
+ * Checks if the given error has insufficient permissions reason.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error The error object to check.
+ * @return {boolean} TRUE if it's insufficient permissions error, otherwise FALSE.
+ */
+export function isInsufficientPermissionsError( error ) {
+	return error?.data?.reason === ERROR_REASON_INSUFFICIENT_PERMISSIONS;
 }
