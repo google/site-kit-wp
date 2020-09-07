@@ -298,6 +298,10 @@ describe( 'core/modules modules', () => {
 				icon: 'icon-name',
 			};
 
+			beforeEach( () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
+			} );
+
 			it( 'registers a module', async () => {
 				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, moduleSettings );
 				const modules = registry.select( STORE_NAME ).getModules();
