@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useEffect, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -68,11 +68,9 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ hasEditScope, autoSubmit, submitForm ] );
 
 	return (
-		<form
-			className="googlesitekit-tagmanager-setup__form"
-			onSubmit={ submitForm }
-		>
-			<StoreErrorNotice storeName={ STORE_NAME } />
+		<form className="googlesitekit-tagmanager-setup__form" onSubmit={ submitForm }>
+			<StoreErrorNotice moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+
 			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">

@@ -16,6 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { _x } from '@wordpress/i18n/build-types';
+
+/**
+ * Internal dependencies
+ */
 import {
 	AccountSelect,
 	AMPContainerSelect,
@@ -29,7 +37,7 @@ import { STORE_NAME } from '../../datastore/constants';
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-tagmanager-settings-fields">
-			<StoreErrorNotice storeName={ STORE_NAME } />
+			<StoreErrorNotice moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
 			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">

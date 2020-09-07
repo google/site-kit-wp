@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -58,7 +58,8 @@ export default function AccountCreateLegacy() {
 
 	return (
 		<div>
-			<StoreErrorNotice storeName={ STORE_NAME } />
+			<StoreErrorNotice moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+
 			{ ( ! isCreateAccount && ( accounts && accounts.length === 0 ) ) && (
 				<p>
 					{ __( 'Looks like you don\'t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.', 'google-site-kit' ) }

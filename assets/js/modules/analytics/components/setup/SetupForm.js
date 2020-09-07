@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -80,11 +80,9 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ hasEditScope, autoSubmit, submitForm ] );
 
 	return (
-		<form
-			className="googlesitekit-analytics-setup__form"
-			onSubmit={ submitForm }
-		>
-			<StoreErrorNotice storeName={ STORE_NAME } />
+		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
+			<StoreErrorNotice moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+
 			<ExistingTagNotice />
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (

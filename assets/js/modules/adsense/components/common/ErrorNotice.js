@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -30,5 +31,12 @@ import StoreErrorNotice from '../.././../../components/StoreErrorNotice';
 
 export default function ErrorNotice() {
 	const shouldDisplayError = useCallback( ( error ) => undefined === errorToStatus( error ), [] );
-	return <StoreErrorNotice storeName={ STORE_NAME } shouldDisplayError={ shouldDisplayError } />;
+
+	return (
+		<StoreErrorNotice
+			moduleName={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
+			storeName={ STORE_NAME }
+			shouldDisplayError={ shouldDisplayError }
+		/>
+	);
 }

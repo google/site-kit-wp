@@ -25,11 +25,12 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { isPermissionScopeError } from '../util/errors';
+import { isPermissionScopeError, isInsufficientPermissionsError } from '../util/errors';
+import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 import ErrorText from '../components/error-text';
 const { useSelect } = Data;
 
-export default function StoreErrorNotice( { storeName, shouldDisplayError = () => true } ) {
+function StoreErrorNotice( { moduleName, storeName, shouldDisplayError } ) {
 	const error = useSelect( ( select ) => select( storeName ).getError() );
 
 	// Do not display if no error, or if the error is for missing scopes.
@@ -37,10 +38,22 @@ export default function StoreErrorNotice( { storeName, shouldDisplayError = () =
 		return null;
 	}
 
-	return <ErrorText message={ error.message } reconnectURL={ error.data?.reconnectURL } />;
+	let message = error.message;
+	if ( isInsufficientPermissionsError( error ) ) {
+		message = getInsufficientPermissionsErrorDescription( message, moduleName );
+	}
+
+	return <ErrorText message={ message } reconnectURL={ error.data?.reconnectURL } />;
 }
 
 StoreErrorNotice.propTypes = {
+	moduleName: PropTypes.string.isRequired,
 	storeName: PropTypes.string.isRequired,
 	shouldDisplayError: PropTypes.func,
 };
+
+StoreErrorNotice.defaultProps = {
+	shouldDisplayError: () => true,
+};
+
+export default StoreErrorNotice;

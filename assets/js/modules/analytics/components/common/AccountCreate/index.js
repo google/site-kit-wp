@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { useCallback, useState, useEffect } from '@wordpress/element';
 
 /**
@@ -135,7 +135,8 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			<StoreErrorNotice storeName={ STORE_NAME } />
+			<StoreErrorNotice moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+
 			<h3 className="googlesitekit-heading-4">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }
 			</h3>

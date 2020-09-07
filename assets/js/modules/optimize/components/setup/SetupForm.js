@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -58,11 +58,8 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ canSubmitChanges, finishSetup ] );
 
 	return (
-		<form
-			className="googlesitekit-optimize-setup__form"
-			onSubmit={ submitForm }
-		>
-			<StoreErrorNotice storeName={ STORE_NAME } />
+		<form className="googlesitekit-optimize-setup__form" onSubmit={ submitForm }>
+			<StoreErrorNotice moduleName={ _x( 'Optimize', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
 
 			<OptimizeIDFieldInstructions />
 
