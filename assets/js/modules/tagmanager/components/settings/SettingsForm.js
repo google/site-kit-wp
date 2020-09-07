@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n/build-types';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,6 +38,7 @@ export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-tagmanager-settings-fields">
 			<StoreErrorNotice moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } />
+
 			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
