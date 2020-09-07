@@ -315,6 +315,12 @@ describe( 'core/modules modules', () => {
 				expect( modules[ moduleSlug ].active ).toBe( false );
 				expect( modules[ moduleSlug ].connected ).toBe( false );
 			} );
+
+			it( 'requires the module slug to be provided', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).registerModule();
+				} ).toThrow( 'module slug is required' );
+			} );
 		} );
 
 		describe( 'fetchGetModules', () => {

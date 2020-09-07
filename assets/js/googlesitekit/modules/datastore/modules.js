@@ -110,6 +110,10 @@ const fetchSetModuleActivationStore = createFetchStore( {
 
 const BASE_INITIAL_STATE = {
 	modules: undefined,
+	// The current module in focus (view/edit)
+	currentModule: '',
+	// Is the current module being edited?
+	isEditing: false,
 	// This value is to indicate that modules data needs to be refreshed after
 	// a module activation update, since the activation is technically complete
 	// before this data has been refreshed.
@@ -205,37 +209,39 @@ const baseActions = {
 	 * @param {number}    [settings.order]             Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}    [settings.homepage]          Optional. Module homepage URL. Default empty string.
 	 * @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
-	 * @return {Object} Redux-style action.
+	 * @return {Object} Generator instance.
 	 */
-	*registerModule( slug, { settingsComponent = DefaultModuleSettings, ...settings } = {} ) {
+	registerModule( slug, { settingsComponent = DefaultModuleSettings, ...settings } = {} ) {
 		invariant( slug, 'module slug is required' );
 
-		const registry = yield commonActions.getRegistry();
-		yield actions.waitForModules();
-		const registryKey = registry.select( CORE_SITE ).getRegistryKey();
+		return ( function* () {
+			yield actions.waitForModules();
+			const { select } = yield commonActions.getRegistry();
+			const registryKey = select( CORE_SITE ).getRegistryKey();
 
-		// We do this assignment in the action rather than the reducer because we can't send a
-		// payload that includes a React component to the reducer; we'll get an error about
-		// payloads needing to be plain objects.
-		if ( ModuleComponents[ registryKey ] === undefined ) {
-			ModuleComponents[ registryKey ] = {};
-		}
+			// We do this assignment in the action rather than the reducer because we can't send a
+			// payload that includes a React component to the reducer; we'll get an error about
+			// payloads needing to be plain objects.
+			if ( ModuleComponents[ registryKey ] === undefined ) {
+				ModuleComponents[ registryKey ] = {};
+			}
 
-		if ( ModuleComponents[ registryKey ][ slug ] === undefined ) {
-			ModuleComponents[ registryKey ][ slug ] = settingsComponent;
-		}
+			if ( ModuleComponents[ registryKey ][ slug ] === undefined ) {
+				ModuleComponents[ registryKey ][ slug ] = settingsComponent;
+			}
 
-		// Ensure that active and connected properties are not passed here.
-		delete settings.active;
-		delete settings.connected;
+			// Ensure that active and connected properties are not passed here.
+			delete settings.active;
+			delete settings.connected;
 
-		return {
-			payload: {
-				slug,
-				settings,
-			},
-			type: REGISTER_MODULE,
-		};
+			return {
+				payload: {
+					slug,
+					settings,
+				},
+				type: REGISTER_MODULE,
+			};
+		}() );
 	},
 
 	/**
