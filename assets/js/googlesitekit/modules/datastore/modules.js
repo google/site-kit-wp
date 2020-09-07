@@ -229,13 +229,11 @@ const baseActions = {
 		delete settings.active;
 		delete settings.connected;
 
-		const mergedModuleSettings = {
-			slug,
-			...settings,
-		};
-
 		return {
-			payload: { slug, settings: mergedModuleSettings },
+			payload: {
+				slug,
+				settings,
+			},
 			type: REGISTER_MODULE,
 		};
 	},
@@ -342,6 +340,7 @@ const baseReducer = ( state, { type, payload } ) => {
 						...defaults,
 						...( existingModules?.[ slug ] || {} ),
 						...settings,
+						...{ slug },
 					},
 				},
 			};
