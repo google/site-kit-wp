@@ -63,12 +63,13 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
  *
  * @since n.e.x.t
  *
- * @param {Object} args              Widget arguments.
- * @param {string} args.moduleSlug   Module slug.
- * @param {string} args.datastore    Module datastore name.
- * @param {string} args.group        Stories group name.
- * @param {Array}  args.data         Widget data.
- * @param {Object} args.options      Arguments for report requests.
+ * @param {Object} args                  Widget arguments.
+ * @param {string} args.moduleSlug       Module slug.
+ * @param {string} args.datastore        Module datastore name.
+ * @param {string} args.group            Stories group name.
+ * @param {Array}  args.data             Widget data.
+ * @param {Object} args.options          Arguments for report requests.
+ * @param {Object} args.variantCallbacks Custom callbacks to be run for each of the variants.
  * @param {Component} args.component Widget component.
  * @return {Story} Generated story.
  */
@@ -79,25 +80,38 @@ export function generateReportBasedWidgetStories( {
 	data,
 	options,
 	component: Widget,
+	variantCallbacks = {},
 } ) {
 	const stories = storiesOf( group, module );
 
 	const variants = {
 		Loaded: ( { dispatch } ) => {
-			dispatch( datastore ).receiveGetReport( data, { options } );
+			if ( variantCallbacks.Loaded ) {
+				variantCallbacks.Loaded( dispatch, data, options );
+			} else {
+				dispatch( datastore ).receiveGetReport( data, { options } );
+			}
 		},
 		'Data Unavailable': ( { dispatch } ) => {
-			dispatch( datastore ).receiveGetReport( [], { options } );
+			if ( variantCallbacks[ 'Data Unavailable' ] ) {
+				variantCallbacks[ 'Data Unavailable' ]( dispatch, data, options );
+			} else {
+				dispatch( datastore ).receiveGetReport( [], { options } );
+			}
 		},
 		Error: ( { dispatch } ) => {
-			const error = {
-				code: 'missing_required_param',
-				message: 'Request parameter is empty: metrics.',
-				data: {},
-			};
+			if ( variantCallbacks.Error ) {
+				variantCallbacks.Error( dispatch, data, options );
+			} else {
+				const error = {
+					code: 'missing_required_param',
+					message: 'Request parameter is empty: metrics.',
+					data: {},
+				};
 
-			dispatch( datastore ).receiveError( error, 'getReport', [ options ] );
-			dispatch( datastore ).finishResolution( 'getReport', [ options ] );
+				dispatch( datastore ).receiveError( error, 'getReport', [ options ] );
+				dispatch( datastore ).finishResolution( 'getReport', [ options ] );
+			}
 		},
 	};
 
