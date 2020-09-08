@@ -63,6 +63,6 @@ describe( 'SettingsEdit', () => {
 
 		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( existingTag.accountID );
 		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( existingTag.propertyID );
-		expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
+		expect( registry.select( STORE_NAME ).hasErrors() ).toBeFalsy();
 	} );
 } );

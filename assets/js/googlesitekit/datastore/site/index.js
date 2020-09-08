@@ -27,6 +27,7 @@ import reset from './reset';
 import { STORE_NAME } from './constants';
 import notifications from './notifications';
 import registryKey from './registry-key';
+import { createErrorStore } from '../../data/create-error-store';
 
 export { STORE_NAME };
 
@@ -37,7 +38,8 @@ const store = Data.combineStores(
 	info,
 	reset,
 	notifications,
-	registryKey
+	registryKey,
+	createErrorStore(),
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;

@@ -38,8 +38,10 @@ const { createRegistryControl } = Data;
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',
 	argsToParams: ( url ) => {
-		invariant( isURL( url ), 'a valid url is required to fetch HTML.' );
 		return { url };
+	},
+	validateParams: ( { url } = {} ) => {
+		invariant( isURL( url ), 'a valid url is required to fetch HTML.' );
 	},
 	controlCallback: async ( { url } ) => {
 		const fetchHTMLOptions = {

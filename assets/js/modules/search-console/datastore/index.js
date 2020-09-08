@@ -38,7 +38,7 @@ const baseModuleStore = Modules.createModuleStore( 'search-console', {
 const store = Data.combineStores(
 	baseModuleStore,
 	report,
-	service,
+	service
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;

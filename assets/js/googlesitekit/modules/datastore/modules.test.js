@@ -559,5 +559,95 @@ describe( 'core/modules modules', () => {
 				expect( isActive ).toEqual( undefined );
 			} );
 		} );
+
+		describe( 'isModuleConnected', () => {
+			beforeEach( () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+			} );
+
+			it( 'returns true if a module is connected', async () => {
+				const slug = 'analytics';
+				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isConnected ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isConnectedLoaded ).toEqual( true );
+			} );
+
+			it( 'returns false if a module is not active', async () => {
+				// Optimize in our fixtures is not active.
+				const slug = 'optimize';
+				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isConnected ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isConnectedLoaded ).toEqual( false );
+			} );
+
+			it( 'returns false if a module is active but not connected', async () => {
+				// AdSense in our fixtures is active but not connected.
+				const slug = 'adsense';
+				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isConnected ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isConnectedLoaded ).toEqual( false );
+			} );
+
+			it( 'returns null if a module does not exist', async () => {
+				const slug = 'not-a-real-module';
+				const isConnected = registry.select( STORE_NAME ).isModuleConnected( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isConnected ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isConnectedLoaded ).toEqual( null );
+			} );
+
+			it( 'returns undefined if modules is not yet available', async () => {
+				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
+
+				const isConnected = registry.select( STORE_NAME ).isModuleConnected( 'analytics' );
+
+				expect( isConnected ).toEqual( undefined );
+			} );
+		} );
 	} );
 } );

@@ -90,12 +90,14 @@ const fetchSetModuleActivationStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( slug, active ) => {
-		invariant( slug, 'slug is required.' );
-		invariant( active !== undefined, 'active is required.' );
 		return {
 			slug,
 			active,
 		};
+	},
+	validateParams: ( { slug, active } = {} ) => {
+		invariant( slug, 'slug is required.' );
+		invariant( active !== undefined, 'active is required.' );
 	},
 } );
 
@@ -134,11 +136,6 @@ const baseActions = {
 	*activateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, true );
 
-		yield {
-			payload: {},
-			type: REFETCH_AUTHENTICATION,
-		};
-
 		return { response, error };
 	},
 
@@ -154,11 +151,6 @@ const baseActions = {
 	 */
 	*deactivateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, false );
-
-		yield {
-			payload: {},
-			type: REFETCH_AUTHENTICATION,
-		};
 
 		return { response, error };
 	},
@@ -412,7 +404,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(Object|undefined)} A specific module object; `undefined` if state is still loading or if said module doesn't exist.
+	 * @return {(boolean|null|undefined)} TRUE when the module exists and is active; `undefined` if state is still loading or `null` if said module doesn't exist.
 	 */
 	isModuleActive: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const module = select( STORE_NAME ).getModule( slug );
@@ -429,6 +421,36 @@ const baseSelectors = {
 		}
 
 		return module.active;
+	} ),
+
+	/**
+	 * Checks whether a module is connected or not.
+	 *
+	 * Returns `true` if the module exists, is active and connected.
+	 * Returns `false` if the module exists but is either not active or not connected.
+	 * Returns `undefined` if state is still loading or if no module with that slug exists.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|null|undefined)} TRUE when the module exists, is active and connected, otherwise FALSE; `undefined` if state is still loading or `null` if said module doesn't exist.
+	 */
+	isModuleConnected: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `null` to signify the
+		// "not found" state.
+		if ( module === null ) {
+			return null;
+		}
+
+		return module.active && module.connected;
 	} ),
 
 	/**

@@ -122,7 +122,7 @@ describe( 'modules/tagmanager containers', () => {
 				const { error } = await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
 
 				expect( error ).toEqual( errorResponse );
-				expect( registry.select( STORE_NAME ).getError() ).toEqual( errorResponse );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'createContainer', [ accountID, usageContext ] ) ).toEqual( errorResponse );
 
 				// Ignore the request fired by the `getContainers` selector.
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
@@ -267,7 +267,7 @@ describe( 'modules/tagmanager containers', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				const containers = registry.select( STORE_NAME ).getContainers( accountID );
 				expect( containers ).toEqual( undefined );
-				const error = registry.select( STORE_NAME ).getError();
+				const error = registry.select( STORE_NAME ).getErrorForSelector( 'getContainers', [ accountID ] );
 				expect( error ).toEqual( errorResponse );
 			} );
 		} );

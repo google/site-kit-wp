@@ -34,6 +34,7 @@ import { isValidDateRange, isValidStringularItems } from '../../../util/report-v
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
+	storeName: STORE_NAME,
 	controlCallback: ( { options } ) => {
 		return API.get( 'modules', 'search-console', 'searchanalytics', options );
 	},
@@ -47,6 +48,9 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
+		return { options };
+	},
+	validateParams: ( { options } = {} ) => {
 		invariant( isPlainObject( options ), 'Options for Search Console report must be an object.' );
 		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Search Console report.' );
 
@@ -57,8 +61,6 @@ const fetchGetReportStore = createFetchStore( {
 				'Dimensions for Search Console report must be either a string or an array of strings',
 			);
 		}
-
-		return { options };
 	},
 } );
 
@@ -85,7 +87,7 @@ const baseSelectors = {
 	/**
 	 * Gets a Search Console report for the given options.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.15.0
 	 *
 	 * @param {Object}         state                       Data store's state.
 	 * @param {Object}         options                     Options for generating the report.

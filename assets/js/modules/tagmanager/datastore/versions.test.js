@@ -457,7 +457,7 @@ describe( 'modules/tagmanager versions', () => {
 				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( STORE_NAME ).getError() ).toEqual( errorResponse );
+				expect( registry.select( STORE_NAME ).getErrorForSelector( 'getLiveContainerVersion', [ accountID, internalContainerID ] ) ).toEqual( errorResponse );
 				expect( registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( undefined );
 			} );
 

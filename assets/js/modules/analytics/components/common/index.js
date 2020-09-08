@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 
-export { default as AccountCreateLegacy } from './AccountCreateLegacy';
 export { default as AccountCreate } from './AccountCreate';
+export { default as AccountCreateLegacy } from './AccountCreateLegacy';
 export { default as AccountSelect } from './AccountSelect';
+export { default as AcquisitionPieChart } from './AcquisitionPieChart';
+export { default as AcquisitionSources } from './AcquisitionSources';
 export { default as AdSenseLinkCTA } from './AdSenseLinkCTA';
 export { default as AnonymizeIPSwitch } from './AnonymizeIPSwitch';
 export { default as ExistingGTMPropertyError } from './ExistingGTMPropertyError';

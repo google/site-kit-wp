@@ -25,7 +25,6 @@ import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot
 import { STORE_NAME } from './constants';
 import accounts from './accounts';
 import containers from './containers';
-import error from './error';
 import tags from './tags';
 import settings from './settings';
 import versions from './versions';
@@ -42,6 +41,7 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 		'internalContainerID',
 		'internalAMPContainerID',
 		'useSnippet',
+		'ownerID',
 	],
 } );
 
@@ -67,7 +67,6 @@ const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
 	containers,
-	error,
 	tags,
 	settings,
 	versions,

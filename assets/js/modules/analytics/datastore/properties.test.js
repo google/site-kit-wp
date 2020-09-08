@@ -108,12 +108,10 @@ describe( 'modules/analytics properties', () => {
 				registry.dispatch( STORE_NAME ).createProperty( accountID );
 
 				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getError()
-					),
+					() => registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) === false
 				);
 
-				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'createProperty', [ accountID ] ) ).toMatchObject( response );
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 					{ body: fixtures.propertiesProfiles, status: 200 }

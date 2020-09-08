@@ -105,6 +105,8 @@ describe( 'modules/analytics profiles', () => {
 				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 				const profileName = fixtures.createProfile.name;
 
+				const args = [ accountID, propertyID, { profileName } ];
+
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -117,15 +119,13 @@ describe( 'modules/analytics profiles', () => {
 				);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
+				registry.dispatch( STORE_NAME ).createProfile( ...args );
 
 				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getError()
-					),
+					() => registry.select( STORE_NAME ).isDoingCreateProfile( ...args ) === false
 				);
 
-				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'createProfile', args ) ).toMatchObject( response );
 
 				// Ignore the request fired by the `getProperties` selector.
 				fetchMock.get(

@@ -48,6 +48,9 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
+		return { options };
+	},
+	validateParams: ( { options } = {} ) => {
 		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
 		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Analytics report.' );
 
@@ -71,8 +74,6 @@ const fetchGetReportStore = createFetchStore( {
 				'Orders for an Analytics report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.',
 			);
 		}
-
-		return { options };
 	},
 } );
 

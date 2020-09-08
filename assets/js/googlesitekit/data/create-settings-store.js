@@ -115,10 +115,12 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			};
 		},
 		argsToParams: ( values ) => {
-			invariant( isPlainObject( values ), 'values is required.' );
 			return {
 				values,
 			};
+		},
+		validateParams: ( { values } = {} ) => {
+			invariant( isPlainObject( values ), 'values is required.' );
 		},
 	} );
 
@@ -169,7 +171,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			const registry = yield Data.commonActions.getRegistry();
 			const values = registry.select( STORE_NAME ).getSettings();
 
-			return yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
+			const { response, error } = yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
+			if ( error ) {
+				// Store error manually since saveSettings signature differs from fetchSaveSettings.
+				registry.dispatch( STORE_NAME ).receiveError( error, 'saveSettings' );
+			}
+
+			return { response, error };
 		},
 	};
 

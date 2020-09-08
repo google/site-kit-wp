@@ -22,8 +22,8 @@ add_action(
 			REST_Routes::REST_ROOT,
 			'e2e/setup/site-verification',
 			array(
-				'methods'  => WP_REST_Server::EDITABLE,
-				'callback' => function ( WP_REST_Request $request ) {
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => function ( WP_REST_Request $request ) {
 					if ( $request['verified'] ) {
 						update_user_option(
 							get_current_user_id(),
@@ -36,8 +36,9 @@ add_action(
 
 					return array( 'success' => true );
 				},
+				'permission_callback' => '__return_true',
 			)
 		);
 	},
-	0 
+	0
 );

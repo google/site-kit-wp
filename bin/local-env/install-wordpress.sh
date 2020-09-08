@@ -105,7 +105,13 @@ fi
 
 # Install the AMP plugin
 status_message "Installing the AMP plugin..."
-wp plugin install amp --force --quiet
+if [[ ! -z "$AMP_VERSION" ]]; then
+	wp plugin install amp --force --quiet --version="$AMP_VERSION"
+else
+	# Install latest 2.x by default, but not v3
+	wp plugin install amp --force --quiet --version="2.0.0"
+	wp plugin update amp --minor --quiet
+fi
 
 # Install a dummy favicon to avoid 404 errors.
 status_message "Installing a dummy favicon..."

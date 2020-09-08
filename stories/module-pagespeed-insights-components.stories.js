@@ -105,6 +105,39 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 			</WithTestRegistry>
 		);
 	} )
+	.add( 'Dashboard widget (Errors for Mobile and Desktop)', () => {
+		const url = fixtures.pagespeedMobile.loadingExperience.id;
+		const setupRegistry = ( { dispatch } ) => {
+			const mobileError = {
+				code: 'fetching_mobile_data_failed',
+				message: 'Fetching PageSpeed Insights report with strategy mobile failed.',
+			};
+			const desktopError = {
+				code: 'fetching_desktop_data_failed',
+				message: 'Fetching PageSpeed Insights report with strategy desktop failed.',
+			};
+			dispatch( STORE_NAME ).receiveError( mobileError, 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( STORE_NAME ).receiveError( desktopError, 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				referenceSiteURL: url,
+				currentEntityURL: null,
+			} );
+			dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'pagespeed-insights',
+					active: true,
+					connected: true,
+				},
+			] );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<DashboardPageSpeedWidget />
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Dashboard widget (CTA)', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
 		const setupRegistry = ( { dispatch } ) => {

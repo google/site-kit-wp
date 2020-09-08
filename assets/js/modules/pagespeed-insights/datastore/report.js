@@ -49,12 +49,14 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( url, strategy ) => {
-		invariant( isURL( url ), 'a valid url is required to fetch a report.' );
-		invariant( typeof strategy === 'string', 'a valid strategy is required to fetch a report.' );
 		return {
 			strategy,
 			url,
 		};
+	},
+	validateParams: ( { strategy, url } = {} ) => {
+		invariant( isURL( url ), 'a valid url is required to fetch a report.' );
+		invariant( typeof strategy === 'string', 'a valid strategy is required to fetch a report.' );
 	},
 } );
 
