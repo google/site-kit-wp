@@ -58,3 +58,12 @@ generateReportBasedWidgetStories( {
 	options: dashboardBounceRateWidgetArgs,
 	component: DashboardBounceRateWidget,
 } );
+
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
+	datastore: STORE_NAME,
+	group: 'Analytics Module/Components/Page Dashboard/Bounce Rate Widget',
+	data: dashboardBounceRateWidgetData,
+	options: dashboardBounceRateWidgetArgs,
+	component: DashboardBounceRateWidget,
+} );
