@@ -30,20 +30,19 @@ import ModuleSetupIncomplete from '../../../components/settings/module-setup-inc
 const { useSelect } = Data;
 
 function ModuleSettingsBody( { allowEdit, children, slug } ) {
-	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
-	const { connected } = module || {};
+	const isConnected = useSelect( ( select ) => select( STORE_NAME ).isModuleConnected( slug ) );
 
 	return (
 		<div className="mdc-layout-grid">
 			<div className="mdc-layout-grid__inner">
-				{ connected &&
+				{ isConnected && (
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						{ children }
 					</div>
-				}
-				{ allowEdit && ! connected &&
+				) }
+				{ allowEdit && ! isConnected && (
 					<ModuleSetupIncomplete slug={ slug } />
-				}
+				) }
 			</div>
 		</div>
 	);
