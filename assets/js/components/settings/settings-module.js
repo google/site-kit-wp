@@ -34,13 +34,13 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import SvgIcon from '../../util/svg-icon';
 import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	moduleIcon,
 	showErrorNotification,
-	getModulesData,
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../../components/link';
@@ -53,6 +53,9 @@ import SetupModule from '../../components/setup-module';
 import Dialog from '../../components/dialog';
 import ModuleSettingsDetails from '../../components/settings/module-settings-details';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+
+const { withSelect } = Data;
 
 /**
  * A single module. Keeps track of its own active state and settings.
@@ -149,8 +152,7 @@ class SettingsModule extends Component {
 
 	// Find modules that depend on a module.
 	getDependentModules() {
-		const { slug } = this.props;
-		const modules = getModulesData();
+		const { slug, modules } = this.props;
 		const dependants = {};
 
 		if ( modules[ slug ].dependants ) {
@@ -185,6 +187,7 @@ class SettingsModule extends Component {
 			provides,
 			isSaving,
 			error,
+			modules,
 		} = this.props;
 
 		const moduleKey = `${ slug }-module`;
@@ -461,6 +464,11 @@ class SettingsModule extends Component {
 							name={ name }
 							description={ description }
 							active={ active }
+							blockedByParentModule={
+								modules[ slug ].dependencies.some(
+									( requiredModule ) => ! modules[ requiredModule ].active || ! modules[ requiredModule ].connected
+								)
+							}
 							showLink
 						/>
 					</Fragment>
@@ -496,4 +504,8 @@ SettingsModule.defaultProps = {
 	setupComplete: false,
 };
 
-export default SettingsModule;
+export default withSelect( ( select ) => {
+	return {
+		modules: select( CORE_MODULES ).getModules(),
+	};
+} )( SettingsModule );
