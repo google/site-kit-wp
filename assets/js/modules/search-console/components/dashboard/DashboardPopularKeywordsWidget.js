@@ -33,15 +33,17 @@ import { numberFormat } from '../../../../util';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/preview-table';
-import ErrorText from '../../../../components/error-text';
 import Layout from '../../../../components/layout/layout';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/notifications/nodata';
 const { useSelect } = Data;
 
 function DashboardPopularKeywordsWidget() {
 	const {
+		baseServiceURL,
 		data,
 		error,
-		baseServiceURL,
+		loading,
 		searchConsolePropertyMainURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
@@ -60,6 +62,7 @@ function DashboardPopularKeywordsWidget() {
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			loading: store.isResolving( 'getReport', [ args ] ),
 			baseServiceURL: store.getServiceURL( {
 				path: '/performance/search-analytics',
 				query: {
@@ -75,20 +78,15 @@ function DashboardPopularKeywordsWidget() {
 		};
 	} );
 
-	if ( error ) {
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ error.message } />
-			</div>
-		);
-	}
-
-	if ( ! Array.isArray( data ) ) {
+	if ( loading ) {
 		return <PreviewTable padding />;
 	}
+	if ( error ) {
+		return getDataErrorComponent( __( 'Search Console', 'google-site-kit' ), error.message );
+	}
 
-	if ( ! data.length ) {
-		return null;
+	if ( ! data || ! data.length ) {
+		return getNoDataComponent( __( 'Search Console', 'google-site-kit' ) );
 	}
 
 	const headers = [
