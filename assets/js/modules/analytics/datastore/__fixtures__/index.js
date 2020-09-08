@@ -29,3 +29,4 @@ export { default as dashboardAllTrafficArgs } from './dashboard-all-traffic-widg
 export { default as dashboardAllTrafficData } from './dashboard-all-traffic-widget-data.json';
 export { default as pageDashboardAllTrafficArgs } from './page-dashboard-all-traffic-widget-args.json';
 export { default as pageDashboardAllTrafficData } from './page-dashboard-all-traffic-widget-data.json';
+export { default as selectPropertyPropertiesProfiles } from './select-property-property-profiles.json';

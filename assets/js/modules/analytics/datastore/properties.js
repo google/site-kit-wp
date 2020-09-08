@@ -138,7 +138,7 @@ const baseActions = {
 	 *
 	 * @param {string} propertyID Property ID to select.
 	 * @param {string} [internalPropertyID] Internal property ID (if available).
-	 * @return {Generator}
+	 * @return {Function} A generator function.
 	 */
 	selectProperty( propertyID, internalPropertyID = '' ) {
 		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
@@ -180,7 +180,6 @@ const baseActions = {
 			}
 
 			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // Capitalization rule exception: webPropertyId
-
 			registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
 		}() );
 	},

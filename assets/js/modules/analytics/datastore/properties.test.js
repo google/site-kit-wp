@@ -158,26 +158,15 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].defaultProfileId );
 			} );
 
-			it( 'does not set the propertyID if default is not found', async () => {
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: fixtures.propertiesProfiles, status: 200 }
-				);
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
-					{ body: fixtures.propertiesProfiles.profiles, status: 200 }
-				);
+			it( 'does not set the profileID if property has defaultProfileId that is not in state', async () => {
+				const accountID = fixtures.selectPropertyPropertiesProfiles.properties[ 0 ].accountId;
+				const propertyID = fixtures.selectPropertyPropertiesProfiles.properties[ 0 ].id;
+				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.selectPropertyPropertiesProfiles.properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.profiles, { accountID, propertyID } );
+				await registry.dispatch( STORE_NAME ).setAccountID( accountID );
+				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
-				const accountID = fixtures.propertiesProfiles.properties[ 1 ].accountId;
-				const propertyID = fixtures.propertiesProfiles.properties[ 1 ].id;
-				registry.dispatch( STORE_NAME ).setAccountID( accountID );
-				registry.dispatch( STORE_NAME ).selectProperty( propertyID );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getProperties( accountID ) !== undefined
-					),
-				);
-				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( '' );
+				expect( registry.select( STORE_NAME ).getProfileID() ).not.toMatch( fixtures.selectPropertyPropertiesProfiles.profiles[ 0 ].id );
 			} );
 		} );
 	} );
