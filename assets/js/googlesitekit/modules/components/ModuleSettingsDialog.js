@@ -20,13 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { map } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { useEffect, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { ESC } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -37,19 +37,16 @@ const { useSelect } = Data;
 import Dialog from '../../../components/dialog';
 
 function ModuleSettingsDialog( { provides, slug, toggleDialogState, onRemove } ) {
-	const {
-		module,
-		modules,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			module: store.getModule( slug ),
-			modules: store.getModules(),
-		};
-	} );
+	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
+	const modules = useSelect( ( select ) => select( STORE_NAME ).getModules() );
 
-	const handleCloseModal = useCallback( ( e ) => {
-		if ( 27 === e.keyCode ) {
+	const {
+		name: moduleName,
+		dependants: moduleDependents = [],
+	} = module || {};
+
+	const handleCloseModal = useCallback( ( event ) => {
+		if ( ESC === event.keyCode ) {
 			toggleDialogState();
 		}
 	}, [] );
@@ -62,43 +59,44 @@ function ModuleSettingsDialog( { provides, slug, toggleDialogState, onRemove } )
 		};
 	}, [] );
 
-	// Find modules that depend on a module.
-	const { name, dependants: dependents } = module;
-	const getDependentModules = () => {
-		const dependentModules = {};
+	if ( ! module || ! Array.isArray( modules ) ) {
+		return null;
+	}
 
-		if ( dependents ) {
-			dependents.forEach( ( dependentSlug ) => {
-				if ( modules[ dependentSlug ] ) {
-					dependentModules[ dependentSlug ] = modules[ dependentSlug ];
-				}
-			} );
-		}
-
-		return dependentModules;
-	};
-
-	/* translators: %s: module name */
-	const subtitle = sprintf( __( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ), name );
-	const dependentModules = map( getDependentModules(), 'name' ).join( ', ' );
+	const dependentActiveModules = moduleDependents
+		// Map module slugs into module objects.
+		.map( ( dependentSlug ) => modules[ dependentSlug ] )
+		// Filter out inactive modules and bad references.
+		.filter( ( dependentModule ) => dependentModule?.active )
+		// Pluck the module names.
+		.map( ( { name } ) => name );
 
 	return (
 		<Dialog
-			dialogActive
-			handleDialog={ toggleDialogState }
+			title={
 			/* translators: %s: module name */
-			title={ sprintf( __( 'Disconnect %s from Site Kit?', 'google-site-kit' ), name ) }
-			subtitle={ subtitle }
-			onKeyPress={ handleCloseModal }
-			provides={ provides }
-			handleConfirm={ onRemove }
-			dependentModules={ dependentModules
-				? sprintf(
-					/* translators: %s: module name */
-					__( 'these active modules depend on %s and will also be disconnected: ', 'google-site-kit' ),
-					name
-				) + dependentModules : false
+				sprintf( __( 'Disconnect %s from Site Kit?', 'google-site-kit' ), moduleName )
 			}
+			subtitle={
+			/* translators: %s: module name */
+				sprintf( __( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ), moduleName )
+			}
+			dependentModules={
+				dependentActiveModules.length > 0 && sprintf(
+					/* translators: 1: module name, 2: module names */
+					__( 'these active modules depend on %1$s and will also be disconnected: %2$s', 'google-site-kit' ),
+					moduleName,
+					dependentActiveModules.join(
+						/* translators: used between list items, there is a space after the comma. */
+						__( ', ', 'google-site-kit' )
+					)
+				)
+			}
+			provides={ provides }
+			handleDialog={ toggleDialogState }
+			handleConfirm={ onRemove }
+			onKeyPress={ handleCloseModal }
+			dialogActive
 			danger
 		/>
 	);
