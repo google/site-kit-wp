@@ -24,9 +24,10 @@ import { map, filter, sortBy } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { compose } from '@wordpress/compose';
 import { Component, Fragment } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -39,7 +40,7 @@ import SettingsModule from './settings-module';
 import SettingsOverlay from './settings-overlay';
 import { isPermissionScopeError } from '../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-const { withSelect } = Data;
+const { withSelect, withDispatch } = Data;
 
 class SettingsModules extends Component {
 	constructor( props ) {
@@ -300,4 +301,23 @@ class SettingsModules extends Component {
 	}
 }
 
-export default withSelect( ( select ) => ( { modules: select( CORE_MODULES ).getModules() } ) )( SettingsModules );
+export default compose(
+	withSelect( ( select ) => {
+		const activeModule = select( CORE_MODULES ).getCurrentSettingsViewModule();
+		return {
+			modules: select( CORE_MODULES ).getModules(),
+			activeModule,
+			moduleState: select( CORE_MODULES ).getSettingsViewModuleState( activeModule ),
+		};
+	} ),
+	withDispatch( ( dispatch ) => {
+		return {
+			setActiveModule( slug ) {
+				dispatch( CORE_MODULES ).setSettingsViewCurrentModule( slug || '' );
+			},
+			setModuleState( state ) {
+				dispatch( CORE_MODULES ).setSettingsViewIsEditing( state === 'edit' );
+			},
+		};
+	} )
+)( SettingsModules );
