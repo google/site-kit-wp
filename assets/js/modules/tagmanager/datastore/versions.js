@@ -42,8 +42,17 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to fetch or receive a live container version.' );
 		invariant( isValidInternalContainerID( internalContainerID ), 'A valid internalContainerID is required to fetch or receive a live container version.' );
 	},
-	controlCallback: ( { accountID, internalContainerID } ) => {
-		return API.get( 'modules', 'tagmanager', 'live-container-version', { accountID, internalContainerID }, { useCache: false } );
+	controlCallback: async ( { accountID, internalContainerID } ) => {
+		try {
+			return await API.get( 'modules', 'tagmanager', 'live-container-version', { accountID, internalContainerID }, { useCache: false } );
+		} catch ( err ) {
+			// If the container has no published version, it will error with a 404.
+			if ( 404 === err.code ) {
+				return null;
+			}
+			// Otherwise rethrow the error to be handled as usual.
+			throw err;
+		}
 	},
 	reducerCallback: ( state, liveContainerVersion, { accountID, internalContainerID } ) => {
 		return {
