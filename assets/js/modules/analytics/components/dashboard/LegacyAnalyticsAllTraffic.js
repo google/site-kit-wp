@@ -1,5 +1,5 @@
 /**
- * AnalyticsAllTraffic component.
+ * LegacyAnalyticsAllTraffic component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -35,11 +35,11 @@ import DashboardModuleHeader from '../../../../components/dashboard/dashboard-mo
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getSetupIncompleteComponent from '../../../../components/notifications/setup-incomplete';
-import DashboardAcquisitionPieChart from './DashboardAcquisitionPieChart';
-import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
+import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
+import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 import { getModulesData } from '../../../../util';
 
-class AnalyticsAllTraffic extends Component {
+class LegacyAnalyticsAllTraffic extends Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -131,7 +131,7 @@ class AnalyticsAllTraffic extends Component {
 									mdc-layout-grid__cell--span-4-tablet
 									mdc-layout-grid__cell--span-4-phone
 								">
-									<DashboardAcquisitionPieChart
+									<LegacyDashboardAcquisitionPieChart
 										source
 										handleDataError={ this.handleDataError }
 										handleDataSuccess={ this.handleDataSuccess }
@@ -143,7 +143,7 @@ class AnalyticsAllTraffic extends Component {
 									mdc-layout-grid__cell--span-4-tablet
 									mdc-layout-grid__cell--span-4-phone
 								">
-									<AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
+									<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
 								</div>
 							</div>
 						</div>
@@ -154,4 +154,4 @@ class AnalyticsAllTraffic extends Component {
 	}
 }
 
-export default AnalyticsAllTraffic;
+export default LegacyAnalyticsAllTraffic;
