@@ -32,3 +32,5 @@ export { default as pageDashboardAllTrafficArgs } from './page-dashboard-all-tra
 export { default as pageDashboardAllTrafficData } from './page-dashboard-all-traffic-widget-data.json';
 export { default as dashboardBounceRateWidgetData } from './dashboard-bounce-rate-widget-data.json';
 export { default as dashboardBounceRateWidgetArgs } from './dashboard-bounce-rate-widget-args.json';
+export { default as dashboardGoalsWidgetData } from './dashboard-goals-widget-data.json';
+export { default as dashboardGoalsWidgetArgs } from './dashboard-goals-widget-args.json';

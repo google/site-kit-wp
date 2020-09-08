@@ -1,0 +1,37 @@
+[
+	{
+	  "nextPageToken": null,
+	  "columnHeader": {
+		"dimensions": [
+		  "ga:date"
+		],
+		"metricHeader": {
+		  "metricHeaderEntries": [
+			{
+			  "name": "Goal Completions",
+			  "type": "INTEGER"
+			}
+		  ]
+		}
+	  },
+	  "data": {
+		"dataLastRefreshed": null,
+		"isDataGolden": null,
+		"rowCount": null,
+		"samplesReadCounts": null,
+		"samplingSpaceSizes": null,
+		"totals": [
+		  {
+			"values": [
+			  "0"
+			]
+		  },
+		  {
+			"values": [
+			  "0"
+			]
+		  }
+		]
+	  }
+	}
+  ]

@@ -22,14 +22,18 @@
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidget';
 import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
+import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
 import {
+	goals,
 	dashboardAllTrafficArgs,
 	dashboardAllTrafficData,
 	pageDashboardAllTrafficArgs,
 	pageDashboardAllTrafficData,
 	dashboardBounceRateWidgetArgs,
 	dashboardBounceRateWidgetData,
+	dashboardGoalsWidgetArgs,
+	dashboardGoalsWidgetData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
 generateReportBasedWidgetStories( {
@@ -66,4 +70,40 @@ generateReportBasedWidgetStories( {
 	data: dashboardBounceRateWidgetData,
 	options: dashboardBounceRateWidgetArgs,
 	component: DashboardBounceRateWidget,
+} );
+
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
+	datastore: STORE_NAME,
+	group: 'Analytics Module/Components/Dashboard/Goals Widget',
+	data: dashboardGoalsWidgetData,
+	options: dashboardGoalsWidgetArgs,
+	component: DashboardGoalsWidget,
+	variantCallbacks: {
+		Loaded: ( dispatch, data, options ) => {
+			dispatch( STORE_NAME ).receiveGetReport( data, { options } );
+			dispatch( STORE_NAME ).receiveGetGoals( goals );
+		},
+		'Data Unavailable': ( dispatch ) => {
+			dispatch( STORE_NAME ).receiveGetGoals( goals );
+		},
+	},
+} );
+
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
+	datastore: STORE_NAME,
+	group: 'Analytics Module/Components/Page Dashboard/Goals Widget',
+	data: dashboardGoalsWidgetData,
+	options: dashboardGoalsWidgetArgs,
+	component: DashboardGoalsWidget,
+	variantCallbacks: {
+		Loaded: ( dispatch, data, options ) => {
+			dispatch( STORE_NAME ).receiveGetReport( data, { options } );
+			dispatch( STORE_NAME ).receiveGetGoals( goals );
+		},
+		'Data Unavailable': ( dispatch ) => {
+			dispatch( STORE_NAME ).receiveGetGoals( goals );
+		},
+	},
 } );
