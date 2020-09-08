@@ -68,7 +68,16 @@ storiesOf( 'Settings', module )
 	} )
 	.add( 'Connected Services', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( CORE_MODULES ).receiveGetModules( defaultModules );
+			const connectedModules = [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ];
+			const modules = defaultModules.map( ( module ) => {
+				const connected = connectedModules.includes( module.slug );
+				return {
+					...module,
+					active: connected,
+					connected,
+				};
+			} );
+			registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
 		};
 
 		return (
@@ -79,7 +88,16 @@ storiesOf( 'Settings', module )
 	} )
 	.add( 'Connect More Services', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( CORE_MODULES ).receiveGetModules( defaultModules );
+			const activeModules = [ 'search-console', 'analytics', 'pagespeed-insights' ];
+			const connectedModules = [ 'search-console', 'pagespeed-insights' ];
+			const modules = defaultModules.map( ( module ) => {
+				return {
+					...module,
+					active: activeModules.includes( module.slug ),
+					connected: connectedModules.includes( module.slug ),
+				};
+			} );
+			registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
 		};
 
 		return (
@@ -89,6 +107,12 @@ storiesOf( 'Settings', module )
 		);
 	} )
 	.add( 'Admin Settings', () => {
-		return <SettingsAdmin />;
+		return (
+			<div className="mdc-layout-grid">
+				<div className="mdc-layout-grid__inner">
+					<SettingsAdmin />
+				</div>
+			</div>
+		);
 	} )
 ;
