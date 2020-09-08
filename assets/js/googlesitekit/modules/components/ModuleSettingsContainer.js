@@ -30,12 +30,15 @@ import { STORE_NAME } from '../datastore/constants';
 const { useSelect } = Data;
 
 function ModuleSettingsContainer( { children, slug } ) {
-	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsOpen( slug ) );
+	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewModuleOpen( slug ) );
 
 	return (
 		<div
 			id={ `googlesitekit-settings-module__content--${ slug }` }
-			className={ classnames( 'googlesitekit-settings-module__content', { 'googlesitekit-settings-module__content--open': isOpen } ) }
+			className={ classnames(
+				'googlesitekit-settings-module__content',
+				{ 'googlesitekit-settings-module__content--open': isOpen }
+			) }
 			role="tabpanel"
 			aria-hidden={ ! isOpen }
 			aria-labelledby={ `googlesitekit-settings-module__header--${ slug }` }
