@@ -23,7 +23,7 @@ export { default as AnalyticsDashboardWidget } from './AnalyticsDashboardWidget'
 export { default as AnalyticsDashboardWidgetOverview } from './AnalyticsDashboardWidgetOverview';
 export { default as AnalyticsDashboardWidgetPopularPagesTable } from './AnalyticsDashboardWidgetPopularPagesTable';
 export { default as AnalyticsDashboardWidgetSiteStats } from './AnalyticsDashboardWidgetSiteStats';
-export { default as AnalyticsDashboardWidgetTopLevel } from './AnalyticsDashboardWidgetTopLevel';
+export { default as LegacyAnalyticsDashboardWidgetTopLevel } from './LegacyAnalyticsDashboardWidgetTopLevel';
 export { default as AnalyticsDashboardWidgetTopPagesTable } from './AnalyticsDashboardWidgetTopPagesTable';
 export { default as DashboardAllTrafficWidget } from './DashboardAllTrafficWidget';
 export { default as LegacyAnalyticsAllTraffic } from './LegacyAnalyticsAllTraffic';
