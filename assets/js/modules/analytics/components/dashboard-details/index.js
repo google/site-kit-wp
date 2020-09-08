@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights Settings components.
+ * Analytics dashboard-details components.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-export { default as SettingsMain } from './SettingsMain';
-export { default as SettingsView } from './SettingsView';
+export { default as AnalyticsDashboardDetailsWidgetTopAcquisitionSources } from './AnalyticsDashboardDetailsWidgetTopAcquisitionSources';
