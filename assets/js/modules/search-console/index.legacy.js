@@ -25,14 +25,24 @@ import { addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { createAddToFilter } from '../../util/helpers';
+import PostSearcher from '../../components/PostSearcher';
+import GoogleSitekitSearchConsoleDashboardWidget from './components/dashboard/GoogleSitekitSearchConsoleDashboardWidget';
+import GoogleSitekitSearchConsoleAdminbarWidget from './components/adminbar/GoogleSitekitSearchConsoleAdminbarWidget';
+import WPSearchConsoleDashboardWidget from './components/wp-dashboard/WPSearchConsoleDashboardWidget';
+import LegacyDashboardSearchFunnel from './components/dashboard/LegacyDashboardSearchFunnel.js';
+import LegacySearchConsoleDashboardWidgetTopLevel from './components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
+import DashboardDetailsWidgetKeywordsTable from './components/dashboard-details/DashboardDetailsWidgetKeywordsTable';
+import DashboardWidgetPopularKeywordsTable from './components/dashboard/DashboardWidgetPopularKeywordsTable';
+import DashboardDetailsWidgetSearchFunnel from './components/dashboard-details/DashboardDetailsSearchFunnel';
+import DashboardPopularity from './components/dashboard/DashboardPopularity';
 
 const slug = 'search-console';
 
 const addGoogleSitekitSearchConsoleDashboardWidget = createAddToFilter( <GoogleSitekitSearchConsoleDashboardWidget /> );
 const addGoogleSitekitSearchConsoleAdminbarWidget = createAddToFilter( <GoogleSitekitSearchConsoleAdminbarWidget /> );
 const addWPSearchConsoleDashboardWidget = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
-const addDashboardSearchFunnel = createAddToFilter( <DashboardSearchFunnel /> );
-const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
+const addLegacyDashboardSearchFunnel = createAddToFilter( <LegacyDashboardSearchFunnel /> );
+const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
 const addDashboardDetailsSearchFunnel = createAddToFilter( <DashboardDetailsWidgetSearchFunnel /> );
 const addDashboardDetailsKeywords = createAddToFilter( <DashboardDetailsWidgetKeywordsTable /> );
@@ -41,31 +51,17 @@ const addDashboardPopularity = createAddToFilter( <DashboardPopularity /> );
 const addPostSearcher = createAddToFilter( <PostSearcher /> );
 
 /**
- * Internal dependencies
- */
-import PostSearcher from '../../components/PostSearcher';
-import GoogleSitekitSearchConsoleDashboardWidget from './components/dashboard/GoogleSitekitSearchConsoleDashboardWidget';
-import GoogleSitekitSearchConsoleAdminbarWidget from './components/adminbar/GoogleSitekitSearchConsoleAdminbarWidget';
-import WPSearchConsoleDashboardWidget from './components/wp-dashboard/WPSearchConsoleDashboardWidget';
-import DashboardSearchFunnel from './components/dashboard/DashboardSearchFunnel.js';
-import SearchConsoleDashboardWidgetTopLevel from './components/dashboard/SearchConsoleDashboardWidgetTopLevel';
-import DashboardDetailsWidgetKeywordsTable from './components/dashboard-details/DashboardDetailsWidgetKeywordsTable';
-import DashboardWidgetPopularKeywordsTable from './components/dashboard/DashboardWidgetPopularKeywordsTable';
-import DashboardDetailsWidgetSearchFunnel from './components/dashboard-details/DashboardDetailsSearchFunnel';
-import DashboardPopularity from './components/dashboard/DashboardPopularity';
-
-/**
  * Add components to the Site Kit Dashboard.
  */
 addFilter( 'googlesitekit.DashboardModule',
 	'googlesitekit.SearchConsole',
-	addDashboardSearchFunnel, 11 );
+	addLegacyDashboardSearchFunnel, 11 );
 addFilter( 'googlesitekit.DashboardModule',
 	'googlesitekit.DashboardPopularityModule',
 	addDashboardPopularity, 40 );
 addFilter( 'googlesitekit.DashboardSearchFunnel',
 	'googlesitekit.SearchConsoleSearchFunnel',
-	addSearchConsoleDashboardWidgetTopLevel );
+	addLegacySearchConsoleDashboardWidgetTopLevel );
 
 /**
  * Add components to the Site Kit URL Details Dashboard.

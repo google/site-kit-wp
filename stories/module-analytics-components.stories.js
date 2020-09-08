@@ -36,6 +36,7 @@ generateReportBasedWidgetStories( {
 	data: dashboardAllTrafficData,
 	options: dashboardAllTrafficArgs,
 	component: DashboardAllTrafficWidget,
+	wrapWidget: false,
 } );
 
 generateReportBasedWidgetStories( {
@@ -45,4 +46,5 @@ generateReportBasedWidgetStories( {
 	data: pageDashboardAllTrafficData,
 	options: pageDashboardAllTrafficArgs,
 	component: DashboardAllTrafficWidget,
+	wrapWidget: false,
 } );
