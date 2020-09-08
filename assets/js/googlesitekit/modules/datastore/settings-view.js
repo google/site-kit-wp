@@ -21,6 +21,11 @@
  */
 import invariant from 'invariant';
 
+/**
+ * Internal dependencies
+ */
+import { SETTINGS_DISPLAY_MODES } from './constants';
+
 const SET_SETTINGS_VIEW_CURRENT_MODULE = 'SET_SETTINGS_VIEW_CURRENT_MODULE';
 const SET_SETTINGS_VIEW_IS_EDITING = 'SET_SETTINGS_VIEW_IS_EDITING';
 
@@ -83,17 +88,30 @@ export const selectors = {
 	},
 
 	getSettingsViewModuleState( state, slug ) {
+		const { EDIT, VIEW, CLOSED } = SETTINGS_DISPLAY_MODES;
 		const { currentModule, isEditing } = state.settingsView;
 
 		if ( currentModule !== slug ) {
-			return 'closed';
+			return CLOSED;
 		}
 
-		return isEditing ? 'edit' : 'view';
+		return isEditing ? EDIT : VIEW;
+	},
+
+	isSettingsViewModuleOpen( state, slug ) {
+		return state.settingsView.currentModule === slug;
+	},
+
+	isSettingsViewEditingModule( state, slug ) {
+		return selectors.getSettingsViewModuleState( state, slug ) === SETTINGS_DISPLAY_MODES.EDIT;
 	},
 
 	isSettingsViewEditing( state ) {
 		return state.settingsView.isEditing;
+	},
+
+	isSettingsViewModuleLocked( state, slug ) {
+		return selectors.getCurrentSettingsViewModule( state ) !== slug && selectors.isSettingsViewEditing( state );
 	},
 };
 
