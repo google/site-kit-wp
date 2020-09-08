@@ -110,10 +110,6 @@ const fetchSetModuleActivationStore = createFetchStore( {
 
 const BASE_INITIAL_STATE = {
 	modules: undefined,
-	// The current module in focus (view/edit)
-	currentModule: '',
-	// Is the current module being edited?
-	isEditing: false,
 	// This value is to indicate that modules data needs to be refreshed after
 	// a module activation update, since the activation is technically complete
 	// before this data has been refreshed.
