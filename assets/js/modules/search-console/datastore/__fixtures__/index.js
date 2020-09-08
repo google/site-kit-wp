@@ -22,3 +22,5 @@ export { default as dashboardClicksWidgetArgs } from './dashboard-clicks-widget-
 export { default as dashboardImpressionsWidgetArgs } from './dashboard-impressions-widget-args.json';
 export { default as pageDashboardClicksWidgetArgs } from './page-dashboard-clicks-widget-args.json';
 export { default as pageDashboardImpressionsArgs } from './page-dashboard-impressions-widget-args.json';
+export { default as dashboardPopularKeyWordsWidgetArgs } from './dashboard-popular-keywords-widget-args.json';
+export { default as dashboardPopularKeyWordsWidgetData } from './dashboard-popular-keywords-widget-data.json';
