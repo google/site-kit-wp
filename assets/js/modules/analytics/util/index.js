@@ -172,20 +172,15 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 		day: 'numeric',
 	};
 
-	previousMonthData[ 3 ][ 1 ] = 0;
-
 	each( lastMonthData, ( row, i ) => {
 		if ( ! row[ 0 ] || ! row[ 1 ] || ! previousMonthData[ i ] ) {
 			return;
 		}
 
 		const prevMonth = parseFloat( previousMonthData[ i ][ 1 ] );
-		const difference = prevMonth !== 0 ? ( row[ 1 ] * 100 / prevMonth ) : 200;
-
-		const arrowClasses = classnames( 'googlesitekit-change-arrow', {
-			'googlesitekit-change-arrow--up': difference > 100,
-			'googlesitekit-change-arrow--down': difference < 100,
-		} );
+		const difference = prevMonth !== 0
+			? ( row[ 1 ] * 100 / prevMonth ) - 100
+			: 100; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 100
 
 		const dateRange = sprintf(
 			/* translators: %1$s: date for user stats, %2$s: previous date for user stats comparison */
@@ -199,17 +194,20 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for Analytics dashbaord chart tooltip', 'google-site-kit' ),
 			dataLabels[ selectedStats ],
 			parseFloat( row[ 1 ] ).toLocaleString(),
-			`<svg class="${ arrowClasses }" width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+			`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
+				'googlesitekit-change-arrow--up': difference > 0,
+				'googlesitekit-change-arrow--down': difference < 0,
+			} ) }">
 				<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
 			</svg>`,
-			Math.abs( difference - 100 ).toFixed( 2 ).replace( /(.00|0)$/, '' )
+			Math.abs( difference ).toFixed( 2 ).replace( /(.00|0)$/, '' ), // .replace( ... ) removes trailing zeros
 		);
 
 		dataMap.push( [
 			row[ 0 ],
 			`<div class="${ classnames( 'googlesitekit-visualization-tooltip', {
-				'googlesitekit-visualization-tooltip--up': difference > 100,
-				'googlesitekit-visualization-tooltip--down': difference < 100,
+				'googlesitekit-visualization-tooltip--up': difference > 0,
+				'googlesitekit-visualization-tooltip--down': difference < 0,
 			} ) }">
 				<p>${ dateRange }</p>
 				<p>${ statInfo }</p>
