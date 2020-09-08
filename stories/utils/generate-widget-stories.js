@@ -25,9 +25,11 @@ import { Component } from 'react';
 /**
  * Internal dependencies
  */
+import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import { WithTestRegistry } from '../../tests/js/utils';
+const { components: { Widget } } = Widgets;
 
 /**
  * Generates a function to set up registry for widget stories.
@@ -63,14 +65,15 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
  *
  * @since n.e.x.t
  *
- * @param {Object} args                  Widget arguments.
- * @param {string} args.moduleSlug       Module slug.
- * @param {string} args.datastore        Module datastore name.
- * @param {string} args.group            Stories group name.
- * @param {Array}  args.data             Widget data.
- * @param {Object} args.options          Arguments for report requests.
+ * @param {Object}    args               Widget arguments.
+ * @param {string}    args.moduleSlug    Module slug.
+ * @param {string}    args.datastore     Module datastore name.
+ * @param {string}    args.group         Stories group name.
+ * @param {Array}     args.data          Widget data.
+ * @param {Object}    args.options       Arguments for report requests.
  * @param {Object} args.variantCallbacks Custom callbacks to be run for each of the variants.
- * @param {Component} args.component Widget component.
+ * @param {Component} args.component     Widget component.
+ * @param {boolean}   args.wrapWidget    Whether to wrap in default <Widget> component. Default true.
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {
@@ -79,8 +82,9 @@ export function generateReportBasedWidgetStories( {
 	group,
 	data,
 	options,
-	component: Widget,
 	variantCallbacks = {},
+	component: WidgetComponent,
+	wrapWidget = true,
 } ) {
 	const stories = storiesOf( group, module );
 
@@ -115,10 +119,12 @@ export function generateReportBasedWidgetStories( {
 		},
 	};
 
+	const widget = wrapWidget ? <Widget><WidgetComponent /></Widget> : <WidgetComponent />;
+
 	Object.keys( variants ).forEach( ( variant ) => {
 		stories.add( variant, () => (
 			<WithTestRegistry callback={ getSetupRegistry( moduleSlug, options.url || null, variants[ variant ] ) }>
-				<Widget />
+				{ widget }
 			</WithTestRegistry>
 		) );
 	} );
