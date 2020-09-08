@@ -34,3 +34,5 @@ export { default as dashboardBounceRateWidgetData } from './dashboard-bounce-rat
 export { default as dashboardBounceRateWidgetArgs } from './dashboard-bounce-rate-widget-args.json';
 export { default as dashboardGoalsWidgetData } from './dashboard-goals-widget-data.json';
 export { default as dashboardGoalsWidgetArgs } from './dashboard-goals-widget-args.json';
+export * from './dashboard-unique-visitors-data';
+export * from './dashboard-unique-visitors-args';
