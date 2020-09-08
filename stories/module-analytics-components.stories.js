@@ -141,7 +141,7 @@ generateReportBasedWidgetStories( {
 			dispatch( STORE_NAME ).receiveGetReport( [], { options: sparkArgs } );
 		},
 		Error: ( dispatch, data, options ) => {
-			const { visitorArgs, sparkArgs } = options;
+			const { visitorArgs } = options;
 			const error = {
 				code: 'missing_required_param',
 				message: 'Request parameter is empty: metrics.',
@@ -180,7 +180,7 @@ generateReportBasedWidgetStories( {
 			dispatch( STORE_NAME ).receiveGetReport( [], { options: sparkArgs } );
 		},
 		Error: ( dispatch, data, options ) => {
-			const { visitorArgs, sparkArgs } = options;
+			const { visitorArgs } = options;
 			const error = {
 				code: 'missing_required_param',
 				message: 'Request parameter is empty: metrics.',
