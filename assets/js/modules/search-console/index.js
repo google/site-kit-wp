@@ -96,7 +96,7 @@ domReady( () => {
 			component: DashboardPopularKeywordsWidget,
 			width: Widgets.WIDGET_WIDTHS.HALF,
 			priority: 1,
-			wrapWidget: false,
+			wrapWidget: true,
 		},
 		[
 			AREA_DASHBOARD_POPULARITY,
