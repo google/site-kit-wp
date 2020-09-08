@@ -48,11 +48,12 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		data = data.slice( 0, options.cap );
 	}
 
-	const siteURL = global._googlesitekitLegacyData.admin.siteURL;
-
 	each( data, ( row, j ) => {
 		const cells = [];
 		const link = links && links[ j ];
+		const permaLink = link
+			? global._googlesitekitLegacyData.admin.siteURL + link
+			: false;
 
 		each( row, ( cell, i ) => {
 			// Replace (none) by direct.
@@ -74,12 +75,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 						? <div className="googlesitekit-table__body-item-content">
 							<Link
 								className="googlesitekit-table__body-item-link"
-								href={ useAdminURLs ? getSiteKitAdminURL(
-									'googlesitekit-dashboard',
-									{
-										permaLink: siteURL + link,
-									}
-								) : link }
+								href={ useAdminURLs ? getSiteKitAdminURL( 'googlesitekit-dashboard', { permaLink } ) : permaLink }
 								external={ ! useAdminURLs }
 								inherit
 							>
@@ -89,7 +85,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 							{ showURLs &&
 								<Link
 									className="googlesitekit-table__body-item-url"
-									href={ link }
+									href={ permaLink }
 									inherit
 									external
 								>
