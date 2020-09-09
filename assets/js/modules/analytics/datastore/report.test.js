@@ -25,6 +25,7 @@ import {
 	createTestRegistry,
 	muteConsole,
 	subscribeUntil,
+	untilResolved,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
@@ -75,6 +76,29 @@ describe( 'modules/analytics report', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
+			} );
+
+			it( 'sets adsenseLinked to false if a 400 error is returned due to restricted metrics', async () => {
+				const restrictedMetricsError = {
+					code: 400,
+					message: 'Restricted metric(s): ga:adsenseRevenue can only be queried under certain conditions.',
+				};
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					{ body: restrictedMetricsError, status: 400 }
+				);
+
+				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+				registry.dispatch( STORE_NAME ).setAdsenseLinked( true );
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
+
+				muteConsole( 'error' ); // fetch will trigger 400 error.
+				registry.select( STORE_NAME ).getReport( options );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				await untilResolved( registry, STORE_NAME ).getReport( options );
+
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( false );
 			} );
 
 			it( 'does not make a network request if report for given options is already present', async () => {
