@@ -33,6 +33,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { isValidDateRange, isValidOrders } from '../../../util/report-validation';
 import { isValidDimensions, isValidMetrics } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
+import normalizeReportOptions from '../util/report-normalization';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -49,7 +50,7 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
-		return { options };
+		return { options: normalizeReportOptions( options ) };
 	},
 	validateParams: ( { options } = {} ) => {
 		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
@@ -96,11 +97,9 @@ const baseResolvers = {
 		const { error } = yield fetchGetReportStore.actions.fetchGetReport( options );
 
 		if (
-			error &&
-			error.code === 400 &&
-			Array.isArray( options.metrics ) &&
-			error.message.startsWith( 'Restricted metric' ) &&
-			options.metrics.some( ( { expression } ) => /^ga:adsense/.test( expression ) )
+			error?.code === 400 &&
+			error?.message.startsWith( 'Restricted metric' ) &&
+			normalizeReportOptions( options ).metrics.some( ( { expression } ) => /^ga:adsense/.test( expression ) )
 		) {
 			yield adsenseActions.setAdsenseLinked( false );
 		}
