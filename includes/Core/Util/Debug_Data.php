@@ -260,7 +260,7 @@ class Debug_Data {
 	/**
 	 * Gets the number of users with a Site Kit token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @return array
 	 */

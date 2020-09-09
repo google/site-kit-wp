@@ -595,7 +595,7 @@ final class Search_Console extends Module
 	/**
 	 * Gets an owner ID for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @return int Owner ID.
 	 */

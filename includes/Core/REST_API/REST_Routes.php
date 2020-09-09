@@ -133,7 +133,7 @@ final class REST_Routes {
 	 * Registers all REST routes.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Reworked to use REST_Route::register method to register a route.
+	 * @since 1.16.0 Reworked to use REST_Route::register method to register a route.
 	 */
 	private function register_routes() {
 		$routes = $this->get_routes();

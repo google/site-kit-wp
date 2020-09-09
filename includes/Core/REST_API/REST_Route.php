@@ -93,7 +93,7 @@ final class REST_Route {
 	/**
 	 * Registers the REST route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 */
 	public function register() {
 		register_rest_route( REST_Routes::REST_ROOT, $this->get_uri(), $this->get_args() );

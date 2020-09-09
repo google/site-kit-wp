@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 /**
  * Trait for a module that includes an owner ID.
  *
- * @since n.e.x.t
+ * @since 1.16.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ trait Module_With_Owner_Trait {
 	/**
 	 * Gets an owner ID for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @return int Owner ID.
 	 */

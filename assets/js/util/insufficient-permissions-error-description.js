@@ -24,7 +24,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Gets a description for an insufficient permissions error.
  *
- * @since n.e.x.t
+ * @since 1.16.0
  *
  * @param {string} error Original error message.
  * @param {Object} module Module data.
