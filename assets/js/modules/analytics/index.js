@@ -69,19 +69,6 @@ domReady( () => {
 	);
 
 	Widgets.registerWidget(
-		'analyticsGoals',
-		{
-			component: DashboardGoalsWidget,
-			width: Widgets.WIDGET_WIDTHS.QUARTER,
-			priority: 4,
-			wrapWidget: true,
-		},
-		[
-			AREA_DASHBOARD_SEARCH_FUNNEL,
-		],
-	);
-
-	Widgets.registerWidget(
 		'analyticsUniqueVisitors',
 		{
 			component: DashboardUniqueVisitorsWidget,
@@ -96,6 +83,19 @@ domReady( () => {
 	);
 
 	Widgets.registerWidget(
+		'analyticsGoals',
+		{
+			component: DashboardGoalsWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 4,
+			wrapWidget: true,
+		},
+		[
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+
+	Widgets.registerWidget(
 		'analyticsBounceRate',
 		{
 			component: DashboardBounceRateWidget,
@@ -104,7 +104,6 @@ domReady( () => {
 			wrapWidget: true,
 		},
 		[
-			AREA_DASHBOARD_SEARCH_FUNNEL,
 			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
