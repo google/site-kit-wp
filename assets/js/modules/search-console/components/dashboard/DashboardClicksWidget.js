@@ -67,7 +67,7 @@ function DashboardClicksWidget() {
 
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return getDataErrorComponent( 'search-console', __( 'Search Console', 'google-site-kit' ), error.message );
+		return getDataErrorComponent( 'search-console', error );
 	}
 
 	if ( ! data || ! data.length ) {
