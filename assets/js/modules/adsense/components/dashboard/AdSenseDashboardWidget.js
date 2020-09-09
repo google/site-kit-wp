@@ -174,7 +174,7 @@ class AdSenseDashboardWidget extends Component {
 								</div>
 							}
 							{ ! receivingData && (
-								error ? getDataErrorComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
+								error ? getDataErrorComponent( 'adsense', error, true, true, true, errorObj ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
 							<div className={ classnames(
 								'mdc-layout-grid__cell',

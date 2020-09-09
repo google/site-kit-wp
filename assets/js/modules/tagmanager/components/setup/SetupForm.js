@@ -30,7 +30,7 @@ import Button from '../../../../components/button';
 import { STORE_NAME, FORM_SETUP, EDIT_SCOPE } from '../../datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import { isPermissionScopeError } from '../../../../util/errors';
 import {
 	AccountSelect,
 	AMPContainerSelect,
@@ -68,11 +68,8 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ hasEditScope, autoSubmit, submitForm ] );
 
 	return (
-		<form
-			className="googlesitekit-tagmanager-setup__form"
-			onSubmit={ submitForm }
-		>
-			<StoreErrorNotice storeName={ STORE_NAME } />
+		<form className="googlesitekit-tagmanager-setup__form" onSubmit={ submitForm }>
+			<StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } />
 			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
