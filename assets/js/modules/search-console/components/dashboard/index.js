@@ -18,8 +18,8 @@
 
 export { default as DashboardClicksWidget } from './DashboardClicksWidget';
 export { default as DashboardImpressionsWidget } from './DashboardImpressionsWidget';
-export { default as DashboardPopularity } from './DashboardPopularity';
-export { default as LegacyDashboardPopularityInner } from './LegacyDashboardPopularityInner';
+export { default as LegacyDashboardPopularity } from './LegacyDashboardPopularity';
+export { default as DashboardPopularityInner } from './DashboardPopularityInner';
 export { default as DashboardWidgetPopularKeywordsTable } from './DashboardWidgetPopularKeywordsTable';
 export { default as GoogleSitekitSearchConsoleDashboardWidget } from './GoogleSitekitSearchConsoleDashboardWidget';
 export { default as LegacyDashboardSearchFunnel } from './LegacyDashboardSearchFunnel';
