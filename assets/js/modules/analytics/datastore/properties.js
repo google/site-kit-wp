@@ -138,7 +138,7 @@ const baseActions = {
 	 *
 	 * @param {string} propertyID Property ID to select.
 	 * @param {string} [internalPropertyID] Internal property ID (if available).
-	 * @return {Function} A generator function.
+	 * @return {Object} A Generator function.
 	 */
 	selectProperty( propertyID, internalPropertyID = '' ) {
 		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
