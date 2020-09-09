@@ -25,26 +25,20 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as MODULE_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyNotice() {
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-
-	if ( ! hasExistingTag ) {
+	const propertyID = useSelect( ( select ) => select( MODULE_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	if ( ! propertyID ) {
 		return null;
 	}
 
-	return (
-		<p>
-			{
-				sprintf(
-					/* translators: %s: Analytics tag ID */
-					__( 'You\'re already using Google Analytics through Google Tag Manager with the property %s. Site Kit will therefore not place an Analytics tag because Tag Manager already covers it.', 'google-site-kit' ),
-					propertyID
-				)
-			}
-		</p>
+	const message = sprintf(
+		/* translators: %s: Analytics tag ID */
+		__( `You're already using Google Analytics through Google Tag Manager with the property %s. Site Kit will therefore not place an Analytics tag because Tag Manager already covers it.`, 'google-site-kit' ),
+		propertyID
 	);
+
+	return <p>{ message }</p>;
 }

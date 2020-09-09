@@ -25,13 +25,12 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as MODULE_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import ErrorText from '../../../../components/error-text';
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyError() {
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-
+	const propertyID = useSelect( ( select ) => select( MODULE_TAGMANAGER ).getSingleAnalyticsPropertyID() );
 	if ( ! propertyID ) {
 		return null;
 	}

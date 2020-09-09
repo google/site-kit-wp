@@ -36,16 +36,12 @@ import ProgressBar from '../../../../components/progress-bar';
 import { SvgIcon, trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import {
 	AccountCreate,
 	AccountCreateLegacy,
-	ExistingGTMPropertyNotice,
-	ExistingGTMPropertyError,
 	ExistingTagError,
 } from '../common';
-import { isValidPropertyID } from '../../util';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -58,8 +54,6 @@ export default function SetupMain( { finishSetup } ) {
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
-	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
-	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( gtmAnalyticsPropertyID ) );
 
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
@@ -88,13 +82,6 @@ export default function SetupMain( { finishSetup } ) {
 		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } />;
 	}
 
-	let gtmTagNotice;
-	if ( isValidPropertyID( gtmAnalyticsPropertyID ) && gtmAnalyticsPropertyIDPermission ) {
-		gtmTagNotice = <ExistingGTMPropertyNotice />;
-	} else if ( isValidPropertyID( gtmAnalyticsPropertyID ) && gtmAnalyticsPropertyIDPermission === false ) {
-		gtmTagNotice = <ExistingGTMPropertyError />;
-	}
-
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 			<div className="googlesitekit-setup-module__logo">
@@ -105,7 +92,6 @@ export default function SetupMain( { finishSetup } ) {
 				{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			</h2>
 
-			{ gtmTagNotice }
 			{ viewComponent }
 		</div>
 	);
