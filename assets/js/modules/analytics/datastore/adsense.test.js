@@ -40,8 +40,6 @@ describe( 'modules/analytics adsense', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
-		// Receive empty settings to prevent unexpected fetch by resolver.
-		// registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 	} );
 
 	afterEach( () => {
