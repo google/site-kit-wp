@@ -68,7 +68,7 @@ export const resolvers = {
 	*getAdsenseLinked() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getAdsenseLinked() === undefined ) {
+		if ( select( STORE_NAME ).getAdsenseLinked() !== undefined ) {
 			return;
 		}
 
