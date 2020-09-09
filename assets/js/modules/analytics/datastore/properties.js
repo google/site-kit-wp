@@ -167,14 +167,15 @@ const baseActions = {
 
 			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
+			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
+			registry.dispatch( STORE_NAME ).setProfileID( '' );
+
 			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) {
 				registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // Capitalization rule exception: defaultProfileId
 				return;
 			}
 
-			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
-			registry.dispatch( STORE_NAME ).setProfileID( '' );
 			if ( profiles === undefined ) {
 				return; // Selection will happen in in getProfiles resolver.
 			}
