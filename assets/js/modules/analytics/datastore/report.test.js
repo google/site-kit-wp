@@ -24,10 +24,9 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
-	subscribeUntil,
 	untilResolved,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics report', () => {
@@ -68,9 +67,7 @@ describe( 'modules/analytics report', () => {
 				const initialReport = registry.select( STORE_NAME ).getReport( options );
 
 				expect( initialReport ).toEqual( undefined );
-				await subscribeUntil( registry, () => (
-					registry.select( STORE_NAME ).getReport( options ) !== undefined
-				) );
+				await untilResolved( registry, STORE_NAME ).getReport( options );
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 
@@ -108,10 +105,7 @@ describe( 'modules/analytics report', () => {
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getReport', [ options ] )
-				);
+				await untilResolved( registry, STORE_NAME ).getReport( options );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.report );
@@ -131,10 +125,7 @@ describe( 'modules/analytics report', () => {
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getReport( options );
-				await subscribeUntil(
-					registry,
-					() => registry.select( STORE_NAME ).isFetchingGetReport( options ) === false,
-				);
+				await untilResolved( registry, STORE_NAME ).getReport( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
