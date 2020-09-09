@@ -35,21 +35,21 @@ import InvalidCredentialsWarning from './invalid-credentials-warning';
 /**
  * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
  *
- * @param {string}  moduleSlug Module slug.
- * @param {string}  error      Description of error.
- * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.
- * @param {boolean} fullWidth  Creates layout with 'cell--span-12' to be full width. Default: false.
- * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
- * @param {Object}  errorObj   Error related data.
+ * @param {string}  moduleSlug   Module slug.
+ * @param {string}  errorMessage Description of error.
+ * @param {boolean} inGrid       Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.
+ * @param {boolean} fullWidth    Creates layout with 'cell--span-12' to be full width. Default: false.
+ * @param {boolean} createGrid   Adds a full grid layout with padding. Default: false.
+ * @param {Object}  errorObj     Error related data.
  * @return {WPElement} CTA component with data error message.
  */
-function getDataErrorComponent( moduleSlug, error, inGrid = false, fullWidth = false, createGrid = false, errorObj = {} ) {
+function getDataErrorComponent( moduleSlug, errorMessage, inGrid = false, fullWidth = false, createGrid = false, errorObj = {} ) {
 	const modulesData = getModulesData();
 	const module = modulesData[ moduleSlug ];
 
 	/* translators: %s: module name */
 	let title = sprintf( __( 'Data error in %s', 'google-site-kit' ), module?.name );
-	let message = error;
+	let message = errorMessage;
 
 	if ( isInsufficientPermissionsError( errorObj ) ) {
 		/* translators: %s: module name */
@@ -62,7 +62,7 @@ function getDataErrorComponent( moduleSlug, error, inGrid = false, fullWidth = f
 	const cta = <CTA title={ title } description={ description } error />;
 
 	// This is to handle token expired error specifically.
-	if ( 'Invalid Credentials' === error ) {
+	if ( 'Invalid Credentials' === errorMessage ) {
 		showErrorNotification( InvalidCredentialsWarning );
 	}
 

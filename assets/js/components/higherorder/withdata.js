@@ -144,14 +144,18 @@ const withData = (
 			this.state = {
 				data: false,
 				zeroData: false,
-				error: false,
+				errorMessage: false,
 			};
 
 			addAction(
 				'googlesitekit.moduleDataReset',
 				'googlesitekit.moduleDataResetHandler',
 				() => {
-					this.setState( { data: false, error: false, zeroData: false } );
+					this.setState( {
+						data: false,
+						errorMessage: false,
+						zeroData: false,
+					} );
 				}
 			);
 
@@ -173,23 +177,23 @@ const withData = (
 				const { datapoint, identifier, toState } = requestData;
 
 				// Check to see if the returned data is an error. If so, getDataError will return a string.
-				const error = getDataError( returnedData );
-				if ( error ) {
+				const errorMessage = getDataError( returnedData );
+				if ( errorMessage ) {
 					// Set an error state on the Component.
 					this.setState( {
-						error,
+						errorMessage,
 						errorObj: returnedData,
 						module: identifier,
 					} );
 
 					// If the Component included a `handleDataError` helper, pass it the error message.
 					if ( handleDataError ) {
-						handleDataError( error, returnedData );
+						handleDataError( errorMessage, returnedData );
 					}
 				} else if ( isDataZero( returnedData, datapoint, requestData ) ) { // No data error, next check for zero data.
 					// If we have a `handleDataError` call it without any parameters (indicating empty data).
 					if ( handleDataError ) {
-						handleDataError( error, returnedData );
+						handleDataError( errorMessage, returnedData );
 					}
 
 					// Set a zeroData state on the Component.
@@ -247,7 +251,7 @@ const withData = (
 				datapoint,
 				module,
 				zeroData,
-				error,
+				errorMessage,
 				errorObj,
 				requestDataToState,
 			} = this.state;
@@ -266,8 +270,8 @@ const withData = (
 			}
 
 			// If we have an error, display the DataErrorComponent.
-			if ( error ) {
-				return ( 'string' !== typeof error ) ? error : getDataErrorComponent( module, error, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid, errorObj );
+			if ( errorMessage ) {
+				return ( 'string' !== typeof errorMessage ) ? errorMessage : getDataErrorComponent( module, errorMessage, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid, errorObj );
 			}
 
 			// If we have zeroData, display the NoDataComponent.
