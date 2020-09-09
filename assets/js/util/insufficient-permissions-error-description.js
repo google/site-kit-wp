@@ -60,11 +60,11 @@ export function getInsufficientPermissionsErrorDescription( error, module ) {
 		);
 	}
 
-	if ( owner ) {
+	if ( owner && owner.login ) {
 		userInfo = sprintf(
 			/* translators: %s: owner name */
 			__( 'This service was originally connected by the administrator "%s" — you can contact them for more information.', 'google-site-kit' ),
-			owner,
+			owner.login,
 		);
 	}
 

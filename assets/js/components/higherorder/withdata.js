@@ -178,6 +178,7 @@ const withData = (
 					// Set an error state on the Component.
 					this.setState( {
 						error,
+						errorObj: returnedData,
 						module: identifier,
 					} );
 
@@ -247,6 +248,7 @@ const withData = (
 				module,
 				zeroData,
 				error,
+				errorObj,
 				requestDataToState,
 			} = this.state;
 
@@ -265,7 +267,7 @@ const withData = (
 
 			// If we have an error, display the DataErrorComponent.
 			if ( error ) {
-				return ( 'string' !== typeof error ) ? error : getDataErrorComponent( module, data, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+				return ( 'string' !== typeof error ) ? error : getDataErrorComponent( module, errorObj, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
 			}
 
 			// If we have zeroData, display the NoDataComponent.
