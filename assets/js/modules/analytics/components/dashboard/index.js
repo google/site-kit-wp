@@ -26,6 +26,9 @@ export { default as AnalyticsDashboardWidgetSiteStats } from './AnalyticsDashboa
 export { default as LegacyAnalyticsDashboardWidgetTopLevel } from './LegacyAnalyticsDashboardWidgetTopLevel';
 export { default as AnalyticsDashboardWidgetTopPagesTable } from './AnalyticsDashboardWidgetTopPagesTable';
 export { default as DashboardAllTrafficWidget } from './DashboardAllTrafficWidget';
+export { default as DashboardBounceRateWidget } from './DashboardBounceRateWidget';
+export { default as DashboardGoalsWidget } from './DashboardGoalsWidget';
+export { default as DashboardUniqueVisitorsWidget } from './DashboardUniqueVisitorsWidget';
 export { default as LegacyAnalyticsAllTraffic } from './LegacyAnalyticsAllTraffic';
 export { default as LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 export { default as LegacyAnalyticsDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
