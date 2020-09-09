@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import castArray from 'lodash/castArray';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
@@ -33,12 +34,12 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { isValidDateRange, isValidOrders } from '../../../util/report-validation';
 import { isValidDimensions, isValidMetrics } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
-import normalizeReportOptions from '../util/report-normalization';
+import { normalizeReportOptions } from '../util/report-normalization';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
-		return API.get( 'modules', 'analytics', 'report', options );
+		return API.get( 'modules', 'analytics', 'report', normalizeReportOptions( options ) );
 	},
 	reducerCallback: ( state, report, { options } ) => {
 		return {
@@ -50,7 +51,7 @@ const fetchGetReportStore = createFetchStore( {
 		};
 	},
 	argsToParams: ( options ) => {
-		return { options: normalizeReportOptions( options ) };
+		return { options };
 	},
 	validateParams: ( { options } = {} ) => {
 		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
@@ -58,7 +59,7 @@ const fetchGetReportStore = createFetchStore( {
 
 		const { metrics, dimensions, orderby } = options;
 
-		invariant( !! metrics.length, 'Requests must specify at least one metric for an Analytics report.' );
+		invariant( !! metrics && castArray( metrics ).length, 'Requests must specify at least one metric for an Analytics report.' );
 		invariant(
 			isValidMetrics( metrics ),
 			'Metrics for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" and "alias" properties.',
