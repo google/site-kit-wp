@@ -97,12 +97,9 @@ const baseResolvers = {
 
 		const { error } = yield fetchGetReportStore.actions.fetchGetReport( options );
 
-		if (
-			error?.code === 400 &&
-			error?.message.startsWith( 'Restricted metric' ) &&
-			normalizeReportOptions( options ).metrics.some( ( { expression } ) => /^ga:adsense/.test( expression ) )
-		) {
-			yield adsenseActions.setAdsenseLinked( false );
+		if ( normalizeReportOptions( options ).metrics.some( ( { expression } ) => /^ga:adsense/.test( expression ) ) ) {
+			const isRestrictedMetricError = error?.code === 400 && error?.message.startsWith( 'Restricted metric' );
+			yield adsenseActions.setAdsenseLinked( ! isRestrictedMetricError );
 		}
 	},
 };
