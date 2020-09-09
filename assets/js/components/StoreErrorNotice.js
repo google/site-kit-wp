@@ -42,7 +42,7 @@ function StoreErrorNotice( { moduleSlug, storeName, shouldDisplayError } ) {
 
 	let message = error.message;
 	if ( isInsufficientPermissionsError( error ) ) {
-		message = getInsufficientPermissionsErrorDescription( message, module?.name, module?.owner );
+		message = getInsufficientPermissionsErrorDescription( message, module );
 	}
 
 	return <ErrorText message={ message } reconnectURL={ error.data?.reconnectURL } />;

@@ -55,7 +55,7 @@ function getDataErrorComponent( moduleSlug, moduleName, error, inGrid = false, f
 		title = sprintf( __( 'Insufficient permissions in %s', 'google-site-kit' ), moduleName );
 
 		const modulesData = getModulesData();
-		message = getInsufficientPermissionsErrorDescription( message, moduleName, modulesData[ moduleSlug ]?.owner );
+		message = getInsufficientPermissionsErrorDescription( message, modulesData[ moduleSlug ] );
 	}
 
 	const reconnectUrl = errorObj?.data?.reconnectURL;
