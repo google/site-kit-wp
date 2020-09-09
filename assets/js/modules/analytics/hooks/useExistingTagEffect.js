@@ -33,29 +33,41 @@ import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/con
 const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
-	// Check for existing Analytics tag.
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
-	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
-
-	// Check for existing Analytics tag added via Tagmanager.
-	const tagmanagerModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
-	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
-	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( gtmAnalyticsPropertyID ) );
-
 	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
+
+	const {
+		accountID,
+		hasExistingTag,
+		existingTag,
+		existingTagAccountID,
+		gtmAnalyticsPropertyID,
+		gtmAnalyticsAccountID,
+		gtmModuleActive,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		const tag = store.getExistingTag() || {};
+		const propertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+
+		return {
+			accountID: store.getAccountID(),
+			hasExistingTag: store.hasExistingTag(),
+			existingTag: tag,
+			existingTagAccountID: store.getTagPermission( tag )?.accountID,
+			gtmAnalyticsPropertyID: propertyID,
+			gtmAnalyticsAccountID: store.getTagPermission( propertyID )?.accountID,
+			gtmModuleActive: select( CORE_MODULES ).isModuleActive( 'tagmanager' ),
+		};
+	} );
+
 	useEffect( () => {
-		( async () => {
-			// If there is an existing Analytics tag, select it.
-			if ( hasExistingTag && existingTagPermission ) {
-				const { accountID: existingTagAccountID } = existingTagPermission;
-				setAccountID( existingTagAccountID );
-				selectProperty( existingTag );
-			} else if ( tagmanagerModuleActive && gtmAnalyticsPropertyID && gtmAnalyticsPropertyIDPermission ) {
-				// If GTM container has GA tag and user has access to it, force select it.
-				await setAccountID( gtmAnalyticsPropertyIDPermission.accountID );
-				await selectProperty( gtmAnalyticsPropertyID );
-			}
-		} )();
-	}, [ hasExistingTag, existingTag, existingTagPermission ] );
+		if ( hasExistingTag && existingTagAccountID && existingTagAccountID !== accountID ) {
+			// There is an existing Analytics tag, select it.
+			setAccountID( existingTagAccountID );
+			selectProperty( existingTag );
+		} else if ( gtmModuleActive && gtmAnalyticsPropertyID && gtmAnalyticsAccountID && gtmAnalyticsAccountID !== accountID ) {
+			// GTM container has GA tag and user has access to it, force select it.
+			setAccountID( gtmAnalyticsAccountID );
+			selectProperty( gtmAnalyticsPropertyID );
+		}
+	}, [ accountID, hasExistingTag, existingTag, existingTagAccountID, gtmAnalyticsPropertyID, gtmAnalyticsAccountID, gtmModuleActive ] );
 }

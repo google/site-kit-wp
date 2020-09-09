@@ -97,7 +97,6 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-
 			<div className="googlesitekit-setup-module__logo">
 				<SvgIcon id="analytics" width="33" height="33" />
 			</div>
@@ -108,7 +107,6 @@ export default function SetupMain( { finishSetup } ) {
 
 			{ gtmTagNotice }
 			{ viewComponent }
-
 		</div>
 	);
 }
