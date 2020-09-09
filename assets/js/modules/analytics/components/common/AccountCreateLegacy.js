@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -58,11 +58,7 @@ export default function AccountCreateLegacy() {
 
 	return (
 		<div>
-			<StoreErrorNotice
-				module="analytics"
-				moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-				storeName={ STORE_NAME }
-			/>
+			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
 
 			{ ( ! isCreateAccount && ( accounts && accounts.length === 0 ) ) && (
 				<p>

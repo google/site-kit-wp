@@ -31,9 +31,9 @@ import { getInsufficientPermissionsErrorDescription } from '../util/insufficient
 import ErrorText from '../components/error-text';
 const { useSelect } = Data;
 
-function StoreErrorNotice( { moduleSlug, moduleName, storeName, shouldDisplayError } ) {
+function StoreErrorNotice( { moduleSlug, storeName, shouldDisplayError } ) {
 	const error = useSelect( ( select ) => select( storeName ).getError() );
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) || {} );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
 	// Do not display if no error, or if the error is for missing scopes.
 	if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
@@ -42,15 +42,14 @@ function StoreErrorNotice( { moduleSlug, moduleName, storeName, shouldDisplayErr
 
 	let message = error.message;
 	if ( isInsufficientPermissionsError( error ) ) {
-		message = getInsufficientPermissionsErrorDescription( message, moduleName, module?.owner );
+		message = getInsufficientPermissionsErrorDescription( message, module?.name, module?.owner );
 	}
 
 	return <ErrorText message={ message } reconnectURL={ error.data?.reconnectURL } />;
 }
 
 StoreErrorNotice.propTypes = {
-	module: PropTypes.string.isRequired,
-	moduleName: PropTypes.string.isRequired,
+	moduleSlug: PropTypes.string.isRequired,
 	storeName: PropTypes.string.isRequired,
 	shouldDisplayError: PropTypes.func,
 };

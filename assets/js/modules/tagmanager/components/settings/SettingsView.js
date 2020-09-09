@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -50,7 +50,7 @@ export default function SettingsView() {
 		<Fragment>
 
 			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice module="tagmanager" moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) } storeName={ STORE_NAME } /> }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 

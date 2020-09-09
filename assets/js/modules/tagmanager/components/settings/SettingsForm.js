@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { _x } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import {
@@ -37,12 +32,7 @@ import { STORE_NAME } from '../../datastore/constants';
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-tagmanager-settings-fields">
-			<StoreErrorNotice
-				module="tagmanager"
-				moduleName={ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
-				storeName={ STORE_NAME }
-			/>
-
+			<StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } />
 			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">

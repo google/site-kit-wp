@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { _x } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import {
@@ -40,12 +35,7 @@ import { STORE_NAME } from '../../datastore/constants';
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
-			<StoreErrorNotice
-				module="analytics"
-				moduleName={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-				storeName={ STORE_NAME }
-			/>
-
+			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 
 			<div className="googlesitekit-setup-module__inputs">
