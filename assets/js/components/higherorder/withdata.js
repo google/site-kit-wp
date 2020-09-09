@@ -267,7 +267,7 @@ const withData = (
 
 			// If we have an error, display the DataErrorComponent.
 			if ( error ) {
-				return ( 'string' !== typeof error ) ? error : getDataErrorComponent( module, errorObj, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+				return ( 'string' !== typeof error ) ? error : getDataErrorComponent( module, error, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid, errorObj );
 			}
 
 			// If we have zeroData, display the NoDataComponent.

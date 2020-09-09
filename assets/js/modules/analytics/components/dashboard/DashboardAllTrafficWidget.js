@@ -92,7 +92,7 @@ function DashboardAllTrafficWidget() {
 	} );
 
 	if ( ! loading && error ) {
-		return getDataErrorComponent( 'analytics', error, true, true );
+		return getDataErrorComponent( 'analytics', error.message, true, true, false, error );
 	}
 
 	if ( ! loading && isDataZeroForReporting( report ) ) {

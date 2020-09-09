@@ -158,7 +158,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 						</div>
 						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 						{ ! receivingData && (
-							error ? getDataErrorComponent( 'search-console', errorObj, true, true, true ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
+							error ? getDataErrorComponent( 'search-console', error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
 						) }
 						<div className={ classnames(
 							'mdc-layout-grid__cell',
