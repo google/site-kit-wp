@@ -89,8 +89,8 @@ final class REST_Routes {
 	public function register() {
 		add_action(
 			'rest_api_init',
-			function( $server ) {
-				$this->register_routes( $server );
+			function() {
+				$this->register_routes();
 			}
 		);
 
@@ -133,33 +133,13 @@ final class REST_Routes {
 	 * Registers all REST routes.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @param WP_REST_Server $server WordPress REST server instance.
+	 * @since n.e.x.t Reworked to use REST_Route::register method to register a route.
 	 */
-	private function register_routes( WP_REST_Server $server ) {
+	private function register_routes() {
 		$routes = $this->get_routes();
-
-		array_walk(
-			$routes,
-			function( REST_Route $route ) use ( $server ) {
-				$this->register_route( $route, $server );
-			}
-		);
-	}
-
-	/**
-	 * Registers the given REST route on the passed server object.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param REST_Route     $route  REST route.
-	 * @param WP_REST_Server $server WordPress REST server instance.
-	 */
-	protected function register_route( REST_Route $route, WP_REST_Server $server ) {
-		$route_uri = '/' . self::REST_ROOT . '/' . trim( $route->get_uri(), '/' );
-		$args      = $route->get_args();
-
-		$server->register_route( self::REST_ROOT, $route_uri, $args );
+		foreach ( $routes as $route ) {
+			$route->register();
+		}
 	}
 
 	/**
@@ -178,6 +158,10 @@ final class REST_Routes {
 			}
 
 			return current_user_can( Permissions::VIEW_POSTS_INSIGHTS );
+		};
+
+		$can_authenticate = function() {
+			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
 		$routes = array(
@@ -249,8 +233,8 @@ final class REST_Routes {
 				'core/search/data/post-search',
 				array(
 					array(
-						'methods'  => WP_REST_Server::READABLE,
-						'callback' => function( WP_REST_Request $request ) {
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
 							$query = rawurldecode( $request['query'] );
 
 							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
@@ -284,6 +268,7 @@ final class REST_Routes {
 
 							return new WP_REST_Response( $posts );
 						},
+						'permission_callback' => $can_authenticate,
 					),
 				),
 				array(
