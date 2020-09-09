@@ -25,7 +25,7 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -54,6 +54,8 @@ export default function DashboardPageSpeed() {
 	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
 	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) ) || DATA_SRC_LAB;
 
+	const [ forceCacheUpdate, setForceCacheUpdate ] = useState( false );
+
 	const {
 		isFetchingMobile,
 		isFetchingDesktop,
@@ -65,12 +67,12 @@ export default function DashboardPageSpeed() {
 		const store = select( STORE_NAME );
 
 		return {
-			isFetchingMobile: store.isFetchingGetReport( referenceURL, STRATEGY_MOBILE ),
-			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
-			errorMobile: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
-			isFetchingDesktop: store.isFetchingGetReport( referenceURL, STRATEGY_DESKTOP ),
-			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
-			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
+			isFetchingMobile: store.isFetchingGetReport( referenceURL, STRATEGY_MOBILE, forceCacheUpdate ),
+			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE, forceCacheUpdate ),
+			errorMobile: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE, forceCacheUpdate ] ),
+			isFetchingDesktop: store.isFetchingGetReport( referenceURL, STRATEGY_DESKTOP, forceCacheUpdate ),
+			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP, forceCacheUpdate ),
+			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP, forceCacheUpdate ] ),
 		};
 	} );
 
@@ -79,6 +81,10 @@ export default function DashboardPageSpeed() {
 	const setStrategyDesktop = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_DESKTOP } ), [] );
 	const setDataSrcField = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_FIELD } ), [] );
 	const setDataSrcLab = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_LAB } ), [] );
+	const updateReport = useCallback( ( event ) => {
+		event.preventDefault();
+		setForceCacheUpdate( new Date().getTime() );
+	}, [] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = useCallback( ( dataSrcIndex ) => {
@@ -154,6 +160,7 @@ export default function DashboardPageSpeed() {
 						</Tab>
 					</TabBar>
 				</div>
+				<a href="#update" onClick={ updateReport }>FORCE UPDATE</a>
 				<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
 					<DeviceSizeTabBar
 						activeTab={ strategy }
