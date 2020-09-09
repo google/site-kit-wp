@@ -58,6 +58,7 @@ const fetchGetReportStore = createFetchStore( {
 
 		const { metrics, dimensions, orderby } = options;
 
+		invariant( !! metrics.length, 'Requests must specify at least one metric for an Analytics report.' );
 		invariant(
 			isValidMetrics( metrics ),
 			'Metrics for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" and "alias" properties.',
