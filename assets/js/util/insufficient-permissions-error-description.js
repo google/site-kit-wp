@@ -34,7 +34,7 @@ export function getInsufficientPermissionsErrorDescription( error, module ) {
 	const {
 		slug = '',
 		name = '',
-		owner = '',
+		owner = null,
 	} = module || {};
 
 	let message = '';
