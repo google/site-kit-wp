@@ -16,7 +16,6 @@ import Layout from '../assets/js/components/layout/layout';
 import AdSenseEstimateEarningsWidget
 	from '../assets/js/modules/adsense/components/dashboard/AdSenseEstimateEarningsWidget';
 import AdSensePerformanceWidget from '../assets/js/modules/adsense/components/dashboard/AdSensePerformanceWidget';
-import AdSenseDashboardOutro from '../assets/js/modules/adsense/components/dashboard/AdSenseDashboardOutro';
 import DashboardZeroData from '../assets/js/modules/adsense/components/dashboard/DashboardZeroData';
 import { googlesitekit as adSenseData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-adsense-googlesitekit';
 import {
@@ -214,6 +213,4 @@ storiesOf( 'AdSense Module', module )
 			</Layout>
 		);
 	} )
-	.add( 'AdSense Outro', () => (
-		<AdSenseDashboardOutro />
-	) );
+;
