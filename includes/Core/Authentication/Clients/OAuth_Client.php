@@ -719,11 +719,6 @@ final class OAuth_Client {
 		);
 		$this->set_granted_scopes( $scopes );
 
-		$current_user_id = get_current_user_id();
-		if ( $this->should_update_owner_id( $current_user_id ) ) {
-			$this->owner_id->set( $current_user_id );
-		}
-
 		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
 		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
@@ -742,6 +737,13 @@ final class OAuth_Client {
 			 * @param array $token_response Token response data.
 			 */
 			do_action( 'googlesitekit_authorize_user', $token_response );
+		}
+
+		// This must happen after googlesitekit_authorize_user as the permissions checks depend on
+		// values set which affect the meta capability mapping.
+		$current_user_id = get_current_user_id();
+		if ( $this->should_update_owner_id( $current_user_id ) ) {
+			$this->owner_id->set( $current_user_id );
 		}
 
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
