@@ -164,8 +164,8 @@ describe( 'modules/analytics report', () => {
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
 			} );
 
-			it( 'sets adsenseLinked to true if a success response is returned for AdSense metrics', async () => {
-				const nonAdsenseOptions = {
+			it( 'sets adsenseLinked to true if a successful response is returned for AdSense metrics', async () => {
+				const adsenseOptions = {
 					dateRange: 'last-28-days',
 					metrics: 'ga:adsenseRevenue',
 				};
@@ -185,8 +185,8 @@ describe( 'modules/analytics report', () => {
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( false );
 
 				muteConsole( 'error' ); // fetch will trigger 400 error.
-				registry.select( STORE_NAME ).getReport( nonAdsenseOptions );
-				await untilResolved( registry, STORE_NAME ).getReport( nonAdsenseOptions );
+				registry.select( STORE_NAME ).getReport( adsenseOptions );
+				await untilResolved( registry, STORE_NAME ).getReport( adsenseOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
