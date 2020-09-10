@@ -24,6 +24,7 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -59,17 +60,13 @@ describe( 'modules/analytics properties', () => {
 					{ body: fixtures.createProperty, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProperty( accountID );
+				await registry.dispatch( STORE_NAME ).createProperty( accountID );
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{
 						body: { data: { accountID } },
 					}
-				);
-
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) === false
 				);
 
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
@@ -98,25 +95,15 @@ describe( 'modules/analytics properties', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: response, status: 500 }
 				);
-				// Add additional mock to avoid unmatched request warning.
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: {}, status: 200 }
-				);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).createProperty( accountID );
-
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) === false
-				);
+				await registry.dispatch( STORE_NAME ).createProperty( accountID );
 
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'createProperty', [ accountID ] ) ).toMatchObject( response );
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: fixtures.propertiesProfiles, status: 200 }
-				);
 
+				// The response isn't important for the test here and we intentionally don't wait for it,
+				// but the fixture is used to prevent an invariant error as the received properties are required to be an array.
+				muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, fixtures.propertiesProfiles );
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				// No properties should have been added yet, as the property creation
 				// failed.
