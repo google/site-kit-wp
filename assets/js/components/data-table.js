@@ -59,7 +59,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 			}
 
 			const hiddenOnMobile = options && options.hideColumns && options.hideColumns.mobile.includes( i );
-			const permaLink = link[ 0 ] === '/' ? global._googlesitekitLegacyData.admin.siteURL + link : link;
+			const permaLink = link && link[ 0 ] === '/' ? global._googlesitekitLegacyData.admin.siteURL + link : link;
 
 			cells.push(
 				<td
