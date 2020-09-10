@@ -59,6 +59,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 			}
 
 			const hiddenOnMobile = options && options.hideColumns && options.hideColumns.mobile.includes( i );
+			const permaLink = link[ 0 ] === '/' ? global._googlesitekitLegacyData.admin.siteURL + link : link;
 
 			cells.push(
 				<td
@@ -72,11 +73,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 						? <div className="googlesitekit-table__body-item-content">
 							<Link
 								className="googlesitekit-table__body-item-link"
-								href={
-									useAdminURLs
-										? getSiteKitAdminURL( 'googlesitekit-dashboard', { permaLink: global._googlesitekitLegacyData.admin.siteURL + link } )
-										: link
-								}
+								href={ useAdminURLs ? getSiteKitAdminURL( 'googlesitekit-dashboard', { permaLink } ) : link }
 								external={ ! useAdminURLs }
 								inherit
 							>
