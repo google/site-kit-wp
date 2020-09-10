@@ -31,6 +31,12 @@ import {
 	dashboardAllTrafficData,
 	pageDashboardAllTrafficArgs,
 	pageDashboardAllTrafficData,
+	pageDashboardBounceRateWidgetArgs,
+	pageDashboardBounceRateWidgetData,
+	pageDashboardUniqueVisitorsSparkArgs,
+	pageDashboardUniqueVisitorsSparkData,
+	pageDashboardUniqueVisitorsVisitorArgs,
+	pageDashboardUniqueVisitorsVisitorData,
 	dashboardBounceRateWidgetArgs,
 	dashboardBounceRateWidgetData,
 	dashboardGoalsWidgetArgs,
@@ -74,8 +80,8 @@ generateReportBasedWidgetStories( {
 	moduleSlug: 'analytics',
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/Bounce Rate Widget',
-	data: dashboardBounceRateWidgetData,
-	options: dashboardBounceRateWidgetArgs,
+	data: pageDashboardBounceRateWidgetData,
+	options: pageDashboardBounceRateWidgetArgs,
 	component: DashboardBounceRateWidget,
 } );
 
@@ -83,24 +89,6 @@ generateReportBasedWidgetStories( {
 	moduleSlug: 'analytics',
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/Goals Widget',
-	data: dashboardGoalsWidgetData,
-	options: dashboardGoalsWidgetArgs,
-	component: DashboardGoalsWidget,
-	variantCallbacks: {
-		Loaded: ( dispatch, data, options ) => {
-			dispatch( STORE_NAME ).receiveGetReport( data, { options } );
-			dispatch( STORE_NAME ).receiveGetGoals( goals );
-		},
-		'Data Unavailable': ( dispatch ) => {
-			dispatch( STORE_NAME ).receiveGetGoals( goals );
-		},
-	},
-} );
-
-generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
-	datastore: STORE_NAME,
-	group: 'Analytics Module/Components/Page Dashboard/Goals Widget',
 	data: dashboardGoalsWidgetData,
 	options: dashboardGoalsWidgetArgs,
 	component: DashboardGoalsWidget,
@@ -159,12 +147,12 @@ generateReportBasedWidgetStories( {
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/Unique Visitors Widget',
 	data: {
-		visitorData: dashboardUniqueVisitorsVisitorData,
-		sparkData: dashboardUniqueVisitorsSparkData,
+		visitorData: pageDashboardUniqueVisitorsVisitorData,
+		sparkData: pageDashboardUniqueVisitorsSparkData,
 	},
 	options: {
-		visitorArgs: dashboardUniqueVisitorsVisitorArgs,
-		sparkArgs: dashboardUniqueVisitorsSparkArgs,
+		visitorArgs: pageDashboardUniqueVisitorsVisitorArgs,
+		sparkArgs: pageDashboardUniqueVisitorsSparkArgs,
 	},
 	component: DashboardUniqueVisitorsWidget,
 	variantCallbacks: {

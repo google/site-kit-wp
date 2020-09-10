@@ -1,4 +1,4 @@
-export const dashboardUniqueVisitorsVisitorArgs = {
+export const pageDashboardUniqueVisitorsVisitorArgs = {
 	dateRange: 'last-28-days',
 	multiDateRange: 1,
 	metrics: [
@@ -9,7 +9,7 @@ export const dashboardUniqueVisitorsVisitorArgs = {
 	],
 };
 
-export const dashboardUniqueVisitorsSparkArgs = {
+export const pageDashboardUniqueVisitorsSparkArgs = {
 	dateRange: 'last-28-days',
 	dimensions: 'ga:date',
 	metrics: [
@@ -18,5 +18,4 @@ export const dashboardUniqueVisitorsSparkArgs = {
 			alias: 'Users',
 		},
 	],
-
 };

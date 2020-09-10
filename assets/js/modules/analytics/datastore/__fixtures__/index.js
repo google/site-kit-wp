@@ -30,9 +30,13 @@ export { default as dashboardAllTrafficArgs } from './dashboard-all-traffic-widg
 export { default as dashboardAllTrafficData } from './dashboard-all-traffic-widget-data.json';
 export { default as pageDashboardAllTrafficArgs } from './page-dashboard-all-traffic-widget-args.json';
 export { default as pageDashboardAllTrafficData } from './page-dashboard-all-traffic-widget-data.json';
+export { default as pageDashboardBounceRateWidgetArgs } from './page-dashboard-bounce-rate-widget-args.json';
+export { default as pageDashboardBounceRateWidgetData } from './page-dashboard-bounce-rate-widget-data.json';
 export { default as dashboardBounceRateWidgetData } from './dashboard-bounce-rate-widget-data.json';
 export { default as dashboardBounceRateWidgetArgs } from './dashboard-bounce-rate-widget-args.json';
 export { default as dashboardGoalsWidgetData } from './dashboard-goals-widget-data.json';
 export { default as dashboardGoalsWidgetArgs } from './dashboard-goals-widget-args.json';
 export * from './dashboard-unique-visitors-data';
 export * from './dashboard-unique-visitors-args';
+export { pageDashboardUniqueVisitorsSparkData, pageDashboardUniqueVisitorsVisitorData } from './page-dashboard-unique-visitors-data';
+export { pageDashboardUniqueVisitorsSparkArgs, pageDashboardUniqueVisitorsVisitorArgs } from './page-dashboard-unique-visitors-args';
