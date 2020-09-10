@@ -153,7 +153,6 @@ describe( 'modules/analytics properties', () => {
 				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( propertyID );
-				expect( registry.select( STORE_NAME ).getProperties( accountID ) ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].defaultProfileId );
 			} );
