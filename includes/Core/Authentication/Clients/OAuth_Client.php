@@ -130,7 +130,7 @@ final class OAuth_Client {
 	/**
 	 * Owner_ID instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 * @var Owner_ID
 	 */
 	private $owner_id;
@@ -872,7 +872,7 @@ final class OAuth_Client {
 	/**
 	 * Determines whether the current owner ID must be changed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @param int $user_id Current user ID.
 	 * @return bool TRUE if owner needs to be changed, otherwise FALSE.
