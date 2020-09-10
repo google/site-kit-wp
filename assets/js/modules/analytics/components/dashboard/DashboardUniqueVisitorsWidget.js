@@ -33,10 +33,10 @@ import PreviewBlock from '../../../../components/preview-block';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
-import { extractAnalyticsDashboardSparklineData, parseTotalUsersData } from '../../util';
-import { extractForSparkline, getSiteKitAdminURL, changeToPercent, readableLargeNumber } from '../../../../util';
+import { getSiteKitAdminURL, changeToPercent, readableLargeNumber } from '../../../../util';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 
 const { useSelect } = Data;
 
@@ -48,45 +48,28 @@ function DashboardUniqueVisitorsWidget() {
 		visitorsData,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
-		const args = {
+		const commonArgs = {
 			dateRange: select( CORE_USER ).getDateRange(),
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
-			args.url = url;
+			commonArgs.url = url;
 		}
 
-		const sparkDataArgs = {
-			compareDateRanges: 1,
+		const sparklineArgs = {
 			dimensions: 'ga:date',
 			metrics: [
 				{
 					expression: 'ga:users',
 					alias: 'Users',
 				},
-				{
-					expression: 'ga:sessions',
-					alias: 'Sessions',
-				},
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-				{
-					expression: 'ga:avgSessionDuration',
-					alias: 'Average Session Duration',
-				},
-				{
-					expression: 'ga:goalCompletionsAll',
-					alias: 'Goal Completions',
-				},
 			],
-			limit: 180,
-			...args,
+			...commonArgs,
 		};
 
-		const visitorsDataArgs = {
+		// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
+		const args = {
 			multiDateRange: 1,
 			metrics: [
 				{
@@ -94,15 +77,15 @@ function DashboardUniqueVisitorsWidget() {
 					alias: 'Total Users',
 				},
 			],
-			...args,
+			...commonArgs,
 		};
 
 		return {
-			loading: store.isResolving( 'getReport', [ sparkDataArgs ] ) || store.isResolving( 'getReport', [ visitorsDataArgs ] ),
-			error: store.getErrorForSelector( 'getReport', [ sparkDataArgs ] ) || store.getErrorForSelector( 'getReport', [ visitorsDataArgs ] ),
+			loading: store.isResolving( 'getReport', [ sparklineArgs ] ) || store.isResolving( 'getReport', [ args ] ),
+			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
-			sparkData: store.getReport( sparkDataArgs ),
-			visitorsData: store.getReport( visitorsDataArgs ),
+			sparkData: store.getReport( sparklineArgs ),
+			visitorsData: store.getReport( args ),
 		};
 	} );
 
@@ -118,9 +101,28 @@ function DashboardUniqueVisitorsWidget() {
 		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
 	}
 
-	const extractedAnalytics = extractAnalyticsDashboardSparklineData( sparkData );
+	const sparkLineData = [
+		[
+			{ type: 'date', label: 'Day' },
+			{ type: 'number', label: 'Bounce Rate' },
+		],
+	];
+	const dataRows = sparkData[ 0 ].data.rows;
 
-	const { previousTotalUsers, totalUsers } = parseTotalUsersData( visitorsData );
+	// Loop the rows to build the chart data.
+	for ( let i = 0; i < dataRows.length; i++ ) {
+		const { values } = dataRows[ i ].metrics[ 0 ];
+		const dateString = dataRows[ i ].dimensions[ 0 ];
+		const date = parseDimensionStringToDate( dateString );
+		sparkLineData.push( [
+			date,
+			values[ 0 ],
+		] );
+	}
+
+	const { totals } = visitorsData[ 0 ].data;
+	const totalUsers = totals[ 0 ].values;
+	const previousTotalUsers = totals[ 1 ].values;
 	const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
 
 	return (
@@ -135,9 +137,9 @@ function DashboardUniqueVisitorsWidget() {
 				link: getSiteKitAdminURL( 'googlesitekit-module-analytics', {} ),
 			} }
 			sparkline={
-				extractedAnalytics &&
+				sparkLineData &&
 					<Sparkline
-						data={ extractForSparkline( extractedAnalytics, 1 ) }
+						data={ sparkLineData }
 						change={ totalUsersChange }
 					/>
 			}

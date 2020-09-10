@@ -49,6 +49,14 @@ function DashboardBounceRateWidget() {
 		const store = select( STORE_NAME );
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
+			multiDateRange: 1,
+			dimensions: 'ga:date',
+			metrics: [
+				{
+					expression: 'ga:bounceRate',
+					alias: 'Bounce Rate',
+				},
+			],
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
@@ -56,17 +64,11 @@ function DashboardBounceRateWidget() {
 			args.url = url;
 		}
 
-		const dataArgs = {
-			multiDateRange: 1,
-			dimensions: 'ga:date',
-			metrics: [ { expression: 'ga:bounceRate', alias: 'Bounce Rate' } ],
-			...args,
-		};
-
 		return {
-			data: store.getReport( dataArgs ),
-			error: store.getErrorForSelector( 'getReport', [ dataArgs ] ),
-			loading: store.isResolving( 'getReport', [ dataArgs ] ),
+			args,
+			data: store.getReport( args ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			loading: store.isResolving( 'getReport', [ args ] ),
 		};
 	} );
 
@@ -90,7 +92,6 @@ function DashboardBounceRateWidget() {
 	];
 
 	const dataRows = data[ 0 ].data.rows;
-
 	// We only want half the date range, having `multiDateRange` in the query doubles the range.
 	for ( let i = Math.ceil( dataRows.length / 2 ); i < dataRows.length; i++ ) {
 		const { values } = dataRows[ i ].metrics[ 0 ];

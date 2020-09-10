@@ -49,17 +49,22 @@ function DashboardGoalsWidget() {
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const dataArgs = {
+		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
 			multiDateRange: 1,
 			dimensions: 'ga:date',
-			metrics: [ { expression: 'ga:goalCompletionsAll', alias: 'Goal Completions' } ],
+			metrics: [
+				{
+					expression: 'ga:goalCompletionsAll',
+					alias: 'Goal Completions',
+				},
+			],
 		};
 
 		return {
-			data: store.getReport( dataArgs ),
-			error: store.getErrorForSelector( 'getReport', [ dataArgs ] ),
-			loading: store.isResolving( 'getReport', [ dataArgs ] ),
+			data: store.getReport( args ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			loading: store.isResolving( 'getReport', [ args ] ),
 			goals: store.getGoals(),
 		};
 	} );
@@ -94,18 +99,16 @@ function DashboardGoalsWidget() {
 		],
 	];
 
-	if ( data[ 0 ].data.rows ) {
-		const dataRows = data[ 0 ].data.rows;
-		// We only want half the date range, having `multiDateRange` in the query doubles the range.
-		for ( let i = Math.ceil( dataRows.length / 2 ); i < dataRows.length; i++ ) {
-			const { values } = dataRows[ i ].metrics[ 0 ];
-			const dateString = dataRows[ i ].dimensions[ 0 ];
-			const date = parseDimensionStringToDate( dateString );
-			sparkLineData.push( [
-				date,
-				values[ 0 ],
-			] );
-		}
+	const dataRows = data[ 0 ].data.rows;
+	// We only want half the date range, having `multiDateRange` in the query doubles the range.
+	for ( let i = Math.ceil( dataRows.length / 2 ); i < dataRows.length; i++ ) {
+		const { values } = dataRows[ i ].metrics[ 0 ];
+		const dateString = dataRows[ i ].dimensions[ 0 ];
+		const date = parseDimensionStringToDate( dateString );
+		sparkLineData.push( [
+			date,
+			values[ 0 ],
+		] );
 	}
 
 	const { totals } = data[ 0 ].data;
