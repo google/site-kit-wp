@@ -28,48 +28,60 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { getTopPagesReportDataDefaults } from '../../util';
 import whenActive from '../../../../util/when-active';
-import ErrorText from '../../../../components/error-text';
 import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import { numberFormat } from '../../../../util';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/notifications/nodata';
+
 const { useSelect } = Data;
 
 function DashboardPopularPagesWidget() {
 	const {
+		analytics,
 		data,
 		error,
-		analytics,
+		loading,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
-			...getTopPagesReportDataDefaults(),
 			dateRange: select( CORE_USER ).getDateRange(),
+			dimensions: 'ga:pageTitle,ga:pagePath',
+			metrics: [
+				{
+					expression: 'ga:pageviews',
+					alias: 'Pageviews',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:pageviews',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 10,
 		};
 
 		return {
+			analytics: select( CORE_MODULES ).getModule( 'analytics' ),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			analytics: select( CORE_MODULES ).getModule( 'analytics' ),
+			loading: store.isResolving( 'getReport', [ args ] ),
 		};
 	} );
 
-	if ( error ) {
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ error.message } />
-			</div>
-		);
-	}
-
-	if ( ! data ) {
+	if ( loading ) {
 		return <PreviewTable padding />;
 	}
 
-	if ( ! Array.isArray( data ) || ! data.length || ! Array.isArray( data[ 0 ].data.rows ) ) {
-		return null;
+	if ( error ) {
+		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
+	}
+
+	if ( ! Array.isArray( data?.[ 0 ]?.data?.rows ) ) {
+		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
 	}
 
 	const headers = [
@@ -107,7 +119,7 @@ function DashboardPopularPagesWidget() {
 			className="googlesitekit-popular-content"
 			footer
 			footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			footerCtaLink={ ( analytics || {} ).homepage }
+			footerCtaLink={ analytics?.homepage }
 			fill
 		>
 			<TableOverflowContainer>
