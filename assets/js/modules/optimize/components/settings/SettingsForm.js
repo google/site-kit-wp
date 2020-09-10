@@ -42,7 +42,7 @@ export default function SettingsForm() {
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
-			<StoreErrorNotice storeName={ STORE_NAME } />
+			<StoreErrorNotice moduleSlug="optimize" storeName={ STORE_NAME } />
 			<OptimizeIDFieldInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">

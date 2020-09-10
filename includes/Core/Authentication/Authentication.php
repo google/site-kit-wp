@@ -121,7 +121,7 @@ final class Authentication {
 	/**
 	 * Owner_ID instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 * @var Owner_ID
 	 */
 	protected $owner_id;
