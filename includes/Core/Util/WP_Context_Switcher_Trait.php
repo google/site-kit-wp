@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Trait for temporarily switching WordPress context, e.g. from admin to frontend.
  *
- * @since n.e.x.t
+ * @since 1.16.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ trait WP_Context_Switcher_Trait {
 	 * Context is only switched if WordPress is not already in frontend context. Context should only ever be switched
 	 * temporarily. Call the returned closure as soon as possible after to restore the original context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @return callable Closure that restores context.
 	 */
@@ -43,7 +43,7 @@ trait WP_Context_Switcher_Trait {
 	/**
 	 * Switches the current WordPress screen via the given screen ID or hook name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @param string $screen_id WordPress screen ID.
 	 */
@@ -62,7 +62,7 @@ trait WP_Context_Switcher_Trait {
 	 * Calling the closure will restore the `$current_screen` global to what it was set to at the time of calling
 	 * this method.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @return callable Closure that restores context.
 	 */

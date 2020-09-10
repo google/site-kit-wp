@@ -430,7 +430,7 @@ const baseSelectors = {
 	 * Returns `false` if the module exists but is either not active or not connected.
 	 * Returns `undefined` if state is still loading or if no module with that slug exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.

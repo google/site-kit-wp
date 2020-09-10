@@ -34,7 +34,7 @@ import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction }
 import { getCurrentDateRangeSlug } from '../../util/date-range';
 import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
-import { isWPError } from '../../util/is-wp-error';
+import { isWPError } from '../../util/errors';
 import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
 import { getCacheKey, getCache, setCache } from './cache';
