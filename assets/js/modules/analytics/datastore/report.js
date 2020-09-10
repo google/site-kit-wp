@@ -98,7 +98,7 @@ const baseResolvers = {
 		const { error } = yield fetchGetReportStore.actions.fetchGetReport( options );
 
 		if ( normalizeReportOptions( options ).metrics.some( ( { expression } ) => /^ga:adsense/.test( expression ) ) ) {
-			const isRestrictedMetricError = error?.code === 400 && error?.message.startsWith( 'Restricted metric' );
+			const isRestrictedMetricError = error?.code === 400 && error.message && error.message.startsWith( 'Restricted metric' ) && /ga:adsense/.test( error.message );
 			yield adsenseActions.setAdsenseLinked( ! isRestrictedMetricError );
 		}
 	},
