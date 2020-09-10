@@ -53,7 +53,7 @@ describe( 'modules/analytics properties', () => {
 
 	describe( 'actions', () => {
 		describe( 'createProperty', () => {
-			it( 'creates a property and adds it to the store ', async () => {
+			it( 'creates a property and adds it to the store', async () => {
 				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
@@ -73,7 +73,7 @@ describe( 'modules/analytics properties', () => {
 				expect( properties ).toMatchObject( [ fixtures.createProperty ] );
 			} );
 
-			it( 'sets isDoingCreateProperty ', async () => {
+			it( 'sets isDoingCreateProperty', async () => {
 				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
@@ -84,7 +84,7 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) ).toEqual( true );
 			} );
 
-			it( 'dispatches an error if the request fails ', async () => {
+			it( 'dispatches an error if the request fails', async () => {
 				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const response = {
 					code: 'internal_server_error',
