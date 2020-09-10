@@ -51,8 +51,6 @@ function SettingsForm() {
 		};
 	} );
 
-	global.console.log( gtmAnalyticsPropertyID, gtmAnalyticsPropertyIDPermission );
-
 	let gtmTagNotice;
 	if ( isValidPropertyID( gtmAnalyticsPropertyID ) && gtmAnalyticsPropertyIDPermission ) {
 		gtmTagNotice = <ExistingGTMPropertyNotice />;
