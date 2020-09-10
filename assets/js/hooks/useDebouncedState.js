@@ -24,7 +24,7 @@ import { useState, useEffect } from '@wordpress/element';
 /**
  * useDebouncedState hook
  *
- * @since n.e.x.t
+ * @since 1.16.0
  *
  * @param {string} value The value to be debounced.
  * @param {number} delay Number of milliseconds to debounce

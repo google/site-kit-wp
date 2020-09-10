@@ -161,7 +161,7 @@ class AnalyticsDashboardWidget extends Component {
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 							{ ! receivingData && (
-								error ? getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true )
+								error ? getDataErrorComponent( 'analytics', error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
 							<div className={ classnames(
 								'mdc-layout-grid__cell',
