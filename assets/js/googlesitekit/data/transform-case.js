@@ -45,7 +45,7 @@ export const camelCaseToConstantCase = ( name ) => {
 /**
  * Transforms a kebab-case name into its PascalCase name.
  *
- * @since n.e.x.t
+ * @since 1.16.0
  * @private
  *
  * @param {string} name kebab-case name to transform.
