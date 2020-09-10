@@ -24,7 +24,8 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
 /**
  * Verifies that provided metrics match allowed values. Metrics can be a string,
  * an array of string, an array of objects or mix of strings and objects. Objects
- * must have "expression" and "alias" properties in order to be considered as valid.
+ * must have an "expression" property in order to be considered as valid, and they
+ * can optionally include an "alias" property.
  *
  * @since 1.13.0
  *
