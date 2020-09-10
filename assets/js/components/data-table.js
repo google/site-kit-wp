@@ -51,6 +51,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 	each( data, ( row, j ) => {
 		const cells = [];
 		const link = links && links[ j ];
+		const permaLink = link && link[ 0 ] === '/' ? global._googlesitekitLegacyData.admin.siteURL + link : link;
 
 		each( row, ( cell, i ) => {
 			// Replace (none) by direct.
@@ -59,7 +60,6 @@ export const getDataTableFromData = ( data, headers, options ) => {
 			}
 
 			const hiddenOnMobile = options && options.hideColumns && options.hideColumns.mobile.includes( i );
-			const permaLink = link && link[ 0 ] === '/' ? global._googlesitekitLegacyData.admin.siteURL + link : link;
 
 			cells.push(
 				<td
