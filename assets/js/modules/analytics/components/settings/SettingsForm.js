@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
 	AnonymizeIPSwitch,
@@ -28,15 +29,42 @@ import {
 	TrackingExclusionSwitches,
 	UseSnippetSwitch,
 	ProfileNameTextField,
+	ExistingGTMPropertyNotice,
+	ExistingGTMPropertyError,
 } from '../common';
 import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { isValidPropertyID } from '../../util';
+const { useSelect } = Data;
 
-export default function SettingsForm() {
+function SettingsForm() {
+	const {
+		gtmAnalyticsPropertyID,
+		gtmAnalyticsPropertyIDPermission,
+	} = useSelect( ( select ) => {
+		const propertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+
+		return {
+			gtmAnalyticsPropertyID: propertyID,
+			gtmAnalyticsPropertyIDPermission: select( STORE_NAME ).hasTagPermission( propertyID ),
+		};
+	} );
+
+	global.console.log( gtmAnalyticsPropertyID, gtmAnalyticsPropertyIDPermission );
+
+	let gtmTagNotice;
+	if ( isValidPropertyID( gtmAnalyticsPropertyID ) && gtmAnalyticsPropertyIDPermission ) {
+		gtmTagNotice = <ExistingGTMPropertyNotice />;
+	} else if ( isValidPropertyID( gtmAnalyticsPropertyID ) && gtmAnalyticsPropertyIDPermission === false ) {
+		gtmTagNotice = <ExistingGTMPropertyError />;
+	}
+
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
 			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
+			{ gtmTagNotice }
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
@@ -58,3 +86,5 @@ export default function SettingsForm() {
 		</div>
 	);
 }
+
+export default SettingsForm;

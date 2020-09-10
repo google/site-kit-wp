@@ -37,7 +37,7 @@ export default function ExistingGTMPropertyNotice() {
 	const message = sprintf(
 		/* translators: %s: Analytics tag ID */
 		__( `You're already using Google Analytics through Google Tag Manager with the property %s. Site Kit will therefore not place an Analytics tag because Tag Manager already covers it.`, 'google-site-kit' ),
-		propertyID
+		propertyID,
 	);
 
 	return <p>{ message }</p>;
