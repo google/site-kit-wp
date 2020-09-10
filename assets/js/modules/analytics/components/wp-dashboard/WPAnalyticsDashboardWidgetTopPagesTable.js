@@ -82,6 +82,7 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 			links,
 			cap: 5,
 			showURLs: true,
+			useAdminURLs: true,
 		};
 
 		const dataTable = getDataTableFromData( dataMapped, headers, options );

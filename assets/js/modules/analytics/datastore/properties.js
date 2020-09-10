@@ -138,49 +138,51 @@ const baseActions = {
 	 *
 	 * @param {string} propertyID Property ID to select.
 	 * @param {string} [internalPropertyID] Internal property ID (if available).
+	 * @return {Object} A Generator function.
 	 */
-	*selectProperty( propertyID, internalPropertyID = '' ) {
+	selectProperty( propertyID, internalPropertyID = '' ) {
 		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
 
-		const registry = yield Data.commonActions.getRegistry();
+		return ( function* () {
+			const registry = yield Data.commonActions.getRegistry();
 
-		const accountID = registry.select( STORE_NAME ).getAccountID();
-		if ( ! isValidAccountID( accountID ) ) {
-			return;
-		}
+			const accountID = registry.select( STORE_NAME ).getAccountID();
+			if ( ! isValidAccountID( accountID ) ) {
+				return;
+			}
 
-		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
+			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
 
-		if ( PROPERTY_CREATE === propertyID ) {
-			registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
-			return;
-		}
+			if ( PROPERTY_CREATE === propertyID ) {
+				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+				return;
+			}
 
-		yield baseActions.waitForProperties( accountID );
-		const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
+			yield baseActions.waitForProperties( accountID );
+			const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
 
-		if ( ! internalPropertyID ) {
-			internalPropertyID = property.internalWebPropertyId;
-		}
+			if ( ! internalPropertyID ) {
+				internalPropertyID = property.internalWebPropertyId;
+			}
 
-		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
+			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
-		if ( property.defaultProfileId ) {
-			registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // Capitalization rule exception: defaultProfileId
-			return;
-		}
+			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
+			registry.dispatch( STORE_NAME ).setProfileID( '' );
 
-		// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
-		registry.dispatch( STORE_NAME ).setProfileID( '' );
+			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) {
+				registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // Capitalization rule exception: defaultProfileId
+				return;
+			}
 
-		const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
-		if ( profiles === undefined ) {
-			return; // Selection will happen in in getProfiles resolver.
-		}
+			if ( profiles === undefined ) {
+				return; // Selection will happen in in getProfiles resolver.
+			}
 
-		const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // Capitalization rule exception: webPropertyId
-
-		registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
+			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // Capitalization rule exception: webPropertyId
+			registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
+		}() );
 	},
 
 	receiveGetProperties( properties, { accountID } ) {

@@ -48,7 +48,7 @@ import {
 import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 import { trackEvent } from '../../../../util';
 import { isValidPropertyID } from '../../util';
-import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import { isPermissionScopeError } from '../../../../util/errors';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -93,11 +93,8 @@ export default function SetupForm( { finishSetup } ) {
 	}
 
 	return (
-		<form
-			className="googlesitekit-analytics-setup__form"
-			onSubmit={ submitForm }
-		>
-			<StoreErrorNotice storeName={ STORE_NAME } />
+		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
+			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 
 			{ gtmTagNotice }
