@@ -102,11 +102,11 @@ describe( 'modules/analytics properties', () => {
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'createProperty', [ accountID ] ) ).toMatchObject( response );
 
 				// The response isn't important for the test here and we intentionally don't wait for it,
-				// but the fixture is used to prevent an invariant error as the received properties are required to be an array.
+				// but the fixture is used to prevent an invariant error as the received properties
+				// taken from `response.properties` are required to be an array.
 				muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, fixtures.propertiesProfiles );
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-				// No properties should have been added yet, as the property creation
-				// failed.
+				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toEqual( undefined );
 			} );
 		} );
