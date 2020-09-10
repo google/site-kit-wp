@@ -25,12 +25,13 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/progress-bar';
@@ -54,8 +55,6 @@ export default function DashboardPageSpeed() {
 	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
 	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) ) || DATA_SRC_LAB;
 
-	const [ forceCacheUpdate, setForceCacheUpdate ] = useState( false );
-
 	const {
 		isFetchingMobile,
 		isFetchingDesktop,
@@ -67,24 +66,30 @@ export default function DashboardPageSpeed() {
 		const store = select( STORE_NAME );
 
 		return {
-			isFetchingMobile: store.isFetchingGetReport( referenceURL, STRATEGY_MOBILE, forceCacheUpdate ),
-			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE, forceCacheUpdate ),
-			errorMobile: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE, forceCacheUpdate ] ),
-			isFetchingDesktop: store.isFetchingGetReport( referenceURL, STRATEGY_DESKTOP, forceCacheUpdate ),
-			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP, forceCacheUpdate ),
-			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP, forceCacheUpdate ] ),
+			isFetchingMobile: store.isFetchingGetReport( referenceURL, STRATEGY_MOBILE ),
+			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
+			errorMobile: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
+			isFetchingDesktop: store.isFetchingGetReport( referenceURL, STRATEGY_DESKTOP ),
+			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
+			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
 		};
 	} );
 
+	const { invalidateResolution } = useDispatch( STORE_NAME );
 	const { setValues } = useDispatch( CORE_FORMS );
 	const setStrategyMobile = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_MOBILE } ), [] );
 	const setStrategyDesktop = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_DESKTOP } ), [] );
 	const setDataSrcField = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_FIELD } ), [] );
 	const setDataSrcLab = useCallback( () => setValues( FORM_DASH_WIDGET, { dataSrc: DATA_SRC_LAB } ), [] );
-	const updateReport = useCallback( ( event ) => {
+	const updateReport = useCallback( async ( event ) => {
 		event.preventDefault();
-		setForceCacheUpdate( new Date().getTime() );
-	}, [] );
+
+		// Invalidate the PageSpeed API request caches.
+		await API.invalidateCache( 'modules', 'pagespeed' );
+		// Invalidate the cached resolver.
+		invalidateResolution( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] );
+		invalidateResolution( 'getReport', [ referenceURL, STRATEGY_MOBILE ] );
+	}, [ invalidateResolution ] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = useCallback( ( dataSrcIndex ) => {
@@ -132,6 +137,7 @@ export default function DashboardPageSpeed() {
 		<Fragment>
 			<header className="googlesitekit-pagespeed-widget__header">
 				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
+					<a href="#update" onClick={ updateReport }>FORCE UPDATE</a>
 					<TabBar
 						activeIndex={ [ DATA_SRC_LAB, DATA_SRC_FIELD ].indexOf( dataSrc ) }
 						handleActiveIndexUpdate={ updateActiveTab }
@@ -160,7 +166,6 @@ export default function DashboardPageSpeed() {
 						</Tab>
 					</TabBar>
 				</div>
-				<a href="#update" onClick={ updateReport }>FORCE UPDATE</a>
 				<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
 					<DeviceSizeTabBar
 						activeTab={ strategy }

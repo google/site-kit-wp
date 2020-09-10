@@ -31,12 +31,13 @@ import { isURL } from '@wordpress/url';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { forceCacheUpdate, strategy, url } ) => {
-		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', { strategy, url }, { forceCacheUpdate: !! forceCacheUpdate } );
+	controlCallback: ( { strategy, url } ) => {
+		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', { strategy, url } );
 	},
 	reducerCallback: ( state, report, { strategy, url } ) => {
 		return {
@@ -47,9 +48,8 @@ const fetchGetReportStore = createFetchStore( {
 			},
 		};
 	},
-	argsToParams: ( url, strategy, forceCacheUpdate ) => {
+	argsToParams: ( url, strategy ) => {
 		return {
-			forceCacheUpdate,
 			strategy,
 			url,
 		};
@@ -65,12 +65,20 @@ const BASE_INITIAL_STATE = {
 };
 
 const baseResolvers = {
-	*getReport( url, strategy, forceCacheUpdate ) {
+	*getReport( url, strategy ) {
 		if ( ! url || ! strategy ) {
 			return;
 		}
 
-		yield fetchGetReportStore.actions.fetchGetReport( url, strategy, forceCacheUpdate );
+		const registry = yield Data.commonActions.getRegistry();
+		const existingReport = registry.select( STORE_NAME ).getReport( url, strategy );
+
+		// If there is already a report loaded in state, consider it fulfilled and don't make an API request.
+		if ( existingReport ) {
+			return;
+		}
+
+		yield fetchGetReportStore.actions.fetchGetReport( url, strategy );
 	},
 };
 
@@ -80,15 +88,12 @@ const baseSelectors = {
 	 *
 	 * @since 1.10.0
 	 *
-	 * @param {Object} state            Data store's state.
-	 * @param {string} url              URL used for generating the report.
-	 * @param {string} strategy         Strategy used for generating the report.
-	 * @param {*}      forceCacheUpdate Optional. Any truthy value will skip cached data and force update.
+	 * @param {Object} state    Data store's state.
+	 * @param {string} url      URL used for generating the report.
+	 * @param {string} strategy Strategy used for generating the report.
 	 * @return {(Object|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
-	// ESLint rule disabled to document this param, which is only used in the resolver.
-	// eslint-disable-next-line no-unused-vars
-	getReport( state, url, strategy, forceCacheUpdate = false ) {
+	getReport( state, url, strategy ) {
 		const { reports } = state;
 
 		return reports[ `${ strategy }::${ url }` ];

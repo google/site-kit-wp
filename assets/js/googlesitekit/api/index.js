@@ -82,22 +82,21 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
  *
  * @since 1.5.0
  * @private
- * @param {string}  type                     The data to access. One of 'core' or 'modules'.
- * @param {string}  identifier               The data identifier, eg. a module slug like `'search-console'`.
- * @param {string}  datapoint                The endpoint to request data from.
- * @param {Object}  options                  Optional. Options to pass to the request.
- * @param {number}  options.cacheTTL         The oldest cache data to use, in seconds.
- * @param {Object}  options.bodyParams       Request body data to send. (Eg. used for `POST`/`PUT` request variables.)
- * @param {number}  options.method           HTTP method to use for this request.
- * @param {boolean} options.forceCacheUpdate Optional. Set to `true` to skip cached data and force the request to run again, but store new data in the cache as normal.
- * @param {Object}  options.queryParams      Query params to send with the request.
- * @param {boolean} options.useCache         Enable or disable caching for this request only. (Caching is only used for `GET` requests.)
+ *
+ * @param {string}  type                The data to access. One of 'core' or 'modules'.
+ * @param {string}  identifier          The data identifier, eg. a module slug like `'search-console'`.
+ * @param {string}  datapoint           The endpoint to request data from.
+ * @param {Object}  options             Optional. Options to pass to the request.
+ * @param {number}  options.cacheTTL    The oldest cache data to use, in seconds.
+ * @param {Object}  options.bodyParams  Request body data to send. (Eg. used for `POST`/`PUT` request variables.)
+ * @param {number}  options.method      HTTP method to use for this request.
+ * @param {Object}  options.queryParams Query params to send with the request.
+ * @param {boolean} options.useCache    Enable or disable caching for this request only. (Caching is only used for `GET` requests.)
  * @return {Promise} Response of HTTP request.
  */
 export const siteKitRequest = async ( type, identifier, datapoint, {
 	bodyParams,
 	cacheTTL = 3600,
-	forceCacheUpdate = false,
 	method = 'GET',
 	queryParams,
 	useCache = undefined,
@@ -112,7 +111,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 	const useCacheForRequest = method === 'GET' && ( useCache !== undefined ? useCache : usingCache() );
 	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
 
-	if ( useCacheForRequest && ! forceCacheUpdate ) {
+	if ( useCacheForRequest ) {
 		const { cacheHit, value } = await getItem( cacheKey, cacheTTL );
 
 		if ( cacheHit ) {
@@ -162,14 +161,13 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
  *
  * @since 1.5.0
  *
- * @param {string}   type                     The data to access. One of 'core' or 'modules'.
- * @param {string}   identifier               The data identifier, eg. a module slug like `'search-console'`.
- * @param {string}   datapoint                The endpoint to request data from.
- * @param {Object}   data                     Data (query params) to send with the request.
- * @param {Object}   options                  Extra options for this request.
- * @param {number}   options.cacheTTL         The oldest cache data to use, in seconds.
- * @param {boolean}  options.forceCacheUpdate Optional. Set to `true` to skip cached data and force the request to run again, but store new data in the cache as normal.
- * @param {boolean}  options.useCache         Enable or disable caching for this request only.
+ * @param {string}  type             The data to access. One of 'core' or 'modules'.
+ * @param {string}  identifier       The data identifier, eg. a module slug like `'search-console'`.
+ * @param {string}  datapoint        The endpoint to request data from.
+ * @param {Object}  data             Data (query params) to send with the request.
+ * @param {Object}  options          Extra options for this request.
+ * @param {number}  options.cacheTTL The oldest cache data to use, in seconds.
+ * @param {boolean} options.useCache Enable or disable caching for this request only.
  * @return {Promise} A promise for the `fetch` request.
  */
 export const get = async (
@@ -177,15 +175,10 @@ export const get = async (
 	identifier,
 	datapoint,
 	data,
-	{
-		cacheTTL = 3600,
-		forceCacheUpdate = false,
-		useCache = undefined,
-	} = {}
+	{ cacheTTL = 3600, useCache = undefined } = {}
 ) => {
 	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,
-		forceCacheUpdate,
 		queryParams: data,
 		useCache,
 	} );
