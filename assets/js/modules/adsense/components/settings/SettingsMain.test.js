@@ -19,10 +19,11 @@
 /**
  * Internal dependencies
  */
-import { render, fireEvent, waitFor } from '../../../../../../tests/js/test-utils';
+import { render, fireEvent, waitFor, createTestRegistry, unsubscribeFromAll } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_MODULE } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	ACCOUNT_STATUS_APPROVED,
 	SITE_STATUS_ADDED,
@@ -31,6 +32,17 @@ import * as fixtures from '../../datastore/__fixtures__';
 import SettingsMain from './SettingsMain';
 
 describe( 'SettingsMain', () => {
+	let registry;
+	beforeEach( () => {
+		registry = createTestRegistry();
+		// Receive empty modules to prevent unexpected fetch by resolver.
+		registry.dispatch( CORE_MODULE ).receiveGetModules( [] );
+	} );
+
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
+
 	const initialSettings = {
 		accountID: fixtures.accounts[ 0 ].id,
 		clientID: fixtures.clients[ 0 ].id,
@@ -42,15 +54,13 @@ describe( 'SettingsMain', () => {
 	};
 
 	it( 'rolls back settings if settings have changed and is not editing', async () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {} );
-			dispatch( CORE_USER ).receiveUserInfo( {} );
-			dispatch( CORE_USER ).receiveUserIsVerified( true );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
-		};
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+		registry.dispatch( CORE_USER ).receiveUserInfo( {} );
+		registry.dispatch( CORE_USER ).receiveUserIsVerified( true );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 
-		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
+		const { rerender, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { registry } );
 		const { select } = registry;
 
 		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );
@@ -67,13 +77,11 @@ describe( 'SettingsMain', () => {
 	} );
 
 	it( 'does not roll back settings if settings have changed and is editing', async () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
-		};
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 
-		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
+		const { rerender, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { registry } );
 		const { select } = registry;
 
 		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );

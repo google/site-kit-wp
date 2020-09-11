@@ -19,13 +19,31 @@
 /**
  * Internal dependencies
  */
-import { render, fireEvent, waitFor } from '../../../../../../tests/js/test-utils';
+import {
+	render,
+	fireEvent,
+	waitFor,
+	createTestRegistry,
+	unsubscribeFromAll,
+} from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULE } from '../../../../googlesitekit/modules/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import SettingsMain from './SettingsMain';
 
 describe( 'SettingsMain', () => {
+	let registry;
+	beforeEach( () => {
+		registry = createTestRegistry();
+		// Receive empty modules to prevent unexpected fetch by resolver.
+		registry.dispatch( CORE_MODULE ).receiveGetModules( [] );
+	} );
+
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
+
 	const initialSettings = {
 		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId,
 		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId,
@@ -42,13 +60,11 @@ describe( 'SettingsMain', () => {
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
-		};
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 
-		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
+		const { rerender, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { registry } );
 		const { select } = registry;
 
 		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );
@@ -70,13 +86,11 @@ describe( 'SettingsMain', () => {
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
-		};
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 
-		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
+		const { rerender, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { registry } );
 		const { select } = registry;
 
 		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );
