@@ -35,21 +35,22 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { reduceAdSenseData } from '../../util';
 import { readableLargeNumber, extractForSparkline, getSiteKitAdminURL } from '../../../../util';
 import whenActive from '../../../../util/when-active';
-import ErrorText from '../../../../components/error-text';
 import PreviewBlock from '../../../../components/preview-block';
 import Layout from '../../../../components/layout/layout';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/notifications/nodata';
+
 const { useSelect } = Data;
 
 function DashboardSummaryWidget() {
 	const {
+		error,
+		loading,
 		today,
-		todayError,
 		period,
-		periodError,
 		daily,
-		dailyError,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
@@ -77,25 +78,24 @@ function DashboardSummaryWidget() {
 		};
 
 		return {
+			error: store.getErrorForSelector( 'getReport', [ todayArgs ] ) || store.getErrorForSelector( 'getReport', [ periodArgs ] ) || store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
+			loading: store.isResolving( 'getReport', [ todayArgs ] ) || store.isResolving( 'getReport', [ periodArgs ] ) || store.isResolving( 'getReport', [ dailyArgs ] ),
 			today: store.getReport( todayArgs ),
-			todayError: store.getErrorForSelector( 'getReport', [ todayArgs ] ),
 			period: store.getReport( periodArgs ),
-			periodError: store.getErrorForSelector( 'getReport', [ periodArgs ] ),
 			daily: store.getReport( dailyArgs ),
-			dailyError: store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
 		};
 	} );
 
-	if ( todayError || periodError || dailyError ) {
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ ( todayError || periodError || dailyError ).message } />
-			</div>
-		);
+	if ( loading ) {
+		return <PreviewBlock width="100%" height="276px" />;
 	}
 
-	if ( ! today || ! period || ! daily ) {
-		return <PreviewBlock width="100%" height="276px" />;
+	if ( error ) {
+		return getDataErrorComponent( 'adsense', error.message );
+	}
+
+	if ( ! today.totals && ! period.totals && ! daily.totals ) {
+		return getNoDataComponent( __( 'AdSense', 'google-site-kit' ) );
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );
@@ -175,4 +175,5 @@ function DashboardSummaryWidget() {
 	);
 }
 
+// export default DashboardSummaryWidget;
 export default whenActive( { moduleName: 'adsense' } )( DashboardSummaryWidget );
