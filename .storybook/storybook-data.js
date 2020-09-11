@@ -210,19 +210,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'adsense-module--adsense-outro',
-		kind: 'AdSense Module',
-		name: 'AdSense Outro',
-		story: 'AdSense Outro',
-		parameters: {
-			fileName: './stories/module-adsense.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
 		id: 'analytics-module--audience-overview-chart',
 		kind: 'Analytics Module',
 		name: 'Audience Overview Chart',
