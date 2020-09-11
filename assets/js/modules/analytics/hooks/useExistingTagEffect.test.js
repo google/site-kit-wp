@@ -19,18 +19,17 @@
 /**
  * Internal dependencies
  */
+import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
 import { renderHook, act } from '../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	untilResolved,
-	muteConsole,
-} from '../../../../../tests/js/utils';
-import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
-import * as factories from '../datastore/__factories__';
+import { createTestRegistry } from '../../../../../tests/js/utils';
+import { makeBuildAndReceiveWebAndAMP } from '../../tagmanager/datastore/util/web-and-amp';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {
 	let registry;
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Set settings to prevent fetch in resolver.
@@ -40,39 +39,43 @@ describe( 'useExistingTagEffect', () => {
 	} );
 
 	it( 'sets the accountID and selects property when there is an existing tag with permission', async () => {
-		// const account = factories.accountBuilder();
-		// const accountID = account.accountId;
-		// const containers = factories.buildContainers(
-		// 	3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
-		// );
-		// // TODO define propertyID
-		// const [ firstContainer, existingContainer ] = containers;
+		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, { body: { properties: [] }, status: 200 } );
+		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, { body: [], status: 200 } );
 
-		const existingTag = 'test-tag-value';
-		const accountID = 'test-account-id';
-		const propertyID = 'test-property-id';
+		const data = {
+			accountID: '12345',
+			webPropertyID: 'UA-123456789-1',
+			ampPropertyID: 'UA-123456789-1',
+		};
 
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag );
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [
+			{
+				slug: 'tagmanager',
+				name: 'Tag Manager',
+				description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
+				homepage: 'https://tagmanager.google.com/',
+				internal: false,
+				active: true,
+				connected: true,
+				dependencies: [ 'analytics' ],
+				dependants: [],
+				order: 10,
+			},
+		] );
 
-		let rerender;
-		await act( () => new Promise( async ( resolve ) => {
-			( { rerender } = renderHook( () => useExistingTagEffect(), { registry } ) );
-			await untilResolved( registry, STORE_NAME ).getTagPermission( null );
-			resolve();
-		} ) );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: data.accountID,
+			permission: true,
+		}, { propertyID: data.webPropertyID } );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( accountID );
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( propertyID );
+		makeBuildAndReceiveWebAndAMP( registry )( data );
 
-		// muteConsole( 'error' );
-		// await act( () => new Promise( async ( resolve ) => {
-		// 	registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: existingContainer.publicId } );
-		// 	registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingContainer.publicId );
-		// 	await untilResolved( registry, STORE_NAME ).getTagPermission( existingContainer.publicId );
-		// 	rerender();
-		// 	resolve();
-		// } ) );
+		act( () => {
+			renderHook( () => useExistingTagEffect(), { registry } );
+		} );
+
+		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( data.accountID );
+		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( data.webPropertyID );
 	} );
 } );
