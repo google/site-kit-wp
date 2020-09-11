@@ -35,8 +35,7 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--optimize">
-
-			<StoreErrorNotice storeName={ STORE_NAME } />
+			<StoreErrorNotice moduleSlug="optimize" storeName={ STORE_NAME } />
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">

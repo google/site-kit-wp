@@ -38,7 +38,7 @@ import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import SettingsModule from './settings-module';
 import SettingsOverlay from './settings-overlay';
-import { isPermissionScopeError } from '../../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import { isPermissionScopeError } from '../../util/errors';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { withSelect, withDispatch } = Data;
 
