@@ -29,3 +29,6 @@ export { default as dashboardAllTrafficArgs } from './dashboard-all-traffic-widg
 export { default as dashboardAllTrafficData } from './dashboard-all-traffic-widget-data.json';
 export { default as pageDashboardAllTrafficArgs } from './page-dashboard-all-traffic-widget-args.json';
 export { default as pageDashboardAllTrafficData } from './page-dashboard-all-traffic-widget-data.json';
+export { default as pageDashboardPopularPagesArgs } from './dashboard-popular-pages-widget-args.json';
+export { default as pageDashboardPopularPagesData } from './dashboard-popular-pages-widget-data.json';
+

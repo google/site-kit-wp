@@ -21,12 +21,15 @@
  */
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidget';
+import DashboardPopularPagesWidget from '../assets/js/modules/analytics/components/dashboard/DashboardPopularPagesWidget';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
 import {
 	dashboardAllTrafficArgs,
 	dashboardAllTrafficData,
 	pageDashboardAllTrafficArgs,
 	pageDashboardAllTrafficData,
+	pageDashboardPopularPagesArgs,
+	pageDashboardPopularPagesData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
 generateReportBasedWidgetStories( {
@@ -46,5 +49,15 @@ generateReportBasedWidgetStories( {
 	data: pageDashboardAllTrafficData,
 	options: pageDashboardAllTrafficArgs,
 	component: DashboardAllTrafficWidget,
+	wrapWidget: false,
+} );
+
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
+	datastore: STORE_NAME,
+	group: 'Analytics Module/Components/Dashboard/Popular Pages Widget',
+	data: pageDashboardPopularPagesData,
+	options: pageDashboardPopularPagesArgs,
+	component: DashboardPopularPagesWidget,
 	wrapWidget: false,
 } );
