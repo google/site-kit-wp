@@ -37,7 +37,7 @@ const { useSelect } = Data;
  * for modules that aren't active. This would cause 404s at best and possibly errors, so
  * it's better to wrap them in HOCs and "return early".
  *
- * @since n.e.x.t
+ * @since 1.16.0
  *
  * @param {Object}   options                     Options for enhancing function.
  * @param {string}   options.moduleName          Name of a module to check.

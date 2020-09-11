@@ -25,22 +25,37 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { isPermissionScopeError } from '../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { isPermissionScopeError, isInsufficientPermissionsError } from '../util/errors';
+import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 import ErrorText from '../components/error-text';
 const { useSelect } = Data;
 
-export default function StoreErrorNotice( { storeName, shouldDisplayError = () => true } ) {
+function StoreErrorNotice( { moduleSlug, storeName, shouldDisplayError } ) {
 	const error = useSelect( ( select ) => select( storeName ).getError() );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
 	// Do not display if no error, or if the error is for missing scopes.
 	if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
 		return null;
 	}
 
-	return <ErrorText message={ error.message } reconnectURL={ error.data?.reconnectURL } />;
+	let message = error.message;
+	if ( isInsufficientPermissionsError( error ) ) {
+		message = getInsufficientPermissionsErrorDescription( message, module );
+	}
+
+	return <ErrorText message={ message } reconnectURL={ error.data?.reconnectURL } />;
 }
 
 StoreErrorNotice.propTypes = {
+	moduleSlug: PropTypes.string.isRequired,
 	storeName: PropTypes.string.isRequired,
 	shouldDisplayError: PropTypes.func,
 };
+
+StoreErrorNotice.defaultProps = {
+	shouldDisplayError: () => true,
+};
+
+export default StoreErrorNotice;

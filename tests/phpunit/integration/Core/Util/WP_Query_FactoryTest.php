@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Core\Util\WP_Query_Factory;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FixWPCoreEntityRewriteTrait;
+use WP_Query;
 
 /**
  * @group Util
@@ -109,6 +110,8 @@ class WP_Query_FactoryTest extends TestCase {
 		}
 
 		$query = WP_Query_Factory::from_url( $url );
+		// This test focuses on correct query flags being set, hence disable 404 detection.
+		$query->enable_404_detection( false );
 		$query->get_posts();
 
 		$this->assertEqualSetsWithIndex( $expected_args, $query->query );
@@ -152,6 +155,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular'   => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'blog page, page 3'                  => array(
 				'https://example.com/?pagename=blog&paged=3',
 				array(
@@ -175,6 +179,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => true,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'single post, by ID, paginated'      => array(
 				'https://example.com/?p=42&page=2',
 				array(
@@ -196,11 +201,23 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => true,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'single post, by slug, paginated'    => array(
 				'https://example.com/?name=some-post&page=2',
 				array(
 					'name' => 'some-post',
 					'page' => '2',
+				),
+				array(
+					'is_single'   => true,
+					'is_singular' => true,
+				),
+			),
+			// This is technically a 404, but irrelevant for this test.
+			'non-existing post'                  => array(
+				'https://example.com/?name=non-existing-post',
+				array(
+					'name' => 'non-existing-post',
 				),
 				array(
 					'is_single'   => true,
@@ -218,6 +235,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'category archives, by ID, page 3'   => array(
 				'https://example.com/?cat=23&paged=3',
 				array(
@@ -252,6 +270,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'category archives, by slug, page 3' => array(
 				'https://example.com/?category_name=uncategorized&paged=3',
 				array(
@@ -275,6 +294,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'tag archives, page 3'               => array(
 				'https://example.com/?tag=food&paged=3',
 				array(
@@ -299,6 +319,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'post format archives, page 2'       => array(
 				'https://example.com/?post_format=image&paged=2',
 				array(
@@ -323,6 +344,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'author archives, by ID, page 2'     => array(
 				'https://example.com/?author=1&paged=2',
 				array(
@@ -346,6 +368,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'author archives, by slug, page 2'   => array(
 				'https://example.com/?author_name=johndoe&paged=2',
 				array(
@@ -370,6 +393,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'year archives, page 3'              => array(
 				'https://example.com/?year=2020&paged=3',
 				array(
@@ -397,6 +421,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'month archives, page 3'             => array(
 				'https://example.com/?year=2020&monthnum=08&paged=3',
 				array(
@@ -428,6 +453,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'day archives, page 3'               => array(
 				'https://example.com/?year=2020&monthnum=08&day=04&paged=3',
 				array(
@@ -463,6 +489,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'time archives, page 3'              => array(
 				'https://example.com/?year=2020&monthnum=08&day=04&hour=11&paged=3',
 				array(
@@ -505,6 +532,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular'          => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'post type archives, page 3'         => array(
 				'https://example.com/?post_type=customposttype&paged=3',
 				array(
@@ -528,6 +556,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'taxonomy archives, page 3'          => array(
 				'https://example.com/?customtaxonomy=coffee&paged=3',
 				array(
@@ -586,6 +615,8 @@ class WP_Query_FactoryTest extends TestCase {
 		flush_rewrite_rules();
 
 		$query = WP_Query_Factory::from_url( $url );
+		// This test focuses on correct query flags being set, hence disable 404 detection.
+		$query->enable_404_detection( false );
 		$query->get_posts();
 
 		$this->assertEqualSetsWithIndex( $expected_args, $query->query );
@@ -630,6 +661,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular'   => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'blog page, page 3'            => array(
 				'https://example.com/blog/page/3/',
 				array(
@@ -654,11 +686,24 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => true,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'single post, paginated'       => array(
 				'https://example.com/some-post/2/',
 				array(
 					'name' => 'some-post',
 					'page' => '2',
+				),
+				array(
+					'is_single'   => true,
+					'is_singular' => true,
+				),
+			),
+			// This is technically a 404, but irrelevant for this test.
+			'non-existing post'            => array(
+				'https://example.com/non-existing-post/',
+				array(
+					'name' => 'non-existing-post',
+					'page' => '',
 				),
 				array(
 					'is_single'   => true,
@@ -687,6 +732,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'category archives, page 3'    => array(
 				'https://example.com/category/uncategorized/page/3/',
 				array(
@@ -710,6 +756,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'tag archives, page 3'         => array(
 				'https://example.com/tag/food/page/3/',
 				array(
@@ -734,6 +781,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'post format archives, page 2' => array(
 				'https://example.com/type/image/page/2/',
 				array(
@@ -758,6 +806,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'author archives, page 2'      => array(
 				'https://example.com/author/johndoe/page/2/',
 				array(
@@ -782,6 +831,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'year archives, page 3'        => array(
 				'https://example.com/2020/page/3/',
 				array(
@@ -809,6 +859,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'month archives, page 3'       => array(
 				'https://example.com/2020/08/page/3/',
 				array(
@@ -840,6 +891,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'day archives, page 3'         => array(
 				'https://example.com/2020/08/04/page/3/',
 				array(
@@ -876,6 +928,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'time archives, page 3'        => array(
 				// Time archives don't have any rewrite rules.
 				'https://example.com/2020/08/04/page/3/?hour=11',
@@ -920,6 +973,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular'          => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'post type archives, page 3'   => array(
 				'https://example.com/customposttype/page/3/',
 				array(
@@ -943,6 +997,7 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			// This is technically a 404, but irrelevant for this test.
 			'taxonomy archives, page 3'    => array(
 				'https://example.com/customtaxonomy/coffee/page/3/',
 				array(
@@ -992,7 +1047,12 @@ class WP_Query_FactoryTest extends TestCase {
 
 		flush_rewrite_rules();
 
+		// Pretend we're in the admin. The URL-based logic should ignore that.
+		set_current_screen( 'edit.php' );
+
 		$query = WP_Query_Factory::from_url( $url );
+		// This test focuses on correct query flags being set, hence disable 404 detection.
+		$query->enable_404_detection( false );
 		$query->get_posts();
 
 		$this->assertEqualSetsWithIndex( $expected_args, $query->query );

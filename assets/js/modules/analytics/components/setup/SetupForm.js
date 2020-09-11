@@ -44,7 +44,7 @@ import {
 } from '../common';
 import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 import { trackEvent } from '../../../../util';
-import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import { isPermissionScopeError } from '../../../../util/errors';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -80,11 +80,8 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ hasEditScope, autoSubmit, submitForm ] );
 
 	return (
-		<form
-			className="googlesitekit-analytics-setup__form"
-			onSubmit={ submitForm }
-		>
-			<StoreErrorNotice storeName={ STORE_NAME } />
+		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
+			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (

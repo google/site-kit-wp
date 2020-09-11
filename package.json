@@ -125,6 +125,7 @@
     "lodash": "^4.17.19",
     "md5": "^2.2.1",
     "moment": "^2.27.0",
+    "memize": "^1.1.0",
     "natives": "^1.1.6",
     "polyfill-library": "^3.95.0",
     "promise-polyfill": "^8.1.3",

@@ -1,7 +1,7 @@
 /**
- * DashboardSearchFunnelInner component.
+ * PageSpeed Insights dashboard components.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,7 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
-
-class DashboardSearchFunnelInner extends Component {
-	render() {
-		return null;
-	}
-}
-
-export default withFilters( 'googlesitekit.DashboardSearchFunnel' )( DashboardSearchFunnelInner );
+export { default as DashboardPageSpeed } from './DashboardPageSpeed';
+export { default as DashboardPageSpeedCTA } from './DashboardPageSpeedCTA';
+export { default as DashboardPageSpeedWidget } from './DashboardPageSpeedWidget';
+export { default as LegacyDashboardSpeed } from './LegacyDashboardSpeed';
