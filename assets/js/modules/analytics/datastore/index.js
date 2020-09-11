@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 import accounts from './accounts';
+import adsense from './adsense';
 import properties from './properties';
 import profiles from './profiles';
 import report from './report';
@@ -51,6 +52,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 const store = Data.combineStores(
 	baseModuleStore,
 	accounts,
+	adsense,
 	properties,
 	profiles,
 	report,
