@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 /**
  * Interface for a settings class that includes owned settings.
  *
- * @since n.e.x.t
+ * @since 1.16.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface Setting_With_Owned_Keys_Interface {
 	/**
 	 * Returns keys for owned settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @return array An array of keys for owned settings.
 	 */

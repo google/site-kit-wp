@@ -91,6 +91,7 @@ class LegacyAnalyticsDashboardWidgetPopularPagesTable extends Component {
 			chartsEnabled: false,
 			links,
 			showURLs: true,
+			useAdminURLs: true,
 		};
 
 		const dataTable = getDataTableFromData( dataMapped, headers, options );

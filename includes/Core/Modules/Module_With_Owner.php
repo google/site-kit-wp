@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Interface for a module that includes an owner.
  *
- * @since n.e.x.t
+ * @since 1.16.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface Module_With_Owner {
 	/**
 	 * Gets an owner ID for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @return int Owner ID.
 	 */

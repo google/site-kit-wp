@@ -35,7 +35,7 @@ import { STORE_NAME } from '../../datastore/constants';
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
-			<StoreErrorNotice storeName={ STORE_NAME } />
+			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 
 			<div className="googlesitekit-setup-module__inputs">
