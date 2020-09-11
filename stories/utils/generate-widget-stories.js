@@ -115,21 +115,21 @@ export function generateReportBasedWidgetStories( {
 				dispatch( datastore ).receiveGetReport( data, { options } );
 			}
 
-			// Run any additional callbacks if they exist.
-			if ( additionalVariantCallbacks ) {
+			// Run additional callback if it exists.
+			if ( additionalLoadingCallback ) {
 				additionalLoadingCallback( dispatch, data, options );
 			}
 		},
 		'Data Unavailable': ( { dispatch } ) => {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
-					const returnType = Array.isArray( options[ index ] ) ? [] : {};
+					const returnType = Array.isArray( data[ index ] ) ? [] : {};
 					dispatch( datastore ).receiveGetReport( returnType, { options: option } );
 				} );
 			} else {
 				dispatch( datastore ).receiveGetReport( [], { options } );
 			}
-			// Run any additional callbacks if they exist.
+			// Run additional callback if it exists.
 			if ( additionalDataUnavailableCallback ) {
 				additionalDataUnavailableCallback( dispatch, data, options );
 			}
@@ -148,7 +148,7 @@ export function generateReportBasedWidgetStories( {
 				dispatch( datastore ).finishResolution( 'getReport', [ options ] );
 			}
 
-			// Run any additional callbacks if they exist.
+			// Run additional callback if it exists.
 			if ( additionalErrorCallback ) {
 				additionalErrorCallback( dispatch, data, options );
 			}
