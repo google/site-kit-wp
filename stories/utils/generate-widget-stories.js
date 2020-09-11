@@ -34,7 +34,7 @@ const { components: { Widget } } = Widgets;
 /**
  * Generates a function to set up registry for widget stories.
  *
- * @since n.e.x.t
+ * @since 1.16.0
  *
  * @param {string} moduleSlug Module slug.
  * @param {string|null} url Current entity URL.
@@ -63,7 +63,7 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
 /**
  * Generates stories for a report based widget using provided data.
  *
- * @since n.e.x.t
+ * @since 1.16.0
  *
  * @param {Object} args                            Widget arguments.
  * @param {string} args.moduleSlug                 Module slug.
