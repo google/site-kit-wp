@@ -74,7 +74,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
+		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {

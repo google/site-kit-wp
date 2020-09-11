@@ -94,7 +94,7 @@ function DashboardUniqueVisitorsWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
+		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
 	if ( ( ! sparkData || ! sparkData.length ) && ( ! visitorsData || ! visitorsData.length ) ) {
