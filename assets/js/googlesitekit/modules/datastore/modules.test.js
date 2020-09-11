@@ -312,8 +312,7 @@ describe( 'core/modules modules', () => {
 			it( 'does not allow active or connected properties to be set to true', async () => {
 				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, { active: true, connected: true, ...moduleSettings } );
 				const modules = registry.select( STORE_NAME ).getModules();
-				expect( modules[ moduleSlug ].active ).toBe( false );
-				expect( modules[ moduleSlug ].connected ).toBe( false );
+				expect( modules[ moduleSlug ] ).toMatchObject( { active: false, connected: false } );
 			} );
 
 			it( 'requires the module slug to be provided', () => {

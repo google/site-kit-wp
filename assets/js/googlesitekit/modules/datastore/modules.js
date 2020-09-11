@@ -32,14 +32,13 @@ import { WPElement } from '@wordpress/element';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 
-const { commonActions, createRegistrySelector, createRegistryControl } = Data;
+const { createRegistrySelector, createRegistryControl } = Data;
 
 /**
  * Store our module components by registry, then by module `slug`. We do this because
@@ -198,7 +197,7 @@ const baseActions = {
 	 * @param {number}    [settings.order]             Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}    [settings.homepage]          Optional. Module homepage URL. Default empty string.
 	 * @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
-	 * @return {Object} Generator instance.
+	 * @return {Object} Redux-style action.
 	 */
 	registerModule( slug, {
 		name = slug,
@@ -210,38 +209,22 @@ const baseActions = {
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
-		return ( function* () {
-			yield actions.waitForModules();
-			const { select } = yield commonActions.getRegistry();
-			const registryKey = select( CORE_SITE ).getRegistryKey();
+		const settings = {
+			name,
+			description,
+			icon,
+			order,
+			homepage,
+			settingsComponent,
+		};
 
-			// We do this assignment in the action rather than the reducer because we can't send a
-			// payload that includes a React component to the reducer; we'll get an error about
-			// payloads needing to be plain objects.
-			if ( ModuleComponents[ registryKey ] === undefined ) {
-				ModuleComponents[ registryKey ] = {};
-			}
-
-			if ( ModuleComponents[ registryKey ][ slug ] === undefined ) {
-				ModuleComponents[ registryKey ][ slug ] = settingsComponent;
-			}
-
-			const settings = {
-				name,
-				description,
-				icon,
-				order,
-				homepage,
-			};
-
-			return {
-				payload: {
-					slug,
-					settings,
-				},
-				type: REGISTER_MODULE,
-			};
-		}() );
+		return {
+			payload: {
+				slug,
+				settings,
+			},
+			type: REGISTER_MODULE,
+		};
 	},
 };
 
@@ -272,6 +255,10 @@ const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
+			const {
+				active = false,
+				connected = false,
+			} = state.modules[ slug ] || {};
 
 			return {
 				...state,
@@ -280,7 +267,7 @@ const baseReducer = ( state, { type, payload } ) => {
 					[ slug ]: {
 						...( state.modules?.[ slug ] || {} ),
 						...settings,
-						...{ slug },
+						...{ slug, active, connected },
 					},
 				},
 			};
@@ -336,7 +323,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Modules available on the site.
 	 */
-	getModules: createRegistrySelector( ( select ) => ( state ) => {
+	getModules( state ) {
 		const { modules } = state;
 
 		// Return `undefined` if modules haven't been loaded yet.
@@ -344,28 +331,11 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		const registryKey = select( CORE_SITE ).getRegistryKey();
-		if ( registryKey === undefined ) {
-			return undefined;
-		}
-
 		// Sorting the modules object by order property.
 		const sortedModules = sortByProperty( Object.values( modules ), 'order' );
-		const mappedModules = sortedModules.map( ( module ) => {
-			const moduleWithComponent = { ...module };
 
-			// If there is a settingsComponent that was passed use it, otherwise set to the default.
-			if ( ModuleComponents[ registryKey ] && ModuleComponents[ registryKey ][ module.slug ] ) {
-				moduleWithComponent.settingsComponent = ModuleComponents[ registryKey ][ module.slug ];
-			} else {
-				moduleWithComponent.settingsComponent = undefined;
-			}
-
-			return moduleWithComponent;
-		} );
-
-		return convertArrayListToKeyedObjectMap( mappedModules, 'slug' );
-	} ),
+		return convertArrayListToKeyedObjectMap( sortedModules, 'slug' );
+	},
 
 	/**
 	 * Gets a specific module by slug.
