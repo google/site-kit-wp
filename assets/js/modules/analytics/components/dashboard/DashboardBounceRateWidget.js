@@ -65,10 +65,9 @@ function DashboardBounceRateWidget() {
 		}
 
 		return {
-			args,
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: store.isResolving( 'getReport', [ args ] ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			data: store.getReport( args ),
 		};
 	} );
 

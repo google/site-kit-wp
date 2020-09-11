@@ -62,9 +62,9 @@ function DashboardGoalsWidget() {
 		};
 
 		return {
+			loading: store.isResolving( 'getReport', [ args ] ) || store.isResolving( 'getGoals', [] ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
 			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
 			goals: store.getGoals(),
 		};
 	} );
