@@ -207,7 +207,14 @@ const baseActions = {
 	 * @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
 	 * @return {Object} Generator instance.
 	 */
-	registerModule( slug, { settingsComponent = DefaultModuleSettings, ...settings } = {} ) {
+	registerModule( slug, {
+		name = slug,
+		description = null,
+		icon = null,
+		order = 10,
+		homepage = null,
+		settingsComponent = DefaultModuleSettings,
+	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
 		return ( function* () {
@@ -226,9 +233,13 @@ const baseActions = {
 				ModuleComponents[ registryKey ][ slug ] = settingsComponent;
 			}
 
-			// Ensure that active and connected properties are not passed here.
-			delete settings.active;
-			delete settings.connected;
+			const settings = {
+				name,
+				description,
+				icon,
+				order,
+				homepage,
+			};
 
 			return {
 				payload: {
@@ -322,25 +333,13 @@ const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
-			const { modules: existingModules } = state;
-			const defaults = {
-				description: null,
-				icon: null,
-				order: 10,
-				homepage: null,
-				internal: false,
-				active: false,
-				connected: false,
-				name: slug,
-				displayMode: 'closed',
-			};
+
 			return {
 				...state,
 				modules: {
-					...existingModules,
+					...state.modules,
 					[ slug ]: {
-						...defaults,
-						...( existingModules?.[ slug ] || {} ),
+						...( state.modules?.[ slug ] || {} ),
 						...settings,
 						...{ slug },
 					},
