@@ -31,7 +31,7 @@ import { WPElement } from '@wordpress/element';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, SETTINGS_DISPLAY_MODES } from './constants';
+import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -50,15 +50,8 @@ const { commonActions, createRegistrySelector, createRegistryControl } = Data;
  */
 export const ModuleComponents = {};
 
-// Helpers.
-function isSettingsMode( ...modes ) {
-	return createRegistrySelector( ( select ) => ( state, slug ) => modes.includes( select( STORE_NAME ).getSettingsDisplayMode( slug ) ) );
-}
-
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
-const SET_SETTINGS_COMPONENT = 'SET_SETTINGS_COMPONENT';
-const SET_SETTINGS_DISPLAY_MODE = 'SET_SETTINGS_DISPLAY_MODE';
 const REGISTER_MODULE = 'REGISTER_MODULE';
 const WAIT_FOR_MODULES = 'WAIT_FOR_MODULES';
 
@@ -250,60 +243,6 @@ const baseActions = {
 			};
 		}() );
 	},
-
-	/**
-	 * Sets settings component for a module.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} slug                 Module slug.
-	 * @param {WPElement} settingsComponent React component to render the settings panel. Default is the DefaultModuleSettings component.
-	 * @return {Object} Redux-style action.
-	 */
-	*setSettingsComponent( slug, settingsComponent ) {
-		invariant( slug, 'module slug is required' );
-
-		const registry = yield commonActions.getRegistry();
-		yield actions.waitForModules();
-		const registryKey = registry.select( CORE_SITE ).getRegistryKey();
-
-		// We do this assignment in the action rather than the reducer because we can't send a
-		// payload that includes a React component to the reducer; we'll get an error about
-		// payloads needing to be plain objects.
-		if ( ModuleComponents[ registryKey ] === undefined ) {
-			ModuleComponents[ registryKey ] = {};
-		}
-
-		if ( ModuleComponents[ registryKey ][ slug ] === undefined ) {
-			ModuleComponents[ registryKey ][ slug ] = settingsComponent;
-		}
-
-		return {
-			payload: { slug },
-			type: SET_SETTINGS_COMPONENT,
-		};
-	},
-
-	/**
-	 * Set settings display mode for the module identified by slug.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} slug   Module slug.
-	 * @param {string} status The settings status, one of: "closed", "view", "edit", "locked" or "saving".
-	 * @return {Object} Redux-style action.
-	 */
-	*setSettingsDisplayMode( slug, status ) {
-		invariant( slug, 'slug is required.' );
-		invariant( Object.values( SETTINGS_DISPLAY_MODES ).includes( status ), 'status is one of "closed", "view", "edit", "locked" or "saving".' );
-
-		yield actions.waitForModules();
-
-		return {
-			payload: { slug, status },
-			type: SET_SETTINGS_DISPLAY_MODE,
-		};
-	},
 };
 
 export const baseControls = {
@@ -342,47 +281,6 @@ const baseReducer = ( state, { type, payload } ) => {
 						...( state.modules?.[ slug ] || {} ),
 						...settings,
 						...{ slug },
-					},
-				},
-			};
-		}
-		case SET_SETTINGS_COMPONENT: {
-			return {
-				...state,
-			};
-		}
-		case SET_SETTINGS_DISPLAY_MODE: {
-			const { slug, status } = payload;
-			const { modules: existingModules } = state;
-
-			// Clone object so as not to override previous object's values below.
-			const updatedModules = JSON.parse( JSON.stringify( existingModules ) );
-
-			// If status is "view", set all other modules to "closed".
-			if ( status === SETTINGS_DISPLAY_MODES.VIEW ) {
-				Object.keys( updatedModules ).forEach( ( currentSlug ) => {
-					if ( updatedModules[ currentSlug ] !== slug ) {
-						updatedModules[ currentSlug ].displayMode = SETTINGS_DISPLAY_MODES.CLOSED;
-					}
-				} );
-			}
-
-			// If status is "edit", set all other modules to "locked".
-			if ( status === SETTINGS_DISPLAY_MODES.EDIT ) {
-				Object.keys( updatedModules ).forEach( ( currentSlug ) => {
-					if ( updatedModules[ currentSlug ] !== slug ) {
-						updatedModules[ currentSlug ].displayMode = SETTINGS_DISPLAY_MODES.LOCKED;
-					}
-				} );
-			}
-
-			return {
-				...state,
-				modules: {
-					...updatedModules,
-					[ slug ]: {
-						...updatedModules[ slug ],
-						displayMode: status,
 					},
 				},
 			};
@@ -497,86 +395,6 @@ const baseSelectors = {
 
 		// This module exists, so let's return it.
 		return modules[ slug ];
-	} ),
-
-	/**
-	 * Gets the display mode for module's settings.
-	 *
-	 * Returns one of: "view", "edit", "saving", "closed" or "locked".
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Module slug.
-	 * @return {string} The displayMode status of the module identified by the slug, default 'closed'.
-	 */
-	getSettingsDisplayMode: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const modules = select( STORE_NAME ).getModules();
-
-		// Return `undefined` if modules haven't been loaded yet.
-		if ( modules === undefined ) {
-			return SETTINGS_DISPLAY_MODES.CLOSED;
-		}
-
-		return modules[ slug ]?.displayMode || SETTINGS_DISPLAY_MODES.CLOSED;
-	} ),
-
-	/**
-	 * Checks if a module's settings are being edited.
-	 *
-	 * Returns `true` if the module exists and is being edited.
-	 * Returns `false` if the module doesn't exist or is not being edited.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Module slug.
-	 * @return {boolean} True if module exists and settings are being edited, false if not.
-	 */
-	isEditingSettings: isSettingsMode( SETTINGS_DISPLAY_MODES.EDIT ),
-
-	/**
-	 * Checks if a module's settings are open.
-	 *
-	 * Returns `true` if the module exists and its settings are open.
-	 * Returns `false` if the module doesn't exist or its settings aren't open.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Module slug.
-	 * @return {boolean} True if module exists and settings are open, false if not.
-	 */
-	isSettingsOpen: isSettingsMode( SETTINGS_DISPLAY_MODES.VIEW, SETTINGS_DISPLAY_MODES.EDIT, SETTINGS_DISPLAY_MODES.SAVING ),
-
-	/**
-	 * Checks if a module's settings are being saved.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Module slug.
-	 * @return {boolean} True if module exists and settings are open, false if not.
-	 */
-	isSavingSettings: isSettingsMode( SETTINGS_DISPLAY_MODES.SAVING ),
-
-	/**
-	 * Gets a module slug that has open settigns (with either open, view or saving state).
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {string|undefined} Module slug if there is a module with open settings, otherwise undefined.
-	 */
-	getModuleSlugWithActiveSettings: createRegistrySelector( ( select ) => () => {
-		const modules = select( STORE_NAME ).getModules();
-		const openModes = [
-			SETTINGS_DISPLAY_MODES.EDIT,
-			SETTINGS_DISPLAY_MODES.VIEW,
-			SETTINGS_DISPLAY_MODES.SAVING,
-		];
-
-		return ( modules ? Object.values( modules ) : [] ).find( ( { displayMode } ) => openModes.includes( displayMode ) )?.slug;
 	} ),
 
 	/**
