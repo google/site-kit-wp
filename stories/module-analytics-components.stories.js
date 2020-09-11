@@ -92,9 +92,8 @@ generateReportBasedWidgetStories( {
 	data: dashboardGoalsWidgetData,
 	options: dashboardGoalsWidgetArgs,
 	component: DashboardGoalsWidget,
-	variantCallbacks: {
-		Loaded: ( dispatch, data, options ) => {
-			dispatch( STORE_NAME ).receiveGetReport( data, { options } );
+	additionalVariantCallbacks: {
+		Loaded: ( dispatch ) => {
 			dispatch( STORE_NAME ).receiveGetGoals( goals );
 		},
 		'Data Unavailable': ( dispatch ) => {
@@ -107,76 +106,28 @@ generateReportBasedWidgetStories( {
 	moduleSlug: 'analytics',
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/Unique Visitors Widget',
-	data: {
-		visitorData: dashboardUniqueVisitorsVisitorData,
-		sparkData: dashboardUniqueVisitorsSparkData,
-	},
-	options: {
-		visitorArgs: dashboardUniqueVisitorsVisitorArgs,
-		sparkArgs: dashboardUniqueVisitorsSparkArgs,
-	},
+	data: [
+		dashboardUniqueVisitorsVisitorData,
+		dashboardUniqueVisitorsSparkData,
+	],
+	options: [
+		dashboardUniqueVisitorsVisitorArgs,
+		dashboardUniqueVisitorsSparkArgs,
+	],
 	component: DashboardUniqueVisitorsWidget,
-	variantCallbacks: {
-		Loaded: ( dispatch, data, options ) => {
-			const { visitorData, sparkData } = data;
-			const { visitorArgs, sparkArgs } = options;
-			dispatch( STORE_NAME ).receiveGetReport( visitorData, { options: visitorArgs } );
-			dispatch( STORE_NAME ).receiveGetReport( sparkData, { options: sparkArgs } );
-		},
-		'Data Unavailable': ( dispatch, data, options ) => {
-			const { visitorArgs, sparkArgs } = options;
-			dispatch( STORE_NAME ).receiveGetReport( [], { options: visitorArgs } );
-			dispatch( STORE_NAME ).receiveGetReport( [], { options: sparkArgs } );
-		},
-		Error: ( dispatch, data, options ) => {
-			const { visitorArgs } = options;
-			const error = {
-				code: 'missing_required_param',
-				message: 'Request parameter is empty: metrics.',
-				data: {},
-			};
-
-			dispatch( STORE_NAME ).receiveError( error, 'getReport', [ visitorArgs ] );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ visitorArgs ] );
-		},
-	},
 } );
 
 generateReportBasedWidgetStories( {
 	moduleSlug: 'analytics',
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/Unique Visitors Widget',
-	data: {
-		visitorData: pageDashboardUniqueVisitorsVisitorData,
-		sparkData: pageDashboardUniqueVisitorsSparkData,
-	},
-	options: {
-		visitorArgs: pageDashboardUniqueVisitorsVisitorArgs,
-		sparkArgs: pageDashboardUniqueVisitorsSparkArgs,
-	},
+	data: [
+		pageDashboardUniqueVisitorsVisitorData,
+		pageDashboardUniqueVisitorsSparkData,
+	],
+	options: [
+		pageDashboardUniqueVisitorsVisitorArgs,
+		pageDashboardUniqueVisitorsSparkArgs,
+	],
 	component: DashboardUniqueVisitorsWidget,
-	variantCallbacks: {
-		Loaded: ( dispatch, data, options ) => {
-			const { visitorData, sparkData } = data;
-			const { visitorArgs, sparkArgs } = options;
-			dispatch( STORE_NAME ).receiveGetReport( visitorData, { options: visitorArgs } );
-			dispatch( STORE_NAME ).receiveGetReport( sparkData, { options: sparkArgs } );
-		},
-		'Data Unavailable': ( dispatch, data, options ) => {
-			const { visitorArgs, sparkArgs } = options;
-			dispatch( STORE_NAME ).receiveGetReport( [], { options: visitorArgs } );
-			dispatch( STORE_NAME ).receiveGetReport( [], { options: sparkArgs } );
-		},
-		Error: ( dispatch, data, options ) => {
-			const { visitorArgs } = options;
-			const error = {
-				code: 'missing_required_param',
-				message: 'Request parameter is empty: metrics.',
-				data: {},
-			};
-
-			dispatch( STORE_NAME ).receiveError( error, 'getReport', [ visitorArgs ] );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ visitorArgs ] );
-		},
-	},
 } );
