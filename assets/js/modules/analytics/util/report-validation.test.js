@@ -74,6 +74,11 @@ describe( 'Analytics Reporting API validation', () => {
 				expression: 'test',
 				alias: 'Test',
 			} ) ).toBeTruthy();
+
+			// 'alias' is optional.
+			expect( isValidMetrics( {
+				expression: 'test',
+			} ) ).toBeTruthy();
 		} );
 
 		it( 'should return TRUE if a valid array of objects/strings is passed', () => {
@@ -88,6 +93,7 @@ describe( 'Analytics Reporting API validation', () => {
 					expression: 'test4',
 					alias: 'Test4',
 				},
+				{ expression: 'test5' },
 			] ) ).toBeTruthy();
 		} );
 
