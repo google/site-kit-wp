@@ -22,6 +22,8 @@
 import API from 'googlesitekit-api';
 import { STORE_NAME, FORM_SETUP, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
+import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
@@ -31,6 +33,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
+import { makeBuildAndReceiveWebAndAMP } from '../../tagmanager/datastore/util/web-and-amp';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -61,6 +64,20 @@ describe( 'modules/analytics settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [
+			{
+				slug: 'tagmanager',
+				name: 'Tag Manager',
+				description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
+				homepage: 'https://tagmanager.google.com/',
+				internal: false,
+				active: false,
+				connected: false,
+				dependencies: [ 'analytics' ],
+				dependants: [],
+				order: 10,
+			},
+		] );
 	} );
 
 	afterAll( () => {
@@ -378,13 +395,34 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'requires permission for GTM Analytics tag if the tag is present', () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).receiveGetSingleAnalyticsPropertyID( tagWithPermission.propertyID );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
+				const data = {
+					accountID: '12345',
+					webPropertyID: 'UA-123456789-1',
+					ampPropertyID: 'UA-123456789-1',
+				};
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'tagmanager',
+						name: 'Tag Manager',
+						description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
+						homepage: 'https://tagmanager.google.com/',
+						internal: false,
+						active: true,
+						connected: true,
+						dependencies: [ 'analytics' ],
+						dependants: [],
+						order: 10,
+					},
+				] );
 
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, false );
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+					accountID: data.accountID,
+					permission: false,
+				}, { propertyID: data.webPropertyID } );
+
+				makeBuildAndReceiveWebAndAMP( registry )( data );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 			} );
