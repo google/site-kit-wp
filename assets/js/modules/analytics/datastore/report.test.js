@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -100,7 +99,6 @@ describe( 'modules/analytics report', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getReport( options );
 				await untilResolved( registry, STORE_NAME ).getReport( options );
 
@@ -108,6 +106,7 @@ describe( 'modules/analytics report', () => {
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 				expect( report ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'sets adsenseLinked to false if a 400 error is returned for AdSense metrics due to them being restricted', async () => {
@@ -128,13 +127,13 @@ describe( 'modules/analytics report', () => {
 				registry.dispatch( STORE_NAME ).setAdsenseLinked( true );
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
 
-				muteConsole( 'error' ); // fetch will trigger 400 error.
 				registry.select( STORE_NAME ).getReport( adsenseOptions );
 				await untilResolved( registry, STORE_NAME ).getReport( adsenseOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( false );
+				expect( console ).toHaveErrored(); // fetch will trigger 400 error.
 			} );
 
 			it( 'does not modify adsenseLinked if a 400 error is returned for non-AdSense metrics', async () => {
@@ -155,13 +154,13 @@ describe( 'modules/analytics report', () => {
 				registry.dispatch( STORE_NAME ).setAdsenseLinked( true );
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
 
-				muteConsole( 'error' ); // fetch will trigger 400 error.
 				registry.select( STORE_NAME ).getReport( nonAdsenseOptions );
 				await untilResolved( registry, STORE_NAME ).getReport( nonAdsenseOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
+				expect( console ).toHaveErrored(); // fetch will trigger 400 error.
 			} );
 
 			it( 'sets adsenseLinked to true if a successful response is returned for AdSense metrics', async () => {
@@ -184,7 +183,6 @@ describe( 'modules/analytics report', () => {
 				registry.dispatch( STORE_NAME ).setAdsenseLinked( false );
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( false );
 
-				muteConsole( 'error' ); // fetch will trigger 400 error.
 				registry.select( STORE_NAME ).getReport( adsenseOptions );
 				await untilResolved( registry, STORE_NAME ).getReport( adsenseOptions );
 
@@ -211,13 +209,13 @@ describe( 'modules/analytics report', () => {
 				registry.dispatch( STORE_NAME ).setAdsenseLinked( false );
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( false );
 
-				muteConsole( 'error' ); // fetch will trigger 400 error.
 				registry.select( STORE_NAME ).getReport( adsenseAndNonAdSenseOptions );
 				await untilResolved( registry, STORE_NAME ).getReport( adsenseAndNonAdSenseOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
+				expect( console ).toHaveErrored(); // fetch will trigger 400 error.
 			} );
 		} );
 	} );

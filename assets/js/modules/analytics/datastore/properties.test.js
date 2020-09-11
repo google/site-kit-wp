@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
@@ -96,8 +95,11 @@ describe( 'modules/analytics properties', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
-				await registry.dispatch( STORE_NAME ).createProperty( accountID );
+				registry.dispatch( STORE_NAME ).createProperty( accountID );
+
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) === false
+				);
 
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'createProperty', [ accountID ] ) ).toMatchObject( response );
 
@@ -108,6 +110,7 @@ describe( 'modules/analytics properties', () => {
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -244,7 +247,6 @@ describe( 'modules/analytics properties', () => {
 				);
 
 				const fakeAccountID = '777888999';
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).isDoingGetProperties( fakeAccountID ) === false,
@@ -254,6 +256,7 @@ describe( 'modules/analytics properties', () => {
 
 				const properties = registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				expect( properties ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 		describe( 'getPropertyByID', () => {

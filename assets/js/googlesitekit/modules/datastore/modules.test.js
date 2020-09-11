@@ -22,7 +22,6 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
@@ -142,7 +141,6 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).activateModule( slug );
 
 				// Wait until this activation action has completed.
@@ -171,6 +169,7 @@ describe( 'core/modules modules', () => {
 				// activation request failed.
 				expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 				expect( isActiveAfter ).toEqual( false );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -262,7 +261,6 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).deactivateModule( slug );
 
 				// Ensure the proper body parameters were sent.
@@ -285,6 +283,7 @@ describe( 'core/modules modules', () => {
 				// deactivation request failed.
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isActiveAfter ).toEqual( true );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -299,6 +298,7 @@ describe( 'core/modules modules', () => {
 			};
 
 			it( 'registers a module', async () => {
+				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
 				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, moduleSettings );
 				const modules = await registry.select( STORE_NAME ).getModules();
 				expect( modules[ moduleSlug ] ).not.toBeUndefined();
@@ -306,6 +306,7 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'does not allow active or connected properties to be set to true', async () => {
+				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
 				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, { active: true, connected: true, ...moduleSettings } );
 				const modules = await registry.select( STORE_NAME ).getModules();
 				expect( modules[ moduleSlug ].active ).toBe( false );
@@ -325,8 +326,8 @@ describe( 'core/modules modules', () => {
 		describe( 'receiveGetModules', () => {
 			it( 'requires the response param', () => {
 				expect( () => {
-					muteConsole( 'error' );
 					registry.dispatch( STORE_NAME ).receiveGetModules();
+					expect( console ).toHaveErrored();
 				} ).toThrow( 'response is required.' );
 			} );
 
@@ -389,7 +390,6 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getModules();
 
 				await subscribeUntil( registry, () => registry
@@ -401,6 +401,7 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( modules ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -441,7 +442,6 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getModule( slug );
 
 				await subscribeUntil( registry, () => registry
@@ -453,6 +453,7 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( module ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {

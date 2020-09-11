@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { waitFor } from '@testing-library/react';
+
+/**
  * WordPress dependencies
  */
 import apiFetchMock from '@wordpress/api-fetch';
@@ -25,7 +30,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import AccountSelect from './AccountSelect';
-import { fireEvent, muteConsole, render } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 
@@ -76,14 +81,16 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should render a loading state when accounts are undefined', async () => {
-		muteConsole( 'warn' );
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
 
-		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
+		await waitFor( () => {
+			expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 
-		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
-		// If accounts are `undefined`, we'll make a request to fetch them.
-		expect( apiFetchMock ).toHaveBeenCalled();
+			expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
+			// If accounts are `undefined`, we'll make a request to fetch them.
+			expect( apiFetchMock ).toHaveBeenCalled();
+			expect( console ).toHaveWarned();
+		} );
 	} );
 
 	it( 'should render a select box with only setup when no accounts exist', async () => {

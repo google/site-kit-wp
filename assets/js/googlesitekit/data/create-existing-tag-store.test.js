@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	unsubscribeFromAll,
 	untilResolved,
@@ -79,8 +78,8 @@ describe( 'createExistingTagStore store', () => {
 		describe( 'receiveGetExistingTag', () => {
 			it( 'requires the response param', () => {
 				expect( () => {
-					muteConsole( 'error' );
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag();
+					expect( console ).toHaveErrored();
 				} ).toThrow( 'existingTag must be a tag string or null.' );
 			} );
 

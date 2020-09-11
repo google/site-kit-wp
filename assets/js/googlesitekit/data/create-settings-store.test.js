@@ -26,7 +26,6 @@ import { createRegistry } from '@wordpress/data';
  */
 import API from 'googlesitekit-api';
 import {
-	muteConsole,
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
@@ -77,8 +76,8 @@ describe( 'createSettingsStore store', () => {
 		describe( 'setSettings', () => {
 			it( 'requires the values param', () => {
 				expect( () => {
-					muteConsole( 'error' );
 					dispatch.setSettings();
+					expect( console ).toHaveErrored();
 				} ).toThrow( 'values is required.' );
 			} );
 
@@ -106,8 +105,8 @@ describe( 'createSettingsStore store', () => {
 		describe( 'receiveGetSettings', () => {
 			it( 'requires the response param', () => {
 				expect( () => {
-					muteConsole( 'error' );
 					dispatch.receiveGetSettings();
+					expect( console ).toHaveErrored();
 				} ).toThrow( 'response is required.' );
 			} );
 
@@ -317,7 +316,6 @@ describe( 'createSettingsStore store', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				select.getSettings();
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
@@ -329,6 +327,7 @@ describe( 'createSettingsStore store', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( settings ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 

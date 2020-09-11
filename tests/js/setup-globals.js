@@ -44,6 +44,14 @@ global._googlesitekitLegacyData = {
 };
 
 // eslint-disable-next-line no-undef
+global._googlesitekitUserData = {
+	user: {},
+};
+
+global._googlesitekitBaseData = {};
+global._googlesitekitEntityData = {};
+
+// eslint-disable-next-line no-undef
 global.gtag = function( type, name, sendto, category, label, value ) {
 	return {
 		type,

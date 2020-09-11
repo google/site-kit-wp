@@ -32,7 +32,6 @@ import { createRegistry } from '@wordpress/data';
  */
 import API from 'googlesitekit-api';
 import {
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../tests/js/utils';
@@ -217,9 +216,9 @@ describe( 'createFetchStore store', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
 
+				expect( console ).toHaveErrored();
 				expect( error ).toEqual( errorResponse );
 				expect( response ).toEqual( undefined );
 				expect( store.getState().data ).toEqual( undefined );

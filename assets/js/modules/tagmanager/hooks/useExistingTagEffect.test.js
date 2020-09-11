@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { renderHook, act } from '../../../../../tests/js/test-utils';
-import { createTestRegistry, untilResolved, muteConsole } from '../../../../../tests/js/utils';
+import { createTestRegistry, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
 import useExistingTagEffect from './useExistingTagEffect';
@@ -58,8 +58,6 @@ describe( 'useExistingTagEffect', () => {
 		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( firstContainer.publicId );
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId );
 
-		// Can't seem to prevent an error from updates happening outside of `act()` just for this part.
-		muteConsole( 'error' );
 		await act( () => new Promise( async ( resolve ) => {
 			registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: existingContainer.publicId } );
 			registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingContainer.publicId );
@@ -70,5 +68,7 @@ describe( 'useExistingTagEffect', () => {
 
 		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( existingContainer.publicId );
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( existingContainer.containerId );
+		// Can't seem to prevent an error from updates happening outside of `act()` just for this part.
+		expect( console ).toHaveErrored();
 	} );
 } );

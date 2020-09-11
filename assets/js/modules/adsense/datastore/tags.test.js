@@ -24,7 +24,6 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -145,7 +144,6 @@ describe( 'modules/adsense tags', () => {
 
 				const clientID = fixtures.tagPermissionAccess.clientID;
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getTagPermission( clientID );
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).isFetchingGetTagPermission( clientID ) === false,
@@ -155,6 +153,7 @@ describe( 'modules/adsense tags', () => {
 
 				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( clientID );
 				expect( permissionForTag ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -261,10 +260,8 @@ describe( 'modules/adsense tags', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				muteConsole( 'error' );
-				fetchMock.get( /^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/, { status: 200 } );
+				fetchMock.get( /^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/, JSON.stringify( { status: 200 } ) );
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.tagPermissionNoAccess.clientID );
-
 				expect( hasPermission ).toEqual( undefined );
 			} );
 		} );

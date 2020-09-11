@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
-	muteConsole,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from './constants';
@@ -190,9 +189,6 @@ describe( 'core/widgets Widgets', () => {
 				registry.dispatch( STORE_NAME ).registerWidget( slug, {
 					component: WidgetOne,
 				} );
-
-				// Mute warning about duplicate slug since we expect it below anyway.
-				muteConsole( 'warn' );
 
 				// Expect console warning about duplicate slug.
 				const consoleWarnSpy = jest.spyOn( global.console, 'warn' );

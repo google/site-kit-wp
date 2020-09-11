@@ -21,7 +21,6 @@
  */
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -100,10 +99,10 @@ describe( 'core/user userInfo', () => {
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
-				muteConsole( 'error' );
 				const connectURL = registry.select( STORE_NAME ).getConnectURL();
 
 				expect( connectURL ).toEqual( INITIAL_STATE.connectURL );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'accepts an optional list of additional scopes to add as a query parameter', () => {
@@ -157,11 +156,11 @@ describe( 'core/user userInfo', () => {
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 
-				muteConsole( 'error' );
 				const userInfo = registry.select( STORE_NAME ).getUser();
 
 				const { user } = INITIAL_STATE;
 				expect( userInfo ).toEqual( user );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -185,11 +184,11 @@ describe( 'core/user userInfo', () => {
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 
-				muteConsole( 'error' );
 				const isVerified = registry.select( STORE_NAME ).isVerified();
 
 				const { verified } = INITIAL_STATE;
 				expect( isVerified ).toEqual( verified );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -217,10 +216,10 @@ describe( 'core/user userInfo', () => {
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 
-				muteConsole( 'error' );
 				const result = registry.select( STORE_NAME )[ selector ]();
 
 				expect( result ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import UseSnippetInstructions from './UseSnippetInstructions';
-import { render } from '../../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	render,
+	unsubscribeFromAll,
+} from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_MODULE } from '../../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
@@ -28,42 +32,47 @@ import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/
 import fixtures from '../../../../googlesitekit/modules/datastore/fixtures.json';
 
 describe( 'UseSnippetInstructions', () => {
-	it( 'should render with analytics active and no useSnippet', () => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
-		};
+	let registry;
+	beforeEach( () => {
+		registry = createTestRegistry();
+		// Receive empty settings & modules to prevent unexpected fetch by resolver.
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
+		registry.dispatch( CORE_MODULE ).receiveGetModules( [] );
+	} );
 
-		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
+
+	it( 'should render with analytics active and no useSnippet', async () => {
+		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+		registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
+		const { container } = render( <UseSnippetInstructions />, { registry } );
 
 		const selectedText = container.querySelector( 'p' );
 		expect( selectedText ).toHaveTextContent( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:' );
 	} );
 
-	it( 'should render with analytics message if analytics is inactive', () => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-		};
+	it( 'should render with analytics message if analytics is inactive', async () => {
+		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
 
-		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
+		const { container } = render( <UseSnippetInstructions />, { registry } );
 
 		const selectedText = container.querySelector( 'p' );
 		expect( selectedText ).toHaveTextContent( 'Google Analytics must be active to use Optimize' );
 	} );
 
-	it( 'should not render with analytics active and a useSnippet', () => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-			registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
-			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		};
+	it( 'should not render with analytics active and a useSnippet', async () => {
+		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+		registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
+		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 
-		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
-
+		const { container } = render( <UseSnippetInstructions />, { registry } );
 		expect( container.querySelector( 'p' ) ).toEqual( null );
 	} );
 
-	it( 'should render with analytics active and no analytics useSnippet, also with tagmanager active and a gtm useSnippet', () => {
+	it( 'should render with analytics active and no analytics useSnippet, also with tagmanager active and a gtm useSnippet', async () => {
 		const newFixtures = fixtures.map( ( fixture ) => {
 			if ( fixture.slug !== 'tagmanager' && fixture.slug !== 'optimize' ) {
 				return fixture;
@@ -71,13 +80,11 @@ describe( 'UseSnippetInstructions', () => {
 			return { ...fixture, active: true, connected: true };
 		} );
 
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-			registry.dispatch( CORE_MODULE ).receiveGetModules( newFixtures );
-			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
-		};
+		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+		registry.dispatch( CORE_MODULE ).receiveGetModules( newFixtures );
+		registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
 
-		const { container } = render( <UseSnippetInstructions />, { setupRegistry } );
+		const { container } = render( <UseSnippetInstructions />, { registry } );
 
 		const selectedText = container.querySelector( 'p' );
 		expect( selectedText ).toHaveTextContent( 'You are using auto insert snippet with Tag Manager' );

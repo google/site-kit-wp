@@ -24,7 +24,7 @@ import apiFetchMock from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
+import { render, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import SettingsEdit from './SettingsEdit';
@@ -61,8 +61,11 @@ describe( 'SettingsEdit', () => {
 		};
 		const { registry } = render( <SettingsEdit />, { setupRegistry } );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( existingTag.accountID );
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( existingTag.propertyID );
-		expect( registry.select( STORE_NAME ).hasErrors() ).toBeFalsy();
+		waitFor( () => {
+			expect( registry.select( STORE_NAME ).getAccountID() ).toBe( existingTag.accountID );
+			expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( existingTag.propertyID );
+			expect( registry.select( STORE_NAME ).hasErrors() ).toBeFalsy();
+			expect( console ).toHaveWarned();
+		} );
 	} );
 } );

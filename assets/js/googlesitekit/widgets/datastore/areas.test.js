@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
-	muteConsole,
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
@@ -118,9 +117,6 @@ describe( 'core/widgets Widget areas', () => {
 			} );
 
 			it( 'requires a title and subtitle in settings', () => {
-				// Mute warning about duplicate slug registrations for this test.
-				muteConsole( 'warn' );
-
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {} );
 				} ).toThrow( 'settings.title is required.' );
@@ -145,6 +141,8 @@ describe( 'core/widgets Widget areas', () => {
 						style: 'composite',
 					} );
 				} ).not.toThrow();
+
+				expect( console ).toHaveWarned();
 			} );
 
 			it( 'should register multiple widget areas', () => {
@@ -215,9 +213,6 @@ describe( 'core/widgets Widget areas', () => {
 					style: 'composite',
 				};
 				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
-
-				// Mute warning about duplicate slug since we expect it below anyway.
-				muteConsole( 'warn' );
 
 				// Expect console warning about duplicate slug.
 				const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
