@@ -356,12 +356,6 @@ final class Analytics extends Module
 
 		$gtag_opt = array();
 
-		if ( $this->context->get_amp_mode() ) {
-			$gtag_opt['linker'] = array(
-				'domains' => array( $this->get_home_domain() ),
-			);
-		}
-
 		$anonymize_ip = $this->get_data( 'anonymize-ip' );
 		if ( ! is_wp_error( $anonymize_ip ) && $anonymize_ip ) {
 			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
@@ -434,9 +428,6 @@ final class Analytics extends Module
 				'config'  => array(
 					$property_id => array(
 						'groups' => 'default',
-						'linker' => array(
-							'domains' => array( $this->get_home_domain() ),
-						),
 					),
 				),
 			),
