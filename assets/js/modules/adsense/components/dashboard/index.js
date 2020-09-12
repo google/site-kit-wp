@@ -17,7 +17,6 @@
  */
 
 export { default as AdSenseDashboardMainSummary } from './AdSenseDashboardMainSummary';
-export { default as AdSenseDashboardOutro } from './AdSenseDashboardOutro';
 export { default as AdSenseDashboardWidget } from './AdSenseDashboardWidget';
 export { default as AdSenseEstimateEarningsWidget } from './AdSenseEstimateEarningsWidget';
 export { default as AdSensePerformanceWidget } from './AdSensePerformanceWidget';
