@@ -89,7 +89,7 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 		const existingReport = registry.select( STORE_NAME ).getReport( options );
 
-		// If there are already alerts loaded in state, consider it fulfilled
+		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.
 		if ( existingReport ) {
 			return;
@@ -122,7 +122,7 @@ const baseSelectors = {
 	 * @param {Array.<Object>} [options.orderby]           Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
 	 * @param {string}         [options.url]               Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]             Optional. Maximum number of entries to return. Default 1000.
-	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An Analytics report; `undefined` if not loaded.
 	 */
 	getReport( state, options ) {
 		const { reports } = state;
