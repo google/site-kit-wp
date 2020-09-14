@@ -53,8 +53,8 @@ function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave } ) 
 		const store = select( STORE_NAME );
 		return {
 			module: store.getModule( slug ),
-			isEditing: store.isEditingSettings( slug ),
-			isSavingModuleSettings: store.isSavingSettings( slug ),
+			isEditing: store.isSettingsViewModuleEditing( slug ),
+			isSavingModuleSettings: false, // TODO: update
 		};
 	} );
 

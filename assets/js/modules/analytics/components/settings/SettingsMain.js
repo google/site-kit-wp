@@ -47,7 +47,7 @@ export default function SettingsMain( { slug } ) {
 		};
 	} );
 
-	const isEditing = useSelect( ( select ) => select( CORE_MODULES ).isEditingSettings( slug ) );
+	const isEditing = useSelect( ( select ) => select( CORE_MODULES ).isSettingsViewEditing( slug ) );
 	const { submitChanges, rollbackSettings } = useDispatch( STORE_NAME );
 
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.

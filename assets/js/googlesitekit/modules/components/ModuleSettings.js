@@ -31,7 +31,7 @@ import ModuleSettingsOverlay from './ModuleSettingsOverlay';
 const { useSelect } = Data;
 
 function ModuleSettings( { children, error, slug } ) {
-	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewEditingModule( slug ) );
+	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewModuleEditing( slug ) );
 	const isLocked = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewModuleLocked( slug ) );
 
 	return (

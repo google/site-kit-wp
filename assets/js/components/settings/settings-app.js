@@ -53,7 +53,7 @@ const tabIDsByIndex = Object.keys( tabToIndex );
 
 export default function SettingsApp() {
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
-	const moduleSlug = useSelect( ( select ) => select( CORE_MODULES ).getCurrentSettingsViewModule() );
+	const moduleSlug = useSelect( ( select ) => select( CORE_MODULES ).getSettingsViewCurrentModule() );
 	const moduleState = useSelect( ( select ) => select( CORE_MODULES ).getSettingsViewModuleState( moduleSlug ) );
 	const [ activeTabID, setActiveTabID ] = useState();
 

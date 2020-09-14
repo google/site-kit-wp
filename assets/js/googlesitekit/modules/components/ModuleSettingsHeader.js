@@ -33,30 +33,22 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { moduleIcon } from '../../../util';
-import { STORE_NAME, SETTINGS_DISPLAY_MODES } from '../datastore/constants';
+import { STORE_NAME } from '../datastore/constants';
 const { useDispatch, useSelect } = Data;
 
 function ModuleSettingsHeader( { slug } ) {
-	const {
-		module,
-		isOpen,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			module: store.getModule( slug ),
-			isOpen: store.isSettingsOpen( slug ),
-		};
-	} );
+	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewModuleOpen( slug ) );
+	const isConnected = useSelect( ( select ) => select( STORE_NAME ).isModuleConnected( slug ) );
+	const { name } = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) ) || {};
 
-	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
+	const { toggleSettingsViewModuleOpen } = useDispatch( STORE_NAME );
 	const handleAccordion = useCallback( () => {
-		setSettingsDisplayMode( slug, isOpen ? SETTINGS_DISPLAY_MODES.CLOSED : SETTINGS_DISPLAY_MODES.VIEW );
-	}, [ slug, isOpen ] );
+		toggleSettingsViewModuleOpen( slug );
+	}, [ slug ] );
 
 	let moduleStatus, moduleStatusForReader;
 
-	const { connected, name } = module || {};
-	if ( connected ) {
+	if ( isConnected ) {
 		/* translators: %s: module name. */
 		moduleStatus = sprintf( __( '%s is connected', 'google-site-kit' ), name );
 		moduleStatusForReader = __( 'Connected', 'google-site-kit' );
@@ -89,8 +81,8 @@ function ModuleSettingsHeader( { slug } ) {
 						<p className="googlesitekit-settings-module__status">
 							{ moduleStatus }
 							<span className={ classnames( 'googlesitekit-settings-module__status-icon', {
-								'googlesitekit-settings-module__status-icon--connected': connected,
-								'googlesitekit-settings-module__status-icon--not-connected': ! connected,
+								'googlesitekit-settings-module__status-icon--connected': isConnected,
+								'googlesitekit-settings-module__status-icon--not-connected': ! isConnected,
 							} ) }>
 								<span className="screen-reader-text">
 									{ moduleStatusForReader }
