@@ -200,7 +200,7 @@ final class Authentication {
 		$this->verification_meta()->register();
 		$this->has_connected_admins->register();
 		$this->owner_id->register();
-		$this->$this->connected_proxy_url->register();
+		$this->connected_proxy_url->register();
 
 		add_action(
 			'init',
