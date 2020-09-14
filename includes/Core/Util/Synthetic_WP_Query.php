@@ -16,7 +16,7 @@ use WP_Post;
 /**
  * Class extending WordPress core's `WP_Query` for more self-contained behavior.
  *
- * @since n.e.x.t
+ * @since 1.16.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ final class Synthetic_WP_Query extends WP_Query {
 	/**
 	 * The hash of the `$query` last parsed into `$query_vars`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 * @var string
 	 */
 	private $parsed_query_hash = '';
@@ -33,7 +33,7 @@ final class Synthetic_WP_Query extends WP_Query {
 	/**
 	 * Whether automatic 404 detection in `get_posts()` method is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 * @var bool
 	 */
 	private $enable_404_detection = false;
@@ -41,7 +41,7 @@ final class Synthetic_WP_Query extends WP_Query {
 	/**
 	 * Sets whether 404 detection in `get_posts()` method should be enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @param bool $enable Whether or not to enable 404 detection.
 	 */
@@ -52,7 +52,7 @@ final class Synthetic_WP_Query extends WP_Query {
 	/**
 	 * Initiates object properties and sets default values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 */
 	public function init() {
 		parent::init();
@@ -63,7 +63,7 @@ final class Synthetic_WP_Query extends WP_Query {
 	/**
 	 * Extends `WP_Query::parse_query()` to ensure it is not unnecessarily run twice.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @param string|array $query Optional. Array or string of query parameters. See `WP_Query::parse_query()`.
 	 */
@@ -95,7 +95,7 @@ final class Synthetic_WP_Query extends WP_Query {
 	 *
 	 * The majority of the code is a copy of `WP::handle_404()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @return WP_Post[]|int[] Array of post objects or post IDs.
 	 */
