@@ -1,0 +1,179 @@
+[
+	{
+		"nextPageToken": "10",
+		"columnHeader": {
+			"dimensions": [
+				"ga:pageTitle",
+				"ga:pagePath"
+			],
+			"metricHeader": {
+				"metricHeaderEntries": [
+					{
+						"name": "Pageviews",
+						"type": "INTEGER"
+					}
+				]
+			}
+		},
+		"data": {
+			"dataLastRefreshed": null,
+			"isDataGolden": null,
+			"rowCount": 177,
+			"samplesReadCounts": null,
+			"samplingSpaceSizes": null,
+			"rows": [
+				{
+					"dimensions": [
+						"Site Kit Test 1",
+						"/"
+					],
+					"metrics": [
+						{
+							"values": [
+								"1469"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Site Kit Test 2",
+						"/site-kit-tests/"
+					],
+					"metrics": [
+						{
+							"values": [
+								"616"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Site Kit Test 3",
+						"/site-kit-tests/"
+					],
+					"metrics": [
+						{
+							"values": [
+								"302"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Site Kit Test 4",
+						"/site-kit-tests/"
+					],
+					"metrics": [
+						{
+							"values": [
+								"231"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Site Kit Tests 5",
+						"/site-kit-tests/"
+					],
+					"metrics": [
+						{
+							"values": [
+								"203"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Site Kit Tests 6",
+						"/site-kit-tests/"
+					],
+					"metrics": [
+						{
+							"values": [
+								"110"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Site Kit Tests 7",
+						"/site-kit-tests/"
+					],
+					"metrics": [
+						{
+							"values": [
+								"98"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Site Kit Tests 8",
+						"/site-kit-tests/"
+					],
+					"metrics": [
+						{
+							"values": [
+								"78"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Site Kit Tests 9",
+						"/site-kit-tests/"
+					],
+					"metrics": [
+						{
+							"values": [
+								"72"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"Site Kit Tests 10",
+						"/site-kit-tests/"
+					],
+					"metrics": [
+						{
+							"values": [
+								"71"
+							]
+						}
+					]
+				}
+			],
+			"totals": [
+				{
+					"values": [
+						"4264"
+					]
+				}
+			],
+			"minimums": [
+				{
+					"values": [
+						"1"
+					]
+				}
+			],
+			"maximums": [
+				{
+					"values": [
+						"1469"
+					]
+				}
+			]
+		}
+	}
+]
