@@ -142,8 +142,10 @@ export function generateReportBasedWidgetStories( {
 				data: {},
 			};
 			if ( Array.isArray( options ) ) {
-				dispatch( datastore ).receiveError( error, 'getReport', [ options[ 0 ] ] );
-				dispatch( datastore ).finishResolution( 'getReport', [ options[ 0 ] ] );
+				options.forEach( ( option ) => {
+					dispatch( datastore ).receiveError( error, 'getReport', [ option ] );
+					dispatch( datastore ).finishResolution( 'getReport', [ option ] );
+				} );
 			} else {
 				dispatch( datastore ).receiveError( error, 'getReport', [ options ] );
 				dispatch( datastore ).finishResolution( 'getReport', [ options ] );
