@@ -30,6 +30,8 @@ import {
 	dashboardImpressionsWidgetArgs,
 	pageDashboardClicksWidgetArgs,
 	pageDashboardImpressionsArgs,
+	pageDashboardPopularKeyWordsWidgetArgs,
+	pageDashboardPopularKeyWordsWidgetData,
 	dashboardPopularKeyWordsWidgetArgs,
 	dashboardPopularKeyWordsWidgetData,
 } from '../assets/js/modules/search-console/datastore/__fixtures__';
@@ -77,13 +79,15 @@ generateReportBasedWidgetStories( {
 	data: dashboardPopularKeyWordsWidgetData,
 	options: dashboardPopularKeyWordsWidgetArgs,
 	component: DashboardPopularKeywordsWidget,
+	wrapWidget: false,
 } );
 
 generateReportBasedWidgetStories( {
 	moduleSlug: 'search-console',
 	datastore: STORE_NAME,
 	group: 'Search Console Module/Components/Page Dashboard/Popular Keywords Widget',
-	data: dashboardPopularKeyWordsWidgetData,
-	options: dashboardPopularKeyWordsWidgetArgs,
+	data: pageDashboardPopularKeyWordsWidgetData,
+	options: pageDashboardPopularKeyWordsWidgetArgs,
 	component: DashboardPopularKeywordsWidget,
+	wrapWidget: false,
 } );

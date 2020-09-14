@@ -129,7 +129,7 @@ function DashboardPopularKeywordsWidget() {
 
 	return (
 		<Layout
-			className="googlesitekit-popular-content"
+			className="googlesitekit-widget--no-padding googlesitekit-popular-content "
 			footer
 			footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 			footerCtaLink={ searchConsolePropertyMainURL }
