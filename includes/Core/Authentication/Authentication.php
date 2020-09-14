@@ -143,6 +143,14 @@ final class Authentication {
 	protected $connected_proxy_url;
 
 	/**
+	 * Disconnected_Reason instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Disconnected_Reason
+	 */
+	protected $disconnected_reason;
+
+	/**
 	 * Google_Proxy instance.
 	 *
 	 * @since 1.1.2
@@ -186,6 +194,7 @@ final class Authentication {
 		$this->owner_id             = new Owner_ID( $this->options );
 		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
 		$this->connected_proxy_url  = new Connected_Proxy_URL( $this->options );
+		$this->disconnected_reason  = new Disconnected_Reason( $this->user_options );
 	}
 
 	/**
@@ -201,6 +210,7 @@ final class Authentication {
 		$this->has_connected_admins->register();
 		$this->owner_id->register();
 		$this->connected_proxy_url->register();
+		$this->disconnected_reason->register();
 
 		add_action(
 			'init',
