@@ -28,6 +28,7 @@ import { SETTINGS_DISPLAY_MODES } from './constants';
 
 const SET_SETTINGS_VIEW_CURRENT_MODULE = 'SET_SETTINGS_VIEW_CURRENT_MODULE';
 const SET_SETTINGS_VIEW_IS_EDITING = 'SET_SETTINGS_VIEW_IS_EDITING';
+const TOGGLE_SETTINGS_VIEW_MODULE_OPEN = 'TOGGLE_SETTINGS_VIEW_MODULE_OPEN';
 
 export const INITIAL_STATE = {
 	settingsView: {
@@ -52,6 +53,13 @@ export const actions = {
 			type: SET_SETTINGS_VIEW_IS_EDITING,
 		};
 	},
+	toggleSettingsViewModuleOpen( slug ) {
+		invariant( typeof slug === 'string', 'slug must be a string' );
+		return {
+			payload: { slug },
+			type: TOGGLE_SETTINGS_VIEW_MODULE_OPEN,
+		};
+	},
 };
 
 export const controls = {};
@@ -68,11 +76,20 @@ export const reducer = ( state, { type, payload } ) => {
 				},
 			};
 		case SET_SETTINGS_VIEW_IS_EDITING:
+			const isEditing = !! payload.isEditing;
 			return {
 				...state,
 				settingsView: {
 					...state.settingsView,
-					isEditing: !! payload.isEditing,
+					isEditing: isEditing ? !! state.settingsView.currentModule : false,
+				},
+			};
+		case TOGGLE_SETTINGS_VIEW_MODULE_OPEN:
+			return {
+				...state,
+				settingsView: {
+					...state.settingsView,
+					currentModule: state.settingsView.currentModule !== payload.slug ? payload.slug : '',
 				},
 			};
 		default:
@@ -83,35 +100,35 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {};
 
 export const selectors = {
-	getCurrentSettingsViewModule( state ) {
+	getSettingsViewCurrentModule( state ) {
 		return state.settingsView.currentModule;
 	},
 
 	getSettingsViewModuleState( state, slug ) {
-		const { EDIT, VIEW, CLOSED } = SETTINGS_DISPLAY_MODES;
+		const { EDIT, VIEW, CLOSED, LOCKED } = SETTINGS_DISPLAY_MODES;
 		const { currentModule, isEditing } = state.settingsView;
 
 		if ( currentModule !== slug ) {
-			return CLOSED;
+			return isEditing ? LOCKED : CLOSED;
 		}
 
 		return isEditing ? EDIT : VIEW;
-	},
-
-	isSettingsViewModuleOpen( state, slug ) {
-		return state.settingsView.currentModule === slug;
-	},
-
-	isSettingsViewEditingModule( state, slug ) {
-		return selectors.getSettingsViewModuleState( state, slug ) === SETTINGS_DISPLAY_MODES.EDIT;
 	},
 
 	isSettingsViewEditing( state ) {
 		return state.settingsView.isEditing;
 	},
 
+	isSettingsViewModuleOpen( state, slug ) {
+		return state.settingsView.currentModule === slug;
+	},
+
+	isSettingsViewModuleEditing( state, slug ) {
+		return selectors.getSettingsViewModuleState( state, slug ) === SETTINGS_DISPLAY_MODES.EDIT;
+	},
+
 	isSettingsViewModuleLocked( state, slug ) {
-		return selectors.getCurrentSettingsViewModule( state ) !== slug && selectors.isSettingsViewEditing( state );
+		return selectors.getSettingsViewCurrentModule( state ) !== slug && selectors.isSettingsViewEditing( state );
 	},
 };
 
