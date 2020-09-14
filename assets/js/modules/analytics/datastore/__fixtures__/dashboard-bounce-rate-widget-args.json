@@ -1,0 +1,11 @@
+{
+	"dateRange": "last-28-days",
+	"multiDateRange": 1,
+	"dimensions": "ga:date",
+	"metrics": [
+		{
+			"expression": "ga:bounceRate",
+			"alias": "Bounce Rate"
+		}
+	]
+}
