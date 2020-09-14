@@ -77,7 +77,7 @@ function DashboardPopularPagesWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message );
+		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message, false, false, false, error );
 	}
 
 	if ( ! Array.isArray( data?.[ 0 ]?.data?.rows ) ) {
@@ -110,6 +110,7 @@ function DashboardPopularPagesWidget() {
 		chartsEnabled: false,
 		links,
 		showURLs: true,
+		useAdminURLs: true,
 	};
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
