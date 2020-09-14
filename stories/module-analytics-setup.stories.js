@@ -60,7 +60,7 @@ function Setup( props ) {
 	);
 }
 
-function makeGtmPropertyStory( { permission } ) {
+function makeGtmPropertyStory( { permission, useExistingTag = false } ) {
 	return () => {
 		const setupRegistry = ( registry ) => {
 			const data = {
@@ -98,6 +98,10 @@ function makeGtmPropertyStory( { permission } ) {
 				accountID: properties[ 0 ].accountId,
 				propertyID: profiles[ 0 ].webPropertyId,
 			} );
+
+			if ( useExistingTag ) {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( data.webPropertyID );
+			}
 
 			registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 				accountID: data.accountID,
@@ -326,6 +330,8 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'No tag, GTM property w/ access', makeGtmPropertyStory( { permission: true } ) )
-	.add( 'No tag, GTM property w/o access', makeGtmPropertyStory( { permission: false } ) )
+	.add( 'No Tag, GTM property w/ access', makeGtmPropertyStory( { permission: true } ) )
+	.add( 'No Tag, GTM property w/o access', makeGtmPropertyStory( { permission: false } ) )
+	.add( 'Existing Tag, GTM property w/ access', makeGtmPropertyStory( { permission: true, useExistingTag: true } ) )
+	.add( 'Existing Tag, GTM property w/o access', makeGtmPropertyStory( { permission: false, useExistingTag: true } ) )
 ;
