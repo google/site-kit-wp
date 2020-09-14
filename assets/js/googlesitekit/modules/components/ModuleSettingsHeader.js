@@ -19,8 +19,9 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import isPlainObject from 'lodash/isPlainObject';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -39,22 +40,26 @@ const { useDispatch, useSelect } = Data;
 function ModuleSettingsHeader( { slug } ) {
 	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewModuleOpen( slug ) );
 	const isConnected = useSelect( ( select ) => select( STORE_NAME ).isModuleConnected( slug ) );
-	const { name } = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) ) || {};
+	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 
 	const { toggleSettingsViewModuleOpen } = useDispatch( STORE_NAME );
 	const handleAccordion = useCallback( () => {
 		toggleSettingsViewModuleOpen( slug );
 	}, [ slug ] );
 
+	if ( ! isPlainObject( module ) ) {
+		return null;
+	}
+
 	let moduleStatus, moduleStatusForReader;
 
 	if ( isConnected ) {
 		/* translators: %s: module name. */
-		moduleStatus = sprintf( __( '%s is connected', 'google-site-kit' ), name );
+		moduleStatus = sprintf( __( '%s is connected', 'google-site-kit' ), module.name );
 		moduleStatusForReader = __( 'Connected', 'google-site-kit' );
 	} else {
 		/* translators: %s: module name. */
-		moduleStatus = sprintf( __( '%s is not connected', 'google-site-kit' ), name );
+		moduleStatus = sprintf( __( '%s is not connected', 'google-site-kit' ), module.name );
 		moduleStatusForReader = __( 'Not Connected', 'google-site-kit' );
 	}
 
@@ -74,7 +79,7 @@ function ModuleSettingsHeader( { slug } ) {
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
 						<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
 							{ moduleIcon( slug, false, '24', '26', 'googlesitekit-settings-module__title-icon' ) }
-							{ name }
+							{ module.name }
 						</h3>
 					</div>
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right-tablet">
