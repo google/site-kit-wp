@@ -85,14 +85,14 @@ function DashboardAllTrafficWidget() {
 
 		return {
 			loading: store.isResolving( 'getReport', [ args ] ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			report: store.getReport( args ),
 			reportArgs: args,
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
 		};
 	} );
 
 	if ( ! loading && error ) {
-		return getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error.message, true, true, false, error );
+		return getDataErrorComponent( 'analytics', error.message, true, true, false, error );
 	}
 
 	if ( ! loading && isDataZeroForReporting( report ) ) {
