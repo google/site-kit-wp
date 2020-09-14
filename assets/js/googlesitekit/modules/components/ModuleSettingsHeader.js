@@ -51,17 +51,10 @@ function ModuleSettingsHeader( { slug } ) {
 		return null;
 	}
 
-	let moduleStatus, moduleStatusForReader;
-
-	if ( isConnected ) {
-		/* translators: %s: module name. */
-		moduleStatus = sprintf( __( '%s is connected', 'google-site-kit' ), module.name );
-		moduleStatusForReader = __( 'Connected', 'google-site-kit' );
-	} else {
-		/* translators: %s: module name. */
-		moduleStatus = sprintf( __( '%s is not connected', 'google-site-kit' ), module.name );
-		moduleStatusForReader = __( 'Not Connected', 'google-site-kit' );
-	}
+	/* translators: %s: module name. */
+	const connectedStatusText = () => sprintf( __( '%s is connected', 'google-site-kit' ), module.name );
+	/* translators: %s: module name. */
+	const nonConnectedStatusText = () => sprintf( __( '%s is not connected', 'google-site-kit' ), module.name );
 
 	return (
 		<button
@@ -84,15 +77,14 @@ function ModuleSettingsHeader( { slug } ) {
 					</div>
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right-tablet">
 						<p className="googlesitekit-settings-module__status">
-							{ moduleStatus }
-							<span className={ classnames( 'googlesitekit-settings-module__status-icon', {
-								'googlesitekit-settings-module__status-icon--connected': isConnected,
-								'googlesitekit-settings-module__status-icon--not-connected': ! isConnected,
-							} ) }>
-								<span className="screen-reader-text">
-									{ moduleStatusForReader }
-								</span>
-							</span>
+							{ isConnected ? connectedStatusText() : nonConnectedStatusText() }
+
+							<span
+								className={ classnames( 'googlesitekit-settings-module__status-icon', {
+									'googlesitekit-settings-module__status-icon--connected': isConnected,
+									'googlesitekit-settings-module__status-icon--not-connected': ! isConnected,
+								} ) }
+							/>
 						</p>
 					</div>
 				</div>
