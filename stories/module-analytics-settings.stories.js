@@ -34,7 +34,10 @@ import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytic
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datastore/constants';
+import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
+import { makeBuildAndReceiveWebAndAMP } from '../assets/js/modules/tagmanager/datastore/util/web-and-amp';
 
 function filterAnalyticsSettings() {
 	// set( global, 'googlesitekit.modules.analytics.setupComplete', true );
@@ -99,6 +102,61 @@ function Settings( props ) {
 			</div>
 		</WithTestRegistry>
 	);
+}
+
+function makeGtmPropertyStory( { permission, useExistingTag = false } ) {
+	return () => {
+		const setupRegistry = ( registry ) => {
+			const data = {
+				accountID: '152925174',
+				webPropertyID: 'UA-152925174-1',
+				ampPropertyID: 'UA-152925174-1',
+			};
+
+			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+
+			registry.dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'tagmanager',
+					name: 'Tag Manager',
+					description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
+					homepage: 'https://tagmanager.google.com/',
+					internal: false,
+					active: true,
+					connected: true,
+					dependencies: [ 'analytics' ],
+					dependants: [],
+					order: 10,
+				},
+			] );
+
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				homeURL: 'https://example.com/',
+				ampMode: AMP_MODE_SECONDARY,
+			} );
+
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+			registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				accountID: properties[ 0 ].accountId,
+				propertyID: profiles[ 0 ].webPropertyId,
+			} );
+
+			if ( useExistingTag ) {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( data.webPropertyID );
+			}
+
+			registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				accountID: data.accountID,
+				permission,
+			}, { propertyID: data.webPropertyID } );
+
+			makeBuildAndReceiveWebAndAMP( registry )( data );
+		};
+
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+	};
 }
 
 storiesOf( 'Analytics Module/Settings', module )
@@ -220,7 +278,7 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
-	.add( 'Edit, with existing tag (with access)', () => {
+	.add( 'Edit, with existing tag w/ access', () => {
 		filterAnalyticsSettings();
 
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
@@ -253,7 +311,7 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
-	.add( 'Edit, with existing tag (no access)', () => {
+	.add( 'Edit, with existing tag w/o access', () => {
 		filterAnalyticsSettings();
 
 		const existingTag = {
@@ -278,4 +336,8 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
+	.add( 'No Tag, GTM property w/ access', makeGtmPropertyStory( { permission: true } ) )
+	.add( 'No Tag, GTM property w/o access', makeGtmPropertyStory( { permission: false } ) )
+	.add( 'Existing Tag, GTM property w/ access', makeGtmPropertyStory( { permission: true, useExistingTag: true } ) )
+	.add( 'Existing Tag, GTM property w/o access', makeGtmPropertyStory( { permission: false, useExistingTag: true } ) )
 ;

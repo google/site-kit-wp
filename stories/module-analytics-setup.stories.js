@@ -279,7 +279,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'Existing Tag (with access)', () => {
+	.add( 'Existing Tag w/ access', () => {
 		filterAnalyticsSetup();
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
@@ -305,7 +305,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'Existing Tag (no access)', () => {
+	.add( 'Existing Tag w/o access', () => {
 		filterAnalyticsSetup();
 
 		const existingTag = {
