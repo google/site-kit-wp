@@ -35,8 +35,10 @@ import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 
 import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { makeBuildAndReceiveWebAndAMP } from '../assets/js/modules/tagmanager/datastore/util/web-and-amp';
 import { WithTestRegistry } from '../tests/js/utils';
 
 function filterAnalyticsSetup() {
@@ -56,6 +58,57 @@ function Setup( props ) {
 			<SetupWrapper />
 		</WithTestRegistry>
 	);
+}
+
+function makeGtmPropertyStory( { permission } ) {
+	return () => {
+		const setupRegistry = ( registry ) => {
+			const data = {
+				accountID: '152925174',
+				webPropertyID: 'UA-152925174-1',
+				ampPropertyID: 'UA-152925174-1',
+			};
+
+			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+
+			registry.dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'tagmanager',
+					name: 'Tag Manager',
+					description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
+					homepage: 'https://tagmanager.google.com/',
+					internal: false,
+					active: true,
+					connected: true,
+					dependencies: [ 'analytics' ],
+					dependants: [],
+					order: 10,
+				},
+			] );
+
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				homeURL: 'https://example.com/',
+				ampMode: AMP_MODE_SECONDARY,
+			} );
+
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+			registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				accountID: properties[ 0 ].accountId,
+				propertyID: profiles[ 0 ].webPropertyId,
+			} );
+
+			registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				accountID: data.accountID,
+				permission,
+			}, { propertyID: data.webPropertyID } );
+
+			makeBuildAndReceiveWebAndAMP( registry )( data );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	};
 }
 
 storiesOf( 'Analytics Module/Setup', module )
@@ -273,4 +326,6 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
+	.add( 'No tag, GTM property w/ access', makeGtmPropertyStory( { permission: true } ) )
+	.add( 'No tag, GTM property w/o access', makeGtmPropertyStory( { permission: false } ) )
 ;
