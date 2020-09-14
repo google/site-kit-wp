@@ -1,0 +1,17 @@
+{
+	"dateRange": "last-28-days",
+	"dimensions": "ga:pageTitle,ga:pagePath",
+	"metrics": [
+		{
+			"expression": "ga:pageviews",
+			"alias": "Pageviews"
+		}
+	],
+	"orderby": [
+		{
+			"fieldName": "ga:pageviews",
+			"sortOrder": "DESCENDING"
+		}
+	],
+	"limit": 10
+}

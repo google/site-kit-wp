@@ -1,5 +1,5 @@
 /**
- * DashboardPopularKeywordsWidget component.
+ * DashboardPopularPagesWidget component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,102 +20,87 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { numberFormat } from '../../../../util';
-import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
+import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import { numberFormat } from '../../../../util';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+
 const { useSelect } = Data;
 
-function DashboardPopularKeywordsWidget() {
+function DashboardPopularPagesWidget() {
 	const {
 		data,
 		error,
 		loading,
-		baseServiceURL,
-		searchConsolePropertyMainURL,
+		analyticsMainURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
-		const domain = store.getPropertyID();
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
-			dimensions: 'query',
+			dimensions: 'ga:pageTitle,ga:pagePath',
+			metrics: [
+				{
+					expression: 'ga:pageviews',
+					alias: 'Pageviews',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:pageviews',
+					sortOrder: 'DESCENDING',
+				},
+			],
 			limit: 10,
 		};
-
-		const baseServiceURLArgs = {
-			resource_id: domain,
-			num_of_days: 28,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-			baseServiceURLArgs.page = `!${ url }`;
-		}
 
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: store.isResolving( 'getReport', [ args ] ),
-			baseServiceURL: store.getServiceURL( {
-				path: '/performance/search-analytics',
-				query: baseServiceURLArgs,
-			} ),
-			searchConsolePropertyMainURL: store.getServiceURL( {
-				query: {
-					resource_id: domain,
-				},
-			} ),
+			analyticsMainURL: store.getServiceURL(),
 		};
 	} );
 
 	if ( loading ) {
 		return <PreviewTable padding />;
 	}
+
 	if ( error ) {
-		return getDataErrorComponent( 'search-console', error.message, false, false, false, error );
+		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message, false, false, false, error );
 	}
 
-	if ( ! data || ! data.length ) {
-		return getNoDataComponent( __( 'Search Console', 'google-site-kit' ) );
+	if ( ! Array.isArray( data?.[ 0 ]?.data?.rows ) ) {
+		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
 	}
 
 	const headers = [
 		{
-			title: __( 'Keyword', 'google-site-kit' ),
-			tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
+			title: __( 'Most popular content', 'google-site-kit' ),
 			primary: true,
 		},
 		{
-			title: __( 'Clicks', 'google-site-kit' ),
-			tooltip: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
-		},
-		{
-			title: __( 'Impressions', 'google-site-kit' ),
-			tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
+			title: __( 'Views', 'google-site-kit' ),
 		},
 	];
 
 	const links = [];
-	const dataMapped = data.map( ( row, i ) => {
-		const query = row.keys[ 0 ];
-		links[ i ] = addQueryArgs( baseServiceURL, { query: `!${ query }` } );
+	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
+		const [ title, url ] = row.dimensions;
+		links[ i ] = url.startsWith( '/' ) ? url : '/' + url;
+
 		return [
-			query,
-			numberFormat( row.clicks ),
-			numberFormat( row.impressions ),
+			title,
+			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
 		];
 	} );
 
@@ -123,6 +108,8 @@ function DashboardPopularKeywordsWidget() {
 		hideHeader: false,
 		chartsEnabled: false,
 		links,
+		showURLs: true,
+		useAdminURLs: true,
 	};
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
@@ -131,8 +118,8 @@ function DashboardPopularKeywordsWidget() {
 		<Layout
 			className="googlesitekit-popular-content"
 			footer
-			footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-			footerCtaLink={ searchConsolePropertyMainURL }
+			footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+			footerCtaLink={ analyticsMainURL }
 			fill
 		>
 			<TableOverflowContainer>
@@ -142,4 +129,4 @@ function DashboardPopularKeywordsWidget() {
 	);
 }
 
-export default whenActive( { moduleName: 'search-console' } )( DashboardPopularKeywordsWidget );
+export default whenActive( { moduleName: 'analytics' } )( DashboardPopularPagesWidget );
