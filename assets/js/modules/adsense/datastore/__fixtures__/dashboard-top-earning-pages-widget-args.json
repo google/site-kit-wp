@@ -1,0 +1,14 @@
+{
+	"dateRange": "last-90-days",
+	"dimensions": [ "ga:pageTitle", "ga:pagePath" ],
+	"metrics": [
+			{ "expression": "ga:adsenseRevenue", "alias": "Earnings" },
+			{ "expression": "ga:adsenseECPM", "alias": "Page RPM" },
+			{ "expression": "ga:adsensePageImpressions", "alias": "Impressions" }
+		],
+		"orderby": {
+			"fieldName": "ga:adsenseRevenue",
+			"sortOrder": "DESCENDING"
+		},
+		"limit": 10
+}
