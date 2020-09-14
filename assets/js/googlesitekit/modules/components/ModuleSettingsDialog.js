@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useEffect, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { ESC } from '@wordpress/keycodes';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -46,7 +46,7 @@ function ModuleSettingsDialog( { provides, slug, toggleDialogState, onRemove } )
 	} = module || {};
 
 	const handleCloseModal = useCallback( ( event ) => {
-		if ( ESC === event.keyCode ) {
+		if ( ESCAPE === event.keyCode ) {
 			toggleDialogState();
 		}
 	}, [] );
