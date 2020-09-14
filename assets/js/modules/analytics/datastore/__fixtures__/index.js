@@ -30,6 +30,8 @@ export { default as dashboardAllTrafficArgs } from './dashboard-all-traffic-widg
 export { default as dashboardAllTrafficData } from './dashboard-all-traffic-widget-data.json';
 export { default as pageDashboardAllTrafficArgs } from './page-dashboard-all-traffic-widget-args.json';
 export { default as pageDashboardAllTrafficData } from './page-dashboard-all-traffic-widget-data.json';
+export { default as dashboardPopularPagesArgs } from './dashboard-popular-pages-widget-args.json';
+export { default as dashboardPopularPagesData } from './dashboard-popular-pages-widget-data.json';
 export { default as pageDashboardBounceRateWidgetArgs } from './page-dashboard-bounce-rate-widget-args.json';
 export { default as pageDashboardBounceRateWidgetData } from './page-dashboard-bounce-rate-widget-data.json';
 export { default as dashboardBounceRateWidgetData } from './dashboard-bounce-rate-widget-data.json';
