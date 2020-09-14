@@ -22,21 +22,24 @@
 import domReady from '@wordpress/dom-ready';
 
 /**
- * Internal dependencies
- */
-import './datastore';
-import Widgets from 'googlesitekit-widgets';
-import { AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC } from '../../googlesitekit/widgets/default-areas';
-import { fillFilterWithComponent } from '../../util';
-import { SetupMain as AnalyticsSetup } from './components/setup';
-import { SettingsMain as AnalyticsSettings } from './components/settings';
-import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
-
-/**
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import './datastore';
+import Widgets from 'googlesitekit-widgets';
+import { AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC, AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL } from '../../googlesitekit/widgets/default-areas';
+import { fillFilterWithComponent } from '../../util';
+import { SetupMain as AnalyticsSetup } from './components/setup';
+import { SettingsMain as AnalyticsSettings } from './components/settings';
+import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
+import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
+import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
+import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 
 addFilter(
 	'googlesitekit.ModuleSetup-analytics',
@@ -62,6 +65,46 @@ domReady( () => {
 		[
 			AREA_DASHBOARD_ALL_TRAFFIC,
 			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsUniqueVisitors',
+		{
+			component: DashboardUniqueVisitorsWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 3,
+			wrapWidget: true,
+		},
+		[
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsGoals',
+		{
+			component: DashboardGoalsWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 4,
+			wrapWidget: true,
+		},
+		[
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsBounceRate',
+		{
+			component: DashboardBounceRateWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 4,
+			wrapWidget: true,
+		},
+		[
+			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
 } );
