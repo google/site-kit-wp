@@ -34,6 +34,8 @@ use Exception;
  */
 final class Authentication {
 
+	const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH = 'connected_url_mismatch';
+
 	/**
 	 * Plugin context.
 	 *
@@ -212,12 +214,22 @@ final class Authentication {
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
 
-		add_action(
-			'init',
-			function() {
-				$this->handle_oauth();
-			}
-		);
+		$private_hook = function( $method ) {
+			return function() use ( $method ) {
+				return call_user_func_array( array( $this, $method ), func_get_args() );
+			};
+		};
+
+		add_filter( 'googlesitekit_inline_base_data', $private_hook( 'inline_js_base_data' ) );
+		add_filter( 'googlesitekit_admin_data', $private_hook( 'inline_js_admin_data' ) );
+		add_filter( 'googlesitekit_setup_data', $private_hook( 'inline_js_setup_data' ) );
+		add_filter( 'allowed_redirect_hosts', $private_hook( 'allowed_redirect_hosts' ) );
+		add_filter( 'googlesitekit_admin_notices', $private_hook( 'authentication_admin_notices' ) );
+
+		add_action( 'init', $private_hook( 'handle_oauth' ) );
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $private_hook( 'verify_proxy_setup_nonce' ), -1 );
+		add_action( 'admin_init', $private_hook( 'check_connected_proxy_url' ) );
+		add_action( 'googlesitekit_authorize_user', $private_hook( 'set_connected_proxy_url' ) );
 
 		add_filter(
 			'googlesitekit_rest_routes',
@@ -235,49 +247,6 @@ final class Authentication {
 				);
 				return array_merge( $routes, $authentication_routes );
 			}
-		);
-
-		add_filter(
-			'googlesitekit_inline_base_data',
-			function ( $data ) {
-				return $this->inline_js_base_data( $data );
-			}
-		);
-
-		add_filter(
-			'googlesitekit_admin_data',
-			function ( $data ) {
-				return $this->inline_js_admin_data( $data );
-			}
-		);
-
-		add_filter(
-			'googlesitekit_setup_data',
-			function ( $data ) {
-				return $this->inline_js_setup_data( $data );
-			}
-		);
-
-		add_filter(
-			'allowed_redirect_hosts',
-			function ( $hosts ) {
-				return $this->allowed_redirect_hosts( $hosts );
-			}
-		);
-
-		add_filter(
-			'googlesitekit_admin_notices',
-			function ( $notices ) {
-				return $this->authentication_admin_notices( $notices );
-			}
-		);
-
-		add_action(
-			'admin_action_' . Google_Proxy::ACTION_SETUP,
-			function () {
-				$this->verify_proxy_setup_nonce();
-			},
-			-1
 		);
 
 		add_action(
@@ -1011,4 +980,48 @@ final class Authentication {
 		);
 		exit;
 	}
+
+	/**
+	 * Sets connected proxy URL if the current user has setup capabilities.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function set_connected_proxy_url() {
+		if ( current_user_can( Permissions::SETUP ) ) {
+			$this->connected_proxy_url->set( home_url() );
+		}
+	}
+
+	/**
+	 * Checks connected proxy URL.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function check_connected_proxy_url() {
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			return;
+		}
+
+		if ( ! $this->credentials()->has() ) {
+			return;
+		}
+
+		if ( ! $this->credentials()->using_proxy() ) {
+			return;
+		}
+
+		if ( ! $this->is_authenticated() ) {
+			return;
+		}
+
+		if ( ! $this->connected_proxy_url->has() ) {
+			return;
+		}
+
+		if ( ! $this->connected_proxy_url->matches_url( home_url() ) ) {
+			$this->disconnect();
+			$this->disconnected_reason->set( self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH );
+		}
+	}
+
 }
