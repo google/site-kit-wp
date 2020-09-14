@@ -98,7 +98,7 @@ export default function SetupMain( { finishSetup } ) {
 	// Get additional information to determine account and site status.
 	const alerts = useSelect( ( select ) => select( STORE_NAME ).getAlerts( accountID ) );
 	const urlChannels = useSelect( ( select ) => select( STORE_NAME ).getURLChannels( accountID, clientID ) );
-	const accountsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAccounts' ) );
+	const accountsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAccounts', [] ) );
 	const alertsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAlerts', [ accountID ] ) );
 	const error = accountsError || alertsError;
 
