@@ -135,6 +135,14 @@ final class Authentication {
 	protected $has_connected_admins;
 
 	/**
+	 * Connected_Proxy_URL instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Connected_Proxy_URL
+	 */
+	protected $connected_proxy_url;
+
+	/**
 	 * Google_Proxy instance.
 	 *
 	 * @since 1.1.2
@@ -177,6 +185,7 @@ final class Authentication {
 		$this->profile              = new Profile( $this->user_options );
 		$this->owner_id             = new Owner_ID( $this->options );
 		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
+		$this->connected_proxy_url  = new Connected_Proxy_URL( $this->options );
 	}
 
 	/**
@@ -191,6 +200,7 @@ final class Authentication {
 		$this->verification_meta()->register();
 		$this->has_connected_admins->register();
 		$this->owner_id->register();
+		$this->$this->connected_proxy_url->register();
 
 		add_action(
 			'init',
