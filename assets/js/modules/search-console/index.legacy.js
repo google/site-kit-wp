@@ -32,9 +32,9 @@ import WPSearchConsoleDashboardWidget from './components/wp-dashboard/WPSearchCo
 import LegacyDashboardSearchFunnel from './components/dashboard/LegacyDashboardSearchFunnel.js';
 import LegacySearchConsoleDashboardWidgetTopLevel from './components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
 import DashboardDetailsWidgetKeywordsTable from './components/dashboard-details/DashboardDetailsWidgetKeywordsTable';
-import DashboardWidgetPopularKeywordsTable from './components/dashboard/DashboardWidgetPopularKeywordsTable';
+import LegacyDashboardWidgetPopularKeywordsTable from './components/dashboard/LegacyDashboardWidgetPopularKeywordsTable';
 import DashboardDetailsWidgetSearchFunnel from './components/dashboard-details/DashboardDetailsSearchFunnel';
-import DashboardPopularity from './components/dashboard/DashboardPopularity';
+import LegacyDashboardPopularity from './components/dashboard/LegacyDashboardPopularity';
 
 const slug = 'search-console';
 
@@ -46,8 +46,8 @@ const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <Legacy
 
 const addDashboardDetailsSearchFunnel = createAddToFilter( <DashboardDetailsWidgetSearchFunnel /> );
 const addDashboardDetailsKeywords = createAddToFilter( <DashboardDetailsWidgetKeywordsTable /> );
-const addDashboardPopularKeywords = createAddToFilter( <DashboardWidgetPopularKeywordsTable /> );
-const addDashboardPopularity = createAddToFilter( <DashboardPopularity /> );
+const addLegacyDashboardWidgetPopularKeywordsTable = createAddToFilter( <LegacyDashboardWidgetPopularKeywordsTable /> );
+const addLegacyDashboardPopularity = createAddToFilter( <LegacyDashboardPopularity /> );
 const addPostSearcher = createAddToFilter( <PostSearcher /> );
 
 /**
@@ -58,7 +58,7 @@ addFilter( 'googlesitekit.DashboardModule',
 	addLegacyDashboardSearchFunnel, 11 );
 addFilter( 'googlesitekit.DashboardModule',
 	'googlesitekit.DashboardPopularityModule',
-	addDashboardPopularity, 40 );
+	addLegacyDashboardPopularity, 40 );
 addFilter( 'googlesitekit.DashboardSearchFunnel',
 	'googlesitekit.SearchConsoleSearchFunnel',
 	addLegacySearchConsoleDashboardWidgetTopLevel );
@@ -75,7 +75,7 @@ addFilter( 'googlesitekit.DashboardDetailsModule',
 
 addFilter( 'googlesitekit.DashboardPopularity',
 	'googlesitekit.SearchConsoleDashboardPopularity',
-	addDashboardPopularKeywords );
+	addLegacyDashboardWidgetPopularKeywordsTable );
 addFilter( 'googlesitekit.DashboardPopularity',
 	'googlesitekit.DashboardPPostSearcherModule',
 	addPostSearcher, 30 );
