@@ -100,10 +100,27 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {};
 
 export const selectors = {
+	/**
+	 * Gets the current module slug focused in the settings view.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} Current module slug.
+	 */
 	getSettingsViewCurrentModule( state ) {
 		return state.settingsView.currentModule;
 	},
 
+	/**
+	 * Gets the given module's display state as a string.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {string} Display state. One of view/edit/closed/locked.
+	 */
 	getSettingsViewModuleState( state, slug ) {
 		const { EDIT, VIEW, CLOSED, LOCKED } = SETTINGS_DISPLAY_MODES;
 		const { currentModule, isEditing } = state.settingsView;
@@ -115,18 +132,53 @@ export const selectors = {
 		return isEditing ? EDIT : VIEW;
 	},
 
+	/**
+	 * Checks whether any module is being edited.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} `true` if a module is being edited, otherwise `false`.
+	 */
 	isSettingsViewEditing( state ) {
 		return state.settingsView.isEditing;
 	},
 
+	/**
+	 * Checks whether the given module is open in the settings view.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {boolean} `true` if the module is open, otherwise `false`.
+	 */
 	isSettingsViewModuleOpen( state, slug ) {
 		return state.settingsView.currentModule === slug;
 	},
 
+	/**
+	 * Checks whether the given module is being edited in the settings view.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {boolean} `true` if the module is being edited, otherwise `false`.
+	 */
 	isSettingsViewModuleEditing( state, slug ) {
 		return selectors.getSettingsViewModuleState( state, slug ) === SETTINGS_DISPLAY_MODES.EDIT;
 	},
 
+	/**
+	 * Checks whether the given module is locked in the settings view.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {boolean} `true` if the module is locked, otherwise `false`.
+	 */
 	isSettingsViewModuleLocked( state, slug ) {
 		return selectors.getSettingsViewCurrentModule( state ) !== slug && selectors.isSettingsViewEditing( state );
 	},
