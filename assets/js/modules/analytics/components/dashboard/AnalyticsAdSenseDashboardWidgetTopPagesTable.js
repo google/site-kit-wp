@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
@@ -146,11 +146,6 @@ const getDataError = ( data ) => {
 
 	// Legacy errors? Maybe this is never hit but better be safe than sorry.
 	if ( data.error ) {
-		// We don't want to show error as AdsenseDashboardOutro will be rendered for this case.
-		if ( 400 === data.error.code && 'INVALID_ARGUMENT' === data.error.status && getModulesData().analytics.active ) {
-			return null;
-		}
-
 		if ( data.error.message ) {
 			return data.error.message;
 		}

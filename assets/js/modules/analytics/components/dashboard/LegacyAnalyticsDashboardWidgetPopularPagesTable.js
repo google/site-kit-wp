@@ -1,5 +1,5 @@
 /**
- * AnalyticsDashboardWidgetPopularPagesTable component.
+ * LegacyAnalyticsDashboardWidgetPopularPagesTable component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -33,7 +33,7 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../../compon
 import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
 
-class AnalyticsDashboardWidgetPopularPagesTable extends Component {
+class LegacyAnalyticsDashboardWidgetPopularPagesTable extends Component {
 	static renderLayout( component ) {
 		return (
 			<div className="
@@ -91,12 +91,13 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 			chartsEnabled: false,
 			links,
 			showURLs: true,
+			useAdminURLs: true,
 		};
 
 		const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 		return (
-			AnalyticsDashboardWidgetPopularPagesTable.renderLayout(
+			LegacyAnalyticsDashboardWidgetPopularPagesTable.renderLayout(
 				<TableOverflowContainer>
 					{ dataTable }
 				</TableOverflowContainer>
@@ -106,7 +107,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 }
 
 export default withData(
-	AnalyticsDashboardWidgetPopularPagesTable,
+	LegacyAnalyticsDashboardWidgetPopularPagesTable,
 	[
 		{
 			type: TYPE_MODULES,
@@ -118,7 +119,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ],
 		},
 	],
-	AnalyticsDashboardWidgetPopularPagesTable.renderLayout(
+	LegacyAnalyticsDashboardWidgetPopularPagesTable.renderLayout(
 		<PreviewTable padding />
 	),
 	{

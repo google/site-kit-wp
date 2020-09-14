@@ -1,7 +1,7 @@
 /**
- * isPermissionScopeError utility.
+ * LegacyDashboardPopularityInner component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,15 @@
  */
 
 /**
- * Internal dependencies
+ * WordPress dependencies
  */
-import { ERROR_MISSING_REQUIRED_SCOPE } from '../constants';
+import { withFilters } from '@wordpress/components';
+import { Component } from '@wordpress/element';
 
-/**
- * Checks if the given error is a permission scope error.
- *
- * @since 1.9.0
- * @private
- *
- * @param {*} error Input to test as a possible permission scope error.
- * @return {boolean} True if permission scope error, otherwise false.
- */
-export function isPermissionScopeError( error ) {
-	return error?.code === ERROR_MISSING_REQUIRED_SCOPE;
+class LegacyDashboardPopularityInner extends Component {
+	render() {
+		return null;
+	}
 }
+
+export default withFilters( 'googlesitekit.DashboardPopularity' )( LegacyDashboardPopularityInner );

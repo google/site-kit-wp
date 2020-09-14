@@ -32,11 +32,13 @@ import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidDateRange, isValidOrders } from '../../../util/report-validation';
 import { isValidDimensions, isValidMetrics } from '../util/report-validation';
+import { actions as adsenseActions } from './adsense';
+import { normalizeReportOptions } from '../util/report-normalization';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
-		return API.get( 'modules', 'analytics', 'report', options );
+		return API.get( 'modules', 'analytics', 'report', normalizeReportOptions( options ) );
 	},
 	reducerCallback: ( state, report, { options } ) => {
 		return {
@@ -54,8 +56,9 @@ const fetchGetReportStore = createFetchStore( {
 		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
 		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Analytics report.' );
 
-		const { metrics, dimensions, orderby } = options;
+		const { metrics, dimensions, orderby } = normalizeReportOptions( options );
 
+		invariant( metrics.length, 'Requests must specify at least one metric for an Analytics report.' );
 		invariant(
 			isValidMetrics( metrics ),
 			'Metrics for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" and "alias" properties.',
@@ -86,13 +89,18 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 		const existingReport = registry.select( STORE_NAME ).getReport( options );
 
-		// If there are already alerts loaded in state, consider it fulfilled
+		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.
 		if ( existingReport ) {
 			return;
 		}
 
-		yield fetchGetReportStore.actions.fetchGetReport( options );
+		const { error } = yield fetchGetReportStore.actions.fetchGetReport( options );
+
+		if ( normalizeReportOptions( options ).metrics.some( ( { expression } ) => /^ga:adsense/.test( expression ) ) ) {
+			const isRestrictedMetricError = error?.code === 400 && error.message && error.message.startsWith( 'Restricted metric' ) && /ga:adsense/.test( error.message );
+			yield adsenseActions.setAdsenseLinked( ! isRestrictedMetricError );
+		}
 	},
 };
 
@@ -114,7 +122,7 @@ const baseSelectors = {
 	 * @param {Array.<Object>} [options.orderby]           Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
 	 * @param {string}         [options.url]               Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]             Optional. Maximum number of entries to return. Default 1000.
-	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An Analytics report; `undefined` if not loaded.
 	 */
 	getReport( state, options ) {
 		const { reports } = state;

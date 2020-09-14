@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 /**
  * Trait for a Setting that has owner ID option key.
  *
- * @since n.e.x.t
+ * @since 1.16.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ trait Setting_With_Owned_Keys_Trait {
 	/**
 	 * Returns keys for owned settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @return array An array of keys for owned settings.
 	 */
@@ -33,7 +33,7 @@ trait Setting_With_Owned_Keys_Trait {
 	/**
 	 * Registers hooks to determine an owner ID for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 */
 	protected function register_owned_keys() {
 		$keys = $this->get_owned_keys();

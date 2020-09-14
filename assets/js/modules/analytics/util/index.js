@@ -20,15 +20,17 @@
  * External dependencies
  */
 import { each } from 'lodash';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
 
@@ -40,7 +42,7 @@ export * from './validation';
 /**
  * Extracts data required for a pie chart from the Analytics report information.
  *
- * @since n.e.x.t Added keyColumnIndex argument.
+ * @since 1.16.0 Added keyColumnIndex argument.
  *
  * @param {Array} reports         The array with reports data.
  * @param {number} keyColumnIndex The number of a column to extract metrics data from.
@@ -151,6 +153,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
+			{ type: 'string', role: 'tooltip', p: { html: true } },
 			{ type: 'number', label: dataLabels[ selectedStats ] },
 			{ type: 'number', label: __( 'Previous period', 'google-site-kit' ) },
 		],
@@ -161,15 +164,59 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const previousMonthRows = rows.slice( 0, rows.length - days );
 	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, selectedStats );
 	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, selectedStats );
+
+	const locale = getLocale();
+	const localeDateOptions = {
+		weekday: 'short',
+		month: 'short',
+		day: 'numeric',
+	};
+
 	each( lastMonthData, ( row, i ) => {
-		if ( row[ 0 ] && row[ 1 ] && previousMonthData[ i ] ) {
-			dataMap.push( [
-				row[ 0 ],
-				row[ 1 ],
-				previousMonthData[ i ][ 1 ],
-			] );
+		if ( ! row[ 0 ] || ! row[ 1 ] || ! previousMonthData[ i ] ) {
+			return;
 		}
+
+		const prevMonth = parseFloat( previousMonthData[ i ][ 1 ] );
+		const difference = prevMonth !== 0
+			? ( row[ 1 ] * 100 / prevMonth ) - 100
+			: 100; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 100
+
+		const dateRange = sprintf(
+			/* translators: %1$s: date for user stats, %2$s: previous date for user stats comparison */
+			_x( '%1$s vs %2$s', 'Date range for Analytics dashboard chart tooltip', 'google-site-kit' ),
+			row[ 0 ].toLocaleDateString( locale, localeDateOptions ),
+			previousMonthData[ i ][ 0 ].toLocaleDateString( locale, localeDateOptions ),
+		);
+
+		const statInfo = sprintf(
+			/* translators: %1$s: selected stat label, %2$s: numberic value of selected stat, %3$s: up or down arrow , %4$s: different change in percentage, %%: percent symbol */
+			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for Analytics dashbaord chart tooltip', 'google-site-kit' ),
+			dataLabels[ selectedStats ],
+			parseFloat( row[ 1 ] ).toLocaleString(),
+			`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
+				'googlesitekit-change-arrow--up': difference > 0,
+				'googlesitekit-change-arrow--down': difference < 0,
+			} ) }">
+				<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
+			</svg>`,
+			Math.abs( difference ).toFixed( 2 ).replace( /(.00|0)$/, '' ), // .replace( ... ) removes trailing zeros
+		);
+
+		dataMap.push( [
+			row[ 0 ],
+			`<div class="${ classnames( 'googlesitekit-visualization-tooltip', {
+				'googlesitekit-visualization-tooltip--up': difference > 0,
+				'googlesitekit-visualization-tooltip--down': difference < 0,
+			} ) }">
+				<p>${ dateRange }</p>
+				<p>${ statInfo }</p>
+			</div>`,
+			row[ 1 ],
+			previousMonthData[ i ][ 1 ],
+		] );
 	} );
+
 	return dataMap;
 };
 

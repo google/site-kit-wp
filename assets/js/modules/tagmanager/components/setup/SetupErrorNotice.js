@@ -44,5 +44,5 @@ export default function SetupErrorNotice() {
 		);
 	}
 
-	return <StoreErrorNotice storeName={ STORE_NAME } />;
+	return <StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } />;
 }

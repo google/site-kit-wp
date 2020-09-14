@@ -36,7 +36,7 @@ import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/co
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { isPermissionScopeError } from '../../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import { isPermissionScopeError } from '../../../../util/errors';
 import {
 	AccountSelect,
 	AMPContainerSelect,
