@@ -220,15 +220,16 @@ final class Authentication {
 			};
 		};
 
-		add_filter( 'googlesitekit_inline_base_data', $private_hook( 'inline_js_base_data' ) );
-		add_filter( 'googlesitekit_admin_data', $private_hook( 'inline_js_admin_data' ) );
-		add_filter( 'googlesitekit_setup_data', $private_hook( 'inline_js_setup_data' ) );
 		add_filter( 'allowed_redirect_hosts', $private_hook( 'allowed_redirect_hosts' ) );
+		add_filter( 'googlesitekit_admin_data', $private_hook( 'inline_js_admin_data' ) );
 		add_filter( 'googlesitekit_admin_notices', $private_hook( 'authentication_admin_notices' ) );
+		add_filter( 'googlesitekit_inline_base_data', $private_hook( 'inline_js_base_data' ) );
+		add_filter( 'googlesitekit_setup_data', $private_hook( 'inline_js_setup_data' ) );
 
 		add_action( 'init', $private_hook( 'handle_oauth' ) );
-		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $private_hook( 'verify_proxy_setup_nonce' ), -1 );
 		add_action( 'admin_init', $private_hook( 'check_connected_proxy_url' ) );
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $private_hook( 'verify_proxy_setup_nonce' ), -1 );
+		add_action( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER, $private_hook( 'handle_proxy_connect_user' ) );
 		add_action( 'googlesitekit_authorize_user', $private_hook( 'set_connected_proxy_url' ) );
 
 		add_filter(
@@ -1002,11 +1003,11 @@ final class Authentication {
 			return;
 		}
 
-		if ( ! $this->credentials()->has() ) {
+		if ( ! $this->credentials->has() ) {
 			return;
 		}
 
-		if ( ! $this->credentials()->using_proxy() ) {
+		if ( ! $this->credentials->using_proxy() ) {
 			return;
 		}
 
@@ -1022,6 +1023,32 @@ final class Authentication {
 			$this->disconnect();
 			$this->disconnected_reason->set( self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH );
 		}
+	}
+
+	/**
+	 * Handles user connection actions.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function handle_proxy_connect_user() {
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			wp_die( 'Insufficient permissions' );
+		}
+
+		if ( ! $this->credentials->using_proxy() ) {
+			wp_die( 'Doing it wrong' );
+		}
+
+		$nonce = filter_input( INPUT_GET, 'nonce' ); // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.MissingThirdParameter
+		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_CONNECT_USER ) ) {
+			wp_die();
+		}
+
+		if ( $this->disconnected_reason->get() === self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ) {
+			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
+		}
+
+		$this->redirect_to_proxy( $access_code );
 	}
 
 }
