@@ -1318,6 +1318,7 @@ final class Analytics extends Module
 		}
 
 		$request = new Google_Service_AnalyticsReporting_ReportRequest();
+		$request->setIncludeEmptyRows( true );
 		$request->setViewId( $profile_id );
 
 		if ( ! empty( $args['dimensions'] ) ) {

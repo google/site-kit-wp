@@ -25,12 +25,19 @@ import md5 from 'md5';
 const RECEIVE_ERROR = 'RECEIVE_ERROR';
 const CLEAR_ERROR = 'CLEAR_ERROR';
 
+/**
+ * Internal dependencies
+ */
+import { stringifyObject } from '../../util';
+
 function generateErrorKey( baseName, args ) {
 	let key = baseName;
-	if ( args ) {
-		key += md5( JSON.stringify( args ) );
+	if ( args && Array.isArray( args ) ) {
+		const stringifiedArgs = args.map( ( item ) => {
+			return 'object' === typeof item ? stringifyObject( item ) : item;
+		} );
+		key += md5( JSON.stringify( stringifiedArgs ) );
 	}
-
 	return key;
 }
 
