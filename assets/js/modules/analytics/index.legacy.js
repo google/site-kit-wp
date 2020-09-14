@@ -29,7 +29,7 @@ import { createAddToFilter } from '../../util/helpers';
 import AnalyticsDashboardWidget from './components/dashboard/AnalyticsDashboardWidget';
 import AnalyticsAdminbarWidget from './components/adminbar/AnalyticsAdminbarWidget';
 import LegacyAnalyticsAllTraffic from './components/dashboard/LegacyAnalyticsAllTraffic';
-import AnalyticsDashboardWidgetTopLevel from './components/dashboard/AnalyticsDashboardWidgetTopLevel';
+import LegacyAnalyticsDashboardWidgetTopLevel from './components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import WPAnalyticsDashboardWidgetOverview from './components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
 import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/dashboard-details/AnalyticsDashboardDetailsWidgetTopAcquisitionSources';
 import WPAnalyticsDashboardWidgetTopPagesTable from './components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
@@ -74,7 +74,7 @@ if ( modulesData.analytics.active ) {
 	const addAnalyticsAllTraffic = createAddToFilter( <LegacyAnalyticsAllTraffic /> );
 	const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
 	const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
-	const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
+	const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
 	const addAnalyticsDashboardDetailsWidget = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
 	const addAnalyticsAdSenseTopPagesWidget = createAddToFilter( <AnalyticsAdSenseDashboardWidgetTopPagesTable /> );
 	const addLegacyAnalyticsDashboardWidgetPopularPagesTable = createAddToFilter( <LegacyAnalyticsDashboardWidgetPopularPagesTable /> );
@@ -88,7 +88,7 @@ if ( modulesData.analytics.active ) {
 		addAnalyticsAllTraffic, 9 );
 	addFilter( 'googlesitekit.DashboardSearchFunnel',
 		'googlesitekit.Analytics',
-		addAnalyticsDashboardWidgetTopLevel, 11 );
+		addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
 	addFilter( 'googlesitekit.DashboardPopularity',
 		'googlesitekit.Analytics',
 		addLegacyAnalyticsDashboardWidgetPopularPagesTable, 20 );

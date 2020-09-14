@@ -1,0 +1,399 @@
+[
+	{
+		"nextPageToken": null,
+		"columnHeader": {
+			"dimensions": [
+				"ga:date"
+			],
+			"metricHeader": {
+				"metricHeaderEntries": [
+					{
+						"name": "Bounce Rate",
+						"type": "PERCENT"
+					}
+				]
+			}
+		},
+		"data": {
+			"dataLastRefreshed": null,
+			"isDataGolden": null,
+			"rowCount": 56,
+			"samplesReadCounts": null,
+			"samplingSpaceSizes": null,
+			"rows": [
+				{
+					"dimensions": [
+						"20200813"
+					],
+					"metrics": [
+						{
+							"values": [
+								"100.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200814"
+					],
+					"metrics": [
+						{
+							"values": [
+								"100.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200815"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200816"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200817"
+					],
+					"metrics": [
+						{
+							"values": [
+								"100.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200818"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200819"
+					],
+					"metrics": [
+						{
+							"values": [
+								"100.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200820"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200821"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200822"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200823"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200824"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200825"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200826"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200827"
+					],
+					"metrics": [
+						{
+							"values": [
+								"100.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200828"
+					],
+					"metrics": [
+						{
+							"values": [
+								"100.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200829"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200830"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200831"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200901"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200902"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200903"
+					],
+					"metrics": [
+						{
+							"values": [
+								"33.33333333333333"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200904"
+					],
+					"metrics": [
+						{
+							"values": [
+								"25.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200905"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200906"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200907"
+					],
+					"metrics": [
+						{
+							"values": [
+								"0.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200908"
+					],
+					"metrics": [
+						{
+							"values": [
+								"100.0"
+							]
+						}
+					]
+				},
+				{
+					"dimensions": [
+						"20200909"
+					],
+					"metrics": [
+						{
+							"values": [
+								"100.0"
+							]
+						}
+					]
+				}
+			],
+			"totals": [
+				{
+					"values": [
+						"57.047387606318345"
+					]
+				},
+				{
+					"values": [
+						"56.31728045325779"
+					]
+				}
+			],
+			"minimums": [
+				{
+					"values": [
+						"0.0"
+					]
+				},
+				{
+					"values": [
+						"0.0"
+					]
+				}
+			],
+			"maximums": [
+				{
+					"values": [
+						"82.29166666666666"
+					]
+				},
+				{
+					"values": [
+						"67.41573033707866"
+					]
+				}
+			]
+		}
+	}
+]

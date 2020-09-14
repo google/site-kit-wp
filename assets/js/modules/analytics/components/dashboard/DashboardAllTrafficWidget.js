@@ -85,9 +85,9 @@ function DashboardAllTrafficWidget() {
 
 		return {
 			loading: store.isResolving( 'getReport', [ args ] ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			report: store.getReport( args ),
 			reportArgs: args,
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
 		};
 	} );
 
