@@ -54,9 +54,15 @@ function DashboardPopularKeywordsWidget() {
 			limit: 10,
 		};
 
+		const baseServiceURLArgs = {
+			resource_id: domain,
+			num_of_days: 28,
+		};
+
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			args.url = url;
+			baseServiceURLArgs.page = `!${ url }`;
 		}
 
 		return {
@@ -65,10 +71,7 @@ function DashboardPopularKeywordsWidget() {
 			loading: store.isResolving( 'getReport', [ args ] ),
 			baseServiceURL: store.getServiceURL( {
 				path: '/performance/search-analytics',
-				query: {
-					resource_id: domain,
-					num_of_days: 28,
-				},
+				query: baseServiceURLArgs,
 			} ),
 			searchConsolePropertyMainURL: store.getServiceURL( {
 				query: {
