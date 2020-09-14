@@ -1,6 +1,5 @@
 export const dashboardSummaryWidgetTodayOptions = {
-	startDate: '2020-09-11',
-	endDate: '2020-09-11',
+	dateRange: 'today',
 	metrics: [
 		'EARNINGS',
 		'PAGE_VIEWS_RPM',
@@ -16,8 +15,7 @@ export const dashboardSummaryWidgetPeriodOptions = {
 	],
 };
 export const dashboardSummaryWidget28DailyOptions = {
-	startDate: '2020-08-11',
-	endDate: '2020-09-11',
+	dateRange: 'this-month',
 	metrics: [
 		'EARNINGS',
 		'PAGE_VIEWS_RPM',
