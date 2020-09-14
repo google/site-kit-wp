@@ -36,12 +36,12 @@ const { components: { Widget } } = Widgets;
  *
  * @since 1.16.0
  *
- * @param {string} moduleSlug Module slug.
- * @param {string|null} url Current entity URL.
- * @param {Function} cb Callback for additional setup.
+ * @param {(string|Array)} moduleSlugs Module slug or slugs to activate.
+ * @param {string|null}   url          Current entity URL.
+ * @param {Function}     cb            Callback for additional setup.
  * @return {Function} A function to set up registry for widget stories.
  */
-function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
+function getSetupRegistry( moduleSlugs, url, cb = () => {} ) {
 	return ( { dispatch } ) => {
 		cb( { dispatch } );
 
@@ -50,13 +50,25 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
 			currentEntityURL: url,
 		} );
 
-		dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: moduleSlug,
-				active: true,
-				connected: true,
-			},
-		] );
+		let modules = [];
+		if ( Array.isArray( moduleSlugs ) ) {
+			modules = moduleSlugs.map( ( module ) => {
+				return {
+					slug: module,
+					active: true,
+					connected: true,
+				};
+			} );
+		} else {
+			modules = [
+				{
+					slug: moduleSlugs,
+					active: true,
+					connected: true,
+				},
+			];
+		}
+		dispatch( CORE_MODULES ).receiveGetModules( modules );
 	};
 }
 

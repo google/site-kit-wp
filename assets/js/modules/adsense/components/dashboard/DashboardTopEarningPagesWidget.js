@@ -82,10 +82,10 @@ function DashboardTopEarningPagesWidget() {
 				</Layout>
 			);
 		}
-		return getDataErrorComponent( __( 'Analytics and AdSense', 'google-site-kit' ), error.message, false, false, false, error );
+		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
 	}
 
-	if ( ! data || ! Array.isArray( data[ 0 ].data.rows ) ) {
+	if ( ! data || ! data[ 0 ]?.data?.rows ) {
 		return getNoDataComponent( __( 'Analytics and AdSense', 'google-site-kit' ) );
 	}
 

@@ -1,5 +1,5 @@
 {
-	"dateRange": "last-90-days",
+	"dateRange": "last-28-days",
 	"dimensions": [ "ga:pageTitle", "ga:pagePath" ],
 	"metrics": [
 			{ "expression": "ga:adsenseRevenue", "alias": "Earnings" },

@@ -27,3 +27,4 @@ export { default as tagPermissionAccess } from './tag-permission-access';
 export { default as tagPermissionNoAccess } from './tag-permission-no-access';
 export { default as report } from './report';
 export { default as dashboardTopEarningPageWidgetArgs } from './dashboard-top-earning-pages-widget-args.json';
+export { default as dashboardTopEarningPageWidgetData } from './dashboard-top-earning-pages-widget-data.json';
