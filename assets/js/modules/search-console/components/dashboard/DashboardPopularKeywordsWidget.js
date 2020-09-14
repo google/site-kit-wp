@@ -40,10 +40,10 @@ const { useSelect } = Data;
 
 function DashboardPopularKeywordsWidget() {
 	const {
-		baseServiceURL,
 		data,
 		error,
 		loading,
+		baseServiceURL,
 		searchConsolePropertyMainURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
@@ -129,7 +129,7 @@ function DashboardPopularKeywordsWidget() {
 
 	return (
 		<Layout
-			className="googlesitekit-widget--no-padding googlesitekit-popular-content "
+			className="googlesitekit-popular-content"
 			footer
 			footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 			footerCtaLink={ searchConsolePropertyMainURL }

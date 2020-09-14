@@ -27,7 +27,6 @@ import { __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
@@ -40,10 +39,10 @@ const { useSelect } = Data;
 
 function DashboardPopularPagesWidget() {
 	const {
-		analytics,
 		data,
 		error,
 		loading,
+		analyticsMainURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const args = {
@@ -65,10 +64,10 @@ function DashboardPopularPagesWidget() {
 		};
 
 		return {
-			analytics: select( CORE_MODULES ).getModule( 'analytics' ),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: store.isResolving( 'getReport', [ args ] ),
+			analyticsMainURL: store.getServiceURL(),
 		};
 	} );
 
@@ -120,7 +119,7 @@ function DashboardPopularPagesWidget() {
 			className="googlesitekit-popular-content"
 			footer
 			footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			footerCtaLink={ analytics?.homepage }
+			footerCtaLink={ analyticsMainURL }
 			fill
 		>
 			<TableOverflowContainer>
