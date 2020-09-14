@@ -54,7 +54,6 @@ describe( 'SettingsMain', () => {
 			connected: true,
 			dependencies: [],
 			dependants: [ 'optimize', 'tagmanager' ],
-			displayMode: 'closed',
 			order: 10,
 		},
 	];
