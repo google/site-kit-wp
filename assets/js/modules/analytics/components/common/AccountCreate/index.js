@@ -72,11 +72,11 @@ export default function AccountCreate() {
 		// Only set the form if not already present in store.
 		// e.g. after a snapshot has been restored.
 		if ( ! hasAccountCreateForm ) {
-			const { hostname } = new URL( siteURL );
+			const { hostname, pathname } = new URL( siteURL );
 			timezone = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
 			setValues( FORM_ACCOUNT_CREATE, {
 				accountName: siteName || hostname,
-				propertyName: hostname,
+				propertyName: `${ hostname }${ pathname }`.replace( /\/$/, '' ),
 				profileName: __( 'All Web Site Data', 'google-site-kit' ),
 				countryCode: countryCodesByTimezone[ timezone ],
 				timezone,
