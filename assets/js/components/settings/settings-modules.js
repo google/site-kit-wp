@@ -129,9 +129,7 @@ class SettingsModules extends Component {
 			return null;
 		}
 
-		const isCurrentModule = activeModule === module.slug;
-		const { settingsComponent: SettingsComponent, provides } = modules[ module.slug ];
-		const { error } = this.state;
+		const { settingsComponent: SettingsComponent } = modules[ module.slug ];
 
 		if ( activeTab === 0 && SettingsComponent ) {
 			return <SettingsComponent slug={ module.slug } />;
@@ -153,12 +151,12 @@ class SettingsModules extends Component {
 				handleEdit={ this.handleButtonAction }
 				handleConfirm
 				isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
-				isOpen={ isCurrentModule && moduleState }
+				isOpen={ activeModule === module.slug && moduleState }
 				handleAccordion={ this.handleAccordion }
 				handleDialog={ this.handleDialog }
-				provides={ provides }
+				provides={ module.provides }
 				isSaving={ isSaving }
-				error={ error }
+				error={ this.state.error }
 			/>
 		);
 	}
@@ -303,7 +301,7 @@ class SettingsModules extends Component {
 
 export default compose(
 	withSelect( ( select ) => {
-		const activeModule = select( CORE_MODULES ).getCurrentSettingsViewModule();
+		const activeModule = select( CORE_MODULES ).getSettingsViewCurrentModule();
 		return {
 			modules: select( CORE_MODULES ).getModules(),
 			activeModule,
