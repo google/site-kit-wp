@@ -67,7 +67,7 @@ const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 
 	const dataMapped = data.map( ( row, i ) => {
 		const query = row.keys[ 0 ];
-		links[ i ] = addQueryArgs( baseServiceURL, { query } );
+		links[ i ] = addQueryArgs( baseServiceURL, { query: `!${ query }` } );
 		return [
 			query,
 			numberFormat( row.clicks ),
