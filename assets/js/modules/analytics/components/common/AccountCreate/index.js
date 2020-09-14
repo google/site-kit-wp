@@ -75,7 +75,7 @@ export default function AccountCreate() {
 			const { hostname } = new URL( siteURL );
 			timezone = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
 			setValues( FORM_ACCOUNT_CREATE, {
-				accountName: siteName,
+				accountName: siteName || hostname,
 				propertyName: hostname,
 				profileName: __( 'All Web Site Data', 'google-site-kit' ),
 				countryCode: countryCodesByTimezone[ timezone ],
