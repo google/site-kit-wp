@@ -40,6 +40,7 @@ const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidget() {
 	const {
+		isAdSenseLinked,
 		data,
 		error,
 		loading,
@@ -61,6 +62,7 @@ function DashboardTopEarningPagesWidget() {
 		};
 
 		return {
+			isAdSenseLinked: store.getAdsenseLinked(),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: store.isResolving( 'getReport', [ args ] ),
@@ -74,19 +76,15 @@ function DashboardTopEarningPagesWidget() {
 	}
 
 	if ( error ) {
-		// Specifically looking for string "badRequest"
-		if ( 'badRequest' === error?.data?.reason ) {
-			return (
-				<Layout className="googlesitekit-top-earnings-pages" fill>
-					<AdSenseLinkCTA />
-				</Layout>
-			);
-		}
 		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
 	}
 
-	if ( ! data || ! data[ 0 ]?.data?.rows ) {
-		return getNoDataComponent( __( 'Analytics and AdSense', 'google-site-kit' ) );
+	if ( ! isAdSenseLinked ) {
+		return <AdSenseLinkCTA />;
+	}
+
+	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
+		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 
 	const headers = [
