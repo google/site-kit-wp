@@ -34,7 +34,7 @@ import WPAnalyticsDashboardWidgetOverview from './components/wp-dashboard/WPAnal
 import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/dashboard-details/AnalyticsDashboardDetailsWidgetTopAcquisitionSources';
 import WPAnalyticsDashboardWidgetTopPagesTable from './components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
 import AnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/AnalyticsAdSenseDashboardWidgetTopPagesTable';
-import AnalyticsDashboardWidgetPopularPagesTable from './components/dashboard/AnalyticsDashboardWidgetPopularPagesTable';
+import LegacyAnalyticsDashboardWidgetPopularPagesTable from './components/dashboard/LegacyAnalyticsDashboardWidgetPopularPagesTable';
 import LegacyAdSenseDashboardWidgetTopPagesTableSmall from './components/dashboard/LegacyAdSenseDashboardWidgetTopPagesTableSmall';
 
 const slug = 'analytics';
@@ -77,7 +77,7 @@ if ( modulesData.analytics.active ) {
 	const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
 	const addAnalyticsDashboardDetailsWidget = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
 	const addAnalyticsAdSenseTopPagesWidget = createAddToFilter( <AnalyticsAdSenseDashboardWidgetTopPagesTable /> );
-	const addAnalyticsDashboardWidgetPopularPagesTable = createAddToFilter( <AnalyticsDashboardWidgetPopularPagesTable /> );
+	const addLegacyAnalyticsDashboardWidgetPopularPagesTable = createAddToFilter( <LegacyAnalyticsDashboardWidgetPopularPagesTable /> );
 	const addLegacyAdSenseDashboardWidgetTopPagesTableSmall = createAddToFilter( <LegacyAdSenseDashboardWidgetTopPagesTableSmall /> );
 
 	/**
@@ -91,7 +91,7 @@ if ( modulesData.analytics.active ) {
 		addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
 	addFilter( 'googlesitekit.DashboardPopularity',
 		'googlesitekit.Analytics',
-		addAnalyticsDashboardWidgetPopularPagesTable, 20 );
+		addLegacyAnalyticsDashboardWidgetPopularPagesTable, 20 );
 	addFilter( 'googlesitekit.AnalyticsAdSenseTopPagesTableSmall',
 		'googlesitekit.Analytics',
 		addLegacyAdSenseDashboardWidgetTopPagesTableSmall, 20 );

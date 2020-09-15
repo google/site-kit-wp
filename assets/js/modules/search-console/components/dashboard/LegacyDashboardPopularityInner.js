@@ -1,5 +1,5 @@
 /**
- * DashboardPopularityInner component.
+ * LegacyDashboardPopularityInner component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -22,10 +22,10 @@
 import { withFilters } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 
-class DashboardPopularityInner extends Component {
+class LegacyDashboardPopularityInner extends Component {
 	render() {
 		return null;
 	}
 }
 
-export default withFilters( 'googlesitekit.DashboardPopularity' )( DashboardPopularityInner );
+export default withFilters( 'googlesitekit.DashboardPopularity' )( LegacyDashboardPopularityInner );

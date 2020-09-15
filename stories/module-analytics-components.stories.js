@@ -21,6 +21,7 @@
  */
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidget';
+import DashboardPopularPagesWidget from '../assets/js/modules/analytics/components/dashboard/DashboardPopularPagesWidget';
 import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
 import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardUniqueVisitorsWidget';
@@ -31,6 +32,8 @@ import {
 	dashboardAllTrafficData,
 	pageDashboardAllTrafficArgs,
 	pageDashboardAllTrafficData,
+	dashboardPopularPagesArgs,
+	dashboardPopularPagesData,
 	pageDashboardBounceRateWidgetArgs,
 	pageDashboardBounceRateWidgetData,
 	pageDashboardUniqueVisitorsSparkArgs,
@@ -130,4 +133,14 @@ generateReportBasedWidgetStories( {
 		pageDashboardUniqueVisitorsSparkArgs,
 	],
 	component: DashboardUniqueVisitorsWidget,
+} );
+
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
+	datastore: STORE_NAME,
+	group: 'Analytics Module/Components/Dashboard/Popular Pages Widget',
+	data: dashboardPopularPagesData,
+	options: dashboardPopularPagesArgs,
+	component: DashboardPopularPagesWidget,
+	wrapWidget: false,
 } );
