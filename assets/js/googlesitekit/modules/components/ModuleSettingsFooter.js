@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -31,83 +32,57 @@ import { useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { clearWebStorage, activateOrDeactivateModule, getReAuthURL } from '../../../util';
-import { refreshAuthentication } from '../../../util/refresh-authentication';
-import restApiClient, { TYPE_MODULES } from '../../../components/data';
+import API from 'googlesitekit-api';
+import { clearWebStorage } from '../../../util';
 import Button from '../../../components/button';
 import Link from '../../../components/link';
 import Spinner from '../../../components/spinner';
 import SvgIcon from '../../../util/svg-icon';
-import { STORE_NAME, SETTINGS_DISPLAY_MODES } from '../datastore/constants';
+import { STORE_NAME } from '../datastore/constants';
 import ModuleSettingsDialog from './ModuleSettingsDialog';
 const { useDispatch, useSelect } = Data;
 
-function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave } ) {
+function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave, onDisconnected } ) {
 	const [ dialogActive, setDialogActive ] = useState( false );
 
-	const {
-		module,
-		isEditing,
-		isSavingModuleSettings,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			module: store.getModule( slug ),
-			isEditing: store.isSettingsViewModuleEditing( slug ),
-			isSavingModuleSettings: false, // TODO: update
-		};
-	} );
+	const module = useSelect( ( select ) => select( STORE_NAME ).getModule() );
+	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewModuleEditing( slug ) );
+	const isSavingModuleSettings = false; // TODO: update
 
 	const toggleDialogState = useCallback( () => {
 		setDialogActive( ! dialogActive );
 	}, [ dialogActive ] );
 
-	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
+	const { setSettingsViewIsEditing } = useDispatch( STORE_NAME );
 
-	const handleSave = useCallback( () => {
-		setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.SAVING );
-
-		const modulePromise = onSave();
-		if ( ! modulePromise ) {
+	const handleSave = useCallback( async () => {
+		try {
+			await onSave();
 			// Clears session and local storage on successful setting.
 			clearWebStorage();
-			return;
-		}
-
-		modulePromise.then( () => {
-			// Clears session and local storage on every successful setting.
-			clearWebStorage();
-			// TODO Set error to false
-			// Change status from 'saving' to 'view'.
-			setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.VIEW );
-		} ).catch( () => {
-			// TODO: Set error in store.
-			// Change status from 'saving' to 'view'.
-			setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.VIEW );
-		} );
-	}, [] );
+			// Only switch to the settings view on success.
+			setSettingsViewIsEditing( false );
+		} catch {}
+	}, [ onSave, setSettingsViewIsEditing ] );
 
 	const handleEdit = useCallback( () => {
-		setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.EDIT );
-	}, [] );
+		setSettingsViewIsEditing( true );
+	}, [ setSettingsViewIsEditing ] );
 
 	const handleCancel = useCallback( () => {
-		setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.VIEW );
-	}, [] );
+		setSettingsViewIsEditing( false );
+	}, [ setSettingsViewIsEditing ] );
 
+	const { deactivateModule } = useDispatch( STORE_NAME );
 	const handleDisconnect = useCallback( async () => {
 		try {
-			setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.SAVING );
-
-			await activateOrDeactivateModule( restApiClient, slug, false );
-			await refreshAuthentication();
-			restApiClient.invalidateCacheGroup( TYPE_MODULES, slug );
-			global.location = getReAuthURL( slug, false );
-		} catch ( err ) {
-			// @TODO: properly handle error state.
-			setSettingsDisplayMode( slug, SETTINGS_DISPLAY_MODES.VIEW );
-		}
-	}, [] );
+			await deactivateModule( slug );
+			await API.invalidateCache( 'modules', slug );
+			if ( onDisconnected ) {
+				onDisconnected();
+			}
+		} catch {} // User should see error in interface.
+	}, [ onDisconnected ] );
 
 	const { forceActive, homepage, name, connected } = module;
 	const canDisconnect = ! forceActive;
@@ -149,16 +124,39 @@ function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave } ) 
 		<footer className="googlesitekit-settings-module__footer">
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone">
+					<div
+						className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-6-desktop',
+							'mdc-layout-grid__cell--span-8-tablet',
+							'mdc-layout-grid__cell--span-4-phone'
+						) }
+					>
 						{ buttons }
 					</div>
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right-desktop">
+
+					<div
+						className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-6-desktop',
+							'mdc-layout-grid__cell--span-8-tablet',
+							'mdc-layout-grid__cell--span-4-phone',
+							'mdc-layout-grid__cell--align-middle',
+							'mdc-layout-grid__cell--align-right-desktop'
+						) }
+					>
 						{ isEditing && canDisconnect && (
-							<Link className="googlesitekit-settings-module__remove-button" inherit danger onClick={ toggleDialogState }>
+							<Link
+								className="googlesitekit-settings-module__remove-button"
+								onClick={ toggleDialogState }
+								danger
+								inherit
+							>
 								{
 									/* translators: %s: module name */
 									sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
 								}
+
 								<SvgIcon
 									className="googlesitekit-settings-module__remove-button-icon"
 									id="trash"
@@ -167,8 +165,14 @@ function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave } ) 
 								/>
 							</Link>
 						) }
+
 						{ ! isEditing && (
-							<Link href={ homepage } className="googlesitekit-settings-module__cta-button" inherit external>
+							<Link
+								className="googlesitekit-settings-module__cta-button"
+								href={ homepage }
+								external
+								inherit
+							>
 								{
 									/* translators: %s: module name */
 									sprintf( __( 'See full details in %s', 'google-site-kit' ), name )
@@ -176,6 +180,7 @@ function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave } ) 
 							</Link>
 						) }
 					</div>
+
 					{ dialogActive && (
 						<ModuleSettingsDialog
 							slug={ slug }
@@ -193,9 +198,10 @@ function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave } ) 
 ModuleSettingsFooter.propTypes = {
 	slug: PropTypes.string.isRequired,
 	allowEdit: PropTypes.bool,
-	provides: PropTypes.arrayOf( PropTypes.string ),
 	onSave: PropTypes.func,
+	onDisconnected: PropTypes.func,
 	canSave: PropTypes.bool,
+	provides: PropTypes.arrayOf( PropTypes.string ),
 };
 
 ModuleSettingsFooter.defaultProps = {
