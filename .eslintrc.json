@@ -12,9 +12,28 @@
     "featureFlags": false
   },
   "rules": {
-    "sitekit/camelcase-acronyms": [
-      "warn"
-    ],
+    "sitekit/camelcase-acronyms": 0,
+    "sitekit/jsdoc-third-person": 1,
+    "sitekit/jsdoc-fullstop": 1,
+    "sitekit/jsdoc-requires-since": 1,
+    "sitekit/jsdoc-capitalization": 1,
+    "sitekit/jsdoc-tag-grouping": 1,
+    "sitekit/jsdoc-tag-order": 1,
+    "jsdoc/check-tag-names": 2, // Recommended
+    "jsdoc/check-types": 2, // Recommended
+    "jsdoc/check-line-alignment": 1,
+    "jsdoc/require-description": 2,
+    "jsdoc/require-description-complete-sentence": 0,
+    "jsdoc/require-param": 2, // Recommended
+    "jsdoc/require-param-description": 2, // Recommended
+    "jsdoc/require-param-name": 2, // Recommended
+    "jsdoc/require-param-type": 2, // Recommended
+    "jsdoc/require-returns-check": 2,
+    "jsdoc/require-returns-description": 2,
+    "jsdoc/require-returns-type": 2,
+    "jsdoc/require-returns": 2,
+    "jsdoc/no-undefined-types": 2,
+    "jsdoc/valid-types": 2,
     "no-restricted-globals": [
       "error",
       {
@@ -72,6 +91,7 @@
   ],
   "plugins": [
     "filenames",
-    "sitekit"
+    "sitekit",
+    "jsdoc"
   ]
 }

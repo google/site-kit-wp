@@ -17,6 +17,23 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+const { default: iterateJsdoc } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
+
+const isDependencyBlock = ( jsdoc ) => {
+	if ( jsdoc && jsdoc.description && (
+		jsdoc.description === 'External dependencies' ||
+		jsdoc.description === 'WordPress dependencies' ||
+		jsdoc.description === 'Internal dependencies'
+	) ) {
+		return true;
+	}
+
+	return false;
+};
+
 module.exports = {
 	rules: {
 		'camelcase-acronyms': {
@@ -45,16 +62,18 @@ module.exports = {
 				/**
 				 * Reports an AST node as a rule violation.
 				 *
-				 * @param {ASTNode} node The node to report.
-				 * @return {void}
+				 * @since n.e.x.t
 				 * @private
+				 *
+				 * @param {Object} node The node to report.
+				 * @return {void}
 				 */
-				function report( node ) {
+				const report = ( node ) => {
 					if ( ! reported.includes( node ) ) {
 						reported.push( node );
 						context.report( { node, message: `\`${ node.name }\` violates naming rules.`, data: { name: node.name } } );
 					}
-				}
+				};
 
 				return {
 					Identifier( node ) {
@@ -104,5 +123,206 @@ module.exports = {
 				};
 			},
 		},
+		'jsdoc-third-person': iterateJsdoc( ( {
+			context,
+			jsdoc,
+			jsdocNode,
+		} ) => {
+			if ( isDependencyBlock( jsdoc ) ) {
+				return;
+			}
+
+			if ( jsdoc.line === 0 ) {
+				return;
+			}
+
+			if ( jsdoc.description && ! jsdoc.description.match( /^\w+s\W.*/g ) ) {
+				context.report( { node: jsdocNode, message: `The first word in a function's description should end in "s".`, data: { name: jsdocNode.name } } );
+			}
+		}, {
+			iterateAllJsdocs: true,
+			meta: {
+				docs: {
+					description: `Requires that all functions' first word end with "s".`,
+				},
+				fixable: 'code',
+				type: 'suggestion',
+			},
+		} ),
+		'jsdoc-requires-since': iterateJsdoc( ( {
+			context,
+			jsdoc,
+			jsdocNode,
+			utils,
+		} ) => {
+			if ( ! jsdoc.tags || ! jsdoc.tags.length ) {
+				return;
+			}
+
+			const hasSinceTag = utils.filterTags( ( { tag } ) => {
+				return [ 'since' ].includes( tag );
+			} );
+
+			if ( hasSinceTag.length ) {
+				return;
+			}
+
+			context.report( { node: jsdocNode, message: `Missing @since tag in JSDoc.`, data: { name: jsdocNode.name } } );
+		}, {
+			iterateAllJsdocs: true,
+			meta: {
+				docs: {
+					description: 'Requires that all functions have a `@since` tag.',
+				},
+				fixable: 'code',
+				type: 'suggestion',
+			},
+		} ),
+		'jsdoc-capitalization': iterateJsdoc( ( {
+			context,
+			jsdoc,
+			jsdocNode,
+		} ) => {
+			if ( jsdoc.description && ! jsdoc.description.match( /^[A-Z].*/g ) ) {
+				context.report( { node: jsdocNode, message: `JSDoc blocks should start with a capital letter.`, data: { name: jsdocNode.name } } );
+			}
+
+			// Move on to checking tags for this JSDoc block.
+			if ( ! jsdoc.tags || ! jsdoc.tags.length ) {
+				return;
+			}
+
+			jsdoc.tags.forEach( ( tag ) => {
+				if ( tag.tag === 'since' ) {
+					return;
+				}
+
+				if ( tag.description && tag.description.length && ! tag.description.match( /^[A-Z].*/gm ) ) {
+					context.report( { node: jsdocNode, message: `The description for \`${ tag.source }\` should start with a capital letter.`, data: { name: jsdocNode.name } } );
+				}
+			} );
+		}, {
+			iterateAllJsdocs: true,
+			meta: {
+				docs: {
+					description: 'Requires that descriptions start with capital letters.',
+				},
+				fixable: 'code',
+				type: 'suggestion',
+			},
+		} ),
+		'jsdoc-fullstop': iterateJsdoc( ( {
+			context,
+			jsdoc,
+			jsdocNode,
+		} ) => {
+			if ( isDependencyBlock( jsdoc ) ) {
+				return;
+			}
+
+			if ( jsdoc.description && ! jsdoc.description.match( /\.$/g ) ) {
+				context.report( { node: jsdocNode, message: `JSDoc block text should end with a period/full-stop.`, data: { name: jsdocNode.name } } );
+				return;
+			}
+
+			// Move on to checking tags for this JSDoc block.
+			if ( ! jsdoc.tags || ! jsdoc.tags.length ) {
+				return;
+			}
+
+			jsdoc.tags.forEach( ( tag ) => {
+				if ( tag.tag === 'since' ) {
+					return;
+				}
+
+				if ( tag.description && tag.description.length && ! tag.description.match( /\.$/gm ) ) {
+					context.report( { node: jsdocNode, message: `The description for \`${ tag.source }\` should end with a period/full-stop.`, data: { name: jsdocNode.name } } );
+				}
+			} );
+		}, {
+			iterateAllJsdocs: true,
+			meta: {
+				docs: {
+					description: 'Requires that descriptions start with capital letters.',
+				},
+				fixable: 'code',
+				type: 'suggestion',
+			},
+		} ),
+		'jsdoc-tag-grouping': iterateJsdoc( ( {
+			context,
+			jsdoc,
+			jsdocNode,
+			utils,
+		} ) => {
+			if ( ! jsdoc.tags || ! jsdoc.tags.length ) {
+				return;
+			}
+
+			// eslint-disable-next-line no-nested-ternary
+			const lastTagInFirstGroup = !! utils.filterTags( ( { tag } ) => {
+				return [ 'private' ].includes( tag );
+			} ).length ? 'private' : ( !! utils.filterTags( ( { tag } ) => {
+					return [ 'deprecated' ].includes( tag );
+				} ).length ? 'deprecated' : 'since' );
+
+			const firstTagInSecondGroup = !! utils.filterTags( ( { tag } ) => {
+				return [ 'param' ].includes( tag );
+			} ).length ? 'param' : 'return';
+
+			if ( ! jsdoc.source.match( new RegExp( `@${ lastTagInFirstGroup }.*\\n\\n@${ firstTagInSecondGroup }`, 'gm' ) ) ) {
+				context.report( { node: jsdocNode, message: `The @${ lastTagInFirstGroup } tag should be followed by an empty line, and then by the @${ firstTagInSecondGroup } tag.`, data: { name: jsdocNode.name } } );
+			}
+		}, {
+			iterateAllJsdocs: true,
+			meta: {
+				docs: {
+					description: 'Requires that all functions have properly sorted doc annotations.',
+				},
+				fixable: 'code',
+				type: 'suggestion',
+			},
+		} ),
+		'jsdoc-tag-order': iterateJsdoc( ( {
+			context,
+			jsdocNode,
+			utils,
+		} ) => {
+			const expectedTagOrder = [ 'since', 'deprecated', 'private', 'param', 'return' ];
+
+			const tags = utils.filterTags( ( { tag } ) => {
+				return expectedTagOrder.includes( tag );
+			} ).sort( ( tagA, tagB ) => {
+				return tagA.line > tagB.line ? 1 : -1;
+			} ).map( ( tag ) => {
+				return tag.tag;
+			} );
+
+			const checkTagOrder = ( { previousTag, tag, tagOrder } ) => {
+				const previousPositionInTagOrder = tagOrder.indexOf( previousTag );
+				const currentPositionInTagOrder = tagOrder.indexOf( tag );
+
+				if ( previousPositionInTagOrder > currentPositionInTagOrder ) {
+					context.report( { node: jsdocNode, message: `The @${ tag } tag should be before @${ previousTag } tag.`, data: { name: jsdocNode.name } } );
+				}
+			};
+
+			tags.forEach( ( tag, index ) => {
+				checkTagOrder( {
+					previousTag: tags[ index - 1 ] || 'since',
+					tag,
+					tagOrder: expectedTagOrder,
+				} );
+			} );
+		}, {
+			iterateAllJsdocs: true,
+			meta: {
+				docs: {
+					description: 'Requires that all functions have properly sorted doc annotations.',
+				},
+				fixable: 'code',
+				type: 'suggestion',
+			},
+		} ),
 	},
 };
