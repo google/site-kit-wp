@@ -384,6 +384,41 @@ describe( 'core/modules modules', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( modules ).toBeUndefined();
 			} );
+
+			it( 'combines `serverDefinitions` with `clientDefinitions`', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [
+					{ slug: 'server-module' },
+				] );
+				registry.dispatch( STORE_NAME ).registerModule( 'client-module' );
+
+				const modules = registry.select( STORE_NAME ).getModules();
+
+				expect( Object.keys( modules ) ).toEqual(
+					expect.arrayContaining( [ 'server-module', 'client-module' ] )
+				);
+			} );
+
+			it( 'merges `serverDefinitions` of the same module with `clientDefinitions`', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [
+					{ slug: 'test-module', name: 'Server Name' },
+				] );
+				registry.dispatch( STORE_NAME ).registerModule( 'test-module', { name: 'Client Name' } );
+
+				const modules = registry.select( STORE_NAME ).getModules();
+
+				expect( modules[ 'test-module' ] ).toMatchObject( { name: 'Client Name' } );
+			} );
+
+			it( 'does not overwrite `serverDefinitions` of the same module with undefined settings from client registration', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [
+					{ slug: 'test-module', name: 'Server Name', description: 'Server description' },
+				] );
+				registry.dispatch( STORE_NAME ).registerModule( 'test-module', { description: 'Client description' } );
+
+				const modules = registry.select( STORE_NAME ).getModules();
+
+				expect( modules[ 'test-module' ] ).toMatchObject( { name: 'Server Name', description: 'Client description' } );
+			} );
 		} );
 
 		describe( 'getModule', () => {
