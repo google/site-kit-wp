@@ -36,6 +36,8 @@ describe( 'core/user authentication', () => {
 		requiredScopes: [],
 		grantedScopes: [],
 		unsatisfiedScopes: [],
+		needsReauthentication: true,
+		disconnectedReason: 'test-reason',
 	};
 	const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
 	let registry;
@@ -184,6 +186,7 @@ describe( 'core/user authentication', () => {
 			[ 'getRequiredScopes', 'requiredScopes' ],
 			[ 'getUnsatisfiedScopes', 'unsatisfiedScopes' ],
 			[ 'needsReauthentication', 'needsReauthentication' ],
+			[ 'getDisconnectedReason', 'disconnectedReason' ],
 		] )( '%s', ( selector, property ) => {
 			it( 'uses a resolver to load the authenticated value if not yet set.', async () => {
 				fetchMock.getOnce(
