@@ -21,8 +21,8 @@ module.exports = {
 		'^.+\\.[jt]sx?$': '<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',
 	},
 	setupFiles: [
-		'<rootDir>/tests/js/setup-globals',
 		'<rootDir>/tests/js/setup-mocks',
+		'<rootDir>/tests/js/setup-globals',
 		'jest-localstorage-mock',
 	],
 	setupFilesAfterEnv: [

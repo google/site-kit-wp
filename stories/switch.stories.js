@@ -13,14 +13,12 @@ storiesOf( 'Global', module )
 		<div>
 			<div>
 				<Switch
-					id="switch-story"
 					label="Unswitched"
 					hideLabel={ false }
 				/>
 			</div>
 			<div>
 				<Switch
-					id="switch-story"
 					label="Switched"
 					hideLabel={ false }
 					checked
@@ -28,7 +26,6 @@ storiesOf( 'Global', module )
 			</div>
 			<div>
 				<Switch
-					id="switch-story"
 					label="Hidden Label"
 					checked
 				/>

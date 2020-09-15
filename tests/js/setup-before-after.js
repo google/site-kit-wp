@@ -6,6 +6,12 @@ import fetchMockJest from 'fetch-mock-jest';
 global.fetchMock = fetchMockJest;
 
 beforeEach( () => {
+	// jest.spyOn( global.console, 'error' );
+	// jest.spyOn( global.console, 'warn' );
+	// jest.spyOn( global.console, 'log' );
+	// jest.spyOn( global.console, 'info' );
+	// jest.spyOn( global.console, 'debug' );
+
 	global.console.error.mockClear();
 	global.console.warn.mockClear();
 	global.console.log.mockClear();
