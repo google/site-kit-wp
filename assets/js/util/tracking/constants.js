@@ -24,7 +24,7 @@
 export const DATA_LAYER = '_googlesitekitDataLayer';
 
 /**
- * gtag script identifier.
+ * The `gtag` `<script>` identifier.
  *
  * @private
  */

@@ -266,8 +266,7 @@ const dataAPI = {
 	/**
 	 * Collects the initial module data request.
 	 *
-	 * @param {string} context    The context to retrieve the module data for. One of 'Dashboard', 'Settings',
-	 *                         or 'Post'.
+	 * @param {string} context    The context to retrieve the module data for. One of 'Dashboard', 'Settings', or 'Post'.
 	 * @param {Object} moduleArgs Arguments passed from the module.
 	 *
 	 */
@@ -277,7 +276,7 @@ const dataAPI = {
 		 *
 		 * Modules use this filter to attach the datapoints they need to resolve after page load.
 		 *
-		 * @param array datapoints The datapoints to retrieve.
+		 * @param {Array} datapoints The datapoints to retrieve.
 		 */
 		const requestedModuleData = applyFilters( 'googlesitekit.module' + context + 'DataRequest', [], moduleArgs );
 
