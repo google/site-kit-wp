@@ -1,3 +1,4 @@
+/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * modules/tagmanager data store: containers tests.
  *
@@ -65,7 +66,7 @@ describe( 'modules/tagmanager containers', () => {
 	describe( 'actions', () => {
 		describe( 'createContainer', () => {
 			it( 'creates a container and adds it to the store ', async () => {
-				const accountID = fixtures.createContainer.accountId; // Capitalization rule exception: `accountId`
+				const accountID = fixtures.createContainer.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
@@ -92,7 +93,7 @@ describe( 'modules/tagmanager containers', () => {
 			} );
 
 			it( 'sets isDoingCreateContainer ', async () => {
-				const accountID = fixtures.createContainer.accountId; // Capitalization rule exception: `accountId`
+				const accountID = fixtures.createContainer.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/ );
@@ -105,7 +106,7 @@ describe( 'modules/tagmanager containers', () => {
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
-				const accountID = fixtures.createContainer.accountId; // Capitalization rule exception: `accountId`
+				const accountID = fixtures.createContainer.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
 				const errorResponse = {
 					code: 'internal_server_error',

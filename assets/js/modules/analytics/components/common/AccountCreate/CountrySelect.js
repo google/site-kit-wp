@@ -44,6 +44,7 @@ export default function CountrySelect() {
 		if ( newCountryCode !== value && countriesByCode[ newCountryCode ] ) {
 			setValues( FORM_ACCOUNT_CREATE, {
 				countryCode: newCountryCode,
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				timezone: countriesByCode[ newCountryCode ].defaultTimeZoneId,
 			} );
 		}

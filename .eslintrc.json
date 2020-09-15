@@ -12,13 +12,13 @@
     "featureFlags": false
   },
   "rules": {
-    "sitekit/camelcase-acronyms": 0,
-    "sitekit/jsdoc-third-person": 1,
-    "sitekit/jsdoc-fullstop": 1,
-    "sitekit/jsdoc-requires-since": 1,
-    "sitekit/jsdoc-capitalization": 1,
-    "sitekit/jsdoc-tag-grouping": 1,
-    "sitekit/jsdoc-tag-order": 1,
+    "sitekit/camelcase-acronyms": "error",
+    // "sitekit/jsdoc-third-person": 1,
+    // "sitekit/jsdoc-fullstop": 1,
+    // "sitekit/jsdoc-requires-since": 1,
+    // "sitekit/jsdoc-capitalization": 1,
+    // "sitekit/jsdoc-tag-grouping": 1,
+    // "sitekit/jsdoc-tag-order": 1,
     "jsdoc/check-tag-names": 2, // Recommended
     "jsdoc/check-types": 2, // Recommended
     "jsdoc/check-line-alignment": 1,
@@ -31,7 +31,7 @@
     "jsdoc/require-returns-check": 2,
     "jsdoc/require-returns-description": 2,
     "jsdoc/require-returns-type": 2,
-    "jsdoc/require-returns": 2,
+    "jsdoc/require-returns": 0,
     "jsdoc/no-undefined-types": 2,
     "jsdoc/valid-types": 2,
     "no-restricted-globals": [

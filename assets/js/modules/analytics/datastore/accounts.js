@@ -228,6 +228,7 @@ const baseResolvers = {
 			if ( response ) {
 				dispatch( STORE_NAME ).receiveGetAccounts( response.accounts );
 
+				/* eslint-disable sitekit/camelcase-acronyms */
 				if ( response.properties?.[ 0 ]?.accountId ) {
 					const accountID = response.properties[ 0 ].accountId;
 					dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
@@ -238,6 +239,7 @@ const baseResolvers = {
 					const accountID = response.profiles[ 0 ].accountId;
 					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
 				}
+				/* eslint-enable sitekit/camelcase-acronyms */
 
 				if ( response.matchedProperty ) {
 					dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
@@ -257,8 +259,8 @@ const baseResolvers = {
 		const accountID = registry.select( STORE_NAME ).getAccountID();
 		// Pre-select values from the matched property if no account is selected.
 		if ( matchedProperty && ! accountID ) {
-			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // Capitalization rule exception: accountId
-			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
+			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // eslint-disable-line sitekit/camelcase-acronyms
+			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
 		}
 	},
 };

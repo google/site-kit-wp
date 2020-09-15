@@ -115,6 +115,7 @@ describe( 'AccountSelect', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
 		const propertyID = properties[ 0 ].id;
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const accountID = properties[ 0 ].accountId;
 
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
@@ -123,6 +124,7 @@ describe( 'AccountSelect', () => {
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const account = accounts.find( ( acct ) => acct.id === properties[ 0 ].accountId );
 		fireEvent.click( getByText( account.name ) );
 

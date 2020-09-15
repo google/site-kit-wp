@@ -45,7 +45,9 @@ describe( 'SettingsEdit', () => {
 		const existingTag = {};
 		const setupRegistry = ( { dispatch } ) => {
 			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			existingTag.accountID = profiles[ 0 ].accountId;
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			existingTag.propertyID = profiles[ 0 ].webPropertyId;
 			const { accountID, propertyID } = existingTag;
 			dispatch( STORE_NAME ).setSettings( {} );

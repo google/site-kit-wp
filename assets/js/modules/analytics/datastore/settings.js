@@ -93,7 +93,7 @@ export const controls = {
 			}
 			propertyID = property.id;
 			await registry.dispatch( STORE_NAME ).setPropertyID( property.id );
-			await registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
+			await registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
 		}
 
 		const profileID = registry.select( STORE_NAME ).getProfileID();
