@@ -71,7 +71,6 @@ export default function SetupForm( { finishSetup } ) {
 		};
 		// We'll use form state to persist the chosen submit choice
 		// in order to preserve support for auto-submit.
-		// Set `inProgress` optimistically to avoid flashes of progress bar and content.
 		setValues( FORM_SETUP, { submitMode, inProgress: true } );
 
 		try {
