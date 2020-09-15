@@ -336,7 +336,6 @@ describe( 'core/modules modules', () => {
 		describe( 'receiveGetModules', () => {
 			it( 'requires the response param', () => {
 				expect( () => {
-					muteConsole( 'error' );
 					registry.dispatch( STORE_NAME ).receiveGetModules();
 				} ).toThrow( 'response is required.' );
 			} );
