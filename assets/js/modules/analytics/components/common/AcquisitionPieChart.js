@@ -24,14 +24,19 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import GoogleChart from '../../../../components/google-chart';
-import { getSiteKitAdminURL, sanitizeHTML } from '../../../../util';
+import Link from '../../../../components/link';
 import { extractAnalyticsDataForTrafficChart } from '../../util';
+import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+
+const { useSelect } = Data;
 
 const GOOGLE_CHART_PIE_SETTINGS = {
 	chartArea: {
@@ -60,18 +65,20 @@ const GOOGLE_CHART_PIE_SETTINGS = {
 };
 
 function AcquisitionPieChart( { data, args, source } ) {
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+
+	let path = `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
+	if ( url ) {
+		const parsedURL = new URL( url );
+		path += `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
+	}
+	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path } ) );
+
 	if ( ! data ) {
 		return null;
-	}
-
-	let sourceMessage = '';
-	if ( source ) {
-		sourceMessage = sprintf(
-			/* translators: %1$s: URL to Analytics Module page in Site Kit Admin, %2$s: Analytics (Service Name) */
-			__( 'Source: <a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="%1$s">%2$s</a>', 'google-site-kit' ),
-			getSiteKitAdminURL( 'googlesitekit-module-analytics' ),
-			_x( 'Analytics', 'Service name', 'google-site-kit' ),
-		);
 	}
 
 	return (
@@ -83,16 +90,22 @@ function AcquisitionPieChart( { data, args, source } ) {
 				id="overview-piechart"
 				loadHeight={ 205 }
 			/>
-
-			{ source && (
-				<div className="googlesitekit-chart__source" dangerouslySetInnerHTML={ sanitizeHTML(
-					sourceMessage,
-					{
-						ALLOWED_TAGS: [ 'a' ],
-						ALLOWED_ATTR: [ 'href', 'class' ],
-					}
-				) } />
-			) }
+			{ source &&
+				<div className="googlesitekit-chart__source">
+					{ [
+						__( 'Source:', 'google-site-kit' ),
+						' ',
+						<Link
+							key="link"
+							href={ sourceURI }
+							inherit
+							external
+						>
+							{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+						</Link>,
+					] }
+				</div>
+			}
 		</div>
 	);
 }

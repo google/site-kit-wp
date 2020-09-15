@@ -24,13 +24,15 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { getSiteKitAdminURL, getTimeInSeconds } from '../../../../util';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { getTimeInSeconds } from '../../../../util';
 import GoogleChart from '../../../../components/google-chart';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
@@ -38,72 +40,83 @@ import Link from '../../../../components/link';
 import PreviewBlock from '../../../../components/preview-block';
 import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
 
-class LegacyDashboardAcquisitionPieChart extends Component {
-	render() {
-		const {
-			data,
-			source,
-		} = this.props;
+const { useSelect } = Data;
 
-		if ( ! data || data.error || ! data.length ) {
-			return null;
-		}
+const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-		const processedData = extractAnalyticsDataForTrafficChart( data, 1 );
-		const options = {
-			chartArea: {
-				width: '100%',
-				height: '100%',
-			},
-			backgroundColor: 'transparent',
-			height: 250,
-			legend: {
-				alignment: 'center',
-				textStyle: {
-					color: '#5b5b61',
-					fontSize: 12,
-				},
-			},
-			slices: {
-				0: { color: '#178EC5' },
-				1: { color: '#54B23B' },
-				2: { color: '#EB5729' },
-				3: { color: '#ECED33' },
-				4: { color: '#34CBE3' },
-				5: { color: '#82E88E' },
-			},
-			title: null,
-			width: '100%',
-		};
-
-		return (
-			<div className="googlesitekit-chart googlesitekit-chart--pie">
-				<GoogleChart
-					data={ processedData }
-					options={ options }
-					chartType="pie"
-					id="overview-piechart"
-					loadHeight={ 205 }
-				/>
-				{ source &&
-					<div className="googlesitekit-chart__source">
-						{ [
-							__( 'Source:', 'google-site-kit' ),
-							' ',
-							<Link
-								key="link"
-								href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
-								inherit
-							>
-								{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-							</Link>,
-						] }
-					</div>
-				}
-			</div>
-		);
+	let path = `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
+	if ( url ) {
+		const parsedURL = new URL( url );
+		path += `&_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
 	}
-}
+
+	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{ path }
+	) );
+
+	if ( ! data || data.error || ! data.length ) {
+		return null;
+	}
+
+	const processedData = extractAnalyticsDataForTrafficChart( data, 1 );
+	const options = {
+		chartArea: {
+			width: '100%',
+			height: '100%',
+		},
+		backgroundColor: 'transparent',
+		height: 250,
+		legend: {
+			alignment: 'center',
+			textStyle: {
+				color: '#5b5b61',
+				fontSize: 12,
+			},
+		},
+		slices: {
+			0: { color: '#178EC5' },
+			1: { color: '#54B23B' },
+			2: { color: '#EB5729' },
+			3: { color: '#ECED33' },
+			4: { color: '#34CBE3' },
+			5: { color: '#82E88E' },
+		},
+		title: null,
+		width: '100%',
+	};
+
+	return (
+		<div className="googlesitekit-chart googlesitekit-chart--pie">
+			<GoogleChart
+				data={ processedData }
+				options={ options }
+				chartType="pie"
+				id="overview-piechart"
+				loadHeight={ 205 }
+			/>
+			{ source &&
+			<div className="googlesitekit-chart__source">
+				{ [
+					__( 'Source:', 'google-site-kit' ),
+					' ',
+					<Link
+						key="link"
+						href={ sourceURI }
+						inherit
+						external
+					>
+						{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					</Link>,
+				] }
+			</div>
+			}
+		</div>
+	);
+};
 
 LegacyDashboardAcquisitionPieChart.defaultProps = {
 	source: false,
