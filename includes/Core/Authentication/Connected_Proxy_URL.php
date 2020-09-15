@@ -65,7 +65,7 @@ class Connected_Proxy_URL extends Setting {
 				return null;
 			}
 
-			$normalized  = ! emtpy( $url['host'] ) ? $url['host'] : '';
+			$normalized  = ! empty( $url['host'] ) ? $url['host'] : '';
 			$normalized .= ! empty( $url['path'] ) ? $url['path'] : '/';
 			if ( ! empty( $url['query'] ) ) {
 				$query = array();
