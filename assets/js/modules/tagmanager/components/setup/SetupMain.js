@@ -50,7 +50,7 @@ export default function SetupMain( { finishSetup } ) {
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
-	const isNavigating = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'isNavigating' ) );
+	const inProgress = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'inProgress' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.
@@ -59,7 +59,7 @@ export default function SetupMain( { finishSetup } ) {
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating ) {
+	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts || inProgress ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
