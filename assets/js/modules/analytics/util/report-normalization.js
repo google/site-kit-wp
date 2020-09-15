@@ -1,5 +1,5 @@
 /**
- * WP Error Utilities.
+ * Report normalization utilities.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,19 +19,35 @@
 /**
  * External dependencies
  */
+import castArray from 'lodash/castArray';
 import isPlainObject from 'lodash/isPlainObject';
+import memize from 'memize';
 
 /**
- * Checks if the provided object is an instance of WP_Error class.
+ * Normalizes report options.
  *
- * @since 1.13.0
+ * @since n.e.x.t
  *
- * @param {Object} obj The object to check.
- * @return {boolean} TRUE if the object has "code", "data" and "message" properties, otherwise FALSE.
+ * @param {Object} options Report options object.
+ * @return {Object} Normalized options object.
  */
-export function isWPError( obj ) {
-	return isPlainObject( obj ) &&
-		obj.hasOwnProperty( 'code' ) && ( typeof obj.code === 'string' || typeof obj.code === 'number' ) &&
-		obj.hasOwnProperty( 'message' ) && typeof obj.message === 'string' &&
-		obj.hasOwnProperty( 'data' ); // We don't check "obj.data" type because it can be anything.
-}
+export const normalizeReportOptions = memize(
+	( { metrics, ...options } = {} ) => {
+		// TODO: build this out to normalize all options used.
+		return {
+			metrics: normalizeMetrics( metrics ),
+			...options,
+		};
+	}
+);
+
+const normalizeMetrics = ( metrics ) => {
+	return castArray( metrics )
+		.map(
+			( metric ) => typeof metric === 'string'
+				? { expression: metric }
+				: metric
+		)
+		.filter( ( metric ) => isPlainObject( metric ) )
+	;
+};

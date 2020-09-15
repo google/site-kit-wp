@@ -18,7 +18,7 @@ import Layout from '../assets/js/components/layout/layout';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
 import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 import LegacyDashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/LegacyDashboardSearchFunnelInner';
-import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopLevel';
+import LegacyAnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import LegacySearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
 import PostSearcher from '../assets/js/components/PostSearcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
@@ -88,13 +88,13 @@ storiesOf( 'Dashboard', module )
 	.add( 'Search Funnel Analytics Inactive', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
-		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
+		const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
 		removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
 
 		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.SearchConsoleSearchFunnel',
-			addSearchConsoleDashboardWidgetTopLevel );
+			addLegacySearchConsoleDashboardWidgetTopLevel );
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -131,17 +131,17 @@ storiesOf( 'Dashboard', module )
 	.add( 'Search Funnel', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
-		const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
-		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
+		const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
+		const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
 		removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
 		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.Analytics',
-			addAnalyticsDashboardWidgetTopLevel, 11 );
+			addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
 
 		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.SearchConsoleSearchFunnel',
-			addSearchConsoleDashboardWidgetTopLevel );
+			addLegacySearchConsoleDashboardWidgetTopLevel );
 
 		// Manual set some missing goals data;
 		const datacacheIsString = 'string' === typeof global._googlesitekitLegacyData.admin.datacache;

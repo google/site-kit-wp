@@ -20,6 +20,7 @@ use WP_Query;
  * @ignore
  */
 final class WP_Query_Factory {
+	use WP_Context_Switcher_Trait;
 
 	/**
 	 * Creates a `WP_Query` instance to use for a given URL.
@@ -47,10 +48,14 @@ final class WP_Query_Factory {
 
 		$query_args = self::parse_wp_query_args( $url_path_vars, $url_query_vars );
 
+		$restore_context = self::with_frontend_context();
+
 		// Return extended version of `WP_Query` with self-contained 404 detection.
 		$query = new Synthetic_WP_Query();
 		$query->parse_query( $query_args );
 		$query->enable_404_detection( true );
+
+		$restore_context();
 
 		return $query;
 	}

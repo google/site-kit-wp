@@ -1,5 +1,5 @@
 /**
- * isPermissionScopeError utility.
+ * PageSpeed Insights dashboard components.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,20 +16,7 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { ERROR_MISSING_REQUIRED_SCOPE } from '../constants';
-
-/**
- * Checks if the given error is a permission scope error.
- *
- * @since 1.9.0
- * @private
- *
- * @param {*} error Input to test as a possible permission scope error.
- * @return {boolean} True if permission scope error, otherwise false.
- */
-export function isPermissionScopeError( error ) {
-	return error?.code === ERROR_MISSING_REQUIRED_SCOPE;
-}
+export { default as DashboardPageSpeed } from './DashboardPageSpeed';
+export { default as DashboardPageSpeedCTA } from './DashboardPageSpeedCTA';
+export { default as DashboardPageSpeedWidget } from './DashboardPageSpeedWidget';
+export { default as LegacyDashboardSpeed } from './LegacyDashboardSpeed';

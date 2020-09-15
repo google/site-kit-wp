@@ -19,6 +19,7 @@
 export { default as AccountCreate } from './AccountCreate';
 export { default as AccountSelect } from './AccountSelect';
 export { default as AMPContainerSelect } from './AMPContainerSelect';
+export { default as ContainerSelect } from './ContainerSelect';
 export { default as ExistingTagError } from './ExistingTagError';
 export { default as ExistingTagNotice } from './ExistingTagNotice';
 export { default as FormInstructions } from './FormInstructions';

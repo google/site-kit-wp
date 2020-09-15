@@ -1047,6 +1047,9 @@ class WP_Query_FactoryTest extends TestCase {
 
 		flush_rewrite_rules();
 
+		// Pretend we're in the admin. The URL-based logic should ignore that.
+		set_current_screen( 'edit.php' );
+
 		$query = WP_Query_Factory::from_url( $url );
 		// This test focuses on correct query flags being set, hence disable 404 detection.
 		$query->enable_404_detection( false );
