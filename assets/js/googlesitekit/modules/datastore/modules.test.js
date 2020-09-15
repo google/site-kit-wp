@@ -24,7 +24,6 @@ import {
 	createTestRegistry,
 	muteConsole,
 	muteFetch,
-	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -72,10 +71,7 @@ describe( 'core/modules modules', () => {
 				// Call a selector that triggers an HTTP request to get the modules.
 				registry.select( STORE_NAME ).isModuleActive( slug );
 				// Wait until the modules have been loaded.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
 
 				expect( isActiveBefore ).toEqual( false );
@@ -94,13 +90,7 @@ describe( 'core/modules modules', () => {
 					{ body: {}, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).activateModule( slug );
-
-				// Wait until this activation action has completed.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.isDoingSetModuleActivation( slug ) === false
-				);
+				await registry.dispatch( STORE_NAME ).activateModule( slug );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -144,13 +134,7 @@ describe( 'core/modules modules', () => {
 				);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).activateModule( slug );
-
-				// Wait until this activation action has completed.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.isDoingSetModuleActivation( slug ) === false
-				);
+				await registry.dispatch( STORE_NAME ).activateModule( slug );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -196,10 +180,7 @@ describe( 'core/modules modules', () => {
 				registry.select( STORE_NAME ).getModules();
 
 				// Wait until the modules have been loaded.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
 
@@ -376,10 +357,7 @@ describe( 'core/modules modules', () => {
 
 				const modules = registry.select( STORE_NAME ).getModules();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( modules ).toMatchObject( fixturesKeyValue );
@@ -399,10 +377,7 @@ describe( 'core/modules modules', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getModules();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const modules = registry.select( STORE_NAME ).getModules();
 
@@ -424,10 +399,7 @@ describe( 'core/modules modules', () => {
 				expect( module ).toEqual( undefined );
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const moduleLoaded = registry.select( STORE_NAME ).getModule( slug );
 
@@ -451,10 +423,7 @@ describe( 'core/modules modules', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getModule( slug );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const module = registry.select( STORE_NAME ).getModule( slug );
 
@@ -483,10 +452,7 @@ describe( 'core/modules modules', () => {
 				expect( module ).toEqual( undefined );
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const moduleLoaded = registry.select( STORE_NAME ).getModule( 'not-a-real-module' );
 
@@ -511,10 +477,7 @@ describe( 'core/modules modules', () => {
 				expect( isActive ).toEqual( undefined );
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -529,10 +492,7 @@ describe( 'core/modules modules', () => {
 				expect( isActive ).toEqual( undefined );
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
 
@@ -547,10 +507,7 @@ describe( 'core/modules modules', () => {
 				expect( isActive ).toEqual( undefined );
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
 
@@ -582,10 +539,7 @@ describe( 'core/modules modules', () => {
 				expect( isConnected ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -600,10 +554,7 @@ describe( 'core/modules modules', () => {
 				expect( isConnected ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
 
@@ -619,10 +570,7 @@ describe( 'core/modules modules', () => {
 				expect( isConnected ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
 
@@ -637,10 +585,7 @@ describe( 'core/modules modules', () => {
 				expect( isConnected ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
 
