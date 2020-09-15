@@ -49,27 +49,29 @@ export default function SetupFormInstructions() {
 		return <ErrorText message={ message } />;
 	}
 
-	if ( analyticsModuleActive ) {
-		// If the Analytics module is active, and selected containers reference a different property ID
+	if ( analyticsModuleActive && singleAnalyticsPropertyID ) {
+		// If the selected containers reference a different property ID
 		// than is currently set in the Analytics module, display an error explaining why the user is blocked.
-		if ( singleAnalyticsPropertyID && singleAnalyticsPropertyID !== analyticsPropertyID ) {
+		if ( singleAnalyticsPropertyID !== analyticsPropertyID ) {
 			/* translators: %1$s: Tag Manager Analytics property ID, %2$s: Analytics property ID */
 			const message = __( 'Looks like you’re already using Google Analytics within your Google Tag Manager configuration. However, its Analytics property %1$s is different from the Analytics property %2$s, which is currently selected in the plugin. You need to configure the same Analytics property in both places.', 'google-site-kit' );
 
 			return <ErrorText message={ sprintf( message, singleAnalyticsPropertyID, analyticsPropertyID ) } />;
 		}
-		// If the Analytics module is active, and the Analytics property ID in GTM
-		// matches the property ID configured for the Analytics module,
-		// inform the user that GTM will take over outputting the tag/snippet.
-		if ( analyticsModuleActive && singleAnalyticsPropertyID && singleAnalyticsPropertyID === analyticsPropertyID ) {
-			/* translators: %s: Analytics property ID */
-			const message = __( 'Looks like you’re using Google Analytics. Your Analytics property %s is already set up in your Google Tag Manager configuration, so Site Kit will switch to using Google Tag Manager for Analytics.', 'google-site-kit' );
-			return (
-				<p>
-					{ sprintf( message, singleAnalyticsPropertyID ) }
-				</p>
-			);
-		}
+		// If the Analytics property ID in the container(s) matches
+		// the property ID configured for the Analytics module,
+		// inform the user that Tag Manager will take over outputting the tag/snippet.
+		return (
+			<p>
+				{
+					sprintf(
+						/* translators: %s: Analytics property ID */
+						__( 'Looks like you’re using Google Analytics. Your Analytics property %s is already set up in your Google Tag Manager configuration, so Site Kit will switch to using Google Tag Manager for Analytics.', 'google-site-kit' ),
+						singleAnalyticsPropertyID
+					)
+				}
+			</p>
+		);
 	}
 
 	// If the Analytics module is not active, and selected containers reference a singular property ID,
