@@ -18,6 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     if: false == ( ( github.event_name == 'pull_request' && github.event.action == 'closed' ) || github.event.pull_request.head.repo.fork )
     steps:
+    - name: Cancel Previous Runs
+      uses: styfle/cancel-workflow-action@0.5.0
+      with:
+        access_token: ${{ github.token }}
     - uses: actions/checkout@v2
     - name: Get Composer Cache Directory
       id: composer-cache
