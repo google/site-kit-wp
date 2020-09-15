@@ -200,7 +200,7 @@ final class Admin_Bar {
 			}
 		}
 
-		$current_url = $entity->get_url();
+		$current_url = rawurldecode( $entity->get_url() );
 
 		$display = false;
 		foreach ( $this->modules->get_active_modules() as $module ) {
