@@ -68,6 +68,7 @@ class AuthenticationTest extends TestCase {
 			array(
 				'needs_reauthentication',
 				'oauth_error',
+				'reconnect_after_url_mismatch',
 			),
 			array_filter( $notice_slugs )
 		);
@@ -94,8 +95,7 @@ class AuthenticationTest extends TestCase {
 
 	public function option_action_provider() {
 		return array(
-			array( 'home', 'http://example.com', 'http://new.example.com' ),
-			array( 'siteurl', 'http://example.com', 'http://new.example.com' ),
+			array( 'blogname', 'example.com', 'new.example.com' ),
 			array( 'googlesitekit_db_version', '1.0', '2.0' ),
 		);
 	}
