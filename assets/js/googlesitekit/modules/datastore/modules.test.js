@@ -343,7 +343,7 @@ describe( 'core/modules modules', () => {
 				const initialModules = registry.select( STORE_NAME ).getModules();
 				// The modules info will be its initial value while the modules
 				// info is fetched.
-				expect( initialModules ).toEqual( undefined );
+				expect( initialModules ).toBeUndefined();
 				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const modules = registry.select( STORE_NAME ).getModules();
@@ -396,7 +396,7 @@ describe( 'core/modules modules', () => {
 				const module = registry.select( STORE_NAME ).getModule( slug );
 
 				// The modules will be undefined whilst loading.
-				expect( module ).toEqual( undefined );
+				expect( module ).toBeUndefined();
 
 				// Wait for loading to complete.
 				await untilResolved( registry, STORE_NAME ).getModules();
@@ -428,7 +428,7 @@ describe( 'core/modules modules', () => {
 				const module = registry.select( STORE_NAME ).getModule( slug );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( module ).toEqual( undefined );
+				expect( module ).toBeUndefined();
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {
@@ -437,7 +437,7 @@ describe( 'core/modules modules', () => {
 
 				const module = registry.select( STORE_NAME ).getModule( 'analytics' );
 
-				expect( module ).toEqual( undefined );
+				expect( module ).toBeUndefined();
 			} );
 
 			it( 'returns null if the module does not exist', async () => {
@@ -449,7 +449,7 @@ describe( 'core/modules modules', () => {
 				const slug = 'analytics';
 				const module = registry.select( STORE_NAME ).getModule( slug );
 				// The modules will be undefined whilst loading.
-				expect( module ).toEqual( undefined );
+				expect( module ).toBeUndefined();
 
 				// Wait for loading to complete.
 				await untilResolved( registry, STORE_NAME ).getModules();
@@ -474,7 +474,7 @@ describe( 'core/modules modules', () => {
 				const slug = 'search-console';
 				const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
 				// The modules will be undefined whilst loading, so this will return `undefined`.
-				expect( isActive ).toEqual( undefined );
+				expect( isActive ).toBeUndefined();
 
 				// Wait for loading to complete.
 				await untilResolved( registry, STORE_NAME ).getModules();
@@ -489,7 +489,7 @@ describe( 'core/modules modules', () => {
 				const slug = 'optimize';
 				const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
 				// The modules will be undefined whilst loading, so this will return `undefined`.
-				expect( isActive ).toEqual( undefined );
+				expect( isActive ).toBeUndefined();
 
 				// Wait for loading to complete.
 				await untilResolved( registry, STORE_NAME ).getModules();
@@ -504,7 +504,7 @@ describe( 'core/modules modules', () => {
 				const slug = 'not-a-real-module';
 				const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
 				// The modules will be undefined whilst loading, so this will return `undefined`.
-				expect( isActive ).toEqual( undefined );
+				expect( isActive ).toBeUndefined();
 
 				// Wait for loading to complete.
 				await untilResolved( registry, STORE_NAME ).getModules();
@@ -520,7 +520,7 @@ describe( 'core/modules modules', () => {
 
 				const isActive = registry.select( STORE_NAME ).isModuleActive( 'analytics' );
 
-				expect( isActive ).toEqual( undefined );
+				expect( isActive ).toBeUndefined();
 			} );
 		} );
 
@@ -598,7 +598,7 @@ describe( 'core/modules modules', () => {
 
 				const isConnected = registry.select( STORE_NAME ).isModuleConnected( 'analytics' );
 
-				expect( isConnected ).toEqual( undefined );
+				expect( isConnected ).toBeUndefined();
 			} );
 		} );
 	} );
