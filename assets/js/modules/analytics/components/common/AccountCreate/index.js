@@ -40,7 +40,7 @@ import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../da
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { countryCodesByTimezone } from '../../../util/countries-timezones';
+import { getAccountDefaults } from '../../../util/account';
 import Data from 'googlesitekit-data';
 
 const { useDispatch, useSelect } = Data;
@@ -55,7 +55,7 @@ export default function AccountCreate() {
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' ) );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
-	let timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
+	const timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
@@ -72,15 +72,11 @@ export default function AccountCreate() {
 		// Only set the form if not already present in store.
 		// e.g. after a snapshot has been restored.
 		if ( ! hasAccountCreateForm ) {
-			const { hostname, pathname } = new URL( siteURL );
-			timezone = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
-			setValues( FORM_ACCOUNT_CREATE, {
-				accountName: siteName || hostname,
-				propertyName: `${ hostname }${ pathname }`.replace( /\/$/, '' ),
-				profileName: __( 'All Web Site Data', 'google-site-kit' ),
-				countryCode: countryCodesByTimezone[ timezone ],
+			setValues( FORM_ACCOUNT_CREATE, getAccountDefaults( {
+				siteName,
+				siteURL,
 				timezone,
-			} );
+			} ) );
 		}
 	}, [ hasAccountCreateForm, siteName, siteURL, timezone ] );
 
