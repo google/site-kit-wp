@@ -31,11 +31,11 @@ import { reduceAdSenseData } from '../../util';
 import { readableLargeNumber, extractForSparkline, getSiteKitAdminURL } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/preview-block';
-import Layout from '../../../../components/layout/layout';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+import Widget from '../../../../googlesitekit/widgets/components/Widget';
 
 const { useSelect } = Data;
 
@@ -80,7 +80,7 @@ function DashboardSummaryWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( 'adsense', error.message );
+		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
 	}
 
 	if ( ! today?.totals && ! period?.totals && ! daily?.totals ) {
@@ -94,7 +94,7 @@ function DashboardSummaryWidget() {
 	const currencyCode = currencyHeader ? currencyHeader.currency : false;
 
 	return (
-		<Layout className="googlesitekit-dashboard-adsense-stats" fill>
+		<Widget className="googlesitekit-dashboard-adsense-stats">
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
@@ -160,7 +160,7 @@ function DashboardSummaryWidget() {
 					</div>
 				</div>
 			</div>
-		</Layout>
+		</Widget>
 	);
 }
 
