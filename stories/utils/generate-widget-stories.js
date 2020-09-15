@@ -76,7 +76,6 @@ function getSetupRegistry( moduleSlugs, url, cb = () => {} ) {
  * Generates stories for a report based widget using provided data.
  *
  * @since 1.16.0
- *
  * @param {Object} args                            Widget arguments.
  * @param {string} args.moduleSlug                 Module slug.
  * @param {string} args.datastore                  Module datastore name.
@@ -85,6 +84,7 @@ function getSetupRegistry( moduleSlugs, url, cb = () => {} ) {
  * @param {Object} args.options                    Arguments for report requests.
  * @param {Object} args.additionalVariantCallbacks Additional custom callbacks to be run for each of the variants
  * @param {Component} args.component               Widget component.
+ * @param args.additionalVariants
  * @param {boolean} args.wrapWidget                Whether to wrap in default <Widget> component. Default true.
  * @return {Story} Generated story.
  */
@@ -94,6 +94,7 @@ export function generateReportBasedWidgetStories( {
 	group,
 	data,
 	options,
+	additionalVariants = {},
 	additionalVariantCallbacks = {},
 	component: WidgetComponent,
 	wrapWidget = true,
@@ -165,6 +166,7 @@ export function generateReportBasedWidgetStories( {
 				additionalErrorCallback( dispatch, data, options );
 			}
 		},
+		...additionalVariants,
 	};
 
 	const widget = wrapWidget ? <Widget><WidgetComponent /></Widget> : <WidgetComponent />;

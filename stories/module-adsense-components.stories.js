@@ -35,4 +35,17 @@ generateReportBasedWidgetStories( {
 	options: dashboardTopEarningPageWidgetArgs,
 	component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
+	additionalVariants: {
+		'AdSense Not Linked': ( { dispatch } ) => {
+			dispatch( ANALYTICS_STORE ).receiveGetReport( dashboardTopEarningPageWidgetData, { options: dashboardTopEarningPageWidgetArgs } );
+		},
+	},
+	additionalVariantCallbacks: {
+		Loaded: ( dispatch ) => {
+			dispatch( ANALYTICS_STORE ).setAdsenseLinked( true );
+		},
+		'Data Unavailable': ( dispatch ) => {
+			dispatch( ANALYTICS_STORE ).setAdsenseLinked( true );
+		},
+	},
 } );
