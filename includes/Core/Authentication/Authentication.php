@@ -293,8 +293,7 @@ final class Authentication {
 			};
 			add_action( 'shutdown', $sync_site_fields );
 		};
-		add_action( 'update_option_home', $option_updated );
-		add_action( 'update_option_siteurl', $option_updated );
+
 		add_action( 'update_option_blogname', $option_updated );
 		add_action( 'update_option_googlesitekit_db_version', $option_updated );
 
@@ -601,7 +600,7 @@ final class Authentication {
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
+			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_connect_user_url() );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
 		}
@@ -739,6 +738,7 @@ final class Authentication {
 								'grantedScopes'         => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
 								'unsatisfiedScopes'     => ! empty( $access_token ) ? $oauth_client->get_unsatisfied_scopes() : array(),
 								'needsReauthentication' => $oauth_client->needs_reauthentication(),
+								'disconnectedReason'    => $this->disconnected_reason->get(),
 							);
 
 							return new WP_REST_Response( $data );
@@ -781,8 +781,37 @@ final class Authentication {
 
 		$notices[] = $this->get_reauthentication_needed_notice();
 		$notices[] = $this->get_authentication_oauth_error_notice();
+		$notices[] = $this->get_reconnect_after_url_mismatch_notice();
 
 		return $notices;
+	}
+
+	/**
+	 * Gets reconnect notice.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Notice Notice object.
+	 */
+	private function get_reconnect_after_url_mismatch_notice() {
+		return new Notice(
+			'reconnect_after_url_mismatch',
+			array(
+				'content'         => function() {
+					return sprintf(
+						'<p>%s <a href="%s"></a></p>',
+						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you\'ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
+						esc_url( $this->google_proxy->get_connect_user_url() ),
+						esc_html__( 'Reconnect', 'google-site-kit' )
+					);
+				},
+				'type'            => Notice::TYPE_INFO,
+				'active_callback' => function() {
+					return $this->disconnected_reason->get() === self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH
+						&& $this->credentials->has();
+				},
+			)
+		);
 	}
 
 	/**
@@ -1048,7 +1077,25 @@ final class Authentication {
 			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
 		}
 
+		$access_code = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 		$this->redirect_to_proxy( $access_code );
+	}
+
+	/**
+	 * Gets an URL for googlesitekit_proxy_connect_user action.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string An URL for googlesitekit_proxy_connect_user action with a nonce.
+	 */
+	private function get_proxy_connect_user_url() {
+		return add_query_arg(
+			array(
+				'action' => Google_Proxy::ACTION_CONNECT_USER,
+				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_CONNECT_USER ),
+			),
+			admin_url( 'index.php' )
+		);
 	}
 
 }
