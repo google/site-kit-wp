@@ -20,12 +20,11 @@
  * External dependencies
  */
 import punycode from 'punycode';
-import { delay } from 'lodash';
 
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg } from '@wordpress/url';
 
@@ -33,7 +32,7 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { trackEvent, getSiteKitAdminURL } from '../../util';
+import { trackEvent } from '../../util';
 import Header from '../header';
 import Button from '../button';
 import ResetButton from '../reset-button';
@@ -42,44 +41,28 @@ import Notification from '../notifications/notification';
 import OptIn from '../optin';
 import CompatibilityChecks from './compatibility-checks';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 function SetupUsingProxy() {
 	const {
-		hasConnectedAdmins,
-		isConnected,
+		isSecondAdmin,
 		isResettable,
 		siteURL,
 		proxySetupURL,
 		disconnectedReason,
 	} = useSelect( ( select ) => {
-		const store = select( CORE_SITE );
+		const site = select( CORE_SITE );
+		const user = select( CORE_USER );
 
 		return {
-			hasConnectedAdmins: store.hasConnectedAdmins(),
-			isConnected: store.isConnected(),
-			isResettable: store.isResettable(),
-			siteURL: store.getReferenceSiteURL(),
-			proxySetupURL: store.getProxySetupURL(),
-			disconnectedReason: store.getDisconnectedReason(),
+			isSecondAdmin: site.hasConnectedAdmins(),
+			isResettable: site.isResettable(),
+			siteURL: site.getReferenceSiteURL(),
+			proxySetupURL: site.getProxySetupURL(),
+			disconnectedReason: user.getDisconnectedReason(),
 		};
 	} );
-
-	useEffect( () => {
-		if ( isConnected ) {
-			const redirectURL = getSiteKitAdminURL(
-				'googlesitekit-dashboard',
-				{
-					notification: 'authentication_success',
-				},
-			);
-
-			delay( () => {
-				global.location.replace( redirectURL );
-			}, 500, 'later' );
-		}
-	}, [ isConnected ] );
 
 	const onButtonClick = useCallback( async ( event ) => {
 		event.preventDefault();
@@ -88,16 +71,13 @@ function SetupUsingProxy() {
 	}, [ proxySetupURL ] );
 
 	// @TODO: this needs to be migrated to the core/site datastore in the future
-	const errorMessage = global._googlesitekitLegacyData.setup;
-
-	const isRevoked = 'revoked' === getQueryArg( location.href, 'googlesitekit_context' );
-	const isSecondAdmin = hasConnectedAdmins;
+	const { errorMessage } = global._googlesitekitLegacyData.setup;
 
 	let title;
 	let description;
 	let startSetupText;
 
-	if ( isRevoked ) {
+	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
 			/* translators: %s is the site's hostname. (e.g. example.com) */
 			__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
