@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import moment from 'moment';
-
-/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -55,13 +50,8 @@ function DashboardSummaryWidget() {
 		const store = select( STORE_NAME );
 		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
 
-		const format = 'YYYY-MM-DD';
-		const now = moment().format( format );
-		const lastMonth = moment().subtract( 1, 'month' ).format( format );
-
 		const todayArgs = {
-			startDate: now,
-			endDate: now,
+			dateRange: 'today',
 			metrics,
 		};
 
@@ -71,8 +61,7 @@ function DashboardSummaryWidget() {
 		};
 
 		const dailyArgs = {
-			startDate: lastMonth,
-			endDate: now,
+			dateRange: 'this-month',
 			metrics,
 			dimensions: [ 'DATE' ],
 		};
@@ -94,7 +83,7 @@ function DashboardSummaryWidget() {
 		return getDataErrorComponent( 'adsense', error.message );
 	}
 
-	if ( ! today.totals && ! period.totals && ! daily.totals ) {
+	if ( ! today?.totals && ! period?.totals && ! daily?.totals ) {
 		return getNoDataComponent( __( 'AdSense', 'google-site-kit' ) );
 	}
 

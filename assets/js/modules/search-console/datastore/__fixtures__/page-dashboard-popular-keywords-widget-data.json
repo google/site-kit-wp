@@ -1,0 +1,92 @@
+[
+	{
+		"clicks": 109,
+		"ctr": 0.1659056316590563,
+		"impressions": 657,
+		"keys": [
+			"sitekit test"
+		],
+		"position": 3.319634703196347
+	},
+	{
+		"clicks": 39,
+		"ctr": 0.45348837209302323,
+		"impressions": 86,
+		"keys": [
+			"sitekit test"
+		],
+		"position": 1.197674418604651
+	},
+	{
+		"clicks": 13,
+		"ctr": 0.045454545454545456,
+		"impressions": 286,
+		"keys": [
+			"sitekit test"
+		],
+		"position": 8.534965034965035
+	},
+	{
+		"clicks": 9,
+		"ctr": 0.225,
+		"impressions": 40,
+		"keys": [
+			"sitekit test"
+		],
+		"position": 4.75
+	},
+	{
+		"clicks": 8,
+		"ctr": 0.6153846153846154,
+		"impressions": 13,
+		"keys": [
+			"sitekit test"
+		],
+		"position": 3.5384615384615383
+	},
+	{
+		"clicks": 6,
+		"ctr": 0.15789473684210525,
+		"impressions": 38,
+		"keys": [
+			"sitekit test"
+		],
+		"position": 3.0789473684210527
+	},
+	{
+		"clicks": 5,
+		"ctr": 0.026041666666666668,
+		"impressions": 192,
+		"keys": [
+			"sitekit test"
+		],
+		"position": 9.09375
+	},
+	{
+		"clicks": 3,
+		"ctr": 0.05357142857142857,
+		"impressions": 56,
+		"keys": [
+			"sitekit test"
+		],
+		"position": 3.9285714285714284
+	},
+	{
+		"clicks": 3,
+		"ctr": 0.10714285714285714,
+		"impressions": 28,
+		"keys": [
+			"sitekit test"
+		],
+		"position": 3.8214285714285716
+	},
+	{
+		"clicks": 3,
+		"ctr": 0.1875,
+		"impressions": 16,
+		"keys": [
+			"sitekit test"
+		],
+		"position": 4.25
+	}
+]
