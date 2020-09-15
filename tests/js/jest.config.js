@@ -21,8 +21,8 @@ module.exports = {
 		'^.+\\.[jt]sx?$': '<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',
 	},
 	setupFiles: [
-		'<rootDir>/tests/js/setup-mocks',
 		'<rootDir>/tests/js/setup-globals',
+		'<rootDir>/tests/js/setup-mocks',
 		'jest-localstorage-mock',
 	],
 	setupFilesAfterEnv: [
@@ -41,8 +41,17 @@ module.exports = {
 	],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
-		'react__non-shim': 'react',
-		'@wordpress/element__non-shim': '@wordpress/element',
+		// '@wordpress/api-fetch__non-shim': '@wordpress/api-fetch',
+		// '@wordpress/api-fetch$': '<rootDir>assets/js/api-fetch-shim.js',
+		// '@wordpress/element__non-shim': '@wordpress/element',
+		// '@wordpress/element$': '<rootDir>assets/js/element-shim.js',
+		// '@wordpress/hooks__non-shim': '@wordpress/hooks',
+		// '@wordpress/hooks$': '<rootDir>assets/js/hooks-shim.js',
+		// 'react__non-shim': 'react',
+		// react: '<rootDir>assets/js/react-shim.js',
+
+		// 'react__non-shim': 'react',
+		// '@wordpress/element__non-shim': '@wordpress/element',
 		// New (JSR) modules.
 		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
 	},
