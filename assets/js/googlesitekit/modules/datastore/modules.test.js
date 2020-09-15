@@ -26,6 +26,7 @@ import {
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
@@ -298,18 +299,28 @@ describe( 'core/modules modules', () => {
 				icon: 'icon-name',
 			};
 
-			it( 'registers a module', async () => {
-				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, moduleSettings );
-				const modules = await registry.select( STORE_NAME ).getModules();
-				expect( modules[ moduleSlug ] ).not.toBeUndefined();
-				expect( modules[ moduleSlug ] ).toEqual( expect.objectContaining( moduleSettings ) );
+			beforeEach( () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
 			} );
 
-			it( 'does not allow active or connected properties to be set to true', async () => {
-				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, { active: true, connected: true, ...moduleSettings } );
-				const modules = await registry.select( STORE_NAME ).getModules();
-				expect( modules[ moduleSlug ].active ).toBe( false );
-				expect( modules[ moduleSlug ].connected ).toBe( false );
+			it( 'registers a module', () => {
+				registry.dispatch( STORE_NAME ).registerModule( moduleSlug, moduleSettings );
+				const modules = registry.select( STORE_NAME ).getModules();
+				expect( modules[ moduleSlug ] ).not.toBeUndefined();
+				expect( modules[ moduleSlug ] ).toMatchObject( moduleSettings );
+			} );
+
+			it( 'does not allow active or connected properties to be set to true', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
+				registry.dispatch( STORE_NAME ).registerModule( moduleSlug, { active: true, connected: true, ...moduleSettings } );
+				const modules = registry.select( STORE_NAME ).getModules();
+				expect( modules[ moduleSlug ] ).toMatchObject( { active: false, connected: false } );
+			} );
+
+			it( 'requires the module slug to be provided', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).registerModule();
+				} ).toThrow( 'module slug is required' );
 			} );
 		} );
 
@@ -330,13 +341,13 @@ describe( 'core/modules modules', () => {
 				} ).toThrow( 'response is required.' );
 			} );
 
-			it( 'receives and sets modules ', async () => {
+			it( 'receives and sets server definitions', () => {
 				const modules = FIXTURES;
-				await registry.dispatch( STORE_NAME ).receiveGetModules( modules );
+				registry.dispatch( STORE_NAME ).receiveGetModules( modules );
 
 				const state = store.getState();
 
-				expect( state ).toMatchObject( { modules: fixturesKeyValue } );
+				expect( state.serverDefinitions ).toMatchObject( fixturesKeyValue );
 			} );
 		} );
 	} );
@@ -353,15 +364,12 @@ describe( 'core/modules modules', () => {
 				// The modules info will be its initial value while the modules
 				// info is fetched.
 				expect( initialModules ).toEqual( undefined );
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const modules = registry.select( STORE_NAME ).getModules();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( modules ).toEqual( fixturesKeyValue );
+				expect( modules ).toMatchObject( fixturesKeyValue );
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
@@ -375,7 +383,7 @@ describe( 'core/modules modules', () => {
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( modules ).toEqual( fixturesKeyValue );
+				expect( modules ).toMatchObject( fixturesKeyValue );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -400,7 +408,7 @@ describe( 'core/modules modules', () => {
 				const modules = registry.select( STORE_NAME ).getModules();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( modules ).toEqual( undefined );
+				expect( modules ).toBeUndefined();
 			} );
 		} );
 
@@ -425,7 +433,7 @@ describe( 'core/modules modules', () => {
 				const moduleLoaded = registry.select( STORE_NAME ).getModule( slug );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( moduleLoaded ).toEqual( fixturesKeyValue[ slug ] );
+				expect( moduleLoaded ).toMatchObject( fixturesKeyValue[ slug ] );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
