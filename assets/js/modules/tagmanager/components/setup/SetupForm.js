@@ -48,7 +48,7 @@ import SetupErrorNotice from './SetupErrorNotice';
 import SetupFormInstructions from './SetupFormInstructions';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupForm( { finishSetup, setIsNavigating } ) {
+export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
@@ -71,9 +71,8 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 		};
 		// We'll use form state to persist the chosen submit choice
 		// in order to preserve support for auto-submit.
-		setValues( FORM_SETUP, { submitMode } );
-		// Set this optimistically to avoid flashes of progress bar and content.
-		setIsNavigating( true );
+		// Set `isNavigating` optimistically to avoid flashes of progress bar and content.
+		setValues( FORM_SETUP, { submitMode, isNavigating: true } );
 
 		try {
 			await throwOnError( () => submitChanges() );
@@ -99,7 +98,7 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 			// If we got here, call finishSetup to navigate to the success screen.
 			finishSetup();
 		} catch ( err ) {
-			setIsNavigating( false );
+			setValues( FORM_SETUP, { isNavigating: false } );
 
 			if ( isPermissionScopeError( err ) ) {
 				setValues( FORM_SETUP, { autoSubmit: true } );
@@ -176,5 +175,4 @@ export default function SetupForm( { finishSetup, setIsNavigating } ) {
 
 SetupForm.propTypes = {
 	finishSetup: PropTypes.func,
-	setIsNavigating: PropTypes.func,
 };
