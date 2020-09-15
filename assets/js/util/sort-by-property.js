@@ -21,8 +21,8 @@
  *
  * @since 1.13.0
  *
- * @param {Array} arrayData  Array containing objects to be sorted
- * @param {string} property The object key to use for matching.
+ * @param {Array}  arrayData Array containing objects to be sorted
+ * @param {string} property  The object key to use for matching.
  * @return {Array} An Array containing objects ordered by the priority key
  */
 export function sortByProperty( arrayData, property ) {

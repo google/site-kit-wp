@@ -196,10 +196,10 @@ export const get = async (
  *
  * @since 1.5.0
  *
- * @param {string} type                 The data to access. One of 'core' or 'modules'.
- * @param {string} identifier           The data identifier, eg. a module slug like `'adsense'`.
- * @param {string} datapoint            The endpoint to send data to.
- * @param {Object} data                 Request body data (eg. post data) to send with the request.
+ * @param {string}  type                The data to access. One of 'core' or 'modules'.
+ * @param {string}  identifier          The data identifier, eg. a module slug like `'adsense'`.
+ * @param {string}  datapoint           The endpoint to send data to.
+ * @param {Object}  data                Request body data (eg. post data) to send with the request.
  * @param {Object}  options             Extra options for this request.
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {boolean} options.queryParams Query params to send with the request.

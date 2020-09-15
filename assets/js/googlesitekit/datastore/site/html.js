@@ -169,7 +169,7 @@ export const baseSelectors = {
 	 * @since 1.13.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} url URL for which to fetch HTML.
+	 * @param {string} url   URL for which to fetch HTML.
 	 * @return {(string|undefined)} String representation of HTML for given URL, or `undefined` if not loaded yet.
 	 */
 	getHTMLForURL( state, url ) {

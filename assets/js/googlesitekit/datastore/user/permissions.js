@@ -173,7 +173,7 @@ export const selectors = {
 	 *
 	 * @since 1.13.0
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state      Data store's state.
 	 * @param {string} capability Capability name to check.
 	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
 	 */

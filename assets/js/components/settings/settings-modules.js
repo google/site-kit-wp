@@ -79,8 +79,8 @@ class SettingsModules extends Component {
 	/**
 	 * Handle clicks on the Edit, Cancel and Confirm buttons.
 	 *
-	 * @param {string} module         The module slug.
-	 * @param {string} action         The action being performed, one of 'edit', 'cancel' or 'confirm'.
+	 * @param {string} module The module slug.
+	 * @param {string} action The action being performed, one of 'edit', 'cancel' or 'confirm'.
 	 */
 	handleButtonAction( module, action ) {
 		if ( 'confirm' === action ) {
@@ -166,7 +166,7 @@ class SettingsModules extends Component {
 	 * Return list of modules markup.
 	 *
 	 * @param {Object}  modules List of modules
-	 * @param {boolean} active Sets styling for active modules, helps with parent/child grouping.
+	 * @param {boolean} active  Sets styling for active modules, helps with parent/child grouping.
 	 *
 	 * @return {HTMLElement} HTML markup with modules.
 	 *

@@ -27,9 +27,9 @@ import { Page, ElementHandle } from 'puppeteer';
  *
  * @since 1.11.0
  *
- * @param {(Page|ElementHandle)} instance Page or element handle instance.
- * @param {Object} [options]              Matcher options.
- * @param {number} [options.timeout]      Maximum time to wait for selector in milliseconds.
+ * @param {(Page|ElementHandle)} instance          Page or element handle instance.
+ * @param {Object}               [options]         Matcher options.
+ * @param {number}               [options.timeout] Maximum time to wait for selector in milliseconds.
  * @return {Object} Object with `pass` and `message` keys.
  */
 export async function toHaveTracking( instance, { timeout } = getDefaultOptions() ) {

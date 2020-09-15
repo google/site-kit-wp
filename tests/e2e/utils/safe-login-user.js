@@ -11,7 +11,7 @@ const MAX_LOGIN_ATTEMPTS = 3;
  *
  * @param {?string} username String to be used as user credential.
  * @param {?string} password String to be used as user credential.
- * @param {?number} attempt Number of the current attempt.
+ * @param {?number} attempt  Number of the current attempt.
  */
 export async function safeLoginUser( username = WP_USERNAME, password = WP_PASSWORD, attempt = 1 ) {
 	if ( attempt > MAX_LOGIN_ATTEMPTS ) {

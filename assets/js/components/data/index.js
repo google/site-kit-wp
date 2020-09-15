@@ -48,7 +48,7 @@ export { TYPE_CORE, TYPE_MODULES };
  * Respects the current dateRange value, if set.
  *
  * @param {Object} originalRequest Data request object.
- * @param {string} dateRange Default date range slug to use if not specified in the request.
+ * @param {string} dateRange       Default date range slug to use if not specified in the request.
  * @return {Object} New data request object.
  */
 const requestWithDateRange = ( originalRequest, dateRange ) => {
@@ -102,8 +102,8 @@ const dataAPI = {
 	/**
 	 * Gets data for multiple requests from the REST API using a single batch process.
 	 *
-	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
-	 * @param {boolean} secondaryRequest Is this the second (or more) request?
+	 * @param {Array.<{maxAge: Date,            type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
+	 * @param {boolean}        secondaryRequest Is this the second (or more) request?
 	 *
 	 * @return {Promise} A promise for multiple fetch requests.
 	 */
@@ -266,7 +266,7 @@ const dataAPI = {
 	/**
 	 * Collects the initial module data request.
 	 *
-	 * @param {string} context The context to retrieve the module data for. One of 'Dashboard', 'Settings',
+	 * @param {string} context    The context to retrieve the module data for. One of 'Dashboard', 'Settings',
 	 *                         or 'Post'.
 	 * @param {Object} moduleArgs Arguments passed from the module.
 	 *

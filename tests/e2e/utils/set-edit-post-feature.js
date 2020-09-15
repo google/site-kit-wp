@@ -6,8 +6,9 @@ import { evalWithWPData } from './eval-with-wp-data';
 /**
  * Sets feature activation for a core/edit-post feature.
  *
- * @param {string} feature Feature ID/name.
+ * @param {string}  feature       Feature ID/name.
  * @param {boolean} setActivation Activation to set.
+ * @return {Promise} Promise from `evalWithWPData()` call.
  */
 export async function setEditPostFeature( feature, setActivation ) {
 	return await evalWithWPData(

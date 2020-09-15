@@ -45,7 +45,7 @@ export * from './validation';
  *
  * @since 1.16.0 Added keyColumnIndex argument.
  *
- * @param {Array} reports         The array with reports data.
+ * @param {Array}  reports        The array with reports data.
  * @param {number} keyColumnIndex The number of a column to extract metrics data from.
  * @return {Array} Extracted data.
  */
@@ -77,7 +77,7 @@ export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex ) {
 /**
  * Reduce and process an array of analytics row data.
  *
- * @param {Array} rows An array of rows to reduce.
+ * @param {Array} rows          An array of rows to reduce.
  * @param {Array} selectedStats The currently selected stat we need to return data for.
  *
  * @return {Array} Array of selected stats from analytics row data.

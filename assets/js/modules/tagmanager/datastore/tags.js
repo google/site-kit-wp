@@ -86,7 +86,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.11.0
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state       Data store's state.
 	 * @param {string} containerID Container publicId to check permission for.
 	 * @return {(Object|undefined)} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
 	 */

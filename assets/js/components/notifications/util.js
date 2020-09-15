@@ -40,8 +40,11 @@ export const modulesNotificationsToRequest = () => {
 };
 
 /**
- * Retrieve total number of notifications from session storage
- * otherwise make the requests to get modules and page wins notifications.
+ * Retrieves total number of notifications from session storage.
+ *
+ * Otherwise make the requests to get modules and page wins notifications.
+ *
+ * @return {number} Total number of notifications.
  */
 export async function getTotalNotifications() {
 	const { setup } = global._googlesitekitLegacyData;
@@ -102,7 +105,7 @@ const removeDismissed = ( notifications ) => {
  * Remove displayed wins set to show once.
  * Display 1 win at a time. So user would see something new each time.
  *
- * @param {Array} wins  Wins are notifications (including all errors).
+ * @param {Array} wins Wins are notifications (including all errors).
  *                      "Publisher Wins" are things like increased pageviews,
  *                      or traffic that Site Kit will let user know.
  *
@@ -159,7 +162,9 @@ const removeDisplayedWins = ( wins ) => {
 };
 
 /**
- * Get notifications from session storage, fallback to notifications api request.
+ * Gets notifications from session storage, fallback to notifications API request.
+ *
+ * @return {number} Number of module notifications.
  */
 export async function getModulesNotifications() {
 	const results = {};
@@ -195,7 +200,9 @@ export async function getModulesNotifications() {
 }
 
 /**
- * Get win notifications, fallback to callback declared function.
+ * Gets win notifications, fallback to callback declared function.
+ *
+ * @return {number} Number of "wins" notifications.
  */
 export async function getWinsNotifications() {
 	let results = {};

@@ -20,7 +20,8 @@
  * Fetches markup for any given URL in the context of Puppeteer
  *
  * @param {string} url     Page URI to retrieve the content for.
- * @param {Object} options Options object to be passed to fetch()
+ * @param {Object} options Options object to be passed to fetch().
+ * @return {Promise} Promise from `page.evaluate()` call.
  */
 export async function fetchPageContent( url, options = {} ) {
 	try {

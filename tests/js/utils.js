@@ -104,9 +104,9 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * @since 1.10.0
  * @private
  *
- * @param {(string|RegExp|Function|URL|Object)} matcher   Criteria for deciding which requests to mock.
+ * @param {(string|RegExp|Function|URL|Object)} matcher    Criteria for deciding which requests to mock.
  *                                                        (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
- * @param {*}                                  [response] Optional. Response to return.
+ * @param {*}                                   [response] Optional. Response to return.
  */
 export const muteFetch = ( matcher, response = {} ) => {
 	fetchMock.once( matcher, { body: response, status: 200 } );

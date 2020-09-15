@@ -185,8 +185,8 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 /**
  * Internationalization Number Format.
  *
- * @param {number} number The number to format.
- * @param {Object} [options] Formatting options.
+ * @param {number} number           The number to format.
+ * @param {Object} [options]        Formatting options.
  * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter}
  *      For all available formatting options.
@@ -326,8 +326,8 @@ export const changeToPercent = ( previous, current ) => {
 /**
  * Extract a single column of data for a sparkline from a dataset prepared for Google charts.
  *
- * @param {Array}  rowData   An array of Google charts row data.
- * @param {number} column The column to extract for the sparkline.
+ * @param {Array}  rowData An array of Google charts row data.
+ * @param {number} column  The column to extract for the sparkline.
  *
  * @return {Array} Extracted column of dataset prepared for Google charts.
  *
@@ -353,7 +353,7 @@ export const extractForSparkline = ( rowData, column ) => {
  *
  * @since 1.7.0
  *
- * @param {Object}  __googlesitekitLegacyData Optional. _googlesitekitLegacyData global; can be replaced for testing.
+ * @param {Object} __googlesitekitLegacyData Optional. _googlesitekitLegacyData global; can be replaced for testing.
  * @return {Object} Object with module data, with each module keyed by its slug.
  */
 export const getModulesData = ( __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
@@ -380,8 +380,8 @@ export const getModulesData = ( __googlesitekitLegacyData = global._googlesiteki
 /**
  * Get the URL needed to initiate a reAuth flow.
  *
- * @param {string}  slug                     The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
- * @param {boolean} status                   The module activation status.
+ * @param {string}  slug                      The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
+ * @param {boolean} status                    The module activation status.
  * @param {Object}  __googlesitekitLegacyData _googlesitekitLegacyData global; can be replaced for testing.
  * @return {string} Authentication URL
  */
@@ -600,7 +600,7 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 /**
  * Gets the meta key for the given user option.
  *
- * @param {string} userOptionName User option name.
+ * @param {string} userOptionName         User option name.
  * @param {Object} _googlesitekitBaseData Site Kit base data (used for testing).
  * @return {string} meta key name.
  */

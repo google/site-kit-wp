@@ -72,7 +72,7 @@ export const getExistingTag = async ( module ) => {
 /**
  * Scrapes a module tag from the given URL.
  *
- * @param {string} url URL request and parse tag from.
+ * @param {string} url    URL request and parse tag from.
  * @param {string} module The module to parse tag for.
  *
  * @return {(string|null)} The tag id if found, otherwise null.
@@ -116,7 +116,7 @@ export const extractTag = ( string, module ) => {
  *
  * @since 1.13.0
  *
- * @param {string} html       The string of html from which to extract the tag.
+ * @param {string} html        The string of html from which to extract the tag.
  * @param {Array}  tagMatchers An array of the matchers to use.
  *
  * @return {(string|boolean)} The tag id if found, otherwise false.

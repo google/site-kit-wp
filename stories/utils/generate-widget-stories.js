@@ -36,9 +36,9 @@ const { components: { Widget } } = Widgets;
  *
  * @since 1.16.0
  *
- * @param {string} moduleSlug Module slug.
- * @param {string|null} url Current entity URL.
- * @param {Function} cb Callback for additional setup.
+ * @param {string}      moduleSlug Module slug.
+ * @param {string|null} url        Current entity URL.
+ * @param {Function}    cb         Callback for additional setup.
  * @return {Function} A function to set up registry for widget stories.
  */
 function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
@@ -65,15 +65,15 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
  *
  * @since 1.16.0
  *
- * @param {Object} args                            Widget arguments.
- * @param {string} args.moduleSlug                 Module slug.
- * @param {string} args.datastore                  Module datastore name.
- * @param {string} args.group                      Stories group name.
- * @param {Array} args.data                        Widget data.
- * @param {Object} args.options                    Arguments for report requests.
- * @param {Object} args.additionalVariantCallbacks Additional custom callbacks to be run for each of the variants
- * @param {Component} args.component               Widget component.
- * @param {boolean} args.wrapWidget                Whether to wrap in default <Widget> component. Default true.
+ * @param {Object}    args                            Widget arguments.
+ * @param {string}    args.moduleSlug                 Module slug.
+ * @param {string}    args.datastore                  Module datastore name.
+ * @param {string}    args.group                      Stories group name.
+ * @param {Array}     args.data                       Widget data.
+ * @param {Object}    args.options                    Arguments for report requests.
+ * @param {Object}    args.additionalVariantCallbacks Additional custom callbacks to be run for each of the variants
+ * @param {Component} args.component                  Widget component.
+ * @param {boolean}   args.wrapWidget                 Whether to wrap in default <Widget> component. Default true.
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {

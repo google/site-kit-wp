@@ -5,7 +5,7 @@
  * Returns a function that, when called, stops further request
  * handling/interception.
  *
- * @param  {Function} callback Function to handle requests.
+ * @param {Function} callback Function to handle requests.
  * @return {Function} Function that can be called to remove the added handler function from the page.
  */
 export function useRequestInterception( callback ) {

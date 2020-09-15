@@ -16,9 +16,9 @@ const DEFAULT_CONFIG = {
 /**
  * Initializes tracking.
  *
- * @param {Object} newConfig New configuration.
+ * @param {Object} newConfig       New configuration.
  * @param {Object} dataLayerTarget Data layer parent object.
- * @param {Object} _global The global window object.
+ * @param {Object} _global         The global window object.
  * @return {Object} Tracking config.
  */
 export default function createTracking( newConfig, dataLayerTarget = global, _global = global ) {

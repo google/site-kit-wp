@@ -25,10 +25,10 @@ import { createTestRegistry } from './utils';
  *
  * @private
  *
- * @param {*} ui Any valid React child element.
- * @param {Object} options Render options.
+ * @param {*}        ui                    Any valid React child element.
+ * @param {Object}   options               Render options.
  * @param {Function} options.setupRegistry A function which accepts the registry instance to configure it.
- * @param {Function} options.registry A specific registry instance to use. Defaults to a fresh test registry with all stores.
+ * @param {Function} options.registry      A specific registry instance to use. Defaults to a fresh test registry with all stores.
  * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result}
  *                 as well as the `registry`.
  */

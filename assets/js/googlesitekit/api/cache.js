@@ -160,8 +160,8 @@ export const getStorage = async () => {
  *
  * @since 1.5.0
  *
- * @param {string} key              Name of cache key.
- * @param {number} cacheTimeToLive  The number of seconds before cached data will be considered stale. If the cached data is more than this many seconds old no data will be returned. If not set/set to `null`, any data will be returned.
+ * @param {string} key             Name of cache key.
+ * @param {number} cacheTimeToLive The number of seconds before cached data will be considered stale. If the cached data is more than this many seconds old no data will be returned. If not set/set to `null`, any data will be returned.
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
  */
 export const getItem = async ( key, cacheTimeToLive = null ) => {

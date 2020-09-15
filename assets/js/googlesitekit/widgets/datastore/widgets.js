@@ -233,8 +233,8 @@ export const selectors = {
 	 *
 	 * @since 1.11.0
 	 *
-	 * @param {Object} state  Data store's state.
-	 * @param {string} slug   Widget slug.
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget slug.
 	 * @return {Object|null} A widget object, if one exists.
 	 */
 	getWidget: createRegistrySelector( ( select ) => ( state, slug ) => {

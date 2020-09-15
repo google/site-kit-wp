@@ -81,13 +81,13 @@ export const actions = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {string}             slug               Widget Area's slug.
-	 * @param {Object}             settings           Widget Area's settings.
-	 * @param {string}             settings.title     Title for this widget area.
-	 * @param {string}             settings.subtitle  Subtitle for this widget area.
-	 * @param {string}             settings.icon      Optional. URL to SVG icon for this widget area.
-	 * @param {string}             settings.style     Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
-	 * @param {number}             settings.priority  Optional. Priority for this widget area. Default: 10.
+	 * @param {string} slug              Widget Area's slug.
+	 * @param {Object} settings          Widget Area's settings.
+	 * @param {string} settings.title    Title for this widget area.
+	 * @param {string} settings.subtitle Subtitle for this widget area.
+	 * @param {string} settings.icon     Optional. URL to SVG icon for this widget area.
+	 * @param {string} settings.style    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
+	 * @param {number} settings.priority Optional. Priority for this widget area. Default: 10.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidgetArea( slug, {
@@ -212,8 +212,8 @@ export const selectors = {
 	 *
 	 * @since 1.11.0
 	 *
-	 * @param {Object} state  Data store's state.
-	 * @param {string} slug   Widget area to select.
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget area to select.
 	 * @return {Object|null} A widget area if one is found with a matching slug.
 	 */
 	getWidgetArea( state, slug ) {

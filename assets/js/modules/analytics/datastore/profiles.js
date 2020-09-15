@@ -103,9 +103,9 @@ const baseActions = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param {string} accountID Google Analytics account ID.
-	 * @param {string} propertyID Google Analytics property ID.
-	 * @param {Object} args Profile arguments.
+	 * @param {string} accountID        Google Analytics account ID.
+	 * @param {string} propertyID       Google Analytics property ID.
+	 * @param {Object} args             Profile arguments.
 	 * @param {string} args.profileName The name for a new profile.
 	 * @return {Object} Object with `response` and `error`.
 	 */

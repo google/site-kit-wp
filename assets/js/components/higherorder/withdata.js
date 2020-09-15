@@ -50,8 +50,8 @@ import getSetupIncompleteComponent from '../notifications/setup-incomplete';
  * called with the error message string if there is a data error and called with no string if the data is empty.
  * `handleDataSuccess` will be called when data resolves correctly.
  *
- * @param {WPElement}       DataDependentComponent The React Component to render once we have its required data.
- * @param {Array}           selectData             An array of data objects to resolve.
+ * @param {WPElement} DataDependentComponent The React Component to render once we have its required data.
+ * @param {Array}     selectData             An array of data objects to resolve.
  *                                                 Each object includes the following properties:
  *                                                 {string}         type       The data type. Either 'core' or 'modules'.
  *                                                 {string}         identifier The data identifier, for example a module slug.
@@ -61,11 +61,11 @@ import getSetupIncompleteComponent from '../notifications/setup-incomplete';
  *                                                 {number}         maxAge     How long to cache the data results.
  *                                                 {string | array} context    The context(s) to resolve data, eg 'Dashboard'.
  *
- * @param {WPElement}       loadingComponent       A React Component to render while the data is resolving.
- * @param {Object}          layoutOptions          An object with layout options that are passed to the getNoDataComponent and getDataErrorComponent components.
- * @param {Function}        isDataZero             A callback function that is passed the resolved data and returns true
+ * @param {WPElement} loadingComponent       A React Component to render while the data is resolving.
+ * @param {Object}    layoutOptions          An object with layout options that are passed to the getNoDataComponent and getDataErrorComponent components.
+ * @param {Function}  isDataZero             A callback function that is passed the resolved data and returns true
  *                                                 if the data is "zero".
- * @param {Function}        getDataError           A callback function that is passed the resolved data and returns the
+ * @param {Function}  getDataError           A callback function that is passed the resolved data and returns the
  *                                                 error message.
  *
  * @return {WPElement} Component  	Returns React.Components based on data and state.

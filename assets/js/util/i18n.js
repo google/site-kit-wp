@@ -36,8 +36,8 @@ export function loadTranslations() {
 /**
  * Internationalization Number Format.
  *
- * @param {number} number The number to format.
- * @param {Object} [options] Formatting options.
+ * @param {number} number           The number to format.
+ * @param {Object} [options]        Formatting options.
  * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter}
  *      For all available formatting options.

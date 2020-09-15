@@ -136,7 +136,7 @@ const baseActions = {
 	 * @since 1.8.0
 	 * @private
 	 *
-	 * @param {string} propertyID Property ID to select.
+	 * @param {string} propertyID           Property ID to select.
 	 * @param {string} [internalPropertyID] Internal property ID (if available).
 	 * @return {Object} A Generator function.
 	 */
@@ -325,7 +325,7 @@ const baseSelectors = {
 	 * @since 1.8.0
 	 * @private
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID Property ID.
 	 * @return {(Object|undefined)} Property object, or undefined if not present in store.
 	 */

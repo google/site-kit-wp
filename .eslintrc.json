@@ -13,27 +13,30 @@
   },
   "rules": {
     "sitekit/camelcase-acronyms": "error",
-    // "sitekit/jsdoc-third-person": 1,
-    // "sitekit/jsdoc-fullstop": 1,
-    // "sitekit/jsdoc-requires-since": 1,
-    // "sitekit/jsdoc-capitalization": 1,
-    // "sitekit/jsdoc-tag-grouping": 1,
-    // "sitekit/jsdoc-tag-order": 1,
-    "jsdoc/check-tag-names": 2, // Recommended
-    "jsdoc/check-types": 2, // Recommended
-    "jsdoc/check-line-alignment": 1,
-    "jsdoc/require-description": 2,
-    "jsdoc/require-description-complete-sentence": 0,
-    "jsdoc/require-param": 2, // Recommended
-    "jsdoc/require-param-description": 2, // Recommended
-    "jsdoc/require-param-name": 2, // Recommended
-    "jsdoc/require-param-type": 2, // Recommended
-    "jsdoc/require-returns-check": 2,
-    "jsdoc/require-returns-description": 2,
-    "jsdoc/require-returns-type": 2,
-    "jsdoc/require-returns": 0,
-    "jsdoc/no-undefined-types": 2,
-    "jsdoc/valid-types": 2,
+    // "sitekit/jsdoc-third-person": "error",
+    // "sitekit/jsdoc-fullstop": "error",
+    // "sitekit/jsdoc-requires-since": "error",
+    // "sitekit/jsdoc-capitalization": "error",
+    // "sitekit/jsdoc-tag-grouping": "error",
+    // "sitekit/jsdoc-tag-order": "error",
+    "jsdoc/check-tag-names": "error",
+    "jsdoc/check-types": "error",
+    "jsdoc/check-line-alignment": [
+      "error",
+      "always"
+    ],
+    "jsdoc/require-description": "error",
+    "jsdoc/require-description-complete-sentence": "off",
+    "jsdoc/require-param": "error",
+    "jsdoc/require-param-description": "error",
+    "jsdoc/require-param-name": "error",
+    "jsdoc/require-param-type": "error",
+    "jsdoc/require-returns-check": "error",
+    "jsdoc/require-returns-description": "error",
+    "jsdoc/require-returns-type": "error",
+    "jsdoc/require-returns": "error",
+    "jsdoc/no-undefined-types": "error",
+    "jsdoc/valid-types": "error",
     "no-restricted-globals": [
       "error",
       {

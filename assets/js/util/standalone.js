@@ -125,8 +125,8 @@ const fallbackGetQueryParamater = ( name ) => {
 /**
  * Get query parameter from the current URL.
  *
- * @param  {string} name      Query param to search for.
- * @param  {Object} _location Global `location` variable; used for DI-testing.
+ * @param {string} name      Query param to search for.
+ * @param {Object} _location Global `location` variable; used for DI-testing.
  * @return {string}           Value of the query param.
  */
 export const getQueryParameter = ( name, _location = location ) => {
