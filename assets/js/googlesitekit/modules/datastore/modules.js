@@ -19,6 +19,8 @@
 /**
  * External dependencies
  */
+import mapValues from 'lodash/mapValues';
+import merge from 'lodash/merge';
 import invariant from 'invariant';
 
 /**
@@ -32,28 +34,27 @@ import { WPElement } from '@wordpress/element';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
-import { sortByProperty } from '../../../util/sort-by-property';
-import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 
-const { commonActions, createRegistrySelector, createRegistryControl } = Data;
-
-/**
- * Store our module components by registry, then by module `slug`. We do this because
- * we can't store React components in our data store.
- *
- * @private
- * @since 1.13.0
- */
-export const ModuleComponents = {};
+const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
 const REGISTER_MODULE = 'REGISTER_MODULE';
 const WAIT_FOR_MODULES = 'WAIT_FOR_MODULES';
+
+const moduleDefaults = {
+	name: '',
+	description: '',
+	icon: null,
+	order: 10,
+	homepage: null,
+	active: false,
+	connected: false,
+	settingsComponent: DefaultModuleSettings,
+};
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
@@ -66,7 +67,7 @@ const fetchGetModulesStore = createFetchStore( {
 		return {
 			...state,
 			isAwaitingModulesRefresh: false,
-			modules: modules.reduce( ( acc, module ) => {
+			serverDefinitions: modules.reduce( ( acc, module ) => {
 				return { ...acc, [ module.slug ]: module };
 			}, {} ),
 		};
@@ -102,7 +103,8 @@ const fetchSetModuleActivationStore = createFetchStore( {
 } );
 
 const BASE_INITIAL_STATE = {
-	modules: undefined,
+	clientDefinitions: {},
+	serverDefinitions: undefined,
 	// This value is to indicate that modules data needs to be refreshed after
 	// a module activation update, since the activation is technically complete
 	// before this data has been refreshed.
@@ -200,33 +202,30 @@ const baseActions = {
 	 * @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
 	 * @return {Object} Redux-style action.
 	 */
-	*registerModule( slug, { settingsComponent = DefaultModuleSettings, ...settings } = {} ) {
+	registerModule( slug, {
+		name,
+		description,
+		icon,
+		order,
+		homepage,
+		settingsComponent = DefaultModuleSettings,
+	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
-		const registry = yield commonActions.getRegistry();
-		yield actions.waitForModules();
-		const registryKey = registry.select( CORE_SITE ).getRegistryKey();
-
-		// We do this assignment in the action rather than the reducer because we can't send a
-		// payload that includes a React component to the reducer; we'll get an error about
-		// payloads needing to be plain objects.
-		if ( ModuleComponents[ registryKey ] === undefined ) {
-			ModuleComponents[ registryKey ] = {};
-		}
-		if ( ModuleComponents[ registryKey ][ slug ] === undefined ) {
-			ModuleComponents[ registryKey ][ slug ] = settingsComponent;
-		}
-		// Ensure that active and connected properties are not passed here.
-		delete settings.active;
-		delete settings.connected;
-
-		const mergedModuleSettings = {
-			slug,
-			...settings,
+		const settings = {
+			name,
+			description,
+			icon,
+			order,
+			homepage,
+			settingsComponent,
 		};
 
 		return {
-			payload: { slug, settings: mergedModuleSettings },
+			payload: {
+				settings,
+				slug,
+			},
 			type: REGISTER_MODULE,
 		};
 	},
@@ -259,24 +258,13 @@ const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
-			const { modules: existingModules } = state;
-			const defaults = {
-				description: null,
-				icon: null,
-				order: 10,
-				homepage: null,
-				internal: false,
-				active: false,
-				connected: false,
-				name: slug,
-			};
+
 			return {
 				...state,
-				modules: {
-					...existingModules,
+				clientDefinitions: {
+					...state.clientDefinitions,
 					[ slug ]: {
-						...defaults,
-						...( existingModules?.[ slug ] || {} ),
+						...( state.clientDefinitions[ slug ] || {} ),
 						...settings,
 					},
 				},
@@ -333,35 +321,27 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Modules available on the site.
 	 */
-	getModules: createRegistrySelector( ( select ) => ( state ) => {
-		const { modules } = state;
+	getModules( state ) {
+		const { clientDefinitions, serverDefinitions } = state;
 
 		// Return `undefined` if modules haven't been loaded yet.
-		if ( modules === undefined ) {
+		if ( serverDefinitions === undefined ) {
 			return undefined;
 		}
 
-		const registryKey = select( CORE_SITE ).getRegistryKey();
-		if ( registryKey === undefined ) {
-			return undefined;
-		}
-		// Sorting the modules object by order property.
-		const sortedModules = sortByProperty( Object.values( modules ), 'order' );
-		const mappedModules = sortedModules.map( ( module ) => {
-			const moduleWithComponent = { ...module };
-			if ( ModuleComponents[ registryKey ] ) {
-				// If there is a settingsComponent that was passed use it, otherwise set to the default.
-				if ( ModuleComponents[ registryKey ][ module.slug ] ) {
-					moduleWithComponent.settingsComponent = ModuleComponents[ registryKey ][ module.slug ];
-				} else {
-					moduleWithComponent.settingsComponent = DefaultModuleSettings;
-				}
-			}
+		// Module properties in `clientDefinitions` will overwrite `serverDefinitions`
+		// but only for keys whose values are not `undefined`.
+		const modules = merge( {}, serverDefinitions, clientDefinitions );
 
-			return moduleWithComponent;
+		return mapValues( modules, ( module, slug ) => {
+			return {
+				...moduleDefaults,
+				name: slug, // Ensure `name` is not empty.
+				...module,
+				slug,
+			};
 		} );
-		return convertArrayListToKeyedObjectMap( mappedModules, 'slug' );
-	} ),
+	},
 
 	/**
 	 * Gets a specific module by slug.
