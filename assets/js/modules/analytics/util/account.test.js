@@ -34,7 +34,7 @@ describe( 'getAccountDefaults', () => {
 		expect( getAccountDefaults( sufficientArgs ).accountName ).toBe( 'Example Site' );
 	} );
 
-	it( 'should return propertyName equal to the domain name when siteURL is not empty', () => {
+	it( 'should return propertyName equal to the siteURL without the scheme or trailing slash', () => {
 		expect( getAccountDefaults( sufficientArgs ).propertyName ).toBe( 'example.com' );
 	} );
 
