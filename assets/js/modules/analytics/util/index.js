@@ -79,7 +79,6 @@ export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex ) {
  *
  * @param {Array} rows          An array of rows to reduce.
  * @param {Array} selectedStats The currently selected stat we need to return data for.
- *
  * @return {Array} Array of selected stats from analytics row data.
  */
 function reduceAnalyticsRowsData( rows, selectedStats ) {
@@ -104,7 +103,6 @@ function reduceAnalyticsRowsData( rows, selectedStats ) {
  * @param {Object} reports       The data returned from the Analytics API call.
  * @param {Array}  selectedStats The currently selected stat we need to return data for.
  * @param {number} days          The number of days to extract data for. Pads empty data days.
- *
  * @return {Array} The dataMap ready for charting.
  */
 export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) => {
@@ -233,7 +231,6 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
  * Extract the data required from an analytics 'site-analytics' request.
  *
  * @param {Object} reports The data returned from the Analytics API call.
- *
  * @return {Array} Required data from 'site-analytics' request.
  */
 export const extractAnalyticsDashboardSparklineData = ( reports ) => {
@@ -269,12 +266,12 @@ export const extractAnalyticsDashboardSparklineData = ( reports ) => {
 };
 
 /**
- * Translate Analytics API Error Response.
- * See https://developers.google.com/analytics/devguides/reporting/core/v4/errors
+ * Translates Analytics API Error Response.
+ *
+ * See: https://developers.google.com/analytics/devguides/reporting/core/v4/errors.
  *
  * @param {string} status  Error status code.
  * @param {string} message Error message.
- *
  * @return {string} Human readable Analytics API error message based on error status.
  */
 export const translateAnalyticsError = ( status, message ) => {

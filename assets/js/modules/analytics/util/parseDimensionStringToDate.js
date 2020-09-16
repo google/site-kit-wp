@@ -22,7 +22,7 @@
  * @since 1.10.0
  * @private
  *
- * @param {string} dateString String representing the date in the format of YYYYMMDD
+ * @param {string} dateString String representing the date in the format of `YYYYMMDD`.
  * @return {(Date|boolean)} Object representing the date passed, or false if parsing fails or a non-string is passed.
  */
 const parseDimensionStringToDate = ( dateString ) => {

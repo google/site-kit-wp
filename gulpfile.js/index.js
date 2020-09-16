@@ -25,7 +25,7 @@ const pump = require( 'pump' );
 const del = require( 'del' );
 
 /**
- * Gulp tasks
+ * Gulp tasks.
  */
 const copy = require( './copy' );
 const svgmin = require( './svgmin' );

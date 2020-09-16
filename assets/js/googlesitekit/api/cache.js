@@ -124,7 +124,7 @@ export const isStorageAvailable = async ( type ) => {
  * @since 1.5.0
  * @private
  *
- * @return {Object|null} A storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`;
+ * @return {Object|null} A storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`.
  */
 export const getStorage = async () => {
 	// If `googlesitekit.admin.nojscache` is `true`, we should never use

@@ -88,10 +88,10 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
  * @param {string}  datapoint           The endpoint to request data from.
  * @param {Object}  options             Optional. Options to pass to the request.
  * @param {number}  options.cacheTTL    The oldest cache data to use, in seconds.
- * @param {Object}  options.bodyParams  Request body data to send. (Eg. used for `POST`/`PUT` request variables.)
+ * @param {Object}  options.bodyParams  Request body data to send. Used for `POST`/`PUT` request variables.
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {Object}  options.queryParams Query params to send with the request.
- * @param {boolean} options.useCache    Enable or disable caching for this request only. (Caching is only used for `GET` requests.)
+ * @param {boolean} options.useCache    Enable or disable caching for this request only. Caching is only used for `GET` requests.
  * @return {Promise} Response of HTTP request.
  */
 export const siteKitRequest = async ( type, identifier, datapoint, {

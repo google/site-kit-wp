@@ -165,7 +165,7 @@ class SettingsModules extends Component {
 	/**
 	 * Return list of modules markup.
 	 *
-	 * @param {Object}  modules List of modules
+	 * @param {Object}  modules List of modules.
 	 * @param {boolean} active  Sets styling for active modules, helps with parent/child grouping.
 	 *
 	 * @return {HTMLElement} HTML markup with modules.

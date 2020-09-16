@@ -71,7 +71,7 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
  * @param {string}    args.group                      Stories group name.
  * @param {Array}     args.data                       Widget data.
  * @param {Object}    args.options                    Arguments for report requests.
- * @param {Object}    args.additionalVariantCallbacks Additional custom callbacks to be run for each of the variants
+ * @param {Object}    args.additionalVariantCallbacks Additional custom callbacks to be run for each of the variants.
  * @param {Component} args.component                  Widget component.
  * @param {boolean}   args.wrapWidget                 Whether to wrap in default <Widget> component. Default true.
  * @return {Story} Generated story.

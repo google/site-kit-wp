@@ -82,12 +82,16 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 
 	const dataMapped = data[ 0 ].data.rows.map( ( row ) => {
 		/**
+		 * The shape of the dimensions and metrics objects:
+		 *
+		 * ```
 		 * dimensions[0] = ga:pageTitle
 		 * dimensions[1] = ga:pagePath
 		 *
 		 * metrics[0] = ga:adsenseECPM
 		 * metrics[1] = ga:adsensePageImpressions
 		 * metrics[2] = ga:adsenseRevenue
+		 * ```
 		 */
 		return [
 			row.dimensions[ 0 ],

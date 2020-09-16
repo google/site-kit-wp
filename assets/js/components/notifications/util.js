@@ -83,7 +83,7 @@ export async function getTotalNotifications() {
 /**
  * Removes dismissed notifications from list.
  *
- * @param {Array} notifications List of notifications
+ * @param {Array} notifications List of notifications.
  * @return {Array} Filtered list of notifications.
  */
 const removeDismissed = ( notifications ) => {

@@ -24,14 +24,13 @@ const { default: iterateJsdoc } = require( 'eslint-plugin-jsdoc/dist/iterateJsdo
 
 const isDependencyBlock = ( jsdoc ) => {
 	if ( jsdoc && jsdoc.description && (
-		jsdoc.description === 'External dependencies' ||
-		jsdoc.description === 'WordPress dependencies' ||
-		jsdoc.description === 'Internal dependencies'
+		jsdoc.description.trim() === 'Node dependencies' ||
+		jsdoc.description.trim() === 'External dependencies' ||
+		jsdoc.description.trim() === 'WordPress dependencies' ||
+		jsdoc.description.trim() === 'Internal dependencies'
 	) ) {
 		return true;
 	}
-
-	return false;
 };
 
 module.exports = {
@@ -265,7 +264,8 @@ module.exports = {
 				return;
 			}
 
-			if ( jsdoc.description && ! jsdoc.description.match( /\.$/g ) ) {
+			// Don't match code block examples that end in "```".
+			if ( jsdoc.description && ! jsdoc.description.match( /\.$/g ) && ! jsdoc.description.match( /```$/g ) ) {
 				context.report( { node: jsdocNode, message: `JSDoc block text should end with a period/full-stop.`, data: { name: jsdocNode.name } } );
 				return;
 			}
@@ -276,7 +276,8 @@ module.exports = {
 			}
 
 			jsdoc.tags.forEach( ( tag ) => {
-				if ( tag.tag === 'since' ) {
+				// Only check these tags for fullstops.
+				if ( ! [ 'param', 'returns' ].includes( tag.tag ) ) {
 					return;
 				}
 

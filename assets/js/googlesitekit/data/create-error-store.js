@@ -114,7 +114,9 @@ export function createErrorStore() {
 		/**
 		 * Retrieves the error object from state.
 		 *
-		 *```
+		 * Error object has the format:
+		 *
+		 * ```
 		 * {
 		 *   code: <String>,
 		 *   message: <String>,

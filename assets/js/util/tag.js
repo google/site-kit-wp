@@ -74,7 +74,6 @@ export const getExistingTag = async ( module ) => {
  *
  * @param {string} url    URL request and parse tag from.
  * @param {string} module The module to parse tag for.
- *
  * @return {(string|null)} The tag id if found, otherwise null.
  */
 export const scrapeTag = async ( url, module ) => {
@@ -90,8 +89,7 @@ export const scrapeTag = async ( url, module ) => {
  * Extracts a tag related to a module from the given string.
  *
  * @param {string} string The string from where to find the tag.
- * @param {string} module The tag to search for, one of 'adsense' or 'analytics'
- *
+ * @param {string} module The tag to search for, one of 'adsense' or 'analytics'.
  * @return {(string|boolean)} The tag id if found, otherwise false.
  */
 export const extractTag = ( string, module ) => {

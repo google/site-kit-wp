@@ -17,7 +17,7 @@
  */
 
 /**
- * Fetches markup for any given URL in the context of Puppeteer
+ * Fetches markup for any given URL in the context of Puppeteer.
  *
  * @param {string} url     Page URI to retrieve the content for.
  * @param {Object} options Options object to be passed to fetch().

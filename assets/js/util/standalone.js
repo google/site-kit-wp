@@ -29,10 +29,9 @@ import {
  * user is outside the Site Kit app.
  *
  * Retrieves the number from local storage previously stored by NotificationCounter
- * used in googlesitekit-admin.js
+ * used in googlesitekit-admin.js.
  *
  * @param {number} count	Notifications count.
- *
  * @return {HTMLElement}	Updated dashboard menu/admin bar with the notification count.
  *
  */

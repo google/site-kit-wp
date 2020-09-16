@@ -103,7 +103,7 @@ const dataAPI = {
 	 * Gets data for multiple requests from the REST API using a single batch process.
 	 *
 	 * @param {Array.<{maxAge: Date,            type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
-	 * @param {boolean}        secondaryRequest Is this the second (or more) request?
+	 * @param {boolean}        secondaryRequest Set to `true` if this is this is after the first request.
 	 *
 	 * @return {Promise} A promise for multiple fetch requests.
 	 */

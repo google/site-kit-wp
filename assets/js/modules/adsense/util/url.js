@@ -22,10 +22,10 @@
 import { parse as pslParse } from 'psl';
 
 /**
- * Parse a URL to retrieve the domain
+ * Parses a URL to retrieve the domain.
  *
- * @param {string} url The url to parse
- * @return {string} The domain of the url passed
+ * @param {string} url The url to parse.
+ * @return {string} The domain of the url passed.
  */
 export const parseDomain = ( url ) => {
 	const urlObj = new URL( url );

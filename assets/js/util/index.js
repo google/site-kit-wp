@@ -61,7 +61,6 @@ export * from './helpers';
  *
  * @param {string} url       The URL to process.
  * @param {string} parameter The URL parameter to remove.
- *
  * @return {string} URL without the deleted parameter.
  *
  */
@@ -89,7 +88,6 @@ const removeURLFallBack = ( url, parameter ) => {
  *
  * @param {string} url       The URL to process.
  * @param {string} parameter The URL parameter to remove.
- *
  * @return {string} URL without the deleted parameter.
  */
 export const removeURLParameter = ( url, parameter ) => {
@@ -107,8 +105,7 @@ export const removeURLParameter = ( url, parameter ) => {
  * Prepares a number to be used in readableLargeNumber.
  *
  * @param {number} number The large number to prepare.
- *
- * @return {number} The prepared number
+ * @return {number} The prepared number.
  */
 export const prepareForReadableLargeNumber = ( number ) => {
 	if ( 1000000 <= number ) {
@@ -126,7 +123,7 @@ export const prepareForReadableLargeNumber = ( number ) => {
 };
 
 /**
- * Format a large number for shortened display.
+ * Formats a large number for shortened display.
  *
  * @param {number}           number       The large number to format.
  * @param {(string|boolean)} currencyCode Optional currency code to format as amount.
@@ -187,10 +184,7 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
  *
  * @param {number} number           The number to format.
  * @param {Object} [options]        Formatting options.
- * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter}
- *      For all available formatting options.
- *
+ * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit. See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter for all available formatting options.
  * @return {string} The formatted number.
  */
 export const numberFormat = ( number, options = {} ) => {
@@ -431,11 +425,10 @@ export const getReAuthURL = ( slug, status, __googlesitekitLegacyData = global._
 };
 
 /**
- * Get Site Kit Admin URL Helper
+ * Gets Site Kit Admin URL Helper.
  *
  * @param {string} page The page slug. Optional. Default is 'googlesitekit-dashboard'.
  * @param {Object} args Optional. Object of arguments to add to the URL.
- *
  * @return {string} Admin URL with appended query params.
  */
 export const getSiteKitAdminURL = ( page, args ) => {
@@ -453,7 +446,6 @@ export const getSiteKitAdminURL = ( page, args ) => {
  * Verifies whether JSON is valid.
  *
  * @param {string} stringToValidate The string to validate.
- *
  * @return {boolean} Indicates JSON is valid.
  */
 export const validateJSON = ( stringToValidate ) => {
@@ -465,10 +457,9 @@ export const validateJSON = ( stringToValidate ) => {
 };
 
 /**
- * Verifies Optimize ID
+ * Verifies Optimize ID.
  *
  * @param {string} stringToValidate The string to validate.
- *
  * @return {boolean} Indicates GTM or OPT tag is valid.
  */
 export const validateOptimizeID = ( stringToValidate ) => {
@@ -504,8 +495,7 @@ export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, sta
 };
 
 /**
- * Helper to toggle confirm changes button disable/enable
- * depending on the module changed settings.
+ * Toggles confirm changes button disable/enable depending on the module changed settings.
  *
  * @param {string} moduleSlug                The module slug being edited.
  * @param {Object} settingsMapping           The mapping between form settings names and saved settings.
@@ -536,7 +526,7 @@ export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settin
 };
 
 /**
- * Trigger error notification on top of the page.
+ * Triggers an error notification on top of the page.
  *
  * @param {WPElement} ErrorComponent The error component to render in place.
  * @param {Object}    props          The props to pass down to the error component. Optional.

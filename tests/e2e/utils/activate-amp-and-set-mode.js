@@ -48,7 +48,7 @@ export const activateAMPWithMode = async ( mode ) => {
 };
 
 /**
- * Set AMP Mode
+ * Sets AMP Mode.
  *
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */

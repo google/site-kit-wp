@@ -44,7 +44,7 @@ export { isValidNumericID as isValidAccountID };
 /**
  * Checks if the given value is a valid selection for an Account.
  *
- * @param {?string} value Selected value
+ * @param {?string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidAccountSelection( value ) {
@@ -68,7 +68,7 @@ export function isValidPropertyID( propertyID ) {
 /**
  * Checks if the given value is a valid selection for a Property.
  *
- * @param {?string} value Selected value
+ * @param {?string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidPropertySelection( value ) {
@@ -90,7 +90,7 @@ export { isValidNumericID as isValidProfileID };
 /**
  * Checks if the given value is a valid selection for a Profile.
  *
- * @param {?string} value Selected value
+ * @param {?string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidProfileSelection( value ) {
@@ -106,7 +106,7 @@ export function isValidProfileSelection( value ) {
  *
  * @since 1.11.0
  *
- * @param {string} value Profile name to test
+ * @param {string} value Profile name to test.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidProfileName( value ) {

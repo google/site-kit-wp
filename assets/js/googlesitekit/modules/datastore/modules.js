@@ -111,7 +111,7 @@ const BASE_INITIAL_STATE = {
 
 const baseActions = {
 	/**
-	 * Wait for the modules to be loaded
+	 * Waits for the modules to be loaded.
 	 *
 	 * @since 1.13.0
 	 *

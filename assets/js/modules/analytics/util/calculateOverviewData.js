@@ -1,5 +1,5 @@
 /**
- * calculateOverviewData
+ * calculateOverviewData helper.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -22,11 +22,10 @@
 import { changeToPercent } from '../../../util';
 
 /**
- * Calculate the report data
+ * Calculates the report data.
  *
  * @param {Array} reports Report data.
- *
- * @return {Object} Report data
+ * @return {Object} Report data.
  */
 const calculateOverviewData = ( reports ) => {
 	if ( ! reports || ! reports.length ) {

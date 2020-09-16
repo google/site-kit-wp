@@ -22,7 +22,7 @@
 import { activatePlugin } from '@wordpress/e2e-test-utils';
 
 /**
- * Internal depedencies
+ * Internal dependencies
  */
 import {
 	setSiteVerification,

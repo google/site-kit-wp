@@ -24,7 +24,7 @@ import {
 import * as customMatchers from '../matchers';
 
 /**
- * Environment variables
+ * Environment variables.
  */
 const { PUPPETEER_TIMEOUT, EXPECT_PUPPETEER_TIMEOUT } = process.env;
 
@@ -69,13 +69,13 @@ function capturePageEventsForTearDown() {
 }
 
 /**
- * Opt out of all Analytics tracking on page load.
+ * Opts out of all Analytics tracking on page load.
  *
  * This function emulates the behavior of the opt-out browser extension,
  * which is the only way to opt-out in an AMP-friendly way
  * since AMP does not allow for arbitrary JS from the origin.
  *
- * @see {@link https://tools.google.com/dlpage/gaoptout}
+ * See: https://tools.google.com/dlpage/gaoptout.
  */
 function optOutOfEventTracking() {
 	page.on( 'load', async () => {

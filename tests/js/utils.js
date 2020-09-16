@@ -84,7 +84,7 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
  * @since 1.5.0
  * @private
  *
- * @param {string} type  Type of console to mute (one of: `'error'`, `'warn'`, `'log'`, `'info'`, or `'debug'`)
+ * @param {string} type  Type of console to mute (one of: `'error'`, `'warn'`, `'log'`, `'info'`, or `'debug'`).
  * @param {number} times Number of times to mute console output perform resuming.
  */
 export const muteConsole = ( type = 'error', times = 1 ) => {

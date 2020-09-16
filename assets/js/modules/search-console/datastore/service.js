@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
- * Wordpress dependencies
+ * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
 
@@ -34,10 +35,10 @@ export const selectors = {
 	 * @since 1.14.0
 	 *
 	 * @param {Object} state        Data store's state.
-	 * @param {Object} [args]       Object containing optional path and query args
+	 * @param {Object} [args]       Object containing optional path and query args.
 	 * @param {string} [args.path]  A path to append to the base url.
 	 * @param {Object} [args.query] Object of query params to be added to the URL.
-	 * @return {string} The URL to the service
+	 * @return {string} The URL to the service.
 	 */
 	getServiceURL: createRegistrySelector( ( select ) => ( state, { path, query } = {} ) => {
 		const userEmail = select( CORE_USER ).getEmail();

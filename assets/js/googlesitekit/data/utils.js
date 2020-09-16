@@ -170,7 +170,7 @@ const passthroughReducer = ( state ) => {
  *
  * @since 1.8.0
  *
- * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: INITIAL_STATE, actions, controls, reducer, resolvers, selectors
+ * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: INITIAL_STATE, actions, controls, reducer, resolvers, selectors.
  * @return {Object} The combined store.
  */
 export const combineStores = ( ...stores ) => {
@@ -204,7 +204,7 @@ export const combineStores = ( ...stores ) => {
  *
  * @since 1.7.0
  *
- * @return {Object} key/value list of common actions most stores will want.
+ * @return {Object} Key/value list of common actions most stores will want.
  */
 export const commonActions = {
 	/**
