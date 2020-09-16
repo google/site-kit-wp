@@ -71,7 +71,7 @@ export default function SetupForm( { finishSetup } ) {
 		};
 		// We'll use form state to persist the chosen submit choice
 		// in order to preserve support for auto-submit.
-		setValues( FORM_SETUP, { submitMode, inProgress: true } );
+		setValues( FORM_SETUP, { submitMode, submitInProgress: true } );
 
 		try {
 			await throwOnError( () => submitChanges() );
@@ -97,7 +97,7 @@ export default function SetupForm( { finishSetup } ) {
 			// If we got here, call finishSetup to navigate to the success screen.
 			finishSetup();
 		} catch ( err ) {
-			setValues( FORM_SETUP, { inProgress: false } );
+			setValues( FORM_SETUP, { submitInProgress: false } );
 
 			if ( isPermissionScopeError( err ) ) {
 				setValues( FORM_SETUP, { autoSubmit: true } );
