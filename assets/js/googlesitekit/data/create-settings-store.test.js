@@ -77,7 +77,6 @@ describe( 'createSettingsStore store', () => {
 			it( 'requires the values param', () => {
 				expect( () => {
 					dispatch.setSettings();
-					expect( console ).toHaveErrored();
 				} ).toThrow( 'values is required.' );
 			} );
 
@@ -106,7 +105,6 @@ describe( 'createSettingsStore store', () => {
 			it( 'requires the response param', () => {
 				expect( () => {
 					dispatch.receiveGetSettings();
-					expect( console ).toHaveErrored();
 				} ).toThrow( 'response is required.' );
 			} );
 

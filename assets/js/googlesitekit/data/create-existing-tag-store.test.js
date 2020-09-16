@@ -79,7 +79,6 @@ describe( 'createExistingTagStore store', () => {
 			it( 'requires the response param', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).receiveGetExistingTag();
-					expect( console ).toHaveErrored();
 				} ).toThrow( 'existingTag must be a tag string or null.' );
 			} );
 
