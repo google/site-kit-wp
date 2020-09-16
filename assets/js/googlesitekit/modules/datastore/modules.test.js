@@ -298,7 +298,7 @@ describe( 'core/modules modules', () => {
 			};
 
 			it( 'registers a module', async () => {
-				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
+				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
 				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, moduleSettings );
 				const modules = await registry.select( STORE_NAME ).getModules();
 				expect( modules[ moduleSlug ] ).not.toBeUndefined();
@@ -306,7 +306,7 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'does not allow active or connected properties to be set to true', async () => {
-				muteFetch( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, [] );
+				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
 				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, { active: true, connected: true, ...moduleSettings } );
 				const modules = await registry.select( STORE_NAME ).getModules();
 				expect( modules[ moduleSlug ].active ).toBe( false );
