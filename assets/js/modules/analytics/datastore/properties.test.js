@@ -95,11 +95,7 @@ describe( 'modules/analytics properties', () => {
 					{ body: response, status: 500 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProperty( accountID );
-
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) === false
-				);
+				await registry.dispatch( STORE_NAME ).createProperty( accountID );
 
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'createProperty', [ accountID ] ) ).toMatchObject( response );
 

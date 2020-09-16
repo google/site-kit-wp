@@ -28,7 +28,6 @@ import {
 	render,
 	unsubscribeFromAll,
 	waitFor,
-	muteFetch,
 } from '../../../../../tests/js/test-utils';
 
 const { useSelect } = Data;
@@ -262,8 +261,8 @@ describe( 'WidgetAreaRenderer', () => {
 	} );
 
 	it( 'should output composite style with extra grid markup', async () => {
-		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 		registry = createTestRegistryWithArea( areaName, WIDGET_AREA_STYLES.COMPOSITE );
+		registry.dispatch( CORE_SITE ).receiveGetConnection( { connected: true } );
 		createWidgets( registry, areaName, [
 			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
 			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },

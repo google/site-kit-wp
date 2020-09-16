@@ -28,7 +28,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULE } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import SettingsMain from './SettingsMain';
 
@@ -37,7 +37,7 @@ describe( 'SettingsMain', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Receive empty modules to prevent unexpected fetch by resolver.
-		registry.dispatch( CORE_MODULE ).receiveGetModules( [] );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
 	} );
 
 	afterEach( () => {

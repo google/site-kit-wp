@@ -24,6 +24,7 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -260,7 +261,7 @@ describe( 'modules/adsense tags', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				fetchMock.get( /^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/, JSON.stringify( { status: 200 } ) );
+				muteFetch( /^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/ );
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.tagPermissionNoAccess.clientID );
 				expect( hasPermission ).toEqual( undefined );
 			} );

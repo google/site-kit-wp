@@ -61,15 +61,13 @@ describe( 'DashboardPageSpeed', () => {
 
 	it( 'renders a progress bar while reports are requested', async () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/ );
-
+		// needs second freezeFetch call, as one is for desktop and the other for mobile
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/ );
 		const { queryByRole } = render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoReports } );
 
 		await waitFor( () => {
 			expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 		} );
-
-		expect( console ).toHaveErrored();
-		expect( console ).toHaveWarned();
 	} );
 
 	it( 'displays field data by default when available in both mobile and desktop reports', () => {

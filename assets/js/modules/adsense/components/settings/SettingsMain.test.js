@@ -23,7 +23,7 @@ import { render, fireEvent, waitFor, createTestRegistry, unsubscribeFromAll } fr
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_MODULE } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	ACCOUNT_STATUS_APPROVED,
 	SITE_STATUS_ADDED,
@@ -35,8 +35,10 @@ describe( 'SettingsMain', () => {
 	let registry;
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// Receive empty modules to prevent unexpected fetch by resolver.
-		registry.dispatch( CORE_MODULE ).receiveGetModules( [] );
+		// Receive empty modules & data to prevent unexpected fetch by resolver.
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+		registry.dispatch( CORE_USER ).receiveUserInfo( {} );
 	} );
 
 	afterEach( () => {
@@ -54,8 +56,6 @@ describe( 'SettingsMain', () => {
 	};
 
 	it( 'rolls back settings if settings have changed and is not editing', async () => {
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
-		registry.dispatch( CORE_USER ).receiveUserInfo( {} );
 		registry.dispatch( CORE_USER ).receiveUserIsVerified( true );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
@@ -77,7 +77,6 @@ describe( 'SettingsMain', () => {
 	} );
 
 	it( 'does not roll back settings if settings have changed and is editing', async () => {
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 

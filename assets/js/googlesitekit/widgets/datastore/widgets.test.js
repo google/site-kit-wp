@@ -190,13 +190,10 @@ describe( 'core/widgets Widgets', () => {
 					component: WidgetOne,
 				} );
 
-				// Expect console warning about duplicate slug.
-				const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
 				registry.dispatch( STORE_NAME ).registerWidget( slug, {
 					component: WidgetOneRedone,
 				} );
-				expect( consoleWarnSpy ).toHaveBeenCalledWith( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
-				consoleWarnSpy.mockClear();
+				expect( console ).toHaveWarnedWith( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
 
 				const registryKey = registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
 

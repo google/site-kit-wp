@@ -17,29 +17,12 @@
  */
 
 /**
- * External dependencies
- */
-import { waitFor } from '@testing-library/react';
-
-/**
- * WordPress dependencies
- */
-import apiFetchMock from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import AccountSelect from './AccountSelect';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
+import { fireEvent, freezeFetch, render, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-
-// Mock apiFetch so we know if it's called.
-jest.mock( '@wordpress/api-fetch' );
-apiFetchMock.mockImplementation( ( ...args ) => {
-	// eslint-disable-next-line no-console
-	console.warn( 'apiFetch', ...args );
-} );
 
 const setupRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( {} );
@@ -59,9 +42,6 @@ const setupEmptyRegistry = ( registry ) => {
 };
 
 describe( 'AccountSelect', () => {
-	afterEach( () => apiFetchMock.mockClear() );
-	afterAll( () => jest.restoreAllMocks() );
-
 	it( 'should render an option for each analytics account', async () => {
 		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
 
@@ -69,7 +49,6 @@ describe( 'AccountSelect', () => {
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new account".
 		expect( listItems ).toHaveLength( fixtures.accountsPropertiesProfiles.accounts.length + 1 );
-		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should have a "Set up a new account" item at the end of the list', async () => {
@@ -77,20 +56,17 @@ describe( 'AccountSelect', () => {
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
-		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should render a loading state when accounts are undefined', async () => {
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/ );
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
 
 		await waitFor( () => {
 			expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
-
-			expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
-			// If accounts are `undefined`, we'll make a request to fetch them.
-			expect( apiFetchMock ).toHaveBeenCalled();
-			expect( console ).toHaveWarned();
 		} );
+
+		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only setup when no accounts exist', async () => {
@@ -99,7 +75,6 @@ describe( 'AccountSelect', () => {
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
 		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
-		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
