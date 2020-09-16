@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useCallback, useState } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -56,17 +57,24 @@ export default function SetupMain( { finishSetup } ) {
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 
+	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
+	const [ isNavigating, setIsNavigating ] = useState( false );
+	const finishSetupAndNavigate = useCallback( ( ...args ) => {
+		setIsNavigating( true );
+		finishSetup( ...args );
+	}, [ setIsNavigating, finishSetup ] );
+
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts || submitInProgress ) {
+	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating || submitInProgress ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreate />;
 	} else {
-		viewComponent = <SetupForm finishSetup={ finishSetup } />;
+		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } />;
 	}
 
 	return (
