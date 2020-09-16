@@ -17,9 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -38,6 +44,8 @@ import { countryCodesByTimezone } from './countries-timezones';
  * @return {Object} Default values.
  */
 export function getAccountDefaults( { siteName, siteURL, timezone } ) {
+	invariant( isURL( siteURL ), 'a valid siteURL is required.' );
+
 	const { hostname, pathname } = new URL( siteURL );
 	const tz = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
 

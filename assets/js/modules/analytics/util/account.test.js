@@ -19,42 +19,53 @@
 import { getAccountDefaults } from './account';
 
 describe( 'getAccountDefaults', () => {
-	const sufficientArgs = {
-		siteName: 'Example Site',
-		siteURL: 'https://example.com/',
-		timezone: 'Europe/Kiev',
-	};
+	const siteURL = 'https://example.com/';
+	const siteName = 'Example Site';
+	const timezone = 'Europe/Kiev';
 
-	const namelessArgs = {
-		siteURL: 'https://example.com/subsite-slug/',
-		timezone: 'Europe/Kiev',
-	};
+	describe( 'accountName', () => {
+		it( 'should be equal to siteName when siteName is not empty', () => {
+			expect( getAccountDefaults( { siteName, siteURL, timezone } ).accountName ).toBe( 'Example Site' );
+		} );
 
-	it( 'should return accountName equal to siteName when siteName is not empty', () => {
-		expect( getAccountDefaults( sufficientArgs ).accountName ).toBe( 'Example Site' );
+		it( 'should be the domain name of the siteURL when siteName is falsy', () => {
+			expect( getAccountDefaults( { siteName: '', siteURL, timezone } ).accountName ).toBe( 'example.com' );
+		} );
 	} );
 
-	it( 'should return propertyName equal to the siteURL without the scheme or trailing slash', () => {
-		expect( getAccountDefaults( sufficientArgs ).propertyName ).toBe( 'example.com' );
+	describe( 'propertyName', () => {
+		it( 'should be just domain name when the path of the siteURL is just a forward slash', () => {
+			expect( getAccountDefaults( { siteName, siteURL: 'https://example.com/', timezone } ).propertyName ).toBe( 'example.com' );
+		} );
+
+		it( 'should be domain name + path when the siteURL contains non-empty path', () => {
+			expect( getAccountDefaults( { siteName: '', siteURL: 'https://example.com/subsite-slug/', timezone } ).propertyName ).toBe( 'example.com/subsite-slug' );
+		} );
+
+		it( 'should throw an error if siteURL is invalid', () => {
+			expect( () => getAccountDefaults( { siteName, siteURL: undefined, timezone } ) ).toThrow( 'a valid siteURL is required.' );
+		} );
 	} );
 
-	it( 'should return a default profileName', () => {
-		expect( getAccountDefaults( sufficientArgs ).profileName ).toBe( 'All Web Site Data' );
+	describe( 'profileName', () => {
+		it( 'should be "All Web Site Data"', () => {
+			expect( getAccountDefaults( { siteName, siteURL, timezone } ).profileName ).toBe( 'All Web Site Data' );
+		} );
 	} );
 
-	it( 'should return countryCode equal to UA when timezone is Europe/Kiev', () => {
-		expect( getAccountDefaults( sufficientArgs ).countryCode ).toBe( 'UA' );
+	describe( 'countryCode', () => {
+		it( 'should be equal to UA when timezone is Europe/Kiev', () => {
+			expect( getAccountDefaults( { siteName, siteURL, timezone } ).countryCode ).toBe( 'UA' );
+		} );
 	} );
 
-	it( 'should return the same timezone as provided', () => {
-		expect( getAccountDefaults( sufficientArgs ).timezone ).toBe( sufficientArgs.timezone );
-	} );
+	describe( 'timezone', () => {
+		it( 'should be the same as provided', () => {
+			expect( getAccountDefaults( { siteName, siteURL, timezone } ).timezone ).toBe( 'Europe/Kiev' );
+		} );
 
-	it( 'should return the domain name of the siteURL as accountName when siteName is falsy', () => {
-		expect( getAccountDefaults( namelessArgs ).accountName ).toBe( 'example.com' );
-	} );
-
-	it( 'should use domain name + path as propertyName when siteName is not provided', () => {
-		expect( getAccountDefaults( namelessArgs ).propertyName ).toBe( 'example.com/subsite-slug' );
+		it( 'should use a local timezone when the provided timezone does not have an entry in countryCodesByTimezone', () => {
+			expect( getAccountDefaults( { siteName, siteURL, timezone: 'UTC' } ).timeZone ).not.toBe( 'UTC' );
+		} );
 	} );
 } );
