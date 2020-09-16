@@ -899,11 +899,12 @@ final class Tag_Manager extends Module
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules-tagmanager.js',
 					'dependencies' => array(
-						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
-						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
+						'googlesitekit-modules',
+						'googlesitekit-modules-analytics',
+						'googlesitekit-vendor',
 					),
 				)
 			),

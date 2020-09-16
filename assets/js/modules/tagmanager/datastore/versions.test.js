@@ -31,9 +31,14 @@ import {
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
+import {
+	createBuildAndReceivers,
+	parseLiveContainerVersionIDs as parseIDs,
+} from './__factories__/utils';
 
 describe( 'modules/tagmanager versions', () => {
 	let registry;
+	let buildAndReceiveWebAndAMP;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -41,6 +46,7 @@ describe( 'modules/tagmanager versions', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		( { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry ) );
 	} );
 
 	afterAll( () => {
@@ -50,37 +56,6 @@ describe( 'modules/tagmanager versions', () => {
 	afterEach( () => {
 		unsubscribeFromAll( registry );
 	} );
-
-	const parseIDs = ( { accountId, containerId, container: { publicId } }, callback ) => {
-		const ids = {
-			accountID: accountId,
-			containerID: publicId,
-			ampContainerID: publicId,
-			internalContainerID: containerId,
-			internalAMPContainerID: containerId,
-		};
-		if ( callback ) {
-			callback( ids );
-		}
-		return ids;
-	};
-
-	const buildAndReceiveWebAndAMP = ( { webPropertyID, ampPropertyID, accountID = '12345' } = {} ) => {
-		const liveContainerVersionWeb = factories.buildLiveContainerVersionWeb( { accountID, propertyID: webPropertyID } );
-		const liveContainerVersionAMP = factories.buildLiveContainerVersionAMP( { accountID, propertyID: ampPropertyID } );
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		parseIDs( liveContainerVersionWeb, ( { containerID, internalContainerID } ) => {
-			registry.dispatch( STORE_NAME ).setContainerID( containerID );
-			registry.dispatch( STORE_NAME ).setInternalContainerID( internalContainerID );
-			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionWeb, { accountID, internalContainerID } );
-		} );
-		parseIDs( liveContainerVersionAMP, ( { containerID, internalContainerID } ) => {
-			registry.dispatch( STORE_NAME ).setAMPContainerID( containerID );
-			registry.dispatch( STORE_NAME ).setInternalAMPContainerID( internalContainerID );
-			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( liveContainerVersionAMP, { accountID, internalContainerID } );
-		} );
-		return { accountID, liveContainerVersionWeb, liveContainerVersionAMP };
-	};
 
 	describe( 'actions', () => {
 		describe( 'receiveGetLiveContainerVersion', () => {
