@@ -133,6 +133,7 @@ class DataBlock extends Component {
 							className="googlesitekit-data-block__source"
 							name={ source.name }
 							href={ source.link }
+							external={ source?.external }
 						/>
 					) }
 				</div>
