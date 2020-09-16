@@ -26,10 +26,16 @@ global._googlesitekitLegacyData = {
 	},
 	modules: {
 		'search-console': {
-			screenID: 'googlesitekit-module-search-console',
+			slug: 'search-console',
+			name: 'Search Console',
 		},
 		'pagespeed-insights': {
-			screenID: 'googlesitekit-module-pagespeed-insights',
+			slug: 'pagespeed-insights',
+			name: 'PageSpeed Insights',
+		},
+		analytics: {
+			slug: 'analytics',
+			name: 'Analytics',
 		},
 	},
 	setup: {

@@ -17,3 +17,4 @@
  */
 
 export { default as SettingsMain } from './SettingsMain';
+export { default as SettingsView } from './SettingsView';

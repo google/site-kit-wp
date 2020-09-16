@@ -28,13 +28,13 @@ import { getSiteKitAdminURL, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import AnalyticsDashboardWidget from './components/dashboard/AnalyticsDashboardWidget';
 import AnalyticsAdminbarWidget from './components/adminbar/AnalyticsAdminbarWidget';
-import AnalyticsAllTraffic from './components/dashboard/AnalyticsAllTraffic';
-import AnalyticsDashboardWidgetTopLevel from './components/dashboard/AnalyticsDashboardWidgetTopLevel';
+import LegacyAnalyticsAllTraffic from './components/dashboard/LegacyAnalyticsAllTraffic';
+import LegacyAnalyticsDashboardWidgetTopLevel from './components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import WPAnalyticsDashboardWidgetOverview from './components/wp-dashboard/WPAnalyticsDashboardWidgetOverview';
 import AnalyticsDashboardDetailsWidgetTopAcquisitionSources from './components/dashboard-details/AnalyticsDashboardDetailsWidgetTopAcquisitionSources';
 import WPAnalyticsDashboardWidgetTopPagesTable from './components/wp-dashboard/WPAnalyticsDashboardWidgetTopPagesTable';
 import AnalyticsAdSenseDashboardWidgetTopPagesTable from './components/dashboard/AnalyticsAdSenseDashboardWidgetTopPagesTable';
-import AnalyticsDashboardWidgetPopularPagesTable from './components/dashboard/AnalyticsDashboardWidgetPopularPagesTable';
+import LegacyAnalyticsDashboardWidgetPopularPagesTable from './components/dashboard/LegacyAnalyticsDashboardWidgetPopularPagesTable';
 import AdSenseDashboardWidgetTopPagesTableSmall from './components/dashboard/AdSenseDashboardWidgetTopPagesTableSmall';
 
 const slug = 'analytics';
@@ -71,13 +71,13 @@ if ( ! modulesData[ slug ].setupComplete ) {
 
 if ( modulesData.analytics.active ) {
 	const addAnalyticsDashboardWidget = createAddToFilter( <AnalyticsDashboardWidget /> );
-	const addAnalyticsAllTraffic = createAddToFilter( <AnalyticsAllTraffic /> );
+	const addAnalyticsAllTraffic = createAddToFilter( <LegacyAnalyticsAllTraffic /> );
 	const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
 	const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
-	const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
+	const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
 	const addAnalyticsDashboardDetailsWidget = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
 	const addAnalyticsAdSenseTopPagesWidget = createAddToFilter( <AnalyticsAdSenseDashboardWidgetTopPagesTable /> );
-	const addAnalyticsDashboardWidgetPopularPagesTable = createAddToFilter( <AnalyticsDashboardWidgetPopularPagesTable /> );
+	const addLegacyAnalyticsDashboardWidgetPopularPagesTable = createAddToFilter( <LegacyAnalyticsDashboardWidgetPopularPagesTable /> );
 	const addAnalyticsDashboardWidgetPopularPagesTableSmall = createAddToFilter( <AdSenseDashboardWidgetTopPagesTableSmall /> );
 
 	/**
@@ -88,10 +88,10 @@ if ( modulesData.analytics.active ) {
 		addAnalyticsAllTraffic, 9 );
 	addFilter( 'googlesitekit.DashboardSearchFunnel',
 		'googlesitekit.Analytics',
-		addAnalyticsDashboardWidgetTopLevel, 11 );
+		addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
 	addFilter( 'googlesitekit.DashboardPopularity',
 		'googlesitekit.Analytics',
-		addAnalyticsDashboardWidgetPopularPagesTable, 20 );
+		addLegacyAnalyticsDashboardWidgetPopularPagesTable, 20 );
 	addFilter( 'googlesitekit.AnalyticsAdSenseTopPagesTableSmall',
 		'googlesitekit.Analytics',
 		addAnalyticsDashboardWidgetPopularPagesTableSmall, 20 );

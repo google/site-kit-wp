@@ -33,7 +33,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Header from '../../../../components/header';
 import SearchConsoleDashboardWidgetSiteStats from './SearchConsoleDashboardWidgetSiteStats';
-import SearchConsoleDashboardWidgetKeywordTable from './SearchConsoleDashboardWidgetKeywordTable';
+import LegacySearchConsoleDashboardWidgetKeywordTable from './LegacySearchConsoleDashboardWidgetKeywordTable';
 import SearchConsoleDashboardWidgetOverview from './SearchConsoleDashboardWidgetOverview';
 import PageHeader from '../../../../components/page-header';
 import Layout from '../../../../components/layout/layout';
@@ -158,7 +158,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 						</div>
 						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 						{ ! receivingData && (
-							error ? getDataErrorComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
+							error ? getDataErrorComponent( 'search-console', error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
 						) }
 						<div className={ classnames(
 							'mdc-layout-grid__cell',
@@ -196,7 +196,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 								footerCtaLink={ searchConsoleDeepLink }
 							>
-								<SearchConsoleDashboardWidgetKeywordTable />
+								<LegacySearchConsoleDashboardWidgetKeywordTable />
 							</Layout>
 						</div>
 						<div className="
