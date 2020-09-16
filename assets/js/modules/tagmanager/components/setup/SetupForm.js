@@ -92,17 +92,17 @@ export default function SetupForm( { finishSetup } ) {
 
 				global.location.assign( analyticsModuleReauthURL );
 				// Don't call finishSetup as this navigates to a different location.
-				return;
+			} else {
+				// If we got here, call finishSetup to navigate to the success screen.
+				finishSetup();
 			}
-			// If we got here, call finishSetup to navigate to the success screen.
-			finishSetup();
 		} catch ( err ) {
-			setValues( FORM_SETUP, { submitInProgress: false } );
-
 			if ( isPermissionScopeError( err ) ) {
 				setValues( FORM_SETUP, { autoSubmit: true } );
 			}
 		}
+		// Mark the submit as no longer in progress in all cases.
+		setValues( FORM_SETUP, { submitInProgress: false } );
 	}, [ finishSetup, dispatchAnalytics, singleAnalyticsPropertyID, analyticsModuleActive, analyticsModuleReauthURL ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
