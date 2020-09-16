@@ -33,6 +33,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 import { getLocale } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
+import { prepareSecondsForDisplay } from '../../../util';
 
 export { calculateOverviewData };
 
@@ -119,7 +120,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 
 	const rowLength = rows.length;
 
-	// Pad rows to 2 x number of days data points to accomodate new accounts.
+	// Pad rows to 2 x number of days data points to accommodate new accounts.
 	if ( ( days * 2 ) > rowLength ) {
 		const date = new Date();
 		for ( let i = 0; days > i; i++ ) {
@@ -148,6 +149,14 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 		__( 'Sessions', 'google-site-kit' ),
 		__( 'Bounce Rate', 'google-site-kit' ),
 		__( 'Session Duration', 'google-site-kit' ),
+	];
+
+	const dataFormats = [
+		( x ) => parseFloat( x ).toLocaleString(),
+		( x ) => parseFloat( x ).toLocaleString(),
+		( x ) => parseFloat( x ).toFixed( 2 ) + '%',
+		prepareSecondsForDisplay,
+
 	];
 
 	const dataMap = [
@@ -191,9 +200,9 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 
 		const statInfo = sprintf(
 			/* translators: %1$s: selected stat label, %2$s: numberic value of selected stat, %3$s: up or down arrow , %4$s: different change in percentage, %%: percent symbol */
-			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for Analytics dashbaord chart tooltip', 'google-site-kit' ),
+			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for Analytics dashboard chart tooltip', 'google-site-kit' ),
 			dataLabels[ selectedStats ],
-			parseFloat( row[ 1 ] ).toLocaleString(),
+			dataFormats[ selectedStats ]( row[ 1 ] ),
 			`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
 				'googlesitekit-change-arrow--up': difference > 0,
 				'googlesitekit-change-arrow--down': difference < 0,
