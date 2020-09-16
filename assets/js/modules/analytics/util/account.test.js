@@ -30,7 +30,7 @@ describe( 'getAccountDefaults', () => {
 		timezone: 'Europe/Kiev',
 	};
 
-	it( 'should return accountName equal to siteName when it\'s not empty', () => {
+	it( 'should return accountName equal to siteName when siteName is not empty', () => {
 		expect( getAccountDefaults( sufficientArgs ).accountName ).toBe( 'Example Site' );
 	} );
 
