@@ -50,7 +50,7 @@ describe( 'getAccountDefaults', () => {
 		expect( getAccountDefaults( sufficientArgs ).timezone ).toBe( sufficientArgs.timezone );
 	} );
 
-	it( 'should use doman name as accountName when siteName is not provided', () => {
+	it( 'should return the domain name of the siteURL as accountName when siteName is falsy', () => {
 		expect( getAccountDefaults( namelessArgs ).accountName ).toBe( 'example.com' );
 	} );
 
