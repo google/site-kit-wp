@@ -43,13 +43,12 @@ import {
 import CTA from '../../../../components/notifications/cta';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-
 import { STORE_NAME } from '../../datastore/constants';
 import { getCurrentDateRange } from '../../../../util/date-range';
 
 const { useSelect } = Data;
 
-const LegacySearchConsoleDashboardWidgetTopLevel = ( { data } ) => {
+function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
 	const { error } = data;
 
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
@@ -178,7 +177,7 @@ const LegacySearchConsoleDashboardWidgetTopLevel = ( { data } ) => {
 			</div>
 		</Fragment>
 	);
-};
+}
 
 export default withData(
 	LegacySearchConsoleDashboardWidgetTopLevel,
