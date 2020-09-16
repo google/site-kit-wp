@@ -799,9 +799,9 @@ final class Authentication {
 			array(
 				'content'         => function() {
 					return sprintf(
-						'<p>%s <a href="%s"></a></p>',
+						'<p>%s <a href="%s">%s</a></p>',
 						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you\'ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
-						esc_url( $this->google_proxy->get_connect_user_url() ),
+						esc_url( $this->get_proxy_connect_user_url() ),
 						esc_html__( 'Reconnect', 'google-site-kit' )
 					);
 				},
