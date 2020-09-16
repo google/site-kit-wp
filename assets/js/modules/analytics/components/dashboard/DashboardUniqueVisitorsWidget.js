@@ -33,7 +33,7 @@ import PreviewBlock from '../../../../components/preview-block';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
-import { getSiteKitAdminURL, changeToPercent, readableLargeNumber } from '../../../../util';
+import { changeToPercent, readableLargeNumber } from '../../../../util';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
@@ -45,9 +45,15 @@ function DashboardUniqueVisitorsWidget() {
 		loading,
 		error,
 		sparkData,
+		serviceURL,
 		visitorsData,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
+
+		const accountID = store.getAccountID();
+		const profileID = store.getProfileID();
+		const internalWebPropertyID = store.getInternalWebPropertyID();
+		let path = `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
 		const commonArgs = {
 			dateRange: select( CORE_USER ).getDateRange(),
 		};
@@ -55,6 +61,8 @@ function DashboardUniqueVisitorsWidget() {
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			commonArgs.url = url;
+			const parsedURL = new URL( url );
+			path += `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
 		}
 
 		const sparklineArgs = {
@@ -85,6 +93,7 @@ function DashboardUniqueVisitorsWidget() {
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
+			serviceURL: store.getServiceURL( { path } ),
 			visitorsData: store.getReport( args ),
 		};
 	} );
@@ -134,7 +143,8 @@ function DashboardUniqueVisitorsWidget() {
 			changeDataUnit="%"
 			source={ {
 				name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
-				link: getSiteKitAdminURL( 'googlesitekit-module-analytics', {} ),
+				link: serviceURL,
+				external: true,
 			} }
 			sparkline={
 				sparkLineData &&
