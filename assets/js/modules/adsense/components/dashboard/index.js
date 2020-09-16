@@ -23,6 +23,6 @@ export { default as DashboardAdSenseTopPages } from './DashboardAdSenseTopPages'
 export { default as DashboardZeroData } from './DashboardZeroData';
 export { default as DashboardSummaryWidget } from './DashboardSummaryWidget';
 export { default as DashboardTopEarningPagesWidget } from './DashboardTopEarningPagesWidget';
-export { default as LegacyAdSenseDashboardMainSummaryAdSenseDashboardMainSummary } from './LegacyAdSenseDashboardMainSummary';
+export { default as LegacyAdSenseDashboardMainSummary } from './LegacyAdSenseDashboardMainSummary';
 export { default as LegacyDashboardAdSenseTopEarningPagesSmall } from './LegacyDashboardAdSenseTopEarningPagesSmall';
 export { default as LegacyDashboardEarnings } from './LegacyDashboardEarnings';
