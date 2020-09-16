@@ -1012,7 +1012,7 @@ final class Authentication {
 	}
 
 	/**
-	 * Sets connected proxy URL if the current user has setup capabilities.
+	 * Sets the current site URL if the current user has setup capabilities.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -1023,7 +1023,8 @@ final class Authentication {
 	}
 
 	/**
-	 * Checks connected proxy URL.
+	 * Checks whether the current site URL has changed or not. If the URL has been changed,
+	 * it disconnects the Site Kit and sets the disconnected reason to "connected_url_mismatch".
 	 *
 	 * @since n.e.x.t
 	 */
@@ -1055,22 +1056,22 @@ final class Authentication {
 	}
 
 	/**
-	 * Handles user connection actions.
+	 * Handles user connection action and redirects to the proxy connection page.
 	 *
 	 * @since n.e.x.t
 	 */
 	private function handle_proxy_connect_user() {
 		if ( ! current_user_can( Permissions::SETUP ) ) {
-			wp_die( 'Insufficient permissions' );
+			wp_die( 'You have insufficient permissions to connect Site Kit.' );
 		}
 
 		if ( ! $this->credentials->using_proxy() ) {
-			wp_die( 'Doing it wrong' );
+			wp_die( 'Site Kit has to be connected using proxy.' );
 		}
 
 		$nonce = filter_input( INPUT_GET, 'nonce' ); // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.MissingThirdParameter
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_CONNECT_USER ) ) {
-			wp_die();
+			wp_die( 'You are not allowed to connect Site Kit. Please, try again later.' );
 		}
 
 		if ( $this->disconnected_reason->get() === self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ) {
@@ -1086,7 +1087,7 @@ final class Authentication {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string An URL for googlesitekit_proxy_connect_user action with a nonce.
+	 * @return string An URL for googlesitekit_proxy_connect_user action protected with a nonce.
 	 */
 	private function get_proxy_connect_user_url() {
 		return add_query_arg(
