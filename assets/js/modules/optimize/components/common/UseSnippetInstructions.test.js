@@ -26,7 +26,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_MODULE } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import fixtures from '../../../../googlesitekit/modules/datastore/fixtures.json';
@@ -38,7 +38,7 @@ describe( 'UseSnippetInstructions', () => {
 		// Receive empty settings & modules to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
-		registry.dispatch( CORE_MODULE ).receiveGetModules( [] );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
 	} );
 
 	afterEach( () => {
@@ -47,7 +47,7 @@ describe( 'UseSnippetInstructions', () => {
 
 	it( 'should render with analytics active and no useSnippet', async () => {
 		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-		registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( fixtures );
 		const { container } = render( <UseSnippetInstructions />, { registry } );
 
 		const selectedText = container.querySelector( 'p' );
@@ -65,7 +65,7 @@ describe( 'UseSnippetInstructions', () => {
 
 	it( 'should not render with analytics active and a useSnippet', async () => {
 		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-		registry.dispatch( CORE_MODULE ).receiveGetModules( fixtures );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( fixtures );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 
 		const { container } = render( <UseSnippetInstructions />, { registry } );
@@ -81,7 +81,7 @@ describe( 'UseSnippetInstructions', () => {
 		} );
 
 		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
-		registry.dispatch( CORE_MODULE ).receiveGetModules( newFixtures );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( newFixtures );
 		registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
 
 		const { container } = render( <UseSnippetInstructions />, { registry } );
