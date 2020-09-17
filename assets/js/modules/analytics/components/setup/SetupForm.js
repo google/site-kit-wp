@@ -42,7 +42,7 @@ import {
 	PropertySelect,
 	ProfileNameTextField,
 } from '../common';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { trackEvent } from '../../../../util';
 import { isPermissionScopeError } from '../../../../util/errors';
 const { useSelect, useDispatch } = Data;
@@ -81,7 +81,7 @@ export default function SetupForm( { finishSetup } ) {
 
 	return (
 		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
-			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (

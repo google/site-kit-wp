@@ -190,6 +190,41 @@ export function createErrorStore() {
 		},
 
 		/**
+		 * Retrieves all the errors from the state.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {Object} Error object if exists, otherwise undefined.
+		 */
+		getErrors( state ) {
+			const { error, errors } = state;
+			let combinedErrors = [];
+
+			if ( undefined !== errors ) {
+				const errorValues = Object.values( errors );
+				if ( Array.isArray( errorValues ) && errorValues.length > 0 ) {
+					const errorsArray = errorValues.map( ( singleError ) => [ singleError.code, singleError ] );
+					const errorsMap = new Map( errorsArray );
+
+					combinedErrors = [ ...errorsMap.values() ];
+				}
+			}
+
+			if ( undefined !== error ) {
+				const errorArray = Object.values( error );
+				if ( errorArray.length > 0 && 'code' in error && 'message' in error ) {
+					const errorIndex = combinedErrors.findIndex( ( err ) => err.code === error.code && err.message === error.message );
+					if ( errorIndex === -1 ) {
+						combinedErrors.push( error );
+					}
+				}
+			}
+
+			return combinedErrors;
+		},
+
+		/**
 		 * Determines whether the datastore has errors or not.
 		 *
 		 * @since 1.15.0
@@ -198,8 +233,7 @@ export function createErrorStore() {
 		 * @return {boolean} TRUE if the datastore has errors, otherwise FALSE.
 		 */
 		hasErrors( state ) {
-			const { errors } = state;
-			return Object.keys( errors ).some( ( key ) => !! errors[ key ] );
+			return selectors.getErrors( state ).length > 0;
 		},
 	};
 

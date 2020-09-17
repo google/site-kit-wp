@@ -26,9 +26,9 @@ import { useCallback } from '@wordpress/element';
  */
 import { STORE_NAME } from '../../datastore/constants';
 import { errorToStatus } from '../../util/status';
-import StoreErrorNotice from '../.././../../components/StoreErrorNotice';
+import StoreErrorNotices from '../.././../../components/StoreErrorNotices';
 
 export default function ErrorNotice() {
 	const shouldDisplayError = useCallback( ( error ) => undefined === errorToStatus( error ), [] );
-	return <StoreErrorNotice moduleSlug="adsense" storeName={ STORE_NAME } shouldDisplayError={ shouldDisplayError } />;
+	return <StoreErrorNotices moduleSlug="adsense" storeName={ STORE_NAME } shouldDisplayError={ shouldDisplayError } />;
 }

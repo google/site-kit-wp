@@ -37,7 +37,7 @@ import {
 	FormInstructions,
 	WebContainerSelect,
 } from '../common';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -69,7 +69,7 @@ export default function SetupForm( { finishSetup } ) {
 
 	return (
 		<form className="googlesitekit-tagmanager-setup__form" onSubmit={ submitForm }>
-			<StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
 			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">

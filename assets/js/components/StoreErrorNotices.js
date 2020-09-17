@@ -1,5 +1,5 @@
 /**
- * StoreErrorNotice component.
+ * StoreErrorNotices component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -25,23 +25,33 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ErrorNotice from '../components/ErrorNotice';
+import { isPermissionScopeError } from '../util/errors';
+import ErrorNotice from './ErrorNotice';
 const { useSelect } = Data;
 
-function StoreErrorNotice( { moduleSlug, storeName, shouldDisplayError } ) {
-	const error = useSelect( ( select ) => select( storeName ).getError() );
+function StoreErrorNotices( { moduleSlug, storeName, shouldDisplayError } ) {
+	const errors = useSelect( ( select ) => select( storeName ).getErrors() );
 
-	return <ErrorNotice error={ error } shouldDisplayError={ shouldDisplayError } moduleSlug={ moduleSlug } />;
+	errors.map( ( error, key ) => {
+		// Do not display if no error, or if the error is for missing scopes.
+		if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
+			return null;
+		}
+
+		return <ErrorNotice moduleSlug={ moduleSlug } error={ error } shouldDisplayError={ shouldDisplayError } key={ key } />;
+	} );
+
+	return null;
 }
 
-StoreErrorNotice.propTypes = {
+StoreErrorNotices.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
 	storeName: PropTypes.string.isRequired,
 	shouldDisplayError: PropTypes.func,
 };
 
-StoreErrorNotice.defaultProps = {
+StoreErrorNotices.defaultProps = {
 	shouldDisplayError: () => true,
 };
 
-export default StoreErrorNotice;
+export default StoreErrorNotices;
