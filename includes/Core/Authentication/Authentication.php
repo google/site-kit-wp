@@ -1017,9 +1017,7 @@ final class Authentication {
 	 * @since n.e.x.t
 	 */
 	private function set_connected_proxy_url() {
-		if ( current_user_can( Permissions::SETUP ) ) {
-			$this->connected_proxy_url->set( home_url() );
-		}
+		$this->connected_proxy_url->set( home_url() );
 	}
 
 	/**
@@ -1029,6 +1027,14 @@ final class Authentication {
 	 * @since n.e.x.t
 	 */
 	private function check_connected_proxy_url() {
+		if ( ! $this->connected_proxy_url->has() ) {
+			$this->set_connected_proxy_url();
+		}
+
+		if ( $this->connected_proxy_url->matches_url( home_url() ) ) {
+			return;
+		}
+
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			return;
 		}
@@ -1049,10 +1055,8 @@ final class Authentication {
 			return;
 		}
 
-		if ( ! $this->connected_proxy_url->matches_url( home_url() ) ) {
-			$this->disconnect();
-			$this->disconnected_reason->set( self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH );
-		}
+		$this->disconnect();
+		$this->disconnected_reason->set( self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH );
 	}
 
 	/**

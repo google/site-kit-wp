@@ -37,10 +37,12 @@ class AuthenticationTest extends TestCase {
 
 	public function test_register() {
 		remove_all_actions( 'init' );
+		remove_all_actions( 'admin_init' );
 		remove_all_actions( 'admin_head' );
 		remove_all_filters( 'googlesitekit_admin_data' );
-		remove_all_filters( 'googlesitekit_setup_data' );
 		remove_all_filters( 'googlesitekit_admin_notices' );
+		remove_all_filters( 'googlesitekit_authorize_user' );
+		remove_all_filters( 'googlesitekit_setup_data' );
 		remove_all_actions( OAuth_Client::CRON_REFRESH_PROFILE_DATA );
 
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -49,9 +51,11 @@ class AuthenticationTest extends TestCase {
 
 		// Authentication::handle_oauth is invoked on init but we cannot test it due to use of filter_input.
 		$this->assertTrue( has_action( 'init' ) );
-
+		$this->assertTrue( has_action( 'admin_init' ) );
 		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_SETUP ) );
+		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER ) );
 		$this->assertTrue( has_action( OAuth_Client::CRON_REFRESH_PROFILE_DATA ) );
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
 
 		$this->assertAdminDataExtended();
 		$this->assertSetupDataExtended();
@@ -442,6 +446,27 @@ class AuthenticationTest extends TestCase {
 		}
 	}
 
+	public function test_get_proxy_connect_user_url() {
+		$class  = new \ReflectionClass( Authentication::class );
+		$method = $class->getMethod( 'get_proxy_connect_user_url' );
+		$method->setAccessible( true );
+
+		$url = $method->invokeArgs(
+			new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
+			array()
+		);
+
+		$this->assertNotEmpty( filter_var( $url, FILTER_VALIDATE_URL ) );
+
+		$args = array();
+		parse_str( wp_parse_url( $url, PHP_URL_QUERY ), $args );
+
+		$this->assertArrayHasKey( 'action', $args );
+		$this->assertArrayHasKey( 'nonce', $args );
+
+		$this->assertEquals( Google_Proxy::ACTION_CONNECT_USER, $args['action'] );
+	}
+
 	protected function get_user_option_keys() {
 		return array(
 			OAuth_Client::OPTION_ACCESS_TOKEN,
@@ -456,4 +481,5 @@ class AuthenticationTest extends TestCase {
 			Verification_Meta::OPTION,
 		);
 	}
+
 }

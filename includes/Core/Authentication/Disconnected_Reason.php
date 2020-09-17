@@ -26,4 +26,14 @@ class Disconnected_Reason extends User_Setting {
 	 */
 	const OPTION = 'googlesitekit_disconnected_reason';
 
+	/**
+	 * Registers the setting in WordPress.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register() {
+		parent::register();
+		add_action( 'googlesitekit_authorize_user', array( $this, 'delete' ) );
+	}
+
 }
