@@ -16,12 +16,20 @@
  * limitations under the License.
  */
 
-import { getAccountDefaults } from './account';
+/**
+ * Internal dependencies
+ */
+import * as accountUtils from './account';
 
 describe( 'getAccountDefaults', () => {
 	const siteURL = 'https://example.com/';
 	const siteName = 'Example Site';
 	const timezone = 'Europe/Kiev';
+	const fallbackTimezone = 'Europe/Berlin';
+
+	// The fallback timezone is used here to avoid location-sensitive results,
+	// but also because the default fallback will raise errors otherwise due to the node environment.
+	const getAccountDefaults = ( args ) => accountUtils.getAccountDefaults( args, fallbackTimezone );
 
 	describe( 'accountName', () => {
 		it( 'should be equal to siteName when siteName is not empty', () => {
@@ -64,8 +72,8 @@ describe( 'getAccountDefaults', () => {
 			expect( getAccountDefaults( { siteName, siteURL, timezone } ).timezone ).toBe( 'Europe/Kiev' );
 		} );
 
-		it( 'should use a local timezone when the provided timezone does not have an entry in countryCodesByTimezone', () => {
-			expect( getAccountDefaults( { siteName, siteURL, timezone: 'UTC' } ).timeZone ).not.toBe( 'UTC' );
+		it( 'should use the fallback timezone when the provided timezone does not have an entry in countryCodesByTimezone', () => {
+			expect( getAccountDefaults( { siteName, siteURL, timezone: 'UTC' } ).timezone ).toBe( fallbackTimezone );
 		} );
 	} );
 } );
