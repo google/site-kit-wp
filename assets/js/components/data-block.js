@@ -125,7 +125,6 @@ class DataBlock extends Component {
 								/>
 							</span>
 							<span className="googlesitekit-data-block__value">
-								{ `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit } ${ period }` }
 								{ period && sprintf( period, `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit }` ) }
 								{ ! period && `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit }` }
 							</span>
