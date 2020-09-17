@@ -21,7 +21,6 @@
  */
 import {
 	createTestRegistry,
-	muteConsole,
 	untilResolved,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -165,10 +164,10 @@ describe( 'core/site site info', () => {
 				expect( global[ baseInfoVar ] ).toEqual( undefined );
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
-				muteConsole( 'error' );
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
 				expect( info ).toBe( INITIAL_STATE.siteInfo );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -208,10 +207,10 @@ describe( 'core/site site info', () => {
 				expect( global[ baseInfoVar ] ).toEqual( undefined );
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
-				muteConsole( 'error' );
 				const result = registry.select( STORE_NAME )[ selector ]();
 
 				expect( result ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -248,10 +247,10 @@ describe( 'core/site site info', () => {
 				expect( global[ baseInfoVar ] ).toEqual( undefined );
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
-				muteConsole( 'error' );
 				const result = registry.select( STORE_NAME ).isAMP();
 
 				expect( result ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 

@@ -75,25 +75,6 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
 }
 
 /**
- * Mute a given console during tests.
- *
- * Use this to mute expect console output during tests for things like
- * API fetch errors or other things you expect to log to console but don't
- * want appearing in the jest output.
- *
- * @since 1.5.0
- * @private
- *
- * @param {string} type  Type of console to mute (one of: `'error'`, `'warn'`, `'log'`, `'info'`, or `'debug'`)
- * @param {number} times Number of times to mute console output perform resuming.
- */
-export const muteConsole = ( type = 'error', times = 1 ) => {
-	Array.from( { length: times } ).forEach( () => {
-		global.console[ type ].mockImplementationOnce( () => jest.fn() );
-	} );
-};
-
-/**
  * Mutes a fetch request to the given URL once.
  *
  * Useful for mocking a request for the purpose of preventing a fetch error

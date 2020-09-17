@@ -17,29 +17,20 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetchMock from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import PropertySelect from './PropertySelect';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
-
-// Mock apiFetch so we know if it's called.
-jest.mock( '@wordpress/api-fetch' );
-apiFetchMock.mockImplementation( ( ...args ) => {
-	// eslint-disable-next-line no-console
-	console.warn( 'apiFetch', ...args );
-} );
+import { fireEvent, muteFetch, render, act } from '../../../../../../tests/js/test-utils';
 
 const setupRegistry = ( { dispatch } ) => {
-	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
+	const { properties, profiles } = fixtures.accountsPropertiesProfiles;
+	const propertyID = properties[ 0 ].id;
+	const accountID = properties[ 0 ].accountId;
 	dispatch( STORE_NAME ).setAccountID( accountID );
 	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
+	dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( null );
 };
 
@@ -53,16 +44,14 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
-	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
+	const { properties } = fixtures.accountsPropertiesProfiles;
+	const accountID = properties[ 0 ].accountId;
 	dispatch( STORE_NAME ).setSettings( {} );
 	dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( null );
 };
 
 describe( 'PropertySelect', () => {
-	afterEach( () => apiFetchMock.mockClear() );
-	afterAll( () => jest.restoreAllMocks() );
-
 	it( 'should render an option for each analytics property of the currently selected account.', async () => {
 		const { getAllByRole } = render( <PropertySelect />, { setupRegistry } );
 
@@ -112,6 +101,7 @@ describe( 'PropertySelect', () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
 		const originalPropertyID = registry.select( STORE_NAME ).getPropertyID();
 
+		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, [] );
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
@@ -129,6 +119,7 @@ describe( 'PropertySelect', () => {
 		const properties = registry.select( STORE_NAME ).getProperties( accountID );
 		const targetProperty = properties[ 1 ];
 
+		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, [] );
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
