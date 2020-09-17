@@ -31,6 +31,12 @@ describe( 'getAccountDefaults', () => {
 	// but also because the default fallback will raise errors otherwise due to the node environment.
 	const getAccountDefaults = ( args ) => accountUtils.getAccountDefaults( args, fallbackTimezone );
 
+	it( 'should throw an error if siteURL is invalid', () => {
+		expect(
+			() => getAccountDefaults( { siteName, siteURL: undefined, timezone } )
+		).toThrow( 'a valid siteURL is required.' );
+	} );
+
 	describe( 'accountName', () => {
 		it( 'should be equal to siteName when siteName is not empty', () => {
 			expect( getAccountDefaults( { siteName, siteURL, timezone } ).accountName ).toBe( 'Example Site' );
@@ -48,10 +54,6 @@ describe( 'getAccountDefaults', () => {
 
 		it( 'should be domain name + path when the siteURL contains non-empty path', () => {
 			expect( getAccountDefaults( { siteName: '', siteURL: 'https://example.com/subsite-slug/', timezone } ).propertyName ).toBe( 'example.com/subsite-slug' );
-		} );
-
-		it( 'should throw an error if siteURL is invalid', () => {
-			expect( () => getAccountDefaults( { siteName, siteURL: undefined, timezone } ) ).toThrow( 'a valid siteURL is required.' );
 		} );
 	} );
 
