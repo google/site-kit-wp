@@ -20,7 +20,7 @@ namespace Google\Site_Kit\Core\Storage;
 interface User_Aware_Interface {
 
 	/**
-	 * Gets the current user ID.
+	 * Gets the associated user ID.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -29,7 +29,7 @@ interface User_Aware_Interface {
 	public function get_user_id();
 
 	/**
-	 * Switches users.
+	 * Switches the current user to the one with the given ID.
 	 *
 	 * @since n.e.x.t
 	 *
