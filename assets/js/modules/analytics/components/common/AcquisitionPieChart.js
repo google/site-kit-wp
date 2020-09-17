@@ -66,11 +66,10 @@ function AcquisitionPieChart( { data, args, source } ) {
 
 	let sourceMessage = '';
 	if ( source ) {
-		sourceMessage = sprintf(
-			/* translators: %1$s: URL to Analytics Module page in Site Kit Admin, %2$s: Analytics (Service Name) */
-			__( 'Source: <a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="%1$s">%2$s</a>', 'google-site-kit' ),
+		sourceMessage = __( 'Source:', 'google-site-kit' ) + sprintf(
+			' <a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="%1$s">%2$s</a>',
 			getSiteKitAdminURL( 'googlesitekit-module-analytics' ),
-			_x( 'Analytics', 'Service name', 'google-site-kit' ),
+			_x( 'Analytics', 'Service name', 'google-site-kit' )
 		);
 	}
 

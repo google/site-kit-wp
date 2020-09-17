@@ -41,6 +41,7 @@ import {
 	trackEvent,
 } from '../../../../util';
 import CTA from '../../../../components/notifications/cta';
+import getNoDataComponent from '../../../../components/notifications/nodata';
 
 class LegacySearchConsoleDashboardWidgetTopLevel extends Component {
 	render() {
@@ -80,12 +81,7 @@ class LegacySearchConsoleDashboardWidgetTopLevel extends Component {
 					mdc-layout-grid__cell--span-4-tablet
 					mdc-layout-grid__cell--span-6-desktop
 				">
-					<CTA
-						title={ __( 'Search Console Data Empty', 'google-site-kit' ) }
-						description={ __( 'Search Console data is not yet available, please check back later.', 'google-site-kit' ) }
-						ctaLink={ '' }
-						ctaLabel={ '' }
-					/>
+					{ getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) ) }
 				</div>
 			);
 		}

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { useCallback, useState, useEffect } from '@wordpress/element';
 
 /**
@@ -77,7 +77,7 @@ export default function AccountCreate() {
 			setValues( FORM_ACCOUNT_CREATE, {
 				accountName: siteName,
 				propertyName: hostname,
-				profileName: __( 'All Web Site Data', 'google-site-kit' ),
+				profileName: _x( 'All Web Site Data', 'default Analytics view name', 'google-site-kit' ),
 				countryCode: countryCodesByTimezone[ timezone ],
 				timezone,
 			} );
