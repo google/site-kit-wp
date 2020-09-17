@@ -257,10 +257,7 @@ const baseReducer = ( state, { type, payload } ) => {
 				...state,
 				clientDefinitions: {
 					...state.clientDefinitions,
-					[ slug ]: {
-						...( state.clientDefinitions[ slug ] || {} ),
-						...settings,
-					},
+					[ slug ]: settings,
 				},
 			};
 		}
