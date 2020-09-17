@@ -302,6 +302,19 @@ describe( 'core/modules modules', () => {
 					registry.dispatch( STORE_NAME ).registerModule();
 				} ).toThrow( 'module slug is required' );
 			} );
+
+			it( 'does not allow the same module to be registered more than once on the client', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
+
+				registry.dispatch( STORE_NAME ).registerModule( 'test-module', { name: 'Original Name' } );
+
+				expect( console ).not.toHaveWarned();
+
+				registry.dispatch( STORE_NAME ).registerModule( 'test-module', { name: 'New Name' } );
+
+				expect( store.getState().clientDefinitions[ 'test-module' ].name ).toBe( 'Original Name' );
+				expect( console ).toHaveWarned();
+			} );
 		} );
 
 		describe( 'fetchGetModules', () => {

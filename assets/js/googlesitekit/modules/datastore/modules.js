@@ -248,6 +248,11 @@ const baseReducer = ( state, { type, payload } ) => {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
 
+			if ( state.clientDefinitions[ slug ] ) {
+				global.console.warn( `Could not register module with slug "${ slug }". Module "${ slug }" is already registered.` );
+				return state;
+			}
+
 			return {
 				...state,
 				clientDefinitions: {
