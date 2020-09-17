@@ -42,7 +42,6 @@ global._googlesitekitLegacyData = {
 	},
 };
 
-// eslint-disable-next-line no-undef
 global._googlesitekitUserData = {
 	user: {},
 };
