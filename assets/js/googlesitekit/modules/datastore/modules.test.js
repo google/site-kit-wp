@@ -22,7 +22,6 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	unsubscribeFromAll,
 	untilResolved,
@@ -133,7 +132,6 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).activateModule( slug );
 
 				// Ensure the proper body parameters were sent.
@@ -156,6 +154,7 @@ describe( 'core/modules modules', () => {
 				// activation request failed.
 				expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 				expect( isActiveAfter ).toEqual( false );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -244,7 +243,6 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).deactivateModule( slug );
 
 				// Ensure the proper body parameters were sent.
@@ -267,6 +265,7 @@ describe( 'core/modules modules', () => {
 				// deactivation request failed.
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isActiveAfter ).toEqual( true );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -374,7 +373,6 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getModules();
 
 				await untilResolved( registry, STORE_NAME ).getModules();
@@ -455,7 +453,6 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getModule( slug );
 
 				await untilResolved( registry, STORE_NAME ).getModules();
@@ -463,7 +460,8 @@ describe( 'core/modules modules', () => {
 				const module = registry.select( STORE_NAME ).getModule( slug );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( module ).toBeUndefined();
+				expect( module ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {
