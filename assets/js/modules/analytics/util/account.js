@@ -37,17 +37,19 @@ import { countryCodesByTimezone } from './countries-timezones';
  *
  * @since n.e.x.t
  *
- * @param {Object} args          Site information.
- * @param {string} args.siteName Site name.
- * @param {string} args.siteURL  Site home URL.
- * @param {string} args.timezone Site timezone.
+ * @param {Object} args              Site information.
+ * @param {string} args.siteName     Site name.
+ * @param {string} args.siteURL      Site home URL.
+ * @param {string} args.timezone     Site timezone.
+ * @param {string} _fallbackTimezone Fallback timezone. Defaults to local timezone.
+ *                                   This parameter should only be used for providing a deterministic fallback in tests.
  * @return {Object} Default values.
  */
-export function getAccountDefaults( { siteName, siteURL, timezone } ) {
+export function getAccountDefaults( { siteName, siteURL, timezone }, _fallbackTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone ) {
 	invariant( isURL( siteURL ), 'a valid siteURL is required.' );
 
 	const { hostname, pathname } = new URL( siteURL );
-	const tz = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const tz = countryCodesByTimezone[ timezone ] ? timezone : _fallbackTimezone;
 
 	return {
 		accountName: siteName || hostname,
