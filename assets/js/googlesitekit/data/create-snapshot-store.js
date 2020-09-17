@@ -148,7 +148,7 @@ export const createSnapshotStore = ( storeName ) => {
 			}
 
 			default: {
-				return { ...state };
+				return state;
 			}
 		}
 	};

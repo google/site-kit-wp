@@ -284,11 +284,11 @@ const baseReducer = ( state, { type, payload } ) => {
 				};
 			}
 
-			return { ...state };
+			return state;
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };

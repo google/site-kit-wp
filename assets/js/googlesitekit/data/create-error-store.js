@@ -75,7 +75,7 @@ export function createErrorStore() {
 		switch ( type ) {
 			case RECEIVE_ERROR: {
 				const { baseName, args, error } = payload;
-				const newState = { ...state };
+				const newState = state;
 
 				if ( baseName ) {
 					newState.errors = {
@@ -101,7 +101,7 @@ export function createErrorStore() {
 			}
 
 			default: {
-				return { ...state };
+				return state;
 			}
 		}
 	}

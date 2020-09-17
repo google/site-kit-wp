@@ -98,7 +98,7 @@ const baseReducer = ( state, { type } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };

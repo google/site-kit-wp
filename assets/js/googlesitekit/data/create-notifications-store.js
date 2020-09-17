@@ -157,7 +157,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 						global.console.warn( `Cannot remove server-side notification with ID "${ id }"; this may be changed in a future release.` );
 					}
 
-					return { ...state };
+					return state;
 				}
 
 				const newNotifications = { ...state.clientNotifications };
@@ -170,7 +170,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			}
 
 			default: {
-				return { ...state };
+				return state;
 			}
 		}
 	};

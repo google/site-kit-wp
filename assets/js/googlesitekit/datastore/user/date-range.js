@@ -59,7 +59,7 @@ export function reducer( state, { type, payload } ) {
 				dateRange: payload.slug,
 			};
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 }
