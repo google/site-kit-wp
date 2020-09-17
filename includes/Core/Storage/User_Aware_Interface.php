@@ -20,7 +20,7 @@ namespace Google\Site_Kit\Core\Storage;
 interface User_Aware_Interface {
 
 	/**
-	 * Gets user ID.
+	 * Gets the current user ID.
 	 *
 	 * @since n.e.x.t
 	 *
