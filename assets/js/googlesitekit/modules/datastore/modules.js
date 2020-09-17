@@ -45,13 +45,17 @@ const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
 const REGISTER_MODULE = 'REGISTER_MODULE';
 
 const moduleDefaults = {
+	slug: '',
 	name: '',
 	description: '',
-	icon: null,
-	order: 10,
 	homepage: null,
+	internal: false,
 	active: false,
 	connected: false,
+	dependencies: [],
+	dependants: [],
+	order: 10,
+	icon: null,
 	settingsComponent: DefaultModuleSettings,
 };
 
