@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
-	muteConsole,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from './constants';
@@ -191,16 +190,10 @@ describe( 'core/widgets Widgets', () => {
 					component: WidgetOne,
 				} );
 
-				// Mute warning about duplicate slug since we expect it below anyway.
-				muteConsole( 'warn' );
-
-				// Expect console warning about duplicate slug.
-				const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
 				registry.dispatch( STORE_NAME ).registerWidget( slug, {
 					component: WidgetOneRedone,
 				} );
-				expect( consoleWarnSpy ).toHaveBeenCalledWith( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
-				consoleWarnSpy.mockClear();
+				expect( console ).toHaveWarnedWith( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
 
 				const registryKey = registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
 

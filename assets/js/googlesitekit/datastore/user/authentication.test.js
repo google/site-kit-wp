@@ -22,7 +22,6 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
@@ -129,7 +128,6 @@ describe( 'core/user authentication', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAuthentication();
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
@@ -140,6 +138,7 @@ describe( 'core/user authentication', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( authentication ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -214,7 +213,6 @@ describe( 'core/user authentication', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME )[ selector ]();
 				await untilResolved( registry, STORE_NAME ).getAuthentication();
 
@@ -224,6 +222,7 @@ describe( 'core/user authentication', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( value ).toBeUndefined();
 				expect( error ).toEqual( response );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
