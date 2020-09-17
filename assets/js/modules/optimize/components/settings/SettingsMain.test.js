@@ -19,11 +19,33 @@
 /**
  * Internal dependencies
  */
-import { render, fireEvent, waitFor } from '../../../../../../tests/js/test-utils';
+import {
+	render,
+	fireEvent,
+	waitFor,
+	createTestRegistry,
+	unsubscribeFromAll,
+} from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_MODULE } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsMain from './SettingsMain';
 
 describe( 'SettingsMain', () => {
+	let registry;
+	beforeEach( () => {
+		registry = createTestRegistry();
+		// Receive empty settings & modules to prevent unexpected fetch by resolver.
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
+		registry.dispatch( CORE_MODULE ).receiveGetModules( [] );
+	} );
+
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
+
 	const initialSettings = {
 		optimizeID: 'OPT-1234567',
 	};
@@ -33,11 +55,9 @@ describe( 'SettingsMain', () => {
 	};
 
 	it( 'rolls back settings if settings have changed and is not editing', async () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
-		};
+		registry.dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 
-		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
+		const { rerender, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { registry } );
 		const { select } = registry;
 
 		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );
@@ -54,11 +74,9 @@ describe( 'SettingsMain', () => {
 	} );
 
 	it( 'does not roll back settings if settings have changed and is editing', async () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
-		};
+		registry.dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 
-		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
+		const { rerender, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { registry } );
 		const { select } = registry;
 
 		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );

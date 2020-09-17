@@ -22,7 +22,7 @@
 import CompatibilityChecks, { AMP_PROJECT_TEST_URL } from './compatibility-checks';
 import { render, waitFor } from '../../../../tests/js/test-utils';
 import { Fragment } from 'react';
-import { muteFetch, muteConsole } from '../../../../tests/js/utils';
+import { muteFetch } from '../../../../tests/js/utils';
 
 const compatibilityChildren = ( { complete, inProgressFeedback, CTAFeedback } ) => (
 	<Fragment>
@@ -66,8 +66,6 @@ describe( 'CompatibilityChecks', () => {
 		// Mock request to develop-plugin when error is thrown.
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/ );
 
-		muteConsole( 'error' );
-
 		const { container } = render(
 			<CompatibilityChecks>
 				{ compatibilityChildren }
@@ -80,6 +78,7 @@ describe( 'CompatibilityChecks', () => {
 
 		// Expect neither error nor incomplete text to be displayed.
 		expect( container ).toHaveTextContent( 'Your site may not be ready for Site Kit' );
+		expect( console ).toHaveErrored();
 	} );
 
 	it( 'should make API requests to "setup-checks, health-checks and AMP Project test URL', async () => {

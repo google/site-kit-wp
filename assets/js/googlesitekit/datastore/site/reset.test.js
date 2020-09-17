@@ -21,7 +21,6 @@
  */
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -107,7 +106,6 @@ describe( 'core/site reset', () => {
 					{ body: JSON.stringify( response ), status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).reset();
 				await subscribeUntil( registry, () => registry.select( STORE_NAME ).isDoingReset() === false );
 
@@ -116,6 +114,7 @@ describe( 'core/site reset', () => {
 				// After a failed reset, `connection` should still exist.
 				const connection = registry.select( STORE_NAME ).getConnection();
 				expect( connection ).toEqual( { connected: true, resettable: true } );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

@@ -26,7 +26,6 @@ import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/c
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -75,8 +74,6 @@ describe( 'modules/analytics accounts', () => {
 
 				registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
 
-				// Silence expected API errors.
-				muteConsole( 'error' ); // Request will log an error.
 				await registry.dispatch( STORE_NAME ).createAccount();
 
 				// Ensure the proper body parameters were sent.
@@ -114,10 +111,10 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
-				muteConsole( 'error' ); // Request will log an error.
 				await registry.dispatch( STORE_NAME ).createAccount();
 
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'createAccount' ) ).toMatchObject( response );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -252,7 +249,6 @@ describe( 'modules/analytics accounts', () => {
 
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 				await untilResolved( registry, STORE_NAME ).getAccounts();
 
@@ -260,6 +256,7 @@ describe( 'modules/analytics accounts', () => {
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 				expect( accounts ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'passes existing tag ID when fetching accounts', async () => {
