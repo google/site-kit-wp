@@ -67,14 +67,6 @@ class Connected_Proxy_URL extends Setting {
 
 			$normalized  = ! empty( $url['host'] ) ? $url['host'] : '';
 			$normalized .= ! empty( $url['path'] ) ? $url['path'] : '/';
-			if ( ! empty( $url['query'] ) ) {
-				$query = array();
-
-				parse_str( $url['query'], $query );
-				ksort( $query );
-
-				$normalized .= '?' . http_build_query( $query );
-			}
 
 			return $normalized;
 		};
