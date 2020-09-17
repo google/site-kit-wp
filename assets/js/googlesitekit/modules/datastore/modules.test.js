@@ -377,6 +377,8 @@ describe( 'core/modules modules', () => {
 
 				await untilResolved( registry, STORE_NAME ).getModules();
 
+				expect( console ).toHaveErrored();
+
 				const modules = registry.select( STORE_NAME ).getModules();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
