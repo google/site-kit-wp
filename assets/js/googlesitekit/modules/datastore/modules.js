@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import mapValues from 'lodash/mapValues';
 import merge from 'lodash/merge';
 import invariant from 'invariant';
 
@@ -302,14 +301,20 @@ const baseSelectors = {
 		// but only for keys whose values are not `undefined`.
 		const modules = merge( {}, serverDefinitions, clientDefinitions );
 
-		return mapValues( modules, ( module, slug ) => {
-			return {
-				...moduleDefaults,
-				name: slug, // Ensure `name` is not empty.
-				...module,
-				slug,
-			};
-		} );
+		return Object.keys( modules )
+			.map( ( slug ) => {
+				return {
+					...moduleDefaults,
+					name: slug, // Ensure `name` is not empty.
+					...modules[ slug ],
+					slug,
+				};
+			} )
+			.sort( ( a, b ) => a.order - b.order )
+			.reduce( ( acc, module ) => {
+				return { ...acc, [ module.slug ]: module };
+			}, {} )
+		;
 	},
 
 	/**

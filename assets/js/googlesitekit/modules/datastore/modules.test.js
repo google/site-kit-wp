@@ -419,6 +419,17 @@ describe( 'core/modules modules', () => {
 
 				expect( modules[ 'test-module' ] ).toMatchObject( { name: 'Server Name', description: 'Client description' } );
 			} );
+
+			it( 'returns an object with keys set in module order', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
+				registry.dispatch( STORE_NAME ).registerModule( 'second-module', { order: 2 } );
+				registry.dispatch( STORE_NAME ).registerModule( 'first-module', { order: 1 } );
+				registry.dispatch( STORE_NAME ).registerModule( 'third-module', { order: 3 } );
+
+				const modules = registry.select( STORE_NAME ).getModules();
+
+				expect( Object.keys( modules ) ).toEqual( [ 'first-module', 'second-module', 'third-module' ] );
+			} );
 		} );
 
 		describe( 'getModule', () => {
