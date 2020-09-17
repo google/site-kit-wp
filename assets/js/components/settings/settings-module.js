@@ -252,7 +252,11 @@ class SettingsModule extends Component {
 												mdc-layout-grid__cell
 												mdc-layout-grid__cell--span-12
 											">
-												{ __( 'Error:', 'google-site-kit' ) } { error.errorMsg }
+												{ sprintf(
+													/* translators: %s: Error message */
+													__( 'Error: %s', 'google-site-kit' ),
+													error.errorMsg
+												) }
 											</div>
 										</div>
 									</div>
@@ -445,10 +449,11 @@ class SettingsModule extends Component {
 							handleConfirm={ this.handleConfirmRemoveModule }
 							dependentModules={ dependentModules
 								? sprintf(
-									/* translators: %s: module name */
-									__( 'these active modules depend on %s and will also be disconnected: ', 'google-site-kit' ),
-									name
-								) + dependentModules : false
+									/* translators: %1$s: module name, %2$s: list of dependent modules */
+									__( 'these active modules depend on %1$s and will also be disconnected: %2$s', 'google-site-kit' ),
+									name,
+									dependentModules
+								) : false
 							}
 							danger
 						/>

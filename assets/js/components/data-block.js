@@ -26,6 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { Component, Fragment, cloneElement } from '@wordpress/element';
+import { sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -125,6 +126,8 @@ class DataBlock extends Component {
 							</span>
 							<span className="googlesitekit-data-block__value">
 								{ `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit } ${ period }` }
+								{ period && sprintf( period, `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit }` ) }
+								{ ! period && `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit }` }
 							</span>
 						</Fragment> }
 					</div>

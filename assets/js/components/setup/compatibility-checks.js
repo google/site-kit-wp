@@ -174,29 +174,32 @@ export default class CompatibilityChecks extends Component {
 				return <Fragment>
 					<p
 						dangerouslySetInnerHTML={ sanitizeHTML(
+							__( 'Looks like your site is having a technical issue with requesting data from Google services.', 'google-site-kit' ) +
+							'<br/>' +
 							sprintf(
 								/* translators: %1$s: Support Forum URL, %2$s: Error message */
-								__( 'Looks like your site is having a technical issue with requesting data from Google services.<br/>To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message:<br/>%2$s', 'google-site-kit' ),
+								__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ),
 								'https://wordpress.org/support/plugin/google-site-kit/',
-								error
+								'<br/>' + error
 							),
 							{
 								ALLOWED_TAGS: [ 'a', 'br' ],
 								ALLOWED_ATTR: [ 'href' ],
 							}
 						) }
-
 					/>
 				</Fragment>;
 			case ERROR_AMP_CDN_RESTRICTED:
 				return <Fragment>
 					<p
 						dangerouslySetInnerHTML={ sanitizeHTML(
+							__( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.', 'google-site-kit' ) +
+							'<br/>' +
 							sprintf(
 								/* translators: %1$s: Support Forum URL, %2$s: Error message */
-								__( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.<br/>To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message:<br/>%2$s', 'google-site-kit' ),
+								__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ),
 								'https://wordpress.org/support/plugin/google-site-kit/',
-								error
+								'<br/>' + error
 							),
 							{
 								ALLOWED_TAGS: [ 'a', 'br' ],
