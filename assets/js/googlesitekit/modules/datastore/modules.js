@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import memize from 'memize';
 import merge from 'lodash/merge';
 import invariant from 'invariant';
 
@@ -53,6 +54,22 @@ const moduleDefaults = {
 	connected: false,
 	settingsComponent: DefaultModuleSettings,
 };
+
+const normalizeModules = memize(
+	( modules ) => Object.keys( modules )
+		.map( ( slug ) => {
+			return {
+				...moduleDefaults,
+				name: slug, // Ensure `name` is not empty.
+				...modules[ slug ],
+				slug,
+			};
+		} )
+		.sort( ( a, b ) => a.order - b.order )
+		.reduce( ( acc, module ) => {
+			return { ...acc, [ module.slug ]: module };
+		}, {} )
+);
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
@@ -301,20 +318,7 @@ const baseSelectors = {
 		// but only for keys whose values are not `undefined`.
 		const modules = merge( {}, serverDefinitions, clientDefinitions );
 
-		return Object.keys( modules )
-			.map( ( slug ) => {
-				return {
-					...moduleDefaults,
-					name: slug, // Ensure `name` is not empty.
-					...modules[ slug ],
-					slug,
-				};
-			} )
-			.sort( ( a, b ) => a.order - b.order )
-			.reduce( ( acc, module ) => {
-				return { ...acc, [ module.slug ]: module };
-			}, {} )
-		;
+		return normalizeModules( modules );
 	},
 
 	/**
