@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	unsubscribeFromAll,
 	untilResolved,
 } from 'tests/js/utils';
@@ -104,14 +103,13 @@ describe( 'modules/adsense URL channels', () => {
 				const fakeAccountID = 'pub-777888999';
 				const fakeClientID = 'ca-pub-777888999';
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
 				await untilResolved( registry, STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
-
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
 				expect( urlchannels ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

@@ -26,7 +26,6 @@ import { createRegistry } from '@wordpress/data';
  */
 import API from 'googlesitekit-api';
 import {
-	muteConsole,
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
@@ -156,9 +155,9 @@ describe( 'createNotificationsStore store', () => {
 					),
 				);
 
-				muteConsole( 'warn' );
 				dispatch.removeNotification( serverNotifications[ 0 ].id );
 
+				expect( console ).toHaveWarned();
 				expect( global.console.warn ).toHaveBeenCalledWith( `Cannot remove server-side notification with ID "${ serverNotifications[ 0 ].id }"; this may be changed in a future release.` );
 				expect(
 					select.getNotifications()
@@ -251,7 +250,6 @@ describe( 'createNotificationsStore store', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				select.getNotifications();
 				await subscribeUntil( registry,
 					() => select.hasFinishedResolution( 'getNotifications' ),
@@ -261,6 +259,7 @@ describe( 'createNotificationsStore store', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( notifications ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );
