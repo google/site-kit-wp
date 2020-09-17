@@ -75,19 +75,19 @@ export function createErrorStore() {
 		switch ( type ) {
 			case RECEIVE_ERROR: {
 				const { baseName, args, error } = payload;
-				const newState = state;
 
 				if ( baseName ) {
-					newState.errors = {
-						...( state.errors || {} ),
-						[ generateErrorKey( baseName, args ) ]: error,
+					return {
+						...state,
+						errors: {
+							...( state.errors || {} ),
+							[ generateErrorKey( baseName, args ) ]: error,
+						},
 					};
-				} else {
-					// @TODO: remove it once all instances of the legacy behavior have been removed.
-					newState.error = error;
 				}
 
-				return newState;
+				// @TODO: remove once all instances of the legacy behavior have been removed.
+				return { ...state, error };
 			}
 
 			case CLEAR_ERROR: {
