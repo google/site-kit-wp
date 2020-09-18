@@ -18,6 +18,14 @@
 import { trackEvent } from './';
 
 export async function trackAPIError( method, type, identifier, datapoint, error ) {
+	// Exclude certain errors from tracking based on error code.
+	const excludedErrorCodes = [
+		'fetch_error', // Client failed to fetch from WordPress.
+	];
+	if ( excludedErrorCodes.indexOf( error.code ) >= 0 ) {
+		return;
+	}
+
 	await trackEvent(
 		'api_error',
 		`${ method }:${ type }/${ identifier }/data/${ datapoint }`,
