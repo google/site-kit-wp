@@ -537,6 +537,8 @@ class AuthenticationTest extends TestCase {
 	}
 
 	public function test_handle_proxy_connect_user() {
+		remove_all_actions( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER );
+
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
