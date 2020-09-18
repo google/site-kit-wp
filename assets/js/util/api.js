@@ -17,10 +17,10 @@
  */
 import { trackEvent } from './';
 
-export async function trackAPIError( type, identifier, datapoint, error ) {
+export async function trackAPIError( method, type, identifier, datapoint, error ) {
 	await trackEvent(
 		'api_error',
-		`${ type }/${ identifier }/data/${ datapoint }`,
+		`${ method }:${ type }/${ identifier }/data/${ datapoint }`,
 		`${ error.message } (code: ${ error.code }${ error.data?.reason ? ', reason: ' + error.data.reason : '' } ])`,
 		error.data?.status || error.code
 	);
