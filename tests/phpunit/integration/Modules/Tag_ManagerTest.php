@@ -54,12 +54,14 @@ class Tag_ManagerTest extends TestCase {
 		remove_all_actions( 'amp_print_analytics' );
 		remove_all_actions( 'wp_footer' );
 		remove_all_actions( 'amp_post_template_footer' );
+		remove_all_actions( 'web_stories_print_analytics' );
 		remove_all_filters( 'amp_post_template_data' );
 
 		do_action( 'template_redirect' );
 		$this->assertFalse( has_action( 'amp_print_analytics' ) );
 		$this->assertFalse( has_action( 'wp_footer' ) );
 		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_action( 'web_stories_print_analytics' ) );
 		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 
 		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
@@ -75,6 +77,7 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertTrue( has_action( 'amp_print_analytics' ) );
 		$this->assertTrue( has_action( 'wp_footer' ) );
 		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
+		$this->assertTrue( has_action( 'web_stories_print_analytics' ) );
 		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
 	}
 

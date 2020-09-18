@@ -134,6 +134,8 @@ final class Tag_Manager extends Module
 					add_action( 'wp_footer', $print_amp_gtm, 20 );
 					// For AMP Reader, AMP plugin version <1.3.
 					add_action( 'amp_post_template_footer', $print_amp_gtm, 20 );
+					// For Web Stories plugin.
+					add_action( 'web_stories_print_analytics', $print_amp_gtag );
 
 					add_filter( // Load amp-analytics component for AMP Reader.
 						'amp_post_template_data',
