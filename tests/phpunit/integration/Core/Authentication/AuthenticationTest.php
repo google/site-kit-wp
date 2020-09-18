@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
@@ -465,6 +466,26 @@ class AuthenticationTest extends TestCase {
 		$this->assertArrayHasKey( 'nonce', $args );
 
 		$this->assertEquals( Google_Proxy::ACTION_CONNECT_USER, $args['action'] );
+	}
+
+	public function test_set_connected_proxy_url() {
+		remove_all_actions( 'googlesitekit_authorize_user' );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options = new Options( $context );
+
+		$authentication = new Authentication( $context, $options );
+		$authentication->register();
+
+		$home_url_hook = function() {
+			return 'https://example.com/subsite/';
+		};
+
+		add_filter( 'home_url', $home_url_hook );
+		do_action( 'googlesitekit_authorize_user' );
+		remove_filter( 'home_url', $home_url_hook );
+
+		$this->assertEquals( 'example.com/subsite/', $options->get( Connected_Proxy_URL::OPTION ) );
 	}
 
 	protected function get_user_option_keys() {
