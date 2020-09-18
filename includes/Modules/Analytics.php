@@ -933,7 +933,13 @@ final class Analytics extends Module
 				$start_date  = $data['startDate'];
 				$end_date    = $data['endDate'];
 				if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
-					$date_ranges[] = array( $start_date, $end_date );
+					$compare_start_date = $data['compareStartDate'];
+					$compare_end_date   = $data['compareEndDate'];
+					$date_ranges[]      = array( $start_date, $end_date );
+
+					if ( strtotime( $compare_start_date ) && strtotime( $compare_end_date ) ) {
+						$date_ranges = array_merge( array( $compare_start_date, $compare_end_date ), $date_ranges );
+					}
 				} else {
 					$date_range    = $data['dateRange'] ?: 'last-28-days';
 					$date_ranges[] = $this->parse_date_range( $date_range, $data['compareDateRanges'] ? 2 : 1 );
