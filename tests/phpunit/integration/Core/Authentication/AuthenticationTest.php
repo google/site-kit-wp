@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
 use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Authentication\Disconnected_Reason;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
@@ -458,6 +459,7 @@ class AuthenticationTest extends TestCase {
 		);
 
 		$this->assertNotEmpty( filter_var( $url, FILTER_VALIDATE_URL ) );
+		$this->assertStringStartsWith( admin_url(), $url );
 
 		$args = array();
 		parse_str( wp_parse_url( $url, PHP_URL_QUERY ), $args );
@@ -486,6 +488,52 @@ class AuthenticationTest extends TestCase {
 		remove_filter( 'home_url', $home_url_hook );
 
 		$this->assertEquals( 'example.com/subsite/', $options->get( Connected_Proxy_URL::OPTION ) );
+	}
+
+	public function test_check_connected_proxy_url() {
+		remove_all_actions( 'admin_init' );
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options           = new Options( $context );
+		$user_options      = new User_Options( $context );
+		$encrypted_options = new Encrypted_Options( $options );
+
+		$authentication = new Authentication( $context, $options, $user_options );
+		$authentication->register();
+
+		// Set connected proxy URL to something else to emulate URL mismatch.
+		$options->set( Connected_Proxy_URL::OPTION, '/' );
+
+		// Emulate credentials.
+		$encrypted_options->set(
+			Credentials::OPTION,
+			array(
+				'oauth2_client_id'     => 'xxx.apps.sitekit.withgoogle.com',
+				'oauth2_client_secret' => 'xxx-xxxx-xxxxx',
+			)
+		);
+
+		// Emulate OAuth acccess token.
+		$this->force_set_property( $authentication->get_oauth_client(), 'access_token', 'valid-auth-token' );
+
+		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
+		add_filter(
+			'user_has_cap',
+			function( $caps ) {
+				$caps[ Permissions::SETUP ] = true;
+				return $caps;
+			}
+		);
+
+		do_action( 'admin_init' );
+
+		$this->assertEquals(
+			Authentication::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+			$user_options->get( Disconnected_Reason::OPTION )
+		);
 	}
 
 	protected function get_user_option_keys() {

@@ -1051,10 +1051,6 @@ final class Authentication {
 			return;
 		}
 
-		if ( ! $this->connected_proxy_url->has() ) {
-			return;
-		}
-
 		$this->disconnect();
 		$this->disconnected_reason->set( self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH );
 	}
