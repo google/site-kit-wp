@@ -98,7 +98,7 @@ class User_Transients implements User_Aware_Interface {
 	 * @since n.e.x.t
 	 *
 	 * @param string $transient  Transient name.
-	 * @param mixed  $value      Transient value. Must be serializable if non-scalar.
+	 * @param mixed  $value      Transient value.
 	 * @param int    $expiration Optional. Time until expiration in seconds. Default 0 (no expiration).
 	 * @return bool True on success, false on failure.
 	 */
@@ -122,35 +122,99 @@ class User_Transients implements User_Aware_Interface {
 			: $this->delete_from_user_options( $transient );
 	}
 
+	/**
+	 * Gets prefixed transient name for an external cache.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $transient Transient name.
+	 * @return string Prefixed transient name.
+	 */
 	private function get_transient_name_for_cache( $transient ) {
-
+		$user_id = $this->get_user_id();
+		return $this->user_options->get_meta_key( "user_{$user_id}_{$transient}" );
 	}
 
+	/**
+	 * Gets group name for an external cache.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Group name.
+	 */
+	private function get_transient_group_for_cache() {
+		return $this->context->is_network_mode()
+			? 'site-transient'
+			: 'transient';
+	}
+
+	/**
+	 * Gets the value of the given transient from an external cache.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $transient Transient name.
+	 * @return mixed Value set for the transient, or false if not set.
+	 */
 	private function get_from_cache( $transient ) {
-
+		$key = $this->get_transient_name_for_cache( $transient );
+		$group = $this->get_transient_group_for_cache();
+		return wp_cache_get( $key, $group );
 	}
 
+	/**
+	 * Sets the value for a transient in an external cache.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $transient  Transient name.
+	 * @param mixed  $value      Transient value.
+	 * @param int    $expiration Optional. Time until expiration in seconds. Default 0 (no expiration).
+	 * @return bool True on success, false on failure.
+	 */
 	private function set_in_cache( $transient, $value, $expiration ) {
-
+		$key = $this->get_transient_name_for_cache( $transient );
+		$group = $this->get_transient_group_for_cache();
+		return wp_cache_set( $key, $value, $group, $expiration );
 	}
 
+	/**
+	 * Deletes the given transient in an external cache.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $transient Transient name.
+	 * @return bool True on success, false on failure.
+	 */
 	private function delete_from_cache( $transient ) {
-
+		$key = $this->get_transient_name_for_cache( $transient );
+		$group = $this->get_transient_group_for_cache();
+		return wp_cache_delete( $key, $group );
 	}
 
 	private function get_transient_name_for_user_options( $transient ) {
-		
+		return "googlesitekit_transient_{$transient}";
 	}
 
+	/**
+	 * Gets the value of the given transient.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $transient Transient name.
+	 * @return mixed Value set for the transient, or false if not set.
+	 */
 	private function get_from_user_options( $transient ) {
-		
+		$key = $this->get_transient_name_for_user_options( $transient );
 	}
 
 	private function set_in_user_options( $transient, $value, $expiration ) {
+		$key = $this->get_transient_name_for_user_options( $transient );
 
 	}
 
 	private function delete_from_user_options( $transient ) {
+		$key = $this->get_transient_name_for_user_options( $transient );
 
 	}
 
