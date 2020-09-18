@@ -1069,8 +1069,8 @@ final class Authentication {
 			wp_die( 'Site Kit has to be connected using proxy.' );
 		}
 
-		$nonce = filter_input( INPUT_GET, 'nonce' ); // phpcs:ignore WordPressVIPMinimum.Security.PHPFilterFunctions.MissingThirdParameter
-		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_CONNECT_USER ) ) {
+		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_CONNECT_USER ) ) {
 			wp_die( 'You are not allowed to connect Site Kit. Please, try again later.' );
 		}
 
@@ -1078,8 +1078,8 @@ final class Authentication {
 			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
 		}
 
-		$access_code = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-		$this->redirect_to_proxy( $access_code );
+		$code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code' );
+		$this->redirect_to_proxy( $code );
 	}
 
 	/**

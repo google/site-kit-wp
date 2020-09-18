@@ -536,6 +536,54 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
+	public function test_handle_proxy_connect_user() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$options           = new Options( $context );
+		$user_options      = new User_Options( $context );
+		$encrypted_options = new Encrypted_Options( $options );
+
+		$authentication = new Authentication( $context, $options, $user_options );
+		$authentication->register();
+
+		// Emulate credentials.
+		$encrypted_options->set(
+			Credentials::OPTION,
+			array(
+				'oauth2_client_id'     => 'xxx.apps.sitekit.withgoogle.com',
+				'oauth2_client_secret' => 'xxx-xxxx-xxxxx',
+			)
+		);
+
+		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
+		add_filter(
+			'user_has_cap',
+			function( $caps ) {
+				$caps[ Permissions::SETUP ] = true;
+				return $caps;
+			}
+		);
+
+		$_GET['nonce']              = wp_create_nonce( Google_Proxy::ACTION_CONNECT_USER );
+		$_GET['googlesitekit_code'] = 'test-code';
+
+		try {
+			do_action( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER );
+			$this->fail( 'Expected redirection to proxy setup URL!' );
+		} catch ( RedirectException $redirect ) {
+			$location = $redirect->get_location();
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+
+			$parsed = wp_parse_url( $location );
+			parse_str( $parsed['query'], $query_args );
+
+			$this->assertEquals( 'xxx.apps.sitekit.withgoogle.com', $query_args['site_id'] );
+			$this->assertEquals( 'test-code', $query_args['code'] );
+		}
+	}
+
 	protected function get_user_option_keys() {
 		return array(
 			OAuth_Client::OPTION_ACCESS_TOKEN,
