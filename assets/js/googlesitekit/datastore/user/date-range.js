@@ -21,6 +21,11 @@
  */
 import invariant from 'invariant';
 
+/**
+ * Internal dependencies
+ */
+import { getPreviousDate, getDateString, getPreviousWeekDate } from './utils';
+
 export const INITIAL_STATE = {
 	dateRange: 'last-28-days',
 };
@@ -78,6 +83,50 @@ export const selectors = {
 	getDateRange( state ) {
 		const { dateRange } = state;
 		return dateRange;
+	},
+	/**
+	 * Returns the current date range as a list of date strings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}  state                The current data store's state.
+	 * @param {Object} 	options              Options parameter. Default is: {}.
+	 * @param {number} 	options.offsetDays   Number of days to offset. Default is: 0.
+	 * @param {boolean} options.compare      Set to true if date ranges to compare should be included. Default is: false.
+	 * @param {boolean} options.weekDayAlign Set to true if the compared date range should be aligned for the weekdays. Default is: false.
+	 * @return {Array.<string>}              List of date ranges in chronoligical order. [compareStart, compareEnd, start, end, today]
+	 */
+	getDateRangeDates( state, {
+		offsetDays = 1,
+		compare = false,
+		weekDayAlign = false,
+	} = {} ) {
+		const dateRange = selectors.getDateRange( state );
+		const today = getDateString( new Date() );
+		const endDate = getPreviousDate( today, offsetDays );
+		const matches = dateRange.match( '-(.*)-' );
+		const numberOfDays = Number( matches ? matches[ 1 ] - 1 : 28 );
+		const startDate = getPreviousDate( endDate, numberOfDays );
+		const parsed = [];
+
+		if ( compare && ! weekDayAlign ) {
+			const compareEndDate = getPreviousDate( startDate, 1 );
+			parsed.push( getPreviousDate( compareEndDate, numberOfDays ) );
+			parsed.push( compareEndDate );
+		}
+
+		if ( weekDayAlign ) {
+			const compareEndDate = getPreviousWeekDate( endDate, numberOfDays );
+			parsed.push( getPreviousDate( compareEndDate, numberOfDays ) );
+			parsed.push( compareEndDate );
+		}
+
+		return [
+			...parsed,
+			startDate,
+			endDate,
+			today,
+		];
 	},
 };
 
