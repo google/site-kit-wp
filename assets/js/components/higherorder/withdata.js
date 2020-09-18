@@ -99,13 +99,13 @@ const withData = (
 				return data.error.message;
 			}
 			if ( data.error.errors && data.error.errors[ 0 ] && data.error.errors[ 0 ].message ) {
-				return data.error.errors[ 0 ].message;
+				return data.error.errors[ 0 ];
 			}
-			return __( 'Unidentified error', 'google-site-kit' );
+			return { message: __( 'Unidentified error', 'google-site-kit' ) };
 		}
 
 		if ( data && data.errors && data.errors[ 0 ] && data.errors[ 0 ].message ) {
-			return data.errors[ 0 ].message;
+			return data.errors[ 0 ];
 		}
 
 		if ( data && data.error_data ) {
@@ -113,7 +113,7 @@ const withData = (
 
 			// Catch RateLimitExceeded specifically.
 			if ( errors[ 0 ] && 'RateLimitExceeded' === errors[ 0 ].reason ) {
-				return __( 'Too many requests have been sent within a given time span. Please reload this page again in a few seconds', 'google-site-kit' );
+				return { message: __( 'Too many requests have been sent within a given time span. Please reload this page again in a few seconds', 'google-site-kit' ) };
 			}
 		}
 
@@ -129,7 +129,7 @@ const withData = (
 		// handlers are legacy and are likely never hit, but let's keep them
 		// because nobody will ever know.
 		if ( data.code && data.message && data.data && data.data.status ) {
-			return data.message;
+			return data;
 		}
 
 		// No error.
