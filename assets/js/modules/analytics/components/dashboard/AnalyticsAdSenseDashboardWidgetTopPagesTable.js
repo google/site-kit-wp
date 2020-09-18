@@ -135,9 +135,10 @@ const getDataError = ( data ) => {
 		// Specifically looking for string "badRequest"
 		if ( 'badRequest' === data.data.reason ) {
 			return (
-				<AnalyticsAdSenseDashboardWidgetLayout>
+				{ message: <AnalyticsAdSenseDashboardWidgetLayout>
 					{ ctaWrapper( <AdSenseLinkCTA />, false, false, true ) }
-				</AnalyticsAdSenseDashboardWidgetLayout>
+				</AnalyticsAdSenseDashboardWidgetLayout>,
+				}
 			);
 		}
 
