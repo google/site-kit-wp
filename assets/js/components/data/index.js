@@ -353,6 +353,10 @@ const dataAPI = {
 			return new Promise( ( resolve ) => {
 				resolve( response );
 			} );
+		} ).catch( ( err ) => {
+			this.handleWPError( 'POST', datapoint, type, identifier, err );
+
+			return Promise.reject( err );
 		} );
 	},
 	/**
