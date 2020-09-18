@@ -78,4 +78,42 @@ class User_Transients implements User_Aware_Interface {
 		return $this->user_options->switch_user( $user_id );
 	}
 
+	/**
+	 * Gets the value of the given transient.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $transient Transient name.
+	 * @return mixed Value set for the transient, or false if not set.
+	 */
+	public function get( $transient ) {
+		return '';
+	}
+
+	/**
+	 * Sets the value for a transient.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $transient  Transient name.
+	 * @param mixed  $value      Transient value. Must be serializable if non-scalar.
+	 * @param int    $expiration Optional. Time until expiration in seconds. Default 0 (no expiration).
+	 * @return bool True on success, false on failure.
+	 */
+	public function set( $transient, $value, $expiration = 0 ) {
+		return true;
+	}
+
+	/**
+	 * Deletes the given transient.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $transient Transient name.
+	 * @return bool True on success, false on failure.
+	 */
+	public function delete( $transient ) {
+		return true;
+	}
+
 }
