@@ -186,7 +186,7 @@ const dataAPI = {
 
 				const isError = isWPError( result );
 				if ( isError ) {
-					this.handleWPError( result );
+					this.handleWPError( 'POST', currentRequest.datapoint, currentRequest.type, currentRequest.identifier, result );
 				}
 
 				each( keyIndexesMap[ key ], ( index ) => {
@@ -323,7 +323,7 @@ const dataAPI = {
 
 			return Promise.resolve( results );
 		} ).catch( ( err ) => {
-			this.handleWPError( err );
+			this.handleWPError( 'GET', datapoint, type, identifier, err );
 
 			return Promise.reject( err );
 		} );
