@@ -40,6 +40,7 @@ import DashboardPermissionAlert from '../notifications/dashboard-permission-aler
 import { getCacheKey, getCache, setCache } from './cache';
 import { TYPE_CORE, TYPE_MODULES } from './constants';
 import { invalidateCacheGroup } from './invalidate-cache-group';
+import { trackAPIError } from '../../util/api';
 
 export { TYPE_CORE, TYPE_MODULES };
 
@@ -211,7 +212,7 @@ const dataAPI = {
 		} );
 	},
 
-	handleWPError( error ) {
+	handleWPError( method, datapoint, type, identifier, error ) {
 		// eslint-disable-next-line no-console
 		console.warn( 'WP Error in data response', error );
 		const { data } = error;
@@ -219,6 +220,8 @@ const dataAPI = {
 		if ( ! data || ! data.reason ) {
 			return;
 		}
+
+		trackAPIError( method, datapoint, type, identifier, error );
 
 		let addedNoticeCount = 0;
 
