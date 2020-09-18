@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getModulesData } from '../../util';
+import { trackAPIError } from '../../util/api';
 import getNoDataComponent from '../notifications/nodata';
 import getDataErrorComponent from '../notifications/data-error';
 import getSetupIncompleteComponent from '../notifications/setup-incomplete';
@@ -177,8 +178,10 @@ const withData = (
 				const { datapoint, identifier, toState } = requestData;
 
 				// Check to see if the returned data is an error. If so, getDataError will return a string.
-				const errorMessage = getDataError( returnedData );
-				if ( errorMessage ) {
+				const error = getDataError( returnedData );
+				const errorMessage = error?.message;
+				if ( error ) {
+					trackAPIError( 'POST', datapoint, requestData.type, identifier, error );
 					// Set an error state on the Component.
 					this.setState( {
 						errorMessage,
