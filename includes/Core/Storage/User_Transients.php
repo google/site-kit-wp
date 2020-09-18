@@ -87,7 +87,9 @@ class User_Transients implements User_Aware_Interface {
 	 * @return mixed Value set for the transient, or false if not set.
 	 */
 	public function get( $transient ) {
-		return '';
+		return wp_using_ext_object_cache()
+			? $this->get_from_cache( $transient )
+			: $this->get_from_user_options( $transient );
 	}
 
 	/**
@@ -101,7 +103,9 @@ class User_Transients implements User_Aware_Interface {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set( $transient, $value, $expiration = 0 ) {
-		return true;
+		return wp_using_ext_object_cache()
+			? $this->set_in_cache( $transient, $value, $expiration )
+			: $this->set_in_user_options( $transient, $value, $expiration );
 	}
 
 	/**
@@ -113,7 +117,41 @@ class User_Transients implements User_Aware_Interface {
 	 * @return bool True on success, false on failure.
 	 */
 	public function delete( $transient ) {
-		return true;
+		return wp_using_ext_object_cache()
+			? $this->delete_from_cache( $transient )
+			: $this->delete_from_user_options( $transient );
+	}
+
+	private function get_transient_name_for_cache( $transient ) {
+
+	}
+
+	private function get_from_cache( $transient ) {
+
+	}
+
+	private function set_in_cache( $transient, $value, $expiration ) {
+
+	}
+
+	private function delete_from_cache( $transient ) {
+
+	}
+
+	private function get_transient_name_for_user_options( $transient ) {
+		
+	}
+
+	private function get_from_user_options( $transient ) {
+		
+	}
+
+	private function set_in_user_options( $transient, $value, $expiration ) {
+
+	}
+
+	private function delete_from_user_options( $transient ) {
+
 	}
 
 }
