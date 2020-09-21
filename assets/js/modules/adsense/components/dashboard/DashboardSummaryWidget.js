@@ -96,71 +96,69 @@ function DashboardSummaryWidget() {
 	return (
 		<Widget
 			slug="adsenseSummary"
-			className="googlesitekit-dashboard-adsense-stats"
+			className="googlesitekit-dashboard-adsense-stats mdc-layout-grid"
 		>
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<DataBlock
-							className="overview-adsense-rpm"
-							title={ __( 'RPM', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( period.totals[ 1 ], currencyCode ) }
-							source={ {
-								name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-								link: href,
-							} }
-							sparkline={ daily &&
-								<Sparkline
-									data={ extractForSparkline( processedData.dataMap, 2 ) }
-									change={ 1 }
-									loadSmall={ false }
-								/>
-							}
-							context="compact"
-						/>
-					</div>
+			<div className="mdc-layout-grid__inner">
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<DataBlock
+						className="overview-adsense-rpm"
+						title={ __( 'RPM', 'google-site-kit' ) }
+						datapoint={ readableLargeNumber( period.totals[ 1 ], currencyCode ) }
+						source={ {
+							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
+							link: href,
+						} }
+						sparkline={ daily &&
+							<Sparkline
+								data={ extractForSparkline( processedData.dataMap, 2 ) }
+								change={ 1 }
+								loadSmall={ false }
+							/>
+						}
+						context="compact"
+					/>
+				</div>
 
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<DataBlock
-							className="overview-adsense-earnings"
-							title={ __( 'Total Earnings', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( period.totals[ 0 ], currencyCode ) }
-							source={ {
-								name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-								link: href,
-							} }
-							change={ today.totals[ 0 ] }
-							changeDataUnit={ '$' }
-							sparkline={ daily &&
-								<Sparkline
-									data={ extractForSparkline( processedData.dataMap, 1 ) }
-									change={ 1 }
-									loadSmall={ false }
-								/>
-							}
-							context="compact"
-						/>
-					</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<DataBlock
+						className="overview-adsense-earnings"
+						title={ __( 'Total Earnings', 'google-site-kit' ) }
+						datapoint={ readableLargeNumber( period.totals[ 0 ], currencyCode ) }
+						source={ {
+							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
+							link: href,
+						} }
+						change={ today.totals[ 0 ] }
+						changeDataUnit={ '$' }
+						sparkline={ daily &&
+							<Sparkline
+								data={ extractForSparkline( processedData.dataMap, 1 ) }
+								change={ 1 }
+								loadSmall={ false }
+							/>
+						}
+						context="compact"
+					/>
+				</div>
 
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<DataBlock
-							className="overview-adsense-impressions"
-							title={ __( 'Ad Impressions', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( period.totals[ 2 ] ) }
-							source={ {
-								name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-								link: href,
-							} }
-							sparkline={ daily &&
-								<Sparkline
-									data={ extractForSparkline( processedData.dataMap, 3 ) }
-									change={ 1 }
-									loadSmall={ false }
-								/>
-							}
-							context="compact"
-						/>
-					</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<DataBlock
+						className="overview-adsense-impressions"
+						title={ __( 'Ad Impressions', 'google-site-kit' ) }
+						datapoint={ readableLargeNumber( period.totals[ 2 ] ) }
+						source={ {
+							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
+							link: href,
+						} }
+						sparkline={ daily &&
+							<Sparkline
+								data={ extractForSparkline( processedData.dataMap, 3 ) }
+								change={ 1 }
+								loadSmall={ false }
+							/>
+						}
+						context="compact"
+					/>
 				</div>
 			</div>
 		</Widget>
