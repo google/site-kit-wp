@@ -152,7 +152,7 @@ export const reducer = ( state, { type, payload } ) => {
 			if ( state.widgets[ slug ] !== undefined ) {
 				global.console.warn( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
 
-				return { ...state };
+				return state;
 			}
 
 			return {
@@ -165,7 +165,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };

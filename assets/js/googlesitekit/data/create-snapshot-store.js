@@ -144,11 +144,11 @@ export const createSnapshotStore = ( storeName ) => {
 				// eslint-disable-next-line no-unused-vars
 				const { error, ...newState } = snapshot;
 
-				return { ...newState };
+				return newState;
 			}
 
 			default: {
-				return { ...state };
+				return state;
 			}
 		}
 	};

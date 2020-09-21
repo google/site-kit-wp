@@ -29,9 +29,7 @@ import { actions as errorStoreActions } from './create-error-store';
 import { camelCaseToPascalCase, camelCaseToConstantCase } from './transform-case';
 import { stringifyObject } from '../../util';
 
-const defaultReducerCallback = ( state ) => {
-	return { ...state };
-};
+const defaultReducerCallback = ( state ) => state;
 
 const defaultArgsToParams = () => {
 	return {};
@@ -250,7 +248,7 @@ export const createFetchStore = ( {
 			}
 
 			default: {
-				return { ...state };
+				return state;
 			}
 		}
 	};
