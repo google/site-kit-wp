@@ -142,7 +142,7 @@ export const reducer = ( state, { type, payload } ) => {
 			if ( state.areas[ slug ] !== undefined ) {
 				global.console.warn( `Could not register widget area with slug "${ slug }". Widget area "${ slug }" is already registered.` );
 
-				return { ...state };
+				return state;
 			}
 
 			return {
@@ -155,7 +155,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };

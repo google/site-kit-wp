@@ -210,7 +210,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 					return settingReducers[ type ]( state, { type, payload } );
 				}
 
-				return { ...state };
+				return state;
 			}
 		}
 	};
