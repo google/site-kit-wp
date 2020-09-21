@@ -60,7 +60,7 @@ export const reducer = ( state, { type, payload } ) => {
 				adsenseLinked,
 			};
 		default:
-			return { ...state };
+			return state;
 	}
 };
 

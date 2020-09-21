@@ -83,7 +83,8 @@ describe( 'createFetchStore store', () => {
 	beforeEach( () => {
 		registry = createRegistry();
 
-		storeDefinition = createFetchStore( STORE_PARAMS );
+		const { INITIAL_STATE: initialState, ...fetchStore } = createFetchStore( STORE_PARAMS );
+		storeDefinition = { initialState, ...fetchStore };
 		registry.registerStore( STORE_NAME, storeDefinition );
 		dispatch = registry.dispatch( STORE_NAME );
 		store = registry.stores[ STORE_NAME ].store;

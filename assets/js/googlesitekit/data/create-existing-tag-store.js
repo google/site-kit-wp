@@ -132,7 +132,7 @@ export const createExistingTagStore = ( {
 			}
 
 			default: {
-				return { ...state };
+				return state;
 			}
 		}
 	};
