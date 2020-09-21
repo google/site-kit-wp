@@ -21,6 +21,7 @@
  */
 import dataAPI from './index';
 import * as Tracking from '../../util/api';
+//import * as DateRange from '../../util/date-range.js';
 
 describe( 'googlesitekit.dataAPI', () => {
 	let trackEventSpy;
@@ -35,7 +36,7 @@ describe( 'googlesitekit.dataAPI', () => {
 
 	describe( 'get', () => {
 		const { get } = dataAPI;
-		it( 'should throw call trackEvent when an error is returned on get', async () => {
+		it( 'should call trackEvent when an error is returned on get', async () => {
 			const errorResponse = {
 				code: 'internal_server_error',
 				message: 'Internal server error',
@@ -65,7 +66,7 @@ describe( 'googlesitekit.dataAPI', () => {
 
 	describe( 'set', () => {
 		const { set } = dataAPI;
-		it( 'should throw call trackEvent when an error is returned on set', async () => {
+		it( 'should call trackEvent when an error is returned on set', async () => {
 			const errorResponse = {
 				code: 'internal_server_error',
 				message: 'Internal server error',
@@ -81,7 +82,6 @@ describe( 'googlesitekit.dataAPI', () => {
 				set( 'core', 'search-console', 'settings', 'data' );
 			} catch ( err ) {
 				expect( console ).toHaveErrored();
-
 				expect( trackEventSpy ).toHaveBeenCalledWith(
 					'POST',
 					'settings',
@@ -93,4 +93,79 @@ describe( 'googlesitekit.dataAPI', () => {
 			}
 		} );
 	} );
+/*
+	describe( 'combinedGet', () => {
+		const { combinedGet, handleWPError } = dataAPI;
+		combinedGet.instance().handleWPError = handleWPError;
+		const slugMock = jest.spyOn( DateRange, 'getCurrentDateRangeSlug' );
+		slugMock.mockImplementation(() => 'last-28-days' );
+
+		const combinedRequest = [
+			{
+				type: 'core',
+				identifier: 'search-console',
+				datapoint: 'users',
+				data: 'data',
+			},
+			{
+				type: 'core',
+				identifier: 'search-console',
+				datapoint: 'search',
+				data: 'data',
+			},
+			{
+				type: 'core',
+				identifier: 'search-console',
+				datapoint: 'other',
+				data: 'data',
+			}
+
+		];
+
+		it( 'should not call trackEvent for no errors in combinedGet', async () => {
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/data/,
+				{ body: {}, status: 200 }
+			);
+
+			combinedGet( combinedRequest );
+			expect( console ).not.toHaveErrored();
+			expect( trackEventSpy ).not.toHaveBeenCalled();
+		} );
+		it( 'should call trackEvent for error in combinedGet with one error', async () => {
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/data/,
+				{
+					body:
+						[
+							{
+								code: 'internal_server_error',
+								message: 'Internal server error',
+								data: { status: 500 },
+							},
+						],
+					status: 200
+				}
+			);
+
+			combinedGet( combinedRequest );
+			expect( console ).not.toHaveErrored();
+			expect( trackEventSpy ).toHaveBeenCalledWith(
+				'POST',
+				'settings',
+				'core',
+				'search-console', { code: 'internal_server_error',
+					data: { status: 500 },
+					message: 'Internal server error' }
+			);
+
+		} );
+		it( 'should call trackEvent for each error in combinedGet with multiple errors', async () => {
+
+		} );
+		it( 'should call trackEvent for each error in combinedGet with all errors', async () => {
+
+		} );
+	} );
+*/
 } );

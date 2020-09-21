@@ -280,7 +280,7 @@ describe( 'googlesitekit.api', () => {
 				3600
 			);
 		} );
-		it( 'should throw call trackEvent when an error is returned on get', async () => {
+		it( 'should call trackEvent when an error is returned on get', async () => {
 			const trackEventSpy = jest.spyOn( Tracking, 'trackAPIError' );
 
 			const errorResponse = {
@@ -467,7 +467,7 @@ describe( 'googlesitekit.api', () => {
 			expect( cacheData.cacheHit ).toEqual( false );
 		} );
 
-		it( 'should throw call trackEvent when an error is returned on set', async () => {
+		it( 'should call trackEvent when an error is returned on set', async () => {
 			const trackEventSpy = jest.spyOn( Tracking, 'trackAPIError' );
 
 			const errorResponse = {
