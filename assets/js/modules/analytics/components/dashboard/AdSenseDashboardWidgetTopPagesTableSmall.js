@@ -121,24 +121,22 @@ const getDataError = ( data ) => {
 		// Specifically looking for string "badRequest"
 		if ( 'badRequest' === data.data.reason ) {
 			return (
-				{
-					message: <div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-6-desktop
-							mdc-layout-grid__cell--span-4-tablet
-						">
-						<Layout
-							className="googlesitekit-top-earnings-pages"
-							fill
-						>
-							<AdSenseLinkCTA />
-						</Layout>
-					</div>,
-				}
+				<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-6-desktop
+						mdc-layout-grid__cell--span-4-tablet
+					">
+					<Layout
+						className="googlesitekit-top-earnings-pages"
+						fill
+					>
+						<AdSenseLinkCTA />
+					</Layout>
+				</div>
 			);
 		}
 
-		return data;
+		return data.message;
 	}
 
 	// Legacy errors? Maybe this is never hit but better be safe than sorry.

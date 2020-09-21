@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getModulesData } from '../../util';
-import { trackAPIError } from '../../util/api';
 import getNoDataComponent from '../notifications/nodata';
 import getDataErrorComponent from '../notifications/data-error';
 import getSetupIncompleteComponent from '../notifications/setup-incomplete';
@@ -100,13 +99,13 @@ const withData = (
 				return data.error.message;
 			}
 			if ( data.error.errors && data.error.errors[ 0 ] && data.error.errors[ 0 ].message ) {
-				return data.error.errors[ 0 ];
+				return data.error.errors[ 0 ].message;
 			}
-			return { message: __( 'Unidentified error', 'google-site-kit' ) };
+			return __( 'Unidentified error', 'google-site-kit' );
 		}
 
 		if ( data && data.errors && data.errors[ 0 ] && data.errors[ 0 ].message ) {
-			return data.errors[ 0 ];
+			return data.errors[ 0 ].message;
 		}
 
 		if ( data && data.error_data ) {
@@ -114,7 +113,7 @@ const withData = (
 
 			// Catch RateLimitExceeded specifically.
 			if ( errors[ 0 ] && 'RateLimitExceeded' === errors[ 0 ].reason ) {
-				return { message: __( 'Too many requests have been sent within a given time span. Please reload this page again in a few seconds', 'google-site-kit' ) };
+				return __( 'Too many requests have been sent within a given time span. Please reload this page again in a few seconds', 'google-site-kit' );
 			}
 		}
 
@@ -130,7 +129,7 @@ const withData = (
 		// handlers are legacy and are likely never hit, but let's keep them
 		// because nobody will ever know.
 		if ( data.code && data.message && data.data && data.data.status ) {
-			return data;
+			return data.message;
 		}
 
 		// No error.
@@ -178,10 +177,8 @@ const withData = (
 				const { datapoint, identifier, toState } = requestData;
 
 				// Check to see if the returned data is an error. If so, getDataError will return a string.
-				const error = getDataError( returnedData );
-				const errorMessage = error?.message;
-				if ( error ) {
-					trackAPIError( 'POST', datapoint, requestData.type, identifier, error );
+				const errorMessage = getDataError( returnedData );
+				if ( errorMessage ) {
 					// Set an error state on the Component.
 					this.setState( {
 						errorMessage,
