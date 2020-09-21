@@ -54,7 +54,7 @@ export const createInfoStore = ( slug, {
 	const actions = {};
 	const controls = {};
 	const reducer = ( state ) => {
-		return { ...state };
+		return state;
 	};
 	const resolvers = {};
 	const selectors = {

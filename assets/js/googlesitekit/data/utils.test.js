@@ -131,7 +131,7 @@ describe( 'data utils', () => {
 							case 'ACTION_ONE':
 								return { ...state, one: true };
 							default: {
-								return { ...state };
+								return state;
 							}
 						}
 					},
@@ -155,7 +155,7 @@ describe( 'data utils', () => {
 							case 'ACTION_TWO':
 								return { ...state, two: 2 };
 							default: {
-								return { ...state };
+								return state;
 							}
 						}
 					},
@@ -215,7 +215,7 @@ describe( 'data utils', () => {
 							case 'ACTION_ONE':
 								return { ...state, one: true };
 							default: {
-								return { ...state };
+								return state;
 							}
 						}
 					},
@@ -239,7 +239,7 @@ describe( 'data utils', () => {
 							case 'ACTION_TWO':
 								return { ...state, two: 2 };
 							default: {
-								return { ...state };
+								return state;
 							}
 						}
 					},
@@ -417,7 +417,7 @@ describe( 'data utils', () => {
 							case 'ACTION_ONE':
 								return { ...state, one: true };
 							default: {
-								return { ...state };
+								return state;
 							}
 						}
 					},
@@ -428,7 +428,7 @@ describe( 'data utils', () => {
 							case 'ACTION_TWO':
 								return { ...state, two: 2 };
 							default: {
-								return { ...state };
+								return state;
 							}
 						}
 					},
@@ -511,7 +511,7 @@ describe( 'data utils', () => {
 							case 'ACTION_ONE':
 								return { ...state, one: true };
 							default: {
-								return { ...state };
+								return state;
 							}
 						}
 					},
@@ -522,7 +522,7 @@ describe( 'data utils', () => {
 							case 'ACTION_TWO':
 								return { ...state, two: 'two' };
 							default: {
-								return { ...state };
+								return state;
 							}
 						}
 					},
@@ -659,7 +659,7 @@ describe( 'data utils', () => {
 				case 'ACTION_ONE':
 					return { ...state, one: true };
 				default: {
-					return { ...state };
+					return state;
 				}
 			}
 		};
@@ -668,7 +668,7 @@ describe( 'data utils', () => {
 				case 'ACTION_TWO':
 					return { ...state, two: 2 };
 				default: {
-					return { ...state };
+					return state;
 				}
 			}
 		};
