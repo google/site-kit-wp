@@ -94,7 +94,10 @@ function DashboardSummaryWidget() {
 	const currencyCode = currencyHeader ? currencyHeader.currency : false;
 
 	return (
-		<Widget className="googlesitekit-dashboard-adsense-stats">
+		<Widget
+			slug="adsenseSummary"
+			className="googlesitekit-dashboard-adsense-stats"
+		>
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
