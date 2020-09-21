@@ -78,7 +78,7 @@ const store = Data.combineStores(
 Data.registerStore( STORE_NAME, store );
 
 export const {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

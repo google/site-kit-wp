@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
-import { INITIAL_STATE } from './index';
+import { initialState } from './index';
 import { STORE_NAME } from './constants';
 
 describe( 'core/site store', () => {
@@ -40,7 +40,7 @@ describe( 'core/site store', () => {
 		it( 'has the appropriate initial state', () => {
 			const state = store.getState();
 
-			expect( state ).toEqual( INITIAL_STATE );
+			expect( state ).toEqual( initialState );
 		} );
 	} );
 } );

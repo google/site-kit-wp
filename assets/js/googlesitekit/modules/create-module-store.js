@@ -52,7 +52,7 @@ import { createErrorStore } from '../data/create-error-store';
  * @param {string}  options.adminPage     Store admin page. Default is 'googlesitekit-dashboard'.
  * @param {boolean} options.requiresSetup Store flag for requires setup. Default is 'true'
  * @return {Object} The base module store object, with additional `STORE_NAME` and
- *                  `INITIAL_STATE` properties.
+ *                  `initialState` properties.
  */
 export const createModuleStore = ( slug, {
 	storeName = undefined,

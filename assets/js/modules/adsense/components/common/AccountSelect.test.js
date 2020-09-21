@@ -25,7 +25,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import AccountSelect from './AccountSelect';
-import { fireEvent, muteConsole, render } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 
@@ -58,7 +58,6 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should render a loading state when accounts are undefined', async () => {
-		muteConsole( 'warn' );
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
 
 		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
@@ -66,6 +65,7 @@ describe( 'AccountSelect', () => {
 
 		// If accounts are `undefined`, we'll make a request to fetch them.
 		expect( apiFetchMock ).toHaveBeenCalled();
+		expect( console ).toHaveWarned();
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {

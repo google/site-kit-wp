@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { muteConsole, unexpectedSuccess } from '../../../../tests/js/test-utils';
+import { unexpectedSuccess } from '../../../../tests/js/test-utils';
 import * as CacheModule from './cache';
 import {
 	createCacheKey,
@@ -145,9 +145,9 @@ describe( 'googlesitekit.api', () => {
 			);
 
 			try {
-				muteConsole( 'error' );
 				await get( 'core', 'search-console', 'other' );
 			} catch ( err ) {
+				expect( console ).toHaveErrored();
 				expect( err ).toEqual( errorResponse );
 			}
 		} );
@@ -165,9 +165,9 @@ describe( 'googlesitekit.api', () => {
 			);
 
 			try {
-				muteConsole( 'error' );
 				await get( 'core', 'search-console', 'users' );
 			} catch ( err ) {
+				expect( console ).toHaveErrored();
 				expect( err ).toEqual( errorResponse );
 			}
 		} );
