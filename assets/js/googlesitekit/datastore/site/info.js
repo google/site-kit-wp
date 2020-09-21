@@ -41,7 +41,7 @@ function getSiteInfoProperty( propName ) {
 // Actions
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 
-export const INITIAL_STATE = {
+export const initialState = {
 	siteInfo: undefined,
 };
 
@@ -433,7 +433,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

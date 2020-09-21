@@ -119,7 +119,7 @@ describe( 'data utils', () => {
 
 			const combinedStore = combineStores(
 				{
-					INITIAL_STATE: { one: 1 },
+					initialState: { one: 1 },
 					actions: {
 						actionOne,
 					},
@@ -143,7 +143,7 @@ describe( 'data utils', () => {
 					},
 				},
 				{
-					INITIAL_STATE: { two: 2 },
+					initialState: { two: 2 },
 					actions: {
 						actionTwo,
 					},
@@ -169,7 +169,7 @@ describe( 'data utils', () => {
 			);
 
 			// Initial state should contain both one and two
-			expect( combinedStore.INITIAL_STATE ).toMatchObject( { one: 1, two: 2 } );
+			expect( combinedStore.initialState ).toMatchObject( { one: 1, two: 2 } );
 
 			// Actions should contain both actions
 			expect( combinedStore.actions ).toMatchObject( { actionOne, actionTwo } );
@@ -177,7 +177,7 @@ describe( 'data utils', () => {
 			// Controls should contain both controls
 			expect( combinedStore.controls ).toMatchObject( { CONTROL_ONE, CONTROL_TWO } );
 
-			// Reducer should return combined INITIAL_STATE
+			// Reducer should return combined initialState
 			expect( combinedStore.reducer() ).toMatchObject( { one: 1, two: 2 } );
 
 			// Resolvers should contain both resolvers
@@ -203,7 +203,7 @@ describe( 'data utils', () => {
 
 			const combinedStore = combineStores(
 				{
-					INITIAL_STATE: { one: 1 },
+					initialState: { one: 1 },
 					actions: {
 						actionOne,
 					},
@@ -227,7 +227,7 @@ describe( 'data utils', () => {
 					},
 				},
 				{
-					INITIAL_STATE: { two: 2 },
+					initialState: { two: 2 },
 					actions: {
 						actionTwo,
 					},
@@ -275,7 +275,7 @@ describe( 'data utils', () => {
 			const newStore = combineStores();
 
 			expect( newStore ).toMatchObject( {
-				INITIAL_STATE: {},
+				initialState: {},
 				actions: {},
 				controls: {},
 				resolvers: {},
@@ -287,11 +287,11 @@ describe( 'data utils', () => {
 			expect( newStore.reducer( state ) ).toEqual( state );
 		} );
 
-		it( 'should not error if no INITIAL_STATE is provided', () => {
+		it( 'should not error if no initialState is provided', () => {
 			expect( () => {
 				combineStores(
 					{
-						INITIAL_STATE: undefined,
+						initialState: undefined,
 						actions: {},
 						controls: {},
 						reducer: {},
@@ -306,7 +306,7 @@ describe( 'data utils', () => {
 			expect( () => {
 				combineStores(
 					{
-						INITIAL_STATE: {},
+						initialState: {},
 						actions: undefined,
 						controls: {},
 						reducer: {},
@@ -321,7 +321,7 @@ describe( 'data utils', () => {
 			expect( () => {
 				combineStores(
 					{
-						INITIAL_STATE: {},
+						initialState: {},
 						actions: {},
 						controls: undefined,
 						reducer: {},
@@ -336,7 +336,7 @@ describe( 'data utils', () => {
 			expect( () => {
 				combineStores(
 					{
-						INITIAL_STATE: {},
+						initialState: {},
 						actions: {},
 						controls: {},
 						reducer: undefined,
@@ -351,7 +351,7 @@ describe( 'data utils', () => {
 			expect( () => {
 				combineStores(
 					{
-						INITIAL_STATE: {},
+						initialState: {},
 						actions: {},
 						controls: {},
 						reducer: {},
@@ -366,7 +366,7 @@ describe( 'data utils', () => {
 			expect( () => {
 				combineStores(
 					{
-						INITIAL_STATE: {},
+						initialState: {},
 						actions: {},
 						controls: {},
 						reducer: {},
@@ -381,7 +381,7 @@ describe( 'data utils', () => {
 			expect( () => {
 				combineStores(
 					{
-						INITIAL_STATE: undefined,
+						initialState: undefined,
 						actions: undefined,
 						controls: undefined,
 						reducer: undefined,
@@ -409,8 +409,8 @@ describe( 'data utils', () => {
 
 			// Create combined store from several stores which each contain values for only one key
 			const combinedStore = combineStores(
-				{ INITIAL_STATE: { one: 1 } },
-				{ INITIAL_STATE: { two: 2 } },
+				{ initialState: { one: 1 } },
+				{ initialState: { two: 2 } },
 				{
 					reducer: ( state, action ) => {
 						switch ( action.type ) {
@@ -476,7 +476,7 @@ describe( 'data utils', () => {
 			);
 
 			// Initial state should contain both one and two
-			expect( combinedStore.INITIAL_STATE ).toMatchObject( { one: 1, two: 2 } );
+			expect( combinedStore.initialState ).toMatchObject( { one: 1, two: 2 } );
 
 			// Actions should contain both actions
 			expect( combinedStore.actions ).toMatchObject( { actionOne, actionTwo } );
@@ -484,7 +484,7 @@ describe( 'data utils', () => {
 			// Controls should contain both controls
 			expect( combinedStore.controls ).toMatchObject( { CONTROL_ONE, CONTROL_TWO } );
 
-			// Reducer should return combined INITIAL_STATE
+			// Reducer should return combined initialState
 			expect( combinedStore.reducer() ).toMatchObject( { one: 1, two: 2 } );
 
 			// Resolvers should contain both resolvers
@@ -494,7 +494,7 @@ describe( 'data utils', () => {
 			expect( combinedStore.selectors ).toMatchObject( { getOne, getTwo } );
 		} );
 
-		it( 'INITIAL_STATEs, reducers, actions, and selectors should work together when provided by separate stores', () => {
+		it( 'initialStates, reducers, actions, and selectors should work together when provided by separate stores', () => {
 			// Define actions, controls, resolvers and selectors
 			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
 			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
@@ -503,8 +503,8 @@ describe( 'data utils', () => {
 
 			// Create combined store from several stores which each contain values for only one key
 			const combinedStore = combineStores(
-				{ INITIAL_STATE: { one: 1 } },
-				{ INITIAL_STATE: { two: 2 } },
+				{ initialState: { one: 1 } },
+				{ initialState: { two: 2 } },
 				{
 					reducer: ( state, action ) => {
 						switch ( action.type ) {

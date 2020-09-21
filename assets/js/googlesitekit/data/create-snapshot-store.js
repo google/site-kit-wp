@@ -51,7 +51,7 @@ const SET_STATE_FROM_SNAPSHOT = 'SET_STATE_FROM_SNAPSHOT';
 export const createSnapshotStore = ( storeName ) => {
 	invariant( storeName, 'storeName is required to create a snapshot store.' );
 
-	const INITIAL_STATE = {};
+	const initialState = {};
 
 	const actions = {
 		/**
@@ -136,7 +136,7 @@ export const createSnapshotStore = ( storeName ) => {
 		},
 	};
 
-	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
+	const reducer = ( state = initialState, { type, payload } ) => { // eslint-disable-line no-shadow
 		switch ( type ) {
 			case SET_STATE_FROM_SNAPSHOT: {
 				const { snapshot } = payload;
@@ -153,7 +153,7 @@ export const createSnapshotStore = ( storeName ) => {
 		}
 	};
 
-	return { INITIAL_STATE, actions, controls, reducer };
+	return { initialState, actions, controls, reducer };
 };
 
 /**

@@ -82,7 +82,7 @@ const RECEIVE_GET_ACCOUNTS = 'RECEIVE_GET_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	accounts: undefined,
 	isAwaitingAccountsPropertiesProfilesCompletion: false,
 	accountTicketID: undefined,
@@ -187,7 +187,7 @@ const baseReducer = ( state, { type, payload } ) => {
 		case RESET_ACCOUNTS: {
 			return {
 				...state,
-				accounts: BASE_INITIAL_STATE.accounts,
+				accounts: baseInitialState.accounts,
 				settings: {
 					...state.settings,
 					accountID: undefined,
@@ -369,7 +369,7 @@ const store = Data.combineStores(
 	fetchGetAccountsPropertiesProfilesStore,
 	fetchCreateAccountStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
@@ -377,7 +377,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

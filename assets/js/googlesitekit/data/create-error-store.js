@@ -66,7 +66,7 @@ export const actions = {
 };
 
 export function createErrorStore() {
-	const INITIAL_STATE = {
+	const initialState = {
 		errors: {},
 		error: undefined,
 	};
@@ -204,7 +204,7 @@ export function createErrorStore() {
 	};
 
 	return {
-		INITIAL_STATE,
+		initialState,
 		actions,
 		controls,
 		reducer,

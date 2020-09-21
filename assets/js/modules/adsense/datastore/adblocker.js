@@ -30,7 +30,7 @@ import { STORE_NAME } from './constants';
 // Actions
 const RECEIVE_IS_ADBLOCKER_ACTIVE = 'RECEIVE_IS_ADBLOCKER_ACTIVE';
 
-export const INITIAL_STATE = {
+export const initialState = {
 	isAdBlockerActive: undefined,
 };
 
@@ -98,7 +98,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

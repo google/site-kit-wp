@@ -57,7 +57,7 @@ const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
  * @param {Array}  options.settingSlugs List of the slugs that are part of the settings object
  *                                      handled by the respective API endpoint.
  * @return {Object} The settings store object, with additional `STORE_NAME` and
- *                  `INITIAL_STATE` properties.
+ *                  `initialState` properties.
  */
 export const createSettingsStore = ( type, identifier, datapoint, {
 	storeName = undefined,
@@ -69,7 +69,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const STORE_NAME = storeName || `${ type }/${ identifier }`;
 
-	const INITIAL_STATE = {
+	const initialState = {
 		settings: undefined,
 		savedSettings: undefined,
 	};
@@ -183,7 +183,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const controls = {};
 
-	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
+	const reducer = ( state = initialState, { type, payload } ) => { // eslint-disable-line no-shadow
 		switch ( type ) {
 			case SET_SETTINGS: {
 				const { values } = payload;
@@ -325,7 +325,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		fetchGetSettingsStore,
 		fetchSaveSettingsStore,
 		{
-			INITIAL_STATE,
+			initialState,
 			actions,
 			controls,
 			reducer,

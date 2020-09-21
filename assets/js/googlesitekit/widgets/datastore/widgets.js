@@ -46,7 +46,7 @@ const REGISTER_WIDGET = 'REGISTER_WIDGET';
 
 const WidgetWidthKeys = Object.keys( WIDGET_WIDTHS ).map( ( ( key ) => `WIDGET_WIDTHS.${ key }` ) ).join( ', ' );
 
-export const INITIAL_STATE = {
+export const initialState = {
 	areaAssignments: {},
 	registryKey: undefined,
 	widgets: {},
@@ -254,7 +254,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,
