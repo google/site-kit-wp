@@ -30,6 +30,7 @@ import {
 	siteKitRequest,
 	usingCache,
 } from './index';
+import * as Tracking from '../../util/api';
 
 describe( 'googlesitekit.api', () => {
 	// We import the entire caching module so we can use
@@ -279,6 +280,35 @@ describe( 'googlesitekit.api', () => {
 				3600
 			);
 		} );
+		it( 'should throw call trackEvent when an error is returned on get', async () => {
+			const trackEventSpy = jest.spyOn( Tracking, 'trackAPIError' );
+
+			const errorResponse = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
+				{ body: errorResponse, status: 500 }
+			);
+
+			try {
+				await get( 'core', 'search-console', 'users' );
+			} catch ( err ) {
+				expect( console ).toHaveErrored();
+				expect( trackEventSpy ).toHaveBeenCalledWith(
+					'GET',
+					'users',
+					'core',
+					'search-console', { code: 'internal_server_error',
+						data: { status: 500 },
+						message: 'Internal server error' }
+				);
+			}
+			trackEventSpy.mockRestore();
+		} );
 	} );
 
 	describe( 'set', () => {
@@ -435,6 +465,37 @@ describe( 'googlesitekit.api', () => {
 				createCacheKey( 'core', 'search-console', 'will-cache', queryParams )
 			);
 			expect( cacheData.cacheHit ).toEqual( false );
+		} );
+
+		it( 'should throw call trackEvent when an error is returned on set', async () => {
+			const trackEventSpy = jest.spyOn( Tracking, 'trackAPIError' );
+
+			const errorResponse = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
+				{ body: errorResponse, status: 500 }
+			);
+
+			try {
+				await set( 'core', 'search-console', 'settings', 'data' );
+			} catch ( err ) {
+				expect( console ).toHaveErrored();
+
+				expect( trackEventSpy ).toHaveBeenCalledWith(
+					'POST',
+					'settings',
+					'core',
+					'search-console', { code: 'internal_server_error',
+						data: { status: 500 },
+						message: 'Internal server error' }
+				);
+			}
+			trackEventSpy.mockRestore();
 		} );
 	} );
 
