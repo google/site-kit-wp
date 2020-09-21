@@ -39,7 +39,7 @@ const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
 const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
 const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
 
-export const INITIAL_STATE = {
+export const initialState = {
 	isDoingSubmitChanges: false,
 };
 
@@ -220,7 +220,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,
