@@ -151,7 +151,7 @@
     "@wordpress/browserslist-config": "^2.7.0",
     "@wordpress/e2e-test-utils": "^4.11.2",
     "@wordpress/eslint-plugin": "^7.1.0",
-    "@wordpress/scripts": "^3.4.0",
+    "@wordpress/scripts": "^12.2.0",
     "amphtml-validator": "^1.0.32",
     "babel-loader": "^8.1.0",
     "babel-plugin-lodash": "^3.3.4",
