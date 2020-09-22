@@ -24,6 +24,7 @@ import { STORE_NAME, FORM_SETUP, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
@@ -63,20 +64,7 @@ describe( 'modules/analytics settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: 'tagmanager',
-				name: 'Tag Manager',
-				description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
-				homepage: 'https://tagmanager.google.com/',
-				internal: false,
-				active: false,
-				connected: false,
-				dependencies: [ 'analytics' ],
-				dependants: [],
-				order: 10,
-			},
-		] );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive() );
 	} );
 
 	afterAll( () => {
@@ -400,22 +388,13 @@ describe( 'modules/analytics settings', () => {
 					ampPropertyID: 'UA-123456789-1',
 				};
 
-				registry.dispatch( CORE_MODULES ).receiveGetModules( [
-					{
-						slug: 'tagmanager',
-						name: 'Tag Manager',
-						description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
-						homepage: 'https://tagmanager.google.com/',
-						internal: false,
-						active: true,
-						connected: true,
-						dependencies: [ 'analytics' ],
-						dependants: [],
-						order: 10,
-					},
-				] );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
 
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					homeURL: 'http://example.com/',
+					ampMode: AMP_MODE_SECONDARY,
+				} );
+
 				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID: data.accountID,
 					permission: false,
@@ -425,6 +404,21 @@ describe( 'modules/analytics settings', () => {
 				buildAndReceiveWebAndAMP( data );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+					accountID: data.accountID,
+					permission: true,
+				}, { propertyID: data.webPropertyID } );
+
+				registry.dispatch( STORE_NAME ).setSettings( {
+					...validSettings,
+					accountID: data.accountID,
+					propertyID: data.webPropertyID,
+				} );
+
+				registry.dispatch( STORE_NAME ).setPropertyID( PROPERTY_CREATE );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 			} );
 
 			it( 'requires permissions for an existing tag', () => {
