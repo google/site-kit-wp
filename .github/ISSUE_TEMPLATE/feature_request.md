@@ -20,6 +20,12 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 * <!-- One or more bullet points for how to technically implement the feature. -->
 
+### Test Coverage
+* <!-- One or more bullet points for how to implement automated tests to verify the feature works. -->
+
+### Visual Regression Changes
+* <!-- One or more bullet points describing how the feature will affect visual regression tests, if applicable. -->
+
 ## QA Brief
 
 * <!-- One or more bullet points for how to test that the feature works as expected. -->
