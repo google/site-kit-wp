@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Storage\User_Aware
+ * Trait Google\Site_Kit\Core\Storage\User_Aware
  *
  * @package   Google\Site_Kit\Core\Storage
  * @copyright 2020 Google LLC
@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Storage;
  * @access private
  * @ignore
  */
-class User_Aware implements User_Aware_Interface {
+trait User_Aware_Trait {
 
 	/**
 	 * User ID.
@@ -28,13 +28,13 @@ class User_Aware implements User_Aware_Interface {
 	private $user_id;
 
 	/**
-	 * Constructor.
+	 * Sets user ID.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param int $user_id Optional. User ID. Default is the current user.
 	 */
-	public function __construct( $user_id = 0 ) {
+	public function set_user_id( $user_id = 0 ) {
 		$uid = (int) $user_id;
 		if ( empty( $uid ) ) {
 			$uid = get_current_user_id();

@@ -21,7 +21,9 @@ use Google\Site_Kit\Context;
  * @access private
  * @ignore
  */
-final class User_Options extends User_Aware implements User_Options_Interface {
+final class User_Options implements User_Options_Interface {
+
+	use User_Aware_Trait;
 
 	/**
 	 * Plugin context.
@@ -40,8 +42,8 @@ final class User_Options extends User_Aware implements User_Options_Interface {
 	 * @param int     $user_id Optional. User ID for whom options should be managed. Default is the current user.
 	 */
 	public function __construct( Context $context, $user_id = 0 ) {
-		parent::__construct( $user_id );
 		$this->context = $context;
+		$this->set_user_id( $user_id );
 	}
 
 	/**
