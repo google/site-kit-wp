@@ -19,13 +19,13 @@
 /**
  * External dependencies
  */
-import useUUID from 'react-use-uuid';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
+import { useInstanceId } from '@wordpress/compose';
 import { Fragment, useEffect, useRef } from '@wordpress/element';
 
 /**
@@ -44,7 +44,7 @@ const Switch = ( props ) => {
 	} = props;
 
 	const switchRef = useRef();
-	const instanceID = useUUID();
+	const instanceID = useInstanceId( Switch, 'googlesitekit-switch-' );
 
 	const noOp = () => {};
 
@@ -59,8 +59,6 @@ const Switch = ( props ) => {
 			onClick( event );
 		}
 	};
-
-	const htmlID = id || `'googlesitekit-switch-'${ instanceID }`;
 
 	return (
 		<Fragment>
@@ -84,7 +82,7 @@ const Switch = ( props ) => {
 					<div className="mdc-switch__thumb">
 						<input
 							type="checkbox"
-							id={ htmlID }
+							id={ id || instanceID }
 							className="mdc-switch__native-control"
 							role="switch"
 							checked={ checked }
@@ -96,7 +94,7 @@ const Switch = ( props ) => {
 			</div>
 			<label
 				className={ classnames( { 'screen-reader-only': hideLabel } ) }
-				htmlFor={ htmlID }>
+				htmlFor={ id || instanceID }>
 				{ label }
 			</label>
 		</Fragment>
