@@ -32,7 +32,7 @@ const store = Data.combineStores(
 	createErrorStore(),
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

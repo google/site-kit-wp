@@ -1,5 +1,5 @@
 /**
- * AdSense module Component Stories.
+ * AdSense Module Component Stories.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,12 +20,38 @@
  * Internal dependencies
  */
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
+import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
+import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
 import { STORE_NAME as ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore';
 import {
+	dashboardSummaryWidgetTodayData,
+	dashboardSummaryWidgetPeriodData,
+	dashboardSummaryWidget28DailyData,
+	dashboardSummaryWidgetTodayOptions,
+	dashboardSummaryWidgetPeriodOptions,
+	dashboardSummaryWidget28DailyOptions,
 	dashboardTopEarningPageWidgetArgs,
 	dashboardTopEarningPageWidgetData,
 } from '../assets/js/modules/adsense/datastore/__fixtures__';
+
+generateReportBasedWidgetStories( {
+	moduleSlug: 'adsense',
+	datastore: STORE_NAME,
+	group: 'AdSense Module/Components/Dashboard/Summary Widget',
+	data: [
+		dashboardSummaryWidgetTodayData,
+		dashboardSummaryWidgetPeriodData,
+		dashboardSummaryWidget28DailyData,
+	],
+	options: [
+		dashboardSummaryWidgetTodayOptions,
+		dashboardSummaryWidgetPeriodOptions,
+		dashboardSummaryWidget28DailyOptions,
+	],
+	component: DashboardSummaryWidget,
+	wrapWidget: false,
+} );
 
 generateReportBasedWidgetStories( {
 	moduleSlug: [ 'adsense', 'analytics' ],

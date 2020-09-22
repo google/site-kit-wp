@@ -82,11 +82,11 @@ export const collectControls = collect;
  * Collects all reducers and (optionally) provides initial state.
  *
  * If the first argument passed is not a function, it will be used as the
- * combined reducer's `INITIAL_STATE`.
+ * combined reducer's `initialState`.
  *
  * @since 1.5.0
  *
- * @param {...(Object|Function)} args A list of reducers, each containing their own controls. If the first argument is not a function, it will be used as the combined reducer's `INITIAL_STATE`.
+ * @param {...(Object|Function)} args A list of reducers, each containing their own controls. If the first argument is not a function, it will be used as the combined reducer's `initialState`.
  * @return {Function} A Redux-style reducer.
  */
 export const collectReducers = ( ...args ) => {
@@ -161,25 +161,23 @@ export const collectName = ( ...args ) => {
  * @param {Object} state A store's state.
  * @return {Object} The same state data as passed in `state`.
  */
-const passthroughReducer = ( state ) => {
-	return { ...state };
-};
+const passthroughReducer = ( state ) => state;
 
 /**
  * Combines multiple stores.
  *
  * @since 1.8.0
  *
- * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: INITIAL_STATE, actions, controls, reducer, resolvers, selectors
+ * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: initialState, actions, controls, reducer, resolvers, selectors
  * @return {Object} The combined store.
  */
 export const combineStores = ( ...stores ) => {
 	const combinedInitialState = collectState(
-		...stores.map( ( store ) => ( store.INITIAL_STATE || {} ) )
+		...stores.map( ( store ) => ( store.initialState || {} ) )
 	);
 
 	return {
-		INITIAL_STATE: combinedInitialState,
+		initialState: combinedInitialState,
 		controls: collectControls(
 			...stores.map( ( store ) => ( store.controls || {} ) )
 		),

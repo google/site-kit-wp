@@ -95,6 +95,7 @@ domReady( () => {
 			width: Widgets.WIDGET_WIDTHS.HALF,
 			priority: 1,
 			wrapWidget: false,
+
 		},
 		[
 			AREA_DASHBOARD_EARNINGS,

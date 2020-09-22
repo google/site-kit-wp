@@ -24,7 +24,6 @@ import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '.
 import { STORE_NAME, ACCOUNT_CREATE, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
@@ -332,7 +331,6 @@ describe( 'modules/tagmanager accounts', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 
 				await untilResolved( registry, STORE_NAME ).getAccounts();
@@ -341,6 +339,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 				expect( accounts ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
