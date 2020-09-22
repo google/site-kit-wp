@@ -40,9 +40,9 @@ export function generateGtmPropertyStory( { Component, permission, useExistingTa
 	return () => {
 		const setupRegistry = ( registry ) => {
 			const data = {
-				accountID: '152925174',
-				webPropertyID: 'UA-152925174-1',
-				ampPropertyID: 'UA-152925174-1',
+				accountID: '123456789',
+				webPropertyID: 'UA-123456789-1',
+				ampPropertyID: 'UA-123456789-1',
 			};
 
 			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
