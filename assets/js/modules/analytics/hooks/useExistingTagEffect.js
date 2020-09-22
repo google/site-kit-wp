@@ -36,7 +36,6 @@ export default function useExistingTagEffect() {
 	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
 
 	const {
-		hasExistingTag,
 		existingTag,
 		existingTagAccountID,
 		gtmAnalyticsPropertyID,
@@ -46,7 +45,6 @@ export default function useExistingTagEffect() {
 		const store = select( STORE_NAME );
 
 		const data = {
-			hasExistingTag: store.hasExistingTag(),
 			existingTag: store.getExistingTag(),
 			existingTagAccountID: '',
 			gtmAnalyticsPropertyID: select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID(),
@@ -55,18 +53,32 @@ export default function useExistingTagEffect() {
 		};
 
 		if ( data.existingTag ) {
-			data.existingTagAccountID = store.getTagPermission( data.existingTag )?.accountID;
+			const {
+				permission = false,
+				accountID = '',
+			} = store.getTagPermission( data.existingTag ) || {};
+
+			if ( permission ) {
+				data.existingTagAccountID = accountID;
+			}
 		}
 
 		if ( data.gtmAnalyticsPropertyID ) {
-			data.gtmAnalyticsAccountID = store.getTagPermission( data.gtmAnalyticsPropertyID )?.accountID;
+			const {
+				permission = false,
+				accountID = '',
+			} = store.getTagPermission( data.gtmAnalyticsPropertyID ) || {};
+
+			if ( permission ) {
+				data.gtmAnalyticsAccountID = accountID;
+			}
 		}
 
 		return data;
 	} );
 
 	useEffect( () => {
-		if ( hasExistingTag && existingTagAccountID ) {
+		if ( existingTag && existingTagAccountID ) {
 			// There is an existing Analytics tag, select it.
 			setAccountID( existingTagAccountID );
 			selectProperty( existingTag );
@@ -75,5 +87,5 @@ export default function useExistingTagEffect() {
 			setAccountID( gtmAnalyticsAccountID );
 			selectProperty( gtmAnalyticsPropertyID );
 		}
-	}, [ hasExistingTag, existingTag, existingTagAccountID, gtmAnalyticsPropertyID, gtmAnalyticsAccountID, gtmModuleActive ] );
+	}, [ existingTag, existingTagAccountID, gtmAnalyticsPropertyID, gtmAnalyticsAccountID, gtmModuleActive ] );
 }

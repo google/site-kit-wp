@@ -38,7 +38,113 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 	} );
 
-	it( 'sets the accountID and selects property when there is an existing tag with permission', async () => {
+	it( 'should select existing tag if it is available and user has permissions', async () => {
+		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, { body: { properties: [] }, status: 200 } );
+		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, { body: [], status: 200 } );
+
+		const existingTag = {
+			accountID: '54321',
+			propertyID: 'UA-987654321-1',
+		};
+
+		const data = {
+			accountID: '12345',
+			webPropertyID: 'UA-123456789-1',
+			ampPropertyID: 'UA-123456789-1',
+		};
+
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [
+			{
+				slug: 'tagmanager',
+				name: 'Tag Manager',
+				description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
+				homepage: 'https://tagmanager.google.com/',
+				internal: false,
+				active: true,
+				connected: true,
+				dependencies: [],
+				dependants: [],
+				order: 10,
+			},
+		] );
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: existingTag.accountID,
+			permission: true,
+		}, { propertyID: existingTag.propertyID } );
+
+		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+		buildAndReceiveWebAndAMP( data );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: data.accountID,
+			permission: true,
+		}, { propertyID: data.webPropertyID } );
+
+		act( () => {
+			renderHook( () => useExistingTagEffect(), { registry } );
+		} );
+
+		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( existingTag.accountID );
+		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( existingTag.propertyID );
+	} );
+
+	it( 'should select GTM tag if user doesn\'t have permissions for existing tag', async () => {
+		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, { body: { properties: [] }, status: 200 } );
+		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, { body: [], status: 200 } );
+
+		const existingTag = {
+			accountID: '54321',
+			propertyID: 'UA-987654321-1',
+		};
+
+		const data = {
+			accountID: '12345',
+			webPropertyID: 'UA-123456789-1',
+			ampPropertyID: 'UA-123456789-1',
+		};
+
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [
+			{
+				slug: 'tagmanager',
+				name: 'Tag Manager',
+				description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
+				homepage: 'https://tagmanager.google.com/',
+				internal: false,
+				active: true,
+				connected: true,
+				dependencies: [],
+				dependants: [],
+				order: 10,
+			},
+		] );
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: existingTag.accountID,
+			permission: false,
+		}, { propertyID: existingTag.propertyID } );
+
+		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+		buildAndReceiveWebAndAMP( data );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: data.accountID,
+			permission: true,
+		}, { propertyID: data.webPropertyID } );
+
+		act( () => {
+			renderHook( () => useExistingTagEffect(), { registry } );
+		} );
+
+		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( data.accountID );
+		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( data.webPropertyID );
+	} );
+
+	it( 'should select GTM tag if there is no existing tag and user has permissions', async () => {
 		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, { body: { properties: [] }, status: 200 } );
 		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, { body: [], status: 200 } );
 
@@ -78,5 +184,47 @@ describe( 'useExistingTagEffect', () => {
 
 		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( data.accountID );
 		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( data.webPropertyID );
+	} );
+
+	it( 'should select nothing if user doesn\'t have permissions neither to existing tag nor to GTM tag', async () => {
+		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, { body: { properties: [] }, status: 200 } );
+		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, { body: [], status: 200 } );
+
+		const data = {
+			accountID: '12345',
+			webPropertyID: 'UA-123456789-1',
+			ampPropertyID: 'UA-123456789-1',
+		};
+
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [
+			{
+				slug: 'tagmanager',
+				name: 'Tag Manager',
+				description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
+				homepage: 'https://tagmanager.google.com/',
+				internal: false,
+				active: true,
+				connected: true,
+				dependencies: [],
+				dependants: [],
+				order: 10,
+			},
+		] );
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: data.accountID,
+			permission: false,
+		}, { propertyID: data.webPropertyID } );
+
+		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+		buildAndReceiveWebAndAMP( data );
+
+		act( () => {
+			renderHook( () => useExistingTagEffect(), { registry } );
+		} );
+
+		expect( registry.select( STORE_NAME ).getAccountID() ).toBeUndefined();
+		expect( registry.select( STORE_NAME ).getPropertyID() ).toBeUndefined();
 	} );
 } );
