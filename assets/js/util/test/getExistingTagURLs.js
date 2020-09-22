@@ -96,7 +96,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				{ throws: 'error' }
 			);
 
-			// No muteConsole needed as the error is caught internally.
+			// No expect( console ).toHaveErrored() needed as the error is caught internally.
 			const existingTagURLs = await getExistingTagURLs( { homeURL } );
 
 			expect( existingTagURLs ).toEqual( expectedURLs );
