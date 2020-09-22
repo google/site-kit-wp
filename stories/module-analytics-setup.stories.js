@@ -40,6 +40,7 @@ import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/us
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { createBuildAndReceivers } from '../assets/js/modules/tagmanager/datastore/__factories__/utils';
 import { WithTestRegistry } from '../tests/js/utils';
+import { generateGtmPropertyStory } from './utils/analytics';
 
 function filterAnalyticsSetup() {
 	global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
@@ -60,60 +61,12 @@ function Setup( props ) {
 	);
 }
 
-function makeGtmPropertyStory( { permission, useExistingTag = false } ) {
-	return () => {
-		const setupRegistry = ( registry ) => {
-			const data = {
-				accountID: '152925174',
-				webPropertyID: 'UA-152925174-1',
-				ampPropertyID: 'UA-152925174-1',
-			};
-
-			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-
-			registry.dispatch( CORE_MODULES ).receiveGetModules( [
-				{
-					slug: 'tagmanager',
-					name: 'Tag Manager',
-					description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
-					homepage: 'https://tagmanager.google.com/',
-					internal: false,
-					active: true,
-					connected: true,
-					dependencies: [ 'analytics' ],
-					dependants: [],
-					order: 10,
-				},
-			] );
-
-			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-				homeURL: 'https://example.com/',
-				ampMode: AMP_MODE_SECONDARY,
-			} );
-
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				accountID: properties[ 0 ].accountId,
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-
-			if ( useExistingTag ) {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( data.webPropertyID );
-			}
-
-			registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-				accountID: data.accountID,
-				permission,
-			}, { propertyID: data.webPropertyID } );
-
-			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
-			buildAndReceiveWebAndAMP( data );
-		};
-
-		return <Setup callback={ setupRegistry } />;
-	};
+function generateGtmPropertyStoryCallback( permission, useExistingTag = false ) {
+	return generateGtmPropertyStory( {
+		Component: Setup,
+		permission,
+		useExistingTag,
+	} );
 }
 
 storiesOf( 'Analytics Module/Setup', module )
@@ -331,8 +284,8 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'No Tag, GTM property w/ access', makeGtmPropertyStory( { permission: true } ) )
-	.add( 'No Tag, GTM property w/o access', makeGtmPropertyStory( { permission: false } ) )
-	.add( 'Existing Tag, GTM property w/ access', makeGtmPropertyStory( { permission: true, useExistingTag: true } ) )
-	.add( 'Existing Tag, GTM property w/o access', makeGtmPropertyStory( { permission: false, useExistingTag: true } ) )
+	.add( 'No Tag, GTM property w/ access', generateGtmPropertyStoryCallback( true ) )
+	.add( 'No Tag, GTM property w/o access', generateGtmPropertyStoryCallback( false ) )
+	.add( 'Existing Tag, GTM property w/ access', generateGtmPropertyStoryCallback( true, true ) )
+	.add( 'Existing Tag, GTM property w/o access', generateGtmPropertyStoryCallback( false, true ) )
 ;
