@@ -43,7 +43,7 @@ const store = Data.combineStores(
 );
 
 export const {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

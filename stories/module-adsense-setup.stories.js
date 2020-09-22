@@ -119,7 +119,7 @@ storiesOf( 'AdSense Module/Setup', module )
 				data: {
 					reason: 'noAdSenseAccount',
 				},
-			} );
+			}, 'getAccounts' );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -138,7 +138,7 @@ storiesOf( 'AdSense Module/Setup', module )
 				data: {
 					reason: 'noAdSenseAccount',
 				},
-			} );
+			}, 'getAccounts' );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -184,7 +184,7 @@ storiesOf( 'AdSense Module/Setup', module )
 				data: {
 					reason: 'disapprovedAccount',
 				},
-			} );
+			}, 'getAccounts' );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -223,7 +223,7 @@ storiesOf( 'AdSense Module/Setup', module )
 				data: {
 					reason: 'accountPendingReview',
 				},
-			} );
+			}, 'getAlerts', [ fixtures.accounts[ 0 ].id ] );
 			registry.dispatch( STORE_NAME ).receiveGetURLChannels( [], {
 				accountID: fixtures.accounts[ 0 ].id,
 				clientID: fixtures.clients[ 0 ].id,

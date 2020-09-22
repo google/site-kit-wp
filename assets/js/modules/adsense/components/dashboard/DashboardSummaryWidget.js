@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import moment from 'moment';
-
-/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -35,32 +30,28 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { reduceAdSenseData } from '../../util';
 import { readableLargeNumber, extractForSparkline, getSiteKitAdminURL } from '../../../../util';
 import whenActive from '../../../../util/when-active';
-import ErrorText from '../../../../components/error-text';
 import PreviewBlock from '../../../../components/preview-block';
-import Layout from '../../../../components/layout/layout';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/notifications/nodata';
+import Widget from '../../../../googlesitekit/widgets/components/Widget';
+
 const { useSelect } = Data;
 
 function DashboardSummaryWidget() {
 	const {
+		error,
+		loading,
 		today,
-		todayError,
 		period,
-		periodError,
 		daily,
-		dailyError,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
 
-		const format = 'YYYY-MM-DD';
-		const now = moment().format( format );
-		const lastMonth = moment().subtract( 1, 'month' ).format( format );
-
 		const todayArgs = {
-			startDate: now,
-			endDate: now,
+			dateRange: 'today',
 			metrics,
 		};
 
@@ -70,32 +61,30 @@ function DashboardSummaryWidget() {
 		};
 
 		const dailyArgs = {
-			startDate: lastMonth,
-			endDate: now,
+			dateRange: 'this-month',
 			metrics,
 			dimensions: [ 'DATE' ],
 		};
 
 		return {
+			error: store.getErrorForSelector( 'getReport', [ todayArgs ] ) || store.getErrorForSelector( 'getReport', [ periodArgs ] ) || store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
+			loading: store.isResolving( 'getReport', [ todayArgs ] ) || store.isResolving( 'getReport', [ periodArgs ] ) || store.isResolving( 'getReport', [ dailyArgs ] ),
 			today: store.getReport( todayArgs ),
-			todayError: store.getErrorForSelector( 'getReport', [ todayArgs ] ),
 			period: store.getReport( periodArgs ),
-			periodError: store.getErrorForSelector( 'getReport', [ periodArgs ] ),
 			daily: store.getReport( dailyArgs ),
-			dailyError: store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
 		};
 	} );
 
-	if ( todayError || periodError || dailyError ) {
-		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ErrorText message={ ( todayError || periodError || dailyError ).message } />
-			</div>
-		);
+	if ( loading ) {
+		return <PreviewBlock width="100%" height="276px" />;
 	}
 
-	if ( ! today || ! period || ! daily ) {
-		return <PreviewBlock width="100%" height="276px" />;
+	if ( error ) {
+		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
+	}
+
+	if ( ! today?.totals && ! period?.totals && ! daily?.totals ) {
+		return getNoDataComponent( __( 'AdSense', 'google-site-kit' ) );
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );
@@ -105,74 +94,76 @@ function DashboardSummaryWidget() {
 	const currencyCode = currencyHeader ? currencyHeader.currency : false;
 
 	return (
-		<Layout className="googlesitekit-dashboard-adsense-stats" fill>
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<DataBlock
-							className="overview-adsense-rpm"
-							title={ __( 'RPM', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( period.totals[ 1 ], currencyCode ) }
-							source={ {
-								name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-								link: href,
-							} }
-							sparkline={ daily &&
-								<Sparkline
-									data={ extractForSparkline( processedData.dataMap, 2 ) }
-									change={ 1 }
-									loadSmall={ false }
-								/>
-							}
-							context="compact"
-						/>
-					</div>
+		<Widget
+			slug="adsenseSummary"
+			className="googlesitekit-dashboard-adsense-stats mdc-layout-grid"
+		>
+			<div className="mdc-layout-grid__inner">
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<DataBlock
+						className="overview-adsense-rpm"
+						title={ __( 'RPM', 'google-site-kit' ) }
+						datapoint={ readableLargeNumber( period.totals[ 1 ], currencyCode ) }
+						source={ {
+							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
+							link: href,
+						} }
+						sparkline={ daily &&
+							<Sparkline
+								data={ extractForSparkline( processedData.dataMap, 2 ) }
+								change={ 1 }
+								loadSmall={ false }
+							/>
+						}
+						context="compact"
+					/>
+				</div>
 
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<DataBlock
-							className="overview-adsense-earnings"
-							title={ __( 'Total Earnings', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( period.totals[ 0 ], currencyCode ) }
-							source={ {
-								name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-								link: href,
-							} }
-							change={ today.totals[ 0 ] }
-							changeDataUnit={ '$' }
-							sparkline={ daily &&
-								<Sparkline
-									data={ extractForSparkline( processedData.dataMap, 1 ) }
-									change={ 1 }
-									loadSmall={ false }
-								/>
-							}
-							context="compact"
-						/>
-					</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<DataBlock
+						className="overview-adsense-earnings"
+						title={ __( 'Total Earnings', 'google-site-kit' ) }
+						datapoint={ readableLargeNumber( period.totals[ 0 ], currencyCode ) }
+						source={ {
+							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
+							link: href,
+						} }
+						change={ today.totals[ 0 ] }
+						changeDataUnit={ '$' }
+						sparkline={ daily &&
+							<Sparkline
+								data={ extractForSparkline( processedData.dataMap, 1 ) }
+								change={ 1 }
+								loadSmall={ false }
+							/>
+						}
+						context="compact"
+					/>
+				</div>
 
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<DataBlock
-							className="overview-adsense-impressions"
-							title={ __( 'Ad Impressions', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( period.totals[ 2 ] ) }
-							source={ {
-								name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
-								link: href,
-							} }
-							sparkline={ daily &&
-								<Sparkline
-									data={ extractForSparkline( processedData.dataMap, 3 ) }
-									change={ 1 }
-									loadSmall={ false }
-								/>
-							}
-							context="compact"
-						/>
-					</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<DataBlock
+						className="overview-adsense-impressions"
+						title={ __( 'Ad Impressions', 'google-site-kit' ) }
+						datapoint={ readableLargeNumber( period.totals[ 2 ] ) }
+						source={ {
+							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
+							link: href,
+						} }
+						sparkline={ daily &&
+							<Sparkline
+								data={ extractForSparkline( processedData.dataMap, 3 ) }
+								change={ 1 }
+								loadSmall={ false }
+							/>
+						}
+						context="compact"
+					/>
 				</div>
 			</div>
-		</Layout>
+		</Widget>
 	);
 }
 
+// export default DashboardSummaryWidget;
 export default whenActive( { moduleName: 'adsense' } )( DashboardSummaryWidget );
