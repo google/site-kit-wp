@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -33,6 +34,8 @@ use Exception;
  * @ignore
  */
 final class Authentication {
+
+	use Method_Proxy_Trait;
 
 	/**
 	 * Plugin context.
@@ -212,23 +215,17 @@ final class Authentication {
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
 
-		$private_hook = function( $method ) {
-			return function() use ( $method ) {
-				return call_user_func_array( array( $this, $method ), func_get_args() );
-			};
-		};
+		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
+		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
+		add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'authentication_admin_notices' ) );
+		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
 
-		add_filter( 'allowed_redirect_hosts', $private_hook( 'allowed_redirect_hosts' ) );
-		add_filter( 'googlesitekit_admin_data', $private_hook( 'inline_js_admin_data' ) );
-		add_filter( 'googlesitekit_admin_notices', $private_hook( 'authentication_admin_notices' ) );
-		add_filter( 'googlesitekit_inline_base_data', $private_hook( 'inline_js_base_data' ) );
-		add_filter( 'googlesitekit_setup_data', $private_hook( 'inline_js_setup_data' ) );
-
-		add_action( 'init', $private_hook( 'handle_oauth' ) );
-		add_action( 'admin_init', $private_hook( 'check_connected_proxy_url' ) );
-		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $private_hook( 'verify_proxy_setup_nonce' ), -1 ); // Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
-		add_action( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER, $private_hook( 'handle_proxy_connect_user' ) ); // Google_Proxy::ACTION_CONNECT_USER is called from Site Kit to redirect to the proxy initially.
-		add_action( 'googlesitekit_authorize_user', $private_hook( 'set_connected_proxy_url' ) );
+		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
+		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 ); // Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
+		add_action( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER, $this->get_method_proxy( 'handle_proxy_connect_user' ) ); // Google_Proxy::ACTION_CONNECT_USER is called from Site Kit to redirect to the proxy initially.
+		add_action( 'googlesitekit_authorize_user', $this->get_method_proxy( 'set_connected_proxy_url' ) );
 
 		add_filter(
 			'googlesitekit_rest_routes',
