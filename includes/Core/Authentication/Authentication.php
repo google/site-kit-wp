@@ -34,8 +34,6 @@ use Exception;
  */
 final class Authentication {
 
-	const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH = 'connected_url_mismatch';
-
 	/**
 	 * Plugin context.
 	 *
@@ -807,7 +805,7 @@ final class Authentication {
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() {
-					return $this->disconnected_reason->get() === self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH
+					return $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH
 						&& $this->credentials->has();
 				},
 			)
@@ -1052,7 +1050,7 @@ final class Authentication {
 		}
 
 		$this->disconnect();
-		$this->disconnected_reason->set( self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH );
+		$this->disconnected_reason->set( Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH );
 	}
 
 	/**
@@ -1074,7 +1072,7 @@ final class Authentication {
 			wp_die( 'You are not allowed to connect Site Kit. Please, try again later.' );
 		}
 
-		if ( $this->disconnected_reason->get() === self::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ) {
+		if ( $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH ) {
 			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
 		}
 

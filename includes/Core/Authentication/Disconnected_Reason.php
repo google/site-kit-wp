@@ -27,6 +27,11 @@ class Disconnected_Reason extends User_Setting {
 	const OPTION = 'googlesitekit_disconnected_reason';
 
 	/**
+	 * Available reasons.
+	 */
+	const REASON_CONNECTED_URL_MISMATCH = 'connected_url_mismatch';
+
+	/**
 	 * Registers the setting in WordPress.
 	 *
 	 * @since n.e.x.t

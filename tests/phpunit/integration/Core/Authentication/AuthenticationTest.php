@@ -531,7 +531,7 @@ class AuthenticationTest extends TestCase {
 		do_action( 'admin_init' );
 
 		$this->assertEquals(
-			Authentication::DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+			Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH,
 			$user_options->get( Disconnected_Reason::OPTION )
 		);
 	}
