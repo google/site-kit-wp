@@ -121,7 +121,7 @@ const fetchSetModuleActivationStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	clientDefinitions: {},
 	serverDefinitions: undefined,
 	// This value is to indicate that modules data needs to be refreshed after
@@ -456,7 +456,7 @@ const store = Data.combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		controls: baseControls,
 		reducer: baseReducer,
@@ -465,7 +465,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

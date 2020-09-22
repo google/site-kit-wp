@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import { getPreviousDate, getDateString, getPreviousWeekDate } from './utils';
 
-export const INITIAL_STATE = {
+export const initialState = {
 	dateRange: 'last-28-days',
 };
 
@@ -131,7 +131,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

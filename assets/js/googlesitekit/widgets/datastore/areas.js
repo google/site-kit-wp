@@ -41,7 +41,7 @@ const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
 
 const WidgetAreaStyleKeys = Object.keys( WIDGET_AREA_STYLES ).map( ( ( key ) => `WIDGET_AREA_STYLES.${ key }` ) ).join( ', ' );
 
-export const INITIAL_STATE = {
+export const initialState = {
 	areas: {},
 	contextAssignments: {},
 };
@@ -226,7 +226,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

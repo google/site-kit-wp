@@ -129,7 +129,7 @@ export const createFetchStore = ( {
 	const receiveCreator = `receive${ pascalCaseBaseName }`;
 	const isFetching = `isFetching${ pascalCaseBaseName }`;
 
-	const INITIAL_STATE = {
+	const initialState = {
 		[ isFetching ]: {},
 	};
 
@@ -274,7 +274,7 @@ export const createFetchStore = ( {
 	};
 
 	return {
-		INITIAL_STATE,
+		initialState,
 		actions,
 		controls,
 		reducer,

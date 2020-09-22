@@ -31,7 +31,7 @@ import { STORE_NAME } from './constants';
 // Actions
 const SET_REGISTRY_KEY = 'SET_REGISTRY_KEY';
 
-const INITIAL_STATE = {
+const initialState = {
 	registryKey: undefined,
 };
 
@@ -98,7 +98,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	resolvers,
 	reducer,

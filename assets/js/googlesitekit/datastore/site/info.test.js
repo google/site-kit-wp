@@ -24,7 +24,7 @@ import {
 	untilResolved,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
-import { INITIAL_STATE } from './index';
+import { initialState } from './index';
 import { STORE_NAME } from './constants';
 
 describe( 'core/site site info', () => {
@@ -166,7 +166,7 @@ describe( 'core/site site info', () => {
 
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
-				expect( info ).toBe( INITIAL_STATE.siteInfo );
+				expect( info ).toBe( initialState.siteInfo );
 				expect( console ).toHaveErrored();
 			} );
 		} );

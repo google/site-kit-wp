@@ -24,7 +24,7 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { INITIAL_STATE } from './index';
+import { initialState } from './index';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user userInfo', () => {
@@ -101,7 +101,7 @@ describe( 'core/user userInfo', () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 				const connectURL = registry.select( STORE_NAME ).getConnectURL();
 
-				expect( connectURL ).toEqual( INITIAL_STATE.connectURL );
+				expect( connectURL ).toEqual( initialState.connectURL );
 				expect( console ).toHaveErrored();
 			} );
 
@@ -143,7 +143,7 @@ describe( 'core/user userInfo', () => {
 				registry.select( STORE_NAME ).getUser();
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getUser() !== INITIAL_STATE
+						registry.select( STORE_NAME ).getUser() !== initialState
 					),
 				);
 
@@ -158,7 +158,7 @@ describe( 'core/user userInfo', () => {
 
 				const userInfo = registry.select( STORE_NAME ).getUser();
 
-				const { user } = INITIAL_STATE;
+				const { user } = initialState;
 				expect( userInfo ).toEqual( user );
 				expect( console ).toHaveErrored();
 			} );
@@ -172,7 +172,7 @@ describe( 'core/user userInfo', () => {
 				registry.select( STORE_NAME ).isVerified();
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).isVerified() !== INITIAL_STATE
+						registry.select( STORE_NAME ).isVerified() !== initialState
 					),
 				);
 				const isVerified = registry.select( STORE_NAME ).isVerified();
@@ -186,7 +186,7 @@ describe( 'core/user userInfo', () => {
 
 				const isVerified = registry.select( STORE_NAME ).isVerified();
 
-				const { verified } = INITIAL_STATE;
+				const { verified } = initialState;
 				expect( isVerified ).toEqual( verified );
 				expect( console ).toHaveErrored();
 			} );

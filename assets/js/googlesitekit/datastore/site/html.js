@@ -78,7 +78,7 @@ const fetchHTMLForURLStore = createFetchStore( {
 const RESET_HTML_FOR_URL = 'RESET_HTML_FOR_URL';
 const WAIT_FOR_HTML_FOR_URL = 'WAIT_FOR_HTML_FOR_URL';
 
-export const BASE_INITIAL_STATE = {
+export const baseInitialState = {
 	htmlForURL: {},
 };
 
@@ -180,7 +180,7 @@ export const baseSelectors = {
 const store = Data.combineStores(
 	fetchHTMLForURLStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		controls: baseControls,
 		reducer: baseReducer,
@@ -189,7 +189,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;
