@@ -95,14 +95,10 @@ generateReportBasedWidgetStories( {
 	data: dashboardGoalsWidgetData,
 	options: dashboardGoalsWidgetArgs,
 	component: DashboardGoalsWidget,
-	additionalVariantCallbacks: {
-		Loaded: ( dispatch ) => {
-			dispatch( STORE_NAME ).receiveGetGoals( goals );
-		},
-		'Data Unavailable': ( dispatch ) => {
-			dispatch( STORE_NAME ).receiveGetGoals( goals );
-		},
-	},
+	additionalVariantCallbacks: [
+		[ 'Loaded', ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ) ],
+		[ 'Data Unavailable', ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ) ],
+	],
 } );
 
 generateReportBasedWidgetStories( {

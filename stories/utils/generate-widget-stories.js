@@ -29,6 +29,7 @@ import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import { WithTestRegistry } from '../../tests/js/utils';
+import { valuesIn } from 'lodash';
 const { components: { Widget } } = Widgets;
 
 /**
@@ -77,16 +78,16 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
  *
  * @since 1.16.0
  *
- * @param {Object}    args                              Widget arguments.
- * @param {string}    args.moduleSlug                   Module slug.
- * @param {string}    args.datastore                    Module datastore name.
- * @param {string}    args.group                        Stories group name.
- * @param {Array}     args.data                         Widget data.
- * @param {Object}    args.options                      Arguments for report requests.
- * @param {Component} args.component                    Widget component.
- * @param {boolean}   args.wrapWidget                   Whether to wrap in default <Widget> component. Default true.
- * @param {Object}    [args.additionalVariants]         Optional. Additional story variants.
- * @param {Object}    [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants
+ * @param {Object} args                             Widget arguments.
+ * @param {string} args.moduleSlug                  Module slug.
+ * @param {string} args.datastore                   Module datastore name.
+ * @param {string} args.group                       Stories group name.
+ * @param {Array} args.data                         Widget data.
+ * @param {Object} args.options                     Arguments for report requests.
+ * @param {Component} args.component                Widget component.
+ * @param {boolean} args.wrapWidget                 Whether to wrap in default <Widget> component. Default true.
+ * @param {Array} [args.additionalVariants]         Optional. Additional story variants.
+ * @param {Array} [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {
@@ -97,7 +98,7 @@ export function generateReportBasedWidgetStories( {
 	options,
 	component: WidgetComponent,
 	wrapWidget = true,
-	additionalVariants = {},
+	additionalVariants = [],
 	additionalVariantCallbacks = {},
 } ) {
 	const stories = storiesOf( group, module );
@@ -113,13 +114,8 @@ export function generateReportBasedWidgetStories( {
 		}
 	}
 
-	const {
-		Loaded: additionalLoadingCallback,
-		'Data Unavailable': additionalDataUnavailableCallback,
-		Error: additionalErrorCallback,
-	} = additionalVariantCallbacks;
-
-	const variants = {
+	// Existing default variants
+	const defaultVariants = {
 		Loaded: ( { dispatch } ) => {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
@@ -130,8 +126,13 @@ export function generateReportBasedWidgetStories( {
 			}
 
 			// Run additional callback if it exists.
-			if ( additionalLoadingCallback ) {
-				additionalLoadingCallback( dispatch, data, options );
+			if ( additionalVariantCallbacks.length > 0 ) {
+				for ( const [ variantName, callback ] of additionalVariantCallbacks ) {
+					if ( variantName === 'Loaded' ) {
+						callback( dispatch, data, options );
+						break;
+					}
+				}
 			}
 		},
 		'Data Unavailable': ( { dispatch } ) => {
@@ -145,8 +146,13 @@ export function generateReportBasedWidgetStories( {
 			}
 
 			// Run additional callback if it exists.
-			if ( additionalDataUnavailableCallback ) {
-				additionalDataUnavailableCallback( dispatch, data, options );
+			if ( additionalVariantCallbacks.length > 0 ) {
+				for ( const [ variantName, callback ] of additionalVariantCallbacks ) {
+					if ( variantName === 'Data Unavailable' ) {
+						callback( dispatch, data, options );
+						break;
+					}
+				}
 			}
 		},
 		Error: ( { dispatch } ) => {
@@ -166,11 +172,47 @@ export function generateReportBasedWidgetStories( {
 			}
 
 			// Run additional callback if it exists.
-			if ( additionalErrorCallback ) {
-				additionalErrorCallback( dispatch, data, options );
+			if ( additionalVariantCallbacks.length > 0 ) {
+				for ( const [ variantName, callback ] of additionalVariantCallbacks ) {
+					if ( variantName === 'Error' ) {
+						callback( dispatch, data, options );
+						break;
+					}
+				}
 			}
 		},
-		...additionalVariants,
+	};
+
+	// custom variants.
+	const customVariants = {};
+	if ( additionalVariants.length > 0 ) {
+		additionalVariants.forEach( ( [ name, variantFixtureData ] ) => {
+			const { data: variantData, options: variantOptions } = variantFixtureData;
+			customVariants[ name ] = ( { dispatch } ) => {
+				if ( Array.isArray( variantOptions ) ) {
+					options.forEach( ( option, index ) => {
+						dispatch( datastore ).receiveGetReport( variantData[ index ], { options: option } );
+					} );
+				} else {
+					dispatch( datastore ).receiveGetReport( variantData, { options: variantOptions } );
+				}
+
+				// check for additional variant callbacks
+				if ( additionalVariantCallbacks.length > 0 ) {
+					for ( const [ variantName, callback ] of additionalVariantCallbacks ) {
+						if ( variantName === name ) {
+							callback( dispatch, data, options );
+							break;
+						}
+					}
+				}
+			};
+		} );
+	}
+
+	const variants = {
+		...defaultVariants,
+		...customVariants,
 	};
 
 	const widget = wrapWidget ? <Widget><WidgetComponent /></Widget> : <WidgetComponent />;
