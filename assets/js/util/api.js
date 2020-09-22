@@ -29,7 +29,7 @@ export async function trackAPIError( method, type, identifier, datapoint, error 
 	await trackEvent(
 		'api_error',
 		`${ method }:${ type }/${ identifier }/data/${ datapoint }`,
-		`${ error.message } (code: ${ error.code }${ error.data?.reason ? ', reason: ' + error.data.reason : '' } ])`,
+		`${ error.message } (code: ${ error.code }${ error.data?.reason ? ', reason: ' + error.data.reason : '' })`,
 		error.data?.status || error.code
 	);
 }

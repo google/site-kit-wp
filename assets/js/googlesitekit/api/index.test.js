@@ -30,7 +30,9 @@ import {
 	siteKitRequest,
 	usingCache,
 } from './index';
-import * as Tracking from '../../util/api';
+import * as Tracking from '../../util/tracking/';
+import { DATA_LAYER } from '../../util/tracking/constants';
+import createTracking from '../../util/tracking/createTracking';
 
 describe( 'googlesitekit.api', () => {
 	// We import the entire caching module so we can use
@@ -280,8 +282,20 @@ describe( 'googlesitekit.api', () => {
 				3600
 			);
 		} );
-		it( 'should call trackEvent when an error is returned on get', async () => {
-			const trackEventSpy = jest.spyOn( Tracking, 'trackAPIError' );
+		it( 'should add tracking info to the data layer when an error is returned on get', async () => {
+			let pushArgs;
+			const dataLayer = {
+				[ DATA_LAYER ]: {
+					push: ( ...args ) => pushArgs = args,
+				},
+			};
+			const config = {
+				trackingEnabled: true,
+			};
+			const { trackEvent } = createTracking( config, dataLayer );
+
+			// Replace the trackEvent implementation to use our version with the mocked dataLayer.
+			const trackEventSpy = jest.spyOn( Tracking, 'trackEvent' ).mockImplementation( trackEvent );
 
 			const errorResponse = {
 				code: 'internal_server_error',
@@ -298,14 +312,13 @@ describe( 'googlesitekit.api', () => {
 				await get( 'core', 'search-console', 'users' );
 			} catch ( err ) {
 				expect( console ).toHaveErrored();
-				expect( trackEventSpy ).toHaveBeenCalledWith(
-					'GET',
-					'users',
-					'core',
-					'search-console', { code: 'internal_server_error',
-						data: { status: 500 },
-						message: 'Internal server error' }
-				);
+				expect( pushArgs.length ).toEqual( 1 );
+				const [ event, eventName, eventData ] = pushArgs[ 0 ];
+				expect( event ).toEqual( 'event' );
+				expect( eventName ).toEqual( 'GET:users/core/data/search-console' );
+				expect( eventData.event_category ).toEqual( 'api_error' );
+				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
+				expect( eventData.event_value ).toEqual( 500 );
 			}
 			trackEventSpy.mockRestore();
 		} );
@@ -467,8 +480,20 @@ describe( 'googlesitekit.api', () => {
 			expect( cacheData.cacheHit ).toEqual( false );
 		} );
 
-		it( 'should call trackEvent when an error is returned on set', async () => {
-			const trackEventSpy = jest.spyOn( Tracking, 'trackAPIError' );
+		it( 'should add tracking info to the data layer when an error is returned on set', async () => {
+			let pushArgs;
+			const dataLayer = {
+				[ DATA_LAYER ]: {
+					push: ( ...args ) => pushArgs = args,
+				},
+			};
+			const config = {
+				trackingEnabled: true,
+			};
+			const { trackEvent } = createTracking( config, dataLayer );
+
+			// Replace the trackEvent implementation to use our version with the mocked dataLayer.
+			const trackEventSpy = jest.spyOn( Tracking, 'trackEvent' ).mockImplementation( trackEvent );
 
 			const errorResponse = {
 				code: 'internal_server_error',
@@ -485,15 +510,13 @@ describe( 'googlesitekit.api', () => {
 				await set( 'core', 'search-console', 'settings', 'data' );
 			} catch ( err ) {
 				expect( console ).toHaveErrored();
-
-				expect( trackEventSpy ).toHaveBeenCalledWith(
-					'POST',
-					'settings',
-					'core',
-					'search-console', { code: 'internal_server_error',
-						data: { status: 500 },
-						message: 'Internal server error' }
-				);
+				expect( pushArgs.length ).toEqual( 1 );
+				const [ event, eventName, eventData ] = pushArgs[ 0 ];
+				expect( event ).toEqual( 'event' );
+				expect( eventName ).toEqual( 'POST:settings/core/data/search-console' );
+				expect( eventData.event_category ).toEqual( 'api_error' );
+				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
+				expect( eventData.event_value ).toEqual( 500 );
 			}
 			trackEventSpy.mockRestore();
 		} );
