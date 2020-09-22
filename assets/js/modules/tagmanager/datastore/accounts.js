@@ -48,7 +48,7 @@ const fetchGetAccountsStore = createFetchStore( {
 	},
 } );
 
-export const BASE_INITIAL_STATE = {
+export const baseInitialState = {
 	accounts: undefined,
 };
 
@@ -141,7 +141,7 @@ export const baseReducer = ( state, { type } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -193,7 +193,7 @@ export const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetAccountsStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
@@ -202,7 +202,7 @@ const store = Data.combineStores(
 );
 
 export const {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

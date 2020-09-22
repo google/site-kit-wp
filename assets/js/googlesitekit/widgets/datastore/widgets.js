@@ -46,7 +46,7 @@ const REGISTER_WIDGET = 'REGISTER_WIDGET';
 
 const WidgetWidthKeys = Object.keys( WIDGET_WIDTHS ).map( ( ( key ) => `WIDGET_WIDTHS.${ key }` ) ).join( ', ' );
 
-export const INITIAL_STATE = {
+export const initialState = {
 	areaAssignments: {},
 	registryKey: undefined,
 	widgets: {},
@@ -152,7 +152,7 @@ export const reducer = ( state, { type, payload } ) => {
 			if ( state.widgets[ slug ] !== undefined ) {
 				global.console.warn( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
 
-				return { ...state };
+				return state;
 			}
 
 			return {
@@ -165,7 +165,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -254,7 +254,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

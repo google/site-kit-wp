@@ -112,7 +112,7 @@ describe( 'determineAccountStatus', () => {
 		const params = {
 			accounts: undefined,
 			previousAccountID: '',
-			error: {
+			accountsError: {
 				code: '403',
 				message: 'This is an AdSense API error message.',
 				data: {
@@ -136,7 +136,7 @@ describe( 'determineAccountStatus', () => {
 		const params = {
 			accounts: undefined,
 			previousAccountID: '',
-			error: {
+			accountsError: {
 				code: '403',
 				message: 'This is an AdSense API error message.',
 				data: {
@@ -184,7 +184,7 @@ describe( 'determineAccountStatus', () => {
 			alerts: undefined,
 			previousAccountID: '',
 			previousClientID: '',
-			error: {
+			alertsError: {
 				code: '403',
 				message: 'This is an AdSense API error message.',
 				data: {
@@ -203,7 +203,7 @@ describe( 'determineAccountStatus', () => {
 			alerts: undefined,
 			previousAccountID: '',
 			previousClientID: '',
-			error: {
+			alertsError: {
 				code: '403',
 				message: 'This is an AdSense API error message.',
 				data: {
@@ -286,7 +286,7 @@ describe( 'determineAccountStatus', () => {
 					clients: undefined,
 					previousAccountID: '',
 					previousClientID: '',
-					error: {
+					alertsError: {
 						code: '403',
 						message: 'This is an AdSense API error message.',
 						data: {
