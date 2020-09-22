@@ -22,16 +22,18 @@
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
-import { makeBuildAndReceiveWebAndAMP, parseIDs } from './util/web-and-amp';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
+import {
+	createBuildAndReceivers,
+	parseLiveContainerVersionIDs as parseIDs,
+} from './__factories__/utils';
 
 describe( 'modules/tagmanager versions', () => {
 	let registry;
@@ -43,7 +45,7 @@ describe( 'modules/tagmanager versions', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		buildAndReceiveWebAndAMP = makeBuildAndReceiveWebAndAMP( registry );
+		( { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry ) );
 	} );
 
 	afterAll( () => {
@@ -424,13 +426,13 @@ describe( 'modules/tagmanager versions', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( registry.select( STORE_NAME ).getErrorForSelector( 'getLiveContainerVersion', [ accountID, internalContainerID ] ) ).toEqual( errorResponse );
 				expect( registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'receives null if the container has no published version', async () => {

@@ -29,11 +29,10 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
-	muteConsole,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
-import { makeBuildAndReceiveWebAndAMP } from '../../tagmanager/datastore/util/web-and-amp';
+import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -143,7 +142,6 @@ describe( 'modules/analytics settings', () => {
 					{ body: error, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
@@ -153,6 +151,7 @@ describe( 'modules/analytics settings', () => {
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'dispatches createProfile if the "set up a new profile" option is chosen', async () => {
@@ -220,7 +219,6 @@ describe( 'modules/analytics settings', () => {
 					{ body: error, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
@@ -238,6 +236,7 @@ describe( 'modules/analytics settings', () => {
 				expect( result.error ).toEqual( error );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'dispatches both createProperty and createProfile when selected', async () => {
@@ -308,7 +307,6 @@ describe( 'modules/analytics settings', () => {
 					{ body: error, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
@@ -316,6 +314,7 @@ describe( 'modules/analytics settings', () => {
 					{ body: { data: validSettings } },
 				);
 				expect( result.error ).toEqual( error );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'invalidates Analytics API cache on success', async () => {
@@ -422,7 +421,8 @@ describe( 'modules/analytics settings', () => {
 					permission: false,
 				}, { propertyID: data.webPropertyID } );
 
-				makeBuildAndReceiveWebAndAMP( registry )( data );
+				const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+				buildAndReceiveWebAndAMP( data );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 			} );

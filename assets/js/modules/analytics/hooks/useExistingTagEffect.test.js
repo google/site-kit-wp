@@ -24,7 +24,7 @@ import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datas
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
 import { renderHook, act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../../../tests/js/utils';
-import { makeBuildAndReceiveWebAndAMP } from '../../tagmanager/datastore/util/web-and-amp';
+import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {
@@ -69,7 +69,8 @@ describe( 'useExistingTagEffect', () => {
 			permission: true,
 		}, { propertyID: data.webPropertyID } );
 
-		makeBuildAndReceiveWebAndAMP( registry )( data );
+		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+		buildAndReceiveWebAndAMP( data );
 
 		act( () => {
 			renderHook( () => useExistingTagEffect(), { registry } );

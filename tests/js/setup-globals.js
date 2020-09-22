@@ -18,7 +18,6 @@ if ( global.Intl ) {
 // The rest of our code relies on a global, external React being available.
 global.React = React;
 
-// eslint-disable-next-line no-undef
 global._googlesitekitLegacyData = {
 	admin: {
 		connectURL: 'http://sitekit.withgoogle.com/wp-admin/admin.php?googlesitekit_connect=1&nonce=12345&page=googlesitekit-splash',
@@ -42,6 +41,13 @@ global._googlesitekitLegacyData = {
 
 	},
 };
+
+global._googlesitekitUserData = {
+	user: {},
+};
+
+global._googlesitekitBaseData = {};
+global._googlesitekitEntityData = {};
 
 // eslint-disable-next-line no-undef
 global.gtag = function( type, name, sendto, category, label, value ) {

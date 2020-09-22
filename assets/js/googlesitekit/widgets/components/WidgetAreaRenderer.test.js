@@ -27,6 +27,7 @@ import {
 	createTestRegistry,
 	render,
 	unsubscribeFromAll,
+	waitFor,
 } from '../../../../../tests/js/test-utils';
 
 const { useSelect } = Data;
@@ -88,11 +89,13 @@ describe( 'WidgetAreaRenderer', () => {
 		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
 
-		expect( widgets ).toHaveLength( 3 );
-		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget' ) ).toHaveLength( 3 );
+		await waitFor( () => {
+			expect( widgets ).toHaveLength( 3 );
+			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget' ) ).toHaveLength( 3 );
+		} );
 	} );
 
-	it( 'should treat widgets that render no content as zero-width (ignoring them)', () => {
+	it( 'should treat widgets that render no content as zero-width (ignoring them)', async () => {
 		createWidgets( registry, areaName, [
 			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
 			{ component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
@@ -100,7 +103,10 @@ describe( 'WidgetAreaRenderer', () => {
 		] );
 
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
-		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+
+		await waitFor( () => {
+			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+		} );
 	} );
 
 	it.each(
@@ -154,11 +160,13 @@ describe( 'WidgetAreaRenderer', () => {
 				],
 			],
 		]
-	)( 'should resize widgets in a row that spans 9 columns to fill the full 12 columns (%s)', ( testName, widgets ) => {
+	)( 'should resize widgets in a row that spans 9 columns to fill the full 12 columns (%s)', async ( testName, widgets ) => {
 		createWidgets( registry, areaName, widgets );
 
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
-		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+		await waitFor( () => {
+			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+		} );
 	} );
 
 	it.each(
@@ -186,11 +194,13 @@ describe( 'WidgetAreaRenderer', () => {
 				],
 			],
 		]
-	)( 'should not resize widgets in a row that is smaller than 9 columns (%s)', ( testName, widgets ) => {
+	)( 'should not resize widgets in a row that is smaller than 9 columns (%s)', async ( testName, widgets ) => {
 		createWidgets( registry, areaName, widgets );
 
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
-		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+		await waitFor( () => {
+			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+		} );
 	} );
 
 	it.each(
@@ -228,11 +238,13 @@ describe( 'WidgetAreaRenderer', () => {
 				],
 			],
 		]
-	)( 'should not resize widgets that fit into a 12-column grid (%s)', ( testName, widgets ) => {
+	)( 'should not resize widgets that fit into a 12-column grid (%s)', async ( testName, widgets ) => {
 		createWidgets( registry, areaName, widgets );
 
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
-		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+		await waitFor( () => {
+			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets' )[ 0 ] ).toMatchSnapshot();
+		} );
 	} );
 
 	it( 'should output boxes style without extra grid markup', async () => {
@@ -243,12 +255,14 @@ describe( 'WidgetAreaRenderer', () => {
 		] );
 
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } style={ WIDGET_AREA_STYLES.BOXES } />, { registry } );
-
-		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner' ) ).toHaveLength( 0 );
+		await waitFor( () => {
+			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner' ) ).toHaveLength( 0 );
+		} );
 	} );
 
 	it( 'should output composite style with extra grid markup', async () => {
 		registry = createTestRegistryWithArea( areaName, WIDGET_AREA_STYLES.COMPOSITE );
+		registry.dispatch( CORE_SITE ).receiveGetConnection( { connected: true } );
 		createWidgets( registry, areaName, [
 			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
 			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
@@ -256,7 +270,8 @@ describe( 'WidgetAreaRenderer', () => {
 		] );
 
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
-
-		expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner' ) ).toHaveLength( 1 );
+		await waitFor( () => {
+			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner' ) ).toHaveLength( 1 );
+		} );
 	} );
 } );
