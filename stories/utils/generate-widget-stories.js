@@ -36,12 +36,12 @@ const { components: { Widget } } = Widgets;
  *
  * @since 1.16.0
  *
- * @param {(string|Array)} moduleSlugs Module slug or slugs to activate.
+ * @param {(string|Array)} moduleSlug Module slug or slugs to activate.
  * @param {string|null}   url          Current entity URL.
  * @param {Function}     cb            Callback for additional setup.
  * @return {Function} A function to set up registry for widget stories.
  */
-function getSetupRegistry( moduleSlugs, url, cb = () => {} ) {
+function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
 	return ( { dispatch } ) => {
 		cb( { dispatch } );
 
@@ -51,8 +51,8 @@ function getSetupRegistry( moduleSlugs, url, cb = () => {} ) {
 		} );
 
 		let modules = [];
-		if ( Array.isArray( moduleSlugs ) ) {
-			modules = moduleSlugs.map( ( module ) => {
+		if ( Array.isArray( moduleSlug ) ) {
+			modules = moduleSlug.map( ( module ) => {
 				return {
 					slug: module,
 					active: true,
@@ -62,7 +62,7 @@ function getSetupRegistry( moduleSlugs, url, cb = () => {} ) {
 		} else {
 			modules = [
 				{
-					slug: moduleSlugs,
+					slug: moduleSlug,
 					active: true,
 					connected: true,
 				},
@@ -83,10 +83,10 @@ function getSetupRegistry( moduleSlugs, url, cb = () => {} ) {
  * @param {string}    args.group                        Stories group name.
  * @param {Array}     args.data                         Widget data.
  * @param {Object}    args.options                      Arguments for report requests.
- * @param {Object}    [args.additionalVariants]         Optional. Additional story variants.
- * @param {Object}    [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants
  * @param {Component} args.component                    Widget component.
  * @param {boolean}   args.wrapWidget                   Whether to wrap in default <Widget> component. Default true.
+ * @param {Object}    [args.additionalVariants]         Optional. Additional story variants.
+ * @param {Object}    [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {
@@ -95,10 +95,10 @@ export function generateReportBasedWidgetStories( {
 	group,
 	data,
 	options,
-	additionalVariants = {},
-	additionalVariantCallbacks = {},
 	component: WidgetComponent,
 	wrapWidget = true,
+	additionalVariants = {},
+	additionalVariantCallbacks = {},
 } ) {
 	const stories = storiesOf( group, module );
 
