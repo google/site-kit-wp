@@ -55,6 +55,8 @@ const baseActions = {
 			type: RESET_ACCOUNTS,
 		};
 
+		yield dispatch( STORE_NAME ).clearErrors( 'getAccounts' );
+
 		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},

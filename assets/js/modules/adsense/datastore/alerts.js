@@ -70,6 +70,8 @@ const baseActions = {
 			type: RESET_ALERTS,
 		};
 
+		yield dispatch( STORE_NAME ).clearErrors( 'getAlerts' );
+
 		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getAlerts' );
 	},

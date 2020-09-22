@@ -70,6 +70,8 @@ const baseActions = {
 			type: RESET_URLCHANNELS,
 		};
 
+		yield dispatch( STORE_NAME ).clearErrors( 'getURLChannels' );
+
 		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getURLChannels' );
 	},

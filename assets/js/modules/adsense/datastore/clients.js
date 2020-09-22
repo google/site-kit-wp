@@ -70,6 +70,8 @@ const baseActions = {
 			type: RESET_CLIENTS,
 		};
 
+		yield dispatch( STORE_NAME ).clearErrors( 'getClients' );
+
 		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getClients' );
 	},
