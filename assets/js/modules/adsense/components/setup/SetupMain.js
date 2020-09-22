@@ -115,6 +115,7 @@ export default function SetupMain( { finishSetup } ) {
 	} );
 
 	const {
+		clearError,
 		setAccountID,
 		setClientID,
 		setAccountStatus,
@@ -127,7 +128,6 @@ export default function SetupMain( { finishSetup } ) {
 		resetAlerts,
 		resetClients,
 		resetURLChannels,
-		receiveError,
 	} = useDispatch( STORE_NAME );
 
 	// Allow flagging when a background submission should happen.
@@ -246,7 +246,7 @@ export default function SetupMain( { finishSetup } ) {
 			}
 
 			// Unset any potential error.
-			receiveError( undefined );
+			clearError();
 			// Reset all data to force re-fetch.
 			resetAccounts();
 			resetAlerts();
