@@ -20,30 +20,6 @@ namespace Google\Site_Kit\Core\Storage;
 trait User_Aware_Trait {
 
 	/**
-	 * User ID.
-	 *
-	 * @since n.e.x.t
-	 * @var int
-	 */
-	private $user_id;
-
-	/**
-	 * Sets user ID.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param int $user_id Optional. User ID. Default is the current user.
-	 */
-	public function set_user_id( $user_id = 0 ) {
-		$uid = (int) $user_id;
-		if ( empty( $uid ) ) {
-			$uid = get_current_user_id();
-		}
-
-		$this->user_id = $uid;
-	}
-
-	/**
 	 * Gets the associated user ID.
 	 *
 	 * @since n.e.x.t

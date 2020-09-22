@@ -34,6 +34,14 @@ final class User_Options implements User_Options_Interface {
 	private $context;
 
 	/**
+	 * User ID for whom options should be managed.
+	 *
+	 * @since 1.0.0
+	 * @var int
+	 */
+	private $user_id;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -43,7 +51,11 @@ final class User_Options implements User_Options_Interface {
 	 */
 	public function __construct( Context $context, $user_id = 0 ) {
 		$this->context = $context;
-		$this->set_user_id( $user_id );
+
+		if ( empty( $user_id ) ) {
+			$user_id = get_current_user_id();
+		}
+		$this->user_id = (int) $user_id;
 	}
 
 	/**
