@@ -29,7 +29,7 @@ const SET_ADSENSE_LINKED = 'SET_ADSENSE_LINKED';
 // TODO: Refactor this once we have dedicated actions for this.
 const __ADSENSE_LINKED_GET_RESOLVED_SETTINGS = '__ADSENSE_LINKED_GET_SETTINGS';
 
-export const INITIAL_STATE = {
+export const initialState = {
 	adsenseLinked: undefined,
 };
 
@@ -94,7 +94,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

@@ -21,7 +21,7 @@
  */
 import invariant from 'invariant';
 
-export const INITIAL_STATE = {
+export const initialState = {
 	dateRange: 'last-28-days',
 };
 
@@ -82,7 +82,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,
