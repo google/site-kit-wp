@@ -27,16 +27,6 @@ class Connected_Proxy_URL extends Setting {
 	const OPTION = 'googlesitekit_connected_proxy_url';
 
 	/**
-	 * Registers the setting in WordPress.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function register() {
-		parent::register();
-		add_action( 'googlesitekit_authorize_user', array( $this, 'delete' ) );
-	}
-
-	/**
 	 * Matches provided URL with the current proxy URL in the settings.
 	 *
 	 * @since n.e.x.t
@@ -46,7 +36,7 @@ class Connected_Proxy_URL extends Setting {
 	 */
 	public function matches_url( $url ) {
 		$sanitize   = $this->get_sanitize_callback();
-		$normalized = call_user_func( $sanitize, $url );
+		$normalized = $sanitize( $url );
 		return $normalized === $this->get();
 	}
 

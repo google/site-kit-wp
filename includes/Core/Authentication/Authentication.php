@@ -226,8 +226,8 @@ final class Authentication {
 
 		add_action( 'init', $private_hook( 'handle_oauth' ) );
 		add_action( 'admin_init', $private_hook( 'check_connected_proxy_url' ) );
-		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $private_hook( 'verify_proxy_setup_nonce' ), -1 );
-		add_action( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER, $private_hook( 'handle_proxy_connect_user' ) );
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $private_hook( 'verify_proxy_setup_nonce' ), -1 ); // Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
+		add_action( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER, $private_hook( 'handle_proxy_connect_user' ) ); // Google_Proxy::ACTION_CONNECT_USER is called from Site Kit to redirect to the proxy initially.
 		add_action( 'googlesitekit_authorize_user', $private_hook( 'set_connected_proxy_url' ) );
 
 		add_filter(
@@ -798,7 +798,7 @@ final class Authentication {
 				'content'         => function() {
 					return sprintf(
 						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you\'ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
+						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
 						esc_url( $this->get_proxy_connect_user_url() ),
 						esc_html__( 'Reconnect', 'google-site-kit' )
 					);
@@ -1025,10 +1025,6 @@ final class Authentication {
 	 * @since n.e.x.t
 	 */
 	private function check_connected_proxy_url() {
-		if ( ! $this->connected_proxy_url->has() ) {
-			$this->set_connected_proxy_url();
-		}
-
 		if ( $this->connected_proxy_url->matches_url( home_url() ) ) {
 			return;
 		}
@@ -1049,6 +1045,11 @@ final class Authentication {
 			return;
 		}
 
+		if ( ! $this->connected_proxy_url->has() ) {
+			$this->set_connected_proxy_url();
+			return;
+		}
+
 		$this->disconnect();
 		$this->disconnected_reason->set( Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH );
 	}
@@ -1060,16 +1061,16 @@ final class Authentication {
 	 */
 	private function handle_proxy_connect_user() {
 		if ( ! current_user_can( Permissions::SETUP ) ) {
-			wp_die( 'You have insufficient permissions to connect Site Kit.' );
+			wp_die( esc_html__( 'You have insufficient permissions to connect Site Kit.', 'google-site-kit' ) );
 		}
 
 		if ( ! $this->credentials->using_proxy() ) {
-			wp_die( 'Site Kit has to be connected using proxy.' );
+			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
 		}
 
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_CONNECT_USER ) ) {
-			wp_die( 'You are not allowed to connect Site Kit. Please, try again later.' );
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
 		}
 
 		if ( $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH ) {
