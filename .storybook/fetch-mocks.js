@@ -32,12 +32,7 @@ export function bootstrapFetchMocks() {
 export function fetchMockGetModules() {
 	fetchMock.get(
 		/\/google-site-kit\/v1\/core\/modules\/data\/list/,
-		() => {
-			return {
-				status: 200,
-				body: '[]',
-			};
-		},
+		{ body: [], status: 200 }
 	);
 }
 
@@ -65,4 +60,3 @@ export function fetchMockCatchAll() {
 		};
 	} );
 }
-

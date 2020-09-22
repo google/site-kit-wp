@@ -37,7 +37,7 @@ export default function ExistingGTMPropertyError() {
 
 	const message = sprintf(
 		/* translators: %s: Property id of the existing tag */
-		__( `You're already using Google Analytics through Google Tag Manager with the property %s, but your account doesn't seem to have access to this Analytics property. You can either modify your Tag Manager configuration to use a different property, or request access to this property from your team.`, 'google-site-kit' ),
+		__( 'You’re already using Google Analytics through Google Tag Manager with the property %s, but your account doesn’t seem to have access to this Analytics property. You can either modify your Tag Manager configuration to use a different property, or request access to this property from your team.', 'google-site-kit' ),
 		propertyID,
 	);
 
