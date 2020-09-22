@@ -29,7 +29,7 @@ import { useEffect } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as MODULE_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
@@ -44,17 +44,25 @@ export default function useExistingTagEffect() {
 		gtmModuleActive,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
-		const tag = store.getExistingTag();
-		const propertyID = select( MODULE_TAGMANAGER ).getSingleAnalyticsPropertyID();
 
-		return {
+		const data = {
 			hasExistingTag: store.hasExistingTag(),
-			existingTag: tag,
-			existingTagAccountID: tag ? store.getTagPermission( tag )?.accountID : '',
-			gtmAnalyticsPropertyID: propertyID,
-			gtmAnalyticsAccountID: store.getTagPermission( propertyID )?.accountID,
+			existingTag: store.getExistingTag(),
+			existingTagAccountID: '',
+			gtmAnalyticsPropertyID: select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID(),
+			gtmAnalyticsAccountID: '',
 			gtmModuleActive: select( CORE_MODULES ).isModuleActive( 'tagmanager' ),
 		};
+
+		if ( data.existingTag ) {
+			data.existingTagAccountID = store.getTagPermission( data.existingTag )?.accountID;
+		}
+
+		if ( data.gtmAnalyticsPropertyID ) {
+			data.gtmAnalyticsAccountID = store.getTagPermission( data.gtmAnalyticsPropertyID )?.accountID;
+		}
+
+		return data;
 	} );
 
 	useEffect( () => {

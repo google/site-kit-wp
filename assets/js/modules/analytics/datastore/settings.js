@@ -23,7 +23,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME as MODULE_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
@@ -173,7 +173,7 @@ export const selectors = {
 
 		const gtmIsActive = select( CORE_MODULES ).isModuleActive( 'tagmanager' );
 		if ( gtmIsActive ) {
-			const gtmAnalyticsPropertyID = select( MODULE_TAGMANAGER ).getSingleAnalyticsPropertyID();
+			const gtmAnalyticsPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 			if ( isValidPropertyID( gtmAnalyticsPropertyID ) && hasTagPermission( gtmAnalyticsPropertyID ) === false ) {
 				return false;
 			}

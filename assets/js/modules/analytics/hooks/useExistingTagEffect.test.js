@@ -22,7 +22,7 @@
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
-import { renderHook, act } from '../../../../../tests/js/test-utils';
+import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
 import useExistingTagEffect from './useExistingTagEffect';
@@ -57,7 +57,7 @@ describe( 'useExistingTagEffect', () => {
 				internal: false,
 				active: true,
 				connected: true,
-				dependencies: [ 'analytics' ],
+				dependencies: [],
 				dependants: [],
 				order: 10,
 			},

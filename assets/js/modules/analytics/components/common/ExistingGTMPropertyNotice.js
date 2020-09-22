@@ -1,5 +1,5 @@
 /**
- * Analytics Existing Tag Notice component.
+ * Analytics Existing GTM Property Notice component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -25,11 +25,11 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as MODULE_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyNotice() {
-	const propertyID = useSelect( ( select ) => select( MODULE_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const propertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
 	if ( ! propertyID ) {
 		return null;
 	}
