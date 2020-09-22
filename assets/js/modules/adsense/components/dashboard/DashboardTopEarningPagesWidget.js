@@ -76,7 +76,7 @@ function DashboardTopEarningPagesWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
+		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
 	if ( ! isAdSenseLinked ) {
