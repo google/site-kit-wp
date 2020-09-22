@@ -28,6 +28,11 @@ import * as fixtures from '../../datastore/__fixtures__';
 
 describe( 'SettingsEdit', () => {
 	it( 'sets the account ID and property ID of an existing tag when present', async () => {
+		fetchMock.get(
+			/tagmanager\/data\/settings/,
+			{ body: {}, status: 200 },
+		);
+
 		const registry = createTestRegistry();
 		const existingTag = {};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;

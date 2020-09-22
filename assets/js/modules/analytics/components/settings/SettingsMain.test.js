@@ -60,6 +60,11 @@ describe( 'SettingsMain', () => {
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);
 
+		fetchMock.get(
+			/tagmanager\/data\/settings/,
+			{ body: {}, status: 200 },
+		);
+
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
@@ -84,6 +89,11 @@ describe( 'SettingsMain', () => {
 		fetchMock.get(
 			/accounts-properties-profiles/,
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
+		);
+
+		fetchMock.get(
+			/tagmanager\/data\/settings/,
+			{ body: {}, status: 200 },
 		);
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );

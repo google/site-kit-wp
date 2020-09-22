@@ -22,18 +22,10 @@
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
-import {
-	createTestRegistry,
-	muteFetch,
-	untilResolved,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, muteFetch, untilResolved, unsubscribeFromAll } from '../../../../../tests/js/utils';
+import { createBuildAndReceivers, parseLiveContainerVersionIDs as parseIDs } from './__factories__/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
-import {
-	createBuildAndReceivers,
-	parseLiveContainerVersionIDs as parseIDs,
-} from './__factories__/utils';
 
 describe( 'modules/tagmanager versions', () => {
 	let registry;
@@ -457,6 +449,7 @@ describe( 'modules/tagmanager versions', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				expect( registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( null );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
