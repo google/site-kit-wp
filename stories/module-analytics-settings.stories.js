@@ -37,7 +37,7 @@ import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datas
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
-import { makeBuildAndReceiveWebAndAMP } from '../assets/js/modules/tagmanager/datastore/util/web-and-amp';
+import { createBuildAndReceivers } from '../assets/js/modules/tagmanager/datastore/__factories__/utils';
 
 function filterAnalyticsSettings() {
 	// set( global, 'googlesitekit.modules.analytics.setupComplete', true );
@@ -152,7 +152,8 @@ function makeGtmPropertyStory( { permission, useExistingTag = false } ) {
 				permission,
 			}, { propertyID: data.webPropertyID } );
 
-			makeBuildAndReceiveWebAndAMP( registry )( data );
+			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+			buildAndReceiveWebAndAMP( data );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
