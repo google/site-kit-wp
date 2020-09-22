@@ -46,6 +46,8 @@ const Switch = ( props ) => {
 	const switchRef = useRef();
 	const instanceID = useUUID();
 
+	const noOp = () => {};
+
 	useEffect( () => {
 		if ( switchRef && switchRef.current ) {
 			new MDCSwitch( switchRef.current );
@@ -87,6 +89,7 @@ const Switch = ( props ) => {
 							role="switch"
 							checked={ checked }
 							disabled={ disabled }
+							onChange={ noOp }
 						/>
 					</div>
 				</div>
