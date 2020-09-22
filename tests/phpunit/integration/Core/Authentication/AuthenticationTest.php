@@ -55,7 +55,6 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( has_action( 'init' ) );
 		$this->assertTrue( has_action( 'admin_init' ) );
 		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_SETUP ) );
-		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER ) );
 		$this->assertTrue( has_action( OAuth_Client::CRON_REFRESH_PROFILE_DATA ) );
 		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
 
@@ -448,9 +447,9 @@ class AuthenticationTest extends TestCase {
 		}
 	}
 
-	public function test_get_proxy_connect_user_url() {
+	public function test_get_proxy_setup_url() {
 		$class  = new \ReflectionClass( Authentication::class );
-		$method = $class->getMethod( 'get_proxy_connect_user_url' );
+		$method = $class->getMethod( 'get_proxy_setup_url' );
 		$method->setAccessible( true );
 
 		$url = $method->invokeArgs(
@@ -467,7 +466,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertArrayHasKey( 'action', $args );
 		$this->assertArrayHasKey( 'nonce', $args );
 
-		$this->assertEquals( Google_Proxy::ACTION_CONNECT_USER, $args['action'] );
+		$this->assertEquals( Google_Proxy::ACTION_SETUP, $args['action'] );
 	}
 
 	public function test_set_connected_proxy_url() {
@@ -530,8 +529,8 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
-	public function test_handle_proxy_connect_user() {
-		remove_all_actions( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER );
+	public function test_handle_sync_site_fields() {
+		remove_all_actions( 'admin_action_' . Google_Proxy::ACTION_SETUP );
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
@@ -556,11 +555,11 @@ class AuthenticationTest extends TestCase {
 			}
 		);
 
-		$_GET['nonce']              = wp_create_nonce( Google_Proxy::ACTION_CONNECT_USER );
+		$_GET['nonce']              = wp_create_nonce( Google_Proxy::ACTION_SETUP );
 		$_GET['googlesitekit_code'] = 'test-code';
 
 		try {
-			do_action( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER );
+			do_action( 'admin_action_' . Google_Proxy::ACTION_SETUP );
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
@@ -569,7 +568,7 @@ class AuthenticationTest extends TestCase {
 			$parsed = wp_parse_url( $location );
 			parse_str( $parsed['query'], $query_args );
 
-			$this->assertEquals( 'xxx.apps.sitekit.withgoogle.com', $query_args['site_id'] );
+			$this->assertEquals( '12345678.apps.sitekit.withgoogle.com', $query_args['site_id'] );
 			$this->assertEquals( 'test-code', $query_args['code'] );
 		}
 	}

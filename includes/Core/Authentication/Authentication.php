@@ -224,7 +224,7 @@ final class Authentication {
 		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
 		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 ); // Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
-		add_action( 'admin_action_' . Google_Proxy::ACTION_CONNECT_USER, $this->get_method_proxy( 'handle_proxy_connect_user' ) ); // Google_Proxy::ACTION_CONNECT_USER is called from Site Kit to redirect to the proxy initially.
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'handle_sync_site_fields' ), 5 ); // Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
 		add_action( 'googlesitekit_authorize_user', $this->get_method_proxy( 'set_connected_proxy_url' ) );
 
 		add_filter(
@@ -595,7 +595,7 @@ final class Authentication {
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_connect_user_url() );
+			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_setup_url() );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
 		}
@@ -796,7 +796,7 @@ final class Authentication {
 					return sprintf(
 						'<p>%s <a href="%s">%s</a></p>',
 						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
-						esc_url( $this->get_proxy_connect_user_url() ),
+						esc_url( $this->get_proxy_setup_url() ),
 						esc_html__( 'Reconnect', 'google-site-kit' )
 					);
 				},
@@ -1056,7 +1056,12 @@ final class Authentication {
 	 *
 	 * @since n.e.x.t
 	 */
-	private function handle_proxy_connect_user() {
+	private function handle_sync_site_fields() {
+		$googlesitekit_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code' );
+		if ( $googlesitekit_code ) {
+			return;
+		}
+
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			wp_die( esc_html__( 'You have insufficient permissions to connect Site Kit.', 'google-site-kit' ) );
 		}
@@ -1065,17 +1070,11 @@ final class Authentication {
 			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
 		}
 
-		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
-		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_CONNECT_USER ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
-		}
-
 		if ( $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH ) {
 			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
 		}
 
-		$code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code' );
-		$this->redirect_to_proxy( $code );
+		$this->redirect_to_proxy( '' );
 	}
 
 	/**
@@ -1085,11 +1084,11 @@ final class Authentication {
 	 *
 	 * @return string An URL for googlesitekit_proxy_connect_user action protected with a nonce.
 	 */
-	private function get_proxy_connect_user_url() {
+	private function get_proxy_setup_url() {
 		return add_query_arg(
 			array(
-				'action' => Google_Proxy::ACTION_CONNECT_USER,
-				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_CONNECT_USER ),
+				'action' => Google_Proxy::ACTION_SETUP,
+				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_SETUP ),
 			),
 			admin_url( 'index.php' )
 		);

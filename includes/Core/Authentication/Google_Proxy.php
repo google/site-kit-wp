@@ -29,9 +29,7 @@ class Google_Proxy {
 	const OAUTH2_AUTH_URI   = '/o/oauth2/auth/';
 	const SETUP_URI         = '/site-management/setup/';
 	const PERMISSIONS_URI   = '/site-management/permissions/';
-
-	const ACTION_SETUP        = 'googlesitekit_proxy_setup';
-	const ACTION_CONNECT_USER = 'googlesitekit_proxy_connect_user';
+	const ACTION_SETUP      = 'googlesitekit_proxy_setup';
 
 	/**
 	 * Plugin context.
