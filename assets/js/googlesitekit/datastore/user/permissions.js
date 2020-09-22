@@ -33,7 +33,7 @@ const CLEAR_PERMISSION_SCOPE_ERROR = 'CLEAR_PERMISSION_SCOPE_ERROR';
 const SET_PERMISSION_SCOPE_ERROR = 'SET_PERMISSION_SCOPE_ERROR';
 const RECEIVE_CAPABILITIES = 'RECEIVE_CAPABILITIES';
 
-export const INITIAL_STATE = {
+export const initialState = {
 	permissionError: null,
 	capabilities: undefined,
 };
@@ -119,7 +119,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -188,7 +188,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

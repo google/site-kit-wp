@@ -129,6 +129,7 @@ export function generateReportBasedWidgetStories( {
 			} else {
 				dispatch( datastore ).receiveGetReport( [], { options } );
 			}
+
 			// Run additional callback if it exists.
 			if ( additionalDataUnavailableCallback ) {
 				additionalDataUnavailableCallback( dispatch, data, options );
@@ -141,8 +142,10 @@ export function generateReportBasedWidgetStories( {
 				data: {},
 			};
 			if ( Array.isArray( options ) ) {
-				dispatch( datastore ).receiveError( error, 'getReport', [ options[ 0 ] ] );
-				dispatch( datastore ).finishResolution( 'getReport', [ options[ 0 ] ] );
+				options.forEach( ( option ) => {
+					dispatch( datastore ).receiveError( error, 'getReport', [ option ] );
+					dispatch( datastore ).finishResolution( 'getReport', [ option ] );
+				} );
 			} else {
 				dispatch( datastore ).receiveError( error, 'getReport', [ options ] );
 				dispatch( datastore ).finishResolution( 'getReport', [ options ] );
