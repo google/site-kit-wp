@@ -508,13 +508,7 @@ class AuthenticationTest extends TestCase {
 		$options->set( Connected_Proxy_URL::OPTION, '/' );
 
 		// Emulate credentials.
-		$encrypted_options->set(
-			Credentials::OPTION,
-			array(
-				'oauth2_client_id'     => 'xxx.apps.sitekit.withgoogle.com',
-				'oauth2_client_secret' => 'xxx-xxxx-xxxxx',
-			)
-		);
+		$this->fake_proxy_site_connection();
 
 		// Emulate OAuth acccess token.
 		$this->force_set_property( $authentication->get_oauth_client(), 'access_token', 'valid-auth-token' );
@@ -551,13 +545,7 @@ class AuthenticationTest extends TestCase {
 		$authentication->register();
 
 		// Emulate credentials.
-		$encrypted_options->set(
-			Credentials::OPTION,
-			array(
-				'oauth2_client_id'     => 'xxx.apps.sitekit.withgoogle.com',
-				'oauth2_client_secret' => 'xxx-xxxx-xxxxx',
-			)
-		);
+		$this->fake_proxy_site_connection();
 
 		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
 		add_filter(

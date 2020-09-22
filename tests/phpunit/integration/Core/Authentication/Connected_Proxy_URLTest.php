@@ -34,17 +34,6 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 		$this->options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
-	public function test_register() {
-		$connected_proxy_url = new Connected_Proxy_URL( $this->options );
-
-		$action   = 'googlesitekit_authorize_user';
-		$callback = array( $connected_proxy_url, 'delete' );
-
-		$this->assertFalse( has_action( $action, $callback ) );
-		$connected_proxy_url->register();
-		$this->assertTrue( false !== has_action( $action, $callback ) );
-	}
-
 	public function test_matches_url() {
 		$connected_proxy_url = new Connected_Proxy_URL( $this->options );
 		$connected_proxy_url->register();
