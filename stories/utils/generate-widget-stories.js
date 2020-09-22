@@ -29,7 +29,6 @@ import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import { WithTestRegistry } from '../../tests/js/utils';
-import { valuesIn } from 'lodash';
 const { components: { Widget } } = Widgets;
 
 /**
