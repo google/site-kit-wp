@@ -46,7 +46,7 @@ const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
  * @param {Array}    args.tagMatchers The tag matchers used to extract tags from HTML.
  * @param {Function} args.isValidTag  Function to test whether a tag is valid or not.
  * @return {Object} The existing tag store object, with additional `STORE_NAME` and
- * INITIAL_STATE` properties.
+ * initialState` properties.
  */
 export const createExistingTagStore = ( {
 	storeName: STORE_NAME,
@@ -57,7 +57,7 @@ export const createExistingTagStore = ( {
 	invariant( 'function' === typeof isValidTag, 'isValidTag must be a function.' );
 	invariant( Array.isArray( tagMatchers ), 'tagMatchers must be an Array.' );
 
-	const INITIAL_STATE = {
+	const initialState = {
 		existingTag: undefined,
 	};
 
@@ -120,7 +120,7 @@ export const createExistingTagStore = ( {
 		} ),
 	};
 
-	const reducer = ( state = INITIAL_STATE, { type, payload } ) => {
+	const reducer = ( state = initialState, { type, payload } ) => {
 		switch ( type ) {
 			case RECEIVE_GET_EXISTING_TAG: {
 				const { existingTag } = payload;
@@ -180,7 +180,7 @@ export const createExistingTagStore = ( {
 	};
 
 	const store = {
-		INITIAL_STATE,
+		initialState,
 		actions,
 		controls,
 		reducer,

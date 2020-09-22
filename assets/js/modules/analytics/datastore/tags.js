@@ -67,7 +67,7 @@ const existingTagStore = createExistingTagStore( {
 // Actions
 const WAIT_FOR_TAG_PERMISSION = 'WAIT_FOR_TAG_PERMISSION';
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	tagPermissions: {},
 };
 
@@ -185,7 +185,7 @@ const store = Data.combineStores(
 	existingTagStore,
 	fetchGetTagPermissionStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		controls: baseControls,
 		resolvers: baseResolvers,
@@ -193,7 +193,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

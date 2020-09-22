@@ -54,7 +54,7 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	liveContainerVersions: {},
 };
 
@@ -105,14 +105,14 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetLiveContainerVersionStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
 );
 
 export const {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

@@ -23,7 +23,7 @@ import invariant from 'invariant';
 
 const SET_FORM_VALUES = 'SET_FORM_VALUES';
 
-export const INITIAL_STATE = {};
+export const initialState = {};
 
 export const actions = {
 	/**
@@ -102,7 +102,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,
