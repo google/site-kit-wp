@@ -25,12 +25,19 @@ import md5 from 'md5';
 const RECEIVE_ERROR = 'RECEIVE_ERROR';
 const CLEAR_ERROR = 'CLEAR_ERROR';
 
+/**
+ * Internal dependencies
+ */
+import { stringifyObject } from '../../util';
+
 function generateErrorKey( baseName, args ) {
 	let key = baseName;
-	if ( args ) {
-		key += md5( JSON.stringify( args ) );
+	if ( args && Array.isArray( args ) ) {
+		const stringifiedArgs = args.map( ( item ) => {
+			return 'object' === typeof item ? stringifyObject( item ) : item;
+		} );
+		key += md5( JSON.stringify( stringifiedArgs ) );
 	}
-
 	return key;
 }
 
@@ -59,7 +66,7 @@ export const actions = {
 };
 
 export function createErrorStore() {
-	const INITIAL_STATE = {
+	const initialState = {
 		errors: {},
 		error: undefined,
 	};
@@ -68,19 +75,19 @@ export function createErrorStore() {
 		switch ( type ) {
 			case RECEIVE_ERROR: {
 				const { baseName, args, error } = payload;
-				const newState = { ...state };
 
 				if ( baseName ) {
-					newState.errors = {
-						...( state.errors || {} ),
-						[ generateErrorKey( baseName, args ) ]: error,
+					return {
+						...state,
+						errors: {
+							...( state.errors || {} ),
+							[ generateErrorKey( baseName, args ) ]: error,
+						},
 					};
-				} else {
-					// @TODO: remove it once all instances of the legacy behavior have been removed.
-					newState.error = error;
 				}
 
-				return newState;
+				// @TODO: remove once all instances of the legacy behavior have been removed.
+				return { ...state, error };
 			}
 
 			case CLEAR_ERROR: {
@@ -94,7 +101,7 @@ export function createErrorStore() {
 			}
 
 			default: {
-				return { ...state };
+				return state;
 			}
 		}
 	}
@@ -197,7 +204,7 @@ export function createErrorStore() {
 	};
 
 	return {
-		INITIAL_STATE,
+		initialState,
 		actions,
 		controls,
 		reducer,

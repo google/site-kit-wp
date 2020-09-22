@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -100,7 +99,6 @@ describe( 'modules/adsense accounts', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).isFetchingGetAccounts() === false,
@@ -110,6 +108,7 @@ describe( 'modules/adsense accounts', () => {
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 				expect( accounts ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

@@ -1,0 +1,6 @@
+{
+	"dateRange": "last-28-days",
+	"dimensions": "query",
+	"limit": 10,
+	"url": "https://www.sitekit.com/"
+}

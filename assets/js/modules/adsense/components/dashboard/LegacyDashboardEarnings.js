@@ -1,5 +1,5 @@
 /**
- * DashboardEarnings component.
+ * LegacyDashboardEarnings component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -27,10 +27,10 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import DashboardAdSenseTopEarningPagesSmall from './DashboardAdSenseTopEarningPagesSmall';
-import AdSenseDashboardMainSummary from './AdSenseDashboardMainSummary';
+import LegacyAdSenseDashboardMainSummary from './LegacyAdSenseDashboardMainSummary';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 
-class DashboardEarnings extends Component {
+class LegacyDashboardEarnings extends Component {
 	render() {
 		return (
 			<Fragment>
@@ -44,11 +44,11 @@ class DashboardEarnings extends Component {
 					/>
 					<ModuleSettingsWarning slug="adsense" context="module-sitekit-dashboard" />
 				</div>
-				<AdSenseDashboardMainSummary />
+				<LegacyAdSenseDashboardMainSummary />
 				<DashboardAdSenseTopEarningPagesSmall />
 			</Fragment>
 		);
 	}
 }
 
-export default DashboardEarnings;
+export default LegacyDashboardEarnings;

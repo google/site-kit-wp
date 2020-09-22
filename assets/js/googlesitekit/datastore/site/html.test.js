@@ -146,7 +146,7 @@ describe( 'core/site html', () => {
 					{ body: undefined, status: 500 }
 				);
 
-				// `muteConsole` is not needed since `fetchGetHTMLForURL` uses `fetch` internally instead of `apiFetch`.
+				// `expect( console ).toHaveErrored()` is not needed since `fetchGetHTMLForURL` uses `fetch` internally instead of `apiFetch`.
 				registry.select( STORE_NAME ).getHTMLForURL( url );
 
 				await untilResolved( registry, STORE_NAME ).getHTMLForURL( url );

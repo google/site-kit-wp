@@ -48,7 +48,7 @@ const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
  * @param {boolean} options.server    Enable server notifications. `true` by default.
  * @param {number}  options.storeName Store name to use. Default is '{type}/{identifier}'.
  * @return {Object} The notifications store object, with additional `STORE_NAME` and
- *                  `INITIAL_STATE` properties.
+ *                  `initialState` properties.
  */
 export const createNotificationsStore = ( type, identifier, datapoint, {
 	client = true,
@@ -61,7 +61,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 
 	const STORE_NAME = storeName || `${ type }/${ identifier }`;
 
-	const INITIAL_STATE = {
+	const initialState = {
 		serverNotifications: server ? undefined : {},
 		// Initialize clientNotifications as undefined rather than an empty
 		// object so we can know if a client notification was added and then
@@ -128,7 +128,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 
 	const controls = {};
 
-	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
+	const reducer = ( state = initialState, { type, payload } ) => { // eslint-disable-line no-shadow
 		switch ( type ) {
 			case ADD_NOTIFICATION: {
 				const { notification } = payload;
@@ -157,7 +157,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 						global.console.warn( `Cannot remove server-side notification with ID "${ id }"; this may be changed in a future release.` );
 					}
 
-					return { ...state };
+					return state;
 				}
 
 				const newNotifications = { ...state.clientNotifications };
@@ -170,7 +170,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			}
 
 			default: {
-				return { ...state };
+				return state;
 			}
 		}
 	};
@@ -224,7 +224,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 	const store = Data.combineStores(
 		fetchGetNotificationsStore,
 		{
-			INITIAL_STATE,
+			initialState,
 			actions,
 			controls,
 			reducer,
