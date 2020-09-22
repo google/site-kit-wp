@@ -201,7 +201,7 @@ class User_Transients implements User_Aware_Interface {
 	 * @return string Prefixed transient name.
 	 */
 	private function get_transient_name_for_user_options( $transient ) {
-		return "googlesitekit_transient_{$transient}";
+		return "_googlesitekit_transient_{$transient}";
 	}
 
 	/**
@@ -213,7 +213,7 @@ class User_Transients implements User_Aware_Interface {
 	 * @return string Prefixed transient timeout name.
 	 */
 	private function get_transient_timeout_for_user_options( $transient ) {
-		return "googlesitekit_transient_timeout_{$transient}";
+		return "_googlesitekit_transient_timeout_{$transient}";
 	}
 
 	/**
@@ -248,7 +248,7 @@ class User_Transients implements User_Aware_Interface {
 	 */
 	private function set_in_user_options( $transient, $value, $expiration ) {
 		$prefixed_transient_timeout = $this->get_transient_timeout_for_user_options( $transient );
-		$this->user_options->set( $prefixed_transient_timeout, (int) $expiration );
+		$this->user_options->set( $prefixed_transient_timeout, time() + $expiration );
 
 		$prefixed_transient = $this->get_transient_name_for_user_options( $transient );
 		return $this->user_options->set( $prefixed_transient, $value );

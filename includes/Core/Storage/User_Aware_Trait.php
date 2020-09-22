@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Core\Storage;
 
 /**
- * Base class for user aware entities.
+ * Trait for user aware entities.
  *
  * @since n.e.x.t
  * @access private
