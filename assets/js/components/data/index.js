@@ -35,6 +35,7 @@ import { getCurrentDateRangeSlug } from '../../util/date-range';
 import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
 import { isWPError } from '../../util/errors';
+import AuthError from '../notifications/AuthError';
 import DashboardAuthScopesAlert from '../notifications/DashboardAuthScopesAlert';
 import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
 import { getCacheKey, getCache, setCache } from './cache';
@@ -235,6 +236,13 @@ const dataAPI = {
 			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
 				fillFilterWithComponent( DashboardPermissionAlert ), 1 );
+			addedNoticeCount++;
+		}
+
+		if ( data.reconnectURL ) {
+			addFilter( 'googlesitekit.ErrorNotification',
+				'googlesitekit.AuthNotification',
+				fillFilterWithComponent( AuthError ), 1 );
 			addedNoticeCount++;
 		}
 
