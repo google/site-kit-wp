@@ -97,7 +97,7 @@ export function generateReportBasedWidgetStories( {
 	options,
 	component: WidgetComponent,
 	wrapWidget = true,
-	additionalVariants = [],
+	additionalVariants = {},
 	additionalVariantCallbacks = {},
 } ) {
 	const stories = storiesOf( group, module );
@@ -113,6 +113,12 @@ export function generateReportBasedWidgetStories( {
 		}
 	}
 
+	const {
+		Loaded: additionalLoadingCallback,
+		'Data Unavailable': additionalDataUnavailableCallback,
+		Error: additionalErrorCallback,
+	} = additionalVariantCallbacks;
+
 	// Existing default variants
 	const defaultVariants = {
 		Loaded: ( { dispatch } ) => {
@@ -125,13 +131,8 @@ export function generateReportBasedWidgetStories( {
 			}
 
 			// Run additional callback if it exists.
-			if ( additionalVariantCallbacks.length > 0 ) {
-				for ( const [ variantName, callback ] of additionalVariantCallbacks ) {
-					if ( variantName === 'Loaded' ) {
-						callback( dispatch, data, options );
-						break;
-					}
-				}
+			if ( additionalLoadingCallback ) {
+				additionalLoadingCallback( dispatch, data, options );
 			}
 		},
 		'Data Unavailable': ( { dispatch } ) => {
@@ -145,13 +146,8 @@ export function generateReportBasedWidgetStories( {
 			}
 
 			// Run additional callback if it exists.
-			if ( additionalVariantCallbacks.length > 0 ) {
-				for ( const [ variantName, callback ] of additionalVariantCallbacks ) {
-					if ( variantName === 'Data Unavailable' ) {
-						callback( dispatch, data, options );
-						break;
-					}
-				}
+			if ( additionalDataUnavailableCallback ) {
+				additionalDataUnavailableCallback( dispatch, data, options );
 			}
 		},
 		Error: ( { dispatch } ) => {
@@ -171,44 +167,30 @@ export function generateReportBasedWidgetStories( {
 			}
 
 			// Run additional callback if it exists.
-			if ( additionalVariantCallbacks.length > 0 ) {
-				for ( const [ variantName, callback ] of additionalVariantCallbacks ) {
-					if ( variantName === 'Error' ) {
-						callback( dispatch, data, options );
-						break;
-					}
-				}
+			if ( additionalErrorCallback ) {
+				additionalErrorCallback( dispatch, data, options );
 			}
 		},
 	};
 
 	// custom variants.
 	const customVariants = {};
-	if ( additionalVariants.length > 0 ) {
-		additionalVariants.forEach( ( [ name, variantFixtureData ] ) => {
-			const { data: variantData, options: variantOptions } = variantFixtureData;
-			customVariants[ name ] = ( { dispatch } ) => {
-				if ( Array.isArray( variantOptions ) ) {
-					options.forEach( ( option, index ) => {
-						dispatch( datastore ).receiveGetReport( variantData[ index ], { options: option } );
-					} );
-				} else {
-					dispatch( datastore ).receiveGetReport( variantData, { options: variantOptions } );
-				}
-
-				// check for additional variant callbacks
-				if ( additionalVariantCallbacks.length > 0 ) {
-					for ( const [ variantName, callback ] of additionalVariantCallbacks ) {
-						if ( variantName === name ) {
-							callback( dispatch, data, options );
-							break;
-						}
-					}
-				}
-			};
-		} );
-	}
-
+	Object.keys( additionalVariants ).forEach( ( name ) => {
+		const { data: variantData, options: variantOptions } = additionalVariants[ name ];
+		customVariants[ name ] = ( { dispatch } ) => {
+			if ( Array.isArray( variantOptions ) ) {
+				options.forEach( ( option, index ) => {
+					dispatch( datastore ).receiveGetReport( variantData[ index ], { options: option } );
+				} );
+			} else {
+				dispatch( datastore ).receiveGetReport( variantData, { options: variantOptions } );
+			}
+			const { [ name ]: callback } = additionalVariantCallbacks;
+			if ( callback ) {
+				callback( dispatch, data, options );
+			}
+		};
+	} );
 	const variants = {
 		...defaultVariants,
 		...customVariants,

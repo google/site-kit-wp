@@ -61,11 +61,11 @@ generateReportBasedWidgetStories( {
 	options: dashboardTopEarningPageWidgetArgs,
 	component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
-	additionalVariants: [
-		[ 'AdSense Not Linked', { data: dashboardTopEarningPageWidgetData, options: dashboardTopEarningPageWidgetArgs } ],
-	],
-	additionalVariantCallbacks: [
-		[ 'Loaded', ( dispatch ) => dispatch( ANALYTICS_STORE ).setAdsenseLinked( true ) ],
-		[ 'Data Unavailable', ( dispatch ) => dispatch( ANALYTICS_STORE ).setAdsenseLinked( true ) ],
-	],
+	additionalVariants: {
+		'AdSense Not Linked': { data: dashboardTopEarningPageWidgetData, options: dashboardTopEarningPageWidgetArgs },
+	},
+	additionalVariantCallbacks: {
+		Loaded: ( dispatch ) => dispatch( ANALYTICS_STORE ).setAdsenseLinked( true ),
+		'Data Unavailable': ( dispatch ) => dispatch( ANALYTICS_STORE ).setAdsenseLinked( true ),
+	},
 } );
