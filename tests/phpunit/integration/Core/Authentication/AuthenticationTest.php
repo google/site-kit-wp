@@ -479,14 +479,14 @@ class AuthenticationTest extends TestCase {
 		$authentication->register();
 
 		$home_url_hook = function() {
-			return 'https://example.com/subsite/';
+			return 'https://example.com/subsite';
 		};
 
 		add_filter( 'home_url', $home_url_hook );
 		do_action( 'googlesitekit_authorize_user' );
 		remove_filter( 'home_url', $home_url_hook );
 
-		$this->assertEquals( 'example.com/subsite/', $options->get( Connected_Proxy_URL::OPTION ) );
+		$this->assertEquals( 'https://example.com/subsite/', $options->get( Connected_Proxy_URL::OPTION ) );
 	}
 
 	public function test_check_connected_proxy_url() {

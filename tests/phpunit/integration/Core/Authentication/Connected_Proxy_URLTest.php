@@ -39,7 +39,13 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 		$connected_proxy_url->register();
 
 		$connected_proxy_url->set( 'https://example.com' );
-		$this->assertTrue( $connected_proxy_url->matches_url( 'http://example.com/?p=132' ) );
+		$this->assertTrue( $connected_proxy_url->matches_url( 'https://example.com/' ) );
+
+		$connected_proxy_url->set( 'https://example.com/subdirectory' );
+		$this->assertTrue( $connected_proxy_url->matches_url( 'https://example.com/subdirectory/' ) );
+
+		$connected_proxy_url->set( 'https://example.com/' );
+		$this->assertTrue( $connected_proxy_url->matches_url( 'https://example.com/' ) );
 	}
 
 	/**
