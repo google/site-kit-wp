@@ -83,6 +83,23 @@ class DataBlock extends Component {
 			sparklineComponent = cloneElement( sparkline, { invertChangeColor } );
 		}
 
+		let changeFormatted = change;
+		if ( change ) {
+			// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
+			if ( changeDataUnit ) {
+				try {
+					changeFormatted = numberFormat( Math.abs( change ), { style: 'currency', currency: changeDataUnit } );
+				} catch ( e ) {
+					changeFormatted = `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit }`;
+				}
+			}
+
+			// If period is given (requires %s placeholder), add it.
+			if ( period ) {
+				changeFormatted = sprintf( period, changeFormatted );
+			}
+		}
+
 		return (
 			<div
 				className={ classnames(
@@ -125,8 +142,7 @@ class DataBlock extends Component {
 								/>
 							</span>
 							<span className="googlesitekit-data-block__value">
-								{ period && sprintf( period, `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit }` ) }
-								{ ! period && `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit }` }
+								{ changeFormatted }
 							</span>
 						</Fragment> }
 					</div>
