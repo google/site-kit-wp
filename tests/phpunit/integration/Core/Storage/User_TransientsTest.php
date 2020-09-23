@@ -29,12 +29,8 @@ class User_TransientsTest extends TestCase {
 
 	use User_Aware_Interface_ContractTests;
 
-	public function setUp() {
-		parent::setUp();
-		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-	}
-
 	protected function create_user_aware_instance( $user_id ) {
+		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		return new User_Transients( $this->context, $user_id );
 	}
 
@@ -82,7 +78,7 @@ class User_TransientsTest extends TestCase {
 		$this->network_activate_site_kit();
 		$this->using_external_cache(
 			function( $user_transients, $user_id ) {
-				wp_cache_set( "wptests_user_{$user_id}_testkey2", 'qwerty2', 'site-transient', 1000 );
+				wp_cache_set( "user_{$user_id}_testkey2", 'qwerty2', 'site-transient', 1000 );
 				$value = $user_transients->get( 'testkey2' );
 				$this->assertEquals( 'qwerty2', $value );
 			}
@@ -106,7 +102,7 @@ class User_TransientsTest extends TestCase {
 		$this->using_external_cache(
 			function( $user_transients, $user_id ) {
 				$value = $user_transients->set( 'testkey4', 'qwerty4', 1000 );
-				$this->assertEquals( 'qwerty4', wp_cache_get( "wptests_user_{$user_id}_testkey4", 'site-transient' ) );
+				$this->assertEquals( 'qwerty4', wp_cache_get( "user_{$user_id}_testkey4", 'site-transient' ) );
 			}
 		);
 	}
@@ -127,13 +123,14 @@ class User_TransientsTest extends TestCase {
 	 * @group ms-required
 	 */
 	public function test_delete_using_external_cache_in_network_mode() {
+		$this->network_activate_site_kit();
 		$this->using_external_cache(
 			function( $user_transients, $user_id ) {
-				wp_cache_set( "wptests_user_{$user_id}_testkey6", 'qwerty6', 'site-transient', 1000 );
-				$this->assertEquals( 'qwerty6', wp_cache_get( "wptests_user_{$user_id}_testkey6", 'site-transient' ) );
+				wp_cache_set( "user_{$user_id}_testkey6", 'qwerty6', 'site-transient', 1000 );
+				$this->assertEquals( 'qwerty6', wp_cache_get( "user_{$user_id}_testkey6", 'site-transient' ) );
 
 				$user_transients->delete( 'testkey6' );
-				$this->assertFalse( wp_cache_get( "wptests_user_{$user_id}_testkey6", 'site-transient' ) );
+				$this->assertFalse( wp_cache_get( "user_{$user_id}_testkey6", 'site-transient' ) );
 			}
 		);
 	}
