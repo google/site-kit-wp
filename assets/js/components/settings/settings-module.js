@@ -206,7 +206,8 @@ class SettingsModule extends Component {
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
 
-		const dependentModules = map( this.getDependentModules(), 'name' ).join( ', ' );
+		/* translators: used between list items, there is a space after the comma. */
+		const dependentModules = map( this.getDependentModules(), 'name' ).join( __( ', ', 'google-site-kit' ) );
 
 		// Set button text based on state.
 		let buttonText = __( 'Close', 'google-site-kit' );
