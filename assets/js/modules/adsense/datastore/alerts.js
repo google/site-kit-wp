@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
 // Actions
 const RESET_ALERTS = 'RESET_ALERTS';
@@ -70,7 +71,7 @@ const baseActions = {
 			type: RESET_ALERTS,
 		};
 
-		yield dispatch( STORE_NAME ).clearErrors( 'getAlerts' );
+		yield errorStoreActions.clearErrors( 'getAlerts' );
 
 		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getAlerts' );
