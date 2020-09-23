@@ -495,10 +495,9 @@ class AuthenticationTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options           = new Options( $context );
-		$user_options      = new User_Options( $context );
-		$encrypted_options = new Encrypted_Options( $options );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context );
 
 		$authentication = new Authentication( $context, $options, $user_options );
 		$authentication->register();
@@ -544,7 +543,7 @@ class AuthenticationTest extends TestCase {
 		$authentication->register();
 
 		// Emulate credentials.
-		$this->fake_proxy_site_connection();
+		$fake_proxy_credentials = $this->fake_proxy_site_connection();
 
 		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
 		add_filter(
@@ -568,7 +567,7 @@ class AuthenticationTest extends TestCase {
 			$parsed = wp_parse_url( $location );
 			parse_str( $parsed['query'], $query_args );
 
-			$this->assertEquals( '12345678.apps.sitekit.withgoogle.com', $query_args['site_id'] );
+			$this->assertEquals( $fake_proxy_credentials['client_id'], $query_args['site_id'] );
 			$this->assertEquals( 'test-code', $query_args['code'] );
 		}
 	}

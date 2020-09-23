@@ -596,7 +596,6 @@ final class Authentication {
 		$data['usingProxy']          = false;
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
-			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_setup_url() );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
