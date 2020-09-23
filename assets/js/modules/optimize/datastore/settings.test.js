@@ -24,7 +24,6 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
-	muteConsole,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
@@ -88,11 +87,11 @@ describe( 'modules/optimize settings', () => {
 					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
 					{ body: wpError, status: 500 }
 				);
-				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).getSettings() ).toEqual( validSettings );
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( wpError );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'invalidates Optimize API cache on success', async () => {

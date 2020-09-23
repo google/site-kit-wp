@@ -22,7 +22,7 @@
 import { createAddToFilter } from '../../util/helpers';
 import { getSiteKitAdminURL, getModulesData } from '../../util';
 import AdSenseDashboardWidget from './components/dashboard/AdSenseDashboardWidget';
-import DashboardEarnings from './components/dashboard/DashboardEarnings';
+import LegacyDashboardEarnings from './components/dashboard/LegacyDashboardEarnings';
 
 /**
  * WordPress dependencies
@@ -41,7 +41,7 @@ addFilter( 'googlesitekit.SetupModuleShowLink',
 const modulesData = getModulesData();
 if ( modulesData.adsense.active ) {
 	const addAdSenseDashboardWidget = createAddToFilter( <AdSenseDashboardWidget /> );
-	const addDashboardEarnings = createAddToFilter( <DashboardEarnings /> );
+	const addLegacyDashboardEarnings = createAddToFilter( <LegacyDashboardEarnings /> );
 
 	// If setup is complete, show the AdSense data.
 	if ( modulesData[ slug ].setupComplete ) {
@@ -54,7 +54,7 @@ if ( modulesData.adsense.active ) {
 
 		addFilter( 'googlesitekit.DashboardModule',
 			'googlesitekit.DashboardEarningModule',
-			addDashboardEarnings, 50 );
+			addLegacyDashboardEarnings, 50 );
 	} else {
 		const {
 			reAuth,
