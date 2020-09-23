@@ -35,7 +35,7 @@ import { getCurrentDateRangeSlug } from '../../util/date-range';
 import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
 import { isWPError } from '../../util/errors';
-import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
+import DashboardAuthScopesAlert from '../notifications/DashboardAuthScopesAlert';
 import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
 import { getCacheKey, getCache, setCache } from './cache';
 import { TYPE_CORE, TYPE_MODULES } from './constants';
@@ -226,7 +226,7 @@ const dataAPI = {
 		if ( [ 'authError', 'insufficientPermissions' ].includes( data.reason ) ) {
 			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
-				fillFilterWithComponent( DashboardAuthAlert ), 1 );
+				fillFilterWithComponent( DashboardAuthScopesAlert ), 1 );
 			addedNoticeCount++;
 		}
 
