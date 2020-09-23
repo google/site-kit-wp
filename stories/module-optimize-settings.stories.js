@@ -22,100 +22,78 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters, addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
+import { AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { SettingsMain as OptimizeSettings } from '../assets/js/modules/optimize/components/settings';
-import { fillFilterWithComponent } from '../assets/js/util';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME } from '../assets/js/modules/optimize/datastore';
+import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
 import fixtures from '../assets/js/googlesitekit/modules/datastore/fixtures.json';
+import { createTestRegistry, provideSiteInfo, provideModules } from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 const analyticsFixture = fixtures.filter( ( fixture ) => fixture.slug === 'analytics' );
 
-function filterOptimizeSettings() {
-	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-optimize' );
-	addFilter(
-		'googlesitekit.ModuleSettingsDetails-optimize',
-		'googlesitekit.OptimizeModuleSettingsDetails',
-		fillFilterWithComponent( OptimizeSettings )
-	);
-}
-
-const completeModuleData = {
-	...global._googlesitekitLegacyData.modules.optimize,
-	active: true,
-	setupComplete: true,
+const defaultSettings = {
+	optimizeID: '',
+	ampExperimentJSON: '',
+	ownerID: 0,
 };
 
 const Settings = createLegacySettingsWrapper( 'optimize', OptimizeSettings );
 
 storiesOf( 'Optimize Module/Settings', module )
-	.add( 'View, closed', () => {
-		filterOptimizeSettings();
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		provideModules( registry, [ {
+			slug: 'optimize',
+			active: true,
+			connected: true,
+		} ] );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-		};
-
-		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
+		return storyFn( registry );
 	} )
-	.add( 'View, open with all settings', () => {
-		filterOptimizeSettings();
-
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				optimizeID: 'OPT-1234567',
-			} );
-		};
-
-		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
+	.add( 'View, closed', ( registry ) => {
+		return <Settings isOpen={ false } registry={ registry } />;
 	} )
-	.add( 'Edit, open with all settings', () => {
-		filterOptimizeSettings();
+	.add( 'View, open with all settings', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			optimizeID: 'OPT-1234567',
+		} );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				optimizeID: 'OPT-1234567',
-				ampExperimentJSON: '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
-			} );
-		};
-
-		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+		return <Settings isOpen={ true } registry={ registry } />;
 	} )
-	.add( 'Edit, open with no optimize ID', () => {
-		filterOptimizeSettings();
+	.add( 'Edit, open with all settings', ( registry ) => {
+		registry.dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
+		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			optimizeID: 'OPT-1234567',
+			ampExperimentJSON: '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
+		} );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-		};
-
-		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
-	.add( 'Edit, open with all settings and AMP Experiment JSON Field', () => {
-		filterOptimizeSettings();
+	.add( 'Edit, open with no optimize ID', ( registry ) => {
+		registry.dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
-			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				optimizeID: 'OPT-1234567',
-				ampExperimentJSON: '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
-			} );
-		};
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	} )
+	.add( 'Edit, open with all settings and AMP Experiment JSON Field', ( registry ) => {
+		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
+		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			optimizeID: 'OPT-1234567',
+			ampExperimentJSON: '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
+		} );
 
-		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
 ;

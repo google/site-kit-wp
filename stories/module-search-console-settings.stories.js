@@ -22,56 +22,36 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters, addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import { SettingsMain as SearchConsoleSettings } from '../assets/js/modules/search-console/components/settings';
-import { fillFilterWithComponent } from '../assets/js/util';
-import { STORE_NAME } from '../assets/js/modules/search-console/datastore';
+import { STORE_NAME } from '../assets/js/modules/search-console/datastore/constants';
+import { createTestRegistry, provideUserAuthentication } from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
-
-function filterSearchConsoleSettings() {
-	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-search-console' );
-	addFilter(
-		'googlesitekit.ModuleSettingsDetails-search-console',
-		'googlesitekit.SearchConsoleModuleSettingsDetails',
-		fillFilterWithComponent( SearchConsoleSettings, {
-			onSettingsPage: true,
-		} )
-	);
-}
-
-const completeModuleData = {
-	...global._googlesitekitLegacyData.modules[ 'search-console' ],
-	active: true,
-	setupComplete: true,
-};
 
 const Settings = createLegacySettingsWrapper( 'search-console', SearchConsoleSettings );
 
+const defaultSettings = {
+	propertyID: '',
+};
+
 storiesOf( 'Search Console Module/Settings', module )
-	.add( 'View, closed', () => {
-		filterSearchConsoleSettings();
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		provideUserAuthentication( registry );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-		};
-
-		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
+		return storyFn( registry );
 	} )
-	.add( 'View, open with all settings', () => {
-		filterSearchConsoleSettings();
+	.add( 'View, closed', ( registry ) => {
+		return <Settings isOpen={ false } registry={ registry } />;
+	} )
+	.add( 'View, open with all settings', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			propertyID: 'http://example.com/',
+		} );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				propertyID: 'http://example.com/',
-			} );
-		};
-
-		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
+		return <Settings isOpen={ true } registry={ registry } />;
 	} )
 ;

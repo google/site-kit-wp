@@ -22,48 +22,26 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters, addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import { SettingsMain as PageSpeedInsightsSettings } from '../assets/js/modules/pagespeed-insights/components/settings';
-import { fillFilterWithComponent } from '../assets/js/util';
+import { createTestRegistry } from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
-
-function filterPageSpeedInsightsSettings() {
-	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-pagespeed-insights' );
-	addFilter(
-		'googlesitekit.ModuleSettingsDetails-pagespeed-insights',
-		'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
-		fillFilterWithComponent( PageSpeedInsightsSettings )
-	);
-}
-
-const completeModuleData = {
-	...global._googlesitekitLegacyData.modules[ 'pagespeed-insights' ],
-	active: true,
-	setupComplete: true,
-};
 
 const Settings = createLegacySettingsWrapper( 'pagespeed-insights', PageSpeedInsightsSettings );
 
 storiesOf( 'PageSpeed Insights Module/Settings', module )
-	.add( 'View, closed', () => {
-		filterPageSpeedInsightsSettings();
-
-		return <Settings isOpen={ false } module={ completeModuleData } />;
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		return storyFn( registry );
 	} )
-	.add( 'View, open with all settings', () => {
-		filterPageSpeedInsightsSettings();
-
-		return <Settings module={ completeModuleData } />;
+	.add( 'View, closed', ( registry ) => {
+		return <Settings isOpen={ false } registry={ registry } />;
 	} )
-	.add( 'Edit, open with all settings', () => {
-		filterPageSpeedInsightsSettings();
-
-		return <Settings isEditing={ true } module={ completeModuleData } />;
+	.add( 'View, open with all settings', ( registry ) => {
+		return <Settings isOpen={ true } registry={ registry } />;
+	} )
+	.add( 'Edit, open with all settings', ( registry ) => {
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
 ;
