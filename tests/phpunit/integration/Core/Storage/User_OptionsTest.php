@@ -108,15 +108,6 @@ class User_OptionsTest extends TestCase {
 		$this->assertFalse( metadata_exists( 'user', $user_id, 'test-key' ) );
 	}
 
-	protected function network_activate_site_kit() {
-		add_filter(
-			'pre_site_option_active_sitewide_plugins',
-			function () {
-				return array( GOOGLESITEKIT_PLUGIN_BASENAME => true );
-			}
-		);
-	}
-
 	protected function create_user_aware_instance( $user_id ) {
 		return new User_Options(
 			new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
