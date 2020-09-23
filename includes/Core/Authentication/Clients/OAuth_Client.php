@@ -1050,6 +1050,9 @@ final class OAuth_Client {
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
 		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
+
+		$this->access_token  = '';
+		$this->refresh_token = '';
 	}
 
 	/**
