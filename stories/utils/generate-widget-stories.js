@@ -173,7 +173,7 @@ export function generateReportBasedWidgetStories( {
 		},
 	};
 
-	// custom variants.
+	// Custom variants.
 	const customVariants = {};
 	Object.keys( additionalVariants ).forEach( ( name ) => {
 		const { data: variantData, options: variantOptions } = additionalVariants[ name ];
@@ -196,7 +196,16 @@ export function generateReportBasedWidgetStories( {
 		...customVariants,
 	};
 
-	const widget = wrapWidget ? <Widget><WidgetComponent /></Widget> : <WidgetComponent />;
+	let widget;
+	if ( wrapWidget ) {
+		widget = (
+			<Widget slug={ `${ moduleSlug }-widget` }>
+				<WidgetComponent />
+			</Widget>
+		);
+	} else {
+		widget = <WidgetComponent />;
+	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
 		stories.add( variant, () => (

@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
 // Actions
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
@@ -54,6 +55,8 @@ const baseActions = {
 			payload: {},
 			type: RESET_ACCOUNTS,
 		};
+
+		yield errorStoreActions.clearErrors( 'getAccounts' );
 
 		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
