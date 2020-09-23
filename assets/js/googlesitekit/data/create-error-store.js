@@ -108,7 +108,7 @@ export function createErrorStore() {
 					delete newState.errors[ key ];
 				} else {
 					// @TODO: remove it once all instances of the legacy behavior have been removed.
-					delete newState.error;
+					newState.error = undefined;
 				}
 
 				return newState;
@@ -122,8 +122,8 @@ export function createErrorStore() {
 					newState.errors = { ...( state.errors || {} ) };
 					delete newState.errors[ key ];
 				} else {
-					delete newState.errors;
-					delete newState.error;
+					newState.errors = undefined;
+					newState.error = undefined;
 				}
 				return newState;
 			}
