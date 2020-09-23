@@ -37,7 +37,7 @@ function generateErrorKey( baseName, args ) {
 		const stringifiedArgs = args.map( ( item ) => {
 			return 'object' === typeof item ? stringifyObject( item ) : item;
 		} );
-		key += md5( JSON.stringify( stringifiedArgs ) );
+		key += `::${ md5( JSON.stringify( stringifiedArgs ) ) }`;
 	}
 	return key;
 }
@@ -118,11 +118,15 @@ export function createErrorStore() {
 				const { baseName } = payload;
 				const newState = { ...state };
 				if ( baseName ) {
-					const key = generateErrorKey( baseName );
 					newState.errors = { ...( state.errors || {} ) };
-					delete newState.errors[ key ];
+					for ( const key in Object.keys( newState.errors ) ) {
+						if ( key === baseName || key.startsWith( baseName ) ) {
+							delete newState.errors[ key ];
+						}
+					}
 				} else {
-					newState.errors = undefined;
+					// @TODO: remove it once all instances of the legacy behavior have been removed.
+					newState.errors = {};
 					newState.error = undefined;
 				}
 				return newState;
