@@ -51,7 +51,7 @@ const completeModuleData = {
 	setupComplete: true,
 };
 
-const Settings = createLegacySettingsWrapper( 'console-settings', SearchConsoleSettings );
+const Settings = createLegacySettingsWrapper( 'search-console', SearchConsoleSettings );
 
 storiesOf( 'Search Console Module/Settings', module )
 	.add( 'View, closed', () => {
