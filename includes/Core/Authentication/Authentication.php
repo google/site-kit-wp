@@ -1007,7 +1007,7 @@ final class Authentication {
 	}
 
 	/**
-	 * Sets the current site URL if the current user has setup capabilities.
+	 * Sets the current connected proxy URL.
 	 *
 	 * @since n.e.x.t
 	 */
