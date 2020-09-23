@@ -223,8 +223,10 @@ final class Authentication {
 
 		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
-		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 ); // Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
-		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'handle_sync_site_fields' ), 5 ); // Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
+		// Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
+		// Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'handle_sync_site_fields' ), 5 );
 		add_action(
 			'admin_action_' . Google_Proxy::ACTION_SETUP,
 			function () {
