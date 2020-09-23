@@ -129,10 +129,7 @@ export default function LabReportMetrics( { data, error } ) {
 			</table>
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--last">
 				<ReportDetailsLink />
-				<Button
-					href="#update"
-					onClick={ updateReport }
-				>
+				<Button onClick={ updateReport }>
 					{ __( 'Run test again', 'google-site-kit' ) }
 				</Button>
 			</div>
