@@ -451,11 +451,11 @@ describe( 'modules/tagmanager versions', () => {
 					{ body: notFoundResponse, status: 404 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( console ).toHaveErrored();
 				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				expect( registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( null );
 			} );
