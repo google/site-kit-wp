@@ -37,8 +37,8 @@ const { components: { Widget } } = Widgets;
  * @since 1.16.0
  *
  * @param {(string|Array)} moduleSlug Module slug or slugs to activate.
- * @param {string|null}   url          Current entity URL.
- * @param {Function}     cb            Callback for additional setup.
+ * @param {string|null}    url        Current entity URL.
+ * @param {Function}       [cb]       Callback for additional setup. Default is no-op.
  * @return {Function} A function to set up registry for widget stories.
  */
 function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
@@ -84,7 +84,7 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
  * @param {Array}     args.data                         Widget data.
  * @param {Object}    args.options                      Arguments for report requests.
  * @param {Component} args.component                    Widget component.
- * @param {boolean}   args.wrapWidget                   Whether to wrap in default <Widget> component. Default true.
+ * @param {boolean}   [args.wrapWidget]                 Whether to wrap in default <Widget> component. Default true.
  * @param {Array}     [args.additionalVariants]         Optional. Additional story variants.
  * @param {Array}     [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants
  * @return {Story} Generated story.
@@ -107,7 +107,7 @@ export function generateReportBasedWidgetStories( {
 		if ( ! Array.isArray( data ) ) {
 			throw new Error( 'options is an array, data must be one too' );
 		}
-		// Both must have the same length
+		// Both must have the same length.
 		if ( options.length !== data.length ) {
 			throw new Error( 'options and data must have the same number of items' );
 		}
@@ -119,7 +119,7 @@ export function generateReportBasedWidgetStories( {
 		Error: additionalErrorCallback,
 	} = additionalVariantCallbacks;
 
-	// Existing default variants
+	// Existing default variants.
 	const defaultVariants = {
 		Loaded: ( { dispatch } ) => {
 			if ( Array.isArray( options ) ) {
@@ -177,20 +177,34 @@ export function generateReportBasedWidgetStories( {
 	const customVariants = {};
 	Object.keys( additionalVariants ).forEach( ( name ) => {
 		const { data: variantData, options: variantOptions } = additionalVariants[ name ];
+
+		if ( Array.isArray( variantOptions ) ) {
+			// 	If variantOptions is an array, so must variantData.
+			if ( ! Array.isArray( variantData ) ) {
+				throw new Error( `options for variant "${ name }" is an array, data must be one too` );
+			}
+			// Both must have the same length.
+			if ( variantOptions.length !== variantData.length ) {
+				throw new Error( `options and data for variant "${ name }" must have the same number of items` );
+			}
+		}
+
 		customVariants[ name ] = ( { dispatch } ) => {
 			if ( Array.isArray( variantOptions ) ) {
-				options.forEach( ( option, index ) => {
-					dispatch( datastore ).receiveGetReport( variantData[ index ], { options: option } );
+				variantOptions.forEach( ( variantOption, index ) => {
+					dispatch( datastore ).receiveGetReport( variantData[ index ], { options: variantOption } );
 				} );
 			} else {
 				dispatch( datastore ).receiveGetReport( variantData, { options: variantOptions } );
 			}
-			const { [ name ]: callback } = additionalVariantCallbacks;
-			if ( callback ) {
-				callback( dispatch, data, options );
+
+			// Run additional callback if it exists.
+			if ( additionalVariantCallbacks[ name ] ) {
+				additionalVariantCallbacks[ name ]( dispatch, data, options );
 			}
 		};
 	} );
+
 	const variants = {
 		...defaultVariants,
 		...customVariants,
