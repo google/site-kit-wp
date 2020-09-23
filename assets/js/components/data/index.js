@@ -217,7 +217,7 @@ const dataAPI = {
 		console.warn( 'WP Error in data response', error );
 		const { data } = error;
 
-		if ( ! data || ! data.reason ) {
+		if ( ! data || ( ! data.reason && ! data.reconnectURL ) ) {
 			return;
 		}
 
