@@ -227,7 +227,7 @@ class User_Transients implements User_Aware_Interface {
 	private function get_from_user_options( $transient ) {
 		$prefixed_transient_timeout = $this->get_transient_timeout_for_user_options( $transient );
 		$timeout                    = $this->user_options->get( $prefixed_transient_timeout );
-		if ( false !== $timeout && $timeout < time() ) {
+		if ( false === $timeout || $timeout < time() ) {
 			$this->delete( $transient );
 			return false;
 		}
