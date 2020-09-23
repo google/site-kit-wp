@@ -68,7 +68,6 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 			// Component will be loading as long as both reports are not present.
 			// Omit receiving mobile here to trigger the request only once.
 			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
 			dispatch( CORE_SITE ).receiveSiteInfo( {
 				referenceSiteURL: url,
 				currentEntityURL: null,
