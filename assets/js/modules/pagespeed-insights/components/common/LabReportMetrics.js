@@ -56,7 +56,7 @@ export default function LabReportMetrics( { data, error } ) {
 		event.preventDefault();
 
 		// Invalidate the PageSpeed API request caches.
-		await API.invalidateCache( 'modules', 'pagespeed' );
+		await API.invalidateCache( 'modules', 'pagespeed-insights', 'pagespeed' );
 
 		// Invalidate the cached resolver.
 		invalidateResolution( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] );
