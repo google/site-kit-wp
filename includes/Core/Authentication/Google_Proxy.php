@@ -139,7 +139,7 @@ class Google_Proxy {
 			),
 		);
 
-		if ( 'sync' !== $mode ) {
+		if ( 'async' === $mode ) {
 			$request_args['timeout']  = 0.01;
 			$request_args['blocking'] = false;
 		}
