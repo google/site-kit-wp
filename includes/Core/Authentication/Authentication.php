@@ -225,6 +225,17 @@ final class Authentication {
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
 		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 ); // Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
 		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'handle_sync_site_fields' ), 5 ); // Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
+		add_action(
+			'admin_action_' . Google_Proxy::ACTION_SETUP,
+			function () {
+				$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
+				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+
+				$this->handle_site_code( $code, $site_code );
+				$this->redirect_to_proxy( $code );
+			}
+		);
+
 		add_action( 'googlesitekit_authorize_user', $this->get_method_proxy( 'set_connected_proxy_url' ) );
 
 		add_filter(
@@ -242,17 +253,6 @@ final class Authentication {
 					'/' . REST_Routes::REST_ROOT . '/core/user/data/authentication',
 				);
 				return array_merge( $routes, $authentication_routes );
-			}
-		);
-
-		add_action(
-			'admin_action_' . Google_Proxy::ACTION_SETUP,
-			function () {
-				$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
-
-				$this->handle_site_code( $code, $site_code );
-				$this->redirect_to_proxy( $code );
 			}
 		);
 
@@ -1057,6 +1057,7 @@ final class Authentication {
 	 * @since n.e.x.t
 	 */
 	private function handle_sync_site_fields() {
+		// If this query parameter is sent, the request comes from the authentication proxy as part of an ongoing setup flow, so there is no need to sync site fields.
 		$googlesitekit_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code' );
 		if ( $googlesitekit_code ) {
 			return;
@@ -1073,12 +1074,10 @@ final class Authentication {
 		if ( $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH ) {
 			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
 		}
-
-		$this->redirect_to_proxy( '' );
 	}
 
 	/**
-	 * Gets an URL for googlesitekit_proxy_connect_user action.
+	 * Gets the publicly visible URL to set up the plugin with the authentication proxy.
 	 *
 	 * @since n.e.x.t
 	 *

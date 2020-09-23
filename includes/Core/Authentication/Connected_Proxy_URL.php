@@ -48,18 +48,7 @@ class Connected_Proxy_URL extends Setting {
 	 * @return callable A sanitizing function.
 	 */
 	protected function get_sanitize_callback() {
-		return function( $url ) {
-			$url = filter_var( $url, FILTER_SANITIZE_URL );
-			$url = wp_parse_url( $url );
-			if ( ! $url ) {
-				return null;
-			}
-
-			$normalized  = ! empty( $url['host'] ) ? $url['host'] : '';
-			$normalized .= ! empty( $url['path'] ) ? $url['path'] : '/';
-
-			return $normalized;
-		};
+		return 'trailingslashit';
 	}
 
 }
