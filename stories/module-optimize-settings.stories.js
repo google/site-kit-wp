@@ -29,15 +29,14 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import SettingsModule from '../assets/js/components/settings/settings-module';
 import { SettingsMain as OptimizeSettings } from '../assets/js/modules/optimize/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore';
-import { WithTestRegistry } from '../tests/js/utils';
 import fixtures from '../assets/js/googlesitekit/modules/datastore/fixtures.json';
+import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 const analyticsFixture = fixtures.filter( ( fixture ) => fixture.slug === 'analytics' );
 
@@ -56,54 +55,7 @@ const completeModuleData = {
 	setupComplete: true,
 };
 
-function Settings( props ) {
-	const {
-		callback,
-		module = global._googlesitekitLegacyData.modules.optimize,
-		isEditing = false,
-		isOpen = true,
-		isSaving = false,
-		error = false,
-		// eslint-disable-next-line no-console
-		handleAccordion = ( ...args ) => console.log( 'handleAccordion', ...args ),
-		// eslint-disable-next-line no-console
-		handleDialog = ( ...args ) => console.log( 'handleDialog', ...args ),
-		// eslint-disable-next-line no-console
-		updateModulesList = ( ...args ) => console.log( 'updateModulesList', ...args ),
-		// eslint-disable-next-line no-console
-		handleButtonAction = ( ...args ) => console.log( 'handleButtonAction', ...args ),
-	} = props;
-
-	return (
-		<WithTestRegistry callback={ callback }>
-			<div style={ { background: 'white' } }>
-				<SettingsModule
-					key={ module.slug + '-module' }
-					slug={ module.slug }
-					name={ module.name }
-					description={ module.description }
-					homepage={ module.homepage }
-					learnmore={ module.learnMore }
-					active={ module.active }
-					setupComplete={ module.setupComplete }
-					hasSettings={ true }
-					autoActivate={ module.autoActivate }
-					updateModulesList={ updateModulesList }
-					handleEdit={ handleButtonAction }
-					handleConfirm
-					isEditing={ isEditing ? { 'optimize-module': true } : {} }
-					isOpen={ isOpen }
-					handleAccordion={ handleAccordion }
-					handleDialog={ handleDialog }
-					provides={ module.provides }
-					isSaving={ isSaving }
-					screenID={ module.screenID }
-					error={ error }
-				/>
-			</div>
-		</WithTestRegistry>
-	);
-}
+const Settings = createLegacySettingsWrapper( 'optimize', OptimizeSettings );
 
 storiesOf( 'Optimize Module/Settings', module )
 	.add( 'View, closed', () => {

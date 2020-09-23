@@ -29,12 +29,11 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import SettingsModule from '../assets/js/components/settings/settings-module';
 import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytics/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datastore/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 function filterAnalyticsSettings() {
 	// set( global, 'googlesitekit.modules.analytics.setupComplete', true );
@@ -52,54 +51,7 @@ const completeModuleData = {
 	setupComplete: true,
 };
 
-function Settings( props ) {
-	const {
-		callback,
-		module = global._googlesitekitLegacyData.modules.analytics,
-		isEditing = false,
-		isOpen = true,
-		isSaving = false,
-		error = false,
-		// eslint-disable-next-line no-console
-		handleAccordion = ( ...args ) => console.log( 'handleAccordion', ...args ),
-		// eslint-disable-next-line no-console
-		handleDialog = ( ...args ) => console.log( 'handleDialog', ...args ),
-		// eslint-disable-next-line no-console
-		updateModulesList = ( ...args ) => console.log( 'updateModulesList', ...args ),
-		// eslint-disable-next-line no-console
-		handleButtonAction = ( ...args ) => console.log( 'handleButtonAction', ...args ),
-	} = props;
-
-	return (
-		<WithTestRegistry callback={ callback }>
-			<div style={ { background: 'white' } }>
-				<SettingsModule
-					key={ module.slug + '-module' }
-					slug={ module.slug }
-					name={ module.name }
-					description={ module.description }
-					homepage={ module.homepage }
-					learnmore={ module.learnMore }
-					active={ module.active }
-					setupComplete={ module.setupComplete }
-					hasSettings={ true }
-					autoActivate={ module.autoActivate }
-					updateModulesList={ updateModulesList }
-					handleEdit={ handleButtonAction }
-					handleConfirm
-					isEditing={ isEditing ? { 'analytics-module': true } : {} }
-					isOpen={ isOpen }
-					handleAccordion={ handleAccordion }
-					handleDialog={ handleDialog }
-					provides={ module.provides }
-					isSaving={ isSaving }
-					screenID={ module.screenID }
-					error={ error }
-				/>
-			</div>
-		</WithTestRegistry>
-	);
-}
+const Settings = createLegacySettingsWrapper( 'analytics', AnalyticsSettings );
 
 storiesOf( 'Analytics Module/Settings', module )
 	.add( 'View, closed', () => {
