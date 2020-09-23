@@ -32,14 +32,14 @@ const CLEAR_ERRORS = 'CLEAR_ERRORS';
 import { stringifyObject } from '../../util';
 
 function generateErrorKey( baseName, args ) {
-	let key = baseName;
 	if ( args && Array.isArray( args ) ) {
 		const stringifiedArgs = args.map( ( item ) => {
 			return 'object' === typeof item ? stringifyObject( item ) : item;
 		} );
-		key += `::${ md5( JSON.stringify( stringifiedArgs ) ) }`;
+		return `${ baseName }::${ md5( JSON.stringify( stringifiedArgs ) ) }`;
 	}
-	return key;
+
+	return baseName;
 }
 
 export const actions = {
@@ -120,13 +120,13 @@ export function createErrorStore() {
 				if ( baseName ) {
 					newState.errors = { ...( state.errors || {} ) };
 					for ( const key in Object.keys( newState.errors ) ) {
-						if ( key === baseName || key.startsWith( baseName ) ) {
+						if ( key === baseName || key.startsWith( `${ baseName }::` ) ) {
 							delete newState.errors[ key ];
 						}
 					}
 				} else {
-					// @TODO: remove it once all instances of the legacy behavior have been removed.
 					newState.errors = {};
+					// @TODO: remove it once all instances of the legacy behavior have been removed.
 					newState.error = undefined;
 				}
 				return newState;
