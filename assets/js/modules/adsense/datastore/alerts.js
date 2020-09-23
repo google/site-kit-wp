@@ -58,7 +58,7 @@ const fetchGetAlertsStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	alerts: {},
 };
 
@@ -89,7 +89,7 @@ const baseReducer = ( state, { type } ) => {
 			} = state.savedSettings || {};
 			return {
 				...state,
-				alerts: INITIAL_STATE.alerts,
+				alerts: initialState.alerts,
 				settings: {
 					...( state.settings || {} ),
 					accountStatus,
@@ -101,7 +101,7 @@ const baseReducer = ( state, { type } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -149,7 +149,7 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetAlertsStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
@@ -157,7 +157,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

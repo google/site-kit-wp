@@ -7,7 +7,9 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import Setup from '../assets/js/components/setup';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import SetupUsingProxy from '../assets/js/components/setup/setup-proxy';
+import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Setup', module )
@@ -29,6 +31,27 @@ storiesOf( 'Setup', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<Setup />
+			</WithTestRegistry>
+		);
+	} );
+
+storiesOf( 'Setup / Using Proxy', module )
+	.add( 'Disconnected - URL Mismatch', () => {
+		global._googlesitekitLegacyData.setup.isSiteKitConnected = true;
+
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_SITE ).receiveGetConnection( {} );
+			dispatch( CORE_USER ).receiveGetAuthentication( {
+				authenticated: false,
+				requiredScopes: [],
+				grantedScopes: [],
+				disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+			} );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupUsingProxy />
 			</WithTestRegistry>
 		);
 	} );

@@ -58,7 +58,7 @@ const fetchGetURLChannelsStore = createFetchStore( {
 // Actions
 const RESET_URLCHANNELS = 'RESET_URLCHANNELS';
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	urlchannels: {},
 };
 
@@ -87,7 +87,7 @@ const baseReducer = ( state, { type } ) => {
 			} = state.savedSettings || {};
 			return {
 				...state,
-				urlchannels: INITIAL_STATE.urlchannels,
+				urlchannels: initialState.urlchannels,
 				settings: {
 					...( state.settings || {} ),
 					siteStatus,
@@ -97,7 +97,7 @@ const baseReducer = ( state, { type } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -141,7 +141,7 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetURLChannelsStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
@@ -149,7 +149,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

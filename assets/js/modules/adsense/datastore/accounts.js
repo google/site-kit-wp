@@ -43,7 +43,7 @@ const fetchGetAccountsStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	accounts: undefined,
 };
 
@@ -76,7 +76,7 @@ const baseReducer = ( state, { type } ) => {
 			} = state.savedSettings || {};
 			return {
 				...state,
-				accounts: BASE_INITIAL_STATE.accounts,
+				accounts: baseInitialState.accounts,
 				settings: {
 					...( state.settings || {} ),
 					accountID,
@@ -90,7 +90,7 @@ const baseReducer = ( state, { type } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -129,7 +129,7 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetAccountsStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
@@ -137,7 +137,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

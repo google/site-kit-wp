@@ -41,7 +41,7 @@ const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
 
 const WidgetAreaStyleKeys = Object.keys( WIDGET_AREA_STYLES ).map( ( ( key ) => `WIDGET_AREA_STYLES.${ key }` ) ).join( ', ' );
 
-export const INITIAL_STATE = {
+export const initialState = {
 	areas: {},
 	contextAssignments: {},
 };
@@ -142,7 +142,7 @@ export const reducer = ( state, { type, payload } ) => {
 			if ( state.areas[ slug ] !== undefined ) {
 				global.console.warn( `Could not register widget area with slug "${ slug }". Widget area "${ slug }" is already registered.` );
 
-				return { ...state };
+				return state;
 			}
 
 			return {
@@ -155,7 +155,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -226,7 +226,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

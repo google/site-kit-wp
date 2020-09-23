@@ -29,9 +29,7 @@ import { actions as errorStoreActions } from './create-error-store';
 import { camelCaseToPascalCase, camelCaseToConstantCase } from './transform-case';
 import { stringifyObject } from '../../util';
 
-const defaultReducerCallback = ( state ) => {
-	return { ...state };
-};
+const defaultReducerCallback = ( state ) => state;
 
 const defaultArgsToParams = () => {
 	return {};
@@ -131,7 +129,7 @@ export const createFetchStore = ( {
 	const receiveCreator = `receive${ pascalCaseBaseName }`;
 	const isFetching = `isFetching${ pascalCaseBaseName }`;
 
-	const INITIAL_STATE = {
+	const initialState = {
 		[ isFetching ]: {},
 	};
 
@@ -250,7 +248,7 @@ export const createFetchStore = ( {
 			}
 
 			default: {
-				return { ...state };
+				return state;
 			}
 		}
 	};
@@ -276,7 +274,7 @@ export const createFetchStore = ( {
 	};
 
 	return {
-		INITIAL_STATE,
+		initialState,
 		actions,
 		controls,
 		reducer,

@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
@@ -118,7 +117,6 @@ describe( 'modules/tagmanager containers', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				const { error } = await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
 
 				expect( error ).toEqual( errorResponse );
@@ -129,6 +127,7 @@ describe( 'modules/tagmanager containers', () => {
 				const containers = registry.select( STORE_NAME ).getContainers( accountID );
 				// No properties should have been added yet, as the container creation failed.
 				expect( containers ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -259,7 +258,6 @@ describe( 'modules/tagmanager containers', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getContainers( accountID );
 
 				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
@@ -269,6 +267,7 @@ describe( 'modules/tagmanager containers', () => {
 				expect( containers ).toEqual( undefined );
 				const error = registry.select( STORE_NAME ).getErrorForSelector( 'getContainers', [ accountID ] );
 				expect( error ).toEqual( errorResponse );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 

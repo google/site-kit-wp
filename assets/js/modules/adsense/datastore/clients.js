@@ -58,7 +58,7 @@ const fetchGetClientsStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	clients: {},
 };
 
@@ -90,7 +90,7 @@ const baseReducer = ( state, { type } ) => {
 			} = state.savedSettings || {};
 			return {
 				...state,
-				clients: INITIAL_STATE.clients,
+				clients: initialState.clients,
 				settings: {
 					...( state.settings || {} ),
 					clientID,
@@ -103,7 +103,7 @@ const baseReducer = ( state, { type } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -151,7 +151,7 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetClientsStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
@@ -159,7 +159,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;
