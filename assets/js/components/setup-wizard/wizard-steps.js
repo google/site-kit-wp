@@ -44,7 +44,7 @@ const STEPS = {
 		Component: WizardStepSearchConsoleProperty,
 	},
 	completeSetup: {
-		title: _x( 'Finish', 'action', 'google-site-kit' ),
+		title: _x( 'Finish', 'complete module setup', 'google-site-kit' ),
 		required: false,
 		isApplicable: () => true,
 		isCompleted: ( props ) => props.isSiteKitConnected && props.isAuthenticated && props.isVerified && props.hasSearchConsoleProperty,
