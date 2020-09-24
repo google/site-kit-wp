@@ -33,7 +33,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function SettingsMain( { slug } ) {
+export default function SettingsMain() {
 	const {
 		canSubmitChanges,
 		isDoingSubmitChanges,
@@ -47,7 +47,7 @@ export default function SettingsMain( { slug } ) {
 		};
 	} );
 
-	const isEditing = useSelect( ( select ) => select( CORE_MODULES ).isSettingsViewEditing( slug ) );
+	const isEditing = useSelect( ( select ) => select( CORE_MODULES ).isSettingsViewEditing( 'analytics' ) );
 	const { submitChanges, rollbackSettings } = useDispatch( STORE_NAME );
 
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
@@ -59,7 +59,7 @@ export default function SettingsMain( { slug } ) {
 
 	return (
 		<DefaultModuleSettings
-			slug={ slug }
+			slug={ 'analytics' }
 			onEdit={ () => <SettingsEdit /> }
 			onView={ () => <SettingsView /> }
 			onSave={ submitChanges }

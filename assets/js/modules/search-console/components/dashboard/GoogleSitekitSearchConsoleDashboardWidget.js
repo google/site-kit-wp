@@ -33,7 +33,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Header from '../../../../components/header';
 import SearchConsoleDashboardWidgetSiteStats from './SearchConsoleDashboardWidgetSiteStats';
-import SearchConsoleDashboardWidgetKeywordTable from './SearchConsoleDashboardWidgetKeywordTable';
+import LegacySearchConsoleDashboardWidgetKeywordTable from './LegacySearchConsoleDashboardWidgetKeywordTable';
 import SearchConsoleDashboardWidgetOverview from './SearchConsoleDashboardWidgetOverview';
 import PageHeader from '../../../../components/page-header';
 import Layout from '../../../../components/layout/layout';
@@ -153,7 +153,19 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-							<PageHeader title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) } icon iconWidth="23" iconHeight="21" iconID="search-console" status="connected" statusText={ __( 'Search Console is connected', 'google-site-kit' ) } />
+							<PageHeader
+								title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+								icon
+								iconWidth="23"
+								iconHeight="21"
+								iconID="search-console"
+								status="connected"
+								statusText={ sprintf(
+									/* translators: %s: module name. */
+									__( '%s is connected', 'google-site-kit' ),
+									_x( 'Search Console', 'Service name', 'google-site-kit' )
+								) }
+							/>
 							{ loading && <ProgressBar /> }
 						</div>
 						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
@@ -169,7 +181,11 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								header
 								/* translators: %s: date range */
 								title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), currentDateRange ) }
-								headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
+								headerCtaLabel={ sprintf(
+									/* translators: %s: module name. */
+									__( 'See full stats in %s', 'google-site-kit' ),
+									_x( 'Search Console', 'Service name', 'google-site-kit' )
+								) }
 								headerCtaLink={ searchConsoleDeepLink }
 							>
 								<SearchConsoleDashboardWidgetOverview
@@ -191,12 +207,16 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), currentDateRange ) }
 								header
 								footer
-								headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
+								headerCtaLabel={ sprintf(
+									/* translators: %s: module name. */
+									__( 'See full stats in %s', 'google-site-kit' ),
+									_x( 'Search Console', 'Service name', 'google-site-kit' )
+								) }
 								headerCtaLink={ searchConsoleDeepLink }
 								footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 								footerCtaLink={ searchConsoleDeepLink }
 							>
-								<SearchConsoleDashboardWidgetKeywordTable />
+								<LegacySearchConsoleDashboardWidgetKeywordTable />
 							</Layout>
 						</div>
 						<div className="

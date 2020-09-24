@@ -45,7 +45,7 @@ const { useDispatch, useSelect } = Data;
 function ModuleSettingsFooter( { slug, allowEdit, provides, onSave, canSave, onDisconnected } ) {
 	const [ dialogActive, setDialogActive ] = useState( false );
 
-	const module = useSelect( ( select ) => select( STORE_NAME ).getModule() );
+	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 	const isEditing = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewModuleEditing( slug ) );
 	const isSavingModuleSettings = false; // TODO: update
 

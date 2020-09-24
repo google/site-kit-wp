@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Data_Request;
@@ -68,6 +69,10 @@ final class Search_Console extends Module
 		add_action(
 			'googlesitekit_authorize_user',
 			function( array $token_response ) {
+				if ( ! current_user_can( Permissions::SETUP ) ) {
+					return;
+				}
+
 				// If the response includes the Search Console property, set that.
 				if ( ! empty( $token_response['search_console_property'] ) ) {
 					$this->get_settings()->merge(

@@ -110,7 +110,7 @@
     "@wordpress/hooks": "^2.9.0",
     "@wordpress/i18n": "^3.14.0",
     "@wordpress/keycodes": "^2.15.0",
-    "@wordpress/scripts": "^3.4.0",
+    "@wordpress/scripts": "^12.2.0",
     "@wordpress/url": "^2.17.0",
     "accessible-autocomplete": "^2.0.3",
     "autoprefixer": "^9.8.5",

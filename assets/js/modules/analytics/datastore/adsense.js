@@ -29,7 +29,7 @@ const SET_ADSENSE_LINKED = 'SET_ADSENSE_LINKED';
 // TODO: Refactor this once we have dedicated actions for this.
 const __ADSENSE_LINKED_GET_RESOLVED_SETTINGS = '__ADSENSE_LINKED_GET_SETTINGS';
 
-export const INITIAL_STATE = {
+export const initialState = {
 	adsenseLinked: undefined,
 };
 
@@ -60,7 +60,7 @@ export const reducer = ( state, { type, payload } ) => {
 				adsenseLinked,
 			};
 		default:
-			return { ...state };
+			return state;
 	}
 };
 
@@ -81,7 +81,7 @@ export const selectors = {
 	/**
 	 * Gets the linked state of Analytics and Adsense services.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if Analytics is linked with AdSense,
@@ -94,7 +94,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

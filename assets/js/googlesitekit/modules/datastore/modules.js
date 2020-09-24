@@ -19,6 +19,8 @@
 /**
  * External dependencies
  */
+import memize from 'memize';
+import merge from 'lodash/merge';
 import invariant from 'invariant';
 
 /**
@@ -35,24 +37,43 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
-import { sortByProperty } from '../../../util/sort-by-property';
-import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 
 const { createRegistrySelector, createRegistryControl } = Data;
-
-/**
- * Store our module components by registry, then by module `slug`. We do this because
- * we can't store React components in our data store.
- *
- * @private
- * @since 1.13.0
- */
-export const ModuleComponents = {};
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
 const REGISTER_MODULE = 'REGISTER_MODULE';
-const WAIT_FOR_MODULES = 'WAIT_FOR_MODULES';
+
+const moduleDefaults = {
+	slug: '',
+	name: '',
+	description: '',
+	homepage: null,
+	internal: false,
+	active: false,
+	connected: false,
+	dependencies: [],
+	dependants: [],
+	order: 10,
+	icon: null,
+	settingsComponent: DefaultModuleSettings,
+};
+
+const normalizeModules = memize(
+	( modules ) => Object.keys( modules )
+		.map( ( slug ) => {
+			return {
+				...moduleDefaults,
+				name: slug, // Ensure `name` is not empty.
+				...modules[ slug ],
+				slug,
+			};
+		} )
+		.sort( ( a, b ) => a.order - b.order )
+		.reduce( ( acc, module ) => {
+			return { ...acc, [ module.slug ]: module };
+		}, {} )
+);
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
@@ -65,7 +86,7 @@ const fetchGetModulesStore = createFetchStore( {
 		return {
 			...state,
 			isAwaitingModulesRefresh: false,
-			modules: modules.reduce( ( acc, module ) => {
+			serverDefinitions: modules.reduce( ( acc, module ) => {
 				return { ...acc, [ module.slug ]: module };
 			}, {} ),
 		};
@@ -100,8 +121,9 @@ const fetchSetModuleActivationStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
-	modules: undefined,
+const baseInitialState = {
+	clientDefinitions: {},
+	serverDefinitions: undefined,
 	// This value is to indicate that modules data needs to be refreshed after
 	// a module activation update, since the activation is technically complete
 	// before this data has been refreshed.
@@ -109,19 +131,6 @@ const BASE_INITIAL_STATE = {
 };
 
 const baseActions = {
-	/**
-	 * Wait for the modules to be loaded
-	 *
-	 * @since 1.13.0
-	 *
-	 * @return {Object} Redux-style action.
-	 */
-	waitForModules() {
-		return {
-			payload: {},
-			type: WAIT_FOR_MODULES,
-		};
-	},
 	/**
 	 * Activates a module on the server.
 	 *
@@ -200,11 +209,11 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	registerModule( slug, {
-		name = slug,
-		description = null,
-		icon = null,
-		order = 10,
-		homepage = null,
+		name,
+		description,
+		icon,
+		order,
+		homepage,
 		settingsComponent = DefaultModuleSettings,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
@@ -220,8 +229,8 @@ const baseActions = {
 
 		return {
 			payload: {
-				slug,
 				settings,
+				slug,
 			},
 			type: REGISTER_MODULE,
 		};
@@ -232,49 +241,29 @@ export const baseControls = {
 	[ REFETCH_AUTHENTICATION ]: createRegistryControl( ( { dispatch } ) => () => {
 		return dispatch( CORE_USER ).fetchGetAuthentication();
 	} ),
-	[ WAIT_FOR_MODULES ]: createRegistryControl( ( registry ) => ( { payload: {} } ) => {
-		// Select first to ensure resolution is always triggered.
-		const { getModules, hasFinishedResolution } = registry.select( STORE_NAME );
-		getModules();
-		const modulesAreLoaded = () => hasFinishedResolution( 'getModules', [] );
-		if ( modulesAreLoaded() ) {
-			return;
-		}
-		return new Promise( ( resolve ) => {
-			const unsubscribe = registry.subscribe( () => {
-				if ( modulesAreLoaded() ) {
-					unsubscribe();
-					resolve();
-				}
-			} );
-		} );
-	} ),
 };
 
 const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
-			const {
-				active = false,
-				connected = false,
-			} = state.modules[ slug ] || {};
+
+			if ( state.clientDefinitions[ slug ] ) {
+				global.console.warn( `Could not register module with slug "${ slug }". Module "${ slug }" is already registered.` );
+				return state;
+			}
 
 			return {
 				...state,
-				modules: {
-					...state.modules,
-					[ slug ]: {
-						...( state.modules?.[ slug ] || {} ),
-						...settings,
-						...{ slug, active, connected },
-					},
+				clientDefinitions: {
+					...state.clientDefinitions,
+					[ slug ]: settings,
 				},
 			};
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -324,17 +313,18 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} Modules available on the site.
 	 */
 	getModules( state ) {
-		const { modules } = state;
+		const { clientDefinitions, serverDefinitions } = state;
 
 		// Return `undefined` if modules haven't been loaded yet.
-		if ( modules === undefined ) {
+		if ( serverDefinitions === undefined ) {
 			return undefined;
 		}
 
-		// Sorting the modules object by order property.
-		const sortedModules = sortByProperty( Object.values( modules ), 'order' );
+		// Module properties in `clientDefinitions` will overwrite `serverDefinitions`
+		// but only for keys whose values are not `undefined`.
+		const modules = merge( {}, serverDefinitions, clientDefinitions );
 
-		return convertArrayListToKeyedObjectMap( sortedModules, 'slug' );
+		return normalizeModules( modules );
 	},
 
 	/**
@@ -466,7 +456,7 @@ const store = Data.combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		controls: baseControls,
 		reducer: baseReducer,
@@ -475,7 +465,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

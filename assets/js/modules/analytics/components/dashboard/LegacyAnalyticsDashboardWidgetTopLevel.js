@@ -54,7 +54,7 @@ import Sparkline from '../../../../components/sparkline';
 import CTA from '../../../../components/notifications/cta';
 import PreviewBlock from '../../../../components/preview-block';
 
-class AnalyticsDashboardWidgetTopLevel extends Component {
+class LegacyAnalyticsDashboardWidgetTopLevel extends Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -162,7 +162,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								className="overview-bounce-rate"
 								title={ __( 'Bounce Rate', 'google-site-kit' ) }
 								datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
-								datapointUnit={ __( '%', 'google-site-kit' ) }
+								datapointUnit="%"
 								change={ averageBounceRateChange }
 								changeDataUnit="%"
 								invertChangeColor
@@ -231,7 +231,7 @@ This is because withData changes the props passed to the child for each request.
 */
 
 export default withData(
-	AnalyticsDashboardWidgetTopLevel,
+	LegacyAnalyticsDashboardWidgetTopLevel,
 	[
 		{
 			type: TYPE_MODULES,

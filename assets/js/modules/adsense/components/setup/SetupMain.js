@@ -98,14 +98,17 @@ export default function SetupMain( { finishSetup } ) {
 	// Get additional information to determine account and site status.
 	const alerts = useSelect( ( select ) => select( STORE_NAME ).getAlerts( accountID ) );
 	const urlChannels = useSelect( ( select ) => select( STORE_NAME ).getURLChannels( accountID, clientID ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
+	const accountsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAccounts', [] ) );
+	const alertsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAlerts', [ accountID ] ) );
+	const hasErrors = useSelect( ( select ) => select( STORE_NAME ).hasErrors() );
 
 	// Determine account and site status.
 	const accountStatus = determineAccountStatus( {
 		accounts,
 		clients,
 		alerts,
-		error,
+		accountsError,
+		alertsError,
 		previousAccountID,
 		previousClientID,
 	} );
@@ -115,6 +118,7 @@ export default function SetupMain( { finishSetup } ) {
 	} );
 
 	const {
+		clearError,
 		setAccountID,
 		setClientID,
 		setAccountStatus,
@@ -127,7 +131,6 @@ export default function SetupMain( { finishSetup } ) {
 		resetAlerts,
 		resetClients,
 		resetURLChannels,
-		receiveError,
 	} = useDispatch( STORE_NAME );
 
 	// Allow flagging when a background submission should happen.
@@ -246,7 +249,7 @@ export default function SetupMain( { finishSetup } ) {
 			}
 
 			// Unset any potential error.
-			receiveError( undefined );
+			clearError();
 			// Reset all data to force re-fetch.
 			resetAccounts();
 			resetAlerts();
@@ -275,7 +278,7 @@ export default function SetupMain( { finishSetup } ) {
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
 	let viewComponent;
-	if ( ( undefined === accountStatus && ! error ) || undefined === existingTag || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {
+	if ( ( undefined === accountStatus && ! hasErrors ) || undefined === existingTag || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {
 		// Show loading indicator if account status not determined yet or if
 		// a submission is in progress that is not happening in background.
 		viewComponent = <ProgressBar />;
@@ -302,7 +305,7 @@ export default function SetupMain( { finishSetup } ) {
 				viewComponent = <SetupAccountApproved />;
 				break;
 			default:
-				if ( error ) {
+				if ( hasErrors ) {
 					viewComponent = <ErrorNotice />;
 				} else {
 					viewComponent = <ErrorText message={ sprintf(
@@ -325,7 +328,7 @@ export default function SetupMain( { finishSetup } ) {
 				viewComponent = <SetupSiteAdded finishSetup={ finishSetupAndNavigate } />;
 				break;
 			default:
-				if ( error ) {
+				if ( hasErrors ) {
 					viewComponent = <ErrorNotice />;
 				} else {
 					viewComponent = <ErrorText message={ sprintf(

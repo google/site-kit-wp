@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 const STEPS = {
 	authentication: {
@@ -44,7 +44,7 @@ const STEPS = {
 		Component: WizardStepSearchConsoleProperty,
 	},
 	completeSetup: {
-		title: __( 'Finish', 'google-site-kit' ),
+		title: _x( 'Finish', 'complete module setup', 'google-site-kit' ),
 		required: false,
 		isApplicable: () => true,
 		isCompleted: ( props ) => props.isSiteKitConnected && props.isAuthenticated && props.isVerified && props.hasSearchConsoleProperty,
