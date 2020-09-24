@@ -35,6 +35,7 @@ import Layout from '../../../../components/layout/layout';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+import { isRestrictedMetricsError } from '../../../analytics/util/error';
 
 const { useSelect } = Data;
 
@@ -75,7 +76,7 @@ function DashboardTopEarningPagesWidget() {
 		);
 	}
 
-	if ( error ) {
+	if ( error && ! isRestrictedMetricsError( error, 'ga:adsense' ) ) {
 		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
