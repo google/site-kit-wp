@@ -137,7 +137,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 
 		return response;
 	} catch ( error ) {
-		trackAPIError( method, datapoint, type, identifier, error );
+		trackAPIError( { method, datapoint, type, identifier, error } );
 
 		// Check to see if this error was a `ERROR_CODE_MISSING_REQUIRED_SCOPE` error;
 		// if so and there is a data store available to dispatch on, dispatch a

@@ -186,7 +186,13 @@ const dataAPI = {
 
 				const isError = isWPError( result );
 				if ( isError ) {
-					this.handleWPError( 'POST', currentRequest.datapoint, currentRequest.type, currentRequest.identifier, result );
+					this.handleWPError( {
+						method: 'POST',
+						datapoint: currentRequest.datapoint,
+						type: currentRequest.type,
+						identifier: currentRequest.identifier,
+						result,
+					} );
 				}
 
 				each( keyIndexesMap[ key ], ( index ) => {
@@ -212,7 +218,7 @@ const dataAPI = {
 		} );
 	},
 
-	handleWPError( method, datapoint, type, identifier, error ) {
+	handleWPError( { method, datapoint, type, identifier, error } ) {
 		// eslint-disable-next-line no-console
 		console.warn( 'WP Error in data response', error );
 		const { data } = error;
@@ -221,7 +227,7 @@ const dataAPI = {
 			return;
 		}
 
-		trackAPIError( method, datapoint, type, identifier, error );
+		trackAPIError( { method, datapoint, type, identifier, error } );
 
 		let addedNoticeCount = 0;
 
@@ -322,10 +328,10 @@ const dataAPI = {
 			}
 
 			return Promise.resolve( results );
-		} ).catch( ( err ) => {
-			this.handleWPError( 'GET', datapoint, type, identifier, err );
+		} ).catch( ( error ) => {
+			this.handleWPError( { method: 'GET', datapoint, type, identifier, error } );
 
-			return Promise.reject( err );
+			return Promise.reject( error );
 		} );
 	},
 
@@ -353,10 +359,10 @@ const dataAPI = {
 			return new Promise( ( resolve ) => {
 				resolve( response );
 			} );
-		} ).catch( ( err ) => {
-			this.handleWPError( 'POST', datapoint, type, identifier, err );
+		} ).catch( ( error ) => {
+			this.handleWPError( { method: 'POST', datapoint, type, identifier, error } );
 
-			return Promise.reject( err );
+			return Promise.reject( error );
 		} );
 	},
 	/**
