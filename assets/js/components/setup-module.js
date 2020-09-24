@@ -37,7 +37,6 @@ import {
 	getReAuthURL,
 	showErrorNotification,
 	moduleIcon,
-	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
@@ -94,22 +93,8 @@ class SetupModule extends Component {
 			name,
 			description,
 			showLink,
+			blockedByParentModule,
 		} = this.props;
-
-		let blockedByParentModule = false;
-
-		const modules = getModulesData();
-
-		// Check if required module is active.
-		if ( modules[ slug ].required.length ) {
-			const requiredModules = modules[ slug ].required;
-
-			requiredModules.forEach( ( requiredModule ) => {
-				if ( ! modules[ requiredModule ].setupComplete ) {
-					blockedByParentModule = true;
-				}
-			} );
-		}
 
 		return (
 			<div
@@ -175,6 +160,7 @@ SetupModule.propTypes = {
 	homepage: PropTypes.string,
 	active: PropTypes.bool,
 	onActive: PropTypes.func,
+	blockedByParentModule: PropTypes.bool,
 };
 
 SetupModule.defaultProps = {
@@ -183,6 +169,7 @@ SetupModule.defaultProps = {
 	description: '',
 	homepage: '',
 	active: false,
+	blockedByParentModule: false,
 };
 
 export default SetupModule;

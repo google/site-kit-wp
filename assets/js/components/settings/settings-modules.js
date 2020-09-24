@@ -24,9 +24,10 @@ import { map, filter, sortBy } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { compose } from '@wordpress/compose';
 import { Component, Fragment } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,9 +38,9 @@ import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import SettingsModule from './settings-module';
 import SettingsOverlay from './settings-overlay';
-import { isPermissionScopeError } from '../../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import { isPermissionScopeError } from '../../util/errors';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-const { withSelect } = Data;
+const { withSelect, withDispatch } = Data;
 
 class SettingsModules extends Component {
 	constructor( props ) {
@@ -128,9 +129,7 @@ class SettingsModules extends Component {
 			return null;
 		}
 
-		const isCurrentModule = activeModule === module.slug;
-		const { settingsComponent: SettingsComponent, provides } = modules[ module.slug ];
-		const { error } = this.state;
+		const { settingsComponent: SettingsComponent } = modules[ module.slug ];
 
 		if ( activeTab === 0 && SettingsComponent ) {
 			return <SettingsComponent slug={ module.slug } />;
@@ -152,12 +151,12 @@ class SettingsModules extends Component {
 				handleEdit={ this.handleButtonAction }
 				handleConfirm
 				isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
-				isOpen={ isCurrentModule && moduleState }
+				isOpen={ activeModule === module.slug && moduleState }
 				handleAccordion={ this.handleAccordion }
 				handleDialog={ this.handleDialog }
-				provides={ provides }
+				provides={ module.provides }
 				isSaving={ isSaving }
-				error={ error }
+				error={ this.state.error }
 			/>
 		);
 	}
@@ -300,4 +299,23 @@ class SettingsModules extends Component {
 	}
 }
 
-export default withSelect( ( select ) => ( { modules: select( CORE_MODULES ).getModules() } ) )( SettingsModules );
+export default compose(
+	withSelect( ( select ) => {
+		const activeModule = select( CORE_MODULES ).getSettingsViewCurrentModule();
+		return {
+			modules: select( CORE_MODULES ).getModules(),
+			activeModule,
+			moduleState: select( CORE_MODULES ).getSettingsViewModuleState( activeModule ),
+		};
+	} ),
+	withDispatch( ( dispatch ) => {
+		return {
+			setActiveModule( slug ) {
+				dispatch( CORE_MODULES ).setSettingsViewCurrentModule( slug || '' );
+			},
+			setModuleState( state ) {
+				dispatch( CORE_MODULES ).setSettingsViewIsEditing( state === 'edit' );
+			},
+		};
+	} )
+)( SettingsModules );

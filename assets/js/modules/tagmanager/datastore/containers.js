@@ -86,7 +86,7 @@ const fetchCreateContainerStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	containers: {},
 };
 
@@ -312,7 +312,7 @@ const store = Data.combineStores(
 	fetchGetContainersStore,
 	fetchCreateContainerStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		controls: baseControls,
 		resolvers: baseResolvers,
@@ -321,7 +321,7 @@ const store = Data.combineStores(
 );
 
 export const {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

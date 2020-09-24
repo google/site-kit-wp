@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -128,7 +129,19 @@ final class Modules {
 					$data[ $module->slug ]['setupComplete'] = $data[ $module->slug ]['active'] && $this->is_module_connected( $module->slug );
 					$data[ $module->slug ]['dependencies']  = $this->get_module_dependencies( $module->slug );
 					$data[ $module->slug ]['dependants']    = $this->get_module_dependants( $module->slug );
+					$data[ $module->slug ]['owner']         = null;
+
+					if ( current_user_can( 'list_users' ) && $module instanceof Module_With_Owner ) {
+						$owner_id = $module->get_owner_id();
+						if ( $owner_id ) {
+							$data[ $module->slug ]['owner'] = array(
+								'id'    => $owner_id,
+								'login' => get_the_author_meta( 'user_login', $owner_id ),
+							);
+						}
+					}
 				}
+
 				return $data;
 			}
 		);
@@ -804,7 +817,7 @@ final class Modules {
 	 * @return array Module REST response data.
 	 */
 	private function prepare_module_data_for_response( Module $module ) {
-		return array(
+		$module_data = array(
 			'slug'         => $module->slug,
 			'name'         => $module->name,
 			'description'  => $module->description,
@@ -816,7 +829,20 @@ final class Modules {
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
 			'dependants'   => $this->get_module_dependants( $module->slug ),
+			'owner'        => null,
 		);
+
+		if ( current_user_can( 'list_users' ) && $module instanceof Module_With_Owner ) {
+			$owner_id = $module->get_owner_id();
+			if ( $owner_id ) {
+				$module_data['owner'] = array(
+					'id'    => $owner_id,
+					'login' => get_the_author_meta( 'user_login', $owner_id ),
+				);
+			}
+		}
+
+		return $module_data;
 	}
 
 	/**
@@ -886,6 +912,21 @@ final class Modules {
 						'type' => 'string',
 					),
 					'readonly'    => true,
+				),
+				'owner'        => array(
+					'type'       => 'object',
+					'properties' => array(
+						'id'    => array(
+							'type'        => 'integer',
+							'description' => __( 'Owner ID.', 'google-site-kit' ),
+							'readonly'    => true,
+						),
+						'login' => array(
+							'type'        => 'string',
+							'description' => __( 'Owner login.', 'google-site-kit' ),
+							'readonly'    => true,
+						),
+					),
 				),
 			),
 		);

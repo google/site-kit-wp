@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -33,6 +34,8 @@ use Exception;
  * @ignore
  */
 final class Authentication {
+
+	use Method_Proxy_Trait;
 
 	/**
 	 * Plugin context.
@@ -121,7 +124,7 @@ final class Authentication {
 	/**
 	 * Owner_ID instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 * @var Owner_ID
 	 */
 	protected $owner_id;
@@ -133,6 +136,22 @@ final class Authentication {
 	 * @var Has_Connected_Admins
 	 */
 	protected $has_connected_admins;
+
+	/**
+	 * Connected_Proxy_URL instance.
+	 *
+	 * @since 1.17.0
+	 * @var Connected_Proxy_URL
+	 */
+	protected $connected_proxy_url;
+
+	/**
+	 * Disconnected_Reason instance.
+	 *
+	 * @since 1.17.0
+	 * @var Disconnected_Reason
+	 */
+	protected $disconnected_reason;
 
 	/**
 	 * Google_Proxy instance.
@@ -177,6 +196,8 @@ final class Authentication {
 		$this->profile              = new Profile( $this->user_options );
 		$this->owner_id             = new Owner_ID( $this->options );
 		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
+		$this->connected_proxy_url  = new Connected_Proxy_URL( $this->options );
+		$this->disconnected_reason  = new Disconnected_Reason( $this->user_options );
 	}
 
 	/**
@@ -191,13 +212,33 @@ final class Authentication {
 		$this->verification_meta()->register();
 		$this->has_connected_admins->register();
 		$this->owner_id->register();
+		$this->connected_proxy_url->register();
+		$this->disconnected_reason->register();
 
+		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
+		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
+		add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'authentication_admin_notices' ) );
+		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
+
+		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
+		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
+		// Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
+		// Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'handle_sync_site_fields' ), 5 );
 		add_action(
-			'init',
-			function() {
-				$this->handle_oauth();
+			'admin_action_' . Google_Proxy::ACTION_SETUP,
+			function () {
+				$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
+				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+
+				$this->handle_site_code( $code, $site_code );
+				$this->redirect_to_proxy( $code );
 			}
 		);
+
+		add_action( 'googlesitekit_authorize_user', $this->get_method_proxy( 'set_connected_proxy_url' ) );
 
 		add_filter(
 			'googlesitekit_rest_routes',
@@ -214,60 +255,6 @@ final class Authentication {
 					'/' . REST_Routes::REST_ROOT . '/core/user/data/authentication',
 				);
 				return array_merge( $routes, $authentication_routes );
-			}
-		);
-
-		add_filter(
-			'googlesitekit_inline_base_data',
-			function ( $data ) {
-				return $this->inline_js_base_data( $data );
-			}
-		);
-
-		add_filter(
-			'googlesitekit_admin_data',
-			function ( $data ) {
-				return $this->inline_js_admin_data( $data );
-			}
-		);
-
-		add_filter(
-			'googlesitekit_setup_data',
-			function ( $data ) {
-				return $this->inline_js_setup_data( $data );
-			}
-		);
-
-		add_filter(
-			'allowed_redirect_hosts',
-			function ( $hosts ) {
-				return $this->allowed_redirect_hosts( $hosts );
-			}
-		);
-
-		add_filter(
-			'googlesitekit_admin_notices',
-			function ( $notices ) {
-				return $this->authentication_admin_notices( $notices );
-			}
-		);
-
-		add_action(
-			'admin_action_' . Google_Proxy::ACTION_SETUP,
-			function () {
-				$this->verify_proxy_setup_nonce();
-			},
-			-1
-		);
-
-		add_action(
-			'admin_action_' . Google_Proxy::ACTION_SETUP,
-			function () {
-				$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
-
-				$this->handle_site_code( $code, $site_code );
-				$this->redirect_to_proxy( $code );
 			}
 		);
 
@@ -303,8 +290,7 @@ final class Authentication {
 			};
 			add_action( 'shutdown', $sync_site_fields );
 		};
-		add_action( 'update_option_home', $option_updated );
-		add_action( 'update_option_siteurl', $option_updated );
+
 		add_action( 'update_option_blogname', $option_updated );
 		add_action( 'update_option_googlesitekit_db_version', $option_updated );
 
@@ -610,8 +596,7 @@ final class Authentication {
 		$data['usingProxy']          = false;
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
-			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
+			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_setup_url() );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
 		}
@@ -749,6 +734,7 @@ final class Authentication {
 								'grantedScopes'         => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
 								'unsatisfiedScopes'     => ! empty( $access_token ) ? $oauth_client->get_unsatisfied_scopes() : array(),
 								'needsReauthentication' => $oauth_client->needs_reauthentication(),
+								'disconnectedReason'    => $this->disconnected_reason->get(),
 							);
 
 							return new WP_REST_Response( $data );
@@ -791,8 +777,37 @@ final class Authentication {
 
 		$notices[] = $this->get_reauthentication_needed_notice();
 		$notices[] = $this->get_authentication_oauth_error_notice();
+		$notices[] = $this->get_reconnect_after_url_mismatch_notice();
 
 		return $notices;
+	}
+
+	/**
+	 * Gets reconnect notice.
+	 *
+	 * @since 1.17.0
+	 *
+	 * @return Notice Notice object.
+	 */
+	private function get_reconnect_after_url_mismatch_notice() {
+		return new Notice(
+			'reconnect_after_url_mismatch',
+			array(
+				'content'         => function() {
+					return sprintf(
+						'<p>%s <a href="%s">%s</a></p>',
+						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
+						esc_url( $this->get_proxy_setup_url() ),
+						esc_html__( 'Reconnect', 'google-site-kit' )
+					);
+				},
+				'type'            => Notice::TYPE_INFO,
+				'active_callback' => function() {
+					return $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH
+						&& $this->credentials->has();
+				},
+			)
+		);
 	}
 
 	/**
@@ -991,4 +1006,92 @@ final class Authentication {
 		);
 		exit;
 	}
+
+	/**
+	 * Sets the current connected proxy URL.
+	 *
+	 * @since 1.17.0
+	 */
+	private function set_connected_proxy_url() {
+		$this->connected_proxy_url->set( home_url() );
+	}
+
+	/**
+	 * Checks whether the current site URL has changed or not. If the URL has been changed,
+	 * it disconnects the Site Kit and sets the disconnected reason to "connected_url_mismatch".
+	 *
+	 * @since 1.17.0
+	 */
+	private function check_connected_proxy_url() {
+		if ( $this->connected_proxy_url->matches_url( home_url() ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			return;
+		}
+
+		if ( ! $this->credentials->has() ) {
+			return;
+		}
+
+		if ( ! $this->credentials->using_proxy() ) {
+			return;
+		}
+
+		if ( ! $this->is_authenticated() ) {
+			return;
+		}
+
+		if ( ! $this->connected_proxy_url->has() ) {
+			$this->set_connected_proxy_url();
+			return;
+		}
+
+		$this->disconnect();
+		$this->disconnected_reason->set( Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH );
+	}
+
+	/**
+	 * Handles user connection action and redirects to the proxy connection page.
+	 *
+	 * @since 1.17.0
+	 */
+	private function handle_sync_site_fields() {
+		// If this query parameter is sent, the request comes from the authentication proxy as part of an ongoing setup flow, so there is no need to sync site fields.
+		$googlesitekit_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code' );
+		if ( $googlesitekit_code ) {
+			return;
+		}
+
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			wp_die( esc_html__( 'You have insufficient permissions to connect Site Kit.', 'google-site-kit' ) );
+		}
+
+		if ( ! $this->credentials->using_proxy() ) {
+			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
+		}
+
+		if ( $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH ) {
+			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
+		}
+	}
+
+	/**
+	 * Gets the publicly visible URL to set up the plugin with the authentication proxy.
+	 *
+	 * @since 1.17.0
+	 *
+	 * @return string An URL for googlesitekit_proxy_connect_user action protected with a nonce.
+	 */
+	private function get_proxy_setup_url() {
+		return add_query_arg(
+			array(
+				'action' => Google_Proxy::ACTION_SETUP,
+				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_SETUP ),
+			),
+			admin_url( 'index.php' )
+		);
+	}
+
 }

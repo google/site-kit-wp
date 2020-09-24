@@ -19,8 +19,9 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import isPlainObject from 'lodash/isPlainObject';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -33,38 +34,27 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { moduleIcon } from '../../../util';
-import { STORE_NAME, SETTINGS_DISPLAY_MODES } from '../datastore/constants';
+import { STORE_NAME } from '../datastore/constants';
 const { useDispatch, useSelect } = Data;
 
 function ModuleSettingsHeader( { slug } ) {
-	const {
-		module,
-		isOpen,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			module: store.getModule( slug ),
-			isOpen: store.isSettingsOpen( slug ),
-		};
-	} );
+	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewModuleOpen( slug ) );
+	const isConnected = useSelect( ( select ) => select( STORE_NAME ).isModuleConnected( slug ) );
+	const module = useSelect( ( select ) => select( STORE_NAME ).getModule( slug ) );
 
-	const { setSettingsDisplayMode } = useDispatch( STORE_NAME );
+	const { toggleSettingsViewModuleOpen } = useDispatch( STORE_NAME );
 	const handleAccordion = useCallback( () => {
-		setSettingsDisplayMode( slug, isOpen ? SETTINGS_DISPLAY_MODES.CLOSED : SETTINGS_DISPLAY_MODES.VIEW );
-	}, [ slug, isOpen ] );
+		toggleSettingsViewModuleOpen( slug );
+	}, [ slug ] );
 
-	let moduleStatus, moduleStatusForReader;
-
-	const { connected, name } = module || {};
-	if ( connected ) {
-		/* translators: %s: module name. */
-		moduleStatus = sprintf( __( '%s is connected', 'google-site-kit' ), name );
-		moduleStatusForReader = __( 'Connected', 'google-site-kit' );
-	} else {
-		/* translators: %s: module name. */
-		moduleStatus = sprintf( __( '%s is not connected', 'google-site-kit' ), name );
-		moduleStatusForReader = __( 'Not Connected', 'google-site-kit' );
+	if ( ! isPlainObject( module ) ) {
+		return null;
 	}
+
+	/* translators: %s: module name. */
+	const connectedStatusText = () => sprintf( __( '%s is connected', 'google-site-kit' ), module.name );
+	/* translators: %s: module name. */
+	const nonConnectedStatusText = () => sprintf( __( '%s is not connected', 'google-site-kit' ), module.name );
 
 	return (
 		<button
@@ -82,20 +72,19 @@ function ModuleSettingsHeader( { slug } ) {
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
 						<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
 							{ moduleIcon( slug, false, '24', '26', 'googlesitekit-settings-module__title-icon' ) }
-							{ name }
+							{ module.name }
 						</h3>
 					</div>
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right-tablet">
 						<p className="googlesitekit-settings-module__status">
-							{ moduleStatus }
-							<span className={ classnames( 'googlesitekit-settings-module__status-icon', {
-								'googlesitekit-settings-module__status-icon--connected': connected,
-								'googlesitekit-settings-module__status-icon--not-connected': ! connected,
-							} ) }>
-								<span className="screen-reader-text">
-									{ moduleStatusForReader }
-								</span>
-							</span>
+							{ isConnected ? connectedStatusText() : nonConnectedStatusText() }
+
+							<span
+								className={ classnames( 'googlesitekit-settings-module__status-icon', {
+									'googlesitekit-settings-module__status-icon--connected': isConnected,
+									'googlesitekit-settings-module__status-icon--not-connected': ! isConnected,
+								} ) }
+							/>
 						</p>
 					</div>
 				</div>

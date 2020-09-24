@@ -29,12 +29,22 @@ import domReady from '@wordpress/dom-ready';
 import './datastore';
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC } from '../../googlesitekit/widgets/default-areas';
+import {
+	AREA_DASHBOARD_ALL_TRAFFIC,
+	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+	AREA_DASHBOARD_SEARCH_FUNNEL,
+	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+	AREA_DASHBOARD_POPULARITY,
+} from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { SetupMain as AnalyticsSetup } from './components/setup';
 import { SettingsMain as AnalyticsSettings } from './components/settings';
 import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
+import DashboardPopularPagesWidget from './components/dashboard/DashboardPopularPagesWidget';
+import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
+import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
+import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 const { dispatch } = Data;
 
 addFilter(
@@ -44,7 +54,7 @@ addFilter(
 );
 
 domReady( () => {
-	dispatch( CORE_MODULES ).setSettingsComponent( 'analytics', AnalyticsSettings );
+	dispatch( CORE_MODULES ).registerModule( 'analytics', { settingsComponent: AnalyticsSettings } );
 
 	Widgets.registerWidget(
 		'analyticsAllTraffic',
@@ -57,6 +67,59 @@ domReady( () => {
 		[
 			AREA_DASHBOARD_ALL_TRAFFIC,
 			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsUniqueVisitors',
+		{
+			component: DashboardUniqueVisitorsWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 3,
+			wrapWidget: true,
+		},
+		[
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsGoals',
+		{
+			component: DashboardGoalsWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 4,
+			wrapWidget: true,
+		},
+		[
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsBounceRate',
+		{
+			component: DashboardBounceRateWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 4,
+			wrapWidget: true,
+		},
+		[
+			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsPopularPages',
+		{
+			component: DashboardPopularPagesWidget,
+			width: Widgets.WIDGET_WIDTHS.HALF,
+			priority: 2,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_POPULARITY,
 		],
 	);
 } );

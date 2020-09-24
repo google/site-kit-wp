@@ -43,18 +43,9 @@ function DefaultModuleSettings( props ) {
 		canSave,
 	} = props;
 
-	const {
-		isOpen,
-		isEdit,
-		isSaving,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			isOpen: store.isSettingsOpen( slug ),
-			isEdit: store.isEditingSettings( slug ),
-			isSaving: store.isSavingSettings( slug ),
-		};
-	} );
+	const isOpen = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewModuleOpen( slug ) );
+	const isEdit = useSelect( ( select ) => select( STORE_NAME ).isSettingsViewModuleEditing( slug ) );
+	const isSaving = false;
 
 	let settingsComponent = null;
 	if ( isOpen ) {

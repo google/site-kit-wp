@@ -21,6 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import modules from './modules';
+import settingsView from './settings-view';
 import { STORE_NAME } from './constants';
 import { createErrorStore } from '../../data/create-error-store';
 
@@ -29,10 +30,11 @@ export { STORE_NAME };
 const store = Data.combineStores(
 	Data.commonStore,
 	modules,
+	settingsView,
 	createErrorStore(),
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

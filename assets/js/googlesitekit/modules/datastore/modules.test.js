@@ -22,10 +22,9 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
-	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
@@ -71,10 +70,7 @@ describe( 'core/modules modules', () => {
 				// Call a selector that triggers an HTTP request to get the modules.
 				registry.select( STORE_NAME ).isModuleActive( slug );
 				// Wait until the modules have been loaded.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
 
 				expect( isActiveBefore ).toEqual( false );
@@ -93,13 +89,7 @@ describe( 'core/modules modules', () => {
 					{ body: {}, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).activateModule( slug );
-
-				// Wait until this activation action has completed.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.isDoingSetModuleActivation( slug ) === false
-				);
+				await registry.dispatch( STORE_NAME ).activateModule( slug );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -142,14 +132,7 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).activateModule( slug );
-
-				// Wait until this activation action has completed.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.isDoingSetModuleActivation( slug ) === false
-				);
+				await registry.dispatch( STORE_NAME ).activateModule( slug );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -171,6 +154,7 @@ describe( 'core/modules modules', () => {
 				// activation request failed.
 				expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 				expect( isActiveAfter ).toEqual( false );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -195,10 +179,7 @@ describe( 'core/modules modules', () => {
 				registry.select( STORE_NAME ).getModules();
 
 				// Wait until the modules have been loaded.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
 
@@ -262,7 +243,6 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).deactivateModule( slug );
 
 				// Ensure the proper body parameters were sent.
@@ -285,6 +265,7 @@ describe( 'core/modules modules', () => {
 				// deactivation request failed.
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isActiveAfter ).toEqual( true );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -302,24 +283,37 @@ describe( 'core/modules modules', () => {
 				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
 			} );
 
-			it( 'registers a module', async () => {
-				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, moduleSettings );
+			it( 'registers a module', () => {
+				registry.dispatch( STORE_NAME ).registerModule( moduleSlug, moduleSettings );
 				const modules = registry.select( STORE_NAME ).getModules();
 				expect( modules[ moduleSlug ] ).not.toBeUndefined();
-				expect( modules[ moduleSlug ] ).toEqual( expect.objectContaining( moduleSettings ) );
+				expect( modules[ moduleSlug ] ).toMatchObject( moduleSettings );
 			} );
 
-			it( 'does not allow active or connected properties to be set to true', async () => {
-				await registry.dispatch( STORE_NAME ).registerModule( moduleSlug, { active: true, connected: true, ...moduleSettings } );
+			it( 'does not allow active or connected properties to be set to true', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
+				registry.dispatch( STORE_NAME ).registerModule( moduleSlug, { active: true, connected: true, ...moduleSettings } );
 				const modules = registry.select( STORE_NAME ).getModules();
-				expect( modules[ moduleSlug ].active ).toBe( false );
-				expect( modules[ moduleSlug ].connected ).toBe( false );
+				expect( modules[ moduleSlug ] ).toMatchObject( { active: false, connected: false } );
 			} );
 
 			it( 'requires the module slug to be provided', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerModule();
 				} ).toThrow( 'module slug is required' );
+			} );
+
+			it( 'does not allow the same module to be registered more than once on the client', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
+
+				registry.dispatch( STORE_NAME ).registerModule( 'test-module', { name: 'Original Name' } );
+
+				expect( console ).not.toHaveWarned();
+
+				registry.dispatch( STORE_NAME ).registerModule( 'test-module', { name: 'New Name' } );
+
+				expect( store.getState().clientDefinitions[ 'test-module' ].name ).toBe( 'Original Name' );
+				expect( console ).toHaveWarned();
 			} );
 		} );
 
@@ -335,118 +329,18 @@ describe( 'core/modules modules', () => {
 		describe( 'receiveGetModules', () => {
 			it( 'requires the response param', () => {
 				expect( () => {
-					muteConsole( 'error' );
 					registry.dispatch( STORE_NAME ).receiveGetModules();
 				} ).toThrow( 'response is required.' );
 			} );
 
-			it( 'receives and sets modules ', async () => {
+			it( 'receives and sets server definitions', () => {
 				const modules = FIXTURES;
-				await registry.dispatch( STORE_NAME ).receiveGetModules( modules );
+				registry.dispatch( STORE_NAME ).receiveGetModules( modules );
 
 				const state = store.getState();
 
-				expect( state ).toMatchObject( { modules: fixturesKeyValue } );
+				expect( state.serverDefinitions ).toMatchObject( fixturesKeyValue );
 			} );
-		} );
-
-		describe( 'setSettingsDisplayMode', () => {
-			it( 'sets the a module\'s displayMode to the correct value', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'analytics';
-				registry.select( STORE_NAME ).getModule( slug );
-
-				let displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-
-				// Expect initial status to be closed.
-				expect( displayMode ).toEqual( 'closed' );
-
-				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
-
-				const moduleLoaded = registry.select( STORE_NAME ).getModule( slug );
-				expect( moduleLoaded ).not.toEqual( null );
-
-				// Set display mode to 'view'.
-				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'view' );
-
-				displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-
-				// Expect displayMode to default to be 'view'.
-				expect( displayMode ).toEqual( 'view' );
-			} );
-
-			it( 'changes other modules\' displayModes to "closed" when changing a module to "view"', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'analytics';
-				const otherSlug = 'adsense';
-				registry.select( STORE_NAME ).getModule( slug );
-				registry.select( STORE_NAME ).getModule( otherSlug );
-
-				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
-
-				// Set otherSlug mode to 'open'.
-				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( otherSlug, 'view' );
-
-				let otherDisplayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( otherSlug );
-				expect( otherDisplayMode ).toEqual( 'view' );
-
-				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'view' );
-
-				// Expect target's displayMode to be "view".
-				const displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-				expect( displayMode ).toEqual( 'view' );
-
-				// Expect other module's displayMode to have changed to "closed".
-				otherDisplayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( otherSlug );
-				expect( otherDisplayMode ).toEqual( 'closed' );
-			} );
-		} );
-
-		it( 'changes other modules\' displayModes to "locked" when changing a module to "edit"', async () => {
-			fetchMock.getOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-				{ body: FIXTURES, status: 200 }
-			);
-			const slug = 'analytics';
-			const otherSlug = 'adsense';
-			registry.select( STORE_NAME ).getModule( slug );
-			registry.select( STORE_NAME ).getModule( otherSlug );
-
-			// Wait for loading to complete.
-			await subscribeUntil( registry, () => registry
-				.select( STORE_NAME )
-				.hasFinishedResolution( 'getModules' )
-			);
-
-			// Set otherSlug mode to "edit".
-			registry.dispatch( STORE_NAME ).setSettingsDisplayMode( otherSlug, 'edit' );
-
-			let otherDisplayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( otherSlug );
-			expect( otherDisplayMode ).toEqual( 'edit' );
-
-			registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'edit' );
-
-			// Expect target's displayMode to be "edit".
-			const displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-			expect( displayMode ).toEqual( 'edit' );
-
-			// Expect other module's displayMode to have changed to "locked".
-			otherDisplayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( otherSlug );
-			expect( otherDisplayMode ).toEqual( 'locked' );
 		} );
 	} );
 
@@ -461,16 +355,13 @@ describe( 'core/modules modules', () => {
 				const initialModules = registry.select( STORE_NAME ).getModules();
 				// The modules info will be its initial value while the modules
 				// info is fetched.
-				expect( initialModules ).toEqual( undefined );
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				expect( initialModules ).toBeUndefined();
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const modules = registry.select( STORE_NAME ).getModules();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( modules ).toEqual( fixturesKeyValue );
+				expect( modules ).toMatchObject( fixturesKeyValue );
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
@@ -478,13 +369,10 @@ describe( 'core/modules modules', () => {
 
 				const modules = registry.select( STORE_NAME ).getModules();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( modules ).toEqual( fixturesKeyValue );
+				expect( modules ).toMatchObject( fixturesKeyValue );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -498,18 +386,62 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getModules();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
+
+				expect( console ).toHaveErrored();
 
 				const modules = registry.select( STORE_NAME ).getModules();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( modules ).toEqual( undefined );
+				expect( modules ).toBeUndefined();
+			} );
+
+			it( 'combines `serverDefinitions` with `clientDefinitions`', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [
+					{ slug: 'server-module' },
+				] );
+				registry.dispatch( STORE_NAME ).registerModule( 'client-module' );
+
+				const modules = registry.select( STORE_NAME ).getModules();
+
+				expect( Object.keys( modules ) ).toEqual(
+					expect.arrayContaining( [ 'server-module', 'client-module' ] )
+				);
+			} );
+
+			it( 'merges `serverDefinitions` of the same module with `clientDefinitions`', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [
+					{ slug: 'test-module', name: 'Server Name' },
+				] );
+				registry.dispatch( STORE_NAME ).registerModule( 'test-module', { name: 'Client Name' } );
+
+				const modules = registry.select( STORE_NAME ).getModules();
+
+				expect( modules[ 'test-module' ] ).toMatchObject( { name: 'Client Name' } );
+			} );
+
+			it( 'does not overwrite `serverDefinitions` of the same module with undefined settings from client registration', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [
+					{ slug: 'test-module', name: 'Server Name', description: 'Server description' },
+				] );
+				registry.dispatch( STORE_NAME ).registerModule( 'test-module', { description: 'Client description' } );
+
+				const modules = registry.select( STORE_NAME ).getModules();
+
+				expect( modules[ 'test-module' ] ).toMatchObject( { name: 'Server Name', description: 'Client description' } );
+			} );
+
+			it( 'returns an object with keys set in module order', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
+				registry.dispatch( STORE_NAME ).registerModule( 'second-module', { order: 2 } );
+				registry.dispatch( STORE_NAME ).registerModule( 'first-module', { order: 1 } );
+				registry.dispatch( STORE_NAME ).registerModule( 'third-module', { order: 3 } );
+
+				const modules = registry.select( STORE_NAME ).getModules();
+
+				expect( Object.keys( modules ) ).toEqual( [ 'first-module', 'second-module', 'third-module' ] );
 			} );
 		} );
 
@@ -523,18 +455,15 @@ describe( 'core/modules modules', () => {
 				const module = registry.select( STORE_NAME ).getModule( slug );
 
 				// The modules will be undefined whilst loading.
-				expect( module ).toEqual( undefined );
+				expect( module ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const moduleLoaded = registry.select( STORE_NAME ).getModule( slug );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( moduleLoaded ).toEqual( fixturesKeyValue[ slug ] );
+				expect( moduleLoaded ).toMatchObject( fixturesKeyValue[ slug ] );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -550,18 +479,15 @@ describe( 'core/modules modules', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getModule( slug );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const module = registry.select( STORE_NAME ).getModule( slug );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( module ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {
@@ -570,7 +496,7 @@ describe( 'core/modules modules', () => {
 
 				const module = registry.select( STORE_NAME ).getModule( 'analytics' );
 
-				expect( module ).toEqual( undefined );
+				expect( module ).toBeUndefined();
 			} );
 
 			it( 'returns null if the module does not exist', async () => {
@@ -582,105 +508,15 @@ describe( 'core/modules modules', () => {
 				const slug = 'analytics';
 				const module = registry.select( STORE_NAME ).getModule( slug );
 				// The modules will be undefined whilst loading.
-				expect( module ).toEqual( undefined );
+				expect( module ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const moduleLoaded = registry.select( STORE_NAME ).getModule( 'not-a-real-module' );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( moduleLoaded ).toEqual( null );
-			} );
-		} );
-
-		describe( 'getSettingsDisplayMode', () => {
-			it( 'returns the correct status', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'analytics';
-				registry.select( STORE_NAME ).getModule( slug );
-
-				let displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-
-				// Expect initial status to be closed.
-				expect( displayMode ).toEqual( 'closed' );
-
-				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
-
-				const moduleLoaded = registry.select( STORE_NAME ).getModule( slug );
-				expect( moduleLoaded ).not.toEqual( null );
-
-				// Set display mode to 'view'.
-				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'view' );
-
-				displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-
-				// Expect displayMode to default to be 'view'.
-				expect( displayMode ).toEqual( 'view' );
-			} );
-
-			it( 'returns "closed" by default', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'analytics';
-				const module = registry.select( STORE_NAME ).getModule( slug );
-
-				let displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-
-				// Expect displayMode to be 'closed' before modules are loaded.
-				expect( displayMode ).toEqual( 'closed' );
-				expect( module ).toEqual( undefined );
-
-				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
-
-				displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-
-				// Expect displayMode to default to 'closed' after modules are loaded.
-				expect( displayMode ).toEqual( 'closed' );
-			} );
-		} );
-
-		describe( 'isEditingSettings', () => {
-			it( 'returns true if module is being edited, false if not', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'analytics';
-				registry.select( STORE_NAME ).getModule( slug );
-
-				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
-
-				let displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-
-				expect( displayMode ).not.toEqual( 'edit' );
-				expect( registry.select( STORE_NAME ).isEditingSettings( slug ) ).toBe( false );
-
-				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'edit' );
-				displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-
-				expect( displayMode ).toEqual( 'edit' );
-				expect( registry.select( STORE_NAME ).isEditingSettings( slug ) ).toBe( true );
 			} );
 		} );
 
@@ -697,13 +533,10 @@ describe( 'core/modules modules', () => {
 				const slug = 'search-console';
 				const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
 				// The modules will be undefined whilst loading, so this will return `undefined`.
-				expect( isActive ).toEqual( undefined );
+				expect( isActive ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -715,13 +548,10 @@ describe( 'core/modules modules', () => {
 				const slug = 'optimize';
 				const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
 				// The modules will be undefined whilst loading, so this will return `undefined`.
-				expect( isActive ).toEqual( undefined );
+				expect( isActive ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
 
@@ -733,13 +563,10 @@ describe( 'core/modules modules', () => {
 				const slug = 'not-a-real-module';
 				const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
 				// The modules will be undefined whilst loading, so this will return `undefined`.
-				expect( isActive ).toEqual( undefined );
+				expect( isActive ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
 
@@ -752,7 +579,7 @@ describe( 'core/modules modules', () => {
 
 				const isActive = registry.select( STORE_NAME ).isModuleActive( 'analytics' );
 
-				expect( isActive ).toEqual( undefined );
+				expect( isActive ).toBeUndefined();
 			} );
 		} );
 
@@ -771,10 +598,7 @@ describe( 'core/modules modules', () => {
 				expect( isConnected ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -789,10 +613,7 @@ describe( 'core/modules modules', () => {
 				expect( isConnected ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
 
@@ -808,10 +629,7 @@ describe( 'core/modules modules', () => {
 				expect( isConnected ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
 
@@ -826,10 +644,7 @@ describe( 'core/modules modules', () => {
 				expect( isConnected ).toBeUndefined();
 
 				// Wait for loading to complete.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
+				await untilResolved( registry, STORE_NAME ).getModules();
 
 				const isConnectedLoaded = registry.select( STORE_NAME ).isModuleConnected( slug );
 
@@ -842,25 +657,7 @@ describe( 'core/modules modules', () => {
 
 				const isConnected = registry.select( STORE_NAME ).isModuleConnected( 'analytics' );
 
-				expect( isConnected ).toEqual( undefined );
-			} );
-		} );
-
-		describe( 'isSettingsOpen', () => {
-			it( 'returns true if module is open, false if not', async () => {
-				const slug = 'analytics';
-				registry.select( STORE_NAME ).getModule( slug );
-
-				let displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-
-				expect( displayMode ).not.toEqual( 'view' );
-				expect( registry.select( STORE_NAME ).isSettingsOpen( slug ) ).toBe( false );
-
-				registry.dispatch( STORE_NAME ).setSettingsDisplayMode( slug, 'view' );
-				displayMode = registry.select( STORE_NAME ).getSettingsDisplayMode( slug );
-
-				expect( displayMode ).toEqual( 'view' );
-				expect( registry.select( STORE_NAME ).isSettingsOpen( slug ) ).toBe( true );
+				expect( isConnected ).toBeUndefined();
 			} );
 		} );
 	} );

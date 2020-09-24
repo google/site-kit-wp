@@ -46,7 +46,8 @@ export const SITE_STATUS_ADDED = 'added';
  * @param {(Array|undefined)}  data.accounts          List of account objects retrieved from the API.
  * @param {(Array|undefined)}  data.clients           List of client objects retrieved from the API.
  * @param {(Array|undefined)}  data.alerts            List of alert objects retrieved from the API.
- * @param {(Object|undefined)} data.error             Error object if one of the API requests failed.
+ * @param {(Object|undefined)} data.accountsError     Error object if account API request failed.
+ * @param {(Object|undefined)} data.alertsError       Error object if alert API request failed.
  * @param {(string|undefined)} data.previousAccountID Account ID, if already known from before.
  * @param {(string|undefined)} data.previousClientID  Client ID, if already known from before.
  * @return {(string|undefined)} Account status determined, or undefined if one of the required
@@ -56,12 +57,13 @@ export const determineAccountStatus = ( {
 	accounts,
 	clients,
 	alerts,
-	error,
+	accountsError,
+	alertsError,
 	previousAccountID,
 	previousClientID,
 } ) => {
 	if ( undefined === accounts || undefined === previousAccountID ) {
-		return accountsErrorToStatus( error );
+		return accountsErrorToStatus( accountsError );
 	}
 
 	const accountID = determineAccountID( { accounts, previousAccountID } );
@@ -81,7 +83,7 @@ export const determineAccountStatus = ( {
 	}
 
 	if ( undefined === alerts ) {
-		return alertsErrorToStatus( error );
+		return alertsErrorToStatus( alertsError );
 	}
 
 	const hasGraylistedAlert = alerts.some( ( alert ) => {

@@ -64,7 +64,7 @@ export default function AMPExperimentJSONField() {
 					external
 					inherit
 				>
-					{ __( 'Learn More.', 'google-site-kit' ) }
+					{ __( 'Learn More', 'google-site-kit' ) }
 				</Link>
 			</p>
 			<TextField

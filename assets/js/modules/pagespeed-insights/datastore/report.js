@@ -31,7 +31,6 @@ import { isURL } from '@wordpress/url';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetReportStore = createFetchStore( {
@@ -60,21 +59,13 @@ const fetchGetReportStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	reports: {},
 };
 
 const baseResolvers = {
 	*getReport( url, strategy ) {
 		if ( ! url || ! strategy ) {
-			return;
-		}
-
-		const registry = yield Data.commonActions.getRegistry();
-		const existingReport = registry.select( STORE_NAME ).getReport( url, strategy );
-
-		// If there is already a report loaded in state, consider it fulfilled and don't make an API request.
-		if ( existingReport ) {
 			return;
 		}
 
@@ -103,13 +94,13 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetReportStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

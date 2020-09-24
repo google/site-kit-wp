@@ -9,7 +9,6 @@
     "connected": true,
     "dependencies": [],
     "dependants": [],
-    "displayMode": "closed",
     "order": 10
   },
   {
@@ -22,7 +21,6 @@
     "connected": true,
     "dependencies": [],
     "dependants": [],
-    "displayMode": "closed",
     "order": 10
   },
   {
@@ -35,7 +33,6 @@
     "connected": false,
     "dependencies": [],
     "dependants": [],
-    "displayMode": "closed",
     "order": 10
   },
   {
@@ -51,7 +48,6 @@
       "optimize",
       "tagmanager"
     ],
-    "displayMode": "closed",
     "order": 10
   },
   {
@@ -64,7 +60,6 @@
     "connected": true,
     "dependencies": [],
     "dependants": [],
-    "displayMode": "closed",
     "order": 10
   },
   {
@@ -79,7 +74,6 @@
       "analytics"
     ],
     "dependants": [],
-    "displayMode": "closed",
     "order": 10
   },
   {
@@ -94,7 +88,6 @@
       "analytics"
     ],
     "dependants": [],
-    "displayMode": "closed",
     "order": 10
   }
 ]

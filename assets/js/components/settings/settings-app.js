@@ -21,13 +21,12 @@
  */
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import SettingsAdmin from './settings-admin';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
-import { compose } from '@wordpress/compose';
+import { Fragment, useEffect, useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,11 +37,11 @@ import Header from '../header';
 import PageHeader from '../page-header';
 import Layout from '../layout/layout';
 import HelpLink from '../help-link';
+import SettingsAdmin from './settings-admin';
 import SettingsModules from './settings-modules';
-import { getModulesData } from '../../util';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
-const { withSelect, withDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 // tabID to tabIndex
 const tabToIndex = {
@@ -52,46 +51,34 @@ const tabToIndex = {
 };
 const tabIDsByIndex = Object.keys( tabToIndex );
 
-class SettingsApp extends Component {
-	constructor( props ) {
-		super( props );
+export default function SettingsApp() {
+	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
+	const moduleSlug = useSelect( ( select ) => select( CORE_MODULES ).getSettingsViewCurrentModule() );
+	const moduleState = useSelect( ( select ) => select( CORE_MODULES ).getSettingsViewModuleState( moduleSlug ) );
+	const [ activeTabID, setActiveTabID ] = useState();
+
+	const { setSettingsViewCurrentModule, setSettingsViewIsEditing } = useDispatch( CORE_MODULES );
+	useEffect( () => {
+		if ( modules === undefined ) {
+			return;
+		}
 		// Route, e.g. #settings/analytics/(view|edit)
 		const hashParts = global.location.hash.replace( '#', '' ).split( /\// );
 		// eslint-disable-next-line prefer-const
-		let [ activeTabID, moduleSlug, moduleState ] = hashParts;
-		moduleSlug = getModulesData()[ moduleSlug ] ? moduleSlug : null;
-		moduleState = [ 'view', 'edit' ].includes( moduleState ) ? moduleState : null;
-		if ( moduleSlug && ! moduleState ) {
-			moduleState = 'view';
+		let [ tabID, slug, state ] = hashParts;
+		slug = modules?.[ slug ] ? slug : '';
+
+		setActiveTabID( tabID || 'settings' );
+		setSettingsViewCurrentModule( slug );
+		if ( slug && state === 'edit' ) {
+			setSettingsViewIsEditing( true );
 		}
+	}, [ modules ] );
 
-		this.state = {
-			activeTabID: activeTabID || 'settings',
-			moduleSlug,
-			moduleState,
-		};
-
-		this.updateFragment = this.updateFragment.bind( this );
-		this.handleTabUpdate = this.handleTabUpdate.bind( this );
-	}
-
-	componentDidMount() {
-		const { moduleSlug, moduleState } = this.state;
-		if ( moduleSlug && moduleState ) {
-			this.props.setSettingsDisplayMode( moduleSlug, moduleState );
-		}
-	}
-
-	componentDidUpdate() {
-		this.updateFragment();
-	}
-
-	updateFragment() {
-		const { activeTabID } = this.state;
+	useEffect( () => {
 		const fragments = [ activeTabID ];
 
 		if ( activeTabID === 'settings' ) {
-			const { moduleSlug, moduleState } = this.props;
 			// eslint-disable-next-line no-unused-expressions
 			moduleSlug && fragments.push( moduleSlug );
 			// eslint-disable-next-line no-unused-expressions
@@ -99,83 +86,69 @@ class SettingsApp extends Component {
 		}
 
 		global.location.hash = fragments.join( '/' );
+	}, [ activeTabID, moduleSlug, moduleState ] );
+
+	const handleTabUpdate = useCallback( ( index ) => setActiveTabID( tabIDsByIndex[ index ] ), [ tabIDsByIndex ] );
+	const activeTabIndex = tabToIndex[ activeTabID ];
+
+	let viewComponent;
+	switch ( activeTabID ) {
+		case 'settings':
+		case 'connect':
+			viewComponent = <SettingsModules activeTab={ activeTabIndex } />;
+			break;
+		case 'admin':
+			viewComponent = <SettingsAdmin />;
+			break;
 	}
 
-	handleTabUpdate( tabIndex ) {
-		this.setState( { activeTabID: tabIDsByIndex[ tabIndex ] } );
-	}
+	return (
+		<Fragment>
+			<Header />
+			<div className="googlesitekit-module-page">
+				<div className="mdc-layout-grid">
+					<div className="mdc-layout-grid__inner">
+						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+							<PageHeader title={ __( 'Settings', 'google-site-kit' ) } />
+						</div>
 
-	render() {
-		const { moduleSlug, moduleState } = this.props;
-		const { activeTabID } = this.state;
-		const activeTab = tabToIndex[ activeTabID ];
+						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+							<Layout>
+								<TabBar
+									activeIndex={ activeTabIndex }
+									handleActiveIndexUpdate={ handleTabUpdate }
+								>
+									<Tab>
+										<span className="mdc-tab__text-label">
+											{ __( 'Connected Services', 'google-site-kit' ) }
+										</span>
+									</Tab>
+									<Tab>
+										<span className="mdc-tab__text-label">
+											{ __( 'Connect More Services', 'google-site-kit' ) }
+										</span>
+									</Tab>
+									<Tab>
+										<span className="mdc-tab__text-label">
+											{ __( 'Admin Settings', 'google-site-kit' ) }
+										</span>
+									</Tab>
+								</TabBar>
+							</Layout>
+						</div>
 
-		return (
-			<Fragment>
-				<Header />
-				<div className="googlesitekit-module-page">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-								<PageHeader title={ __( 'Settings', 'google-site-kit' ) } />
-							</div>
-							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-								<Layout>
-									<TabBar
-										activeIndex={ activeTab }
-										handleActiveIndexUpdate={ this.handleTabUpdate }
-									>
-										<Tab>
-											<span className="mdc-tab__text-label">{ __( 'Connected Services', 'google-site-kit' ) }</span>
-										</Tab>
-										<Tab>
-											<span className="mdc-tab__text-label">{ __( 'Connect More Services', 'google-site-kit' ) }</span>
-										</Tab>
-										<Tab>
-											<span className="mdc-tab__text-label">{ __( 'Admin Settings', 'google-site-kit' ) }</span>
-										</Tab>
-									</TabBar>
-								</Layout>
-							</div>
-							{ ( [ 'settings', 'connect' ].includes( activeTabID ) ) && // TODO Refactor SettingsModules into separate components.
-								<SettingsModules
-									activeTab={ activeTab }
-									activeModule={ moduleSlug }
-									moduleState={ moduleState }
-									setActiveModule={ ( slug ) => this.props.setSettingsDisplayMode( slug || moduleSlug, slug ? ( moduleState || 'view' ) : 'closed' ) }
-									setModuleState={ ( state ) => this.props.setSettingsDisplayMode( moduleSlug, state ) }
-								/>
-							}
-							{ 'admin' === activeTabID && <SettingsAdmin /> }
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								mdc-layout-grid__cell--align-right
-							">
-								<HelpLink />
-							</div>
+						{ viewComponent }
+
+						<div className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-12',
+							'mdc-layout-grid__cell--align-right',
+						) }>
+							<HelpLink />
 						</div>
 					</div>
 				</div>
-			</Fragment>
-		);
-	}
+			</div>
+		</Fragment>
+	);
 }
-
-export default compose(
-	withSelect( ( select ) => {
-		const store = select( CORE_MODULES );
-		const moduleSlug = store.getModuleSlugWithActiveSettings();
-		const moduleState = moduleSlug ? store.getSettingsDisplayMode( moduleSlug ) : '';
-
-		return {
-			moduleSlug,
-			moduleState,
-		};
-	} ),
-	withDispatch( ( dispatch ) => ( {
-		setSettingsDisplayMode( moduleSlug, moduleState ) {
-			dispatch( CORE_MODULES ).setSettingsDisplayMode( moduleSlug, moduleState );
-		},
-	} ) ),
-)( SettingsApp );

@@ -34,13 +34,13 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import SvgIcon from '../../util/svg-icon';
 import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	moduleIcon,
 	showErrorNotification,
-	getModulesData,
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../../components/link';
@@ -53,6 +53,9 @@ import SetupModule from '../../components/setup-module';
 import Dialog from '../../components/dialog';
 import ModuleSettingsDetails from '../../components/settings/module-settings-details';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+
+const { withSelect } = Data;
 
 /**
  * A single module. Keeps track of its own active state and settings.
@@ -149,8 +152,7 @@ class SettingsModule extends Component {
 
 	// Find modules that depend on a module.
 	getDependentModules() {
-		const { slug } = this.props;
-		const modules = getModulesData();
+		const { slug, modules } = this.props;
 		const dependants = {};
 
 		if ( modules[ slug ].dependants ) {
@@ -185,6 +187,7 @@ class SettingsModule extends Component {
 			provides,
 			isSaving,
 			error,
+			modules,
 		} = this.props;
 
 		const moduleKey = `${ slug }-module`;
@@ -206,7 +209,8 @@ class SettingsModule extends Component {
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
 
-		const dependentModules = map( this.getDependentModules(), 'name' ).join( ', ' );
+		/* translators: used between list items, there is a space after the comma. */
+		const dependentModules = map( this.getDependentModules(), 'name' ).join( __( ', ', 'google-site-kit' ) );
 
 		// Set button text based on state.
 		let buttonText = __( 'Close', 'google-site-kit' );
@@ -252,7 +256,11 @@ class SettingsModule extends Component {
 												mdc-layout-grid__cell
 												mdc-layout-grid__cell--span-12
 											">
-												{ __( 'Error:', 'google-site-kit' ) } { error.errorMsg }
+												{ sprintf(
+													/* translators: %s: Error message */
+													__( 'Error: %s', 'google-site-kit' ),
+													error.errorMsg
+												) }
 											</div>
 										</div>
 									</div>
@@ -445,10 +453,11 @@ class SettingsModule extends Component {
 							handleConfirm={ this.handleConfirmRemoveModule }
 							dependentModules={ dependentModules
 								? sprintf(
-									/* translators: %s: module name */
-									__( 'these active modules depend on %s and will also be disconnected: ', 'google-site-kit' ),
-									name
-								) + dependentModules : false
+									/* translators: %1$s: module name, %2$s: list of dependent modules */
+									__( 'these active modules depend on %1$s and will also be disconnected: %2$s', 'google-site-kit' ),
+									name,
+									dependentModules
+								) : false
 							}
 							danger
 						/>
@@ -461,6 +470,11 @@ class SettingsModule extends Component {
 							name={ name }
 							description={ description }
 							active={ active }
+							blockedByParentModule={
+								modules[ slug ].dependencies.some(
+									( requiredModule ) => ! modules[ requiredModule ].active || ! modules[ requiredModule ].connected
+								)
+							}
 							showLink
 						/>
 					</Fragment>
@@ -496,4 +510,8 @@ SettingsModule.defaultProps = {
 	setupComplete: false,
 };
 
-export default SettingsModule;
+export default withSelect( ( select ) => {
+	return {
+		modules: select( CORE_MODULES ).getModules(),
+	};
+} )( SettingsModule );

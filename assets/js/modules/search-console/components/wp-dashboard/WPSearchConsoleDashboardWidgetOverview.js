@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 
 /**
@@ -34,7 +34,7 @@ import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
 } from '../../util';
-import CTA from '../../../../components/notifications/cta';
+import getNoDataComponent from '../../../../components/notifications/nodata';
 
 class WPSearchConsoleDashboardWidgetOverview extends Component {
 	render() {
@@ -56,12 +56,7 @@ class WPSearchConsoleDashboardWidgetOverview extends Component {
 			<Fragment>
 				{ ! data.length
 					? <div className="googlesitekit-wp-dashboard-stats__cta">
-						<CTA
-							title={ __( 'Search Console Data Empty', 'google-site-kit' ) }
-							description={ __( 'Search Console data is not yet available, please check back later.', 'google-site-kit' ) }
-							ctaLink={ '' }
-							ctaLabel={ '' }
-						/>
+						{ getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) ) }
 					</div>
 					: <Fragment>
 						<DataBlock

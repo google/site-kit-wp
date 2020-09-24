@@ -50,11 +50,11 @@ export const createInfoStore = ( slug, {
 } = {} ) => {
 	const STORE_NAME = storeName || `modules/${ slug }`;
 
-	const INITIAL_STATE = {};
+	const initialState = {};
 	const actions = {};
 	const controls = {};
 	const reducer = ( state ) => {
-		return { ...state };
+		return state;
 	};
 	const resolvers = {};
 	const selectors = {
@@ -107,7 +107,7 @@ export const createInfoStore = ( slug, {
 
 	return {
 		STORE_NAME,
-		INITIAL_STATE,
+		initialState,
 		actions,
 		controls,
 		reducer,
