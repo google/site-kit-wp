@@ -17,10 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
