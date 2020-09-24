@@ -31,8 +31,8 @@ import {
 	dashboardSummaryWidgetTodayOptions,
 	dashboardSummaryWidgetPeriodOptions,
 	dashboardSummaryWidget28DailyOptions,
-	dashboardTopEarningPageWidgetArgs,
 	dashboardTopEarningPageWidgetData,
+	dashboardTopEarningPageWidgetOptions,
 } from '../assets/js/modules/adsense/datastore/__fixtures__';
 
 generateReportBasedWidgetStories( {
@@ -58,11 +58,11 @@ generateReportBasedWidgetStories( {
 	datastore: ANALYTICS_STORE,
 	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
 	data: dashboardTopEarningPageWidgetData,
-	options: dashboardTopEarningPageWidgetArgs,
+	options: dashboardTopEarningPageWidgetOptions,
 	component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
 	additionalVariants: {
-		'AdSense Not Linked': { data: dashboardTopEarningPageWidgetData, options: dashboardTopEarningPageWidgetArgs },
+		'AdSense Not Linked': { data: dashboardTopEarningPageWidgetData, options: dashboardTopEarningPageWidgetOptions },
 	},
 	additionalVariantCallbacks: {
 		Loaded: ( dispatch ) => dispatch( ANALYTICS_STORE ).setAdsenseLinked( true ),
