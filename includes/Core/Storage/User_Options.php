@@ -34,14 +34,6 @@ final class User_Options implements User_Options_Interface {
 	private $context;
 
 	/**
-	 * User ID for whom options should be managed.
-	 *
-	 * @since 1.0.0
-	 * @var int
-	 */
-	private $user_id;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0

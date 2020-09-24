@@ -20,6 +20,14 @@ namespace Google\Site_Kit\Core\Storage;
 trait User_Aware_Trait {
 
 	/**
+	 * User ID.
+	 *
+	 * @since n.e.x.t
+	 * @var int
+	 */
+	private $user_id;
+
+	/**
 	 * Gets the associated user ID.
 	 *
 	 * @since n.e.x.t
@@ -27,7 +35,7 @@ trait User_Aware_Trait {
 	 * @return int User ID.
 	 */
 	public function get_user_id() {
-		return $this->user_id;
+		return (int) $this->user_id;
 	}
 
 	/**

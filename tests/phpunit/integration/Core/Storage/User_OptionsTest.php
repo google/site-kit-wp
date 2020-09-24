@@ -108,11 +108,14 @@ class User_OptionsTest extends TestCase {
 		$this->assertFalse( metadata_exists( 'user', $user_id, 'test-key' ) );
 	}
 
-	protected function create_user_aware_instance( $user_id ) {
-		return new User_Options(
+	protected function create_user_aware_instance() {
+		$user_id      = $this->factory()->user->create();
+		$user_options = new User_Options(
 			new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
 			$user_id
 		);
+
+		return array( $user_options, $user_id );
 	}
 
 }

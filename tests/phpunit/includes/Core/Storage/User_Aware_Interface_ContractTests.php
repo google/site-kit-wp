@@ -15,25 +15,20 @@ use Google\Site_Kit\Core\Storage\User_Aware_Interface;
 trait User_Aware_Interface_ContractTests {
 
 	/**
-	 * @return User_Aware_Interface
+	 * @return array Array with an User_Aware_Interface instance and user_id associated with the isntance.
 	 */
-	abstract protected function create_user_aware_instance( $user_id );
+	abstract protected function create_user_aware_instance();
 
 	public function test_get_user_id() {
-		$user_id    = $this->factory()->user->create();
-		$user_aware = $this->create_user_aware_instance( $user_id );
+		list( $user_aware, $user_id ) = $this->create_user_aware_instance();
 		$this->assertEquals( $user_id, $user_aware->get_user_id() );
 	}
 
 	public function test_switch_user() {
-		$user_id_a = $this->factory()->user->create();
-		$user_id_b = $this->factory()->user->create();
-		update_user_option( $user_id_a, 'test-key', 'test-value-a' );
-		update_user_option( $user_id_b, 'test-key', 'test-value-b' );
-
-		$user_aware = $this->create_user_aware_instance( $user_id_a );
+		list( $user_aware, $user_id_a ) = $this->create_user_aware_instance();
 		$this->assertEquals( $user_id_a, $user_aware->get_user_id() );
 
+		$user_id_b                = $this->factory()->user->create();
 		$restore_original_user_id = $user_aware->switch_user( $user_id_b );
 		$this->assertEquals( $user_id_b, $user_aware->get_user_id() );
 

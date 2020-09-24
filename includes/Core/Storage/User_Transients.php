@@ -38,6 +38,14 @@ class User_Transients implements User_Aware_Interface {
 	private $user_options;
 
 	/**
+	 * External cache group.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $ext_cache_group;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -46,8 +54,9 @@ class User_Transients implements User_Aware_Interface {
 	 * @param int     $user_id Optional. User ID for whom transients should be managed. Default is the current user.
 	 */
 	public function __construct( Context $context, $user_id = 0 ) {
-		$this->context      = $context;
-		$this->user_options = new User_Options( $context, $user_id );
+		$this->context         = $context;
+		$this->user_options    = new User_Options( $context, $user_id );
+		$this->ext_cache_group = $context->is_network_mode() ? 'site-transient' : 'transient';
 	}
 
 	/**
@@ -136,19 +145,6 @@ class User_Transients implements User_Aware_Interface {
 	}
 
 	/**
-	 * Gets group name for an external cache.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Group name.
-	 */
-	private function get_transient_group_for_cache() {
-		return $this->context->is_network_mode()
-			? 'site-transient'
-			: 'transient';
-	}
-
-	/**
 	 * Gets the value of the given transient from an external cache.
 	 *
 	 * @since n.e.x.t
@@ -157,9 +153,10 @@ class User_Transients implements User_Aware_Interface {
 	 * @return mixed Value set for the transient, or false if not set.
 	 */
 	private function get_from_cache( $transient ) {
-		$key   = $this->get_transient_name_for_cache( $transient );
-		$group = $this->get_transient_group_for_cache();
-		return wp_cache_get( $key, $group );
+		return wp_cache_get(
+			$this->get_transient_name_for_cache( $transient ),
+			$this->ext_cache_group
+		);
 	}
 
 	/**
@@ -173,9 +170,12 @@ class User_Transients implements User_Aware_Interface {
 	 * @return bool True on success, false on failure.
 	 */
 	private function set_in_cache( $transient, $value, $expiration ) {
-		$key   = $this->get_transient_name_for_cache( $transient );
-		$group = $this->get_transient_group_for_cache();
-		return wp_cache_set( $key, $value, $group, (int) $expiration ); // phpcs:ignore WordPressVIPMinimum.Performance.LowExpiryCacheTime.LowCacheTime
+		return wp_cache_set( // phpcs:ignore WordPressVIPMinimum.Performance.LowExpiryCacheTime.LowCacheTime
+			$this->get_transient_name_for_cache( $transient ),
+			$value,
+			$this->ext_cache_group,
+			(int) $expiration
+		);
 	}
 
 	/**
@@ -187,9 +187,10 @@ class User_Transients implements User_Aware_Interface {
 	 * @return bool True on success, false on failure.
 	 */
 	private function delete_from_cache( $transient ) {
-		$key   = $this->get_transient_name_for_cache( $transient );
-		$group = $this->get_transient_group_for_cache();
-		return wp_cache_delete( $key, $group );
+		return wp_cache_delete(
+			$this->get_transient_name_for_cache( $transient ),
+			$this->ext_cache_group
+		);
 	}
 
 	/**
