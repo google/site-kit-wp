@@ -24,12 +24,13 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Component } from '@wordpress/element';
 import { isUndefined } from 'lodash';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
@@ -39,93 +40,100 @@ import DataBlock from '../../../../components/data-block.js';
 import PreviewBlock from '../../../../components/preview-block';
 import { isDataZeroAdSense } from '../../util';
 import withData from '../../../../components/higherorder/withdata';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME } from '../../datastore/constants';
 
-class AdSensePerformanceWidget extends Component {
-	constructor( props ) {
-		super( props );
+const { useSelect } = Data;
 
-		this.state = {
-			twentyEightDays: false,
-			prev28Days: false,
+function AdSensePerformanceWidget( { handleDataSuccess } ) {
+	const { twentyEightDays, prev28Days } = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		const dateRange = select( CORE_USER ).getDateRange();
+		const prevRange = dateRange.replace( 'last', 'prev' );
+		const commonArgs = {
+			metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
 		};
+		const currentRangeArgs = {
+			dateRange,
+			...commonArgs,
+		};
+
+		const prevRangeArgs = {
+			dateRange: prevRange,
+			...commonArgs,
+		};
+		return {
+			twentyEightDays: store.getReport( currentRangeArgs ),
+			prev28Days: store.getReport( prevRangeArgs ),
+
+		};
+	} );
+
+	if ( ! twentyEightDays || ! prev28Days ) {
+		return null;
 	}
+	handleDataSuccess();
 
-	// When additional data is returned, componentDidUpdate will fire.
-	componentDidUpdate() {
-		this.processCallbackData();
-	}
+	const dataBlocks = twentyEightDays.totals ? [
+		{
+			className: 'googlesitekit-data-block--page-rpm',
+			title: __( 'Earnings', 'google-site-kit' ),
+			datapoint: readableLargeNumber( twentyEightDays.totals[ 0 ] ),
+			change: ( ! isUndefined( prev28Days.totals ) ) ? prev28Days.totals[ 0 ] : 0,
+			changeDataUnit: '%',
+		},
+		{
+			className: 'googlesitekit-data-block--page-rpm',
+			title: __( 'Page RPM', 'google-site-kit' ),
+			datapoint: readableLargeNumber( twentyEightDays.totals[ 1 ] ),
+			change: ( ! isUndefined( prev28Days.totals ) ) ? prev28Days.totals[ 1 ] : 0,
+			changeDataUnit: '%',
+		},
+		{
+			className: 'googlesitekit-data-block--impression',
+			title: __( 'Impressions', 'google-site-kit' ),
+			datapoint: readableLargeNumber( twentyEightDays.totals[ 2 ] ),
+			change: ! isUndefined( prev28Days.totals ) ? prev28Days.totals[ 2 ] : 0,
+			changeDataUnit: '%',
+		},
+		{
+			className: 'googlesitekit-data-block--impression',
+			title: __( 'Page CTR', 'google-site-kit' ),
+			datapoint: readableLargeNumber( twentyEightDays.totals[ 3 ] ),
+			change: ! isUndefined( prev28Days.totals ) ? prev28Days.totals[ 3 ] : 0,
+			changeDataUnit: '%',
+		},
+	] : [];
 
-	componentDidMount() {
-		this.processCallbackData();
-	}
-
-	/**
-	 * Process callback data received from the API.
-	 */
-	processCallbackData() {
-		const {
-			data,
-			requestDataToState,
-		} = this.props;
-
-		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
-			this.setState( requestDataToState );
-		}
-	}
-
-	render() {
-		const {
-			twentyEightDays,
-			prev28Days,
-		} = this.state;
-
-		const dataBlocks = twentyEightDays.totals ? [
-			{
-				className: 'googlesitekit-data-block--page-rpm',
-				title: __( 'Page RPM', 'google-site-kit' ),
-				datapoint: readableLargeNumber( twentyEightDays.totals[ 1 ] ),
-				change: ( ! isUndefined( prev28Days.totals ) ) ? prev28Days.totals[ 1 ] : 0,
-				changeDataUnit: '%',
-			},
-			{
-				className: 'googlesitekit-data-block--impression',
-				title: __( 'Impressions', 'google-site-kit' ),
-				datapoint: readableLargeNumber( twentyEightDays.totals[ 2 ] ),
-				change: ! isUndefined( prev28Days.totals ) ? prev28Days.totals[ 2 ] : 0,
-				changeDataUnit: '%',
-			},
-		] : [];
-
-		return (
-			<section className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					{ dataBlocks.map( ( block, i ) => {
-						return (
-							<div key={ i } className="
+	return (
+		<section className="mdc-layout-grid">
+			<div className="mdc-layout-grid__inner">
+				{ dataBlocks.map( ( block, i ) => {
+					return (
+						<div key={ i } className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--align-top
 								mdc-layout-grid__cell--span-2-phone
 								mdc-layout-grid__cell--span-2-tablet
-								mdc-layout-grid__cell--span-4-desktop
+								mdc-layout-grid__cell--span-3-desktop
 							">
-								<DataBlock
-									stat={ i }
-									className={ block.className }
-									title={ block.title }
-									datapoint={ block.datapoint }
-									change={ block.change }
-									changeDataUnit={ block.changeDataUnit }
-									context={ block.context }
-									selected={ block.selected }
-									handleStatSelection={ block.handleStatSelection }
-								/>
-							</div>
-						);
-					} ) }
-				</div>
-			</section>
-		);
-	}
+							<DataBlock
+								stat={ i }
+								className={ block.className }
+								title={ block.title }
+								datapoint={ block.datapoint }
+								change={ block.change }
+								changeDataUnit={ block.changeDataUnit }
+								context={ block.context }
+								selected={ block.selected }
+								handleStatSelection={ block.handleStatSelection }
+							/>
+						</div>
+					);
+				} ) }
+			</div>
+		</section>
+	);
 }
 
 export default withData(
@@ -156,6 +164,7 @@ export default withData(
 			datapoint: 'earnings',
 			data: {
 				dateRange: 'prev-28-days',
+				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),

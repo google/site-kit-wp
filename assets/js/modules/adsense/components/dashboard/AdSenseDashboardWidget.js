@@ -32,14 +32,13 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import AdSenseEstimateEarningsWidget from './AdSenseEstimateEarningsWidget';
 import AdSensePerformanceWidget from './AdSensePerformanceWidget';
 import Alert from '../../../../components/alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import ProgressBar from '../../../../components/progress-bar';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
+import ProgressBar from '../../../../components/progress-bar';
 import HelpLink from '../../../../components/help-link';
 import { getCurrentDateRange } from '../../../../util/date-range';
 import Header from '../../../../components/header';
@@ -58,8 +57,8 @@ export default function AdSenseDashboardWidget() {
 	const [ receivingData, setReceivingData ] = useState( true );
 	const [ error, setError ] = useState( false );
 	const [ errorObj, setErrorObj ] = useState( false );
-	const [ loading, setLoading ] = useState( false );
 	const [ zeroData, setZeroData ] = useState( false );
+	const [ loading, setLoading ] = useState( true );
 
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const isModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'adsense' ) );
@@ -86,6 +85,13 @@ export default function AdSenseDashboardWidget() {
 	};
 
 	/**
+	 * Show the "We're getting your site ready for ads. screen until we have data.".
+	 */
+	const handleZeroData = () => {
+		setZeroData( true );
+	};
+
+	/**
 	 * Loading is set to false until data starts to resolve.
 	 */
 	const handleDataSuccess = () => {
@@ -93,16 +99,8 @@ export default function AdSenseDashboardWidget() {
 		setLoading( false );
 	};
 
-	/**
-	 * Show the "We're getting your site ready for ads. screen until we have data.".
-	 */
-	const handleZeroData = () => {
-		setLoading( false );
-		setZeroData( true );
-	};
-
 	// Hide AdSense data display when we don't have data.
-	const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
+	const wrapperClass = ( ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
 	const currentDateRange = getCurrentDateRange( dateRange );
 
 	return (
@@ -146,17 +144,7 @@ export default function AdSenseDashboardWidget() {
 							wrapperClass
 						) }>
 							<ModuleSettingsWarning slug="adsense" context="module-dashboard" />
-							<Layout
-								header
-								title={ __( 'Estimated earnings', 'google-site-kit' ) }
-								headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
-								headerCtaLink={ homepage }
-							>
-								<AdSenseEstimateEarningsWidget
-									handleDataError={ handleDataError }
-									handleDataSuccess={ handleDataSuccess }
-								/>
-							</Layout>
+
 						</div>
 						<div className={ classnames(
 							'mdc-layout-grid__cell',
@@ -175,8 +163,11 @@ export default function AdSenseDashboardWidget() {
 										// If there is no error, it is a zero data condition.
 										if ( ! err ) {
 											handleZeroData();
+										} else {
+											handleDataError( err.message, err );
 										}
 									} }
+									handleDataSuccess={ handleDataSuccess }
 								/>
 							</Layout>
 						</div>
