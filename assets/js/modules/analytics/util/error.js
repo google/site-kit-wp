@@ -21,9 +21,19 @@
  *
  * @since n.e.x.t
  *
- * @param {Object} error Error object instance.
+ * @param {Object}          error         Error object instance.
+ * @param {(RegExp|string)} [metricMatch] Expression for matching specific metrics. Defaults to match any metric.
  * @return {boolean} `true` if a restricted metrics error, otherwise `false`.
  */
-export function isRestrictedMetricsError( error ) {
-	return error?.code === 400 && error.message?.startsWith?.( 'Restricted metric' );
+export function isRestrictedMetricsError( error, metricMatch ) {
+	if ( error?.code !== 400 || ! error.message?.startsWith?.( 'Restricted metric' ) ) {
+		return false;
+	}
+
+	if ( metricMatch instanceof RegExp || typeof metricMatch === 'string' ) {
+		const metrics = error.message.match( /ga:[a-z]+/gi );
+		return metrics.some( ( metric ) => metric.match( metricMatch ) );
+	}
+
+	return true;
 }
