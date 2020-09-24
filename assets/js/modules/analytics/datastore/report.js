@@ -100,7 +100,7 @@ const baseResolvers = {
 
 		// If the report was requested with AdSense metrics, set `adsenseLinked` accordingly.
 		if ( normalizeReportOptions( options ).metrics.some( ( { expression } ) => /^ga:adsense/.test( expression ) ) ) {
-			if ( isRestrictedMetricsError( error ) && /ga:adsense/.test( error.message ) ) {
+			if ( isRestrictedMetricsError( error, 'ga:adsense' ) ) {
 				// If the error is a restricted metrics error for AdSense metrics, the services are not linked.
 				yield adsenseActions.setAdsenseLinked( false );
 			} else {
