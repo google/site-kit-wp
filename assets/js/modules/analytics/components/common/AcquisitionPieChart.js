@@ -24,13 +24,15 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import GoogleChart from '../../../../components/google-chart';
-import { getSiteKitAdminURL, sanitizeHTML } from '../../../../util';
+import Link from '../../../../components/link';
+import { getSiteKitAdminURL } from '../../../../util';
 import { extractAnalyticsDataForTrafficChart } from '../../util';
 
 const GOOGLE_CHART_PIE_SETTINGS = {
@@ -64,16 +66,6 @@ function AcquisitionPieChart( { data, args, source } ) {
 		return null;
 	}
 
-	let sourceMessage = '';
-	if ( source ) {
-		sourceMessage = sprintf(
-			/* translators: %1$s: URL to Analytics Module page in Site Kit Admin, %2$s: Analytics (Service Name) */
-			__( 'Source: <a class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit" href="%1$s">%2$s</a>', 'google-site-kit' ),
-			getSiteKitAdminURL( 'googlesitekit-module-analytics' ),
-			_x( 'Analytics', 'Service name', 'google-site-kit' ),
-		);
-	}
-
 	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">
 			<GoogleChart
@@ -84,15 +76,24 @@ function AcquisitionPieChart( { data, args, source } ) {
 				loadHeight={ 205 }
 			/>
 
-			{ source && (
-				<div className="googlesitekit-chart__source" dangerouslySetInnerHTML={ sanitizeHTML(
-					sourceMessage,
-					{
-						ALLOWED_TAGS: [ 'a' ],
-						ALLOWED_ATTR: [ 'href', 'class' ],
-					}
-				) } />
-			) }
+			{ source &&
+				<div className="googlesitekit-chart__source">
+					{ createInterpolateElement(
+						sprintf(
+							/* translators: %s: source link */
+							__( 'Source: %s', 'google-site-kit' ),
+							`<a>${ _x( 'Analytics', 'Service name', 'google-site-kit' ) }</a>`
+						),
+						{
+							a: <Link
+								key="link"
+								href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
+								inherit
+							/>,
+						}
+					) }
+				</div>
+			}
 		</div>
 	);
 }
