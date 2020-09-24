@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 
 /**
@@ -41,7 +41,7 @@ import {
 } from '../../util';
 import PreviewBlocks from '../../../../components/preview-blocks';
 import DataBlock from '../../../../components/data-block';
-import CTA from '../../../../components/notifications/cta';
+import getNoDataComponent from '../../../../components/notifications/nodata';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 
@@ -100,12 +100,7 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 			<Fragment>
 				{ 0 === totalUsers
 					? <div className="googlesitekit-wp-dashboard-stats__cta">
-						<CTA
-							title={ __( 'Analytics Gathering Data', 'google-site-kit' ) }
-							description={ __( 'Analytics data is not yet available, please check back later.', 'google-site-kit' ) }
-							ctaLink={ '' }
-							ctaLabel={ '' }
-						/>
+						{ getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) ) }
 					</div>
 					: <Fragment>
 						<DataBlock

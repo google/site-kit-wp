@@ -151,7 +151,7 @@ class LegacyAdSenseDashboardMainSummary extends Component {
 											link: href,
 										} }
 										change={ today.totals[ 0 ] }
-										changeDataUnit={ '$' }
+										changeDataUnit={ currencyCode }
 										sparkline={ daily &&
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 1 ) }
