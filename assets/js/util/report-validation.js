@@ -56,7 +56,7 @@ export function isValidStringsOrObjects( data, verifyFunction ) {
 export function isValidDateRange( { dateRange, startDate, endDate } ) {
 	const validStartDate = startDate && startDate.match( /^\d{4}-\d{2}-\d{2}$/ );
 	const validEndDate = endDate && endDate.match( /^\d{4}-\d{2}-\d{2}$/ );
-	const validDateRange = dateRange && dateRange.match( /^last-\d+-days$/ );
+	const validDateRange = dateRange && ( dateRange.match( /^last-\d+-days$/ ) || dateRange.match( /^prev-\d+-days$/ ) );
 
 	return ( validStartDate && validEndDate ) || validDateRange;
 }
