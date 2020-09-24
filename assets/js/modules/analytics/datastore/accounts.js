@@ -228,18 +228,16 @@ const baseResolvers = {
 			if ( response ) {
 				dispatch( STORE_NAME ).receiveGetAccounts( response.accounts );
 
-				/* eslint-disable sitekit/camelcase-acronyms */
-				if ( response.properties?.[ 0 ]?.accountId ) {
-					const accountID = response.properties[ 0 ].accountId;
+				if ( response.properties?.[ 0 ]?.accountId ) { // eslint-disable-line sitekit/camelcase-acronyms
+					const accountID = response.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 					dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 				}
 
-				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
-					const propertyID = response.profiles[ 0 ].webPropertyId;
-					const accountID = response.profiles[ 0 ].accountId;
+				if ( response.profiles?.[ 0 ]?.webPropertyId ) { // eslint-disable-line sitekit/camelcase-acronyms
+					const propertyID = response.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
+					const accountID = response.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
 				}
-				/* eslint-enable sitekit/camelcase-acronyms */
 
 				if ( response.matchedProperty ) {
 					dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );

@@ -1,4 +1,3 @@
-/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * Profile Select component tests.
  *
@@ -38,17 +37,17 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 } );
 
 const setupRegistry = ( { dispatch } ) => {
-	const { id, webPropertyId, accountId } = fixtures.propertiesProfiles.profiles[ 0 ];
-	dispatch( STORE_NAME ).setAccountID( accountId );
-	dispatch( STORE_NAME ).setPropertyID( webPropertyId );
+	const { id, webPropertyId, accountId } = fixtures.propertiesProfiles.profiles[ 0 ]; // eslint-disable-line sitekit/camelcase-acronyms
+	dispatch( STORE_NAME ).setAccountID( accountId ); // eslint-disable-line sitekit/camelcase-acronyms
+	dispatch( STORE_NAME ).setPropertyID( webPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
 	dispatch( STORE_NAME ).setProfileID( id );
-	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID: accountId, propertyID: webPropertyId } );
+	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID: accountId, propertyID: webPropertyId } ); // eslint-disable-line sitekit/camelcase-acronyms
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	const existingTag = {
-		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId,
-		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId,
+		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
+		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
 	};
 	const { id } = fixtures.propertiesProfiles.profiles[ 0 ];
 	dispatch( STORE_NAME ).setAccountID( existingTag.accountID );
@@ -59,8 +58,8 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
-	const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId;
-	const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId;
+	const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+	const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
 	dispatch( STORE_NAME ).setSettings( {} );
 	dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID, propertyID } );
 };
@@ -86,7 +85,7 @@ describe( 'ProfileSelect', () => {
 		expect( existingTagPropertyID ).toEqual( currentPropertyID );
 
 		const existingTagProfiles = fixtures.accountsPropertiesProfiles.profiles
-			.filter( ( { webPropertyId } ) => webPropertyId === existingTagPropertyID );
+			.filter( ( { webPropertyId } ) => webPropertyId === existingTagPropertyID ); // eslint-disable-line sitekit/camelcase-acronyms
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( existingTagProfiles.length + 1 );

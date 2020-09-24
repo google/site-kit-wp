@@ -61,15 +61,13 @@ export default function AccountSelect() {
 		>
 			{ ( accounts || [] )
 				.concat( {
-					/* eslint-disable sitekit/camelcase-acronyms */
-					accountId: ACCOUNT_CREATE,
+					accountId: ACCOUNT_CREATE, // eslint-disable-line sitekit/camelcase-acronyms
 					name: __( 'Set up a new account', 'google-site-kit' ),
 				} )
-				.map( ( { accountId, name } ) => (
+				.map( ( { accountId, name } ) => ( // eslint-disable-line sitekit/camelcase-acronyms
 					<Option
-						key={ accountId }
-						value={ accountId }
-						/* eslint-enable sitekit/camelcase-acronyms */
+						key={ accountId } // eslint-disable-line sitekit/camelcase-acronyms
+						value={ accountId } // eslint-disable-line sitekit/camelcase-acronyms
 					>
 						{ name }
 					</Option>

@@ -1,4 +1,3 @@
-/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * Country and Time Zone utilities.
  *
@@ -38,14 +37,14 @@ export const timeZonesByCountryCode = allCountries.reduce( ( map, country ) => {
 export const countriesByCode = keyBy( allCountries, 'countryCode' );
 
 export const countryCodesByTimezone = allCountries.reduce( ( map, country ) => {
-	country.timeZone.forEach( ( { timeZoneId } ) => map[ timeZoneId ] = country.countryCode );
+	country.timeZone.forEach( ( { timeZoneId } ) => map[ timeZoneId ] = country.countryCode ); // eslint-disable-line sitekit/camelcase-acronyms
 
 	return map;
 }, {} );
 
 export const countriesByTimeZone = allCountries.reduce( ( map, country ) => {
-	country.timeZone.forEach( ( { timeZoneId } ) => {
-		map[ timeZoneId ] = country;
+	country.timeZone.forEach( ( { timeZoneId } ) => { // eslint-disable-line sitekit/camelcase-acronyms
+		map[ timeZoneId ] = country; // eslint-disable-line sitekit/camelcase-acronyms
 	} );
 	return map;
 }, {} );

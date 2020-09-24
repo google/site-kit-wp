@@ -1,4 +1,3 @@
-/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * Tag Manager object builders.
  *
@@ -43,14 +42,14 @@ import { CONTEXT_WEB, CONTEXT_AMP } from '../constants';
 export const accountBuilder = build( 'Tag Manager Account', {
 	fields: {
 		path: 'accounts/{accountId}',
-		accountId: sequence( ( num ) => `${ 100 + num }` ),
+		accountId: sequence( ( num ) => `${ 100 + num }` ), // eslint-disable-line sitekit/camelcase-acronyms
 		name: fake( ( { lorem } ) => lorem.words() ),
 	},
 	postBuild: ( account ) => {
-		const { accountId } = account;
+		const { accountId } = account; // eslint-disable-line sitekit/camelcase-acronyms
 		return {
 			...account,
-			path: `accounts/${ accountId }`,
+			path: `accounts/${ accountId }`, // eslint-disable-line sitekit/camelcase-acronyms
 		};
 	},
 } );
@@ -71,10 +70,10 @@ export const accountBuilder = build( 'Tag Manager Account', {
 export const containerBuilder = build( 'Tag Manager Container', {
 	fields: {
 		path: 'accounts/{accountId}/containers/{containerId}',
-		accountId: fake( ( { random } ) => random.number().toString() ), // Relationship
-		containerId: sequence( ( num ) => `${ 200 + num }` ),
+		accountId: fake( ( { random } ) => random.number().toString() ), // eslint-disable-line sitekit/camelcase-acronyms
+		containerId: sequence( ( num ) => `${ 200 + num }` ), // eslint-disable-line sitekit/camelcase-acronyms
 		name: fake( ( { lorem } ) => lorem.words() ),
-		publicId: fake( ( { random } ) => {
+		publicId: fake( ( { random } ) => { // eslint-disable-line sitekit/camelcase-acronyms
 			const char = random.alphaNumeric;
 			return `GTM-FAKE${ char() }${ char() }${ char() }`.toUpperCase();
 		} ),
@@ -82,15 +81,15 @@ export const containerBuilder = build( 'Tag Manager Container', {
 			oneOf( CONTEXT_WEB, CONTEXT_AMP ),
 		],
 		fingerprint: Date.now().toString(),
-		tagManagerUrl: 'https://tagmanager.google.com/#/container/accounts/{accountId}/containers/{containerId}/workspaces?apiLink=container',
+		tagManagerUrl: 'https://tagmanager.google.com/#/container/accounts/{accountId}/containers/{containerId}/workspaces?apiLink=container', // eslint-disable-line sitekit/camelcase-acronyms
 	},
 	postBuild: ( container ) => {
-		const { accountId, containerId } = container;
+		const { accountId, containerId } = container; // eslint-disable-line sitekit/camelcase-acronyms
 
 		return {
 			...container,
-			path: `accounts/${ accountId }/containers/${ containerId }`,
-			tagManagerUrl: `https://tagmanager.google.com/#/container/accounts/${ accountId }/containers/${ containerId }/workspaces?apiLink=container`,
+			path: `accounts/${ accountId }/containers/${ containerId }`, // eslint-disable-line sitekit/camelcase-acronyms
+			tagManagerUrl: `https://tagmanager.google.com/#/container/accounts/${ accountId }/containers/${ containerId }/workspaces?apiLink=container`, // eslint-disable-line sitekit/camelcase-acronyms
 		};
 	},
 } );
@@ -132,7 +131,7 @@ export function buildAccountWithContainers( {
 		count,
 		{
 			...containerOverrides,
-			accountId: account.accountId,
+			accountId: account.accountId, // eslint-disable-line sitekit/camelcase-acronyms
 		},
 	);
 
