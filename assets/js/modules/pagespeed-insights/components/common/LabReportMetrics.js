@@ -38,7 +38,7 @@ import ReportMetric from './ReportMetric';
 import ReportDetailsLink from './ReportDetailsLink';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../../util';
-import Button from '../../../../components/button';
+import Link from '../../../../components/link';
 import ErrorText from '../../../../components/error-text';
 import {
 	STORE_NAME,
@@ -128,10 +128,10 @@ export default function LabReportMetrics( { data, error } ) {
 				</tbody>
 			</table>
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--last">
-				<ReportDetailsLink />
-				<Button onClick={ updateReport }>
+				<Link href="#update-pagespeed" onClick={ updateReport }>
 					{ __( 'Run test again', 'google-site-kit' ) }
-				</Button>
+				</Link>
+				<ReportDetailsLink />
 			</div>
 		</div>
 	);
