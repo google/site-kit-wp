@@ -108,9 +108,9 @@ final class Reset {
 				"
 				DELETE FROM {$table_name}
 				 WHERE {$column_name} LIKE %s
-					OR {$column_name} LIKE %s
-					OR {$column_name} LIKE %s
-					OR {$column_name} = %s
+				    OR {$column_name} LIKE %s
+				    OR {$column_name} LIKE %s
+				    OR {$column_name} = %s
 				", /* phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared */
 				self::KEY_PATTERN,
 				$transient_prefix . self::KEY_PATTERN,
