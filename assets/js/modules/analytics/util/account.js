@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { _x } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
 /**
@@ -54,7 +54,7 @@ export function getAccountDefaults( { siteName, siteURL, timezone }, _fallbackTi
 	return {
 		accountName: siteName || hostname,
 		propertyName: `${ hostname }${ pathname }`.replace( /\/$/, '' ),
-		profileName: __( 'All Web Site Data', 'google-site-kit' ),
+		profileName: _x( 'All Web Site Data', 'default Analytics view name', 'google-site-kit' ),
 		countryCode: countryCodesByTimezone[ tz ],
 		timezone: tz,
 	};

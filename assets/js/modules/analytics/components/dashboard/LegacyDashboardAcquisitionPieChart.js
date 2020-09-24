@@ -24,8 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { Component, createInterpolateElement } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -87,17 +87,20 @@ class LegacyDashboardAcquisitionPieChart extends Component {
 				/>
 				{ source &&
 					<div className="googlesitekit-chart__source">
-						{ [
-							__( 'Source:', 'google-site-kit' ),
-							' ',
-							<Link
-								key="link"
-								href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
-								inherit
-							>
-								{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-							</Link>,
-						] }
+						{ createInterpolateElement(
+							sprintf(
+								/* translators: %s: source link */
+								__( 'Source: %s', 'google-site-kit' ),
+								`<a>${ _x( 'Analytics', 'Service name', 'google-site-kit' ) }</a>`
+							),
+							{
+								a: <Link
+									key="link"
+									href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
+									inherit
+								/>,
+							}
+						) }
 					</div>
 				}
 			</div>
