@@ -26,6 +26,13 @@ import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
+function createGetAuthenticationSelector( property ) {
+	return createRegistrySelector( ( select ) => () => {
+		const data = select( STORE_NAME ).getAuthentication() || {};
+		return data[ property ];
+	} );
+}
+
 const fetchGetAuthenticationStore = createFetchStore( {
 	baseName: 'getAuthentication',
 	controlCallback: () => {
@@ -163,10 +170,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} User authentication status.
 	 */
-	isAuthenticated: createRegistrySelector( ( select ) => () => {
-		const { authenticated } = select( STORE_NAME ).getAuthentication() || {};
-		return authenticated;
-	} ),
+	isAuthenticated: createGetAuthenticationSelector( 'authenticated' ),
 
 	/**
 	 * Gets the granted scopes for the user.
@@ -179,10 +183,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of granted scopes
 	 */
-	getGrantedScopes: createRegistrySelector( ( select ) => () => {
-		const { grantedScopes } = select( STORE_NAME ).getAuthentication() || {};
-		return grantedScopes;
-	} ),
+	getGrantedScopes: createGetAuthenticationSelector( 'grantedScopes' ),
 
 	/**
 	 * Gets the required scopes for the user.
@@ -195,10 +196,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of required scopes
 	 */
-	getRequiredScopes: createRegistrySelector( ( select ) => () => {
-		const { requiredScopes } = select( STORE_NAME ).getAuthentication() || {};
-		return requiredScopes;
-	} ),
+	getRequiredScopes: createGetAuthenticationSelector( 'requiredScopes' ),
 
 	/**
 	 * Gets the unsatisfied scopes for the user.
@@ -211,10 +209,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of scopes
 	 */
-	getUnsatisfiedScopes: createRegistrySelector( ( select ) => () => {
-		const { unsatisfiedScopes } = select( STORE_NAME ).getAuthentication() || {};
-		return unsatisfiedScopes;
-	} ),
+	getUnsatisfiedScopes: createGetAuthenticationSelector( 'unsatisfiedScopes' ),
 
 	/**
 	 * Checks reauthentication status for this user.
@@ -227,10 +222,17 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} User reauthentication status.
 	 */
-	needsReauthentication: createRegistrySelector( ( select ) => () => {
-		const { needsReauthentication } = select( STORE_NAME ).getAuthentication() || {};
-		return needsReauthentication;
-	} ),
+	needsReauthentication: createGetAuthenticationSelector( 'needsReauthentication' ),
+
+	/**
+	 * Gets the current disconnected reason.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The current disconnected reason.
+	 */
+	getDisconnectedReason: createGetAuthenticationSelector( 'disconnectedReason' ),
 
 	/**
 	 * Gets the authentication error.

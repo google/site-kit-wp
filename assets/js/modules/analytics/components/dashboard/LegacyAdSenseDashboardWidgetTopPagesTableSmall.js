@@ -1,5 +1,5 @@
 /**
- * AdSenseDashboardWidgetTopPagesTableSmall component.
+ * LegacyAdSenseDashboardWidgetTopPagesTableSmall component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -37,7 +37,7 @@ import {
 	isDataZeroForReporting,
 } from '../../util';
 
-class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
+class LegacyAdSenseDashboardWidgetTopPagesTableSmall extends Component {
 	static renderLayout( component ) {
 		return (
 			<div className="
@@ -100,7 +100,7 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 		const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 		return (
-			AdSenseDashboardWidgetTopPagesTableSmall.renderLayout(
+			LegacyAdSenseDashboardWidgetTopPagesTableSmall.renderLayout(
 				<TableOverflowContainer>
 					{ dataTable }
 				</TableOverflowContainer>
@@ -152,7 +152,7 @@ const getDataError = ( data ) => {
 };
 
 export default withData(
-	AdSenseDashboardWidgetTopPagesTableSmall,
+	LegacyAdSenseDashboardWidgetTopPagesTableSmall,
 	[
 		{
 			type: TYPE_MODULES,
@@ -164,7 +164,7 @@ export default withData(
 			context: 'Dashboard',
 		},
 	],
-	AdSenseDashboardWidgetTopPagesTableSmall.renderLayout(
+	LegacyAdSenseDashboardWidgetTopPagesTableSmall.renderLayout(
 		<PreviewTable rows={ 5 } padding />
 	),
 	{
