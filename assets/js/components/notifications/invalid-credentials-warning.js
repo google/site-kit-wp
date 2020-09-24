@@ -33,9 +33,9 @@ class InvalidCredentialsWarning extends Component {
 			<Notification
 				id="notification-id"
 				title={ __( 'Security Token Error', 'google-site-kit' ) }
-				description={ __( 'We’re unable to retrieve your data because your security token is expired or revoked. Please ', 'google-site-kit' ) }
+				description={ __( 'We’re unable to retrieve your data because your security token is expired or revoked.', 'google-site-kit' ) }
 				learnMoreURL={ global._googlesitekitLegacyData.admin.connectURL }
-				learnMoreLabel={ __( 'reauthenticate your account', 'google-site-kit' ) }
+				learnMoreLabel={ __( 'Please reauthenticate your account', 'google-site-kit' ) }
 				format="small"
 				type="win-error"
 			/>

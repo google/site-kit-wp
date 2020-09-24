@@ -156,7 +156,19 @@ class AnalyticsDashboardWidget extends Component {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-								<PageHeader title={ _x( 'Analytics', 'Service name', 'google-site-kit' ) } icon iconWidth="24" iconHeight="26" iconID="analytics" status="connected" statusText={ __( 'Analytics is connected', 'google-site-kit' ) } />
+								<PageHeader
+									title={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+									icon
+									iconWidth="24"
+									iconHeight="26"
+									iconID="analytics"
+									status="connected"
+									statusText={ sprintf(
+										/* translators: %s: module name. */
+										__( '%s is connected', 'google-site-kit' ),
+										_x( 'Analytics', 'Service name', 'google-site-kit' )
+									) }
+								/>
 								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
@@ -172,7 +184,11 @@ class AnalyticsDashboardWidget extends Component {
 									header
 									/* translators: %s: date range */
 									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), currentDateRange ) }
-									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+									headerCtaLabel={ sprintf(
+										/* translators: %s: module name. */
+										__( 'See full stats in %s', 'google-site-kit' ),
+										_x( 'Analytics', 'Service name', 'google-site-kit' )
+									) }
 									headerCtaLink="http://analytics.google.com"
 								>
 									<AnalyticsDashboardWidgetOverview
@@ -200,7 +216,11 @@ class AnalyticsDashboardWidget extends Component {
 									/* translators: %s: date range */
 									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLink="https://analytics.google.com"
-									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+									headerCtaLabel={ sprintf(
+										/* translators: %s: module name. */
+										__( 'See full stats in %s', 'google-site-kit' ),
+										_x( 'Analytics', 'Service name', 'google-site-kit' )
+									) }
 									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 									footerCtaLink="https://analytics.google.com"
 								>
@@ -218,7 +238,11 @@ class AnalyticsDashboardWidget extends Component {
 									/* translators: %s: date range */
 									title={ sprintf( __( 'Top acquisition channels over the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLink="https://analytics.google.com"
-									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+									headerCtaLabel={ sprintf(
+										/* translators: %s: module name. */
+										__( 'See full stats in %s', 'google-site-kit' ),
+										_x( 'Analytics', 'Service name', 'google-site-kit' )
+									) }
 									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 									footerCtaLink="https://analytics.google.com"
 								>
