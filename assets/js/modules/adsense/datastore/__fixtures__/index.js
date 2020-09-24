@@ -36,3 +36,5 @@ export {
 	dashboardSummaryWidgetTodayOptions,
 	dashboardSummaryWidget28DailyOptions,
 } from './dashboard-summary-widget-options';
+export { default as dashboardTopEarningPageWidgetOptions } from './dashboard-top-earning-pages-widget-options.json';
+export { default as dashboardTopEarningPageWidgetData } from './dashboard-top-earning-pages-widget-data.json';
