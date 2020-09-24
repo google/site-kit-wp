@@ -1,4 +1,3 @@
-/* eslint-disable @wordpress/no-unused-vars-before-return */
 /**
  * ESLint rules.
  *

@@ -1,4 +1,3 @@
-/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * modules/analytics data store: accounts tests.
  *
@@ -334,8 +333,8 @@ describe( 'modules/analytics accounts', () => {
 				const matchedProfile = {
 					...fixtures.profiles[ 0 ],
 					id: '123456',
-					webPropertyId: matchedProperty.id,
-					accountId: matchedProperty.accountId,
+					webPropertyId: matchedProperty.id, // eslint-disable-line sitekit/camelcase-acronyms
+					accountId: matchedProperty.accountId, // eslint-disable-line sitekit/camelcase-acronyms
 				};
 				const response = {
 					accounts,
@@ -369,10 +368,10 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
-				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId );
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId ); // eslint-disable-line sitekit/camelcase-acronyms
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
-				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProperty.defaultProfileId );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProperty.defaultProfileId ); // eslint-disable-line sitekit/camelcase-acronyms
 			} );
 		} );
 

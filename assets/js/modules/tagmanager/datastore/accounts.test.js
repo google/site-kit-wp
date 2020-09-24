@@ -1,4 +1,3 @@
-/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * modules/tagmanager data store: accounts tests.
  *
@@ -149,7 +148,7 @@ describe( 'modules/tagmanager accounts', () => {
 					container: { usageContext: [ CONTEXT_WEB ] },
 					count: 3,
 				} );
-				const accountID = account.accountId;
+				const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const [ firstContainer ] = containers;
 				let resolveResponse;
 				const responsePromise = new Promise( ( resolve ) => {
@@ -173,8 +172,8 @@ describe( 'modules/tagmanager accounts', () => {
 				await promise;
 
 				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( accountID );
-				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( firstContainer.publicId );
-				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId );
+				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( firstContainer.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
+				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
 				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
 				expect( registry.select( STORE_NAME ).getWebContainers( accountID ) ).toEqual( containers );
@@ -187,14 +186,14 @@ describe( 'modules/tagmanager accounts', () => {
 						container: { usageContext: [ CONTEXT_WEB ] },
 						count: 3,
 					} );
-					const accountID = account.accountId;
+					const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 					const [ firstContainer ] = containers;
 					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 
 					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
 
-					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( firstContainer.publicId );
-					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId );
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( firstContainer.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
+					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
 					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
 					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
 				} );
@@ -220,7 +219,7 @@ describe( 'modules/tagmanager accounts', () => {
 						container: { usageContext: [ CONTEXT_AMP ] },
 						count: 3,
 					} );
-					const accountID = account.accountId;
+					const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 					const [ firstContainer ] = containers;
 					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 
@@ -228,8 +227,8 @@ describe( 'modules/tagmanager accounts', () => {
 
 					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
 					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
-					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( firstContainer.publicId );
-					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( firstContainer.containerId );
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( firstContainer.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
+					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( firstContainer.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
 				} );
 
 				it( 'selects "set up a new container" if there are none', async () => {
@@ -249,19 +248,19 @@ describe( 'modules/tagmanager accounts', () => {
 				beforeEach( () => registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } ) );
 
 				it( 'selects both first containers for the selected account', async () => {
-					const { accountId } = factories.accountBuilder();
-					const accountID = accountId;
-					const webContainers = factories.buildContainers( 3, { accountId, usageContext: [ CONTEXT_WEB ] } );
-					const ampContainers = factories.buildContainers( 3, { accountId, usageContext: [ CONTEXT_AMP ] } );
+					const { accountId } = factories.accountBuilder(); // eslint-disable-line sitekit/camelcase-acronyms
+					const accountID = accountId; // eslint-disable-line sitekit/camelcase-acronyms
+					const webContainers = factories.buildContainers( 3, { accountId, usageContext: [ CONTEXT_WEB ] } ); // eslint-disable-line sitekit/camelcase-acronyms
+					const ampContainers = factories.buildContainers( 3, { accountId, usageContext: [ CONTEXT_AMP ] } ); // eslint-disable-line sitekit/camelcase-acronyms
 					const containers = [ ...webContainers, ...ampContainers ];
 					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 
 					await registry.dispatch( STORE_NAME ).selectAccount( accountID );
 
-					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( webContainers[ 0 ].publicId );
-					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( webContainers[ 0 ].containerId );
-					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( ampContainers[ 0 ].publicId );
-					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( ampContainers[ 0 ].containerId );
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( webContainers[ 0 ].publicId ); // eslint-disable-line sitekit/camelcase-acronyms
+					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( webContainers[ 0 ].containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( ampContainers[ 0 ].publicId ); // eslint-disable-line sitekit/camelcase-acronyms
+					expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( ampContainers[ 0 ].containerId ); // eslint-disable-line sitekit/camelcase-acronyms
 				} );
 
 				it( 'selects "set up a new container" if there are none', async () => {
