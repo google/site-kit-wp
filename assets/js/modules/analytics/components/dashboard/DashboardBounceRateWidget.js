@@ -80,7 +80,7 @@ function DashboardBounceRateWidget() {
 	}
 
 	if ( ! data || ! data.length ) {
-		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
+		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 
 	const sparkLineData = [
@@ -113,7 +113,7 @@ function DashboardBounceRateWidget() {
 			className="overview-bounce-rate"
 			title={ __( 'Bounce Rate', 'google-site-kit' ) }
 			datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
-			datapointUnit={ __( '%', 'google-site-kit' ) }
+			datapointUnit="%"
 			change={ averageBounceRateChange }
 			changeDataUnit="%"
 			invertChangeColor

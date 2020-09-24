@@ -103,6 +103,24 @@ export default function AdSenseDashboardWidget() {
 	const wrapperClass = ( ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
 	const currentDateRange = getCurrentDateRange( dateRange );
 
+	let moduleStatus;
+	let moduleStatusText;
+	if ( ! error && isModuleConnected ) {
+		moduleStatus = 'connected';
+		moduleStatusText = sprintf(
+			/* translators: %s: module name. */
+			__( '%s is connected', 'google-site-kit' ),
+			_x( 'AdSense', 'Service name', 'google-site-kit' )
+		);
+	} else {
+		moduleStatus = 'not-connected';
+		moduleStatusText = sprintf(
+			/* translators: %s: module name. */
+			__( '%s is not connected', 'google-site-kit' ),
+			_x( 'AdSense', 'Service name', 'google-site-kit' )
+		);
+	}
+
 	return (
 		<Fragment>
 			<Header />
@@ -117,23 +135,27 @@ export default function AdSenseDashboardWidget() {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-							{
-								( ! error && isModuleConnected )
-									? <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } />
-									: <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
-							}
+							<PageHeader
+								title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
+								icon
+								iconWidth="30"
+								iconHeight="26"
+								iconID="adsense"
+								status={ moduleStatus }
+								statusText={ moduleStatusText }
+							/>
 							{ loading && <ProgressBar /> }
 						</div>
 						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 						{ zeroData &&
-						<div className="
+							<div className="
 									mdc-layout-grid__cell
 									mdc-layout-grid__cell--span-12
 								">
-							<Layout fill>
-								<AdSenseDashboardZeroData />
-							</Layout>
-						</div>
+								<Layout fill>
+									<AdSenseDashboardZeroData />
+								</Layout>
+							</div>
 						}
 						{ ! receivingData && (
 							error ? getDataErrorComponent( 'adsense', error, true, true, true, errorObj ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
