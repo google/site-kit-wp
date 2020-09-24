@@ -98,7 +98,7 @@ function DashboardUniqueVisitorsWidget() {
 	}
 
 	if ( ( ! sparkData || ! sparkData.length ) && ( ! visitorsData || ! visitorsData.length ) ) {
-		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
+		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 
 	const sparkLineData = [

@@ -1,5 +1,5 @@
 /**
- * DashboardPopularPagesWidget component.
+ * DashboardTopEarningPagesWidget component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,106 +20,109 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
+import { compose } from '@wordpress/compose';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as ANALYTICS_STORE } from '../../../analytics/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/preview-table';
-import Layout from '../../../../components/layout/layout';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import { numberFormat } from '../../../../util';
+import Layout from '../../../../components/layout/layout';
+import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 
 const { useSelect } = Data;
 
-function DashboardPopularPagesWidget() {
+function DashboardTopEarningPagesWidget() {
 	const {
+		isAdSenseLinked,
 		data,
 		error,
 		loading,
-		analyticsMainURL,
 	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+		const store = select( ANALYTICS_STORE );
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
-			dimensions: 'ga:pageTitle,ga:pagePath',
+			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
 			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
+				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+				{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+				{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
 			],
-			orderby: [
-				{
-					fieldName: 'ga:pageviews',
-					sortOrder: 'DESCENDING',
-				},
-			],
+			orderby: {
+				fieldName: 'ga:adsenseRevenue',
+				sortOrder: 'DESCENDING',
+			},
 			limit: 10,
 		};
 
 		return {
+			isAdSenseLinked: store.getAdsenseLinked(),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: store.isResolving( 'getReport', [ args ] ),
-			analyticsMainURL: store.getServiceURL(),
 		};
 	} );
 
 	if ( loading ) {
-		return <PreviewTable padding />;
+		return (
+			<PreviewTable rows={ 5 } padding />
+		);
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error.message, false, false, false, error );
+		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
-	if ( ! Array.isArray( data?.[ 0 ]?.data?.rows ) ) {
+	if ( ! isAdSenseLinked ) {
+		return <AdSenseLinkCTA />;
+	}
+
+	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
 		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 
 	const headers = [
 		{
-			title: __( 'Most popular content', 'google-site-kit' ),
+			title: __( 'Top Earning Pages', 'google-site-kit' ),
+			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
 		},
 		{
-			title: __( 'Views', 'google-site-kit' ),
+			title: __( 'Revenue', 'google-site-kit' ),
+			tooltip: __( 'Revenue', 'google-site-kit' ),
 		},
 	];
 
 	const links = [];
 	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-		const [ title, url ] = row.dimensions;
-		links[ i ] = url.startsWith( '/' ) ? url : '/' + url;
-
+		links[ i ] = row.dimensions[ 1 ];
 		return [
-			title,
-			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
+			row.dimensions[ 0 ],
+			Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
 		];
 	} );
 
 	const options = {
 		hideHeader: false,
 		chartsEnabled: false,
+		cap: 5,
 		links,
-		showURLs: true,
-		useAdminURLs: true,
 	};
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 	return (
 		<Layout
-			className="googlesitekit-popular-content"
+			className="googlesitekit-top-earnings-pages"
 			footer
 			footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			footerCtaLink={ analyticsMainURL }
+			footerCtaLink="http://analytics.google.com"
 			fill
 		>
 			<TableOverflowContainer>
@@ -129,4 +132,7 @@ function DashboardPopularPagesWidget() {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics' } )( DashboardPopularPagesWidget );
+export default compose(
+	whenActive( { moduleName: 'adsense' } ),
+	whenActive( { moduleName: 'analytics' } ),
+)( DashboardTopEarningPagesWidget );

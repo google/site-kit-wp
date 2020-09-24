@@ -17,10 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * WordPress dependencies
  */
 import { createRegistry } from '@wordpress/data';
