@@ -27,7 +27,7 @@ import { act } from 'react-dom/test-utils';
 import { render, fireEvent, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES, SETTINGS_DISPLAY_MODES } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import SettingsMain from './SettingsMain';
 
@@ -64,7 +64,7 @@ describe( 'SettingsMain', () => {
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {} );
-			dispatch( CORE_MODULES ).setSettingsDisplayMode( 'analytics', SETTINGS_DISPLAY_MODES.VIEW );
+			dispatch( CORE_MODULES ).setSettingsViewCurrentModule( 'analytics' );
 			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 		};
@@ -75,7 +75,7 @@ describe( 'SettingsMain', () => {
 		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );
 
 		act( () => {
-			registry.dispatch( CORE_MODULES ).setSettingsDisplayMode( 'analytics', SETTINGS_DISPLAY_MODES.EDIT );
+			registry.dispatch( CORE_MODULES ).getSettingsViewIsEditing( true );
 		} );
 
 		await waitFor( () => container.querySelector( '.googlesitekit-analytics-usesnippet' ) );
@@ -83,7 +83,7 @@ describe( 'SettingsMain', () => {
 		expect( select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
 
 		act( () => {
-			registry.dispatch( CORE_MODULES ).setSettingsDisplayMode( 'analytics', SETTINGS_DISPLAY_MODES.VIEW );
+			registry.dispatch( CORE_MODULES ).getSettingsViewIsEditing( false );
 		} );
 
 		expect( select( STORE_NAME ).getSettings() ).toEqual( initialSettings );
