@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -114,13 +114,13 @@ export default function LabReportMetrics( { data, error } ) {
 						category={ getScoreCategory( totalBlockingTime.score ) }
 					/>
 					<ReportMetric
-						title={ __( 'Largest Contentful Paint', 'google-site-kit' ) }
+						title={ _x( 'Largest Contentful Paint', 'core web vitals name', 'google-site-kit' ) }
 						description={ __( 'Time it takes for the page to load', 'google-site-kit' ) }
 						displayValue={ largestContentfulPaint.displayValue }
 						category={ getScoreCategory( largestContentfulPaint.score ) }
 					/>
 					<ReportMetric
-						title={ __( 'Cumulative Layout Shift', 'google-site-kit' ) }
+						title={ _x( 'Cumulative Layout Shift', 'core web vitals name', 'google-site-kit' ) }
 						description={ __( 'How stable the elements on the page are', 'google-site-kit' ) }
 						displayValue={ cumulativeLayoutShift.displayValue }
 						category={ getScoreCategory( cumulativeLayoutShift.score ) }
