@@ -37,6 +37,7 @@ import Layout from '../assets/js/components/layout/layout';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import defaultModules from '../assets/js/googlesitekit/modules/datastore/fixtures.json';
+import { SettingsMain } from '../assets/js/modules/analytics/components/settings';
 
 /**
  * Add components to the settings page.
@@ -78,6 +79,7 @@ storiesOf( 'Settings', module )
 				};
 			} );
 			registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
+			registry.dispatch( CORE_MODULES ).registerModule( 'analytics', { settingsComponent: SettingsMain } );
 		};
 
 		return (

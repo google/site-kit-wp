@@ -44,7 +44,7 @@ addFilter(
 );
 
 domReady( () => {
-	dispatch( CORE_MODULES ).setSettingsComponent( 'analytics', AnalyticsSettings );
+	dispatch( CORE_MODULES ).registerModule( 'analytics', { settingsComponent: AnalyticsSettings } );
 
 	Widgets.registerWidget(
 		'analyticsAllTraffic',
