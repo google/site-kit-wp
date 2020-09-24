@@ -29,7 +29,6 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-
 import {
 	SettingsMain as AdSenseSettings,
 	SettingsSetupIncomplete,
