@@ -75,7 +75,7 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
  *
  * By default the site will be set to connected.
  *
- * @since n.e.x.t
+ * @since 1.17.0
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.
@@ -102,7 +102,7 @@ export const provideSiteConnection = ( registry, extraData = {} ) => {
  *
  * By default the user will be set to authenticated.
  *
- * @since n.e.x.t
+ * @since 1.17.0
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.
@@ -127,7 +127,7 @@ export const provideUserAuthentication = ( registry, extraData = {} ) => {
 /**
  * Provides site information data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.17.0
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.
@@ -159,7 +159,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 /**
  * Provides user information data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.17.0
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.
@@ -182,7 +182,7 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 /**
  * Provides modules data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.17.0
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.

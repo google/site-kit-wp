@@ -118,7 +118,7 @@ export default function FieldReportMetrics( { data, error } ) {
 					/>
 				</tbody>
 			</table>
-			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--last">
+			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--single-item googlesitekit-pagespeed-report__row--last">
 				<ReportDetailsLink />
 			</div>
 		</div>

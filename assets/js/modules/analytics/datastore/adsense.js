@@ -81,7 +81,7 @@ export const selectors = {
 	/**
 	 * Gets the linked state of Analytics and Adsense services.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if Analytics is linked with AdSense,

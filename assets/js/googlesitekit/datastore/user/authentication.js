@@ -227,7 +227,7 @@ const baseSelectors = {
 	/**
 	 * Gets the current disconnected reason.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The current disconnected reason.
