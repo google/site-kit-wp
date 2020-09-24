@@ -17,7 +17,17 @@
  */
 import { trackEvent } from './';
 
-export async function trackAPIError( method, type, identifier, datapoint, error ) {
+/**
+ *
+ * @param {Object} args            The requst arguments.
+ * @param {Object} args.method     The request method.
+ * @param {Object} args.type       The request type.
+ * @param {Object} args.identifier The request identifier.
+ * @param {Object} args.datapoint  The request datapoint.
+ * @param {Object} args.error      The request error.
+ *
+ */
+export async function trackAPIError( { method, type, identifier, datapoint, error } ) {
 	// Exclude certain errors from tracking based on error code.
 	const excludedErrorCodes = [
 		'fetch_error', // Client failed to fetch from WordPress.
