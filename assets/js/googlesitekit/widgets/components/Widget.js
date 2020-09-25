@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { node, func, string, bool } from 'prop-types';
+import { node, elementType, string, bool } from 'prop-types';
 
 const Widget = ( {
 	children,
@@ -65,8 +65,8 @@ Widget.propTypes = {
 	children: node,
 	slug: string.isRequired,
 	noPadding: bool,
-	header: func,
-	footer: func,
+	header: elementType,
+	footer: elementType,
 };
 
 export default Widget;
