@@ -132,7 +132,7 @@ function DashboardPopularKeywordsWidget() {
 	return (
 		<Widget
 			slug="searchConsolePopularKeywords"
-			className="googlesitekit-widget--no-padding"
+			noPadding
 			footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"

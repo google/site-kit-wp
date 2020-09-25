@@ -118,7 +118,7 @@ function DashboardPopularPagesWidget() {
 	return (
 		<Widget
 			slug="analyticsPopularPages"
-			className="googlesitekit-widget--no-padding"
+			noPadding
 			footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"

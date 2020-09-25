@@ -79,7 +79,7 @@ storiesOf( 'Global/Widgets', module )
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
 					slug={ `widget${ count }` }
-					className="googlesitekit-widget--no-padding"
+					noPadding
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }
@@ -93,7 +93,7 @@ storiesOf( 'Global/Widgets', module )
 				<QuarterWidgetInGrid
 					key={ `widget${ count }` }
 					slug={ `widget${ count }` }
-					className="googlesitekit-widget--no-padding"
+					noPadding
 				>
 					{ count === 4 && <div>Widget with more body content.</div> }
 					{ count !== 4 && <div>Widget body content.</div> }

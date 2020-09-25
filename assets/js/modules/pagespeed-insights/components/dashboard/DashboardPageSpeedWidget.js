@@ -42,7 +42,8 @@ function DashboardPageSpeedWidget() {
 	return (
 		<Widget
 			slug="pagespeedInsightsWebVitals"
-			className="googlesitekit-widget--no-padding googlesitekit-pagespeed-widget"
+			className="googlesitekit-pagespeed-widget"
+			noPadding
 		>
 			<DashboardPageSpeed />
 		</Widget>

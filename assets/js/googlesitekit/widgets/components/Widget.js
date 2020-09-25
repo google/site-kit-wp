@@ -20,17 +20,25 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { node, func, string } from 'prop-types';
+import { node, func, string, boolean } from 'prop-types';
 
 const Widget = ( {
 	children,
 	className,
 	slug,
+	noPadding,
 	header: Header,
 	footer: Footer,
 } ) => {
 	return (
-		<div className={ classnames( 'googlesitekit-widget', `googlesitekit-widget--${ slug }`, className ) }>
+		<div
+			className={ classnames(
+				'googlesitekit-widget',
+				`googlesitekit-widget--${ slug }`,
+				{ 'googlesitekit-widget--no-padding': noPadding },
+				className
+			) }
+		>
 			{ Header && (
 				<div className="googlesitekit-widget__header">
 					<Header />
@@ -55,6 +63,7 @@ Widget.defaultProps = {
 Widget.propTypes = {
 	children: node,
 	slug: string.isRequired,
+	noPadding: boolean,
 	header: func,
 	footer: func,
 };

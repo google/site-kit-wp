@@ -103,7 +103,7 @@ function DashboardAllTrafficWidget() {
 	return (
 		<Widget
 			slug="analyticsAllTraffic"
-			className="googlesitekit-widget--no-padding"
+			noPadding
 		>
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">

@@ -123,7 +123,7 @@ function DashboardTopEarningPagesWidget() {
 	return (
 		<Widget
 			slug="adsenseTopEarningPages"
-			className="googlesitekit-widget--no-padding"
+			noPadding
 			footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
