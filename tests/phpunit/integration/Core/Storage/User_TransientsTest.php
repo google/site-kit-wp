@@ -32,16 +32,19 @@ class User_TransientsTest extends TestCase {
 	/**
 	 * @var bool
 	 */
-	protected $old_wp_using_ext_object_cache;
+	protected static $old_wp_using_ext_object_cache;
+
+	public static function wpSetUpBeforeClass() {
+		self::$old_wp_using_ext_object_cache = wp_using_ext_object_cache();
+	}
+
+	public static function wpTearDownAfterClass() {
+		wp_using_ext_object_cache( self::$old_wp_using_ext_object_cache );
+	}
 
 	public function setUp() {
 		parent::setUp();
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-	}
-
-	public function tearDown() {
-		parent::tearDown();
-		wp_using_ext_object_cache( $this->old_wp_using_ext_object_cache );
 	}
 
 	protected function create_user_aware_instance() {
@@ -53,17 +56,14 @@ class User_TransientsTest extends TestCase {
 		);
 	}
 
-	protected function with_predefined_environment( $ext_object_cache ) {
-		$this->old_wp_using_ext_object_cache = wp_using_ext_object_cache( 'with_ext_cache' === $ext_object_cache );
+	protected function using_external_cache() {
+		wp_using_ext_object_cache( true );
 		return $this->create_user_aware_instance();
 	}
 
-	protected function using_external_cache() {
-		return $this->with_predefined_environment( 'with_ext_cache' );
-	}
-
 	protected function using_user_options() {
-		list( $user_transients, $user_id ) = $this->with_predefined_environment( 'without_ext_cache' );
+		wp_using_ext_object_cache( false );
+		list( $user_transients, $user_id ) = $this->create_user_aware_instance();
 
 		return array(
 			$user_transients,
