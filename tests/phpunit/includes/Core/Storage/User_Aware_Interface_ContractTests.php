@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Aware_Interface;
 trait User_Aware_Interface_ContractTests {
 
 	/**
-	 * @return array Array with an User_Aware_Interface instance and user_id associated with the isntance.
+	 * @return array Array with a User_Aware_Interface instance and initial $user_id.
 	 */
 	abstract protected function create_user_aware_instance();
 
