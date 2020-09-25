@@ -31,7 +31,7 @@ describe( 'googlesitekit.dataAPI', () => {
 	let pushArgs;
 	const dataLayer = {
 		[ DATA_LAYER ]: {
-			push: ( ...args ) => pushArgs = args,
+			push: ( ...args ) => pushArgs = [ ...pushArgs, ...args ],
 		},
 	};
 	const config = {
@@ -50,7 +50,7 @@ describe( 'googlesitekit.dataAPI', () => {
 	} );
 
 	afterAll( () => jest.restoreAllMocks() );
-	/*
+
 	const errorResponse = {
 		code: 'internal_server_error',
 		message: 'Internal server error',
@@ -103,7 +103,7 @@ describe( 'googlesitekit.dataAPI', () => {
 			}
 		} );
 	} );
-*/
+
 	describe( 'combinedGet', () => {
 		const combinedGet = dataAPI.combinedGet.bind( dataAPI );
 
@@ -125,8 +125,8 @@ describe( 'googlesitekit.dataAPI', () => {
 			},
 			{
 				type: 'core',
-				identifier: 'search-console',
-				datapoint: 'other',
+				identifier: 'analytics',
+				datapoint: 'query',
 				data: { status: 500 },
 			},
 
@@ -168,8 +168,6 @@ describe( 'googlesitekit.dataAPI', () => {
 
 			await combinedGet( combinedRequest );
 			expect( console ).not.toHaveErrored();
-			//
-			//expect( console ).not.toHaveErrored();
 			expect( pushArgs.length ).toEqual( 1 );
 			const [ event, eventName, eventData ] = pushArgs[ 0 ];
 			expect( event ).toEqual( 'event' );
@@ -180,10 +178,52 @@ describe( 'googlesitekit.dataAPI', () => {
 		} );
 
 		it( 'should call trackEvent for each error in combinedGet with multiple errors', async () => {
+			const cacheKey = getCacheKey( 'core', 'search-console', 'users', { dateRange: 'last-28-days', status: 500 } );
+			const cacheKey2 = getCacheKey( 'core', 'analytics', 'query', { dateRange: 'last-28-days', status: 500 } );
+			const response = {
+				body:
+					{
+						[ cacheKey ]: {
+							code: 'internal_server_error',
+							message: 'Internal server error',
+							data: {
+								reason: 'internal_server_error',
+								status: 500,
+							},
+						},
+						[ cacheKey2 ]: {
+							code: 'unknown_error',
+							message: 'Unknown error',
+							data: {
+								reason: 'unknown_error',
+								status: 503,
+							},
+						},
+					},
+				status: 200,
+			};
 
-		} );
-		it( 'should call trackEvent for each error in combinedGet with all errors', async () => {
-
+			fetchMock.post(
+				/^\/google-site-kit\/v1\/data/,
+				response
+			);
+			await combinedGet( combinedRequest );
+			expect( console ).not.toHaveErrored();
+			//
+			//expect( console ).not.toHaveErrored();
+			expect( pushArgs.length ).toEqual( 2 );
+			let [ event, eventName, eventData ] = pushArgs[ 0 ];
+			expect( event ).toEqual( 'event' );
+			expect( eventName ).toEqual( 'POST:core/search-console/data/users' );
+			expect( eventData.event_category ).toEqual( 'api_error' );
+			expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error, reason: internal_server_error)' );
+			expect( eventData.event_value ).toEqual( 500 );
+			[ event, eventName, eventData ] = pushArgs[ 1 ];
+			expect( event ).toEqual( 'event' );
+			expect( eventName ).toEqual( 'POST:core/analytics/data/query' );
+			expect( eventData.event_category ).toEqual( 'api_error' );
+			expect( eventData.event_label ).toEqual( 'Unknown error (code: unknown_error, reason: unknown_error)' );
+			expect( eventData.event_value ).toEqual( 503 );
 		} );
 	} );
 } );
