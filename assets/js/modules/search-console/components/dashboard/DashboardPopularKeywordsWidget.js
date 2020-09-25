@@ -26,6 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -33,10 +34,11 @@ import { numberFormat } from '../../../../util';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/preview-table';
-import Layout from '../../../../components/layout/layout';
+import SourceLink from '../../../../components/source-link';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 const { useSelect } = Data;
+const { Widget } = Widgets.components;
 
 function DashboardPopularKeywordsWidget() {
 	const {
@@ -127,18 +129,23 @@ function DashboardPopularKeywordsWidget() {
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
+	const sourceLink = <SourceLink
+		className="googlesitekit-data-block__source"
+		name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+		href={ searchConsolePropertyMainURL }
+		external
+	/>;
+
 	return (
-		<Layout
-			className="googlesitekit-popular-content"
-			footer
-			footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-			footerCtaLink={ searchConsolePropertyMainURL }
-			fill
+		<Widget
+			slug="searchConsolePopularKeywords"
+			className="googlesitekit-widget--no-padding"
+			footer={ () => sourceLink }
 		>
 			<TableOverflowContainer>
 				{ dataTable }
 			</TableOverflowContainer>
-		</Layout>
+		</Widget>
 	);
 }
 

@@ -25,17 +25,18 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/preview-table';
-import Layout from '../../../../components/layout/layout';
+import SourceLink from '../../../../components/source-link';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import { numberFormat } from '../../../../util';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
-
 const { useSelect } = Data;
+const { Widget } = Widgets.components;
 
 function DashboardPopularPagesWidget() {
 	const {
@@ -114,18 +115,23 @@ function DashboardPopularPagesWidget() {
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
+	const sourceLink = <SourceLink
+		className="googlesitekit-data-block__source"
+		name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+		href={ analyticsMainURL }
+		external
+	/>;
+
 	return (
-		<Layout
-			className="googlesitekit-popular-content"
-			footer
-			footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			footerCtaLink={ analyticsMainURL }
-			fill
+		<Widget
+			slug="analyticsPopularPages"
+			className="googlesitekit-widget--no-padding"
+			footer={ () => sourceLink }
 		>
 			<TableOverflowContainer>
 				{ dataTable }
 			</TableOverflowContainer>
-		</Layout>
+		</Widget>
 	);
 }
 
