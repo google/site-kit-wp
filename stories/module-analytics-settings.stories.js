@@ -32,22 +32,6 @@ import { createTestRegistry, provideModules } from '../tests/js/utils';
 import { generateGtmPropertyStory } from './utils/analytics';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
-function filterAnalyticsSettings() {
-	// set( global, 'googlesitekit.modules.analytics.setupComplete', true );
-	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-analytics' );
-	addFilter(
-		'googlesitekit.ModuleSettingsDetails-analytics',
-		'googlesitekit.AnalyticsModuleSettings',
-		fillFilterWithComponent( AnalyticsSettings )
-	);
-}
-
-const completeModuleData = {
-	...global._googlesitekitLegacyData.modules.analytics,
-	active: true,
-	setupComplete: true,
-};
-
 const defaultSettings = {
 	ownerID: 0,
 	accountID: '',
@@ -63,7 +47,7 @@ const defaultSettings = {
 const Settings = createLegacySettingsWrapper( 'analytics', AnalyticsSettings );
 
 function EditingSettingsForCompleteModule( { callback } ) {
-	return <Settings isEditing={ true } module={ completeModuleData } callback={ callback } />;
+	return <Settings isOpen={ true } isEditing={ true } callback={ callback } />;
 }
 
 function generateGtmPropertyStoryCallback( permission, useExistingTag = false ) {
@@ -171,8 +155,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
 	.add( 'Edit, with existing tag w/ access', ( registry ) => {
-		filterAnalyticsSettings();
-
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			accountID: matchedProperty.accountId,
@@ -195,8 +177,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
 	.add( 'Edit, with existing tag w/o access', ( registry ) => {
-		filterAnalyticsSettings();
-
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 
 		const existingTag = {
