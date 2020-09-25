@@ -89,7 +89,7 @@ function DashboardPopularKeywordsWidget() {
 	}
 
 	if ( ! data || ! data.length ) {
-		return getNoDataComponent( __( 'Search Console', 'google-site-kit' ) );
+		return getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) );
 	}
 
 	const headers = [

@@ -21,7 +21,9 @@
  */
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
+import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
+import { STORE_NAME as ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore';
 import {
 	dashboardSummaryWidgetTodayData,
 	dashboardSummaryWidgetPeriodData,
@@ -29,6 +31,8 @@ import {
 	dashboardSummaryWidgetTodayOptions,
 	dashboardSummaryWidgetPeriodOptions,
 	dashboardSummaryWidget28DailyOptions,
+	dashboardTopEarningPageWidgetData,
+	dashboardTopEarningPageWidgetOptions,
 } from '../assets/js/modules/adsense/datastore/__fixtures__';
 
 generateReportBasedWidgetStories( {
@@ -47,4 +51,21 @@ generateReportBasedWidgetStories( {
 	],
 	component: DashboardSummaryWidget,
 	wrapWidget: false,
+} );
+
+generateReportBasedWidgetStories( {
+	moduleSlug: [ 'adsense', 'analytics' ],
+	datastore: ANALYTICS_STORE,
+	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
+	data: dashboardTopEarningPageWidgetData,
+	options: dashboardTopEarningPageWidgetOptions,
+	component: DashboardTopEarningPagesWidget,
+	wrapWidget: false,
+	additionalVariants: {
+		'AdSense Not Linked': { data: dashboardTopEarningPageWidgetData, options: dashboardTopEarningPageWidgetOptions },
+	},
+	additionalVariantCallbacks: {
+		Loaded: ( dispatch ) => dispatch( ANALYTICS_STORE ).setAdsenseLinked( true ),
+		'Data Unavailable': ( dispatch ) => dispatch( ANALYTICS_STORE ).setAdsenseLinked( true ),
+	},
 } );

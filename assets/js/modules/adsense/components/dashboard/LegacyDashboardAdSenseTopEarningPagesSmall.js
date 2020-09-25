@@ -1,5 +1,5 @@
 /**
- * DashboardAdSenseTopEarningPagesSmall component.
+ * LegacyDashboardAdSenseTopEarningPagesSmall component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -22,10 +22,10 @@
 import { withFilters } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 
-class DashboardAdSenseTopEarningPagesSmall extends Component {
+class LegacyDashboardAdSenseTopEarningPagesSmall extends Component {
 	render() {
 		return null;
 	}
 }
 
-export default withFilters( 'googlesitekit.AnalyticsAdSenseTopPagesTableSmall' )( DashboardAdSenseTopEarningPagesSmall );
+export default withFilters( 'googlesitekit.AnalyticsAdSenseTopPagesTableSmall' )( LegacyDashboardAdSenseTopEarningPagesSmall );
