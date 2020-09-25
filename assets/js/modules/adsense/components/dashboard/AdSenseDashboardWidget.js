@@ -26,7 +26,7 @@ import classnames from 'classnames';
  */
 import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -119,6 +119,24 @@ class AdSenseDashboardWidget extends Component {
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
 
+		let moduleStatus;
+		let moduleStatusText;
+		if ( ! error && modulesData.adsense.setupComplete ) {
+			moduleStatus = 'connected';
+			moduleStatusText = sprintf(
+				/* translators: %s: module name. */
+				__( '%s is connected', 'google-site-kit' ),
+				_x( 'AdSense', 'Service name', 'google-site-kit' )
+			);
+		} else {
+			moduleStatus = 'not-connected';
+			moduleStatusText = sprintf(
+				/* translators: %s: module name. */
+				__( '%s is not connected', 'google-site-kit' ),
+				_x( 'AdSense', 'Service name', 'google-site-kit' )
+			);
+		}
+
 		return (
 			<Fragment>
 				<Header />
@@ -133,11 +151,15 @@ class AdSenseDashboardWidget extends Component {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-								{
-									( ! error && modulesData.adsense.setupComplete )
-										? <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } />
-										: <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
-								}
+								<PageHeader
+									title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
+									icon
+									iconWidth="30"
+									iconHeight="26"
+									iconID="adsense"
+									status={ moduleStatus }
+									statusText={ moduleStatusText }
+								/>
 								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

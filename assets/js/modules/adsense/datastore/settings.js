@@ -79,7 +79,7 @@ const COMPLETE_SITE_SETUP = 'COMPLETE_SITE_SETUP';
 // certain parts of the AdSense setup flow.
 const RECEIVE_ORIGINAL_ACCOUNT_STATUS = 'RECEIVE_ORIGINAL_ACCOUNT_STATUS';
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	isDoingSubmitChanges: false,
 	originalAccountStatus: undefined,
 };
@@ -284,11 +284,11 @@ const baseReducer = ( state, { type, payload } ) => {
 				};
 			}
 
-			return { ...state };
+			return state;
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -397,7 +397,7 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchSaveUseSnippetStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		controls: baseControls,
 		reducer: baseReducer,
@@ -406,7 +406,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;
