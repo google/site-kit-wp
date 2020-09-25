@@ -15,7 +15,7 @@ trait Method_Proxy_Trait {
 	/**
 	 * Gets a proxy function for a class method.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @param string $method Method name.
 	 * @return callable A proxy function.

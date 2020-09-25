@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.5
 Requires PHP:      5.6
-Stable tag:        1.16.0
+Stable tag:        1.17.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -87,6 +87,32 @@ We plan to expand the plugin’s capabilities and integrations in the future; we
 If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/master/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
 
 == Changelog ==
+
+= 1.17.0 =
+
+**Enhanced**
+
+* Simplify module registration in JavaScript and only allow one registration call per module. See [#2024](https://github.com/google/site-kit-wp/issues/2024).
+* Improve accuracy of AdSense account status detection based on specific errors. See [#1919](https://github.com/google/site-kit-wp/issues/1919).
+* Migrate AdSense Top Earning Pages widget to new Widget API. See [#1902](https://github.com/google/site-kit-wp/issues/1902).
+* Migrate AdSense Summary widget to new Widget API. See [#1901](https://github.com/google/site-kit-wp/issues/1901).
+* Migrate Analytics Popular Pages widget to new Widget API. See [#1900](https://github.com/google/site-kit-wp/issues/1900).
+* Migrate Search Console Top Keywords widget to new Widget API. See [#1899](https://github.com/google/site-kit-wp/issues/1899).
+* Migrate Analytics Unique Visitors, Bounce Rate, and Goals widgets to new Widget API. See [#1898](https://github.com/google/site-kit-wp/issues/1898).
+* Store the site URL that is connected to the Site Kit authentication service and prompt users to reconnect if the site URL has changed, allowing to update the registered configuration and fix future connection issues. See [#1857](https://github.com/google/site-kit-wp/issues/1857).
+* Show a button to refresh PageSpeed Insights report data in the widget. Props amirsadeghian. See [#87](https://github.com/google/site-kit-wp/issues/87).
+
+**Fixed**
+
+* Fix initial datastore state being registered incorrectly to ensure consistent initial state. See [#2083](https://github.com/google/site-kit-wp/issues/2083).
+* Improve performance of datastores by avoiding unnecessary datastore updates. See [#2052](https://github.com/google/site-kit-wp/issues/2052).
+* Fix various translation strings to no longer violate localization best practices. See [#2049](https://github.com/google/site-kit-wp/issues/2049).
+* Fix console error when unfocusing and refocusing tab in AdSense setup flow. See [#2033](https://github.com/google/site-kit-wp/issues/2033).
+* Fix Search Console deep links for specific keywords in keywords widget to point to the correct location. See [#2019](https://github.com/google/site-kit-wp/issues/2019).
+* Fix tooltips for Bounce Rate and Session Duration in Analytics graph to format values correctly. See [#2008](https://github.com/google/site-kit-wp/issues/2008).
+* Provide site URL as fallback default value when creating a new Analytics account if site title is empty. See [#1960](https://github.com/google/site-kit-wp/issues/1960).
+* Avoid unnecessarily excessive requests to constantly check whether the active Analytics property and AdSense client are connected. See [#1858](https://github.com/google/site-kit-wp/issues/1858).
+* Only select Analytics default view for the active property automatically if it still exists. See [#1691](https://github.com/google/site-kit-wp/issues/1691).
 
 = 1.16.0 =
 
