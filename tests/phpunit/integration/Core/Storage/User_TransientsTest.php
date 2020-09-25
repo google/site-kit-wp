@@ -30,7 +30,7 @@ class User_TransientsTest extends TestCase {
 	protected $context;
 
 	/**
-	 * @var string
+	 * @var bool
 	 */
 	protected $old_wp_using_ext_object_cache;
 
