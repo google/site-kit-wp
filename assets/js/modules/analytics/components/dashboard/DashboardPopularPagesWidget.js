@@ -115,18 +115,18 @@ function DashboardPopularPagesWidget() {
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
-	const sourceLink = <SourceLink
-		className="googlesitekit-data-block__source"
-		name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-		href={ analyticsMainURL }
-		external
-	/>;
-
 	return (
 		<Widget
 			slug="analyticsPopularPages"
 			className="googlesitekit-widget--no-padding"
-			footer={ () => sourceLink }
+			footer={ () => (
+				<SourceLink
+					className="googlesitekit-data-block__source"
+					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					href={ analyticsMainURL }
+					external
+				/>
+			) }
 		>
 			<TableOverflowContainer>
 				{ dataTable }

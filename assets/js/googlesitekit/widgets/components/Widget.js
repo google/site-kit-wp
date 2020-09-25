@@ -31,17 +31,19 @@ const Widget = ( {
 } ) => {
 	return (
 		<div className={ classnames( 'googlesitekit-widget', `googlesitekit-widget--${ slug }`, className ) }>
-			{ Header &&
-			<div className="googlesitekit-widget__header">
-				<Header />
-			</div> }
+			{ Header && (
+				<div className="googlesitekit-widget__header">
+					<Header />
+				</div>
+			) }
 			<div className="googlesitekit-widget__body">
 				{ children }
 			</div>
-			{ Footer &&
-			<div className="googlesitekit-widget__footer">
-				<Footer />
-			</div> }
+			{ Footer && (
+				<div className="googlesitekit-widget__footer">
+					<Footer />
+				</div>
+			) }
 		</div>
 	);
 };

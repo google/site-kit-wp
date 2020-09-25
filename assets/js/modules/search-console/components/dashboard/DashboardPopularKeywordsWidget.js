@@ -129,18 +129,18 @@ function DashboardPopularKeywordsWidget() {
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
-	const sourceLink = <SourceLink
-		className="googlesitekit-data-block__source"
-		name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-		href={ searchConsolePropertyMainURL }
-		external
-	/>;
-
 	return (
 		<Widget
 			slug="searchConsolePopularKeywords"
 			className="googlesitekit-widget--no-padding"
-			footer={ () => sourceLink }
+			footer={ () => (
+				<SourceLink
+					className="googlesitekit-data-block__source"
+					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+					href={ searchConsolePropertyMainURL }
+					external
+				/>
+			) }
 		>
 			<TableOverflowContainer>
 				{ dataTable }
