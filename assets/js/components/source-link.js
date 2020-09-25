@@ -25,8 +25,8 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { Component, createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -42,18 +42,21 @@ class SourceLink extends Component {
 				'googlesitekit-source-link',
 				className
 			) }>
-				{ [
-					__( 'Source:', 'google-site-kit' ),
-					' ',
-					<Link
-						key="link"
-						href={ href }
-						external={ external }
-						inherit
-					>
-						{ name }
-					</Link>,
-				] }
+				{ createInterpolateElement(
+					sprintf(
+						/* translators: %s: source link */
+						__( 'Source: %s', 'google-site-kit' ),
+						`<a>${ name }</a>`
+					),
+					{
+						a: <Link
+							key="link"
+							href={ href }
+							external={ external }
+							inherit
+						/>,
+					}
+				) }
 			</div>
 		);
 	}

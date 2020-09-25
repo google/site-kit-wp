@@ -148,6 +148,10 @@
 			}
 		}
 
+		&--single-item {
+			flex-direction: row-reverse;
+		}
+
 		&--last {
 
 			padding: 8px $grid-gap-phone 12px $grid-gap-phone;
