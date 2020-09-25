@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { node, func, string, boolean } from 'prop-types';
+import { node, func, string, bool } from 'prop-types';
 
 const Widget = ( {
 	children,
@@ -58,12 +58,13 @@ const Widget = ( {
 
 Widget.defaultProps = {
 	children: undefined,
+	noPadding: false,
 };
 
 Widget.propTypes = {
 	children: node,
 	slug: string.isRequired,
-	noPadding: boolean,
+	noPadding: bool,
 	header: func,
 	footer: func,
 };
