@@ -32,18 +32,24 @@ import { createBuildAndReceivers } from '../../assets/js/modules/tagmanager/data
  *
  * @param {Object}      args                Story arguments.
  * @param {WPComponent} args.Component      Story component.
- * @param {boolean}     args.permission     Whether the current user has tag permissions.
  * @param {boolean}     args.useExistingTag Whether to use an existing tag or not.
+ * @param {boolean}     args.gaPermission   Whether the current user has GA tag permissions.
+ * @param {boolean}     args.gtmPermission  Whether the current user has GTM tag permissions.
  * @return {Function} Story callback function.
  */
-export function generateGtmPropertyStory( { Component, permission, useExistingTag = false } ) {
+export function generateGtmPropertyStory( {
+	Component,
+	useExistingTag = false,
+	gaPermission = false,
+	gtmPermission = false,
+} ) {
 	return () => {
 		const setupRegistry = ( registry ) => {
-			const data = {
-				accountID: '123456789',
-				webPropertyID: 'UA-123456789-1',
-				ampPropertyID: 'UA-123456789-1',
-			};
+			const existingTagAccountID = '151753095';
+			const existingTagPropertyID = 'UA-151753095-1';
+
+			const gtmAccountID = '152925174';
+			const gtmPropertyID = 'UA-152925174-1';
 
 			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 
@@ -69,23 +75,44 @@ export function generateGtmPropertyStory( { Component, permission, useExistingTa
 
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				accountID: properties[ 0 ].accountId,
-				propertyID: profiles[ 0 ].webPropertyId,
+
+			[ gtmAccountID, existingTagAccountID ].forEach( ( accountID ) => {
+				const accountProperties = properties.filter( ( { accountId } ) => accountId === accountID );
+
+				registry.dispatch( STORE_NAME ).receiveGetProperties(
+					accountProperties,
+					{ accountID },
+				);
+
+				accountProperties.forEach( ( { id: propertyID } ) => {
+					registry.dispatch( STORE_NAME ).receiveGetProfiles(
+						profiles.filter( ( { webPropertyId } ) => webPropertyId === propertyID ),
+						{ accountID, propertyID }
+					);
+				} );
 			} );
 
 			if ( useExistingTag ) {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( data.webPropertyID );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTagPropertyID );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+					accountID: existingTagAccountID,
+					permission: gaPermission,
+				}, { propertyID: existingTagPropertyID } );
+			} else {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			}
 
 			registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-				accountID: data.accountID,
-				permission,
-			}, { propertyID: data.webPropertyID } );
+				accountID: gtmAccountID,
+				permission: gtmPermission,
+			}, { propertyID: gtmPropertyID } );
 
 			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
-			buildAndReceiveWebAndAMP( data );
+			buildAndReceiveWebAndAMP( {
+				accountID: gtmAccountID,
+				webPropertyID: gtmPropertyID,
+				ampPropertyID: gtmPropertyID,
+			} );
 		};
 
 		return <Component callback={ setupRegistry } />;

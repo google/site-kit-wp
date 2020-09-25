@@ -59,11 +59,10 @@ function Setup( props ) {
 	);
 }
 
-function generateGtmPropertyStoryCallback( permission, useExistingTag = false ) {
+function generateGtmPropertyStoryCallback( args ) {
 	return generateGtmPropertyStory( {
+		...args,
 		Component: Setup,
-		permission,
-		useExistingTag,
 	} );
 }
 
@@ -282,8 +281,10 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'No Tag, GTM property w/ access', generateGtmPropertyStoryCallback( true ) )
-	.add( 'No Tag, GTM property w/o access', generateGtmPropertyStoryCallback( false ) )
-	.add( 'Existing Tag, GTM property w/ access', generateGtmPropertyStoryCallback( true, true ) )
-	.add( 'Existing Tag, GTM property w/o access', generateGtmPropertyStoryCallback( false, true ) )
+	.add( 'No Tag, GTM property w/ access', generateGtmPropertyStoryCallback( { useExistingTag: false, gtmPermission: true } ) )
+	.add( 'No Tag, GTM property w/o access', generateGtmPropertyStoryCallback( { useExistingTag: false, gtmPermission: false } ) )
+	.add( 'Existing Tag w/ access, GTM property w/ access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: true, gaPermission: true } ) )
+	.add( 'Existing Tag w/ access, GTM property w/o access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: false, gaPermission: true } ) )
+	.add( 'Existing Tag w/o access, GTM property w/ access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: true, gaPermission: false } ) )
+	.add( 'Existing Tag w/o access, GTM property w/o access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: false, gaPermission: false } ) )
 ;

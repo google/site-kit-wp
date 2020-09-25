@@ -46,15 +46,12 @@ const defaultSettings = {
 
 const Settings = createLegacySettingsWrapper( 'analytics', AnalyticsSettings );
 
-function EditingSettingsForCompleteModule( { callback } ) {
-	return <Settings isOpen={ true } isEditing={ true } callback={ callback } />;
-}
-
-function generateGtmPropertyStoryCallback( permission, useExistingTag = false ) {
+function generateGtmPropertyStoryCallback( args ) {
 	return generateGtmPropertyStory( {
-		Component: EditingSettingsForCompleteModule,
-		permission,
-		useExistingTag,
+		...args,
+		Component( { callback } ) {
+			return <Settings isOpen={ true } isEditing={ true } callback={ callback } />;
+		},
 	} );
 }
 
@@ -199,8 +196,10 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
-	.add( 'No Tag, GTM property w/ access', generateGtmPropertyStoryCallback( true ) )
-	.add( 'No Tag, GTM property w/o access', generateGtmPropertyStoryCallback( false ) )
-	.add( 'Existing Tag, GTM property w/ access', generateGtmPropertyStoryCallback( true, true ) )
-	.add( 'Existing Tag, GTM property w/o access', generateGtmPropertyStoryCallback( false, true ) )
+	.add( 'No Tag, GTM property w/ access', generateGtmPropertyStoryCallback( { useExistingTag: false, gtmPermission: true } ) )
+	.add( 'No Tag, GTM property w/o access', generateGtmPropertyStoryCallback( { useExistingTag: false, gtmPermission: false } ) )
+	.add( 'Existing Tag w/ access, GTM property w/ access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: true, gaPermission: true } ) )
+	.add( 'Existing Tag w/ access, GTM property w/o access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: false, gaPermission: true } ) )
+	.add( 'Existing Tag w/o access, GTM property w/ access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: true, gaPermission: false } ) )
+	.add( 'Existing Tag w/o access, GTM property w/o access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: false, gaPermission: false } ) )
 ;
