@@ -40,7 +40,7 @@ function ErrorNotice( { moduleSlug, shouldDisplayError, error } ) {
 	}
 
 	let message = error.message;
-	if ( isInsufficientPermissionsError( error ) ) {
+	if ( isInsufficientPermissionsError( error ) && undefined !== module ) {
 		message = getInsufficientPermissionsErrorDescription( message, module );
 	}
 
@@ -48,20 +48,17 @@ function ErrorNotice( { moduleSlug, shouldDisplayError, error } ) {
 }
 
 ErrorNotice.propTypes = {
-	moduleSlug: PropTypes.string.isRequired,
+	moduleSlug: PropTypes.string,
 	shouldDisplayError: PropTypes.func,
 	error: PropTypes.shape( {
-		code: PropTypes.number,
 		message: PropTypes.string,
-		data: PropTypes.shape( {
-			reason: PropTypes.string,
-			status: PropTypes.number,
-		} ),
 	} ),
 };
 
 ErrorNotice.defaultProps = {
+	moduleSlug: '',
 	shouldDisplayError: () => true,
+	error: {},
 };
 
 export default ErrorNotice;

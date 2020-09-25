@@ -32,25 +32,35 @@ const { useSelect } = Data;
 function StoreErrorNotices( { moduleSlug, storeName, shouldDisplayError } ) {
 	const errors = useSelect( ( select ) => select( storeName ).getErrors() );
 
-	errors.map( ( error, key ) => {
-		// Do not display if no error, or if the error is for missing scopes.
-		if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
-			return null;
-		}
+	if ( Array.isArray( errors ) && errors.length > 0 ) {
+		const errorNotices = errors.map( ( error, key ) => {
+			// Do not display if no error, or if the error is for missing scopes.
+			if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
+				return null;
+			}
 
-		return <ErrorNotice moduleSlug={ moduleSlug } error={ error } shouldDisplayError={ shouldDisplayError } key={ key } />;
-	} );
+			return <ErrorNotice
+				moduleSlug={ moduleSlug }
+				error={ error }
+				shouldDisplayError={ shouldDisplayError }
+				key={ key }
+			/>;
+		} );
+
+		return errorNotices;
+	}
 
 	return null;
 }
 
 StoreErrorNotices.propTypes = {
-	moduleSlug: PropTypes.string.isRequired,
+	moduleSlug: PropTypes.string,
 	storeName: PropTypes.string.isRequired,
 	shouldDisplayError: PropTypes.func,
 };
 
 StoreErrorNotices.defaultProps = {
+	moduleSlug: '',
 	shouldDisplayError: () => true,
 };
 

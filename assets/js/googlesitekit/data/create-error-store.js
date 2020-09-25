@@ -30,7 +30,7 @@ const CLEAR_ERROR = 'CLEAR_ERROR';
  */
 import { stringifyObject } from '../../util';
 
-function generateErrorKey( baseName, args ) {
+export function generateErrorKey( baseName, args ) {
 	let key = baseName;
 	if ( args && Array.isArray( args ) ) {
 		const stringifiedArgs = args.map( ( item ) => {
@@ -195,33 +195,25 @@ export function createErrorStore() {
 		 * @since n.e.x.t
 		 *
 		 * @param {Object} state Data store's state.
-		 * @return {Object} Error object if exists, otherwise undefined.
+		 * @return {Array} Unique set of errors
 		 */
 		getErrors( state ) {
 			const { error, errors } = state;
-			let combinedErrors = [];
 
+			const errorsSet = new Set();
 			if ( undefined !== errors ) {
-				const errorValues = Object.values( errors );
-				if ( Array.isArray( errorValues ) && errorValues.length > 0 ) {
-					const errorsArray = errorValues.map( ( singleError ) => [ singleError.code, singleError ] );
-					const errorsMap = new Map( errorsArray );
+				const errorsValues = Object.values( errors );
 
-					combinedErrors = [ ...errorsMap.values() ];
+				if ( Array.isArray( errorsValues ) && errorsValues.length > 0 ) {
+					errorsValues.map( ( singleError ) => errorsSet.add( singleError ) );
 				}
 			}
 
 			if ( undefined !== error ) {
-				const errorArray = Object.values( error );
-				if ( errorArray.length > 0 && 'code' in error && 'message' in error ) {
-					const errorIndex = combinedErrors.findIndex( ( err ) => err.code === error.code && err.message === error.message );
-					if ( errorIndex === -1 ) {
-						combinedErrors.push( error );
-					}
-				}
+				errorsSet.add( error );
 			}
 
-			return combinedErrors;
+			return Array.from( errorsSet );
 		},
 
 		/**

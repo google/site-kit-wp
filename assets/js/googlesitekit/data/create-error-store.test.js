@@ -24,41 +24,9 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import {
-	unsubscribeFromAll,
-} from '../../../../tests/js/utils';
-import { createErrorStore } from './create-error-store';
+import { createErrorStore, generateErrorKey } from './create-error-store';
 
 const STORE_NAME = 'test/some-data';
-const ERROR_SAMPLE = {
-	error: {
-		code: 404,
-		message: 'Not found',
-		data: {
-			status: 404,
-			reason: 'not-found',
-		},
-	},
-	baseName: 'getMock',
-	args: {
-		foo: 'bar',
-	},
-};
-const ERROR_SAMPLE_2 = {
-	error: {
-		code: 403,
-		message: 'Forbidden',
-		data: {
-			status: 403,
-			reason: 'forbidden',
-		},
-	},
-	baseName: 'getAccess',
-	args: {
-		foo: 'bar',
-	},
-};
 
 describe( 'createErrorStore store', () => {
 	let registry;
@@ -66,10 +34,38 @@ describe( 'createErrorStore store', () => {
 	let select;
 	let store;
 	let storeDefinition;
-
-	beforeAll( () => {
-		API.setUsingCache( false );
-	} );
+	const errorNotFound = {
+		error: {
+			code: 404,
+			message: 'Not found',
+			data: {
+				status: 404,
+				reason: 'not-found',
+			},
+		},
+		baseName: 'getMock',
+		args: [
+			{
+				foo: 'bar',
+			},
+		],
+	};
+	const errorForbidden = {
+		error: {
+			code: 403,
+			message: 'Forbidden',
+			data: {
+				status: 403,
+				reason: 'forbidden',
+			},
+		},
+		baseName: 'getAccess',
+		args: [
+			{
+				foo: 'bar',
+			},
+		],
+	};
 
 	beforeEach( () => {
 		registry = createRegistry();
@@ -81,14 +77,6 @@ describe( 'createErrorStore store', () => {
 		select = registry.select( STORE_NAME );
 	} );
 
-	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
-
 	describe( 'actions', () => {
 		describe( 'receiveError', () => {
 			it( 'requires the error param', () => {
@@ -97,83 +85,110 @@ describe( 'createErrorStore store', () => {
 				} ).toThrow( 'error is required.' );
 			} );
 
-			it( 'receives and sets value', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
-				expect( store.getState().errors[ ERROR_SAMPLE.baseName ] ).toMatchObject( ERROR_SAMPLE.error );
+			it( 'receives and sets value for an error with baseName only', () => {
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName );
+				expect( store.getState().errors[ errorNotFound.baseName ] ).toEqual( errorNotFound.error );
+			} );
+
+			it( 'receives and sets value for an error with baseName and args', () => {
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
+				const errorKey = generateErrorKey( errorNotFound.baseName, errorNotFound.args );
+
+				expect( store.getState().errors ).toHaveProperty( errorKey );
 			} );
 		} );
 
 		describe( 'clearError', () => {
-			it( 'removes an error', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
-				dispatch.receiveError( ERROR_SAMPLE_2.error, ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
-				dispatch.clearError( ERROR_SAMPLE.baseName );
+			it( 'does not clear an error if baseName and args are missing', () => {
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
+				dispatch.clearError();
 
-				const errorObj = {};
-				errorObj[ ERROR_SAMPLE_2.baseName ] = ERROR_SAMPLE_2.error;
-				expect( store.getState().errors ).toMatchObject( errorObj );
+				const errorObj = {
+					[ generateErrorKey( errorForbidden.baseName, errorForbidden.args ) ]: errorForbidden.error,
+				};
+				expect( store.getState().errors ).toEqual( errorObj );
+			} );
+
+			it( 'does not clear an error if args is missing when error has been created with args', () => {
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
+				const errorsState = store.getState().errors;
+				dispatch.clearError( errorForbidden.baseName );
+
+				expect( store.getState().errors ).toEqual( errorsState );
+			} );
+
+			it( 'removes an error', () => {
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
+				dispatch.clearError( errorNotFound.baseName, errorNotFound.args );
+
+				const errorObj = {
+					[ generateErrorKey( errorForbidden.baseName, errorForbidden.args ) ]: errorForbidden.error,
+				};
+				expect( store.getState().errors ).toEqual( errorObj );
 			} );
 		} );
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getErrorForSelector', () => {
-			it( 'requires a selector param', () => {
+		describe.each( [ 'getErrorForSelector', 'getErrorForAction' ] )( '%s', ( selectorName ) => {
+			const baseNameParam = selectorName === 'getErrorForSelector' ? 'selectorName' : 'actionName';
+
+			it( `requires a ${ baseNameParam } param`, () => {
 				expect( () => {
-					select.getErrorForSelector();
-				} ).toThrow( 'selectorName is required.' );
+					select[ selectorName ]();
+				} ).toThrow( `${ baseNameParam } is required.` );
 			} );
 
 			it( 'returns undefined when error does not exist', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
-				const selectedError = select.getErrorForSelector( ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName );
+				const selectedError = select[ selectorName ]( 'nonExistentBaseName' );
 				expect( selectedError ).toBeUndefined();
 			} );
 
-			it( 'returns the required error', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
-				dispatch.receiveError( ERROR_SAMPLE_2.error, ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
-				const selectedError = select.getErrorForSelector( ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
+			it( 'returns the error for the given selector name with empty args', () => {
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, [] );
+				const selectedError = select[ selectorName ]( errorForbidden.baseName );
 
-				expect( selectedError ).toMatchObject( ERROR_SAMPLE_2.error );
-			} );
-		} );
-
-		describe( 'getErrorForAction', () => {
-			it( 'requires a selector param', () => {
-				expect( () => {
-					select.getErrorForAction();
-				} ).toThrow( 'actionName is required.' );
+				expect( selectedError ).toEqual( errorForbidden.error );
 			} );
 
-			it( 'returns undefined when error does not exist', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
-				const selectedError = select.getErrorForAction( ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
-				expect( selectedError ).toBeUndefined();
-			} );
+			it( 'returns the error for the given selector name with args', () => {
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
+				const selectedError = select[ selectorName ]( errorForbidden.baseName, errorForbidden.args );
 
-			it( 'returns the specified error', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
-				dispatch.receiveError( ERROR_SAMPLE_2.error, ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
-				const selectedError = select.getErrorForAction( ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
-
-				expect( selectedError ).toMatchObject( ERROR_SAMPLE_2.error );
+				expect( selectedError ).toEqual( errorForbidden.error );
 			} );
 		} );
 
 		describe( 'getError', () => {
-			it( 'requires a baseName param', () => {
+			it( 'requires a baseName and args param', () => {
 				select.getError();
 
 				expect( store.getState().error ).toBeUndefined();
 			} );
 
-			it( 'returns the correct error', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
-				dispatch.receiveError( ERROR_SAMPLE_2.error, ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
+			it( 'requires an baseName param', () => {
+				expect( () => {
+					select.getError( false, [ { foo: 'bar' } ] );
+				} ).toThrow( 'baseName is required.' );
+			} );
 
-				const error = select.getError( ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
-				expect( error ).toMatchObject( ERROR_SAMPLE_2.error );
+			it( 'requires an args param', () => {
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
+				select.getError( 'nonExistentBaseName' );
+
+				expect( store.getState().error ).toBeUndefined();
+			} );
+
+			it( 'returns the appropriate error with baseName and args', () => {
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
+
+				const error = select.getError( errorForbidden.baseName, errorForbidden.args );
+				expect( error ).toEqual( errorForbidden.error );
 			} );
 		} );
 
@@ -184,37 +199,39 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'checks if we have only 1 error', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
 				const errors = select.getErrors();
-				expect( errors ).toHaveLength( 1 );
+
+				expect( errors ).toEqual( [ errorNotFound.error ] );
 			} );
 
 			it( 'checks if we have more than 1 error', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
-				dispatch.receiveError( ERROR_SAMPLE_2.error, ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
 				const errors = select.getErrors();
-				expect( errors ).toHaveLength( 2 );
+				expect( errors ).toEqual( expect.arrayContaining( [ errorNotFound.error, errorForbidden.error ] ) );
 			} );
 
 			it( 'checks if duplicate errors are removed', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
-				dispatch.receiveError( ERROR_SAMPLE_2.error, ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
-				dispatch.receiveError( ERROR_SAMPLE_2.error, ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
-				dispatch.receiveError( ERROR_SAMPLE_2.error, ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, [ { foo: 'bar' } ] );
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, [ { waldo: 'fred' } ] );
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, [ { quux: 'quuz' } ] );
 				const errors = select.getErrors();
-				expect( errors ).toHaveLength( 2 );
+
+				expect( errors ).toEqual( [ errorNotFound.error, errorForbidden.error ] );
 			} );
 		} );
 
 		describe( 'hasErrors', () => {
 			it( 'returns false if there are no errors', () => {
-				expect( select.hasErrors() ).toBeFalsy();
+				expect( select.hasErrors() ).toBe( false );
 			} );
 
-			it( 'returns true if there are errors', () => {
-				dispatch.receiveError( ERROR_SAMPLE.error, ERROR_SAMPLE.baseName, ERROR_SAMPLE.args );
-				dispatch.receiveError( ERROR_SAMPLE_2.error, ERROR_SAMPLE_2.baseName, ERROR_SAMPLE_2.args );
-				expect( select.hasErrors() ).toBeTruthy();
+			it( 'returns true if there are any errors', () => {
+				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
+				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
+				expect( select.hasErrors() ).toBe( true );
 			} );
 		} );
 	} );
