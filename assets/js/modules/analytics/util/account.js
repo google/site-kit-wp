@@ -35,7 +35,7 @@ import { countryCodesByTimezone } from './countries-timezones';
 /**
  * Gets default values for a new account.
  *
- * @since n.e.x.t
+ * @since 1.17.0
  *
  * @param {Object} args              Site information.
  * @param {string} args.siteName     Site name.

@@ -140,7 +140,7 @@ final class Authentication {
 	/**
 	 * Connected_Proxy_URL instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 * @var Connected_Proxy_URL
 	 */
 	protected $connected_proxy_url;
@@ -148,7 +148,7 @@ final class Authentication {
 	/**
 	 * Disconnected_Reason instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 * @var Disconnected_Reason
 	 */
 	protected $disconnected_reason;
@@ -785,7 +785,7 @@ final class Authentication {
 	/**
 	 * Gets reconnect notice.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @return Notice Notice object.
 	 */
@@ -1010,7 +1010,7 @@ final class Authentication {
 	/**
 	 * Sets the current connected proxy URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 */
 	private function set_connected_proxy_url() {
 		$this->connected_proxy_url->set( home_url() );
@@ -1020,7 +1020,7 @@ final class Authentication {
 	 * Checks whether the current site URL has changed or not. If the URL has been changed,
 	 * it disconnects the Site Kit and sets the disconnected reason to "connected_url_mismatch".
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 */
 	private function check_connected_proxy_url() {
 		if ( $this->connected_proxy_url->matches_url( home_url() ) ) {
@@ -1055,7 +1055,7 @@ final class Authentication {
 	/**
 	 * Handles user connection action and redirects to the proxy connection page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 */
 	private function handle_sync_site_fields() {
 		// If this query parameter is sent, the request comes from the authentication proxy as part of an ongoing setup flow, so there is no need to sync site fields.
@@ -1080,7 +1080,7 @@ final class Authentication {
 	/**
 	 * Gets the publicly visible URL to set up the plugin with the authentication proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @return string An URL for googlesitekit_proxy_connect_user action protected with a nonce.
 	 */

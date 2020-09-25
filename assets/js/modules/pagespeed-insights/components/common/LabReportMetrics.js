@@ -25,18 +25,44 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ReportMetric from './ReportMetric';
 import ReportDetailsLink from './ReportDetailsLink';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../../util';
+import Link from '../../../../components/link';
 import ErrorText from '../../../../components/error-text';
+import {
+	STORE_NAME,
+	STRATEGY_MOBILE,
+	STRATEGY_DESKTOP,
+} from '../../datastore/constants';
+
+const { useSelect, useDispatch } = Data;
 
 export default function LabReportMetrics( { data, error } ) {
+	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
+
+	const { invalidateResolution } = useDispatch( STORE_NAME );
+	const updateReport = useCallback( async ( event ) => {
+		event.preventDefault();
+
+		// Invalidate the PageSpeed API request caches.
+		await API.invalidateCache( 'modules', 'pagespeed-insights', 'pagespeed' );
+
+		// Invalidate the cached resolver.
+		invalidateResolution( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] );
+		invalidateResolution( 'getReport', [ referenceURL, STRATEGY_MOBILE ] );
+	}, [ invalidateResolution, referenceURL ] );
+
 	const totalBlockingTime = data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
 	const largestContentfulPaint = data?.lighthouseResult?.audits?.[ 'largest-contentful-paint' ];
 	const cumulativeLayoutShift = data?.lighthouseResult?.audits?.[ 'cumulative-layout-shift' ];
@@ -102,6 +128,9 @@ export default function LabReportMetrics( { data, error } ) {
 				</tbody>
 			</table>
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--last">
+				<Link onClick={ updateReport }>
+					{ __( 'Run test again', 'google-site-kit' ) }
+				</Link>
 				<ReportDetailsLink />
 			</div>
 		</div>
