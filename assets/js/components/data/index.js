@@ -223,13 +223,14 @@ const dataAPI = {
 	handleWPError( { method, datapoint, type, identifier, error } ) {
 		// eslint-disable-next-line no-console
 		console.warn( 'WP Error in data response', error );
+
+		trackAPIError( { method, datapoint, type, identifier, error } );
+
 		const { data } = error;
 
 		if ( ! data || ! data.reason ) {
 			return;
 		}
-
-		trackAPIError( { method, datapoint, type, identifier, error } );
 
 		let addedNoticeCount = 0;
 
