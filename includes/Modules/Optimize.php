@@ -295,8 +295,6 @@ final class Optimize extends Module
 			'order'       => 5,
 			'homepage'    => __( 'https://optimize.google.com/optimize/home/', 'google-site-kit' ),
 			'learn_more'  => __( 'https://marketingplatform.google.com/about/optimize/', 'google-site-kit' ),
-			'group'       => __( 'Marketing Platform', 'google-site-kit' ),
-			'tags'        => array( 'marketing' ),
 			'depends_on'  => array( 'analytics' ),
 		);
 	}

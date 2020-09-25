@@ -186,7 +186,6 @@ final class PageSpeed_Insights extends Module
 			'order'       => 4,
 			'homepage'    => __( 'https://developers.google.com/speed/pagespeed/insights/', 'google-site-kit' ),
 			'learn_more'  => __( 'https://developers.google.com/speed/docs/insights/v5/about', 'google-site-kit' ),
-			'group'       => __( 'Additional Google Services', 'google-site-kit' ),
 		);
 	}
 
