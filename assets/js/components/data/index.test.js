@@ -20,42 +20,36 @@
  * Internal dependencies
  */
 import dataAPI from './index';
-import * as Tracking from '../../util/tracking/';
 import { DATA_LAYER } from '../../util/tracking/constants';
-import createTracking from '../../util/tracking/createTracking';
 import * as DateRange from '../../util/date-range.js';
 import { getCacheKey } from './cache';
+import { enableTracking } from '../../util/tracking';
 
 describe( 'googlesitekit.dataAPI', () => {
-	let trackEventSpy;
-	let pushArgs;
-	const dataLayer = {
-		[ DATA_LAYER ]: {
-			push: ( ...args ) => pushArgs = [ ...pushArgs, ...args ],
-		},
-	};
-	const config = {
-		trackingEnabled: true,
-	};
-	const { trackEvent } = createTracking( config, dataLayer );
+	let dataLayerPushSpy;
+	const backupBaseData = global._googlesitekitBaseData;
+	const restoreGlobal = () => global._googlesitekitBaseData = backupBaseData;
+
+	beforeAll( () => {
+		global._googlesitekitBaseData = {
+			trackingEnabled: true,
+		};
+	} );
+
 	beforeEach( () => {
-		pushArgs = [];
-
-		// Replace the trackEvent implementation to use our version with the mocked dataLayer.
-		trackEventSpy = jest.spyOn( Tracking, 'trackEvent' ).mockImplementation( trackEvent );
+		enableTracking();
+		global[ DATA_LAYER ] = [];
+		dataLayerPushSpy = jest.spyOn( global[ DATA_LAYER ], 'push' );
 	} );
 
-	afterEach( async () => {
-		trackEventSpy.mockRestore();
-	} );
-
-	afterAll( () => jest.restoreAllMocks() );
+	afterAll( restoreGlobal );
 
 	const errorResponse = {
 		code: 'internal_server_error',
 		message: 'Internal server error',
 		data: { status: 500 },
 	};
+
 	describe( 'get', () => {
 		const get = dataAPI.get.bind( dataAPI );
 
@@ -66,13 +60,13 @@ describe( 'googlesitekit.dataAPI', () => {
 			);
 
 			try {
-				get( 'core', 'search-console', 'users' );
+				await get( 'core', 'search-console', 'users' );
 			} catch ( err ) {
-				expect( console ).toHaveErrored();
-				expect( pushArgs.length ).toEqual( 1 );
-				const [ event, eventName, eventData ] = pushArgs[ 0 ];
+				expect( console ).toHaveWarnedWith( 'WP Error in data response', err );
+				expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
+				const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 				expect( event ).toEqual( 'event' );
-				expect( eventName ).toEqual( 'GET:users/core/data/search-console' );
+				expect( eventName ).toEqual( 'GET:core/search-console/data/users' );
 				expect( eventData.event_category ).toEqual( 'api_error' );
 				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
 				expect( eventData.event_value ).toEqual( 500 );
@@ -90,13 +84,13 @@ describe( 'googlesitekit.dataAPI', () => {
 			);
 
 			try {
-				set( 'core', 'search-console', 'settings', 'data' );
+				await set( 'core', 'search-console', 'settings', {} );
 			} catch ( err ) {
-				expect( console ).toHaveErrored();
-				expect( pushArgs.length ).toEqual( 1 );
-				const [ event, eventName, eventData ] = pushArgs[ 0 ];
+				expect( console ).toHaveWarnedWith( 'WP Error in data response', err );
+				expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
+				const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 				expect( event ).toEqual( 'event' );
-				expect( eventName ).toEqual( 'POST:users/core/data/search-console' );
+				expect( eventName ).toEqual( 'POST:core/search-console/data/settings' );
 				expect( eventData.event_category ).toEqual( 'api_error' );
 				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
 				expect( eventData.event_value ).toEqual( 500 );
@@ -138,9 +132,9 @@ describe( 'googlesitekit.dataAPI', () => {
 				{ body: {}, status: 200 }
 			);
 
-			combinedGet( combinedRequest );
-			expect( console ).not.toHaveErrored();
-			expect( pushArgs.length ).toEqual( 0 );
+			await combinedGet( combinedRequest );
+
+			expect( dataLayerPushSpy ).not.toHaveBeenCalled();
 		} );
 
 		it( 'should call trackEvent for error in combinedGet with one error', async () => {
@@ -167,9 +161,10 @@ describe( 'googlesitekit.dataAPI', () => {
 			);
 
 			await combinedGet( combinedRequest );
-			expect( console ).not.toHaveErrored();
-			expect( pushArgs.length ).toEqual( 1 );
-			const [ event, eventName, eventData ] = pushArgs[ 0 ];
+
+			expect( console ).toHaveWarned();
+			expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
+			const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 			expect( event ).toEqual( 'event' );
 			expect( eventName ).toEqual( 'POST:core/search-console/data/users' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
@@ -208,17 +203,15 @@ describe( 'googlesitekit.dataAPI', () => {
 				response
 			);
 			await combinedGet( combinedRequest );
-			expect( console ).not.toHaveErrored();
-			//
-			//expect( console ).not.toHaveErrored();
-			expect( pushArgs.length ).toEqual( 2 );
-			let [ event, eventName, eventData ] = pushArgs[ 0 ];
+			expect( console ).toHaveWarned();
+			expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 2 );
+			let [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 			expect( event ).toEqual( 'event' );
 			expect( eventName ).toEqual( 'POST:core/search-console/data/users' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
 			expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error, reason: internal_server_error)' );
 			expect( eventData.event_value ).toEqual( 500 );
-			[ event, eventName, eventData ] = pushArgs[ 1 ];
+			[ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 1 ][ 0 ];
 			expect( event ).toEqual( 'event' );
 			expect( eventName ).toEqual( 'POST:core/analytics/data/query' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
