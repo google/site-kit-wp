@@ -25,6 +25,7 @@ import { STORE_NAME as MODULES_STORE } from '../../../../googlesitekit/modules/d
 import DashboardPageSpeedCTA from './DashboardPageSpeedCTA';
 import DashboardPageSpeed from './DashboardPageSpeed';
 const { useSelect } = Data;
+const { Widget } = Widgets.components;
 
 function DashboardPageSpeedWidget() {
 	const pagespeedInsightsModule = useSelect( ( select ) => select( MODULES_STORE ).getModule( 'pagespeed-insights' ) );
@@ -36,8 +37,6 @@ function DashboardPageSpeedWidget() {
 	if ( ! active || ! connected ) {
 		return <DashboardPageSpeedCTA />;
 	}
-
-	const { Widget } = Widgets.components;
 
 	// Pass class to omit regular widget padding and legacy widget class to use original styles.
 	return (
