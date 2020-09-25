@@ -130,4 +130,4 @@ storiesOf( 'Global/Widgets', module )
 				</QuarterWidgetInGrid>
 			) ) }
 		</CompositeWidgets>
-	) )
+	) );
