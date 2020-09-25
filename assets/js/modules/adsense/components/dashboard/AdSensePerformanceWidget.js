@@ -19,14 +19,13 @@
 /**
  * WordPress dependencies
  */
+import { useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { isUndefined } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
@@ -36,39 +35,26 @@ import DataBlock from '../../../../components/data-block.js';
 import PreviewBlock from '../../../../components/preview-block';
 import { isDataZeroAdSense } from '../../util';
 import withData from '../../../../components/higherorder/withdata';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME } from '../../datastore/constants';
 
-const { useSelect } = Data;
+function AdSensePerformanceWidget( { data, requestDataToState } ) {
+	const [ twentyEightDays, setTwentyEightDays ] = useState( false );
+	const [ prev28Days, setPrev28Days ] = useState( false );
 
-function AdSensePerformanceWidget( { handleDataSuccess } ) {
-	const { twentyEightDays, prev28Days } = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		const dateRange = select( CORE_USER ).getDateRange();
-		const prevRange = dateRange.replace( 'last', 'prev' );
-		const commonArgs = {
-			metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
-		};
-		const currentRangeArgs = {
-			dateRange,
-			...commonArgs,
-		};
+	useEffect( () => {
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
+			const {
+				twentyEightDays: twentyEightDaysData,
+				prev28Days: prev28DaysData,
+			} = requestDataToState( { twentyEightDays, prev28Days }, { data } ) || {};
+			if ( undefined !== twentyEightDaysData ) {
+				setTwentyEightDays( twentyEightDaysData );
+			}
 
-		const prevRangeArgs = {
-			dateRange: prevRange,
-			...commonArgs,
-		};
-		return {
-			twentyEightDays: store.getReport( currentRangeArgs ),
-			prev28Days: store.getReport( prevRangeArgs ),
-
-		};
-	} );
-
-	if ( ! twentyEightDays || ! prev28Days ) {
-		return null;
-	}
-	handleDataSuccess();
+			if ( undefined !== prev28DaysData ) {
+				setPrev28Days( prev28DaysData );
+			}
+		}
+	}, [ data, requestDataToState, twentyEightDays, prev28Days ] );
 
 	const dataBlocks = twentyEightDays.totals ? [
 		{

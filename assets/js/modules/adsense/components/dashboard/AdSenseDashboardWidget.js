@@ -90,15 +90,6 @@ export default function AdSenseDashboardWidget() {
 	const handleZeroData = () => {
 		setZeroData( true );
 	};
-
-	/**
-	 * Loading is set to false until data starts to resolve.
-	 */
-	const handleDataSuccess = () => {
-		setReceivingData( true );
-		setLoading( false );
-	};
-
 	// Hide AdSense data display when we don't have data.
 	const wrapperClass = ( ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
 	const currentDateRange = getCurrentDateRange( dateRange );
@@ -189,7 +180,6 @@ export default function AdSenseDashboardWidget() {
 											handleDataError( err.message, err );
 										}
 									} }
-									handleDataSuccess={ handleDataSuccess }
 								/>
 							</Layout>
 						</div>
