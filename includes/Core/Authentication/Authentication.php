@@ -25,6 +25,7 @@ use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
 use Exception;
+use OAuth;
 
 /**
  * Authentication Class.
@@ -238,6 +239,8 @@ final class Authentication {
 			}
 		);
 
+		add_action( 'admin_action' . Google_Proxy::ACTION_PERMISSIONS, $this->handle_proxy_permissions() );
+
 		add_action( 'googlesitekit_authorize_user', $this->get_method_proxy( 'set_connected_proxy_url' ) );
 
 		add_filter(
@@ -444,6 +447,47 @@ final class Authentication {
 	}
 
 	/**
+	 * Gets the proxy permission url
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Proxy permission url.
+	 */
+	private function get_proxy_permissions_url() {
+		return add_query_arg(
+			array(
+				'action' => Google_Proxy::ACTION_PERMISSIONS,
+				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS ),
+			),
+			admin_url( 'index.php' )
+		);
+	}
+
+	/**
+	 * Handles proxy permissions
+	 *
+	 * @since n.e.x.t
+	 */
+	private function handle_proxy_permissions() {
+		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+			wp_die( esc_html__( 'You need a higher level of permission.', 'google-site-kit' ) );
+		}
+
+		if ( ! $this->credentials->using_proxy() ) {
+			wp_die( esc_html__( 'You need a higher level of permission.', 'google-site-kit' ) );
+		}
+
+		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
+		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_PERMISSIONS ) ) {
+			wp_die( esc_html__( 'An error has occurred. Please reload the page and try again.', 'google-site-kit' ) );
+		}
+
+		wp_safe_redirect( $this->get_oauth_client()->get_proxy_permissions_url() );
+		exit();
+
+	}
+
+	/**
 	 * Check if the current user is authenticated.
 	 *
 	 * @since 1.0.0
@@ -597,7 +641,7 @@ final class Authentication {
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
 			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_setup_url() );
-			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
+			$data['proxyPermissionsURL'] = esc_url_raw( $this->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
 		}
 
