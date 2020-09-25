@@ -139,13 +139,8 @@ final class Reset {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
 			$wpdb->prepare(
-				"
-				DELETE FROM {$wpdb->usermeta}
-				 WHERE meta_key LIKE %s
-				    OR meta_key LIKE %s
-				",
-				$meta_prefix . self::KEY_PATTERN,
-				'_googlesitekit_transient_%'
+				"DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s",
+				$meta_prefix . self::KEY_PATTERN
 			)
 		);
 	}

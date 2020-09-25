@@ -132,42 +132,42 @@ class User_TransientsTest extends TestCase {
 		list( $user_transients, $user_options ) = $this->using_user_options();
 
 		// Test when timeout is valid.
-		$user_options->set( '_googlesitekit_transient_testkey7', 'qwerty7' );
-		$user_options->set( '_googlesitekit_transient_timeout_testkey7', time() + 1000 );
+		$user_options->set( 'googlesitekit_transient_testkey7', 'qwerty7' );
+		$user_options->set( 'googlesitekit_transient_timeout_testkey7', time() + 1000 );
 
 		$value = $user_transients->get( 'testkey7' );
 		$this->assertEquals( 'qwerty7', $value );
 
 		// Test when timeout is expired.
-		$user_options->set( '_googlesitekit_transient_testkey8', 'qwerty8' );
-		$user_options->set( '_googlesitekit_transient_timeout_testkey8', time() - 1000 );
+		$user_options->set( 'googlesitekit_transient_testkey8', 'qwerty8' );
+		$user_options->set( 'googlesitekit_transient_timeout_testkey8', time() - 1000 );
 
-		$this->assertNotEmpty( $user_options->get( '_googlesitekit_transient_testkey8' ) );
+		$this->assertNotEmpty( $user_options->get( 'googlesitekit_transient_testkey8' ) );
 
 		$value = $user_transients->get( 'testkey8' );
 		$this->assertFalse( $value );
-		$this->assertEmpty( $user_options->get( '_googlesitekit_transient_testkey8' ) );
+		$this->assertEmpty( $user_options->get( 'googlesitekit_transient_testkey8' ) );
 
 		// Test when timeout is not set.
-		$user_options->set( '_googlesitekit_transient_testkey9', 'qwerty9' );
+		$user_options->set( 'googlesitekit_transient_testkey9', 'qwerty9' );
 
-		$this->assertNotEmpty( $user_options->get( '_googlesitekit_transient_testkey9' ) );
+		$this->assertNotEmpty( $user_options->get( 'googlesitekit_transient_testkey9' ) );
 
 		$value = $user_transients->get( 'testkey9' );
 		$this->assertFalse( $value );
-		$this->assertEmpty( $user_options->get( '_googlesitekit_transient_testkey9' ) );
+		$this->assertEmpty( $user_options->get( 'googlesitekit_transient_testkey9' ) );
 	}
 
 	public function test_set_using_user_options() {
 		list( $user_transients, $user_options ) = $this->using_user_options();
 
-		$this->assertEmpty( $user_options->get( '_googlesitekit_transient_testkey10' ) );
-		$this->assertEmpty( $user_options->get( '_googlesitekit_transient_timeout_testkey10' ) );
+		$this->assertEmpty( $user_options->get( 'googlesitekit_transient_testkey10' ) );
+		$this->assertEmpty( $user_options->get( 'googlesitekit_transient_timeout_testkey10' ) );
 
 		$user_transients->set( 'testkey10', 'qwerty10', 1000 );
-		$this->assertEquals( 'qwerty10', $user_options->get( '_googlesitekit_transient_testkey10' ) );
+		$this->assertEquals( 'qwerty10', $user_options->get( 'googlesitekit_transient_testkey10' ) );
 
-		$timeout = $user_options->get( '_googlesitekit_transient_timeout_testkey10' );
+		$timeout = $user_options->get( 'googlesitekit_transient_timeout_testkey10' );
 		$this->assertGreaterThan( time(), $timeout );
 		$this->assertLessThanOrEqual( time() + 1000, $timeout );
 	}
@@ -175,13 +175,13 @@ class User_TransientsTest extends TestCase {
 	public function test_delete_using_user_options() {
 		list( $user_transients, $user_options ) = $this->using_user_options();
 
-		$user_options->set( '_googlesitekit_transient_testkey11', 'qwerty11' );
-		$user_options->set( '_googlesitekit_transient_timeout_testkey11', time() + 1000 );
+		$user_options->set( 'googlesitekit_transient_testkey11', 'qwerty11' );
+		$user_options->set( 'googlesitekit_transient_timeout_testkey11', time() + 1000 );
 
 		$user_transients->delete( 'testkey11' );
 
-		$this->assertFalse( $user_options->get( '_googlesitekit_transient_testkey11' ) );
-		$this->assertFalse( $user_options->get( '_googlesitekit_transient_timeout_testkey11' ) );
+		$this->assertFalse( $user_options->get( 'googlesitekit_transient_testkey11' ) );
+		$this->assertFalse( $user_options->get( 'googlesitekit_transient_timeout_testkey11' ) );
 	}
 
 }
