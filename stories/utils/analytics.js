@@ -47,11 +47,28 @@ export function generateGtmPropertyStory( {
 		const setupRegistry = ( registry ) => {
 			const existingTagAccountID = '151753095';
 			const existingTagPropertyID = 'UA-151753095-1';
+			const existingTagWebPropertyID = '216084975';
 
 			const gtmAccountID = '152925174';
 			const gtmPropertyID = 'UA-152925174-1';
 
 			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+
+			properties.push( {
+				accountId: existingTagAccountID,
+				defaultProfileId: '206512257',
+				id: existingTagPropertyID,
+				internalWebPropertyId: existingTagWebPropertyID,
+				name: 'qwerty',
+			} );
+
+			profiles.push( {
+				accountId: existingTagAccountID,
+				id: '206512258',
+				internalWebPropertyId: existingTagWebPropertyID,
+				name: 'All Web Site Data',
+				webPropertyId: existingTagPropertyID,
+			} );
 
 			registry.dispatch( CORE_MODULES ).receiveGetModules( [
 				{

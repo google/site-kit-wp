@@ -419,6 +419,7 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setPropertyID( PROPERTY_CREATE );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( console ).toHaveWarned();
 			} );
 
 			it( 'requires permissions for an existing tag', () => {
