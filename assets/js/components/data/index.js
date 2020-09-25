@@ -186,12 +186,14 @@ const dataAPI = {
 
 				const isError = isWPError( result );
 				if ( isError ) {
+					const { datapoint, type, identifier } = dataRequest[ keyIndexesMap[ key ] ];
+
 					this.handleWPError( {
 						method: 'POST',
-						datapoint: currentRequest.datapoint,
-						type: currentRequest.type,
-						identifier: currentRequest.identifier,
-						result,
+						datapoint,
+						type,
+						identifier,
+						error: result,
 					} );
 				}
 

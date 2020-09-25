@@ -25,8 +25,6 @@ import { DATA_LAYER } from '../../util/tracking/constants';
 import createTracking from '../../util/tracking/createTracking';
 import * as DateRange from '../../util/date-range.js';
 import { getCacheKey } from './cache';
-import apiFetchMock from '@wordpress/api-fetch';
-jest.mock( '@wordpress/api-fetch' );
 
 describe( 'googlesitekit.dataAPI', () => {
 	let trackEventSpy;
@@ -133,7 +131,7 @@ describe( 'googlesitekit.dataAPI', () => {
 			},
 
 		];
-		/*
+
 		it( 'should not call trackEvent for no errors in combinedGet', async () => {
 			fetchMock.postOnce(
 				/^\/google-site-kit\/v1\/data/,
@@ -144,7 +142,7 @@ describe( 'googlesitekit.dataAPI', () => {
 			expect( console ).not.toHaveErrored();
 			expect( pushArgs.length ).toEqual( 0 );
 		} );
-*/
+
 		it( 'should call trackEvent for error in combinedGet with one error', async () => {
 			const cacheKey = getCacheKey( 'core', 'search-console', 'users', { dateRange: 'last-28-days', status: 500 } );
 			const response = {
@@ -162,29 +160,23 @@ describe( 'googlesitekit.dataAPI', () => {
 					},
 				status: 200,
 			};
-			const mockPromise = Promise.resolve( response );
-			// const mockFetchPromise = Promise.resolve( { json: () => [] } );
 
-			apiFetchMock.mockImplementation( () => {
-				// eslint-disable-next-line no-console
+			fetchMock.post(
+				/^\/google-site-kit\/v1\/data/,
+				response
+			);
 
-				return mockPromise;
-			} );
-
-			combinedGet( combinedRequest );
+			await combinedGet( combinedRequest );
+			expect( console ).not.toHaveErrored();
+			//
 			//expect( console ).not.toHaveErrored();
 			expect( pushArgs.length ).toEqual( 1 );
-
-			//
-			/*
-			//expect( console ).toHaveErrored();
 			const [ event, eventName, eventData ] = pushArgs[ 0 ];
 			expect( event ).toEqual( 'event' );
-			expect( eventName ).toEqual( 'GET:users/core/data/search-console' );
-			expect( eventData[ 'event_category' ] ).toEqual( 'api_error' );
-			expect( eventData[ 'event_label' ] ).toEqual( 'Internal server error (code: internal_server_error)' );
-			expect( eventData[ 'event_value' ] ).toEqual( 500 );
-*/
+			expect( eventName ).toEqual( 'POST:core/search-console/data/users' );
+			expect( eventData.event_category ).toEqual( 'api_error' );
+			expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error, reason: internal_server_error)' );
+			expect( eventData.event_value ).toEqual( 500 );
 		} );
 
 		it( 'should call trackEvent for each error in combinedGet with multiple errors', async () => {
