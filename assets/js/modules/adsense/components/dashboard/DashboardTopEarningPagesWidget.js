@@ -35,7 +35,6 @@ import Layout from '../../../../components/layout/layout';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
-import { isRestrictedMetricsError } from '../../../analytics/util/error';
 
 const { useSelect } = Data;
 
@@ -76,12 +75,14 @@ function DashboardTopEarningPagesWidget() {
 		);
 	}
 
-	if ( error && ! isRestrictedMetricsError( error, 'ga:adsense' ) ) {
-		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
-	}
-
+	// A restricted metrics error will cause this value to change in the resolver
+	// so this check should happen before an error, which is only relevant if they are linked.
 	if ( ! isAdSenseLinked ) {
 		return <AdSenseLinkCTA />;
+	}
+
+	if ( error ) {
+		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
 	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
