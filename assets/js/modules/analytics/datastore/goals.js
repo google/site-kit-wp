@@ -60,7 +60,7 @@ const baseSelectors = {
 	/**
 	 * Gets Analytics goals.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} An Analytics goals; `undefined` if not loaded.

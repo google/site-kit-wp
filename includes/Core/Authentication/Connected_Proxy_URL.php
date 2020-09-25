@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Connected_Proxy_URL class.
  *
- * @since n.e.x.t
+ * @since 1.17.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Connected_Proxy_URL extends Setting {
 	/**
 	 * Matches provided URL with the current proxy URL in the settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @param string $url URL to match against the current one in the settings.
 	 * @return bool TRUE if URL matches the current one, otherwise FALSE.
@@ -43,7 +43,7 @@ class Connected_Proxy_URL extends Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @return callable A sanitizing function.
 	 */

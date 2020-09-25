@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Disconnected_Reason class.
  *
- * @since n.e.x.t
+ * @since 1.17.0
  * @access private
  * @ignore
  */
@@ -34,7 +34,7 @@ class Disconnected_Reason extends User_Setting {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 */
 	public function register() {
 		parent::register();
