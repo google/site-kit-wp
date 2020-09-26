@@ -89,44 +89,43 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}  state                The current data store's state.
-	 * @param {Object} 	options              Options parameter. Default is: {}.
-	 * @param {number} 	options.offsetDays   Number of days to offset. Default is: 0.
-	 * @param {boolean} options.compare      Set to true if date ranges to compare should be included. Default is: false.
-	 * @param {boolean} options.weekDayAlign Set to true if the compared date range should be aligned for the weekdays. Default is: false.
-	 * @return {Array.<string>}              List of date ranges in chronoligical order. [compareStart, compareEnd, start, end, today]
+	 * @typedef {Object} DateRangeReturnObj
+	 * @property {string} startDate          Beginning of the original date range.
+	 * @property {string} endDate            End of the original date range.
+	 * @property {string} [compareStartDate] Beginning of the comparative date range.
+	 * @property {string} [compareEndDate]   End of the comparative date range.
+	 *
+	 * @param {Object}  state                   The current data store's state.
+	 * @param {Object}  [options]               Options parameter. Default is: {}.
+	 * @param {boolean} [options.compare]       Set to true if date ranges to compare should be included. Default is: false.
+	 * @param {number}  [options.offsetDays]    Number of days to offset. Default is: 0.
+	 * @param {string}  [options.referenceDate] Used for testing to set a static date. Default is: new Date() (today/now)
+	 * @param {boolean} [options.weekDayAlign]  Set to true if the compared date range should be aligned for the weekdays. Default is: false.
+	 * @return {DateRangeReturnObj}             Object containing dates for date ranges.
 	 */
 	getDateRangeDates( state, {
-		offsetDays = 1,
 		compare = false,
+		offsetDays = 1,
+		referenceDate = getDateString( new Date() ),
 		weekDayAlign = false,
 	} = {} ) {
 		const dateRange = selectors.getDateRange( state );
-		const today = getDateString( new Date() );
-		const endDate = getPreviousDate( today, offsetDays );
+		const endDate = getPreviousDate( referenceDate, offsetDays );
 		const matches = dateRange.match( '-(.*)-' );
-		const numberOfDays = Number( matches ? matches[ 1 ] - 1 : 28 );
-		const startDate = getPreviousDate( endDate, numberOfDays );
-		const parsed = [];
+		const numberOfDays = Number( matches ? matches[ 1 ] : 28 );
+		const startDate = getPreviousDate( endDate, numberOfDays - 1 );
+		const dates = { startDate, endDate };
 
-		if ( compare && ! weekDayAlign ) {
-			const compareEndDate = getPreviousDate( startDate, 1 );
-			parsed.push( getPreviousDate( compareEndDate, numberOfDays ) );
-			parsed.push( compareEndDate );
+		if ( compare ) {
+			const compareEndDate = weekDayAlign
+				? getPreviousWeekDate( endDate, numberOfDays )
+				: getPreviousDate( startDate, 1 );
+			const compareStartDate = getPreviousDate( compareEndDate, numberOfDays - 1 );
+			dates.compareStartDate = compareStartDate;
+			dates.compareEndDate = compareEndDate;
 		}
 
-		if ( weekDayAlign ) {
-			const compareEndDate = getPreviousWeekDate( endDate, numberOfDays );
-			parsed.push( getPreviousDate( compareEndDate, numberOfDays ) );
-			parsed.push( compareEndDate );
-		}
-
-		return [
-			...parsed,
-			startDate,
-			endDate,
-			today,
-		];
+		return dates;
 	},
 };
 
