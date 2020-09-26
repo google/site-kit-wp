@@ -36,6 +36,8 @@ const url = fixtures.pagespeedMobile.loadingExperience.id;
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
+	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
 	dispatch( CORE_SITE ).receiveSiteInfo( {
 		referenceSiteURL: url,
 		currentEntityURL: null,
@@ -49,7 +51,9 @@ const setupRegistryNoReports = ( { dispatch } ) => {
 };
 const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
+	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldData, { url, strategy: STRATEGY_DESKTOP } );
+	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
 	dispatch( CORE_SITE ).receiveSiteInfo( {
 		referenceSiteURL: url,
 		currentEntityURL: null,

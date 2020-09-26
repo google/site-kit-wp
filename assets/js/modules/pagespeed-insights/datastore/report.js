@@ -31,7 +31,6 @@ import { isURL } from '@wordpress/url';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetReportStore = createFetchStore( {
@@ -67,14 +66,6 @@ const baseInitialState = {
 const baseResolvers = {
 	*getReport( url, strategy ) {
 		if ( ! url || ! strategy ) {
-			return;
-		}
-
-		const registry = yield Data.commonActions.getRegistry();
-		const existingReport = registry.select( STORE_NAME ).getReport( url, strategy );
-
-		// If there is already a report loaded in state, consider it fulfilled and don't make an API request.
-		if ( existingReport ) {
 			return;
 		}
 

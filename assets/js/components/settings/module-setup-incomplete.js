@@ -20,8 +20,8 @@
  * WordPress dependencies
  */
 import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { Component, createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -41,16 +41,22 @@ class ModuleSetupIncomplete extends Component {
 		return (
 			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 				<ModuleSettingsWarning slug={ slug } context="settings" />
-				{ __( 'Setup incomplete: ', 'google-site-kit' ) }
-				<Link
-					className="googlesitekit-settings-module__edit-button"
-					onClick={ () => {
-						global.location = getReAuthURL( slug, true );
-					} }
-					inherit
-				>
-					{ __( 'continue module setup', 'google-site-kit' ) }
-				</Link>
+				{ createInterpolateElement(
+					sprintf(
+						/* translators: %s: link with next step */
+						__( 'Setup incomplete: %s', 'google-site-kit' ),
+						`<a>${ __( 'continue module setup', 'google-site-kit' ) }</a>`
+					),
+					{
+						a: <Link
+							className="googlesitekit-settings-module__edit-button"
+							onClick={ () => {
+								global.location = getReAuthURL( slug, true );
+							} }
+							inherit
+						/>,
+					}
+				) }
 			</div>
 		);
 	}
