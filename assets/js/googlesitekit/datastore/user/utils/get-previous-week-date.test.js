@@ -49,7 +49,7 @@ describe( 'getPreviousWeekDate', () => {
 		}
 	} );
 
-	it( 'should go back to "2020-09-17" with daysBefore value of 0 and date of "2020-09-24"', () => {
+	it( 'should go back to "2020-09-24" with daysBefore value of 0 and date of "2020-09-24"', () => {
 		expect( getPreviousWeekDate( referenceDate, 0 ) ).toEqual( '2020-09-24' );
 	} );
 
