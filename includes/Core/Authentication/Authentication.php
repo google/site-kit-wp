@@ -239,7 +239,12 @@ final class Authentication {
 			}
 		);
 
-		add_action( 'admin_action' . Google_Proxy::ACTION_PERMISSIONS, $this->handle_proxy_permissions() );
+		add_action(
+			'admin_action_' . Google_Proxy::ACTION_PERMISSIONS,
+			function () {
+				$this->handle_proxy_permissions();
+			}
+		);
 
 		add_action( 'googlesitekit_authorize_user', $this->get_method_proxy( 'set_connected_proxy_url' ) );
 
@@ -483,7 +488,7 @@ final class Authentication {
 		}
 
 		wp_safe_redirect( $this->get_oauth_client()->get_proxy_permissions_url() );
-		exit();
+		exit;
 
 	}
 
