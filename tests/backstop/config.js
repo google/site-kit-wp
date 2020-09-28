@@ -33,7 +33,7 @@ module.exports = {
 	debug: false,
 	debugWindow: false,
 	// Use a custom command template to make sure it works correctly in the GitHub actions environment.
-	// The only difference between the original dockerCommandTemplate and this one is that there is no -t flag in the currect template.
+	// The only difference between the original dockerCommandTemplate and this one is that there is no -t flag in the current template.
 	dockerCommandTemplate: 'docker run --rm -i --mount type=bind,source="{cwd}",target=/src backstopjs/backstopjs:{version} {backstopCommand} {args}',
 	engine: 'puppeteer',
 	engineOptions: {
