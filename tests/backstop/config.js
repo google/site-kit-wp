@@ -22,8 +22,11 @@ const viewports = require( './viewports' );
 // If run from the host, detect the proper target host and set the hostname arg.
 // This will be passed through with the `backstop` command run with docker.
 if ( process.argv.includes( '--docker' ) ) {
-	const hostname = require( './detect-storybook-host' );
-	process.argv.push( `--storybook-host=${ hostname }` );
+	const hostArg = process.argv.find( ( arg ) => arg.match( /^--storybook-host=/ ) );
+	if ( ! hostArg ) {
+		const hostname = require( './detect-storybook-host' );
+		process.argv.push( `--storybook-host=http://${ hostname }:9001` );
+	}
 }
 
 module.exports = {
@@ -49,5 +52,5 @@ module.exports = {
 	viewports,
 	readyEvent: 'backstopjs_ready',
 	misMatchThreshold: 0.05, // @todo change to 0, resolve SVG issue.
-	delay: 1000, // Default delay to ensure components render in Travis.
+	delay: 1000, // Default delay to ensure components render complete.
 };
