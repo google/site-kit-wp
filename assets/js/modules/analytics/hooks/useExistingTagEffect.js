@@ -38,6 +38,7 @@ export default function useExistingTagEffect() {
 	const {
 		existingTag,
 		existingTagAccountID,
+		existingTagPermission,
 		gtmAnalyticsPropertyID,
 		gtmAnalyticsAccountID,
 		gtmModuleActive,
@@ -46,6 +47,7 @@ export default function useExistingTagEffect() {
 
 		const data = {
 			existingTag: store.getExistingTag(),
+			existingTagPermission: false,
 			existingTagAccountID: '',
 			gtmAnalyticsPropertyID: select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID(),
 			gtmAnalyticsAccountID: '',
@@ -59,6 +61,7 @@ export default function useExistingTagEffect() {
 			} = store.getTagPermission( data.existingTag ) || {};
 
 			if ( permission ) {
+				data.existingTagPermission = permission;
 				data.existingTagAccountID = accountID;
 			}
 		}
@@ -78,14 +81,23 @@ export default function useExistingTagEffect() {
 	} );
 
 	useEffect( () => {
-		if ( existingTag && existingTagAccountID ) {
-			// There is an existing Analytics tag, select it.
-			setAccountID( existingTagAccountID );
-			selectProperty( existingTag );
+		if ( existingTag ) {
+			if ( existingTagPermission && existingTagAccountID ) {
+				// There is an existing Analytics tag, select it.
+				setAccountID( existingTagAccountID );
+				selectProperty( existingTag );
+			}
 		} else if ( gtmModuleActive && gtmAnalyticsPropertyID && gtmAnalyticsAccountID ) {
 			// GTM container has GA tag and user has access to it, force select it.
 			setAccountID( gtmAnalyticsAccountID );
 			selectProperty( gtmAnalyticsPropertyID );
 		}
-	}, [ existingTag, existingTagAccountID, gtmAnalyticsPropertyID, gtmAnalyticsAccountID, gtmModuleActive ] );
+	}, [
+		existingTag,
+		existingTagAccountID,
+		existingTagPermission,
+		gtmAnalyticsPropertyID,
+		gtmAnalyticsAccountID,
+		gtmModuleActive,
+	] );
 }

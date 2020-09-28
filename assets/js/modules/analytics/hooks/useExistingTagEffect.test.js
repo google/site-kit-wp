@@ -79,7 +79,7 @@ describe( 'useExistingTagEffect', () => {
 		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( existingTag.propertyID );
 	} );
 
-	it( 'should select GTM tag if user doesn\'t have permissions for existing tag', async () => {
+	it( 'should not select GTM tag if user doesn\'t have permissions for existing tag', async () => {
 		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, { body: { properties: [] }, status: 200 } );
 		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, { body: [], status: 200 } );
 
@@ -115,8 +115,8 @@ describe( 'useExistingTagEffect', () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( gtmAnalytics.accountID );
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( gtmAnalytics.webPropertyID );
+		expect( registry.select( STORE_NAME ).getAccountID() ).toBeUndefined();
+		expect( registry.select( STORE_NAME ).getPropertyID() ).toBeUndefined();
 	} );
 
 	it( 'should select GTM tag if there is no existing tag and user has permissions', async () => {

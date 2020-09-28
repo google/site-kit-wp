@@ -31,18 +31,26 @@ const { useSelect } = Data;
 
 export default function ExistingGTMPropertyNotice() {
 	const {
+		existingTag,
 		gtmAnalyticsPropertyID,
 		gtmAnalyticsPropertyIDPermission,
 	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
 		const propertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 
 		return {
+			existingTag: store.getExistingTag(),
 			gtmAnalyticsPropertyID: propertyID,
-			gtmAnalyticsPropertyIDPermission: select( STORE_NAME ).hasTagPermission( propertyID ),
+			gtmAnalyticsPropertyIDPermission: store.hasTagPermission( propertyID ),
 		};
 	} );
 
-	if ( ! gtmAnalyticsPropertyID || ! gtmAnalyticsPropertyIDPermission ) {
+	// Don't display this notice if:
+	if (
+		existingTag || // There is an existing tag.
+		! gtmAnalyticsPropertyID || // There is no GTM tag.
+		! gtmAnalyticsPropertyIDPermission // The current user doesn't have permissions for the GTM tag.
+	) {
 		return null;
 	}
 
