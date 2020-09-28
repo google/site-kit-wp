@@ -1,7 +1,8 @@
 {
   "extends": [
     "plugin:@wordpress/eslint-plugin/recommended-with-formatting",
-    "plugin:jest/recommended"
+    "plugin:jest/recommended",
+    "plugin:sitekit/main"
   ],
   "env": {
     "browser": true,
@@ -12,9 +13,6 @@
     "featureFlags": false
   },
   "rules": {
-    "sitekit/camelcase-acronyms": [
-      "error"
-    ],
     "no-restricted-globals": [
       "error",
       {
