@@ -198,10 +198,12 @@ storiesOf( 'AdSense Module', module )
 			adSensePerformancePrevRangeData,
 			adSensePerformancePrevRangeOptions,
 		} = fixtures;
+
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).receiveGetReport( adSensePerformanceCurrentRangeData, { options: adSensePerformanceCurrentRangeOptions } );
 			registry.dispatch( STORE_NAME ).receiveGetReport( adSensePerformancePrevRangeData, { options: adSensePerformancePrevRangeOptions } );
 		};
+
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<Layout
