@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Storage;
  * @access private
  * @ignore
  */
-interface User_Options_Interface {
+interface User_Options_Interface extends User_Aware_Interface {
 
 	/**
 	 * Gets the value of the given option.
@@ -60,21 +60,4 @@ interface User_Options_Interface {
 	 */
 	public function get_meta_key( $option );
 
-	/**
-	 * Gets the current user ID.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @return int User ID.
-	 */
-	public function get_user_id();
-
-	/**
-	 * Sets the current user ID.
-	 *
-	 * @since 1.4.0
-	 *
-	 * @param int $user_id User ID.
-	 */
-	public function switch_user( $user_id );
 }

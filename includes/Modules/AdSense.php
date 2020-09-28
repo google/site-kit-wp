@@ -894,8 +894,6 @@ tag_partner: "site_kit"
 			'order'       => 2,
 			'homepage'    => add_query_arg( $idenfifier_args, $this->get_data( 'reports-url' ) ),
 			'learn_more'  => __( 'https://www.google.com/intl/en_us/adsense/start/', 'google-site-kit' ),
-			'group'       => __( 'Additional Google Services', 'google-site-kit' ),
-			'tags'        => array( 'monetize' ),
 		);
 	}
 

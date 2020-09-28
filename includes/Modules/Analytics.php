@@ -1366,7 +1366,6 @@ final class Analytics extends Module
 			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
 			'learn_more'  => __( 'https://marketingplatform.google.com/about/analytics/', 'google-site-kit' ),
-			'group'       => __( 'Marketing Platform', 'google-site-kit' ),
 		);
 	}
 
