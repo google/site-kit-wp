@@ -63,7 +63,7 @@ const existingTagStore = createExistingTagStore( {
 	isValidTag: isValidContainerID,
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	tagPermission: {},
 };
 
@@ -141,14 +141,14 @@ const store = Data.combineStores(
 	existingTagStore,
 	fetchGetTagPermissionStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
 );
 
 export const {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

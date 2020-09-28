@@ -24,7 +24,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
@@ -55,7 +54,7 @@ describe( 'modules/analytics properties', () => {
 	describe( 'actions', () => {
 		describe( 'createProperty', () => {
 			it( 'creates a property and adds it to the store', async () => {
-				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: fixtures.createProperty, status: 200 }
@@ -75,7 +74,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'sets isDoingCreateProperty', async () => {
-				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: fixtures.createProperty, status: 200 }
@@ -86,7 +85,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
-				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -97,7 +96,6 @@ describe( 'modules/analytics properties', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).createProperty( accountID );
 
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'createProperty', [ accountID ] ) ).toMatchObject( response );
@@ -109,6 +107,7 @@ describe( 'modules/analytics properties', () => {
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -120,7 +119,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'returns if the accountID is not set', () => {
-				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId;
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
@@ -132,7 +131,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'selects the property and its default profile when set', async () => {
-				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId;
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
@@ -141,8 +140,8 @@ describe( 'modules/analytics properties', () => {
 				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( propertyID );
-				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].defaultProfileId );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].defaultProfileId ); // eslint-disable-line sitekit/camelcase-acronyms
 			} );
 
 			it( 'does not set the profileID if property has defaultProfileId that is not in state', async () => {
@@ -150,11 +149,11 @@ describe( 'modules/analytics properties', () => {
 				const propertiesProfiles = {
 					...fixtures.propertiesProfiles,
 					properties: fixtures.propertiesProfiles.properties.map( ( property ) => {
-						return { ...property, defaultProfileId: nonExistentProfileID };
+						return { ...property, defaultProfileId: nonExistentProfileID }; // eslint-disable-line sitekit/camelcase-acronyms
 					} ),
 				};
 
-				const accountID = propertiesProfiles.properties[ 0 ].accountId;
+				const accountID = propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const propertyID = propertiesProfiles.properties[ 0 ].id;
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
@@ -245,7 +244,6 @@ describe( 'modules/analytics properties', () => {
 				);
 
 				const fakeAccountID = '777888999';
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).isDoingGetProperties( fakeAccountID ) === false,
@@ -255,6 +253,7 @@ describe( 'modules/analytics properties', () => {
 
 				const properties = registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				expect( properties ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 		describe( 'getPropertyByID', () => {

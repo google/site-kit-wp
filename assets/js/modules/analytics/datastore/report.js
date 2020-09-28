@@ -80,7 +80,7 @@ const fetchGetReportStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	reports: {},
 };
 
@@ -134,13 +134,13 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetReportStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

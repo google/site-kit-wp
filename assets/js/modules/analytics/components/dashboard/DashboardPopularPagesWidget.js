@@ -76,11 +76,11 @@ function DashboardPopularPagesWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error.message, false, false, false, error );
+		return getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error.message, false, false, false, error );
 	}
 
 	if ( ! Array.isArray( data?.[ 0 ]?.data?.rows ) ) {
-		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
+		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 
 	const headers = [

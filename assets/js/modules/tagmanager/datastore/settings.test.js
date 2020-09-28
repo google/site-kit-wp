@@ -27,7 +27,6 @@ import { accountBuilder, containerBuilder } from './__factories__';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
-	muteConsole,
 	muteFetch,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
@@ -145,7 +144,6 @@ describe( 'modules/tagmanager settings', () => {
 						{ body: WPError, status: 500 }
 					);
 
-					muteConsole( 'error' );
 					await registry.dispatch( STORE_NAME ).submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
@@ -159,6 +157,7 @@ describe( 'modules/tagmanager settings', () => {
 
 					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( CONTAINER_CREATE );
 					expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( WPError );
+					expect( console ).toHaveErrored();
 				} );
 
 				it( 'dispatches saveSettings', async () => {
@@ -189,7 +188,6 @@ describe( 'modules/tagmanager settings', () => {
 						{ body: WPError, status: 500 }
 					);
 
-					muteConsole( 'error' );
 					const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
@@ -199,6 +197,7 @@ describe( 'modules/tagmanager settings', () => {
 						}
 					);
 					expect( result.error ).toEqual( WPError );
+					expect( console ).toHaveErrored();
 				} );
 
 				it( 'invalidates module cache on success', async () => {

@@ -162,7 +162,7 @@ class LegacyAnalyticsDashboardWidgetTopLevel extends Component {
 								className="overview-bounce-rate"
 								title={ __( 'Bounce Rate', 'google-site-kit' ) }
 								datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
-								datapointUnit={ __( '%', 'google-site-kit' ) }
+								datapointUnit="%"
 								change={ averageBounceRateChange }
 								changeDataUnit="%"
 								invertChangeColor

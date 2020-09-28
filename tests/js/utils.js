@@ -24,6 +24,7 @@ import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsSt
 import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
 import modulesTagManagerStore, { STORE_NAME as modulesTagManagerStoreName } from '../../assets/js/modules/tagmanager/datastore';
 import modulesOptimizeStore, { STORE_NAME as modulesOptimizeStoreName } from '../../assets/js/modules/optimize/datastore';
+import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
 
 /**
  * Create a registry with all available stores.
@@ -56,12 +57,7 @@ export const createTestRegistry = () => {
  */
 export function WithTestRegistry( { children, callback, registry = createTestRegistry() } = {} ) {
 	// Populate most basic data which should not affect any tests.
-	registry.dispatch( coreUserStoreName ).receiveUserInfo( {
-		id: 1,
-		name: 'Wapuu WordPress',
-		email: 'wapuu.wordpress@gmail.com',
-		picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
-	} );
+	provideUserInfo( registry );
 
 	if ( callback ) {
 		callback( registry );
@@ -75,22 +71,136 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
 }
 
 /**
- * Mute a given console during tests.
+ * Provides site connection data to the given registry.
  *
- * Use this to mute expect console output during tests for things like
- * API fetch errors or other things you expect to log to console but don't
- * want appearing in the jest output.
+ * By default the site will be set to connected.
  *
- * @since 1.5.0
+ * @since 1.17.0
  * @private
  *
- * @param {string} type  Type of console to mute (one of: `'error'`, `'warn'`, `'log'`, `'info'`, or `'debug'`).
- * @param {number} times Number of times to mute console output perform resuming.
+ * @param {Object} registry    Registry object to dispatch to.
+ * @param {Object} [extraData] Custom data to set, will be merged with defaults. Default empty object.
  */
-export const muteConsole = ( type = 'error', times = 1 ) => {
-	Array.from( { length: times } ).forEach( () => {
-		global.console[ type ].mockImplementationOnce( () => jest.fn() );
+export const provideSiteConnection = ( registry, extraData = {} ) => {
+	const defaultConnected = extraData.connected !== undefined ? extraData.connected : true;
+	const defaults = {
+		connected: defaultConnected,
+		resettable: defaultConnected,
+		setupCompleted: defaultConnected,
+		hasConnectedAdmins: defaultConnected,
+		ownerID: defaultConnected ? 1 : 0,
+	};
+
+	registry.dispatch( coreSiteStoreName ).receiveGetConnection( {
+		...defaults,
+		...extraData,
 	} );
+};
+
+/**
+ * Provides user authentication data to the given registry.
+ *
+ * By default the user will be set to authenticated.
+ *
+ * @since 1.17.0
+ * @private
+ *
+ * @param {Object} registry    Registry object to dispatch to.
+ * @param {Object} [extraData] Custom data to set, will be merged with defaults. Default empty object.
+ */
+export const provideUserAuthentication = ( registry, extraData = {} ) => {
+	const defaults = {
+		authenticated: true,
+		requiredScopes: [],
+		grantedScopes: [],
+		unsatisfiedScopes: [],
+		needsReauthentication: [],
+	};
+
+	const mergedData = { ...defaults, ...extraData };
+	registry.dispatch( coreUserStoreName ).receiveGetAuthentication( mergedData );
+
+	// Also set verification info here based on authentication.
+	registry.dispatch( coreUserStoreName ).receiveUserIsVerified( mergedData.authenticated );
+};
+
+/**
+ * Provides site information data to the given registry.
+ *
+ * @since 1.17.0
+ * @private
+ *
+ * @param {Object} registry    Registry object to dispatch to.
+ * @param {Object} [extraData] Custom data to set, will be merged with defaults. Default empty object.
+ */
+export const provideSiteInfo = ( registry, extraData = {} ) => {
+	const defaults = {
+		adminURL: 'http://example.com/wp-admin',
+		ampMode: false,
+		currentEntityID: null,
+		currentEntityTitle: null,
+		currentEntityType: null,
+		currentEntityURL: null,
+		homeURL: 'http://example.com',
+		proxyPermissionsURL: 'https://sitekit.withgoogle.com/site-management/permissions/',
+		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/',
+		referenceSiteURL: 'http://example.com',
+		siteName: 'My Site Name',
+		timezone: 'America/Detroit',
+		usingProxy: true,
+	};
+
+	registry.dispatch( coreSiteStoreName ).receiveSiteInfo( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
+ * Provides user information data to the given registry.
+ *
+ * @since 1.17.0
+ * @private
+ *
+ * @param {Object} registry    Registry object to dispatch to.
+ * @param {Object} [extraData] Custom data to set, will be merged with defaults. Default empty object.
+ */
+export const provideUserInfo = ( registry, extraData = {} ) => {
+	const defaults = {
+		id: 1,
+		name: 'Wapuu WordPress',
+		email: 'wapuu.wordpress@gmail.com',
+		picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+	};
+
+	registry.dispatch( coreUserStoreName ).receiveUserInfo( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
+ * Provides modules data to the given registry.
+ *
+ * @since 1.17.0
+ * @private
+ *
+ * @param {Object} registry    Registry object to dispatch to.
+ * @param {Array}  [extraData] List of module objects, will be merged with defaults. Default empty array.
+ */
+export const provideModules = ( registry, extraData = [] ) => {
+	const extraModules = extraData.reduce( ( acc, module ) => {
+		return { ...acc, [ module.slug ]: module };
+	}, {} );
+
+	const modules = [ ...coreModulesFixture ].map( ( module ) => {
+		if ( extraModules[ module.slug ] ) {
+			return { ...module, ...extraModules[ module.slug ] };
+		}
+		return { ...module };
+	} );
+
+	registry.dispatch( coreModulesStoreName ).receiveGetModules( modules );
 };
 
 /**

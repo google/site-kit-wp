@@ -21,7 +21,7 @@
  */
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
 import { STORE_NAME } from './constants';
-import { INITIAL_STATE } from './index';
+import { initialState } from './index';
 
 describe( 'core/modules store', () => {
 	let registry;
@@ -40,7 +40,7 @@ describe( 'core/modules store', () => {
 		it( 'has the appropriate initial state', () => {
 			const state = store.getState();
 
-			expect( state ).toEqual( INITIAL_STATE );
+			expect( state ).toEqual( initialState );
 		} );
 	} );
 } );

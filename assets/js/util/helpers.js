@@ -30,7 +30,7 @@ import { createElement, Fragment } from '@wordpress/element';
  *
  * 		addFilter( 'googlesitekit.DashboardModule', // Filter name.
  *			'googlesitekit.DashboardEarningModule', // callback name.
- *			createAddToFilter( <DashboardEarnings /> ), // Using the helper to append a component.
+ *			createAddToFilter( <LegacyDashboardEarnings /> ), // Using the helper to append a component.
  * 			11 ); // Priority will determine the order items are appended.
  *
  * @param {WPElement} NewComponent The new component to append to the filtered component.

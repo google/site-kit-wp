@@ -88,7 +88,7 @@ const RECEIVE_GET_PROPERTIES = 'RECEIVE_GET_PROPERTIES';
 const RECEIVE_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_PROPERTIES_PROFILES_COMPLETION';
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	properties: {},
 	isAwaitingPropertiesProfilesCompletion: {},
 	matchedProperty: undefined,
@@ -267,7 +267,7 @@ const baseReducer = ( state, { type, payload } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -406,7 +406,7 @@ const store = Data.combineStores(
 	fetchGetPropertiesProfilesStore,
 	fetchCreatePropertyStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		controls: baseControls,
 		reducer: baseReducer,
@@ -415,7 +415,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

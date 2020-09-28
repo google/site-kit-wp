@@ -1,5 +1,5 @@
 /**
- * AdSenseDashboardMainSummary component.
+ * LegacyAdSenseDashboardMainSummary component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -42,7 +42,7 @@ import {
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 
-class AdSenseDashboardMainSummary extends Component {
+class LegacyAdSenseDashboardMainSummary extends Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -151,7 +151,7 @@ class AdSenseDashboardMainSummary extends Component {
 											link: href,
 										} }
 										change={ today.totals[ 0 ] }
-										changeDataUnit={ '$' }
+										changeDataUnit={ currencyCode }
 										sparkline={ daily &&
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 1 ) }
@@ -194,7 +194,7 @@ class AdSenseDashboardMainSummary extends Component {
 }
 
 export default withData(
-	AdSenseDashboardMainSummary,
+	LegacyAdSenseDashboardMainSummary,
 	[
 		{
 			type: TYPE_MODULES,

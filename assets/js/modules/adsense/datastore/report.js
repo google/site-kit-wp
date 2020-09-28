@@ -51,7 +51,9 @@ const fetchGetReportStore = createFetchStore( {
 	},
 	validateParams: ( { options } = {} ) => {
 		invariant( isPlainObject( options ), 'options must be an object.' );
-		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
+
+		// Account for additional date ranges supported by AdSense module in PHP.
+		invariant( [ 'today', 'this-month' ].includes( options.dateRange ) || isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
 
 		const { orderby, metrics, dimensions } = options;
 
@@ -76,7 +78,7 @@ const fetchGetReportStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	reports: {},
 };
 
@@ -130,13 +132,13 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetReportStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;
