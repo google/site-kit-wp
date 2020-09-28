@@ -57,8 +57,8 @@ function getDataErrorComponent( moduleSlug, errorMessage, inGrid = false, fullWi
 		message = getInsufficientPermissionsErrorDescription( message, module );
 	}
 
-	const reconnectUrl = errorObj?.data?.reconnectURL;
-	const description = reconnectUrl ? <ErrorText message={ message } reconnectURL={ reconnectUrl } /> : message;
+	const reconnectURL = errorObj?.data?.reconnectURL;
+	const description = reconnectURL ? <ErrorText message={ message } reconnectURL={ reconnectURL } /> : message;
 	const cta = <CTA title={ title } description={ description } error />;
 
 	// This is to handle token expired error specifically.

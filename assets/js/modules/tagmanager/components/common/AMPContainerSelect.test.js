@@ -41,12 +41,12 @@ describe( 'AMPContainerSelect', () => {
 	it( 'should render an option for each AMP container of the currently selected account.', () => {
 		const account = factories.accountBuilder();
 		const webContainers = factories.buildContainers(
-			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
+			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } // eslint-disable-line sitekit/camelcase-acronyms
 		);
 		const ampContainers = factories.buildContainers(
-			3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] }
+			3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } // eslint-disable-line sitekit/camelcase-acronyms
 		);
-		const accountID = account.accountId;
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [ ...webContainers, ...ampContainers ], { accountID } );
@@ -66,7 +66,7 @@ describe( 'AMPContainerSelect', () => {
 		const { account, containers } = factories.buildAccountWithContainers(
 			{ container: { usageContext: [ CONTEXT_AMP ] } }
 		);
-		const accountID = account.accountId;
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
@@ -81,7 +81,7 @@ describe( 'AMPContainerSelect', () => {
 		const { account, containers } = factories.buildAccountWithContainers(
 			{ container: { usageContext: [ CONTEXT_AMP ] } }
 		);
-		const accountID = account.accountId;
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
@@ -99,7 +99,7 @@ describe( 'AMPContainerSelect', () => {
 			{ container: { usageContext: [ CONTEXT_AMP ] } }
 		);
 		const ampContainer = containers[ 0 ];
-		const accountID = account.accountId;
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
@@ -116,8 +116,8 @@ describe( 'AMPContainerSelect', () => {
 			await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( ampContainer.publicId );
-		expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( ampContainer.containerId );
+		expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( ampContainer.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
+		expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( ampContainer.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
@@ -132,7 +132,7 @@ describe( 'AMPContainerSelect', () => {
 	it( 'should render a loading state while containers are loading', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
 		const account = factories.accountBuilder();
-		const accountID = account.accountId;
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
@@ -144,7 +144,7 @@ describe( 'AMPContainerSelect', () => {
 
 	it( 'should be labeled as "Container" in a primary AMP context', () => {
 		const { account, containers } = factories.buildAccountWithContainers();
-		const accountID = account.accountId;
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
@@ -157,7 +157,7 @@ describe( 'AMPContainerSelect', () => {
 
 	it( 'should be labeled as "AMP Container" in a secondary AMP context', () => {
 		const { account, containers } = factories.buildAccountWithContainers();
-		const accountID = account.accountId;
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
