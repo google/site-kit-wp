@@ -52,8 +52,8 @@ jobs:
         npm ci
     - name: Build Storybook
       run: |
-        npm run build:static
         npm run build:storybook
+        npm run build:static
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:

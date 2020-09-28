@@ -29,10 +29,10 @@ jobs:
             ${{ runner.os }}-node-cache-
       - name: npm install
         run: npm ci
-      - name: Build Static Assets
-        run: npm run build:static
       - name: Build Storybook
         run: npm run build:storybook -- --quiet
+      - name: Build Static Assets
+        run: npm run build:static
       - name: Run Backstopjs
         run: npm run backstopjs -- --storybook-host=./dist
       - name: Upload artifacts
