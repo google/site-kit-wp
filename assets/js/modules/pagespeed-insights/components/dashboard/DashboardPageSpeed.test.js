@@ -25,7 +25,7 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import DashboardPageSpeed from './DashboardPageSpeed';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -36,6 +36,8 @@ const url = fixtures.pagespeedMobile.loadingExperience.id;
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
+	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
 	dispatch( CORE_SITE ).receiveSiteInfo( {
 		referenceSiteURL: url,
 		currentEntityURL: null,
@@ -49,7 +51,9 @@ const setupRegistryNoReports = ( { dispatch } ) => {
 };
 const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
+	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
 	dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldData, { url, strategy: STRATEGY_DESKTOP } );
+	dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
 	dispatch( CORE_SITE ).receiveSiteInfo( {
 		referenceSiteURL: url,
 		currentEntityURL: null,
@@ -59,12 +63,15 @@ const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 describe( 'DashboardPageSpeed', () => {
 	afterEach( fetchMock.mockClear );
 
-	it( 'renders a progress bar while reports are requested', () => {
+	it( 'renders a progress bar while reports are requested', async () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/ );
-
+		// needs second freezeFetch call, as one is for desktop and the other for mobile
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/ );
 		const { queryByRole } = render( <DashboardPageSpeed />, { setupRegistry: setupRegistryNoReports } );
 
-		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
+		await waitFor( () => {
+			expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
+		} );
 	} );
 
 	it( 'displays field data by default when available in both mobile and desktop reports', () => {

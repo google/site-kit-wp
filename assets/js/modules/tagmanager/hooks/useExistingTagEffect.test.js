@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { renderHook, act } from '../../../../../tests/js/test-utils';
-import { createTestRegistry, untilResolved, muteConsole } from '../../../../../tests/js/utils';
+import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
+import { createTestRegistry, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
 import useExistingTagEffect from './useExistingTagEffect';
@@ -64,8 +64,6 @@ describe( 'useExistingTagEffect', () => {
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId );
 
-		// Can't seem to prevent an error from updates happening outside of `act()` just for this part.
-		muteConsole( 'error' );
 		await act( () => new Promise( async ( resolve ) => {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
 			registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: existingContainer.publicId } );

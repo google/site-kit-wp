@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -118,7 +117,6 @@ describe( 'modules/analytics profiles', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).createProfile( ...args );
 
 				await subscribeUntil( registry,
@@ -137,6 +135,7 @@ describe( 'modules/analytics profiles', () => {
 
 				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );
@@ -212,7 +211,6 @@ describe( 'modules/analytics profiles', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).isDoingGetProfiles( testAccountID, testPropertyID ) === false
@@ -222,6 +220,7 @@ describe( 'modules/analytics profiles', () => {
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 				expect( profiles ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

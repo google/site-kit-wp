@@ -41,7 +41,7 @@ const fetchGetConnectionStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	connection: undefined,
 };
 
@@ -87,7 +87,7 @@ const baseSelectors = {
 	/**
 	 * Gets owner ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {number|undefined} Owner ID if it exists, otherwise undefined.
@@ -169,13 +169,13 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetConnectionStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

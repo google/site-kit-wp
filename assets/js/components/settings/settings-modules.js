@@ -36,7 +36,7 @@ import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import SettingsModule from './settings-module';
 import SettingsOverlay from './settings-overlay';
-import { isPermissionScopeError } from '../../googlesitekit/datastore/user/utils/is-permission-scope-error';
+import { isPermissionScopeError } from '../../util/errors';
 
 class SettingsModules extends Component {
 	constructor( props ) {

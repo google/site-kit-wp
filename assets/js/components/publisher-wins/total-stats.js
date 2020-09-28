@@ -63,7 +63,8 @@ const totalStats = ( data, id ) => {
 				datapointUnit: '',
 				change: totalClicksChange,
 				changeDataUnit: '%',
-				period: __( 'for month', 'google-site-kit' ),
+				/* translators: %s: numeric value change */
+				period: __( '%s for month', 'google-site-kit' ),
 			},
 			{
 				title: __( 'Total Impressions', 'google-site-kit' ),
@@ -71,7 +72,8 @@ const totalStats = ( data, id ) => {
 				datapointUnit: '',
 				change: totalImpressionsChange,
 				changeDataUnit: '%',
-				period: __( 'for month', 'google-site-kit' ),
+				/* translators: %s: numeric value change */
+				period: __( '%s for month', 'google-site-kit' ),
 			},
 			{
 				title: __( 'Average CTR', 'google-site-kit' ),
@@ -79,7 +81,8 @@ const totalStats = ( data, id ) => {
 				datapointUnit: '%',
 				change: averageCTRChange,
 				changeDataUnit: '%',
-				period: __( 'for month', 'google-site-kit' ),
+				/* translators: %s: numeric value change */
+				period: __( '%s for month', 'google-site-kit' ),
 			},
 		];
 	}

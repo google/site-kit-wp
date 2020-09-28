@@ -26,7 +26,7 @@ import classnames from 'classnames';
  */
 import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,8 +38,6 @@ import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import ProgressBar from '../../../../components/progress-bar';
-import AdSenseDashboardOutro from './AdSenseDashboardOutro';
-import { isAdsenseConnectedAnalytics } from '../../util';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
 import HelpLink from '../../../../components/help-link';
@@ -57,30 +55,11 @@ class AdSenseDashboardWidget extends Component {
 			receivingData: true,
 			error: false,
 			loading: true,
-			isAdSenseConnected: true,
 			zeroData: false,
 		};
 		this.handleDataError = this.handleDataError.bind( this );
 		this.handleDataSuccess = this.handleDataSuccess.bind( this );
 		this.handleZeroData = this.handleZeroData.bind( this );
-	}
-
-	componentDidMount() {
-		this.isAdSenseConnected();
-	}
-
-	async isAdSenseConnected() {
-		const adsenseConnect = await isAdsenseConnectedAnalytics();
-
-		if ( adsenseConnect ) {
-			this.setState( {
-				isAdSenseConnected: true,
-			} );
-		} else {
-			this.setState( {
-				isAdSenseConnected: false,
-			} );
-		}
 	}
 
 	/**
@@ -133,13 +112,30 @@ class AdSenseDashboardWidget extends Component {
 			error,
 			errorObj,
 			loading,
-			isAdSenseConnected,
 			zeroData,
 		} = this.state;
 		const { homepage } = modulesData.adsense;
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
+
+		let moduleStatus;
+		let moduleStatusText;
+		if ( ! error && modulesData.adsense.setupComplete ) {
+			moduleStatus = 'connected';
+			moduleStatusText = sprintf(
+				/* translators: %s: module name. */
+				__( '%s is connected', 'google-site-kit' ),
+				_x( 'AdSense', 'Service name', 'google-site-kit' )
+			);
+		} else {
+			moduleStatus = 'not-connected';
+			moduleStatusText = sprintf(
+				/* translators: %s: module name. */
+				__( '%s is not connected', 'google-site-kit' ),
+				_x( 'AdSense', 'Service name', 'google-site-kit' )
+			);
+		}
 
 		return (
 			<Fragment>
@@ -155,11 +151,15 @@ class AdSenseDashboardWidget extends Component {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-								{
-									( ! error && modulesData.adsense.setupComplete )
-										? <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } />
-										: <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
-								}
+								<PageHeader
+									title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
+									icon
+									iconWidth="30"
+									iconHeight="26"
+									iconID="adsense"
+									status={ moduleStatus }
+									statusText={ moduleStatusText }
+								/>
 								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
@@ -174,7 +174,7 @@ class AdSenseDashboardWidget extends Component {
 								</div>
 							}
 							{ ! receivingData && (
-								error ? getDataErrorComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), error, true, true, true, errorObj ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
+								error ? getDataErrorComponent( 'adsense', error, true, true, true, errorObj ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
 							<div className={ classnames(
 								'mdc-layout-grid__cell',
@@ -232,9 +232,6 @@ class AdSenseDashboardWidget extends Component {
 						</div>
 					</div>
 				</div>
-				{ ! isAdSenseConnected &&
-					<AdSenseDashboardOutro />
-				}
 			</Fragment>
 		);
 	}

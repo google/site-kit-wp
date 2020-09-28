@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -45,7 +45,7 @@ export default function ProfileNameTextField() {
 
 	useEffect( () => {
 		if ( ! profileName ) {
-			setValues( FORM_SETUP, { profileName: __( 'All Web Site Data', 'google-site-kit' ) } );
+			setValues( FORM_SETUP, { profileName: _x( 'All Web Site Data', 'default Analytics view name', 'google-site-kit' ) } );
 		}
 	}, [] );
 

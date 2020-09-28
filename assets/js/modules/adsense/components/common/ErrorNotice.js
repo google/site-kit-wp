@@ -30,5 +30,5 @@ import StoreErrorNotice from '../.././../../components/StoreErrorNotice';
 
 export default function ErrorNotice() {
 	const shouldDisplayError = useCallback( ( error ) => undefined === errorToStatus( error ), [] );
-	return <StoreErrorNotice storeName={ STORE_NAME } shouldDisplayError={ shouldDisplayError } />;
+	return <StoreErrorNotice moduleSlug="adsense" storeName={ STORE_NAME } shouldDisplayError={ shouldDisplayError } />;
 }

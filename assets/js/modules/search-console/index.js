@@ -28,10 +28,16 @@ import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
-import { AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL } from '../../googlesitekit/widgets/default-areas';
 import { SettingsMain as SearchConsolesSettings } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
+import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
+import {
+	AREA_DASHBOARD_POPULARITY,
+	AREA_DASHBOARD_SEARCH_FUNNEL,
+	AREA_PAGE_DASHBOARD_POPULARITY,
+	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+} from '../../googlesitekit/widgets/default-areas';
 
 /**
  * WordPress dependencies
@@ -82,6 +88,19 @@ domReady( () => {
 		[
 			AREA_DASHBOARD_SEARCH_FUNNEL,
 			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+	Widgets.registerWidget(
+		'searchConsolePopularKeywords',
+		{
+			component: DashboardPopularKeywordsWidget,
+			width: Widgets.WIDGET_WIDTHS.HALF,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_POPULARITY,
+			AREA_PAGE_DASHBOARD_POPULARITY,
 		],
 	);
 } );
