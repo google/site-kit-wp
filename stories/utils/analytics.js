@@ -52,23 +52,27 @@ export function generateGtmPropertyStory( {
 			const gtmAccountID = '152925174';
 			const gtmPropertyID = 'UA-152925174-1';
 
-			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+			const properties = [
+				...fixtures.accountsPropertiesProfiles.properties,
+				{
+					accountId: existingTagAccountID,
+					defaultProfileId: '206512257',
+					id: existingTagPropertyID,
+					internalWebPropertyId: existingTagWebPropertyID,
+					name: 'qwerty',
+				},
+			];
 
-			properties.push( {
-				accountId: existingTagAccountID,
-				defaultProfileId: '206512257',
-				id: existingTagPropertyID,
-				internalWebPropertyId: existingTagWebPropertyID,
-				name: 'qwerty',
-			} );
-
-			profiles.push( {
-				accountId: existingTagAccountID,
-				id: '206512258',
-				internalWebPropertyId: existingTagWebPropertyID,
-				name: 'All Web Site Data',
-				webPropertyId: existingTagPropertyID,
-			} );
+			const profiles = [
+				...fixtures.accountsPropertiesProfiles.profiles,
+				{
+					accountId: existingTagAccountID,
+					id: '206512258',
+					internalWebPropertyId: existingTagWebPropertyID,
+					name: 'All Web Site Data',
+					webPropertyId: existingTagPropertyID,
+				},
+			];
 
 			registry.dispatch( CORE_MODULES ).receiveGetModules( [
 				{
@@ -91,7 +95,7 @@ export function generateGtmPropertyStory( {
 			} );
 
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 
 			[ gtmAccountID, existingTagAccountID ].forEach( ( accountID ) => {
 				const accountProperties = properties.filter( ( { accountId } ) => accountId === accountID );
