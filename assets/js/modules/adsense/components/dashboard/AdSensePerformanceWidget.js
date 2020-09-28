@@ -47,12 +47,12 @@ function AdSensePerformanceWidget( ) {
 	const {
 		error,
 		loading,
-		prev28Days,
-		twentyEightDays,
+		prevRange,
+		currentRange,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const dateRange = select( CORE_USER ).getDateRange();
-		const prevRange = dateRange.replace( 'last', 'prev' );
+		const prevDateRange = dateRange.replace( 'last', 'prev' );
 		const commonArgs = {
 			metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
 		};
@@ -62,14 +62,14 @@ function AdSensePerformanceWidget( ) {
 		};
 
 		const prevRangeArgs = {
-			dateRange: prevRange,
+			dateRange: prevDateRange,
 			...commonArgs,
 		};
 		return {
-			error: store.getErrorForSelector( 'getReport', [ twentyEightDays ] ) || store.getErrorForSelector( 'getReport', [ prevRangeArgs ] ),
-			loading: store.isResolving( 'getReport', [ twentyEightDays ] ) || store.isResolving( 'getReport', [ prevRangeArgs ] ),
-			prev28Days: store.getReport( prevRangeArgs ),
-			twentyEightDays: store.getReport( currentRangeArgs ),
+			error: store.getErrorForSelector( 'getReport', [ currentRange ] ) || store.getErrorForSelector( 'getReport', [ prevRangeArgs ] ),
+			loading: store.isResolving( 'getReport', [ currentRange ] ) || store.isResolving( 'getReport', [ prevRangeArgs ] ),
+			prevRange: store.getReport( prevRangeArgs ),
+			currentRange: store.getReport( currentRangeArgs ),
 
 		};
 	} );
@@ -81,37 +81,37 @@ function AdSensePerformanceWidget( ) {
 		return getDataErrorComponent( 'adsense', error.message, true, true, false, error );
 	}
 
-	if ( ! twentyEightDays?.totals || ! prev28Days?.totals ) {
+	if ( ! currentRange?.totals || ! prevRange?.totals ) {
 		return getNoDataComponent( __( 'AdSense', 'google-site-kit' ) );
 	}
 
-	const dataBlocks = twentyEightDays.totals ? [
+	const dataBlocks = currentRange.totals ? [
 		{
 			className: 'googlesitekit-data-block--page-rpm',
 			title: __( 'Earnings', 'google-site-kit' ),
-			datapoint: readableLargeNumber( twentyEightDays.totals[ 0 ] ),
-			change: ( ! isUndefined( prev28Days.totals ) ) ? prev28Days.totals[ 0 ] : 0,
+			datapoint: readableLargeNumber( currentRange.totals[ 0 ] ),
+			change: ( ! isUndefined( prevRange.totals ) ) ? prevRange.totals[ 0 ] : 0,
 			changeDataUnit: '%',
 		},
 		{
 			className: 'googlesitekit-data-block--page-rpm',
 			title: __( 'Page RPM', 'google-site-kit' ),
-			datapoint: readableLargeNumber( twentyEightDays.totals[ 1 ] ),
-			change: ( ! isUndefined( prev28Days.totals ) ) ? prev28Days.totals[ 1 ] : 0,
+			datapoint: readableLargeNumber( currentRange.totals[ 1 ] ),
+			change: ( ! isUndefined( prevRange.totals ) ) ? prevRange.totals[ 1 ] : 0,
 			changeDataUnit: '%',
 		},
 		{
 			className: 'googlesitekit-data-block--impression',
 			title: __( 'Impressions', 'google-site-kit' ),
-			datapoint: readableLargeNumber( twentyEightDays.totals[ 2 ] ),
-			change: ! isUndefined( prev28Days.totals ) ? prev28Days.totals[ 2 ] : 0,
+			datapoint: readableLargeNumber( currentRange.totals[ 2 ] ),
+			change: ! isUndefined( prevRange.totals ) ? prevRange.totals[ 2 ] : 0,
 			changeDataUnit: '%',
 		},
 		{
 			className: 'googlesitekit-data-block--impression',
 			title: __( 'Page CTR', 'google-site-kit' ),
-			datapoint: readableLargeNumber( twentyEightDays.totals[ 3 ] ),
-			change: ! isUndefined( prev28Days.totals ) ? prev28Days.totals[ 3 ] : 0,
+			datapoint: readableLargeNumber( currentRange.totals[ 3 ] ),
+			change: ! isUndefined( prevRange.totals ) ? prevRange.totals[ 3 ] : 0,
 			changeDataUnit: '%',
 		},
 	] : [];

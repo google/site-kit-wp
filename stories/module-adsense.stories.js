@@ -192,25 +192,27 @@ storiesOf( 'AdSense Module', module )
 		},
 	} )
 	.add( 'Performance', () => {
-		global._googlesitekitLegacyData = adSenseData;
-
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Single'
-			);
-		}, 250 );
-
+		const {
+			adSensePerformanceCurrentRangeData,
+			adSensePerformanceCurrentRangeOptions,
+			adSensePerformancePrevRangeData,
+			adSensePerformancePrevRangeOptions,
+		} = fixtures;
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).receiveGetReport( adSensePerformanceCurrentRangeData, { options: adSensePerformanceCurrentRangeOptions } );
+			registry.dispatch( STORE_NAME ).receiveGetReport( adSensePerformancePrevRangeData, { options: adSensePerformancePrevRangeOptions } );
+		};
 		return (
-			<Layout
-				header
-				title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
-				headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
-				headerCtaLink="#"
-			>
-				<AdSensePerformanceWidget />
-			</Layout>
+			<WithTestRegistry callback={ setupRegistry }>
+				<Layout
+					header
+					title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
+					headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
+					headerCtaLink="#"
+				>
+					<AdSensePerformanceWidget />
+				</Layout>
+			</WithTestRegistry>
 		);
 	} )
 ;
