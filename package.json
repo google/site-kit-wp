@@ -74,6 +74,9 @@
       "./vendor/bin/phpcs"
     ]
   },
+  "config": {
+    "storybook_wordpress_version": "5.5.1"
+  },
   "keywords": [
     "google",
     "wordpress",

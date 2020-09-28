@@ -44,6 +44,7 @@ module.exports = async ( { config } ) => {
 				{
 					loader: 'sass-loader',
 					options: {
+						additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
 						sassOptions: {
 							includePaths: [ path.resolve( __dirname, '../node_modules/' ) ],
 						},
