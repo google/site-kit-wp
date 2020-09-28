@@ -315,7 +315,7 @@ describe( 'googlesitekit.api', () => {
 				expect( pushArgs.length ).toEqual( 1 );
 				const [ event, eventName, eventData ] = pushArgs[ 0 ];
 				expect( event ).toEqual( 'event' );
-				expect( eventName ).toEqual( 'GET:users/core/data/search-console' );
+				expect( eventName ).toEqual( 'GET:core/search-console/data/users' );
 				expect( eventData.event_category ).toEqual( 'api_error' );
 				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
 				expect( eventData.event_value ).toEqual( 500 );
@@ -513,7 +513,7 @@ describe( 'googlesitekit.api', () => {
 				expect( pushArgs.length ).toEqual( 1 );
 				const [ event, eventName, eventData ] = pushArgs[ 0 ];
 				expect( event ).toEqual( 'event' );
-				expect( eventName ).toEqual( 'POST:settings/core/data/search-console' );
+				expect( eventName ).toEqual( 'POST:core/search-console/data/settings' );
 				expect( eventData.event_category ).toEqual( 'api_error' );
 				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
 				expect( eventData.event_value ).toEqual( 500 );
