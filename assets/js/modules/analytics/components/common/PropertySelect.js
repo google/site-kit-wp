@@ -29,17 +29,44 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/progress-bar';
 import { STORE_NAME, PROPERTY_CREATE } from '../../datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const isLoadingAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
-	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
+	const {
+		accountID,
+		propertyID,
+		properties,
+		hasExistingTag,
+		hasGtmTag,
+		isLoadingAccounts,
+		isLoadingProperties,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+
+		const data = {
+			accountID: store.getAccountID(),
+			propertyID: store.getPropertyID(),
+			properties: [],
+			hasExistingTag: store.hasExistingTag(),
+			hasGtmTag: false,
+			isLoadingAccounts: store.isDoingGetAccounts(),
+			isLoadingProperties: false,
+		};
+
+		if ( data.accountID ) {
+			data.properties = store.getProperties( data.accountID );
+			data.isLoadingProperties = store.isDoingGetProperties( data.accountID );
+		}
+
+		if ( ! data.hasExistingTag ) {
+			data.hasGtmTag = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+		}
+
+		return data;
+	} );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -60,7 +87,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || ! isValidAccountID( accountID ) }
+			disabled={ hasExistingTag || hasGtmTag || ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>

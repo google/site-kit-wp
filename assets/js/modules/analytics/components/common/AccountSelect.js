@@ -29,14 +29,34 @@ import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/progress-bar';
 import { Select, Option } from '../../../../material-components';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
+	const {
+		accounts,
+		accountID,
+		hasExistingTag,
+		hasGtmTag,
+		isDoingGetAccounts,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+
+		const data = {
+			accounts: store.getAccounts(),
+			accountID: store.getAccountID(),
+			hasExistingTag: store.hasExistingTag(),
+			hasGtmTag: false,
+			isDoingGetAccounts: store.isDoingGetAccounts(),
+		};
+
+		if ( ! data.hasExistingTag ) {
+			data.hasGtmTag = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+		}
+
+		return data;
+	} );
 
 	const { selectAccount } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -57,7 +77,7 @@ export default function AccountSelect() {
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag }
+			disabled={ hasExistingTag || hasGtmTag }
 			enhanced
 			outlined
 		>
