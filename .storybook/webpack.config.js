@@ -33,7 +33,14 @@ module.exports = async ( { config } ) => {
 			use: [
 				MiniCssExtractPlugin.loader,
 				'css-loader',
-				'postcss-loader',
+				{
+					loader: 'postcss-loader',
+					options: {
+						config: {
+							path: './',
+						},
+					},
+				},
 				{
 					loader: 'sass-loader',
 					options: {
@@ -43,6 +50,7 @@ module.exports = async ( { config } ) => {
 					},
 				},
 			],
+			include: path.resolve( __dirname, '../' ),
 		},
 	);
 

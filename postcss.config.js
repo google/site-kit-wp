@@ -16,12 +16,22 @@
  * limitations under the License.
  */
 
+const presetEnv = require( 'postcss-preset-env' );
+const importUrl = require( 'postcss-import-url' );
+const autoprefixer = require( 'autoprefixer' );
+const cssnano = require( 'cssnano' );
+
+const plugins = [
+	presetEnv(),
+	importUrl( { resolveUrls: true } ),
+	autoprefixer( { grid: true } ),
+];
+
+if ( process.env.NODE_ENV === 'production' ) {
+	plugins.push( cssnano() );
+}
+
 module.exports = {
 	parser: false,
-	plugins: {
-		'postcss-preset-env': {},
-		autoprefixer: { grid: true },
-		cssnano: process.env.NODE_ENV === 'production' ? {} : false,
-	},
+	plugins,
 };
-

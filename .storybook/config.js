@@ -1,8 +1,10 @@
 /* eslint-disable no-restricted-globals */
 /* global __STORYBOOK_CLIENT_API__ */
+
 /**
  * External dependencies
  */
+import lodash from 'lodash';
 import React from 'react';
 import { addDecorator, configure } from '@storybook/react';
 
@@ -10,38 +12,18 @@ import { addDecorator, configure } from '@storybook/react';
  * WordPress dependencies
  */
 import { createHigherOrderComponent } from '@wordpress/compose';
-import {
-	Component,
-	createRef,
-	Fragment,
-	createElement,
-	createPortal,
-} from '@wordpress/element';
+import { Component, createRef, Fragment, createElement, createPortal } from '@wordpress/element';
 import { __, sprintf, setLocaleData } from '@wordpress/i18n';
-import {
-	getQueryString,
-	addQueryArgs,
-} from '@wordpress/url';
-import lodash from 'lodash';
-import {
-	addFilter,
-	removeFilter,
-	addAction,
-	doAction,
-	applyFilters,
-	removeAction,
-	removeAllFilters,
-} from '@wordpress/hooks';
+import { getQueryString, addQueryArgs } from '@wordpress/url';
+import { addFilter, removeFilter, addAction, doAction, applyFilters, removeAction, removeAllFilters } from '@wordpress/hooks';
+
 /**
  * Internal dependencies
  */
 import '../assets/sass/wpdashboard.scss';
 import '../assets/sass/adminbar.scss';
 import '../assets/sass/admin.scss';
-import '../vendor/johnpbloch/wordpress-core/wp-admin/css/common.css';
-import '../vendor/johnpbloch/wordpress-core/wp-admin/css/dashboard.css';
-import '../vendor/johnpbloch/wordpress-core/wp-admin/css/edit.css';
-import '../vendor/johnpbloch/wordpress-core/wp-admin/css/forms.css';
+import './assets/sass/wp-admin.scss';
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 import { bootstrapFetchMocks } from './fetch-mocks';
 
@@ -104,9 +86,11 @@ global._googlesitekitEntityData = {
 bootstrapFetchMocks();
 
 // Global Decorator.
-addDecorator( ( story ) => <div className="googlesitekit-plugin-preview">
-	<div className="googlesitekit-plugin">{ story() }</div>
-</div> );
+addDecorator( ( story ) => (
+	<div className="googlesitekit-plugin-preview">
+		<div className="googlesitekit-plugin">{ story() }</div>
+	</div>
+) );
 
 const req = require.context( '../stories', true, /\.stories\.js$/ );
 
