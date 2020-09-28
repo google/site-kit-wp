@@ -12,10 +12,27 @@ import { addDecorator, configure } from '@storybook/react';
  * WordPress dependencies
  */
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { Component, createRef, Fragment, createElement, createPortal } from '@wordpress/element';
+import {
+	Component,
+	createRef,
+	Fragment,
+	createElement,
+	createPortal,
+} from '@wordpress/element';
 import { __, sprintf, setLocaleData } from '@wordpress/i18n';
-import { getQueryString, addQueryArgs } from '@wordpress/url';
-import { addFilter, removeFilter, addAction, doAction, applyFilters, removeAction, removeAllFilters } from '@wordpress/hooks';
+import {
+	getQueryString,
+	addQueryArgs,
+} from '@wordpress/url';
+import {
+	addFilter,
+	removeFilter,
+	addAction,
+	doAction,
+	applyFilters,
+	removeAction,
+	removeAllFilters,
+} from '@wordpress/hooks';
 
 /**
  * Internal dependencies
