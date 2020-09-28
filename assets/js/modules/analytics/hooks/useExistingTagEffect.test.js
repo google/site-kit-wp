@@ -47,7 +47,7 @@ describe( 'useExistingTagEffect', () => {
 			propertyID: 'UA-987654321-1',
 		};
 
-		const data = {
+		const gtmAnalytics = {
 			accountID: '12345',
 			webPropertyID: 'UA-123456789-1',
 			ampPropertyID: 'UA-123456789-1',
@@ -77,11 +77,11 @@ describe( 'useExistingTagEffect', () => {
 		}, { propertyID: existingTag.propertyID } );
 
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
-		buildAndReceiveWebAndAMP( data );
+		buildAndReceiveWebAndAMP( gtmAnalytics );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-			accountID: data.accountID,
+			accountID: gtmAnalytics.accountID,
 			permission: true,
-		}, { propertyID: data.webPropertyID } );
+		}, { propertyID: gtmAnalytics.webPropertyID } );
 
 		act( () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
@@ -100,7 +100,7 @@ describe( 'useExistingTagEffect', () => {
 			propertyID: 'UA-987654321-1',
 		};
 
-		const data = {
+		const gtmAnalytics = {
 			accountID: '12345',
 			webPropertyID: 'UA-123456789-1',
 			ampPropertyID: 'UA-123456789-1',
@@ -130,25 +130,25 @@ describe( 'useExistingTagEffect', () => {
 		}, { propertyID: existingTag.propertyID } );
 
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
-		buildAndReceiveWebAndAMP( data );
+		buildAndReceiveWebAndAMP( gtmAnalytics );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-			accountID: data.accountID,
+			accountID: gtmAnalytics.accountID,
 			permission: true,
-		}, { propertyID: data.webPropertyID } );
+		}, { propertyID: gtmAnalytics.webPropertyID } );
 
 		act( () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( data.accountID );
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( data.webPropertyID );
+		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( gtmAnalytics.accountID );
+		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( gtmAnalytics.webPropertyID );
 	} );
 
 	it( 'should select GTM tag if there is no existing tag and user has permissions', async () => {
 		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, { body: { properties: [] }, status: 200 } );
 		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, { body: [], status: 200 } );
 
-		const data = {
+		const gtmAnalytics = {
 			accountID: '12345',
 			webPropertyID: 'UA-123456789-1',
 			ampPropertyID: 'UA-123456789-1',
@@ -171,26 +171,26 @@ describe( 'useExistingTagEffect', () => {
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-			accountID: data.accountID,
+			accountID: gtmAnalytics.accountID,
 			permission: true,
-		}, { propertyID: data.webPropertyID } );
+		}, { propertyID: gtmAnalytics.webPropertyID } );
 
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
-		buildAndReceiveWebAndAMP( data );
+		buildAndReceiveWebAndAMP( gtmAnalytics );
 
 		act( () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( data.accountID );
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( data.webPropertyID );
+		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( gtmAnalytics.accountID );
+		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( gtmAnalytics.webPropertyID );
 	} );
 
 	it( 'should select nothing if user doesn\'t have permissions neither to existing tag nor to GTM tag', async () => {
 		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, { body: { properties: [] }, status: 200 } );
 		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, { body: [], status: 200 } );
 
-		const data = {
+		const gtmAnalytics = {
 			accountID: '12345',
 			webPropertyID: 'UA-123456789-1',
 			ampPropertyID: 'UA-123456789-1',
@@ -213,12 +213,12 @@ describe( 'useExistingTagEffect', () => {
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-			accountID: data.accountID,
+			accountID: gtmAnalytics.accountID,
 			permission: false,
-		}, { propertyID: data.webPropertyID } );
+		}, { propertyID: gtmAnalytics.webPropertyID } );
 
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
-		buildAndReceiveWebAndAMP( data );
+		buildAndReceiveWebAndAMP( gtmAnalytics );
 
 		act( () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
