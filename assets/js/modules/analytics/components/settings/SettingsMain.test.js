@@ -27,6 +27,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -60,12 +61,8 @@ describe( 'SettingsMain', () => {
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);
 
-		fetchMock.get(
-			/tagmanager\/data\/settings/,
-			{ body: {}, status: 200 },
-		);
-
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 
