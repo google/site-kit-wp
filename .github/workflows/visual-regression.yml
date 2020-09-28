@@ -2,6 +2,9 @@ name: Visual Regresion Testing
 
 on:
   pull_request:
+    branches:
+      - master
+      - develop
     types:
       - opened
       - reopened
