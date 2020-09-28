@@ -17,44 +17,73 @@
  */
 
 /**
+ * External dependencies
+ */
+
+/**
  * WordPress dependencies
  */
-import { useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { isUndefined } from 'lodash';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+
 import {
-	getTimeInSeconds,
 	readableLargeNumber,
 } from '../../../../util';
-import { TYPE_MODULES } from '../../../../components/data';
 import DataBlock from '../../../../components/data-block.js';
 import PreviewBlock from '../../../../components/preview-block';
-import { isDataZeroAdSense } from '../../util';
-import withData from '../../../../components/higherorder/withdata';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME } from '../../datastore/constants';
+import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/notifications/nodata';
 
-function AdSensePerformanceWidget( { data, requestDataToState } ) {
-	const [ twentyEightDays, setTwentyEightDays ] = useState( false );
-	const [ prev28Days, setPrev28Days ] = useState( false );
+const { useSelect } = Data;
 
-	useEffect( () => {
-		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
-			const {
-				twentyEightDays: twentyEightDaysData,
-				prev28Days: prev28DaysData,
-			} = requestDataToState( { twentyEightDays, prev28Days }, { data } ) || {};
-			if ( undefined !== twentyEightDaysData ) {
-				setTwentyEightDays( twentyEightDaysData );
-			}
+function AdSensePerformanceWidget( ) {
+	const {
+		error,
+		loading,
+		prev28Days,
+		twentyEightDays,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		const dateRange = select( CORE_USER ).getDateRange();
+		const prevRange = dateRange.replace( 'last', 'prev' );
+		const commonArgs = {
+			metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
+		};
+		const currentRangeArgs = {
+			dateRange,
+			...commonArgs,
+		};
 
-			if ( undefined !== prev28DaysData ) {
-				setPrev28Days( prev28DaysData );
-			}
-		}
-	}, [ data, requestDataToState, twentyEightDays, prev28Days ] );
+		const prevRangeArgs = {
+			dateRange: prevRange,
+			...commonArgs,
+		};
+		return {
+			error: store.getErrorForSelector( 'getReport', [ twentyEightDays ] ) || store.getErrorForSelector( 'getReport', [ prevRangeArgs ] ),
+			loading: store.isResolving( 'getReport', [ twentyEightDays ] ) || store.isResolving( 'getReport', [ prevRangeArgs ] ),
+			prev28Days: store.getReport( prevRangeArgs ),
+			twentyEightDays: store.getReport( currentRangeArgs ),
+
+		};
+	} );
+
+	if ( loading ) {
+		return <PreviewBlock width="100%" height="250px" />;
+	}
+	if ( ! loading && error ) {
+		return getDataErrorComponent( 'adsense', error.message, true, true, false, error );
+	}
+
+	if ( ! twentyEightDays?.totals || ! prev28Days?.totals ) {
+		return getNoDataComponent( __( 'AdSense', 'google-site-kit' ) );
+	}
 
 	const dataBlocks = twentyEightDays.totals ? [
 		{
@@ -117,51 +146,4 @@ function AdSensePerformanceWidget( { data, requestDataToState } ) {
 		</section>
 	);
 }
-
-export default withData(
-	AdSensePerformanceWidget,
-	[
-		{
-			type: TYPE_MODULES,
-			identifier: 'adsense',
-			datapoint: 'earnings',
-			data: {
-				dateRange: 'last-28-days',
-				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
-			},
-			priority: 1,
-			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ],
-			toState( state, { data } ) {
-				if ( ! state.twentyEightDays ) {
-					return {
-						twentyEightDays: data,
-					};
-				}
-			},
-		},
-		{
-			type: TYPE_MODULES,
-			identifier: 'adsense',
-			datapoint: 'earnings',
-			data: {
-				dateRange: 'prev-28-days',
-				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
-			},
-			priority: 1,
-			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ],
-			toState( state, { data } ) {
-				if ( ! state.prev28Days ) {
-					return {
-						prev28Days: data,
-					};
-				}
-			},
-		},
-	],
-	<PreviewBlock width="100%" height="250px" />,
-	{ createGrid: true },
-	isDataZeroAdSense
-);
-
+export default AdSensePerformanceWidget;

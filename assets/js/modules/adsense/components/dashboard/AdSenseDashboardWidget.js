@@ -38,7 +38,6 @@ import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
-import ProgressBar from '../../../../components/progress-bar';
 import HelpLink from '../../../../components/help-link';
 import { getCurrentDateRange } from '../../../../util/date-range';
 import Header from '../../../../components/header';
@@ -58,7 +57,6 @@ export default function AdSenseDashboardWidget() {
 	const [ error, setError ] = useState( false );
 	const [ errorObj, setErrorObj ] = useState( false );
 	const [ zeroData, setZeroData ] = useState( false );
-	const [ loading, setLoading ] = useState( true );
 
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const isModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'adsense' ) );
@@ -80,7 +78,6 @@ export default function AdSenseDashboardWidget() {
 	const handleDataError = ( receivedError, receivedErrorObj ) => {
 		setError( receivedError );
 		setErrorObj( receivedErrorObj );
-		setLoading( false );
 		setReceivingData( false );
 	};
 
@@ -90,27 +87,17 @@ export default function AdSenseDashboardWidget() {
 	const handleZeroData = () => {
 		setZeroData( true );
 	};
+
+	/**
+	 * Loading is set to false until data starts to resolve.
+	 */
+	const handleDataSuccess = () => {
+		setReceivingData( true );
+	};
+
 	// Hide AdSense data display when we don't have data.
 	const wrapperClass = ( ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
 	const currentDateRange = getCurrentDateRange( dateRange );
-
-	let moduleStatus;
-	let moduleStatusText;
-	if ( ! error && isModuleConnected ) {
-		moduleStatus = 'connected';
-		moduleStatusText = sprintf(
-			/* translators: %s: module name. */
-			__( '%s is connected', 'google-site-kit' ),
-			_x( 'AdSense', 'Service name', 'google-site-kit' )
-		);
-	} else {
-		moduleStatus = 'not-connected';
-		moduleStatusText = sprintf(
-			/* translators: %s: module name. */
-			__( '%s is not connected', 'google-site-kit' ),
-			_x( 'AdSense', 'Service name', 'google-site-kit' )
-		);
-	}
 
 	return (
 		<Fragment>
@@ -126,27 +113,22 @@ export default function AdSenseDashboardWidget() {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-							<PageHeader
-								title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
-								icon
-								iconWidth="30"
-								iconHeight="26"
-								iconID="adsense"
-								status={ moduleStatus }
-								statusText={ moduleStatusText }
-							/>
-							{ loading && <ProgressBar /> }
+							{
+								( ! error && isModuleConnected )
+									? <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } />
+									: <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
+							}
 						</div>
 						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 						{ zeroData &&
-							<div className="
+						<div className="
 									mdc-layout-grid__cell
 									mdc-layout-grid__cell--span-12
 								">
-								<Layout fill>
-									<AdSenseDashboardZeroData />
-								</Layout>
-							</div>
+							<Layout fill>
+								<AdSenseDashboardZeroData />
+							</Layout>
+						</div>
 						}
 						{ ! receivingData && (
 							error ? getDataErrorComponent( 'adsense', error, true, true, true, errorObj ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
@@ -180,6 +162,7 @@ export default function AdSenseDashboardWidget() {
 											handleDataError( err.message, err );
 										}
 									} }
+									handleDataSuccess={ handleDataSuccess }
 								/>
 							</Layout>
 						</div>
