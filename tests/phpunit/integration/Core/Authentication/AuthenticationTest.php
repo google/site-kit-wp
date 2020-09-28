@@ -574,8 +574,6 @@ class AuthenticationTest extends TestCase {
 
 	/**
 	 * Test handle_proxy_permissions()
-	 *
-	 * @group test
 	 */
 	public function test_handle_proxy_permissions() {
 		$action = 'admin_action_' . Google_Proxy::ACTION_PERMISSIONS;
