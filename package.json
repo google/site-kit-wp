@@ -9,7 +9,7 @@
     "build:production": "npm run remove-dist && npm run build:static && webpack --mode=production",
     "build:test": "npm run build:production -- --include-tests",
     "build:static": "gulp svg imagemin",
-    "build:storybook": "build-storybook -c .storybook -o dist && npm run build:static",
+    "build:storybook": "build-storybook -c .storybook -o dist",
     "remove-dist": "rimraf ./dist",
     "prezip": "composer run autoload-includes",
     "zip": "gulp release",
