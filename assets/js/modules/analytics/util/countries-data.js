@@ -1,3 +1,4 @@
+/* eslint-disable sitekit/camelcase-acronyms */
 export const countries = {
 	default: {
 		defaultCountryCode: 'US',
