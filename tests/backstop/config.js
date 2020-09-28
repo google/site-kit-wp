@@ -23,7 +23,7 @@ const viewports = require( './viewports' );
 // This will be passed through with the `backstop` command run with docker.
 if ( process.argv.includes( '--docker' ) ) {
 	const hostname = require( './detect-storybook-host' );
-	process.argv.push( `--storybook-host=http://${ hostname }:9001` );
+	process.argv.push( `--storybook-host=${ hostname }` );
 }
 
 module.exports = {
