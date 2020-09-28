@@ -29,12 +29,8 @@ jobs:
             ${{ runner.os }}-node-cache-
       - name: npm install
         run: npm ci
-      - name: Build Storybook
-        run: npm run build:storybook -- --quiet
-      - name: Build Static Assets
-        run: npm run build:static
       - name: Run Backstopjs
-        run: npm run backstopjs -- --storybook-host=./dist
+        run: npm run test:visualtest
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         if: failure()
