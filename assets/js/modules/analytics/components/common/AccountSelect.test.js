@@ -22,20 +22,24 @@
 import AccountSelect from './AccountSelect';
 import { fireEvent, freezeFetch, render, waitFor } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 
 const setupRegistry = ( registry ) => {
+	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 };
 
 const setupLoadingRegistry = ( registry ) => {
+	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 };
 
 const setupEmptyRegistry = ( registry ) => {
+	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );

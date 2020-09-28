@@ -21,6 +21,7 @@
  */
 import PropertySelect from './PropertySelect';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { fireEvent, muteFetch, render, act } from '../../../../../../tests/js/test-utils';
 
@@ -28,6 +29,7 @@ const setupRegistry = ( { dispatch } ) => {
 	const { properties, profiles } = fixtures.accountsPropertiesProfiles;
 	const propertyID = properties[ 0 ].id;
 	const accountID = properties[ 0 ].accountId;
+	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).setAccountID( accountID );
 	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
 	dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
@@ -36,6 +38,7 @@ const setupRegistry = ( { dispatch } ) => {
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
+	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.getTagPermissionsAccess.propertyID );
 	// Existing tag IDs are set in the resolver so we have to fill those here.
@@ -46,7 +49,9 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 const setupEmptyRegistry = ( { dispatch } ) => {
 	const { properties } = fixtures.accountsPropertiesProfiles;
 	const accountID = properties[ 0 ].accountId;
+	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).setSettings( {} );
+	dispatch( STORE_NAME ).setAccountID( accountID );
 	dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( null );
 };
