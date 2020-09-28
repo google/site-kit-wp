@@ -34,9 +34,7 @@ jobs:
       - name: Build Storybook
         run: npm run build:storybook -- --quiet
       - name: Run Backstopjs
-        run: npm run backstopjs -- --storybook-host=./dist
-        env:
-          CI: true
+        run: npx run backstop test --config=tests/backstop/config.js --storybook-host=./dist
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         # if: failure()
