@@ -1,5 +1,5 @@
 /**
- * ESLint plugin config.
+ * ESLint plugin: utils used in multiple rules.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,13 +17,14 @@
  */
 
 module.exports = {
-	rules: {
-		'sitekit/camelcase-acronyms': [ 'error' ],
-		'sitekit/jsdoc-third-person': [ 'error' ],
-		'sitekit/jsdoc-fullstop': [ 'error' ],
-		// "sitekit/jsdoc-requires-since": [ 'error' ],
-		'sitekit/jsdoc-capitalization': [ 'error' ],
-		// "sitekit/jsdoc-tag-grouping": [ 'error' ],
-		// "sitekit/jsdoc-tag-order": [ 'error' ],
+	isDependencyBlock: ( jsdoc ) => {
+		if ( jsdoc && jsdoc.description && (
+			jsdoc.description.trim() === 'Node dependencies' ||
+      jsdoc.description.trim() === 'External dependencies' ||
+      jsdoc.description.trim() === 'WordPress dependencies' ||
+      jsdoc.description.trim() === 'Internal dependencies'
+		) ) {
+			return true;
+		}
 	},
 };
