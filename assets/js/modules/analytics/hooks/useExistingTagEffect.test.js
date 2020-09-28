@@ -25,6 +25,7 @@ import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesite
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
+import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {
@@ -53,20 +54,7 @@ describe( 'useExistingTagEffect', () => {
 			ampPropertyID: 'UA-123456789-1',
 		};
 
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: 'tagmanager',
-				name: 'Tag Manager',
-				description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
-				homepage: 'https://tagmanager.google.com/',
-				internal: false,
-				active: true,
-				connected: true,
-				dependencies: [],
-				dependants: [],
-				order: 10,
-			},
-		] );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
 
@@ -106,20 +94,7 @@ describe( 'useExistingTagEffect', () => {
 			ampPropertyID: 'UA-123456789-1',
 		};
 
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: 'tagmanager',
-				name: 'Tag Manager',
-				description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
-				homepage: 'https://tagmanager.google.com/',
-				internal: false,
-				active: true,
-				connected: true,
-				dependencies: [],
-				dependants: [],
-				order: 10,
-			},
-		] );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
 
@@ -154,20 +129,7 @@ describe( 'useExistingTagEffect', () => {
 			ampPropertyID: 'UA-123456789-1',
 		};
 
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: 'tagmanager',
-				name: 'Tag Manager',
-				description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
-				homepage: 'https://tagmanager.google.com/',
-				internal: false,
-				active: true,
-				connected: true,
-				dependencies: [],
-				dependants: [],
-				order: 10,
-			},
-		] );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
@@ -196,20 +158,7 @@ describe( 'useExistingTagEffect', () => {
 			ampPropertyID: 'UA-123456789-1',
 		};
 
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: 'tagmanager',
-				name: 'Tag Manager',
-				description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
-				homepage: 'https://tagmanager.google.com/',
-				internal: false,
-				active: true,
-				connected: true,
-				dependencies: [],
-				dependants: [],
-				order: 10,
-			},
-		] );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
