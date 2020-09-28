@@ -23,6 +23,8 @@ use Google\Site_Kit\Context;
  */
 final class User_Options implements User_Options_Interface {
 
+	use User_Aware_Trait;
+
 	/**
 	 * Plugin context.
 	 *
@@ -30,14 +32,6 @@ final class User_Options implements User_Options_Interface {
 	 * @var Context
 	 */
 	private $context;
-
-	/**
-	 * User ID for whom options should be managed.
-	 *
-	 * @since 1.0.0
-	 * @var int
-	 */
-	private $user_id;
 
 	/**
 	 * Constructor.
@@ -65,12 +59,13 @@ final class User_Options implements User_Options_Interface {
 	 * @return mixed Value set for the user option, or false if not set.
 	 */
 	public function get( $option ) {
-		if ( ! $this->user_id ) {
+		$user_id = $this->get_user_id();
+		if ( ! $user_id ) {
 			return false;
 		}
 
 		if ( $this->context->is_network_mode() ) {
-			$value = get_user_meta( $this->user_id, $option );
+			$value = get_user_meta( $user_id, $option );
 			if ( empty( $value ) ) {
 				return false;
 			}
@@ -78,7 +73,7 @@ final class User_Options implements User_Options_Interface {
 			return $value[0];
 		}
 
-		return get_user_option( $option, $this->user_id );
+		return get_user_option( $option, $user_id );
 	}
 
 	/**
@@ -91,15 +86,16 @@ final class User_Options implements User_Options_Interface {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set( $option, $value ) {
-		if ( ! $this->user_id ) {
+		$user_id = $this->get_user_id();
+		if ( ! $user_id ) {
 			return false;
 		}
 
 		if ( $this->context->is_network_mode() ) {
-			return (bool) update_user_meta( $this->user_id, $option, $value );
+			return (bool) update_user_meta( $user_id, $option, $value );
 		}
 
-		return (bool) update_user_option( $this->user_id, $option, $value );
+		return (bool) update_user_option( $user_id, $option, $value );
 	}
 
 	/**
@@ -111,42 +107,16 @@ final class User_Options implements User_Options_Interface {
 	 * @return bool True on success, false on failure.
 	 */
 	public function delete( $option ) {
-		if ( ! $this->user_id ) {
+		$user_id = $this->get_user_id();
+		if ( ! $user_id ) {
 			return false;
 		}
 
 		if ( $this->context->is_network_mode() ) {
-			return (bool) delete_user_meta( $this->user_id, $option );
+			return (bool) delete_user_meta( $user_id, $option );
 		}
 
-		return (bool) delete_user_option( $this->user_id, $option );
-	}
-
-	/**
-	 * Gets the ID of the user that options are controlled for.
-	 *
-	 * @since 1.1.4
-	 *
-	 * @return int User ID.
-	 */
-	public function get_user_id() {
-		return $this->user_id;
-	}
-
-	/**
-	 * Switches the user that options are controlled for to the one with the given ID.
-	 *
-	 * This method exists to exchange the user that is set as the current user in WordPress on the fly. In most cases
-	 * it is preferred to create a new instance of the class when dealing with multiple users. This method should only
-	 * be applied when the entire chain of class main instances need to be updated to rely on another user, i.e. when
-	 * the current WordPress user has changed.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $user_id User ID.
-	 */
-	public function switch_user( $user_id ) {
-		$this->user_id = (int) $user_id;
+		return (bool) delete_user_option( $user_id, $option );
 	}
 
 	/**
@@ -166,4 +136,5 @@ final class User_Options implements User_Options_Interface {
 
 		return $wpdb->get_blog_prefix() . $option;
 	}
+
 }
