@@ -42,4 +42,7 @@ jobs:
         # if: failure()
         with:
           name: vrt-report
-          path: tests/backstop/html_report
+          path: |
+            tests/backstop/html_report
+            tests/backstop/reference
+            tests/backstop/tests
