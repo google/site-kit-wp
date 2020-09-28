@@ -23,6 +23,7 @@ import * as fixtures from '../../assets/js/modules/analytics/datastore/__fixture
 import { STORE_NAME } from '../../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
+import { withActive } from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { createBuildAndReceivers } from '../../assets/js/modules/tagmanager/datastore/__factories__/utils';
 
 /**
@@ -74,20 +75,7 @@ export function generateGtmPropertyStory( {
 				},
 			];
 
-			registry.dispatch( CORE_MODULES ).receiveGetModules( [
-				{
-					slug: 'tagmanager',
-					name: 'Tag Manager',
-					description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code.',
-					homepage: 'https://tagmanager.google.com/',
-					internal: false,
-					active: true,
-					connected: true,
-					dependencies: [ 'analytics' ],
-					dependants: [],
-					order: 10,
-				},
-			] );
+			registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
 
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 				homeURL: 'https://example.com/',
