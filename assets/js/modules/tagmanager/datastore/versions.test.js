@@ -450,7 +450,6 @@ describe( 'modules/tagmanager versions', () => {
 				expect( console ).toHaveErrored();
 				expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();
 				expect( registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( null );
-				expect( console ).toHaveErrored();
 			} );
 		} );
 
