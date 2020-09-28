@@ -34,7 +34,7 @@ jobs:
       - name: Build Storybook
         run: npm run build:storybook -- --quiet
       - name: Run Backstopjs
-        run: npx run backstop test --config=tests/backstop/config.js --storybook-host=./dist
+        run: docker run --rm -i --mount type=bind,source="${PWD}",target=/src backstopjs/backstopjs:3.8.8 test "--config=tests/backstop/config.js" "--moby" "--storybook-host=./dist"
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         # if: failure()
