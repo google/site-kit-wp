@@ -344,7 +344,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	protected function setup_info() {
 		return array(
 			'slug'         => 'site-verification',
-			'name'         => __( 'Site Verification', 'google-site-kit' ),
+			'name'         => _x( 'Site Verification', 'Service name', 'google-site-kit' ),
 			'description'  => __( 'Google Site Verification allows you to manage ownership of your site.', 'google-site-kit' ),
 			'cta'          => __( 'Verify ownership with Google Site Verification.', 'google-site-kit' ),
 			'order'        => 0,

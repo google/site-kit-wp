@@ -24,6 +24,7 @@ import md5 from 'md5';
 
 const RECEIVE_ERROR = 'RECEIVE_ERROR';
 const CLEAR_ERROR = 'CLEAR_ERROR';
+const CLEAR_ERRORS = 'CLEAR_ERRORS';
 
 /**
  * Internal dependencies
@@ -31,14 +32,14 @@ const CLEAR_ERROR = 'CLEAR_ERROR';
 import { stringifyObject } from '../../util';
 
 function generateErrorKey( baseName, args ) {
-	let key = baseName;
 	if ( args && Array.isArray( args ) ) {
 		const stringifiedArgs = args.map( ( item ) => {
 			return 'object' === typeof item ? stringifyObject( item ) : item;
 		} );
-		key += md5( JSON.stringify( stringifiedArgs ) );
+		return `${ baseName }::${ md5( JSON.stringify( stringifiedArgs ) ) }`;
 	}
-	return key;
+
+	return baseName;
 }
 
 export const actions = {
@@ -63,10 +64,18 @@ export const actions = {
 			},
 		};
 	},
+	clearErrors( baseName ) {
+		return {
+			type: CLEAR_ERRORS,
+			payload: {
+				baseName,
+			},
+		};
+	},
 };
 
 export function createErrorStore() {
-	const INITIAL_STATE = {
+	const initialState = {
 		errors: {},
 		error: undefined,
 	};
@@ -75,33 +84,56 @@ export function createErrorStore() {
 		switch ( type ) {
 			case RECEIVE_ERROR: {
 				const { baseName, args, error } = payload;
-				const newState = { ...state };
 
 				if ( baseName ) {
-					newState.errors = {
-						...( state.errors || {} ),
-						[ generateErrorKey( baseName, args ) ]: error,
+					return {
+						...state,
+						errors: {
+							...( state.errors || {} ),
+							[ generateErrorKey( baseName, args ) ]: error,
+						},
 					};
+				}
+
+				// @TODO: remove once all instances of the legacy behavior have been removed.
+				return { ...state, error };
+			}
+
+			case CLEAR_ERROR: {
+				const { baseName, args } = payload;
+				const newState = { ...state };
+				if ( baseName ) {
+					const key = generateErrorKey( baseName, args );
+					newState.errors = { ...( state.errors || {} ) };
+					delete newState.errors[ key ];
 				} else {
 					// @TODO: remove it once all instances of the legacy behavior have been removed.
-					newState.error = error;
+					newState.error = undefined;
 				}
 
 				return newState;
 			}
 
-			case CLEAR_ERROR: {
-				const { baseName, args } = payload;
-				const key = generateErrorKey( baseName, args );
-
-				const errors = { ...( state.errors || {} ) };
-				delete errors[ key ];
-
-				return { ...state, errors };
+			case CLEAR_ERRORS: {
+				const { baseName } = payload;
+				const newState = { ...state };
+				if ( baseName ) {
+					newState.errors = { ...( state.errors || {} ) };
+					for ( const key in Object.keys( newState.errors ) ) {
+						if ( key === baseName || key.startsWith( `${ baseName }::` ) ) {
+							delete newState.errors[ key ];
+						}
+					}
+				} else {
+					newState.errors = {};
+					// @TODO: remove it once all instances of the legacy behavior have been removed.
+					newState.error = undefined;
+				}
+				return newState;
 			}
 
 			default: {
-				return { ...state };
+				return state;
 			}
 		}
 	}
@@ -204,7 +236,7 @@ export function createErrorStore() {
 	};
 
 	return {
-		INITIAL_STATE,
+		initialState,
 		actions,
 		controls,
 		reducer,

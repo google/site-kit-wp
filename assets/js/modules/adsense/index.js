@@ -20,11 +20,14 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
+import domReady from '@wordpress/dom-ready';
 
 /**
  * Internal dependencies
  */
 import './datastore';
+import Widgets from 'googlesitekit-widgets';
+import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain } from './components/setup';
 import {
@@ -32,7 +35,11 @@ import {
 	SettingsSetupIncomplete,
 } from './components/settings';
 import { AdBlockerWarning } from './components/common';
-import { DashboardZeroData } from './components/dashboard';
+import {
+	DashboardZeroData,
+	DashboardSummaryWidget,
+	DashboardTopEarningPagesWidget,
+} from './components/dashboard';
 
 addFilter(
 	'googlesitekit.ModuleSetup-adsense',
@@ -79,3 +86,31 @@ addFilter(
 	'googlesitekit.AdSenseDashboardZeroDataRefactored',
 	fillFilterWithComponent( DashboardZeroData )
 );
+
+domReady( () => {
+	Widgets.registerWidget(
+		'adsenseSummary',
+		{
+			component: DashboardSummaryWidget,
+			width: Widgets.WIDGET_WIDTHS.HALF,
+			priority: 1,
+			wrapWidget: false,
+
+		},
+		[
+			AREA_DASHBOARD_EARNINGS,
+		],
+	);
+	Widgets.registerWidget(
+		'adsenseTopEarningPages',
+		{
+			component: DashboardTopEarningPagesWidget,
+			width: Widgets.WIDGET_WIDTHS.HALF,
+			priority: 2,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_EARNINGS,
+		],
+	);
+} );

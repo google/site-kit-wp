@@ -24,7 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -99,20 +100,22 @@ const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 				loadHeight={ 205 }
 			/>
 			{ source &&
-			<div className="googlesitekit-chart__source">
-				{ [
-					__( 'Source:', 'google-site-kit' ),
-					' ',
-					<Link
-						key="link"
-						href={ sourceURI }
-						inherit
-						external
-					>
-						{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					</Link>,
-				] }
-			</div>
+				<div className="googlesitekit-chart__source">
+					{ createInterpolateElement(
+						sprintf(
+							/* translators: %s: source link */
+							__( 'Source: %s', 'google-site-kit' ),
+							`<a>${ _x( 'Analytics', 'Service name', 'google-site-kit' ) }</a>`
+						),
+						{
+							a: <Link
+								key="link"
+								href={ sourceURI }
+								inherit
+							/>,
+						}
+					) }
+				</div>
 			}
 		</div>
 	);

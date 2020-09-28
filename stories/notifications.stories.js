@@ -183,7 +183,7 @@ storiesOf( 'Global/Notifications', module )
 						datapointUnit: 'K',
 						change: 20,
 						changeDataUnit: '%',
-						period: 'for month',
+						period: '%s for month',
 					},
 					{
 						title: 'Total Impressions',
@@ -191,7 +191,7 @@ storiesOf( 'Global/Notifications', module )
 						datapointUnit: 'm',
 						change: 13,
 						changeDataUnit: '%',
-						period: 'for month',
+						period: '%s for month',
 					},
 					{
 						title: 'Average CTR',
@@ -199,7 +199,7 @@ storiesOf( 'Global/Notifications', module )
 						datapointUnit: '%',
 						change: 5,
 						changeDataUnit: '%',
-						period: 'for month',
+						period: '%s for month',
 					},
 				]
 			}
