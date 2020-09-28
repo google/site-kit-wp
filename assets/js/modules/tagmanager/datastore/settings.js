@@ -89,8 +89,8 @@ export const controls = {
 				return { error };
 			}
 
-			await dispatch( STORE_NAME ).setContainerID( container.publicId ); // Capitalization rule exception: publicId
-			await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // Capitalization rule exception: containerId
+			await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
+			await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
 		}
 
 		const ampContainerID = select( STORE_NAME ).getAMPContainerID();
@@ -102,8 +102,8 @@ export const controls = {
 				return { error };
 			}
 
-			await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // Capitalization rule exception: publicId
-			await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // Capitalization rule exception: containerId
+			await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
+			await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
 		}
 
 		// This action shouldn't be called if settings haven't changed,

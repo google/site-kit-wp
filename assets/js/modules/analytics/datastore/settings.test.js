@@ -86,6 +86,7 @@ describe( 'modules/analytics settings', () => {
 				const createdProperty = {
 					...fixtures.propertiesProfiles.properties[ 0 ],
 					id: 'UA-12345-1',
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					internalWebPropertyId: '123456789',
 				};
 
@@ -110,6 +111,7 @@ describe( 'modules/analytics settings', () => {
 
 				expect( result.error ).toBeFalsy();
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( createdProperty.internalWebPropertyId );
 			} );
 

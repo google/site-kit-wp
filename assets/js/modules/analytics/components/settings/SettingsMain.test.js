@@ -45,9 +45,9 @@ describe( 'SettingsMain', () => {
 	} );
 
 	const initialSettings = {
-		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId,
-		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId,
-		internalWebPropertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].internalWebPropertyId,
+		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
+		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+		internalWebPropertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].internalWebPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
 		profileID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].id,
 		useSnippet: true,
 		trackingDisabled: [],
