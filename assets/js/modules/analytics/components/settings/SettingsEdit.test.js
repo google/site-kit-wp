@@ -31,8 +31,8 @@ describe( 'SettingsEdit', () => {
 		const registry = createTestRegistry();
 		const existingTag = {};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		existingTag.accountID = profiles[ 0 ].accountId;
-		existingTag.propertyID = profiles[ 0 ].webPropertyId;
+		existingTag.accountID = profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		existingTag.propertyID = profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
 		const { accountID, propertyID } = existingTag;
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
