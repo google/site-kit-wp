@@ -31,8 +31,8 @@ import { sortByProperty } from '../../../util/sort-by-property';
  * Store our widget components by registry, then by widget `slug`. We do this because
  * we can't store React components in our data store.
  *
- * @private
  * @since 1.9.0
+ * @private
  */
 export const WidgetComponents = {};
 
