@@ -78,6 +78,17 @@ class User_Input_Settings {
 	 * @return boolean TRUE if connected, otherwise FALSE.
 	 */
 	private function is_connected_to_proxy() {
+		if ( ! $this->authentication->is_authenticated() ) {
+			return false;
+		}
+
+		$credentials = $this->authentication->credentials();
+		if ( $credentials ) {
+			if ( ! $credentials->using_proxy() || ! $credentials->has() ) {
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -152,7 +163,7 @@ class User_Input_Settings {
 	 */
 	public function get_settings() {
 		if ( ! $this->is_connected_to_proxy() ) {
-			return new \WP_Error();
+			return new \WP_Error( 'not_connected', __( 'Not Connected', 'google-site-kit' ), array( 'status' => 400 ) );
 		}
 
 		$data = array(
@@ -189,7 +200,7 @@ class User_Input_Settings {
 	public function set_settings( $settings ) {
 		return $this->is_connected_to_proxy()
 			? $this->sync_with_proxy( $settings )
-			: new \WP_Error();
+			: new \WP_Error( 'not_connected', __( 'Not Connected', 'google-site-kit' ), array( 'status' => 400 ) );
 	}
 
 }
