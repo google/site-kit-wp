@@ -40,7 +40,7 @@ export default function PropertySelect() {
 		propertyID,
 		properties,
 		hasExistingTag,
-		hasGtmTag,
+		hasGTMTag,
 		isLoadingAccounts,
 		isLoadingProperties,
 	} = useSelect( ( select ) => {
@@ -51,7 +51,7 @@ export default function PropertySelect() {
 			propertyID: store.getPropertyID(),
 			properties: [],
 			hasExistingTag: store.hasExistingTag(),
-			hasGtmTag: false,
+			hasGTMTag: false,
 			isLoadingAccounts: store.isDoingGetAccounts(),
 			isLoadingProperties: false,
 		};
@@ -62,7 +62,7 @@ export default function PropertySelect() {
 		}
 
 		if ( ! data.hasExistingTag ) {
-			data.hasGtmTag = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+			data.hasGTMTag = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 		}
 
 		return data;
@@ -87,7 +87,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGtmTag || ! isValidAccountID( accountID ) }
+			disabled={ hasExistingTag || hasGTMTag || ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>

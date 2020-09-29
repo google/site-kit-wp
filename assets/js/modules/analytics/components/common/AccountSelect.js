@@ -38,7 +38,7 @@ export default function AccountSelect() {
 		accounts,
 		accountID,
 		hasExistingTag,
-		hasGtmTag,
+		hasGTMTag,
 		isDoingGetAccounts,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
@@ -47,12 +47,12 @@ export default function AccountSelect() {
 			accounts: store.getAccounts(),
 			accountID: store.getAccountID(),
 			hasExistingTag: store.hasExistingTag(),
-			hasGtmTag: false,
+			hasGTMTag: false,
 			isDoingGetAccounts: store.isDoingGetAccounts(),
 		};
 
 		if ( ! data.hasExistingTag ) {
-			data.hasGtmTag = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+			data.hasGTMTag = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 		}
 
 		return data;
@@ -77,7 +77,7 @@ export default function AccountSelect() {
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGtmTag }
+			disabled={ hasExistingTag || hasGTMTag }
 			enhanced
 			outlined
 		>
