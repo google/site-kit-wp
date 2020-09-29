@@ -24,6 +24,8 @@ import { applyMiddleware } from 'redux';
 /**
  * Creates a middleware for logging dispatched actions to the console.
  *
+ * @since 1.11.0
+ *
  * @return {Function} Middleware function.
  */
 function createLoggerMiddleware() {
@@ -48,6 +50,8 @@ function createLoggerMiddleware() {
  * We set this because wp.data registry middleware is not extendable,
  * but it has built-in support for the devtools extension.
  * Since the real extension can't be used in a unit or E2E testing context, we're safe to hijack the global here.
+ *
+ * @since 1.11.0
  *
  * @see {@link https://github.com/WordPress/gutenberg/blob/2611a1df0a423dd22cbbabef8f2e87eb91b54bb2/packages/data/src/namespace-store/index.js#L124-L147}
  */

@@ -16,7 +16,9 @@
  * module.exports = async function( page, scenario ) {
  *   require( './removeCSP' )( page, scenario );
  * }
-  ```
+ * ```
+ *
+ * @since 1.0.0
  *
  * @param {Request} request HTTP Request.
  * @return     {void}

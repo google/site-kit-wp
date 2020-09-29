@@ -33,8 +33,9 @@ import { createElement, Fragment } from '@wordpress/element';
  *			createAddToFilter( <LegacyDashboardEarnings /> ), // Using the helper to append a component.
  * 			11 ); // Priority will determine the order items are appended.
  *
- * @param {WPElement} NewComponent The new component to append to the filtered component.
+ * @since 1.0.0
  *
+ * @param {WPElement} NewComponent The new component to append to the filtered component.
  * @return {WPElement} Filtered component with appended component.
  *
  */
@@ -73,6 +74,8 @@ export const createAddToFilter = ( NewComponent ) => {
  * 			onSettingsPage: true,
  * 		} ) );
  * ```
+ *
+ * @since 1.0.0
  *
  * @param {WPElement} NewComponent The component to render in place of the filtered component.
  * @param {Object}    newProps     The props to pass down to the new component.

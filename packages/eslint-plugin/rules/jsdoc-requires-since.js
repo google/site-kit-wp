@@ -31,11 +31,20 @@ module.exports = iterateJsdoc( ( {
 		return;
 	}
 
-	const hasSinceTag = utils.filterTags( ( { tag } ) => {
+	const hasSinceTag = !! utils.filterTags( ( { tag } ) => {
 		return [ 'since' ].includes( tag );
-	} );
+	} ).length;
 
-	if ( hasSinceTag.length ) {
+	if ( hasSinceTag ) {
+		return;
+	}
+
+	// If the `@ignore` tag is in this JSDoc block, ignore it and don't require a `@since` tag.
+	const hasIgnoreTag = !! utils.filterTags( ( { tag } ) => {
+		return [ 'ignore' ].includes( tag );
+	} ).length;
+
+	if ( hasIgnoreTag ) {
 		return;
 	}
 

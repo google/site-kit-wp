@@ -50,6 +50,8 @@ import getSetupIncompleteComponent from '../notifications/setup-incomplete';
  * called with the error message string if there is a data error and called with no string if the data is empty.
  * `handleDataSuccess` will be called when data resolves correctly.
  *
+ * @since 1.0.0
+ *
  * @param {WPElement} DataDependentComponent The React Component to render once we have its required data.
  * @param {Array}     selectData             An array of data objects to resolve.
  *                                                 Each object includes the following properties:
@@ -67,7 +69,6 @@ import getSetupIncompleteComponent from '../notifications/setup-incomplete';
  *                                                 if the data is "zero".
  * @param {Function}  getDataError           A callback function that is passed the resolved data and returns the
  *                                                 error message.
- *
  * @return {WPElement} Component  	Returns React.Components based on data and state.
  *                                  If has data  	  Return DataDependentComponent with data.
  *                                  has no data		  Fallback message when no data.
@@ -164,6 +165,8 @@ const withData = (
 			 *
 			 * Each resolved data point is passed thru this handler to detect errors and zero data conditions, and
 			 * to trigger `handleDataError` and `handleDataSuccess` helpers.
+			 *
+			 * @since 1.0.0
 			 *
 			 * @param {Object} returnedData The data returned from the API.
 			 * @param {Object} requestData  The data object for the request.

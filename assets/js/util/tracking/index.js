@@ -48,6 +48,8 @@ const {
 /**
  * Change the active state of tracking.
  *
+ * @since 1.3.0
+ *
  * @param {boolean} activeStatus The new state to set.
  */
 function toggleTracking( activeStatus ) {

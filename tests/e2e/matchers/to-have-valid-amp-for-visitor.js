@@ -36,6 +36,8 @@ import { fetchPageContent } from '../utils';
 /**
  * Matcher to determine if the path has valid AMP for vistors (not logged in).
  *
+ * @since 1.10.0
+ *
  * @param {(string|Object)} path The string URI or page object.
  * @return {Object} Matcher results.
  */

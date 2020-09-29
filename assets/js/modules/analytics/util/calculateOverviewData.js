@@ -24,6 +24,8 @@ import { changeToPercent } from '../../../util';
 /**
  * Calculates the report data.
  *
+ * @since 1.8.0
+ *
  * @param {Array} reports Report data.
  * @return {Object} Report data.
  */

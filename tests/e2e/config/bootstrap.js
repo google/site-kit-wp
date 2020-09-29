@@ -34,6 +34,8 @@ const { PUPPETEER_TIMEOUT, EXPECT_PUPPETEER_TIMEOUT } = process.env;
  * to the Puppeteer ConsoleMessage type, its value the corresponding function
  * on the console global object.
  *
+ * @since 1.0.0
+ *
  * @type {Object<string,string>}
  */
 const OBSERVED_CONSOLE_MESSAGE_TYPES = {
@@ -45,6 +47,8 @@ const OBSERVED_CONSOLE_MESSAGE_TYPES = {
 
 /**
  * Array of page event tuples of [ eventName, handler ].
+ *
+ * @since 1.0.0
  *
  * @type {Array}
  */
@@ -171,6 +175,8 @@ function observeConsoleLogging() {
 /**
  * Observe the given navigation request.
  *
+ * @since 1.0.0
+ *
  * @param {Object} req HTTP request object.
  */
 function observeNavigationRequest( req ) {
@@ -186,6 +192,8 @@ function observeNavigationRequest( req ) {
 
 /**
  * Observe the given navigation response.
+ *
+ * @since 1.0.0
  *
  * @param {Object} res HTTP response object.
  */
@@ -204,6 +212,8 @@ function observeNavigationResponse( res ) {
 /**
  * Observe the given REST request.
  *
+ * @since 1.0.0
+ *
  * @param {Object} req HTTP request object from the REST API request.
  */
 function observeRestRequest( req ) {
@@ -219,6 +229,8 @@ function observeRestRequest( req ) {
 
 /**
  * Observe the given REST response.
+ *
+ * @since 1.0.0
  *
  * @param {Object} res HTTP response object from the REST API request.
  */

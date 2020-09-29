@@ -5,6 +5,8 @@
  * Returns a function that, when called, stops further request
  * handling/interception.
  *
+ * @since 1.0.0
+ *
  * @param {Function} callback Function to handle requests.
  * @return {Function} Function that can be called to remove the added handler function from the page.
  */

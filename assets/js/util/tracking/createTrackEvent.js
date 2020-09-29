@@ -7,6 +7,8 @@ import createDataLayerPush from './createDataLayerPush';
 /**
  * Returns a function which, when invoked tracks a single event.
  *
+ * @since 1.3.0
+ *
  * @param {Object} config          Tracking configuration.
  * @param {Object} dataLayerTarget Data layer parent object.
  * @param {Object} _global         The global window object.
@@ -17,6 +19,8 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 
 	/**
 	 * Send an Analytics tracking event.
+	 *
+	 * @since 1.3.0
 	 *
 	 * @param {string} eventCategory The event category. Required.
 	 * @param {string} eventName     The event category. Required.

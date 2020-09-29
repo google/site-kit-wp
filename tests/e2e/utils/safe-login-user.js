@@ -9,6 +9,8 @@ const MAX_LOGIN_ATTEMPTS = 3;
 /**
  * Attempts to log in the given user up to a maximum number of retries on failure.
  *
+ * @since 1.2.0
+ *
  * @param {?string} username String to be used as user credential.
  * @param {?string} password String to be used as user credential.
  * @param {?number} attempt  Number of the current attempt.

@@ -28,7 +28,10 @@ import Layout from '../layout/layout';
 
 /**
  * Get CTA html wrapper.
+ *
  * Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
+ *
+ * @since 1.0.0
  *
  * @param {Object}  cta        CTA component to render.
  * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.

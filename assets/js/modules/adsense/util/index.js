@@ -54,6 +54,8 @@ export function reduceAdSenseData( rows ) {
 /**
  * Check for any value higher than 0 in values from AdSense data.
  *
+ * @since 1.0.0
+ *
  * @param {Array}  adSenseData Data returned from the AdSense.
  * @param {string} datapoint   Datapoint requested.
  * @param {Object} dataRequest Request data object.

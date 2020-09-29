@@ -21,6 +21,8 @@ import { Page, ElementHandle } from 'puppeteer';
 /**
  * Asserts the given page/element has the given value.
  *
+ * @since 1.9.0
+ *
  * @param {(Page|ElementHandle)} instance      Page or element handle instance.
  * @param {string}               selector      Selector for element with value.
  * @param {string}               expectedValue Value expected to match element's actual value.

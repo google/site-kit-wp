@@ -22,15 +22,14 @@ import { createTestRegistry } from './utils';
  * Renders the given UI into a container to make assertions.
  *
  * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
- *
+ * @since 1.7.1
  * @private
  *
  * @param {*}        ui                    Any valid React child element.
  * @param {Object}   options               Render options.
  * @param {Function} options.setupRegistry A function which accepts the registry instance to configure it.
  * @param {Function} options.registry      A specific registry instance to use. Defaults to a fresh test registry with all stores.
- * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result}
- *                 as well as the `registry`.
+ * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {
 	const {

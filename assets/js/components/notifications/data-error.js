@@ -36,6 +36,8 @@ import InvalidCredentialsWarning from './invalid-credentials-warning';
 /**
  * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
  *
+ * @since 1.0.0
+ *
  * @param {string}  moduleSlug   Module slug.
  * @param {string}  errorMessage Description of error.
  * @param {boolean} inGrid       Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.

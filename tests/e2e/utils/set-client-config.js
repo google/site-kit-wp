@@ -7,6 +7,8 @@ import { testClientConfig } from './test-client-config';
 /**
  * Set oAuth client configuration used by Site Kit.
  *
+ * @since 1.0.0
+ *
  * @param {Object} [config] Client configuration object.
  * @return {*} resolved value from apiFetch promise.
  */

@@ -127,8 +127,9 @@ export const collectSelectors = collect;
 /**
  * Collects all state values.
  *
- * @param {...Object} args A list of objects, each containing their own state values.
+ * @since 1.5.0
  *
+ * @param {...Object} args A list of objects, each containing their own state values.
  * @return {Object} The combined object.
  */
 export const collectState = collect;

@@ -30,6 +30,8 @@ import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constan
 /**
  * Gets the current dateRange string.
  *
+ * @since 1.8.0
+ *
  * @param {string} [dateRange] Optional. The date range slug.
  * @return {string} the date range string.
  */
@@ -49,6 +51,8 @@ export function getCurrentDateRange( dateRange = getCurrentDateRangeSlug() ) {
 
 /**
  * Gets the current dateRange slug.
+ *
+ * @since 1.8.0
  *
  * @return {string} the date range slug.
  */

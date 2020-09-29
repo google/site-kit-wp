@@ -6,6 +6,8 @@ import { wpApiFetch } from './wp-api-fetch';
 /**
  * Set the authentication token used by Site Kit.
  *
+ * @since 1.0.0
+ *
  * @param {string} token Access token to set.
  * @return {*} resolved value from apiFetch promise.
  */

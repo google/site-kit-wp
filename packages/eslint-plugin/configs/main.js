@@ -21,7 +21,7 @@ module.exports = {
 		'sitekit/camelcase-acronyms': [ 'error' ],
 		'sitekit/jsdoc-third-person': [ 'error' ],
 		'sitekit/jsdoc-fullstop': [ 'error' ],
-		// "sitekit/jsdoc-requires-since": [ 'error' ],
+		'sitekit/jsdoc-requires-since': [ 'error' ],
 		'sitekit/jsdoc-capitalization': [ 'error' ],
 		// "sitekit/jsdoc-tag-grouping": [ 'error' ],
 		// "sitekit/jsdoc-tag-order": [ 'error' ],

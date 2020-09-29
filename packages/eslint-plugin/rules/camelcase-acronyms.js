@@ -42,6 +42,8 @@ module.exports = {
 		/**
 		 * Reports an AST node as a rule violation.
 		 *
+		 * @since n.e.x.t
+		 *
 		 * @param {Object} node The node to report.
 		 * @return {void}
 		 * @private

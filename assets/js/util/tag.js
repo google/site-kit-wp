@@ -38,11 +38,12 @@ import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util
 import { AMP_MODE_SECONDARY } from '../googlesitekit/datastore/site/constants';
 
 /**
- * Looks for existing tag requesting front end html, if no existing tag was found on server side
+ * Looks for existing tag requesting front-end HTML, if no existing tag was found on server-side
  * while requesting list of accounts.
  *
- * @param {string} module Module slug.
+ * @since 1.8.0
  *
+ * @param {string} module Module slug.
  * @return {(string|null)} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
@@ -72,6 +73,8 @@ export const getExistingTag = async ( module ) => {
 /**
  * Scrapes a module tag from the given URL.
  *
+ * @since 1.8.0
+ *
  * @param {string} url    URL request and parse tag from.
  * @param {string} module The module to parse tag for.
  * @return {(string|null)} The tag id if found, otherwise null.
@@ -87,6 +90,8 @@ export const scrapeTag = async ( url, module ) => {
 
 /**
  * Extracts a tag related to a module from the given string.
+ *
+ * @since 1.8.0
  *
  * @param {string} string The string from where to find the tag.
  * @param {string} module The tag to search for, one of 'adsense' or 'analytics'.

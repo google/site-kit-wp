@@ -112,8 +112,9 @@ class LegacyAdSenseDashboardWidgetTopPagesTableSmall extends Component {
 /**
  * Check error data response.
  *
- * @param {Object} data Response error data.
+ * @since 1.0.0
  *
+ * @param {Object} data Response error data.
  * @return {(HTMLElement|null)} Returns HTML element markup with error message if it exists.
  */
 const getDataError = ( data ) => {

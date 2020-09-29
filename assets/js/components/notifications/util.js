@@ -44,6 +44,8 @@ export const modulesNotificationsToRequest = () => {
  *
  * Otherwise make the requests to get modules and page wins notifications.
  *
+ * @since 1.0.0
+ *
  * @return {number} Total number of notifications.
  */
 export async function getTotalNotifications() {
@@ -83,6 +85,8 @@ export async function getTotalNotifications() {
 /**
  * Removes dismissed notifications from list.
  *
+ * @since 1.0.0
+ *
  * @param {Array} notifications List of notifications.
  * @return {Array} Filtered list of notifications.
  */
@@ -104,6 +108,8 @@ const removeDismissed = ( notifications ) => {
 /**
  * Remove displayed wins set to show once.
  * Display 1 win at a time. So user would see something new each time.
+ *
+ * @since 1.0.0
  *
  * @param {Array} wins Wins are notifications (including all errors).
  *                      "Publisher Wins" are things like increased pageviews,
@@ -164,6 +170,8 @@ const removeDisplayedWins = ( wins ) => {
 /**
  * Gets notifications from session storage, fallback to notifications API request.
  *
+ * @since 1.0.0
+ *
  * @return {number} Number of module notifications.
  */
 export async function getModulesNotifications() {
@@ -201,6 +209,8 @@ export async function getModulesNotifications() {
 
 /**
  * Gets win notifications, fallback to callback declared function.
+ *
+ * @since 1.0.0
  *
  * @return {number} Number of "wins" notifications.
  */

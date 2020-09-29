@@ -16,6 +16,8 @@ const DEFAULT_CONFIG = {
 /**
  * Initializes tracking.
  *
+ * @since 1.3.0
+ *
  * @param {Object} newConfig       New configuration.
  * @param {Object} dataLayerTarget Data layer parent object.
  * @param {Object} _global         The global window object.

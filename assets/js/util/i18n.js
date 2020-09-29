@@ -36,6 +36,8 @@ export function loadTranslations() {
 /**
  * Internationalization Number Format.
  *
+ * @since 1.8.0
+ *
  * @param {number} number           The number to format.
  * @param {Object} [options]        Formatting options.
  * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
@@ -53,8 +55,9 @@ export const numberFormat = ( number, options = {} ) => {
 /**
  * Gets the current locale for use with browser APIs.
  *
- * @param {Object} _global The global window object.
+ * @since 1.8.0
  *
+ * @param {Object} _global The global window object.
  * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
  *                  E.g. `en-US` or `de-DE`
  */

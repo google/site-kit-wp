@@ -19,7 +19,9 @@
 /**
  * Error Icon - Red triangle with an exclamation mark.
  *
- *  @return {SVGImageElement} Notification error SVG icon.
+ * @since 1.0.0
+ *
+ * @return {SVGImageElement} Notification error SVG icon.
  */
 function Error() {
 	return (

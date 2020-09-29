@@ -6,6 +6,9 @@ import { numberFormat } from '../';
 /**
  * Sets the Site Kit locale to a (legacy) global variable.
  *
+ * @since 1.7.0
+ * @private
+ *
  * @param {string} langCode The locale to set Site Kit to use. E.g. `en-US` or `de-DE`.
  * @return {Object} Site Kit configuration object.
  */

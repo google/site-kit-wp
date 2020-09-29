@@ -59,6 +59,8 @@ export * from './helpers';
  *
  * Fallback for when URL is unable to handle parsedURL.searchParams.delete.
  *
+ * @since 1.0.0
+ *
  * @param {string} url       The URL to process.
  * @param {string} parameter The URL parameter to remove.
  * @return {string} URL without the deleted parameter.
@@ -86,6 +88,8 @@ const removeURLFallBack = ( url, parameter ) => {
  *
  * Leverages the URL object internally.
  *
+ * @since 1.0.0
+ *
  * @param {string} url       The URL to process.
  * @param {string} parameter The URL parameter to remove.
  * @return {string} URL without the deleted parameter.
@@ -103,6 +107,8 @@ export const removeURLParameter = ( url, parameter ) => {
 
 /**
  * Prepares a number to be used in readableLargeNumber.
+ *
+ * @since 1.7.0
  *
  * @param {number} number The large number to prepare.
  * @return {number} The prepared number.
@@ -125,9 +131,10 @@ export const prepareForReadableLargeNumber = ( number ) => {
 /**
  * Formats a large number for shortened display.
  *
+ * @since 1.0.0
+ *
  * @param {number}           number       The large number to format.
  * @param {(string|boolean)} currencyCode Optional currency code to format as amount.
- *
  * @return {string} The formatted number.
  */
 export const readableLargeNumber = ( number, currencyCode = false ) => {
@@ -182,6 +189,8 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 /**
  * Internationalization Number Format.
  *
+ * @since 1.0.0
+ *
  * @param {number} number           The number to format.
  * @param {Object} [options]        Formatting options.
  * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit. See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter for all available formatting options.
@@ -196,8 +205,9 @@ export const numberFormat = ( number, options = {} ) => {
 /**
  * Gets the current locale for use with browser APIs.
  *
- * @param {Object} _global The global window object.
+ * @since 1.6.0
  *
+ * @param {Object} _global The global window object.
  * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
  *                  E.g. `en-US` or `de-DE`
  */
@@ -216,8 +226,9 @@ export const getLocale = ( _global = global ) => {
 /**
  * Transform a period string into a number of seconds.
  *
- * @param {string} period The period to transform.
+ * @since 1.0.0
  *
+ * @param {string} period The period to transform.
  * @return {number} The number of seconds
  */
 export const getTimeInSeconds = ( period ) => {
@@ -254,8 +265,9 @@ export const getTimeInSeconds = ( period ) => {
  *
  * For example, passing 65 returns '1m 5s'.
  *
- * @param {number} seconds The number of seconds.
+ * @since 1.0.0
  *
+ * @param {number} seconds The number of seconds.
  * @return {string} Human readable string indicating time elapsed.
  *
  */
@@ -281,9 +293,10 @@ export const prepareSecondsForDisplay = ( seconds ) => {
 /**
  * Retrieve number of days between 2 dates.
  *
+ * @since 1.0.0
+ *
  * @param {Date} dateStart Start date instance.
  * @param {Date} dateEnd   End date instance.
- *
  * @return {number} The number of days.
  */
 export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
@@ -297,9 +310,10 @@ export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
 /**
  * Calculate the percent change between two values.
  *
+ * @since 1.0.0
+ *
  * @param {number} previous The previous value.
  * @param {number} current  The current value.
- *
  * @return {(number|string)} The percent change.
  */
 export const changeToPercent = ( previous, current ) => {
@@ -320,9 +334,10 @@ export const changeToPercent = ( previous, current ) => {
 /**
  * Extract a single column of data for a sparkline from a dataset prepared for Google charts.
  *
+ * @since 1.0.0
+ *
  * @param {Array}  rowData An array of Google charts row data.
  * @param {number} column  The column to extract for the sparkline.
- *
  * @return {Array} Extracted column of dataset prepared for Google charts.
  *
  */
@@ -373,6 +388,8 @@ export const getModulesData = ( __googlesitekitLegacyData = global._googlesiteki
 
 /**
  * Get the URL needed to initiate a reAuth flow.
+ *
+ * @since 1.0.0
  *
  * @param {string}  slug                      The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
  * @param {boolean} status                    The module activation status.
@@ -427,6 +444,8 @@ export const getReAuthURL = ( slug, status, __googlesitekitLegacyData = global._
 /**
  * Gets Site Kit Admin URL Helper.
  *
+ * @since 1.0.0
+ *
  * @param {string} page The page slug. Optional. Default is 'googlesitekit-dashboard'.
  * @param {Object} args Optional. Object of arguments to add to the URL.
  * @return {string} Admin URL with appended query params.
@@ -445,6 +464,8 @@ export const getSiteKitAdminURL = ( page, args ) => {
 /**
  * Verifies whether JSON is valid.
  *
+ * @since 1.0.0
+ *
  * @param {string} stringToValidate The string to validate.
  * @return {boolean} Indicates JSON is valid.
  */
@@ -459,6 +480,8 @@ export const validateJSON = ( stringToValidate ) => {
 /**
  * Verifies Optimize ID.
  *
+ * @since 1.0.0
+ *
  * @param {string} stringToValidate The string to validate.
  * @return {boolean} Indicates GTM or OPT tag is valid.
  */
@@ -468,6 +491,8 @@ export const validateOptimizeID = ( stringToValidate ) => {
 
 /**
  * Activate or Deactivate a Module.
+ *
+ * @since 1.0.0
  *
  * @param {Object}   restApiClient   Rest API client from data module, this needed so we don't need to import data module in helper.
  * @param {string}   moduleSlug      Module slug to activate or deactivate.
@@ -496,6 +521,8 @@ export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, sta
 
 /**
  * Toggles confirm changes button disable/enable depending on the module changed settings.
+ *
+ * @since 1.0.0
  *
  * @param {string} moduleSlug                The module slug being edited.
  * @param {Object} settingsMapping           The mapping between form settings names and saved settings.
@@ -528,6 +555,8 @@ export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settin
 /**
  * Triggers an error notification on top of the page.
  *
+ * @since 1.0.0
+ *
  * @param {WPElement} ErrorComponent The error component to render in place.
  * @param {Object}    props          The props to pass down to the error component. Optional.
  */
@@ -543,8 +572,9 @@ export const showErrorNotification = ( ErrorComponent, props = {} ) => {
  * _.unescape doesn't seem to decode some entities for admin bar titles.
  * adding combination in this helper as a workaround.
  *
- * @param {string} str The string to decode.
+ * @since 1.0.0
  *
+ * @param {string} str The string to decode.
  * @return {string} Decoded HTML entity.
  */
 export const decodeHTMLEntity = ( str ) => {
@@ -562,12 +592,13 @@ export const decodeHTMLEntity = ( str ) => {
 /**
  * Get the icon for a module.
  *
+ * @since 1.0.0
+ *
  * @param {string}  module                The module slug.
  * @param {boolean} blockedByParentModule Whether the module is blocked by a parent module.
  * @param {string}  width                 The icon width.
  * @param {string}  height                The icon height.
  * @param {string}  useClass              Class string to use for icon.
- *
  * @return {HTMLImageElement}             <img> tag with module icon.
  */
 export function moduleIcon( module, blockedByParentModule, width = '33', height = '33', useClass = '' ) {
@@ -589,6 +620,8 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 
 /**
  * Gets the meta key for the given user option.
+ *
+ * @since 1.3.0
  *
  * @param {string} userOptionName         User option name.
  * @param {Object} _googlesitekitBaseData Site Kit base data (used for testing).

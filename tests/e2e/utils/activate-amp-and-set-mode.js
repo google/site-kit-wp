@@ -40,6 +40,8 @@ export const allowedAMPModes = {
 /**
  * Activate AMP and set it to the correct mode.
  *
+ * @since 1.10.0
+ *
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */
 export const activateAMPWithMode = async ( mode ) => {
@@ -49,6 +51,8 @@ export const activateAMPWithMode = async ( mode ) => {
 
 /**
  * Sets AMP Mode.
+ *
+ * @since 1.10.0
  *
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */

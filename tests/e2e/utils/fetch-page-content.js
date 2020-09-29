@@ -19,6 +19,8 @@
 /**
  * Fetches markup for any given URL in the context of Puppeteer.
  *
+ * @since 1.10.0
+ *
  * @param {string} url     Page URI to retrieve the content for.
  * @param {Object} options Options object to be passed to fetch().
  * @return {Promise} Promise from `page.evaluate()` call.

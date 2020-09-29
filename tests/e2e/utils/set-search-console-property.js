@@ -6,6 +6,8 @@ import { wpApiFetch } from './wp-api-fetch';
 /**
  * Set the connected search console property.
  *
+ * @since 1.0.0
+ *
  * @param {string} property Property URL.
  * @return {*} resolved value from apiFetch promise.
  */

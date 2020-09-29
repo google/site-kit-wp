@@ -24,6 +24,8 @@ import { parse as pslParse } from 'psl';
 /**
  * Parses a URL to retrieve the domain.
  *
+ * @since 1.14.0
+ *
  * @param {string} url The url to parse.
  * @return {string} The domain of the url passed.
  */
