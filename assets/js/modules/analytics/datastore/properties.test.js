@@ -53,7 +53,7 @@ describe( 'modules/analytics properties', () => {
 	describe( 'actions', () => {
 		describe( 'createProperty', () => {
 			it( 'creates a property and adds it to the store', async () => {
-				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: fixtures.createProperty, status: 200 }
@@ -73,7 +73,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'sets isDoingCreateProperty', async () => {
-				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: fixtures.createProperty, status: 200 }
@@ -84,7 +84,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
-				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -118,7 +118,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'returns if the accountID is not set', () => {
-				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId;
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
@@ -130,7 +130,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'selects the property and its default profile when set', async () => {
-				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId;
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
@@ -139,8 +139,8 @@ describe( 'modules/analytics properties', () => {
 				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( propertyID );
-				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].defaultProfileId );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].defaultProfileId ); // eslint-disable-line sitekit/camelcase-acronyms
 			} );
 
 			it( 'does not set the profileID if property has defaultProfileId that is not in state', async () => {
@@ -148,11 +148,11 @@ describe( 'modules/analytics properties', () => {
 				const propertiesProfiles = {
 					...fixtures.propertiesProfiles,
 					properties: fixtures.propertiesProfiles.properties.map( ( property ) => {
-						return { ...property, defaultProfileId: nonExistentProfileID };
+						return { ...property, defaultProfileId: nonExistentProfileID }; // eslint-disable-line sitekit/camelcase-acronyms
 					} ),
 				};
 
-				const accountID = propertiesProfiles.properties[ 0 ].accountId;
+				const accountID = propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const propertyID = propertiesProfiles.properties[ 0 ].id;
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
@@ -175,8 +175,8 @@ describe( 'modules/analytics properties', () => {
 					{ body: fixtures.propertiesProfiles, status: 200 }
 				);
 
-				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				const propertyID = fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+				const propertyID = fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
 
 				const initialProperties = registry.select( STORE_NAME ).getProperties( accountID );
 
@@ -208,7 +208,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'does not make a network request if properties for this account are already present', async () => {
-				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const accountID = testAccountID;
 
 				// Load data into this store so there are matches for the data we're about to select,
@@ -258,7 +258,7 @@ describe( 'modules/analytics properties', () => {
 		describe( 'getPropertyByID', () => {
 			it( 'returns the property object by its ID when present in the store', () => {
 				const { properties } = fixtures.propertiesProfiles;
-				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const accountID = testAccountID;
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
@@ -271,7 +271,7 @@ describe( 'modules/analytics properties', () => {
 
 			it( 'returns undefined when the property is not present in the store', () => {
 				const { properties } = fixtures.propertiesProfiles;
-				const accountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
 
