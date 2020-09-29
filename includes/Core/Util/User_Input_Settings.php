@@ -10,7 +10,9 @@
 
 namespace Google\Site_Kit\Core\Util;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Transients;
 
@@ -52,18 +54,20 @@ class User_Input_Settings {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Authentication  $authentication  Authentication instance.
-	 * @param Transients      $transients      Transient API instance.
-	 * @param User_Transients $user_transients User Transients API instance.
+	 * @param Context         $context         Plugin context.
+	 * @param Authentication  $authentication  Optional. Authentication instance. Default a new instance.
+	 * @param Transients      $transients      Optional. Transient API instance. Default a new instance.
+	 * @param User_Transients $user_transients Optional. User Transients API instance. Default a new instance.
 	 */
 	public function __construct(
-		Authentication $authentication,
-		Transients $transients,
-		User_Transients $user_transients
+		Context $context,
+		Authentication $authentication = null,
+		Transients $transients = null,
+		User_Transients $user_transients = null
 	) {
-		$this->authentication  = $authentication;
-		$this->transients      = $transients;
-		$this->user_transients = $user_transients;
+		$this->transients      = $transients ?: new Transients( $context );
+		$this->user_transients = $user_transients ?: new User_Transients( $context );
+		$this->authentication  = $authentication ?: new Authentication( $context, null, null, $this->transients );
 	}
 
 	/**
@@ -86,7 +90,18 @@ class User_Input_Settings {
 	 * @return array User input settings.
 	 */
 	private function sync_with_proxy( $settings ) {
-		$response = wp_remote_post();
+		$user_input_settings_url  = $this->authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
+		$user_input_settings_args = array(
+			'headers' => array(
+				'Authorization' => 'Bearer: ' . $this->authentication->get_oauth_client()->get_access_token(),
+			),
+		);
+
+		if ( ! empty( $settigns ) ) {
+			$user_input_settings_args['body'] = $settigns;
+		}
+
+		$response = wp_remote_post( $user_input_settings_url, $user_input_settings_args );
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
@@ -120,11 +135,11 @@ class User_Input_Settings {
 				}
 			}
 
-			$this->trasients->set( 'user_input_settings', $site_settings, WEEK_IN_SECONDS );
+			$this->transients->set( 'user_input_settings', $site_settings, WEEK_IN_SECONDS );
 			$this->user_transients->set( 'user_input_settings', $user_settings, WEEK_IN_SECONDS );
 		}
 
-		return $settigns;
+		return $settings;
 	}
 
 	/**

@@ -15,8 +15,10 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Util\Developer_Plugin_Installer;
 use Google\Site_Kit\Core\Util\Reset;
+use Google\Site_Kit\Core\Util\User_Input_Settings;
 use WP_Post;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -126,6 +128,55 @@ final class REST_Routes {
 			},
 			10,
 			2
+		);
+
+		// @TODO: Remove this hook when /settings/ endpoint is implemented on the Google Proxy side.
+		add_filter(
+			'pre_http_request',
+			function( $pre, $args, $url ) {
+				$user_input_settings_url = $this->authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
+				if ( $url !== $user_input_settings_url ) {
+					return $pre;
+				}
+
+				if ( ! empty( $args['body'] ) ) {
+					update_option( '_googlesitekit_temp_userinput', $args['body'], 'no' );
+				}
+
+				$user_input = get_option(
+					'_googlesitekit_temp_userinput',
+					array(
+						'role'          => array(
+							'values' => array(),
+							'scope'  => 'user',
+						),
+						'postFrequency' => array(
+							'values' => array(),
+							'scope'  => 'user',
+						),
+						'goals'         => array(
+							'values' => array(),
+							'scope'  => 'site',
+						),
+						'helpNeeded'    => array(
+							'values' => array(),
+							'scope'  => 'site',
+						),
+						'searchTerms'   => array(
+							'values' => array(),
+							'scope'  => 'site',
+						),
+					)
+				);
+
+				return array(
+					'headers'  => array(),
+					'body'     => wp_json_encode( $user_input ),
+					'response' => array( 'code' => 200 ),
+				);
+			},
+			10,
+			3
 		);
 	}
 
@@ -279,6 +330,32 @@ final class REST_Routes {
 							'required'    => true,
 						),
 					),
+				)
+			),
+			new REST_Route(
+				'core/user/data/user-input-settings',
+				array(
+					array(
+						'methods'  => WP_REST_Server::READABLE,
+						'callback' => function( WP_REST_Request $request ) {
+							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
+							return rest_ensure_response( $user_input_settings->get_settings() );
+						},
+					),
+					array(
+						'methods'  => WP_REST_Server::CREATABLE,
+						'callback' => function( WP_REST_Request $request ) {
+							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
+							return rest_ensure_response(
+								$user_input_settings->set_settings(
+									$request->get_param( 'settings' )
+								)
+							);
+						},
+					),
+				),
+				array(
+					'args' => array(),
 				)
 			),
 		);
