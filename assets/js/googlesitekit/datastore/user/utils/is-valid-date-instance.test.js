@@ -21,48 +21,23 @@
  */
 import { isValidDateInstance } from './is-valid-date-instance';
 
+// [ testName, date, expectedReturnValue ]
+const valuesToTest = [
+	[ 'should return true for valid date instance (no constructor params)', new Date(), true ],
+	[ 'should return true for valid date instance (valid constructor params)', new Date( 100000 ), true ],
+	[ 'should return false for invalid date instance', new Date( 'invalid-date' ), false ],
+	[ 'should return false for `undefined`', undefined, false ],
+	[ 'should return false for `null`', null, false ],
+	[ 'should return false for Boolean', true, false ],
+	[ 'should return false for Number', 100000, false ],
+	[ 'should return false for String', '2020-09-14T01:03:41.493Z', false ],
+	[ 'should return false for Object', {}, false ],
+	[ 'should return false for Array', [], false ],
+	[ 'should return false for Function', () => {}, false ],
+];
+
 describe( 'isValidDateInstance', () => {
-	it( 'should return true for valid date instance (no constructor params)', () => {
-		expect( isValidDateInstance( new Date() ) ).toEqual( true );
-	} );
-
-	it( 'should return true for valid date instance (valid constructor params)', () => {
-		expect( isValidDateInstance( new Date( 100000 ) ) ).toEqual( true );
-	} );
-
-	it( 'should return false for invalid date instance', () => {
-		expect( isValidDateInstance( new Date( 'invalid-date' ) ) ).toEqual( false );
-	} );
-
-	it( 'should return false for `undefined`', () => {
-		expect( isValidDateInstance( undefined ) ).toEqual( false );
-	} );
-
-	it( 'should return false for `null`', () => {
-		expect( isValidDateInstance( null ) ).toEqual( false );
-	} );
-
-	it( 'should return false for Boolean', () => {
-		expect( isValidDateInstance( true ) ).toEqual( false );
-	} );
-
-	it( 'should return false for Number', () => {
-		expect( isValidDateInstance( 100000 ) ).toEqual( false );
-	} );
-
-	it( 'should return false for String', () => {
-		expect( isValidDateInstance( '2020-09-14T01:03:41.493Z' ) ).toEqual( false );
-	} );
-
-	it( 'should return false for Object', () => {
-		expect( isValidDateInstance( {} ) ).toEqual( false );
-	} );
-
-	it( 'should return false for Array', () => {
-		expect( isValidDateInstance( [] ) ).toEqual( false );
-	} );
-
-	it( 'should return false for Function', () => {
-		expect( isValidDateInstance( () => {} ) ).toEqual( false );
+	it.each( valuesToTest )( '%s', ( _testName, dateInstance, expected ) => {
+		expect( isValidDateInstance( dateInstance ) ).toEqual( expected );
 	} );
 } );

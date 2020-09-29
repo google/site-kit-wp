@@ -22,52 +22,34 @@
 import { INVALID_DATE_STRING_ERROR } from './constants';
 import { getPreviousDate } from './get-previous-date';
 
+// [ relativeDate, daysBefore, expectedReturnDate ]
+const valuesToTest = [
+	[ '2020-01-01', 0, '2020-01-01' ],
+	[ '2020-01-02', 1, '2020-01-01' ],
+	[ '2020-01-08', 7, '2020-01-01' ],
+	[ '2020-02-01', 31, '2020-01-01' ],
+	[ '2021-01-01', 366, '2020-01-01' ],
+	[ '2020-01-01', 1, '2019-12-31' ],
+];
+
+// [ testName, relativeDate, daysBefore, expectedReturnError ]
+const errorValuesToTest = [
+	[ 'should throw error if no param is passed', undefined, undefined, INVALID_DATE_STRING_ERROR ],
+	[ 'should throw error if date supplied is invalid', 'invalid-date', 1, INVALID_DATE_STRING_ERROR ],
+	[ 'should throw error if date supplied is invalid date', '2020-99-99', 1, INVALID_DATE_STRING_ERROR ],
+];
+
 describe( 'getPreviousDate', () => {
-	it( 'should throw error if no param is passed', () => {
+	it.each( errorValuesToTest )( '%s', ( _testName, relativeDate, daysBefore, expected ) => {
 		try {
-			getPreviousDate();
+			getPreviousDate( relativeDate, daysBefore );
 		} catch ( error ) {
-			expect( error.message ).toEqual( INVALID_DATE_STRING_ERROR );
+			expect( error.message ).toEqual( expected );
 		}
 	} );
 
-	it( 'should throw error if date supplied is invalid', () => {
-		try {
-			getPreviousDate( 'invalid-date', 1 );
-		} catch ( error ) {
-			expect( error.message ).toEqual( INVALID_DATE_STRING_ERROR );
-		}
-	} );
-
-	it( 'should throw error if date supplied is invalid date', () => {
-		try {
-			getPreviousDate( '2020-99-99', 1 );
-		} catch ( error ) {
-			expect( error.message ).toEqual( INVALID_DATE_STRING_ERROR );
-		}
-	} );
-
-	it( 'should return "2020-01-01" for a date of "2020-01-01" and a days before value of 0', () => {
-		expect( getPreviousDate( '2020-01-01', 0 ) ).toEqual( '2020-01-01' );
-	} );
-
-	it( 'should return "2020-01-01" for a date of "2020-01-02" and a days before value of 1', () => {
-		expect( getPreviousDate( '2020-01-02', 1 ) ).toEqual( '2020-01-01' );
-	} );
-
-	it( 'should return "2020-01-01" for a date of "2020-01-08" and a days before value of 7', () => {
-		expect( getPreviousDate( '2020-01-08', 7 ) ).toEqual( '2020-01-01' );
-	} );
-
-	it( 'should return "2020-01-01" for a date of "2020-02-01" and a days before value of 31', () => {
-		expect( getPreviousDate( '2020-02-01', 31 ) ).toEqual( '2020-01-01' );
-	} );
-
-	it( 'should return "2020-01-01" for a date of "2021-01-01" and a days before value of 366', () => {
-		expect( getPreviousDate( '2021-01-01', 366 ) ).toEqual( '2020-01-01' );
-	} );
-
-	it( 'should return "2019-12-31" for a date of "2020-01-01" and a days before value of 1', () => {
-		expect( getPreviousDate( '2020-01-01', 1 ) ).toEqual( '2019-12-31' );
+	const testName = 'with date of %s and days before value of %s should return %s';
+	it.each( valuesToTest )( testName, ( relativeDate, daysBefore, expected ) => {
+		expect( getPreviousDate( relativeDate, daysBefore ) ).toEqual( expected );
 	} );
 } );

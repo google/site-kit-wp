@@ -22,90 +22,44 @@
 import { INVALID_DATE_STRING_ERROR } from './constants';
 import { getPreviousWeekDate } from './get-previous-week-date';
 
+// [ daysBefore, expectedReturnDate ]
+const valuesToTest = [
+	[ 0, '2020-09-24' ],
+	[ 1, '2020-09-17' ],
+	[ 2, '2020-09-17' ],
+	[ 3, '2020-09-17' ],
+	[ 4, '2020-09-17' ],
+	[ 5, '2020-09-17' ],
+	[ 6, '2020-09-17' ],
+	[ 7, '2020-09-17' ],
+	[ 8, '2020-09-17' ],
+	[ 9, '2020-09-17' ],
+	[ 10, '2020-09-10' ],
+	[ 11, '2020-09-10' ],
+	[ 28, '2020-08-27' ],
+	[ 90, '2020-06-25' ],
+	[ 180, '2020-03-26' ],
+];
+
+// [ relativeDate, daysBefore, expectedReturnError ]
+const errorValuesToTest = [
+	[ 'should throw error if no param is passed', undefined, undefined, INVALID_DATE_STRING_ERROR ],
+	[ 'should throw error if date supplied is invalid', 'invalid-date', 1, INVALID_DATE_STRING_ERROR ],
+	[ 'should throw error if date supplied is invalid date', '2020-99-99', 1, INVALID_DATE_STRING_ERROR ],
+];
+
 describe( 'getPreviousWeekDate', () => {
 	const referenceDate = '2020-09-24';
 
-	it( 'should throw error if no param is passed', () => {
+	it.each( errorValuesToTest )( '%s', ( _testName, relativeDate, daysBefore, expected ) => {
 		try {
-			getPreviousWeekDate();
+			getPreviousWeekDate( relativeDate, daysBefore );
 		} catch ( error ) {
-			expect( error.message ).toEqual( INVALID_DATE_STRING_ERROR );
+			expect( error.message ).toEqual( expected );
 		}
 	} );
 
-	it( 'should throw error if date supplied is invalid', () => {
-		try {
-			getPreviousWeekDate( 'invalid-date', 1 );
-		} catch ( error ) {
-			expect( error.message ).toEqual( INVALID_DATE_STRING_ERROR );
-		}
-	} );
-
-	it( 'should throw error if date supplied is invalid date', () => {
-		try {
-			getPreviousWeekDate( '2020-99-99', 1 );
-		} catch ( error ) {
-			expect( error.message ).toEqual( INVALID_DATE_STRING_ERROR );
-		}
-	} );
-
-	it( 'should go back to "2020-09-24" with daysBefore value of 0 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 0 ) ).toEqual( '2020-09-24' );
-	} );
-
-	it( 'should go back to "2020-09-17" with daysBefore value of 1 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 1 ) ).toEqual( '2020-09-17' );
-	} );
-
-	it( 'should go back to "2020-09-17" with daysBefore value of 2 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 2 ) ).toEqual( '2020-09-17' );
-	} );
-
-	it( 'should go back to "2020-09-17" with daysBefore value of 3 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 3 ) ).toEqual( '2020-09-17' );
-	} );
-
-	it( 'should go back to "2020-09-17" with daysBefore value of 4 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 4 ) ).toEqual( '2020-09-17' );
-	} );
-
-	it( 'should go back to "2020-09-17" with daysBefore value of 5 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 5 ) ).toEqual( '2020-09-17' );
-	} );
-
-	it( 'should go back to "2020-09-17" with daysBefore value of 6 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 6 ) ).toEqual( '2020-09-17' );
-	} );
-
-	it( 'should go back to "2020-09-17" with daysBefore value of 7 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 7 ) ).toEqual( '2020-09-17' );
-	} );
-
-	it( 'should go back to "2020-09-17" with daysBefore value of 8 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 8 ) ).toEqual( '2020-09-17' );
-	} );
-
-	it( 'should go back to "2020-09-17" with daysBefore value of 9 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 9 ) ).toEqual( '2020-09-17' );
-	} );
-
-	it( 'should go back to "2020-09-10" with daysBefore value of 10 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 10 ) ).toEqual( '2020-09-10' );
-	} );
-
-	it( 'should go back to "2020-09-10" with daysBefore value of 11 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 11 ) ).toEqual( '2020-09-10' );
-	} );
-
-	it( 'should go back to "2020-08-27" with daysBefore value of 28 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 28 ) ).toEqual( '2020-08-27' );
-	} );
-
-	it( 'should go back to "2020-06-25" with daysBefore value of 90 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 90 ) ).toEqual( '2020-06-25' );
-	} );
-
-	it( 'should go back to "2020-03-26" with daysBefore value of 180 and date of "2020-09-24"', () => {
-		expect( getPreviousWeekDate( referenceDate, 180 ) ).toEqual( '2020-03-26' );
+	it.each( valuesToTest )( 'with daysBefore value of %s should return %s', ( daysBefore, expected ) => {
+		expect( getPreviousWeekDate( referenceDate, daysBefore ) ).toEqual( expected );
 	} );
 } );
