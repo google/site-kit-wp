@@ -33,16 +33,25 @@ module.exports = async ( { config } ) => {
 			use: [
 				MiniCssExtractPlugin.loader,
 				'css-loader',
-				'postcss-loader',
+				{
+					loader: 'postcss-loader',
+					options: {
+						config: {
+							path: './',
+						},
+					},
+				},
 				{
 					loader: 'sass-loader',
 					options: {
+						additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
 						sassOptions: {
 							includePaths: [ path.resolve( __dirname, '../node_modules/' ) ],
 						},
 					},
 				},
 			],
+			include: path.resolve( __dirname, '../' ),
 		},
 	);
 
