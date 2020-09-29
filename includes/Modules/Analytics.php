@@ -940,7 +940,7 @@ final class Analytics extends Module
 					// When using multiple date ranges, it changes the structure of the response,
 					// where each date range becomes an item in a list.
 					if ( strtotime( $compare_start_date ) && strtotime( $compare_end_date ) ) {
-						array_push( $date_ranges, $compare_start_date, $compare_end_date );
+						$date_ranges[] = array( $compare_start_date, $compare_end_date );
 					}
 				} else {
 					$date_range    = $data['dateRange'] ?: 'last-28-days';
