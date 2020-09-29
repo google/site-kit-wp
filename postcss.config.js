@@ -17,13 +17,13 @@
  */
 
 const presetEnv = require( 'postcss-preset-env' );
-const importUrl = require( 'postcss-import-url' );
+const importURL = require( 'postcss-import-url' );
 const autoprefixer = require( 'autoprefixer' );
 const cssnano = require( 'cssnano' );
 
 const plugins = [
 	presetEnv(),
-	importUrl( { resolveUrls: true } ),
+	importURL( { resolveUrls: true } ),
 	autoprefixer( { grid: true } ),
 ];
 
