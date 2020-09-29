@@ -109,15 +109,21 @@ export const baseActions = {
 		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
 		if ( ! isAMP() || isSecondaryAMP() ) {
 			const webContainers = select( STORE_NAME ).getWebContainers( accountID );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
 		}
 
 		if ( isAMP() ) {
 			const ampContainers = select( STORE_NAME ).getAMPContainers( accountID );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
 		}
 	},
@@ -157,6 +163,7 @@ export const baseResolvers = {
 		}
 
 		if ( accounts?.length && ! select( STORE_NAME ).getAccountID() ) {
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			dispatch( STORE_NAME ).selectAccount( accounts[ 0 ].accountId );
 		}
 	},

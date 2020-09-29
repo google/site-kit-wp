@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { decodeHtmlEntity } from '../../util';
+import { decodeHTMLEntity } from '../../util';
 import Header from '../header';
 import Link from '../link';
 import PageHeader from '../page-header';
@@ -97,7 +97,7 @@ const DashboardDetailsApp = () => {
 														googlesitekit-heading-3
 														googlesitekit-dashboard-single-url__title
 													">
-													{ decodeHtmlEntity( currentEntityTitle ) }
+													{ decodeHTMLEntity( currentEntityTitle ) }
 												</h3>
 												<Link href={ currentEntityURL } inherit external>
 													{ currentEntityURL }
