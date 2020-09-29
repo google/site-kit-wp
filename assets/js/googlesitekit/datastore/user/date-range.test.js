@@ -68,273 +68,146 @@ describe( 'core/user date-range', () => {
 			// referenceDate is passed to allow for static date testing
 			const options = { referenceDate: '2020-09-24' };
 
+			const createDateRangeTest = ( dateRange, expected, additionalOptions = {} ) => {
+				registry.dispatch( STORE_NAME ).setDateRange( dateRange );
+				expect( registry.select( STORE_NAME )
+					.getDateRangeDates( { ...options, ...additionalOptions } ) )
+					.toEqual( expected );
+			};
+
 			describe( 'with date range', () => {
-				it( 'should return proper dates for "last-1-day"', () => {
-					const expected = { startDate: '2020-09-23', endDate: '2020-09-23' };
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-1-day' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( options ) )
-						.toEqual( expected );
-				} );
+				// [ dateRange, expectedReturnDates ]
+				const valuesToTest = [
+					[ 'last-1-days', { startDate: '2020-09-24', endDate: '2020-09-24' } ],
+					[ 'last-7-days', { startDate: '2020-09-18', endDate: '2020-09-24' } ],
+					[ 'last-365-days', { startDate: '2019-09-26', endDate: '2020-09-24' } ],
+				];
 
-				it( 'should return proper dates for "last-7-days"', () => {
-					const expected = { startDate: '2020-09-17', endDate: '2020-09-23' };
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-7-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( options ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-365-days"', () => {
-					const expected = { startDate: '2019-09-25', endDate: '2020-09-23' };
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-365-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( options ) )
-						.toEqual( expected );
+				it.each( valuesToTest )( 'should return proper dates for "%s"', ( dateRange, expected ) => {
+					createDateRangeTest( dateRange, expected );
 				} );
 			} );
 
 			describe( 'with date range & offset', () => {
-				it( 'should return proper dates for "last-1-day" & offsetDays 0', () => {
-					const expected = { startDate: '2020-09-24', endDate: '2020-09-24' };
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-1-day' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 0 } ) )
-						.toEqual( expected );
-				} );
+				// [ dateRange, offsetDays, expectedReturnDates ]
+				const valuesToTest = [
+					[ 'last-1-days', 0, { startDate: '2020-09-24', endDate: '2020-09-24' } ],
+					[ 'last-7-days', 0, { startDate: '2020-09-18', endDate: '2020-09-24' } ],
+					[ 'last-30-days', 0, { startDate: '2020-08-26', endDate: '2020-09-24' } ],
+					[ 'last-1-days', 3, { startDate: '2020-09-21', endDate: '2020-09-21' } ],
+					[ 'last-7-days', 3, { startDate: '2020-09-15', endDate: '2020-09-21' } ],
+					[ 'last-30-days', 3, { startDate: '2020-08-23', endDate: '2020-09-21' } ],
+				];
 
-				it( 'should return proper dates for "last-7-days" & offsetDays 0', () => {
-					const expected = { startDate: '2020-09-18', endDate: '2020-09-24' };
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-7-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 0 } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-30-days" & offsetDays 0', () => {
-					const expected = { startDate: '2020-08-26', endDate: '2020-09-24' };
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-30-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 0 } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-1-day" & offsetDays 3', () => {
-					const expected = { startDate: '2020-09-21', endDate: '2020-09-21' };
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-1-day' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 3 } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-7-days" & offsetDays 3', () => {
-					const expected = { startDate: '2020-09-15', endDate: '2020-09-21' };
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-7-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 3 } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-30-days" & offsetDays 3', () => {
-					const expected = { startDate: '2020-08-23', endDate: '2020-09-21' };
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-30-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 3 } ) )
-						.toEqual( expected );
+				const testName = 'should return proper dates for "%s" & offsetDays %s';
+				it.each( valuesToTest )( testName, ( dateRange, offsetDays, expected ) => {
+					createDateRangeTest( dateRange, expected, { offsetDays } );
 				} );
 			} );
 
 			describe( 'with date range, offset, & compare', () => {
-				it( 'should return proper dates for "last-1-day", offsetDays 0, & compare', () => {
-					const expected = {
+				// [ dateRange, offsetDays, expectedReturnDates ]
+				const valuesToTest = [
+					[ 'last-1-days', 0, {
 						startDate: '2020-09-24',
 						endDate: '2020-09-24',
 						compareStartDate: '2020-09-23',
 						compareEndDate: '2020-09-23',
-					};
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-1-day' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 0, compare: true } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-7-days", offsetDays 0, & compare', () => {
-					const expected = {
+					} ],
+					[ 'last-7-days', 0, {
 						startDate: '2020-09-18',
 						endDate: '2020-09-24',
 						compareStartDate: '2020-09-11',
 						compareEndDate: '2020-09-17',
-					};
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-7-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 0, compare: true } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-30-days", offsetDays 0, & compare', () => {
-					const expected = {
+					} ],
+					[ 'last-30-days', 0, {
 						startDate: '2020-08-26',
 						endDate: '2020-09-24',
 						compareStartDate: '2020-07-27',
 						compareEndDate: '2020-08-25',
-					};
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-30-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 0, compare: true } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-1-day", offsetDays 3, & compare', () => {
-					const expected = {
+					} ],
+					[ 'last-1-days', 3, {
 						startDate: '2020-09-21',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-09-20',
 						compareEndDate: '2020-09-20',
-					};
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-1-day' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 3, compare: true } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-7-days", offsetDays 3, & compare', () => {
-					const expected = {
+					} ],
+					[ 'last-7-days', 3, {
 						startDate: '2020-09-15',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-09-08',
 						compareEndDate: '2020-09-14',
-					};
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-7-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 3, compare: true } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-30-days", offsetDays 3, & compare', () => {
-					const expected = {
+					} ],
+					[ 'last-30-days', 3, {
 						startDate: '2020-08-23',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-07-24',
 						compareEndDate: '2020-08-22',
-					};
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-30-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, offsetDays: 3, compare: true } ) )
-						.toEqual( expected );
+					} ],
+				];
+
+				const testName = 'should return proper dates for "%s" & offsetDays %s, & compare';
+				it.each( valuesToTest )( testName, ( dateRange, offsetDays, expected ) => {
+					createDateRangeTest( dateRange, expected, { offsetDays, compare: true } );
 				} );
 			} );
 
 			describe( 'with date range, offset, compare, & weekDayAlign', () => {
-				it( 'should return proper dates for "last-1-day", offsetDays 1 (default), compare, & weekDayAlign', () => {
-					const expected = {
+				// [ dateRange, offsetDays, expectedReturnDates ]
+				const valuesToTest = [
+					[ 'last-1-days', 1, {
 						startDate: '2020-09-23',
 						endDate: '2020-09-23',
 						compareStartDate: '2020-09-16',
 						compareEndDate: '2020-09-16',
-					};
-
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-1-day' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, compare: true, weekDayAlign: true } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-3-days", offsetDays 1 (default), compare, & weekDayAlign', () => {
-					const expected = {
+					} ],
+					[ 'last-3-days', 1, {
 						startDate: '2020-09-21',
 						endDate: '2020-09-23',
 						compareStartDate: '2020-09-14',
 						compareEndDate: '2020-09-16',
-					};
-
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-3-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, compare: true, weekDayAlign: true } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-7-days", offsetDays 1 (default), compare, & weekDayAlign', () => {
-					const expected = {
+					} ],
+					[ 'last-7-days', 1, {
 						startDate: '2020-09-17',
 						endDate: '2020-09-23',
 						compareStartDate: '2020-09-10',
 						compareEndDate: '2020-09-16',
-					};
-
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-7-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, compare: true, weekDayAlign: true } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-1-day", offsetDays 3, compare, & weekDayAlign', () => {
-					const expected = {
+					} ],
+					[ 'last-1-days', 3, {
 						startDate: '2020-09-21',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-09-14',
 						compareEndDate: '2020-09-14',
-					};
-
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-1-day' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, compare: true, weekDayAlign: true, offsetDays: 3 } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-3-days", offsetDays 3, compare, & weekDayAlign', () => {
-					const expected = {
+					} ],
+					[ 'last-3-days', 3, {
 						startDate: '2020-09-19',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-09-12',
 						compareEndDate: '2020-09-14',
-					};
-
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-3-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, compare: true, weekDayAlign: true, offsetDays: 3 } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-7-days", offsetDays 3, compare, & weekDayAlign', () => {
-					const expected = {
+					} ],
+					[ 'last-7-days', 3, {
 						startDate: '2020-09-15',
 						endDate: '2020-09-21',
 						compareStartDate: '2020-09-08',
 						compareEndDate: '2020-09-14',
-					};
-
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-7-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, compare: true, weekDayAlign: true, offsetDays: 3 } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-28-days", offsetDays 0, compare, & weekDayAlign', () => {
-					const expected = {
+					} ],
+					[ 'last-28-days', 0, {
 						startDate: '2020-08-28',
 						endDate: '2020-09-24',
 						compareStartDate: '2020-07-31',
 						compareEndDate: '2020-08-27',
-					};
-
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-28-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, compare: true, weekDayAlign: true, offsetDays: 0 } ) )
-						.toEqual( expected );
-				} );
-
-				it( 'should return proper dates for "last-90-days", offsetDays 0, compare, & weekDayAlign', () => {
-					const expected = {
+					} ],
+					[ 'last-90-days', 0, {
 						startDate: '2020-06-27',
 						endDate: '2020-09-24',
 						compareStartDate: '2020-03-28',
 						compareEndDate: '2020-06-25',
-					};
+					} ],
+				];
 
-					registry.dispatch( STORE_NAME ).setDateRange( 'last-90-days' );
-					expect( registry.select( STORE_NAME )
-						.getDateRangeDates( { ...options, compare: true, weekDayAlign: true, offsetDays: 0 } ) )
-						.toEqual( expected );
+				const testName = 'should return proper dates for "%s", offsetDays %s, compare, & weekDayAlign';
+				it.each( valuesToTest )( testName, ( dateRange, offsetDays, expected ) => {
+					createDateRangeTest( dateRange, expected, { offsetDays, compare: true, weekDayAlign: true } );
 				} );
 			} );
 		} );

@@ -24,7 +24,13 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { getPreviousDate, getDateString, getPreviousWeekDate } from './utils';
+import {
+	getPreviousDate,
+	getDateString,
+	getPreviousWeekDate,
+	isValidDateRange,
+	INVALID_DATE_RANGE_ERROR,
+} from './utils';
 
 export const initialState = {
 	dateRange: 'last-28-days',
@@ -44,6 +50,7 @@ export const actions = {
 	 */
 	setDateRange( slug ) {
 		invariant( slug, 'Date range slug is required.' );
+		invariant( isValidDateRange( slug ), INVALID_DATE_RANGE_ERROR );
 
 		return {
 			type: SET_DATE_RANGE,
@@ -105,7 +112,7 @@ export const selectors = {
 	 */
 	getDateRangeDates( state, {
 		compare = false,
-		offsetDays = 1,
+		offsetDays = 0,
 		referenceDate = getDateString( new Date() ),
 		weekDayAlign = false,
 	} = {} ) {
