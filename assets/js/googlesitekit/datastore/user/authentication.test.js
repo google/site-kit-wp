@@ -90,11 +90,11 @@ describe( 'core/user authentication', () => {
 			expect( store.getState() ).toMatchObject( { authError } );
 		} );
 
-		test( 'clearAuthError to reset authError to undefined state', () => {
+		test( 'clearAuthError to reset authError to NULL', () => {
 			registry.dispatch( STORE_NAME ).setAuthError( authError );
 			expect( store.getState() ).toMatchObject( { authError } );
 			registry.dispatch( STORE_NAME ).clearAuthError();
-			expect( store.getState().authError ).toBeUndefined();
+			expect( store.getState().authError ).toBeNull();
 		} );
 	} );
 
@@ -255,9 +255,9 @@ describe( 'core/user authentication', () => {
 		} );
 
 		describe( 'getAuthError', () => {
-			it( 'should return undefined if authError is not set yet', () => {
+			it( 'should return NULL if authError is not set yet', () => {
 				const error = registry.select( STORE_NAME ).getAuthError();
-				expect( error ).toBeUndefined();
+				expect( error ).toBeNull();
 			} );
 
 			it( 'should return actual error when it has been set', () => {

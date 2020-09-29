@@ -50,9 +50,11 @@ const fetchGetAuthenticationStore = createFetchStore( {
 
 // Actions
 const SET_AUTH_ERROR = 'SET_AUTH_ERROR';
+const CLEAR_AUTH_ERROR = 'CLEAR_AUTH_ERROR';
 
 const baseInitialState = {
 	authentication: undefined,
+	authError: null,
 };
 
 const baseActions = {
@@ -81,7 +83,7 @@ const baseActions = {
 	clearAuthError() {
 		return {
 			payload: {},
-			type: SET_AUTH_ERROR,
+			type: CLEAR_AUTH_ERROR,
 		};
 	},
 };
@@ -92,6 +94,13 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				authError: payload.error,
+			};
+		}
+
+		case CLEAR_AUTH_ERROR: {
+			return {
+				...state,
+				authError: null,
 			};
 		}
 
@@ -240,7 +249,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Authentication error object if available, otherwise undefined.
+	 * @return {(Object|null)} Authentication error object if available, otherwise null.
 	 */
 	getAuthError( state ) {
 		const { authError } = state;
