@@ -28,7 +28,7 @@ import { fireEvent, muteFetch, render, act } from '../../../../../../tests/js/te
 const setupRegistry = ( { dispatch } ) => {
 	const { properties, profiles } = fixtures.accountsPropertiesProfiles;
 	const propertyID = properties[ 0 ].id;
-	const accountID = properties[ 0 ].accountId;
+	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).setAccountID( accountID );
 	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
@@ -37,7 +37,7 @@ const setupRegistry = ( { dispatch } ) => {
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
-	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
+	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.getTagPermissionsAccess.propertyID );
@@ -48,7 +48,7 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 
 const setupEmptyRegistry = ( { dispatch } ) => {
 	const { properties } = fixtures.accountsPropertiesProfiles;
-	const accountID = properties[ 0 ].accountId;
+	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).setSettings( {} );
 	dispatch( STORE_NAME ).setAccountID( accountID );
@@ -119,7 +119,7 @@ describe( 'PropertySelect', () => {
 
 	it( 'should update internalWebPropertyID in the store when an item is selected', () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
-		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
+		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		const originalID = registry.select( STORE_NAME ).getInternalWebPropertyID();
 		const properties = registry.select( STORE_NAME ).getProperties( accountID );
 		const targetProperty = properties[ 1 ];
@@ -134,6 +134,6 @@ describe( 'PropertySelect', () => {
 		expect( targetProperty.id ).toEqual( newPropertyID );
 		const newID = registry.select( STORE_NAME ).getInternalWebPropertyID();
 		expect( originalID ).not.toEqual( newID );
-		expect( newID ).toEqual( targetProperty.internalWebPropertyId );
+		expect( newID ).toEqual( targetProperty.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
 	} );
 } );

@@ -1,3 +1,4 @@
+
 /**
  * TimezoneSelect component.
  *
@@ -57,9 +58,11 @@ export default function TimezoneSelect() {
 		>
 			{
 				( timeZonesByCountryCode[ countryCode ] || [] ).map(
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					( { timeZoneId, displayName }, i ) => (
 						<Option
 							key={ i }
+							// eslint-disable-next-line sitekit/camelcase-acronyms
 							value={ timeZoneId }
 						>
 							{ displayName }

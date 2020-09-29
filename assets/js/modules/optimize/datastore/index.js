@@ -38,17 +38,21 @@ let baseModuleStore = Modules.createModuleStore( 'optimize', {
 
 // Rename generated pieces to adhere to our convention.
 baseModuleStore = ( ( { actions, selectors, ...store } ) => {
+	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const { setAmpExperimentJSON, ...restActions } = actions;
+	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const { getAmpExperimentJSON, ...restSelectors } = selectors;
 
 	return {
 		...store,
 		actions: {
 			...restActions,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			setAMPExperimentJSON: setAmpExperimentJSON,
 		},
 		selectors: {
 			...restSelectors,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			getAMPExperimentJSON: getAmpExperimentJSON,
 		},
 	};
