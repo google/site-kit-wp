@@ -557,7 +557,7 @@ export const showErrorNotification = ( ErrorComponent, props = {} ) => {
  *
  * @return {string} Decoded HTML entity.
  */
-export const decodeHtmlEntity = ( str ) => {
+export const decodeHTMLEntity = ( str ) => {
 	if ( ! str ) {
 		return '';
 	}

@@ -63,14 +63,15 @@ export default function ContainerSelect( {
 		>
 			{ ( containers || [] )
 				.concat( {
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					publicId: CONTAINER_CREATE,
 					name: __( 'Set up a new container', 'google-site-kit' ),
 				} )
-				.map( ( { publicId, name, containerId } ) => ( // Capitalization rule exception: publicId, containerId
+				.map( ( { publicId, name, containerId } ) => ( // eslint-disable-line sitekit/camelcase-acronyms
 					<Option
-						key={ publicId } // Capitalization rule exception: publicId
-						value={ publicId } // Capitalization rule exception: publicId
-						data-internal-id={ containerId } // Capitalization rule exception: containerId
+						key={ publicId } // eslint-disable-line sitekit/camelcase-acronyms
+						value={ publicId } // eslint-disable-line sitekit/camelcase-acronyms
+						data-internal-id={ containerId } // eslint-disable-line sitekit/camelcase-acronyms
 					>
 						{ name }
 					</Option>
