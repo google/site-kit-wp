@@ -38,7 +38,7 @@ const trafficIncrease = ( reports, id ) => {
 		return false;
 	}
 
-	const totals = reports?.[0]?.data?.totals || [];
+	const totals = reports?.[ 0 ]?.data?.totals || [];
 	const { totalUsers, previousTotalUsers } = parseTotalUsersData( totals );
 	const totalUsersChange = Number( changeToPercent( previousTotalUsers, totalUsers ) );
 
