@@ -34,12 +34,17 @@ import { getPreviousDate } from './get-previous-date';
  */
 export const getPreviousWeekDate = ( relativeDate, daysBefore = 0 ) => {
 	const remainder = daysBefore % 7;
-	const overlap = daysBefore > 7 && remainder < 3;
 	const sameDayOfWeek = remainder === 0;
-	const addedDays = sameDayOfWeek ? 0 : 7 - ( remainder );
+
+	// already same day of week, do nothing extra
+	if ( sameDayOfWeek ) {
+		return getPreviousDate( relativeDate, daysBefore );
+	}
+
+	const overlap = daysBefore > 7 && remainder < 3;
 	const daysRemoved = overlap
 		? daysBefore - remainder
-		: daysBefore + addedDays;
+		: daysBefore + ( 7 - remainder );
 
 	return getPreviousDate( relativeDate, daysRemoved );
 };

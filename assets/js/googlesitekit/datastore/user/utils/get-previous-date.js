@@ -40,6 +40,12 @@ export const getPreviousDate = ( relativeDate = '', daysBefore ) => {
 	invariant( isValidDateString( relativeDate ), INVALID_DATE_STRING_ERROR );
 
 	const dateArray = relativeDate.split( '-' );
+	/**
+	 * Split date into explicit parts rather than pass directly into date constructor
+	 * to avoid timezone issues caused by parsing as UTC. Ensures date is accurate for
+	 * the user's local time, otherwise has a chance to return a different day than was
+	 * passed in depending on timezone.
+	 */
 	const [ year, month, day ] = dateArray;
 	const date = new Date( year, month - 1, day );
 
