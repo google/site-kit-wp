@@ -38,7 +38,7 @@ import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
-import { generateGtmPropertyStory } from './utils/analytics';
+import { generateGTMPropertyStory } from './utils/analytics';
 
 function filterAnalyticsSetup() {
 	global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
@@ -59,8 +59,8 @@ function Setup( props ) {
 	);
 }
 
-function generateGtmPropertyStoryCallback( args ) {
-	return generateGtmPropertyStory( {
+function generateGTMPropertyStoryCallback( args ) {
+	return generateGTMPropertyStory( {
 		...args,
 		Component: Setup,
 	} );
@@ -311,10 +311,10 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'No Tag, GTM property w/ access', generateGtmPropertyStoryCallback( { useExistingTag: false, gtmPermission: true } ) )
-	.add( 'No Tag, GTM property w/o access', generateGtmPropertyStoryCallback( { useExistingTag: false, gtmPermission: false } ) )
-	.add( 'Existing Tag w/ access, GTM property w/ access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: true, gaPermission: true } ) )
-	.add( 'Existing Tag w/ access, GTM property w/o access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: false, gaPermission: true } ) )
-	.add( 'Existing Tag w/o access, GTM property w/ access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: true, gaPermission: false } ) )
-	.add( 'Existing Tag w/o access, GTM property w/o access', generateGtmPropertyStoryCallback( { useExistingTag: true, gtmPermission: false, gaPermission: false } ) )
+	.add( 'No Tag, GTM property w/ access', generateGTMPropertyStoryCallback( { useExistingTag: false, gtmPermission: true } ) )
+	.add( 'No Tag, GTM property w/o access', generateGTMPropertyStoryCallback( { useExistingTag: false, gtmPermission: false } ) )
+	.add( 'Existing Tag w/ access, GTM property w/ access', generateGTMPropertyStoryCallback( { useExistingTag: true, gtmPermission: true, gaPermission: true } ) )
+	.add( 'Existing Tag w/ access, GTM property w/o access', generateGTMPropertyStoryCallback( { useExistingTag: true, gtmPermission: false, gaPermission: true } ) )
+	.add( 'Existing Tag w/o access, GTM property w/ access', generateGTMPropertyStoryCallback( { useExistingTag: true, gtmPermission: true, gaPermission: false } ) )
+	.add( 'Existing Tag w/o access, GTM property w/o access', generateGTMPropertyStoryCallback( { useExistingTag: true, gtmPermission: false, gaPermission: false } ) )
 ;

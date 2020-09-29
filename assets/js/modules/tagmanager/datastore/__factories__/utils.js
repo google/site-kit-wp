@@ -25,13 +25,13 @@ import {
 	buildLiveContainerVersionAMP,
 } from './builders';
 
-export const parseLiveContainerVersionIDs = ( { accountId, containerId, container }, callback ) => { // Capitalization rule exception: accountId, containerId
+export const parseLiveContainerVersionIDs = ( { accountId, containerId, container }, callback ) => { // eslint-disable-line sitekit/camelcase-acronyms
 	const ids = {
-		accountID: accountId, // Capitalization rule exception: accountId
-		containerID: container.publicId, // Capitalization rule exception: publicId
-		ampContainerID: container.publicId, // Capitalization rule exception: publicId
-		internalContainerID: containerId, // Capitalization rule exception: containerId
-		internalAMPContainerID: containerId, // Capitalization rule exception: containerId
+		accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
+		containerID: container.publicId, // eslint-disable-line sitekit/camelcase-acronyms
+		ampContainerID: container.publicId, // eslint-disable-line sitekit/camelcase-acronyms
+		internalContainerID: containerId, // eslint-disable-line sitekit/camelcase-acronyms
+		internalAMPContainerID: containerId, // eslint-disable-line sitekit/camelcase-acronyms
 	};
 	if ( callback ) {
 		callback( ids );
