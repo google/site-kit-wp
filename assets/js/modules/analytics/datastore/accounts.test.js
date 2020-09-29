@@ -183,8 +183,8 @@ describe( 'modules/analytics accounts', () => {
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
 
-				const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+				const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
 
 				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
 
@@ -330,8 +330,8 @@ describe( 'modules/analytics accounts', () => {
 				const matchedProfile = {
 					...fixtures.profiles[ 0 ],
 					id: '123456',
-					webPropertyId: matchedProperty.id,
-					accountId: matchedProperty.accountId,
+					webPropertyId: matchedProperty.id, // eslint-disable-line sitekit/camelcase-acronyms
+					accountId: matchedProperty.accountId, // eslint-disable-line sitekit/camelcase-acronyms
 				};
 				const response = {
 					accounts,
@@ -365,10 +365,10 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
-				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId );
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId ); // eslint-disable-line sitekit/camelcase-acronyms
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
-				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProperty.defaultProfileId );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProperty.defaultProfileId ); // eslint-disable-line sitekit/camelcase-acronyms
 			} );
 		} );
 
