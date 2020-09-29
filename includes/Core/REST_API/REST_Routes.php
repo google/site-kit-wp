@@ -139,35 +139,46 @@ final class REST_Routes {
 					return $pre;
 				}
 
+				$defaults = array(
+					'role'          => array(
+						'values' => array(),
+						'scope'  => 'user',
+					),
+					'postFrequency' => array(
+						'values' => array(),
+						'scope'  => 'user',
+					),
+					'goals'         => array(
+						'values' => array(),
+						'scope'  => 'site',
+					),
+					'helpNeeded'    => array(
+						'values' => array(),
+						'scope'  => 'site',
+					),
+					'searchTerms'   => array(
+						'values' => array(),
+						'scope'  => 'site',
+					),
+				);
+
 				if ( ! empty( $args['body'] ) ) {
-					update_option( '_googlesitekit_temp_userinput', $args['body'], 'no' );
+					$body = json_decode( $args['body'], true );
+					if ( ! empty( $body ) ) {
+						$user_input = array();
+
+						foreach ( $defaults as $key => $values ) {
+							$user_input[ $key ] = array(
+								'values' => ! empty( $body[ $key ] ) ? $body[ $key ] : array(),
+								'scope'  => $values['scope'],
+							);
+						}
+
+						update_option( '_googlesitekit_temp_userinput', $user_input, 'no' );
+					}
 				}
 
-				$user_input = get_option(
-					'_googlesitekit_temp_userinput',
-					array(
-						'role'          => array(
-							'values' => array(),
-							'scope'  => 'user',
-						),
-						'postFrequency' => array(
-							'values' => array(),
-							'scope'  => 'user',
-						),
-						'goals'         => array(
-							'values' => array(),
-							'scope'  => 'site',
-						),
-						'helpNeeded'    => array(
-							'values' => array(),
-							'scope'  => 'site',
-						),
-						'searchTerms'   => array(
-							'values' => array(),
-							'scope'  => 'site',
-						),
-					)
-				);
+				$user_input = get_option( '_googlesitekit_temp_userinput', $defaults );
 
 				return array(
 					'headers'  => array(),

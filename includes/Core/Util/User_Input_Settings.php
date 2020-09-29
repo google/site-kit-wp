@@ -93,12 +93,13 @@ class User_Input_Settings {
 		$user_input_settings_url  = $this->authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
 		$user_input_settings_args = array(
 			'headers' => array(
-				'Authorization' => 'Bearer: ' . $this->authentication->get_oauth_client()->get_access_token(),
+				'Authorization' => 'Bearer ' . $this->authentication->get_oauth_client()->get_access_token(),
 			),
 		);
 
-		if ( ! empty( $settigns ) ) {
-			$user_input_settings_args['body'] = $settigns;
+		if ( ! empty( $settings ) ) {
+			$user_input_settings_args['headers']['Content-Type'] = 'application/json';
+			$user_input_settings_args['body']                    = wp_json_encode( $settings );
 		}
 
 		$response = wp_remote_post( $user_input_settings_url, $user_input_settings_args );
@@ -187,7 +188,7 @@ class User_Input_Settings {
 	 */
 	public function set_settings( $settings ) {
 		return $this->is_connected_to_proxy()
-			? $this->sync_with_proxy( $settigns )
+			? $this->sync_with_proxy( $settings )
 			: new \WP_Error();
 	}
 
