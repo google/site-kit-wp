@@ -31,6 +31,15 @@ module.exports = iterateJsdoc( ( {
 		return;
 	}
 
+	// If the `@ignore` tag is in this JSDoc block, ignore it and don't require any ordering.
+	const hasIgnoreTag = !! utils.filterTags( ( { tag } ) => {
+		return [ 'ignore' ].includes( tag );
+	} ).length;
+
+	if ( hasIgnoreTag ) {
+		return;
+	}
+
 	// eslint-disable-next-line no-nested-ternary
 	const lastTagInFirstGroup = !! utils.filterTags( ( { tag } ) => {
 		return [ 'private' ].includes( tag );
@@ -38,9 +47,21 @@ module.exports = iterateJsdoc( ( {
 			return [ 'deprecated' ].includes( tag );
 		} ).length ? 'deprecated' : 'since' );
 
+	const hasSecondGroup = !! utils.filterTags( ( { tag } ) => {
+		return ! [ 'private', 'deprecated', 'since' ].includes( tag );
+	} ).length;
+
+	// If there's no second group, don't check tag grouping.
+	if ( ! hasSecondGroup ) {
+		return;
+	}
+
+	// eslint-disable-next-line no-nested-ternary
 	const firstTagInSecondGroup = !! utils.filterTags( ( { tag } ) => {
 		return [ 'param' ].includes( tag );
-	} ).length ? 'param' : 'return';
+	} ).length ? 'param' : ( !! utils.filterTags( ( { tag } ) => {
+			return [ 'type' ].includes( tag );
+		} ).length ? 'type' : 'return' );
 
 	if ( ! jsdoc.source.match( new RegExp( `@${ lastTagInFirstGroup }.*\\n\\n@${ firstTagInSecondGroup }`, 'gm' ) ) ) {
 		context.report( { node: jsdocNode, message: `The @${ lastTagInFirstGroup } tag should be followed by an empty line, and then by the @${ firstTagInSecondGroup } tag.`, data: { name: jsdocNode.name } } );

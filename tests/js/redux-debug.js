@@ -51,9 +51,9 @@ function createLoggerMiddleware() {
  * but it has built-in support for the devtools extension.
  * Since the real extension can't be used in a unit or E2E testing context, we're safe to hijack the global here.
  *
- * @since 1.11.0
+ * See: https://github.com/WordPress/gutenberg/blob/2611a1df0a423dd22cbbabef8f2e87eb91b54bb2/packages/data/src/namespace-store/index.js#L124-L147.
  *
- * @see {@link https://github.com/WordPress/gutenberg/blob/2611a1df0a423dd22cbbabef8f2e87eb91b54bb2/packages/data/src/namespace-store/index.js#L124-L147}
+ * @since 1.11.0
  */
 export function setupReduxLogger() {
 	global.__REDUX_DEVTOOLS_EXTENSION__ = () => {

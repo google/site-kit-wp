@@ -72,8 +72,8 @@ const baseSelectors = {
 	 * }
 	 * ```
 	 *
-	 * @private
 	 * @since 1.5.0
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Site connection info.

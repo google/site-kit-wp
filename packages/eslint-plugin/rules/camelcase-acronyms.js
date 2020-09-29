@@ -43,10 +43,10 @@ module.exports = {
 		 * Reports an AST node as a rule violation.
 		 *
 		 * @since n.e.x.t
+		 * @private
 		 *
 		 * @param {Object} node The node to report.
 		 * @return {void}
-		 * @private
 		 */
 		function report( node ) {
 			if ( ! reported.includes( node ) ) {

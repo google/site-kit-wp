@@ -23,7 +23,7 @@ module.exports = {
 		'sitekit/jsdoc-fullstop': [ 'error' ],
 		'sitekit/jsdoc-requires-since': [ 'error' ],
 		'sitekit/jsdoc-capitalization': [ 'error' ],
-		// "sitekit/jsdoc-tag-grouping": [ 'error' ],
-		// "sitekit/jsdoc-tag-order": [ 'error' ],
+		'sitekit/jsdoc-tag-grouping': [ 'error' ],
+		// 'sitekit/jsdoc-tag-order': [ 'error' ],
 	},
 };

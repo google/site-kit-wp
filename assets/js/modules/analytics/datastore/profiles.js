@@ -155,6 +155,7 @@ const baseSelectors = {
 	 * Returns `undefined` if accounts have not yet loaded.
 	 *
 	 * @since 1.8.0
+	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} accountID  The Analytics Account ID to fetch profiles for.
 	 * @param {string} propertyID The Analytics Property ID to fetch profiles for.

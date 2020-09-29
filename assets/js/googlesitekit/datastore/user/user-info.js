@@ -205,8 +205,8 @@ export const selectors = {
 	 * }
 	 * ```
 	 *
-	 * @private
 	 * @since 1.9.0
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User info.

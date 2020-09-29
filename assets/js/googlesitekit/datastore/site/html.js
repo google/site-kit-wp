@@ -165,8 +165,8 @@ export const baseSelectors = {
 	 *
 	 * Returns a string representation of the HTML when successful.
 	 *
-	 * @private
 	 * @since 1.13.0
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} url   URL for which to fetch HTML.
