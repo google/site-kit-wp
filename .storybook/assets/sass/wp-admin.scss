@@ -1,7 +1,7 @@
 /**
- * PostCSS config.
+ * Imports admin styles from WordPress core.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,13 @@
  * limitations under the License.
  */
 
-const presetEnv = require( 'postcss-preset-env' );
-const importURL = require( 'postcss-import-url' );
-const autoprefixer = require( 'autoprefixer' );
-const cssnano = require( 'cssnano' );
+$wp-version: "5.5.1" !default;
 
-const plugins = [
-	presetEnv(),
-	importURL( { resolveUrls: true } ),
-	autoprefixer( { grid: true } ),
-];
-
-if ( process.env.NODE_ENV === 'production' ) {
-	plugins.push( cssnano() );
+@mixin wp-admin( $file, $version: $wp-version ) {
+	@import url( "https://raw.githubusercontent.com/WordPress/WordPress/#{$version}/wp-admin/css/#{$file}.css" );
 }
 
-module.exports = {
-	parser: false,
-	plugins,
-};
+@include wp-admin( "common" );
+@include wp-admin( "dashboard" );
+@include wp-admin( "edit" );
+@include wp-admin( "forms" );
