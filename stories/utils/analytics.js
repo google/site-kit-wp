@@ -56,10 +56,10 @@ export function generateGtmPropertyStory( {
 			const properties = [
 				...fixtures.accountsPropertiesProfiles.properties,
 				{
-					accountId: existingTagAccountID,
-					defaultProfileId: '206512257',
+					accountId: existingTagAccountID, // eslint-disable-line sitekit/camelcase-acronyms
+					defaultProfileId: '206512257', // eslint-disable-line sitekit/camelcase-acronyms
 					id: existingTagPropertyID,
-					internalWebPropertyId: existingTagWebPropertyID,
+					internalWebPropertyId: existingTagWebPropertyID, // eslint-disable-line sitekit/camelcase-acronyms
 					name: 'qwerty',
 				},
 			];
@@ -67,11 +67,11 @@ export function generateGtmPropertyStory( {
 			const profiles = [
 				...fixtures.accountsPropertiesProfiles.profiles,
 				{
-					accountId: existingTagAccountID,
+					accountId: existingTagAccountID, // eslint-disable-line sitekit/camelcase-acronyms
 					id: '206512258',
-					internalWebPropertyId: existingTagWebPropertyID,
+					internalWebPropertyId: existingTagWebPropertyID, // eslint-disable-line sitekit/camelcase-acronyms
 					name: 'All Web Site Data',
-					webPropertyId: existingTagPropertyID,
+					webPropertyId: existingTagPropertyID, // eslint-disable-line sitekit/camelcase-acronyms
 				},
 			];
 
@@ -86,7 +86,7 @@ export function generateGtmPropertyStory( {
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 
 			[ gtmAccountID, existingTagAccountID ].forEach( ( accountID ) => {
-				const accountProperties = properties.filter( ( { accountId } ) => accountId === accountID );
+				const accountProperties = properties.filter( ( { accountId } ) => accountId === accountID ); // eslint-disable-line sitekit/camelcase-acronyms
 
 				registry.dispatch( STORE_NAME ).receiveGetProperties(
 					accountProperties,
@@ -95,7 +95,7 @@ export function generateGtmPropertyStory( {
 
 				accountProperties.forEach( ( { id: propertyID } ) => {
 					registry.dispatch( STORE_NAME ).receiveGetProfiles(
-						profiles.filter( ( { webPropertyId } ) => webPropertyId === propertyID ),
+						profiles.filter( ( { webPropertyId } ) => webPropertyId === propertyID ), // eslint-disable-line sitekit/camelcase-acronyms
 						{ accountID, propertyID }
 					);
 				} );
