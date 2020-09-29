@@ -25,7 +25,6 @@ use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
 use Exception;
-use OAuth;
 
 /**
  * Authentication Class.
@@ -452,11 +451,11 @@ final class Authentication {
 	}
 
 	/**
-	 * Gets the proxy permission url
+	 * Gets the proxy permission URL.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string Proxy permission url.
+	 * @return string Proxy permission URL.
 	 */
 	private function get_proxy_permissions_url() {
 		return add_query_arg(
@@ -466,30 +465,6 @@ final class Authentication {
 			),
 			admin_url( 'index.php' )
 		);
-	}
-
-	/**
-	 * Handles proxy permissions
-	 *
-	 * @since n.e.x.t
-	 */
-	private function handle_proxy_permissions() {
-		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-			wp_die( esc_html__( 'You need a higher level of permission.', 'google-site-kit' ) );
-		}
-
-		if ( ! $this->credentials->using_proxy() ) {
-			wp_die( esc_html__( 'You need a higher level of permission.', 'google-site-kit' ) );
-		}
-
-		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
-		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_PERMISSIONS ) ) {
-			wp_die( esc_html__( 'An error has occurred. Please reload the page and try again.', 'google-site-kit' ) );
-		}
-
-		wp_safe_redirect( $this->get_oauth_client()->get_proxy_permissions_url() );
-		exit;
-
 	}
 
 	/**
@@ -506,7 +481,6 @@ final class Authentication {
 
 		return ! empty( $access_token );
 	}
-
 	/**
 	 * Checks whether the Site Kit setup is considered complete.
 	 *
@@ -1141,6 +1115,30 @@ final class Authentication {
 			),
 			admin_url( 'index.php' )
 		);
+	}
+
+	/**
+	 * Handles proxy permissions
+	 *
+	 * @since n.e.x.t
+	 */
+	private function handle_proxy_permissions() {
+		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
+		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_PERMISSIONS ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
+		}
+
+		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+			wp_die( esc_html__( 'You have insufficient permissions to manage Site Kit permissions.', 'google-site-kit' ) );
+		}
+
+		if ( ! $this->credentials->using_proxy() ) {
+			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
+		}
+
+		wp_safe_redirect( $this->get_oauth_client()->get_proxy_permissions_url() );
+		exit;
+
 	}
 
 }
