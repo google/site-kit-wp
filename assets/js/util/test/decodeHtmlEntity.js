@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { decodeHtmlEntity } from '../';
+import { decodeHTMLEntity } from '../';
 
 const valuesToTest = [
 	[
@@ -23,8 +23,8 @@ const valuesToTest = [
 	],
 ];
 
-describe( 'decodeHtmlEntity', () => {
+describe( 'decodeHTMLEntity', () => {
 	it.each( valuesToTest )( 'for %s should return %s', ( value, expected ) => {
-		expect( decodeHtmlEntity( value ) ).toStrictEqual( expected );
+		expect( decodeHTMLEntity( value ) ).toStrictEqual( expected );
 	} );
 } );

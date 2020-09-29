@@ -43,9 +43,6 @@ use Exception;
  * @property-read int    $order        Module order within module lists.
  * @property-read string $homepage     External module homepage URL.
  * @property-read string $learn_more   External URL to learn more about the module.
- * @property-read string $group        Module group.
- * @property-read string $feature      Module feature.
- * @property-read array  $tags         List of module tags.
  * @property-read array  $depends_on   List of other module slugs the module depends on.
  * @property-read bool   $force_active Whether the module cannot be disabled.
  * @property-read bool   $internal     Whether the module is internal, thus without any UI.
