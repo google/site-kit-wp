@@ -33,6 +33,7 @@ module.exports = {
 		const reported = [];
 		const acronyms = [
 			'AMP',
+			'GTM',
 			'HTML',
 			'ID',
 			'JSON',
