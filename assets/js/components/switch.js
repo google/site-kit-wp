@@ -45,6 +45,7 @@ class Switch extends Component {
 
 	render() {
 		const {
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			id = `googlesitekit-switch-${ this.props.instanceId }`,
 			onClick,
 			label,
@@ -108,6 +109,7 @@ Switch.propTypes = {
 	checked: PropTypes.bool,
 	disabled: PropTypes.bool,
 	hideLabel: PropTypes.bool,
+	// eslint-disable-next-line sitekit/camelcase-acronyms
 	instanceId: PropTypes.number.isRequired,
 };
 

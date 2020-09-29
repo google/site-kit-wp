@@ -36,6 +36,7 @@ describe( 'AccountSelect', () => {
 		// Set set no existing tag by default.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		// Receive containers for the first account in fixtures to prevent fetching in getAccounts resolver.
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID: fixtures.accounts[ 0 ].accountId } );
 		// Prevent error when loading site info.
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
