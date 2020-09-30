@@ -17,19 +17,12 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { applyFilters } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import DateRangeSelector from './date-range-selector';
 
 export default function PageHeaderDateRange() {
-	const showDateRangeSelector = applyFilters( `googlesitekit.showDateRangeSelector`, false );
-
-	return showDateRangeSelector && (
+	return (
 		<span className="googlesitekit-page-header__range">
 			<DateRangeSelector />
 		</span>
