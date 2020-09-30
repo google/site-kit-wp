@@ -451,23 +451,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Gets the proxy permission URL.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Proxy permission URL.
-	 */
-	private function get_proxy_permissions_url() {
-		return add_query_arg(
-			array(
-				'action' => Google_Proxy::ACTION_PERMISSIONS,
-				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS ),
-			),
-			admin_url( 'index.php' )
-		);
-	}
-
-	/**
 	 * Check if the current user is authenticated.
 	 *
 	 * @since 1.0.0
@@ -1118,7 +1101,7 @@ final class Authentication {
 	}
 
 	/**
-	 * Handles proxy permissions
+	 * Handles proxy permissions.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -1141,4 +1124,20 @@ final class Authentication {
 
 	}
 
+	/**
+	 * Gets the proxy permission URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Proxy permission URL.
+	 */
+	private function get_proxy_permissions_url() {
+		return add_query_arg(
+			array(
+				'action' => Google_Proxy::ACTION_PERMISSIONS,
+				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS ),
+			),
+			admin_url( 'index.php' )
+		);
+	}
 }
