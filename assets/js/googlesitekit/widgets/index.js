@@ -119,7 +119,7 @@ const Widgets = {
 	 * @since 1.9.0
 	 *
 	 * @param {string}         slug            Widget slug.
-	 * @param {(string|Array)} widgetAreaSlugs Widget area slug(s).
+	 * @param {(string|string[])} widgetAreaSlugs Widget area slug(s).
 	 */
 	assignWidget( slug, widgetAreaSlugs ) {
 		dispatch( STORE_NAME ).assignWidget( slug, widgetAreaSlugs );
