@@ -14,4 +14,5 @@ Addresses issue #
 - [ ] My code is backward-compatible with WordPress 4.7 and PHP 5.6.
 - [ ] My code follows the [WordPress](https://make.wordpress.org/core/handbook/best-practices/coding-standards/) coding standards.
 - [ ] My code has proper inline documentation.
+- [ ] I have added a QA Brief on the issue linked above.
 - [ ] I have signed the Contributor License Agreement (see <https://cla.developers.google.com/>).

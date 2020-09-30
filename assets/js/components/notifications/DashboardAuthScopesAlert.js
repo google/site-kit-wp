@@ -57,7 +57,7 @@ function mapScopesToModuleNames( scopes ) {
 	;
 }
 
-const DashboardAuthAlert = () => {
+export default function DashboardAuthScopesAlert() {
 	const unsatisfiedScopes = useSelect( ( select ) => select( CORE_USER ).getUnsatisfiedScopes() );
 	const connectURL = useSelect( ( select ) => select( CORE_USER ).getConnectURL( {
 		redirectURL: global.location.href,
@@ -120,6 +120,4 @@ const DashboardAuthAlert = () => {
 			ctaLabel={ __( 'Redo setup', 'google-site-kit' ) }
 		/>
 	);
-};
-
-export default DashboardAuthAlert;
+}
