@@ -84,6 +84,16 @@ const externals = { ...siteKitExternals };
 const rules = [
 	noAMDParserRule,
 	{
+		test: /\.svg$/,
+		use: [ {
+			loader: '@svgr/webpack',
+			options: {
+				// strip width & height to allow manual override using props
+				dimensions: false,
+			},
+		} ],
+	},
+	{
 		test: /\.js$/,
 		exclude: /node_modules/,
 		use: [
@@ -273,7 +283,7 @@ const webpackConfig = ( mode ) => {
 						],
 					},
 					{
-						test: /\.(png|woff|woff2|eot|ttf|svg|gif)$/,
+						test: /\.(png|woff|woff2|eot|ttf|gif)$/,
 						use: { loader: 'url-loader?limit=100000' },
 					},
 				],
