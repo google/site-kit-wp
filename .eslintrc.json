@@ -1,7 +1,8 @@
 {
   "extends": [
     "plugin:@wordpress/eslint-plugin/recommended-with-formatting",
-    "plugin:jest/recommended"
+    "plugin:jest/recommended",
+    "plugin:sitekit/main"
   ],
   "env": {
     "browser": true,
@@ -32,7 +33,7 @@
     "@wordpress/i18n-text-domain": [
       "error",
       {
-        "allowedTextDomain":  "google-site-kit"
+        "allowedTextDomain": "google-site-kit"
       }
     ]
   },
@@ -67,5 +68,8 @@
       }
     }
   ],
-  "plugins": ["filenames"]
+  "plugins": [
+    "filenames",
+    "sitekit"
+  ]
 }

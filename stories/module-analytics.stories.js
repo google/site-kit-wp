@@ -49,9 +49,12 @@ storiesOf( 'Analytics Module', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				accountID: properties[ 0 ].accountId,
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				propertyID: profiles[ 0 ].webPropertyId,
 			} );
 		};
@@ -72,14 +75,20 @@ storiesOf( 'Analytics Module', module )
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				accountID: properties[ 0 ].accountId,
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				propertyID: profiles[ 0 ].webPropertyId,
 			} );
 			dispatch( STORE_NAME ).receiveGetSettings( {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				accountID: profiles[ 0 ].accountId,
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				propertyID: profiles[ 0 ].webPropertyId,
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
 				profileID: profiles[ 0 ].id,
 			} );
