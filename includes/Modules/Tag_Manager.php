@@ -848,8 +848,6 @@ final class Tag_Manager extends Module
 			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),
 			'learn_more'  => __( 'https://marketingplatform.google.com/about/tag-manager/', 'google-site-kit' ),
-			'group'       => __( 'Marketing Platform', 'google-site-kit' ),
-			'tags'        => array( 'marketing' ),
 			'depends_on'  => array( 'analytics' ),
 		);
 	}

@@ -17,10 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -66,7 +62,7 @@ const store = Data.combineStores(
 	service
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

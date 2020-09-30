@@ -37,7 +37,7 @@ const fetchGetGoalsStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	goals: undefined,
 };
 
@@ -60,7 +60,7 @@ const baseSelectors = {
 	/**
 	 * Gets Analytics goals.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} An Analytics goals; `undefined` if not loaded.
@@ -74,13 +74,13 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetGoalsStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

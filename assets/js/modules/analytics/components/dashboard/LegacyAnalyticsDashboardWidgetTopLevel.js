@@ -184,7 +184,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 							className="overview-bounce-rate"
 							title={ __( 'Bounce Rate', 'google-site-kit' ) }
 							datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
-							datapointUnit={ __( '%', 'google-site-kit' ) }
+							datapointUnit="%"
 							change={ averageBounceRateChange }
 							changeDataUnit="%"
 							invertChangeColor
@@ -195,10 +195,10 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 							} }
 							sparkline={
 								extractedAnalytics &&
-								<Sparkline
-									data={ extractForSparkline( extractedAnalytics, 2 ) }
-									change={ averageBounceRateChange }
-								/>
+									<Sparkline
+										data={ extractForSparkline( extractedAnalytics, 2 ) }
+										change={ averageBounceRateChange }
+									/>
 							}
 						/>
 					) }

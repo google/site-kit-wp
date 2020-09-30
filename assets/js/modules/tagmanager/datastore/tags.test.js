@@ -24,7 +24,6 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
@@ -104,7 +103,6 @@ describe( 'modules/tagmanager existing-tag', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getExistingTag();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
@@ -158,7 +156,6 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const containerID = 'GTM-ABC1234';
 
-				muteConsole( 'error' ); // 500 response expected.
 				registry.select( STORE_NAME ).hasTagPermission( containerID );
 
 				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
@@ -166,6 +163,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( registry.select( STORE_NAME ).getTagPermission( containerID ) ).toEqual( undefined );
 				expect( registry.select( STORE_NAME ).getErrorForSelector( 'getTagPermission', [ containerID ] ) ).toEqual( errorResponse );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 

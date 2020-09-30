@@ -38,7 +38,7 @@ const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
 
-const INITIAL_STATE = {
+const initialState = {
 	connectURL: undefined,
 	user: undefined,
 	verified: undefined,
@@ -138,7 +138,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -323,7 +323,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

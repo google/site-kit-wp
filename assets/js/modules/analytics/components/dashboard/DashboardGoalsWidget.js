@@ -94,7 +94,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( ! data || ! data.length ) {
-		return getNoDataComponent( __( 'Analytics', 'google-site-kit' ) );
+		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 
 	const sparkLineData = [

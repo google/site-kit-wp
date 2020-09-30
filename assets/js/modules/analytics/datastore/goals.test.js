@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -98,7 +97,6 @@ describe( 'modules/analytics goals', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getGoals();
 				await subscribeUntil(
 					registry,
@@ -109,6 +107,7 @@ describe( 'modules/analytics goals', () => {
 
 				const goals = registry.select( STORE_NAME ).getGoals();
 				expect( goals ).toBeUndefined();
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

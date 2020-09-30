@@ -1022,7 +1022,7 @@ final class Analytics extends Module
 				}
 				$profile_name = trim( $data['profileName'] );
 				if ( empty( $profile_name ) ) {
-					$profile_name = __( 'All Web Site Data', 'google-site-kit' );
+					$profile_name = _x( 'All Web Site Data', 'default Analytics view name', 'google-site-kit' );
 				}
 				$profile = new Google_Service_Analytics_Profile();
 				$profile->setName( $profile_name );
@@ -1366,7 +1366,6 @@ final class Analytics extends Module
 			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
 			'learn_more'  => __( 'https://marketingplatform.google.com/about/analytics/', 'google-site-kit' ),
-			'group'       => __( 'Marketing Platform', 'google-site-kit' ),
 		);
 	}
 

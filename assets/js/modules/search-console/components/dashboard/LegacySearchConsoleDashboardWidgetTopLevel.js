@@ -45,6 +45,7 @@ import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/sit
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
 import { getCurrentDateRange } from '../../../../util/date-range';
+import getNoDataComponent from '../../../../components/notifications/nodata';
 
 const { useSelect } = Data;
 
@@ -103,12 +104,7 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
 					mdc-layout-grid__cell--span-4-tablet
 					mdc-layout-grid__cell--span-6-desktop
 				">
-				<CTA
-					title={ __( 'Search Console Data Empty', 'google-site-kit' ) }
-					description={ __( 'Search Console data is not yet available, please check back later.', 'google-site-kit' ) }
-					ctaLink={ '' }
-					ctaLabel={ '' }
-				/>
+				{ getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) ) }
 			</div>
 		);
 	}
