@@ -28,20 +28,20 @@ import Data from 'googlesitekit-data';
 import ErrorNotice from '../components/ErrorNotice';
 const { useSelect } = Data;
 
-function StoreErrorNotice( { moduleSlug, storeName, shouldDisplayError } ) {
+export default function StoreErrorNotice( { storeName, shouldDisplayError, moduleSlug } ) {
 	const error = useSelect( ( select ) => select( storeName ).getError() );
 
-	return <ErrorNotice error={ error } shouldDisplayError={ shouldDisplayError } moduleSlug={ moduleSlug } />;
+	return (
+		<ErrorNotice
+			error={ error }
+			moduleSlug={ moduleSlug }
+			shouldDisplayError={ shouldDisplayError }
+		/>
+	);
 }
 
 StoreErrorNotice.propTypes = {
-	moduleSlug: PropTypes.string.isRequired,
 	storeName: PropTypes.string.isRequired,
 	shouldDisplayError: PropTypes.func,
+	moduleSlug: PropTypes.string,
 };
-
-StoreErrorNotice.defaultProps = {
-	shouldDisplayError: () => true,
-};
-
-export default StoreErrorNotice;
