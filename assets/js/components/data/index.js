@@ -102,15 +102,19 @@ const dataAPI = {
 		} );
 	},
 
+	// Disabled because the typing of the `combinedRequest` param causes the JSDoc rules
+	// to format things quite strangely.
+	/* eslint-disable jsdoc/check-line-alignment */
 	/**
 	 * Gets data for multiple requests from the REST API using a single batch process.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param {Array.<{maxAge: Date,            type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
-	 * @param {boolean}        secondaryRequest Set to `true` if this is this is after the first request.
+	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest  An array of data requests to resolve.
+	 * @param {boolean}    secondaryRequest Set to `true` if this is this is after the first request.
 	 * @return {Promise} A promise for multiple fetch requests.
 	 */
+	/* eslint-enable jsdoc/check-line-alignment */
 	combinedGet( combinedRequest, secondaryRequest = false ) {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
 		let dataRequest = [];

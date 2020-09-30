@@ -65,6 +65,8 @@ expect.extend( customMatchers );
 /**
  * Adds an event listener to the page to handle additions of page event
  * handlers, to assure that they are removed at test teardown.
+ *
+ * @since 1.0.0
  */
 function capturePageEventsForTearDown() {
 	page.on( 'newListener', ( eventName, listener ) => {
@@ -79,7 +81,8 @@ function capturePageEventsForTearDown() {
  * which is the only way to opt-out in an AMP-friendly way
  * since AMP does not allow for arbitrary JS from the origin.
  *
- * See: https://tools.google.com/dlpage/gaoptout.
+ * @see {@link https://tools.google.com/dlpage/gaoptout}
+ * @since 1.13.0
  */
 function optOutOfEventTracking() {
 	page.on( 'load', async () => {
@@ -93,6 +96,8 @@ function optOutOfEventTracking() {
 
 /**
  * Removes all bound page event handlers.
+ *
+ * @since 1.0.0
  */
 function removePageEvents() {
 	while ( pageEvents.length ) {
@@ -104,6 +109,8 @@ function removePageEvents() {
 /**
  * Adds a page event handler to emit uncaught exception to process if one of
  * the observed console logging types is encountered.
+ *
+ * @since 1.0.0
  */
 function observeConsoleLogging() {
 	page.on( 'console', ( message ) => {

@@ -4,7 +4,7 @@
  * It's necessary to get the underlying setter from the input's prototype
  * as this is overridden by elements rendered by React.
  *
- * See: https://stackoverflow.com/a/46012210/1037938.
+ * @see {@link https://stackoverflow.com/a/46012210/1037938}
  *
  * @since 1.0.0
  *

@@ -1,9 +1,11 @@
 /**
  * Proxy calls to wp.apiFetch within the page context.
  *
+ * @see {@link https://github.com/WordPress/gutenberg/blob/master/packages/api-fetch/README.md}
+ *
  * @since 1.0.0
  *
- * @param {Object} options Options object passed to `wp.apiFetch`. See documentation at: https://github.com/WordPress/gutenberg/blob/master/packages/api-fetch/README.md#options.
+ * @param {Object} options Options object passed to `wp.apiFetch`.
  * @return {*} resolved value from apiFetch promise.
  */
 export async function wpApiFetch( options ) {

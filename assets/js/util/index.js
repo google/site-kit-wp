@@ -189,11 +189,13 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 /**
  * Internationalization Number Format.
  *
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter} For all available formatting options.
+ *
  * @since 1.0.0
  *
  * @param {number} number           The number to format.
  * @param {Object} [options]        Formatting options.
- * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit. See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter for all available formatting options.
+ * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
  * @return {string} The formatted number.
  */
 export const numberFormat = ( number, options = {} ) => {

@@ -48,7 +48,7 @@ module.exports = iterateJsdoc( ( {
 		} ).length ? 'deprecated' : 'since' );
 
 	const hasSecondGroup = !! utils.filterTags( ( { tag } ) => {
-		return ! [ 'private', 'deprecated', 'since' ].includes( tag );
+		return ! [ 'see', 'private', 'deprecated', 'since' ].includes( tag );
 	} ).length;
 
 	// If there's no second group, don't check tag grouping.

@@ -106,7 +106,7 @@ const Widgets = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {string}         slug         Widget Area's slug.
+	 * @param {string}            slug         Widget Area's slug.
 	 * @param {(string|string[])} contextSlugs Widget context slug(s).
 	 */
 	assignWidgetArea( slug, contextSlugs ) {

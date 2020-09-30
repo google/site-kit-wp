@@ -274,7 +274,7 @@ export const extractAnalyticsDashboardSparklineData = ( reports ) => {
 /**
  * Translates Analytics API Error Response.
  *
- * See: https://developers.google.com/analytics/devguides/reporting/core/v4/errors.
+ * @see {@link https://developers.google.com/analytics/devguides/reporting/core/v4/errors}
  *
  * @since 1.0.0
  *

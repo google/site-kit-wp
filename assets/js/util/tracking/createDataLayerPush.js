@@ -15,11 +15,12 @@ import { DATA_LAYER } from './constants';
 export default function createDataLayerPush( target ) {
 	/**
 	 * Pushes data onto the data layer.
+	 *
 	 * Must push an instance of Arguments to the target.
-	 * Using an ES6 spread operator (i.e. `...args`) will cause tracking events to _silently_ fail.
+	 * Using an ES6 spread operator (i.e. `...args`) will cause tracking events to
+	 * _silently_ fail.
 	 *
-	 * See: https://github.com/google/site-kit-wp/issues/1181.
-	 *
+	 * @see {@link https://github.com/google/site-kit-wp/issues/1181}
 	 * @since 1.0.0
 	 */
 	return function dataLayerPush() {
