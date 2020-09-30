@@ -18,13 +18,10 @@
 
 module.exports = {
 	isDependencyBlock: ( jsdoc ) => {
-		if ( jsdoc && jsdoc.description && (
-			jsdoc.description.trim() === 'Node dependencies' ||
-      jsdoc.description.trim() === 'External dependencies' ||
-      jsdoc.description.trim() === 'WordPress dependencies' ||
-      jsdoc.description.trim() === 'Internal dependencies'
-		) ) {
-			return true;
-		}
+		return !! (
+			jsdoc &&
+			jsdoc.description &&
+			/^(Node|External|WordPress|Internal) dependencies$/.test( jsdoc.description.trim() )
+		);
 	},
 };
