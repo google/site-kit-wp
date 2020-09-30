@@ -222,27 +222,19 @@ export function createErrorStore() {
 		},
 
 		/**
-		 * Retrieves all the errors from the state.
+		 * Gets a list of all unique errors.
 		 *
 		 * @since n.e.x.t
 		 *
 		 * @param {Object} state Data store's state.
-		 * @return {Array} Unique set of errors
+		 * @return {Object[]} Unique set of errors.
 		 */
 		getErrors( state ) {
-			const { error, errors } = state;
+			const errorsSet = new Set( Object.values( state.errors ) );
 
-			const errorsSet = new Set();
-			if ( undefined !== errors ) {
-				const errorsValues = Object.values( errors );
-
-				if ( Array.isArray( errorsValues ) && errorsValues.length > 0 ) {
-					errorsValues.map( ( singleError ) => errorsSet.add( singleError ) );
-				}
-			}
-
-			if ( undefined !== error ) {
-				errorsSet.add( error );
+			// @TODO: remove it once all instances of the legacy usage have been removed.
+			if ( undefined !== state.error ) {
+				errorsSet.add( state.error );
 			}
 
 			return Array.from( errorsSet );
