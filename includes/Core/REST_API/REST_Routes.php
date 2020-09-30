@@ -347,15 +347,17 @@ final class REST_Routes {
 				'core/user/data/user-input-settings',
 				array(
 					array(
-						'methods'  => WP_REST_Server::READABLE,
-						'callback' => function( WP_REST_Request $request ) {
+						'permission_callback' => '__return_true', // It gets checked in the User_Input_Settings class.
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
 							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
 							return rest_ensure_response( $user_input_settings->get_settings() );
 						},
 					),
 					array(
-						'methods'  => WP_REST_Server::CREATABLE,
-						'callback' => function( WP_REST_Request $request ) {
+						'permission_callback' => '__return_true', // It gets checked in the User_Input_Settings class.
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => function( WP_REST_Request $request ) {
 							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
 							return rest_ensure_response(
 								$user_input_settings->set_settings(
@@ -363,7 +365,7 @@ final class REST_Routes {
 								)
 							);
 						},
-						'args'     => array(
+						'args'                => array(
 							'settings' => array(
 								'type'       => 'object',
 								'required'   => true,
