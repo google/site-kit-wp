@@ -366,7 +366,33 @@ final class REST_Routes {
 					),
 				),
 				array(
-					'args' => array(),
+					'args' => array(
+						'settings' => array(
+							'type'       => 'object',
+							'properties' => array(
+								'role'          => array(
+									'type'  => 'array',
+									'items' => array( 'type' => 'string' ),
+								),
+								'postFrequency' => array(
+									'type'  => 'array',
+									'items' => array( 'type' => 'string' ),
+								),
+								'goals'         => array(
+									'type'  => 'array',
+									'items' => array( 'type' => 'string' ),
+								),
+								'helpNeeded'    => array(
+									'type'  => 'array',
+									'items' => array( 'type' => 'string' ),
+								),
+								'searchTerms'   => array(
+									'type'  => 'array',
+									'items' => array( 'type' => 'string' ),
+								),
+							),
+						),
+					),
 				)
 			),
 		);
