@@ -10,6 +10,7 @@ import { removeAllFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import AnalyticsIcon from '../assets/svg/analytics.svg';
 import PageHeader from '../assets/js/components/page-header';
 
 storiesOf( 'Global', module )
@@ -26,10 +27,7 @@ storiesOf( 'Global', module )
 			<p>
 				<PageHeader
 					title="Module Page Title with Icon"
-					icon
-					iconWidth="23"
-					iconHeight="26"
-					iconID="analytics"
+					icon={ <AnalyticsIcon width={ 23 } height={ 26 } className="googlesitekit-page-header__icon" /> }
 					status="not-connected"
 					statusText="Analytics is not connected"
 				/>
