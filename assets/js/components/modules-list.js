@@ -132,7 +132,7 @@ class ModulesList extends Component {
 						>
 							<div className="googlesitekit-settings-connect-module__wrapper">
 								<div className="googlesitekit-settings-connect-module__logo">
-									{ moduleIcon( slug, blockedByParentModule ) }
+									{ moduleIcon( slug ) }
 								</div>
 								<h3 className="googlesitekit-settings-connect-module__title">
 									{ name }

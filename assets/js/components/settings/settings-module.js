@@ -34,7 +34,8 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import SvgIcon from '../../util/svg-icon';
+import PencilIcon from '../../../svg/pencil.svg';
+import TrashIcon from '../../../svg/trash.svg';
 import {
 	activateOrDeactivateModule,
 	getReAuthURL,
@@ -275,7 +276,7 @@ class SettingsModule extends Component {
 											googlesitekit-heading-4
 											googlesitekit-settings-module__title
 										">
-											{ moduleIcon( slug, false, '24', '26', 'googlesitekit-settings-module__title-icon' ) }
+											{ moduleIcon( slug, '24', '26', 'googlesitekit-settings-module__title-icon' ) }
 											{ name }
 										</h3>
 									</div>
@@ -385,9 +386,8 @@ class SettingsModule extends Component {
 												inherit
 											>
 												{ __( 'Edit', 'google-site-kit' ) }
-												<SvgIcon
+												<PencilIcon
 													className="googlesitekit-settings-module__edit-button-icon"
-													id="pencil"
 													width="10"
 													height="10"
 												/>
@@ -413,9 +413,8 @@ class SettingsModule extends Component {
 														/* translators: %s: module name */
 														sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
 													}
-													<SvgIcon
+													<TrashIcon
 														className="googlesitekit-settings-module__remove-button-icon"
-														id="trash"
 														width="13"
 														height="13"
 													/>

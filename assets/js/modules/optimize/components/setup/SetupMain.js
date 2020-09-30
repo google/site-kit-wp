@@ -31,9 +31,9 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import OptimizeIcon from '../../../../../svg/optimize.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/progress-bar';
-import { SvgIcon } from '../../../../util';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
@@ -58,7 +58,7 @@ export default function SetupMain( { finishSetup } ) {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--optimize">
 
 			<div className="googlesitekit-setup-module__logo">
-				<SvgIcon id="optimize" width="33" height="33" />
+				<OptimizeIcon width="33" height="33" />
 			</div>
 
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">

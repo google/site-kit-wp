@@ -30,7 +30,8 @@ import { Component, Fragment, createRef, isValidElement } from '@wordpress/eleme
 /**
  * Internal dependencies
  */
-import SvgIcon from '../../util/svg-icon';
+import GoogleLogoIcon from '../../../svg/logo-g.svg';
+import { moduleIcon } from '../../util';
 import { sanitizeHTML } from '../../util/sanitize';
 import { setCache, getCache, deleteCache } from '../data/cache';
 import DataBlock from '../data-block';
@@ -257,7 +258,7 @@ class Notification extends Component {
 			</Fragment>
 		);
 
-		const logoSVG = module ? <SvgIcon id={ module } height="19" width="19" /> : <SvgIcon id={ 'logo-g' } height="34" width="32" />;
+		const logoSVG = module ? moduleIcon( module, 19, 19 ) : <GoogleLogoIcon height="34" width="32" />;
 
 		return (
 			<section
