@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import isPlainObject from 'lodash/isPlainObject';
 import PropTypes from 'prop-types';
 
 /**
@@ -31,7 +32,7 @@ import { getInsufficientPermissionsErrorDescription } from '../util/insufficient
 import ErrorText from '../components/error-text';
 const { useSelect } = Data;
 
-function ErrorNotice( { moduleSlug, shouldDisplayError, error } ) {
+export default function ErrorNotice( { moduleSlug, shouldDisplayError, error } ) {
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
 	// Do not display if no error, or if the error is for missing scopes.
@@ -40,11 +41,16 @@ function ErrorNotice( { moduleSlug, shouldDisplayError, error } ) {
 	}
 
 	let message = error.message;
-	if ( isInsufficientPermissionsError( error ) && undefined !== module ) {
+	if ( isInsufficientPermissionsError( error ) && isPlainObject( module ) ) {
 		message = getInsufficientPermissionsErrorDescription( message, module );
 	}
 
-	return <ErrorText message={ message } reconnectURL={ error.data?.reconnectURL } />;
+	return (
+		<ErrorText
+			message={ message }
+			reconnectURL={ error.data?.reconnectURL }
+		/>
+	);
 }
 
 ErrorNotice.propTypes = {
@@ -58,7 +64,4 @@ ErrorNotice.propTypes = {
 ErrorNotice.defaultProps = {
 	moduleSlug: '',
 	shouldDisplayError: () => true,
-	error: {},
 };
-
-export default ErrorNotice;
