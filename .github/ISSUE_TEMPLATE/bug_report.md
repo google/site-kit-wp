@@ -45,7 +45,7 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ### Test Coverage
 
-* <!-- One or more bullet points for how to implement automated tests to verify the feature works. -->
+* <!-- One or more bullet points for how to implement automated tests to verify the issue is resolved. -->
 
 ### Visual Regression Changes
 
