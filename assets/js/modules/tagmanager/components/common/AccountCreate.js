@@ -35,8 +35,14 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreate() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
-	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
+	const {
+		accounts,
+		hasResolvedAccounts,
+	} = useSelect( ( select ) => ( {
+		accounts: select( STORE_NAME ).getAccounts(),
+		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+	} ) );
+
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
 	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: 'admin/accounts/create' } ) );
 
@@ -50,7 +56,7 @@ export default function AccountCreate() {
 		global.window.open( createAccountURL, '_blank' );
 	}, [ createAccountURL ] );
 
-	if ( undefined === accounts || isDoingGetAccounts || ! userEmail ) {
+	if ( undefined === accounts || ! hasResolvedAccounts || ! userEmail ) {
 		return <ProgressBar />;
 	}
 
