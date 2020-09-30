@@ -72,6 +72,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	.add( 'Start', ( registry ) => {
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID: fixtures.accounts[ 0 ].accountId } );
 
 		return <Setup registry={ registry } />;
@@ -88,6 +89,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 		return <Setup registry={ registry } />;
 	} )
 	.add( 'Existing tag (with access)', ( registry ) => {
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const accountID = fixtures.accounts[ 0 ].accountId;
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-S1T3K1T' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-S1T3K1T' } );
@@ -117,17 +119,21 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 	} )
 	.add( 'Start', ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID: fixtures.accounts[ 0 ].accountId } );
 
 		return <Setup registry={ registry } />;
 	} )
 	.add( 'Selected', ( registry ) => {
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const accountID = fixtures.accounts[ 0 ].accountId;
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
 		const [ container ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAMPContainerID( container.publicId );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 
 		return <Setup registry={ registry } />;
@@ -146,20 +152,26 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	} )
 	.add( 'Start', ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID: fixtures.accounts[ 0 ].accountId } );
 
 		return <Setup registry={ registry } />;
 	} )
 	.add( 'Selected', ( registry ) => {
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const accountID = fixtures.accounts[ 0 ].accountId;
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
 		const [ webContainer ] = registry.select( STORE_NAME ).getWebContainers( accountID );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
 		const [ ampContainer ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
 
 		return <Setup registry={ registry } />;

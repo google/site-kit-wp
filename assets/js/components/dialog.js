@@ -67,11 +67,14 @@ class Dialog extends Component {
 			subtitle,
 			confirmButton,
 			dependentModules,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			instanceId,
 			danger,
 		} = this.props;
 
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const labelledByID = `googlesitekit-dialog-label-${ instanceId }`;
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const describedByID = `googlesitekit-dialog-description-${ instanceId }`;
 		const hasProvides = !! ( provides && provides.length );
 

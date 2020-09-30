@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import {
-	decodeHtmlEntity,
+	decodeHTMLEntity,
 	loadTranslations,
 	trackEvent,
 } from './util';
@@ -68,7 +68,7 @@ export const GoogleSitekitAdminbar = () => {
 						<div className="googlesitekit-adminbar__subtitle">{ __( 'Stats for', 'google-site-kit' ) }</div>
 						<div className="googlesitekit-adminbar__title">
 							{ currentEntityTitle
-								? decodeHtmlEntity( currentEntityTitle )
+								? decodeHTMLEntity( currentEntityTitle )
 								: currentEntityURL
 							}
 						</div>

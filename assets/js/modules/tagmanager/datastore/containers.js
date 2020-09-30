@@ -145,9 +145,11 @@ const baseActions = {
 		}
 		if ( container.usageContext.includes( CONTEXT_WEB ) ) {
 			dispatch( STORE_NAME ).setContainerID( containerID );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
 		} else if ( container.usageContext.includes( CONTEXT_AMP ) ) {
 			dispatch( STORE_NAME ).setAMPContainerID( containerID );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 		}
 	},
@@ -224,6 +226,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		return containers.find( ( { publicId } ) => containerID === publicId ) || null;
 	} ),
 
