@@ -20,23 +20,53 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { node, string } from 'prop-types';
+import PropTypes from 'prop-types';
 
-const Widget = ( { children, className, slug } ) => {
+const Widget = ( {
+	children,
+	className,
+	slug,
+	noPadding,
+	header: Header,
+	footer: Footer,
+} ) => {
 	return (
-		<div className={ classnames( 'googlesitekit-widget', `googlesitekit-widget--${ slug }`, className ) }>
-			{ children }
+		<div
+			className={ classnames(
+				'googlesitekit-widget',
+				`googlesitekit-widget--${ slug }`,
+				{ 'googlesitekit-widget--no-padding': noPadding },
+				className
+			) }
+		>
+			{ Header && (
+				<div className="googlesitekit-widget__header">
+					<Header />
+				</div>
+			) }
+			<div className="googlesitekit-widget__body">
+				{ children }
+			</div>
+			{ Footer && (
+				<div className="googlesitekit-widget__footer">
+					<Footer />
+				</div>
+			) }
 		</div>
 	);
 };
 
 Widget.defaultProps = {
 	children: undefined,
+	noPadding: false,
 };
 
 Widget.propTypes = {
-	children: node,
-	slug: string.isRequired,
+	children: PropTypes.node,
+	slug: PropTypes.string.isRequired,
+	noPadding: PropTypes.bool,
+	header: PropTypes.elementType,
+	footer: PropTypes.elementType,
 };
 
 export default Widget;
