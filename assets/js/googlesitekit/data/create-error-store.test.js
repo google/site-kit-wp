@@ -34,37 +34,22 @@ describe( 'createErrorStore store', () => {
 	let select;
 	let store;
 	let storeDefinition;
+
 	const errorNotFound = {
-		error: {
-			code: 404,
-			message: 'Not found',
-			data: {
-				status: 404,
-				reason: 'not-found',
-			},
+		code: 404,
+		message: 'Not found',
+		data: {
+			status: 404,
 		},
-		baseName: 'getMock',
-		args: [
-			{
-				foo: 'bar',
-			},
-		],
 	};
+
 	const errorForbidden = {
-		error: {
-			code: 403,
-			message: 'Forbidden',
-			data: {
-				status: 403,
-				reason: 'forbidden',
-			},
+		code: 403,
+		message: 'Forbidden',
+		data: {
+			status: 403,
+			reason: 'forbidden',
 		},
-		baseName: 'getAccess',
-		args: [
-			{
-				foo: 'bar',
-			},
-		],
 	};
 
 	beforeEach( () => {
@@ -77,6 +62,10 @@ describe( 'createErrorStore store', () => {
 		select = registry.select( STORE_NAME );
 	} );
 
+	// Shared fixtures for various arguments by the same names.
+	const baseName = 'getFoo';
+	const args = [ 'bar', 'baz' ];
+
 	describe( 'actions', () => {
 		describe( 'receiveError', () => {
 			it( 'requires the error param', () => {
@@ -85,47 +74,46 @@ describe( 'createErrorStore store', () => {
 				} ).toThrow( 'error is required.' );
 			} );
 
-			it( 'receives and sets value for an error with baseName only', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName );
-				expect( store.getState().errors[ errorNotFound.baseName ] ).toEqual( errorNotFound.error );
+			it( 'receives and sets value for an error with `baseName` only', () => {
+				dispatch.receiveError( errorNotFound, baseName );
+				expect( store.getState().errors[ baseName ] ).toEqual( errorNotFound );
 			} );
 
-			it( 'receives and sets value for an error with baseName and args', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
-				const errorKey = generateErrorKey( errorNotFound.baseName, errorNotFound.args );
+			it( 'receives and sets value for an error with `baseName` and `args`', () => {
+				dispatch.receiveError( errorNotFound, baseName, args );
 
-				expect( store.getState().errors ).toHaveProperty( errorKey );
+				expect( store.getState().errors ).toHaveProperty(
+					generateErrorKey( baseName, args ),
+					errorNotFound
+				);
 			} );
 		} );
 
 		describe( 'clearError', () => {
-			it( 'does not clear an error if baseName and args are missing', () => {
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
+			it( 'does not clear any error when called without any arguments', () => {
+				dispatch.receiveError( errorForbidden, baseName, args );
+				const errorsBefore = store.getState().errors;
+
 				dispatch.clearError();
 
-				const errorObj = {
-					[ generateErrorKey( errorForbidden.baseName, errorForbidden.args ) ]: errorForbidden.error,
-				};
-				expect( store.getState().errors ).toEqual( errorObj );
+				expect( store.getState().errors ).toEqual( errorsBefore );
 			} );
 
-			it( 'does not clear an error if args is missing when error has been created with args', () => {
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
-				const errorsState = store.getState().errors;
-				dispatch.clearError( errorForbidden.baseName );
+			it( 'requires the same `baseName` and `args` an error was received with to clear it', () => {
+				dispatch.receiveError( errorForbidden, baseName, args );
 
-				expect( store.getState().errors ).toEqual( errorsState );
-			} );
+				dispatch.clearError( baseName );
 
-			it( 'removes an error', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
-				dispatch.clearError( errorNotFound.baseName, errorNotFound.args );
+				expect( store.getState().errors ).toHaveProperty(
+					generateErrorKey( baseName, args ),
+					errorForbidden
+				);
 
-				const errorObj = {
-					[ generateErrorKey( errorForbidden.baseName, errorForbidden.args ) ]: errorForbidden.error,
-				};
-				expect( store.getState().errors ).toEqual( errorObj );
+				dispatch.clearError( baseName, args );
+
+				expect( store.getState().errors ).not.toHaveProperty(
+					generateErrorKey( baseName, args )
+				);
 			} );
 		} );
 	} );
@@ -134,103 +122,107 @@ describe( 'createErrorStore store', () => {
 		describe.each( [ 'getErrorForSelector', 'getErrorForAction' ] )( '%s', ( selectorName ) => {
 			const baseNameParam = selectorName === 'getErrorForSelector' ? 'selectorName' : 'actionName';
 
-			it( `requires a ${ baseNameParam } param`, () => {
+			it( `requires a \`${ baseNameParam }\` param`, () => {
 				expect( () => {
 					select[ selectorName ]();
 				} ).toThrow( `${ baseNameParam } is required.` );
 			} );
 
-			it( 'returns undefined when error does not exist', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName );
-				const selectedError = select[ selectorName ]( 'nonExistentBaseName' );
-				expect( selectedError ).toBeUndefined();
+			it( `returns \`undefined\` when no has been received error for the given \`${ baseNameParam }\``, () => {
+				expect( select[ selectorName ]( 'nonExistentBaseName' ) ).toBeUndefined();
 			} );
 
-			it( 'returns the error for the given selector name with empty args', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, [] );
-				const selectedError = select[ selectorName ]( errorForbidden.baseName );
+			it( `returns the error for the given \`${ baseNameParam }\` with empty \`args\` or none`, () => {
+				dispatch.receiveError( errorForbidden, baseName, [] );
 
-				expect( selectedError ).toEqual( errorForbidden.error );
+				expect( select[ selectorName ]( baseName ) ).toEqual( errorForbidden );
+				expect( select[ selectorName ]( baseName, [] ) ).toEqual( errorForbidden );
 			} );
 
-			it( 'returns the error for the given selector name with args', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
-				const selectedError = select[ selectorName ]( errorForbidden.baseName, errorForbidden.args );
+			it( `returns the error received for the given \`${ baseNameParam }\` and \`args\``, () => {
+				dispatch.receiveError( errorNotFound, baseName );
+				dispatch.receiveError( errorForbidden, baseName, args );
 
-				expect( selectedError ).toEqual( errorForbidden.error );
+				expect( select[ selectorName ]( baseName, args ) ).toEqual( errorForbidden );
 			} );
-		} );
+		}
+		);
 
 		describe( 'getError', () => {
-			it( 'requires a baseName and args param', () => {
-				select.getError();
+			describe( 'legacy argumentless behavior', () => {
+				it( 'returns `undefined` if no error exists', () => {
+					expect( select.getError() ).toBeUndefined();
+				} );
 
-				expect( store.getState().error ).toBeUndefined();
+				it( 'returns the error which was received without any `baseName` or `args`', () => {
+					dispatch.receiveError( errorNotFound, baseName );
+
+					expect( select.getError() ).toBeUndefined();
+
+					dispatch.receiveError( errorForbidden );
+
+					expect( select.getError() ).toEqual( errorForbidden );
+				} );
 			} );
 
-			it( 'requires an baseName param', () => {
+			it( 'returns `undefined` if no error exists for the given `baseName` and `args`', () => {
+				expect( select.getError( baseName, args ) ).toBeUndefined();
+			} );
+
+			it( 'requires a `baseName` param when providing `args`', () => {
 				expect( () => {
-					select.getError( false, [ { foo: 'bar' } ] );
+					select.getError( '', args );
 				} ).toThrow( 'baseName is required.' );
 			} );
 
-			it( 'requires an args param', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
-				select.getError( 'nonExistentBaseName' );
+			it( 'returns the error received with the same given `baseName` and `args`', () => {
+				dispatch.receiveError( errorNotFound, baseName );
+				dispatch.receiveError( errorForbidden, baseName, args );
 
-				expect( store.getState().error ).toBeUndefined();
-			} );
-
-			it( 'returns the appropriate error with baseName and args', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
-
-				const error = select.getError( errorForbidden.baseName, errorForbidden.args );
-				expect( error ).toEqual( errorForbidden.error );
+				expect( select.getError( baseName ) ).toEqual( errorNotFound );
+				expect( select.getError( baseName, args ) ).toEqual( errorForbidden );
 			} );
 		} );
 
 		describe( 'getErrors', () => {
-			it( 'returns an empty array if there are no errors', () => {
-				const errors = select.getErrors();
-				expect( errors ).toEqual( [] );
+			it( 'returns an empty array when there are no errors', () => {
+				expect( select.getErrors() ).toEqual( [] );
 			} );
 
-			it( 'checks if we have only 1 error', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
-				const errors = select.getErrors();
+			it( 'returns an array of all errors', () => {
+				dispatch.receiveError( errorNotFound, baseName, [ 'foo' ] );
+				dispatch.receiveError( errorForbidden, baseName, [ 'bar' ] );
 
-				expect( errors ).toEqual( [ errorNotFound.error ] );
+				expect( select.getErrors() ).toEqual(
+					expect.arrayContaining( [ errorForbidden, errorNotFound ] )
+				);
 			} );
 
-			it( 'checks if we have more than 1 error', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
-				const errors = select.getErrors();
-				expect( errors ).toEqual( expect.arrayContaining( [ errorNotFound.error, errorForbidden.error ] ) );
-			} );
+			it( 'returns a list of unique errors, regardless of `baseName` or `args`', () => {
+				dispatch.receiveError( errorNotFound );
+				dispatch.receiveError( errorNotFound, baseName );
+				dispatch.receiveError( errorNotFound, 'otherBaseName' );
+				dispatch.receiveError( errorNotFound, baseName, [ 'foo' ] );
+				dispatch.receiveError( errorNotFound, baseName, [ 'bar' ] );
 
-			it( 'checks if duplicate errors are removed', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, [ { foo: 'bar' } ] );
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, [ { waldo: 'fred' } ] );
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, [ { quux: 'quuz' } ] );
-				const errors = select.getErrors();
-
-				expect( errors ).toEqual( [ errorNotFound.error, errorForbidden.error ] );
+				expect( select.getErrors() ).toEqual( [ errorNotFound ] );
 			} );
 		} );
 
 		describe( 'hasErrors', () => {
-			it( 'returns false if there are no errors', () => {
+			it( 'returns `false` if there are no errors', () => {
 				expect( select.hasErrors() ).toBe( false );
 			} );
 
-			it( 'returns true if there are any errors', () => {
-				dispatch.receiveError( errorNotFound.error, errorNotFound.baseName, errorNotFound.args );
-				dispatch.receiveError( errorForbidden.error, errorForbidden.baseName, errorForbidden.args );
+			it( 'returns `true` if there are any errors', () => {
+				dispatch.receiveError( errorNotFound, baseName, args );
+
+				expect( select.hasErrors() ).toBe( true );
+			} );
+
+			it( 'returns `true` if an error was received with no arguments', () => {
+				dispatch.receiveError( errorNotFound );
+
 				expect( select.hasErrors() ).toBe( true );
 			} );
 		} );
