@@ -119,7 +119,7 @@ export function createErrorStore() {
 				const newState = { ...state };
 				if ( baseName ) {
 					newState.errors = { ...( state.errors || {} ) };
-					for ( const key in Object.keys( newState.errors ) ) {
+					for ( const key in newState.errors ) {
 						if ( key === baseName || key.startsWith( `${ baseName }::` ) ) {
 							delete newState.errors[ key ];
 						}

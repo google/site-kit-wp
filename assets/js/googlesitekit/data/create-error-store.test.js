@@ -116,6 +116,39 @@ describe( 'createErrorStore store', () => {
 				);
 			} );
 		} );
+
+		describe( 'clearErrors', () => {
+			it( 'clears all received errors when called with no arguments', () => {
+				dispatch.receiveError( errorNotFound );
+				dispatch.receiveError( errorForbidden, baseName );
+				dispatch.receiveError( errorForbidden, baseName, args );
+
+				dispatch.clearErrors();
+
+				expect( store.getState().error ).toBeUndefined();
+				expect( Object.values( store.getState().errors ) ).toEqual( [] );
+			} );
+
+			it( 'clears all received errors for a given `baseName`', () => {
+				dispatch.receiveError( errorNotFound );
+				dispatch.receiveError( errorForbidden, baseName );
+				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.receiveError( errorNotFound, 'otherBaseName', args );
+
+				dispatch.clearErrors( baseName );
+
+				expect( store.getState().error ).toEqual( errorNotFound );
+				expect( store.getState().errors ).toHaveProperty(
+					generateErrorKey( 'otherBaseName', args ),
+					errorNotFound
+				);
+				// The store should no longer contain errorForbidden as it was the only
+				// error used with the given `baseName`.
+				expect( Object.values( store.getState().errors ) ).not.toContain(
+					errorForbidden
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
