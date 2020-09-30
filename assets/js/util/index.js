@@ -42,11 +42,15 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import SvgIcon from './svg-icon';
+import AdSenseIcon from '../../svg/adsense.svg';
+import AnalyticsIcon from '../../svg/analytics.svg';
+import OptimizeIcon from '../../svg/optimize.svg';
+import PageSpeedInsightsIcon from '../../svg/pagespeed-insights.svg';
+import SearchConsoleIcon from '../../svg/search-console.svg';
+import TagManagerIcon from '../../svg/tagmanager.svg';
 import { trackEvent } from './tracking';
 import { fillFilterWithComponent } from './helpers';
 export { trackEvent };
-export { SvgIcon };
 export * from './sanitize';
 export * from './stringify';
 export * from './standalone';
@@ -596,27 +600,32 @@ export const decodeHTMLEntity = ( str ) => {
  * @since 1.0.0
  *
  * @param {string}  module                The module slug.
- * @param {boolean} blockedByParentModule Whether the module is blocked by a parent module.
  * @param {string}  width                 The icon width.
  * @param {string}  height                The icon height.
  * @param {string}  useClass              Class string to use for icon.
  * @return {HTMLImageElement}             HTML <img> tag with module icon.
  */
-export function moduleIcon( module, blockedByParentModule, width = '33', height = '33', useClass = '' ) {
+export function moduleIcon( module, width = '33', height = '33', useClass = '' ) {
 	if ( ! global._googlesitekitLegacyData ) {
 		return;
 	}
 
-	/* Set module icons. Page Speed Insights is a special case because only a .png is available. */
-	let iconComponent = <SvgIcon id={ module } width={ width } height={ height } className={ useClass } />;
-
-	if ( blockedByParentModule ) {
-		iconComponent = <SvgIcon id={ `${ module }-disabled` } width={ width } height={ height } className={ useClass } />;
-	} else if ( 'pagespeed-insights' === module ) {
-		iconComponent = <img src={ global._googlesitekitLegacyData.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
+	switch ( module ) {
+		case 'adsense':
+			return <AdSenseIcon width={ width } height={ height } className={ useClass } />;
+		case 'analytics':
+			return <AnalyticsIcon width={ width } height={ height } className={ useClass } />;
+		case 'optimize':
+			return <OptimizeIcon width={ width } height={ height } className={ useClass } />;
+		case 'pagespeed-insights':
+			return <PageSpeedInsightsIcon width={ undefined } height={ height } className={ useClass } />;
+		case 'search-console':
+			return <SearchConsoleIcon width={ width } height={ height } className={ useClass } />;
+		case 'tagmanager':
+			return <TagManagerIcon width={ width } height={ height } className={ useClass } />;
+		default:
+			throw new Error( `Invalid module slug: "${ module }"` );
 	}
-
-	return iconComponent;
 }
 
 /**
