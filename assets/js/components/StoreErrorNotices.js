@@ -25,43 +25,24 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { isPermissionScopeError } from '../util/errors';
 import ErrorNotice from './ErrorNotice';
 const { useSelect } = Data;
 
-function StoreErrorNotices( { moduleSlug, storeName, shouldDisplayError } ) {
+export default function StoreErrorNotices( { moduleSlug, storeName, shouldDisplayError } ) {
 	const errors = useSelect( ( select ) => select( storeName ).getErrors() );
 
-	if ( Array.isArray( errors ) && errors.length > 0 ) {
-		const errorNotices = errors.map( ( error, key ) => {
-			// Do not display if no error, or if the error is for missing scopes.
-			if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
-				return null;
-			}
-
-			return <ErrorNotice
-				moduleSlug={ moduleSlug }
-				error={ error }
-				shouldDisplayError={ shouldDisplayError }
-				key={ key }
-			/>;
-		} );
-
-		return errorNotices;
-	}
-
-	return null;
+	return errors.map( ( error, key ) => (
+		<ErrorNotice
+			key={ key }
+			error={ error }
+			moduleSlug={ moduleSlug }
+			shouldDisplayError={ shouldDisplayError }
+		/>
+	) );
 }
 
 StoreErrorNotices.propTypes = {
-	moduleSlug: PropTypes.string,
 	storeName: PropTypes.string.isRequired,
 	shouldDisplayError: PropTypes.func,
+	moduleSlug: PropTypes.string,
 };
-
-StoreErrorNotices.defaultProps = {
-	moduleSlug: '',
-	shouldDisplayError: () => true,
-};
-
-export default StoreErrorNotices;
