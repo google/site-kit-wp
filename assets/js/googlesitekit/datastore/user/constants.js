@@ -18,6 +18,8 @@
 
 export const STORE_NAME = 'core/user';
 
+export const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH = 'connected_url_mismatch';
+
 // Permissions list.
 export const PERMISSION_AUTHENTICATE = 'googlesitekit_authenticate';
 export const PERMISSION_SETUP = 'googlesitekit_setup';

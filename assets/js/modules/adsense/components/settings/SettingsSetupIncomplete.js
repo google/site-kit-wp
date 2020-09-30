@@ -19,8 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,23 +37,34 @@ export default function SettingsSetupIncomplete() {
 	const isPendingStatus = isPendingAccountStatus( accountStatus );
 	const adminReauthURL = useSelect( ( select ) => select( STORE_NAME ).getAdminReauthURL() );
 
+	let statusText, actionText;
+	if ( isPendingStatus ) {
+		/* translators: %s: link with next step */
+		statusText = __( 'Site Kit has placed AdSense code on your site: %s', 'google-site-kit' );
+		actionText = __( 'check module page', 'google-site-kit' );
+	} else {
+		/* translators: %s: link with next step */
+		statusText = __( 'Setup incomplete: %s', 'google-site-kit' );
+		actionText = __( 'continue module setup', 'google-site-kit' );
+	}
+
 	return (
 		<Fragment>
 			<AdBlockerWarning />
 
-			{ isPendingStatus && __( 'Site Kit has placed AdSense code on your site, ', 'google-site-kit' ) }
-			{ ! isPendingStatus && __( 'Setup incomplete: ', 'google-site-kit' ) }
-
-			<Link
-				className="googlesitekit-settings-module__edit-button"
-				href={
-					adminReauthURL
+			{ createInterpolateElement(
+				sprintf(
+					statusText,
+					`<a>${ actionText }</a>`
+				),
+				{
+					a: <Link
+						className="googlesitekit-settings-module__edit-button"
+						href={ adminReauthURL }
+						inherit
+					/>,
 				}
-				inherit
-			>
-				{ isPendingStatus && __( 'check module page', 'google-site-kit' ) }
-				{ ! isPendingStatus && __( 'continue module setup', 'google-site-kit' ) }
-			</Link>
+			) }
 		</Fragment>
 	);
 }

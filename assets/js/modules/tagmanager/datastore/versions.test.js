@@ -81,7 +81,9 @@ describe( 'modules/tagmanager versions', () => {
 	describe( 'selectors', () => {
 		describe( 'getLiveContainerVersion', () => {
 			it( 'uses a resolver to make a network request', async () => {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const accountID = fixtures.liveContainerVersion.accountId;
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 
 				fetchMock.getOnce(
@@ -100,7 +102,9 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'does not make a network request if the container version is already present', async () => {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const accountID = fixtures.liveContainerVersion.accountId;
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 
 				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion(
@@ -116,7 +120,9 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const accountID = fixtures.liveContainerVersion.accountId;
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 				const errorResponse = {
 					code: 'internal_server_error',

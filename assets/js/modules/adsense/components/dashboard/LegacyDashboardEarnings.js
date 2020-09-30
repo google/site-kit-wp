@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
-import DashboardAdSenseTopEarningPagesSmall from './DashboardAdSenseTopEarningPagesSmall';
+import LegacyDashboardAdSenseTopEarningPagesSmall from './LegacyDashboardAdSenseTopEarningPagesSmall';
 import LegacyAdSenseDashboardMainSummary from './LegacyAdSenseDashboardMainSummary';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 
@@ -45,7 +45,7 @@ class LegacyDashboardEarnings extends Component {
 					<ModuleSettingsWarning slug="adsense" context="module-sitekit-dashboard" />
 				</div>
 				<LegacyAdSenseDashboardMainSummary />
-				<DashboardAdSenseTopEarningPagesSmall />
+				<LegacyDashboardAdSenseTopEarningPagesSmall />
 			</Fragment>
 		);
 	}
