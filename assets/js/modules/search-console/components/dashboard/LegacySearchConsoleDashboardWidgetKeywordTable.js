@@ -32,12 +32,21 @@ import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/preview-table';
 import { STORE_NAME } from '../../datastore/constants';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 const { useSelect } = Data;
 
 const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics', query: { resource_id: domain, num_of_days: 28 } } ) );
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: '/performance/search-analytics',
+			query: {
+				resource_id: domain,
+				num_of_days: getCurrentDateRangeDayCount(),
+			},
+		}
+	) );
 
 	if ( ! data || ! data.length ) {
 		return null;

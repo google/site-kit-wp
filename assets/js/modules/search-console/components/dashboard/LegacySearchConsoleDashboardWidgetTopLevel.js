@@ -44,7 +44,7 @@ import CTA from '../../../../components/notifications/cta';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
-import { getCurrentDateRange } from '../../../../util/date-range';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 
 const { useSelect } = Data;
@@ -56,18 +56,18 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-	const serviceBaseUrlArgs = {
+	const serviceBaseURLArgs = {
 		resource_id: propertyID,
-		num_of_days: getCurrentDateRange( dateRange, true ),
+		num_of_days: getCurrentDateRangeDayCount( dateRange ),
 	};
 	if ( url ) {
-		serviceBaseUrlArgs.page = `!${ url }`;
+		serviceBaseURLArgs.page = `!${ url }`;
 	}
 
 	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{
 			path: '/performance/search-analytics',
-			query: serviceBaseUrlArgs,
+			query: serviceBaseURLArgs,
 		} )
 	);
 
@@ -146,12 +146,12 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
 				/>
 			</div>
 			<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--align-bottom
-					mdc-layout-grid__cell--span-2-phone
-					mdc-layout-grid__cell--span-2-tablet
-					mdc-layout-grid__cell--span-3-desktop
-				">
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--align-bottom
+				mdc-layout-grid__cell--span-2-phone
+				mdc-layout-grid__cell--span-2-tablet
+				mdc-layout-grid__cell--span-3-desktop
+			">
 				<DataBlock
 					className="overview-total-clicks"
 					title={ __( 'Clicks', 'google-site-kit' ) }

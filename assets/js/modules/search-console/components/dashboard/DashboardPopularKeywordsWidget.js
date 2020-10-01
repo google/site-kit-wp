@@ -36,6 +36,7 @@ import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 const { useSelect } = Data;
 
 function DashboardPopularKeywordsWidget() {
@@ -44,7 +45,6 @@ function DashboardPopularKeywordsWidget() {
 		error,
 		loading,
 		baseServiceURL,
-		searchConsolePropertyMainURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const domain = store.getPropertyID();
@@ -56,7 +56,7 @@ function DashboardPopularKeywordsWidget() {
 
 		const baseServiceURLArgs = {
 			resource_id: domain,
-			num_of_days: 28,
+			num_of_days: getCurrentDateRangeDayCount(),
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
@@ -72,11 +72,6 @@ function DashboardPopularKeywordsWidget() {
 			baseServiceURL: store.getServiceURL( {
 				path: '/performance/search-analytics',
 				query: baseServiceURLArgs,
-			} ),
-			searchConsolePropertyMainURL: store.getServiceURL( {
-				query: {
-					resource_id: domain,
-				},
 			} ),
 		};
 	} );
@@ -132,7 +127,7 @@ function DashboardPopularKeywordsWidget() {
 			className="googlesitekit-popular-content"
 			footer
 			footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-			footerCtaLink={ searchConsolePropertyMainURL }
+			footerCtaLink={ baseServiceURL }
 			fill
 		>
 			<TableOverflowContainer>
