@@ -34,7 +34,16 @@ final class Event implements \JsonSerializable {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param array $config The event's configuration.
+	 * @param array $config {
+	 *     The event's configuration.
+	 *
+	 *     @type string     $action   Required. The event action / event name to send.
+	 *     @type string     $on       Required. The DOM event to send the event for.
+	 *     @type string     $selector Required, unless $on is 'DOMContentLoaded'. The DOM selector on which to listen
+	 *                                to the $on event.
+	 *     @type array|null $metadata Optional. Associative array of event metadata to send, such as 'event_category',
+	 *                                'event_label' etc, or null to not send any extra event data.
+	 * }
 	 * @throws \Exception Thrown when config param is undefined.
 	 */
 	public function __construct( $config ) {
