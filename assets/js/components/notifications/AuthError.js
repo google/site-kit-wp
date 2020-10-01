@@ -1,5 +1,5 @@
 /**
- * WidgetContext component.
+ * AuthError component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,33 +17,31 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import WidgetAreaRenderer from './WidgetAreaRenderer';
-import { STORE_NAME } from '../datastore';
-
+import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import Notification from './notification';
 const { useSelect } = Data;
 
-const WidgetContextRenderer = ( { slug } ) => {
-	const widgetAreas = useSelect( ( select ) => select( STORE_NAME ).getWidgetAreas( slug ) );
+export default function AuthError() {
+	const error = useSelect( ( select ) => select( CORE_USER ).getAuthError() );
+	if ( ! error ) {
+		return null;
+	}
 
 	return (
-		<div className="googlesitekit-widget-context">
-			{ widgetAreas.map( ( area ) => {
-				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } />;
-			} ) }
-		</div>
+		<Notification
+			id="autherror"
+			title={ __( 'Site Kit can’t access necessary data', 'google-site-kit' ) }
+			description={ error.message }
+			ctaLink={ error.data.reconnectURL }
+			ctaLabel={ __( 'Redo the plugin setup', 'google-site-kit' ) }
+		/>
 	);
-};
-
-WidgetContextRenderer.propTypes = {
-	slug: PropTypes.string.isRequired,
-};
-
-export default WidgetContextRenderer;
+}
