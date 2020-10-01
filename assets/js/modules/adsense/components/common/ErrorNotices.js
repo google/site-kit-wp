@@ -1,5 +1,5 @@
 /**
- * AdSense Error Notice component.
+ * AdSense Error Notices component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -26,9 +26,16 @@ import { useCallback } from '@wordpress/element';
  */
 import { STORE_NAME } from '../../datastore/constants';
 import { errorToStatus } from '../../util/status';
-import StoreErrorNotices from '../.././../../components/StoreErrorNotices';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
-export default function ErrorNotice() {
+export default function ErrorNotices() {
 	const shouldDisplayError = useCallback( ( error ) => undefined === errorToStatus( error ), [] );
-	return <StoreErrorNotices moduleSlug="adsense" storeName={ STORE_NAME } shouldDisplayError={ shouldDisplayError } />;
+
+	return (
+		<StoreErrorNotices
+			moduleSlug="adsense"
+			storeName={ STORE_NAME }
+			shouldDisplayError={ shouldDisplayError }
+		/>
+	);
 }
