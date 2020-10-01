@@ -76,7 +76,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID ] );
 
-	if ( ! hasResolvedAccounts || ! hasResolvedProperties ) {
+	if ( ! hasResolvedAccounts || ( accountID && ! hasResolvedProperties ) ) {
 		return <ProgressBar small />;
 	}
 

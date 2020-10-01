@@ -38,7 +38,7 @@ import { createBuildAndReceivers } from '../../assets/js/modules/tagmanager/data
  * @param {boolean}     args.gtmPermission  Whether the current user has GTM tag permissions.
  * @return {Function} Story callback function.
  */
-export function generateGTMPropertyStory( {
+export function generateGTMAnalyticsPropertyStory( {
 	Component,
 	useExistingTag = false,
 	gaPermission = false,
