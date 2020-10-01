@@ -22,16 +22,6 @@
 import { INVALID_DATE_STRING_ERROR } from './constants';
 import { getPreviousDate } from './get-previous-date';
 
-// [ relativeDate, daysBefore, expectedReturnDate ]
-const valuesToTest = [
-	[ '2020-01-01', 0, '2020-01-01' ],
-	[ '2020-01-02', 1, '2020-01-01' ],
-	[ '2020-01-08', 7, '2020-01-01' ],
-	[ '2020-02-01', 31, '2020-01-01' ],
-	[ '2021-01-01', 366, '2020-01-01' ],
-	[ '2020-01-01', 1, '2019-12-31' ],
-];
-
 // [ testName, relativeDate, daysBefore, expectedReturnError ]
 const errorValuesToTest = [
 	[ 'should throw error if no param is passed', undefined, undefined, INVALID_DATE_STRING_ERROR ],
@@ -48,6 +38,15 @@ describe( 'getPreviousDate', () => {
 		}
 	} );
 
+	// [ relativeDate, daysBefore, expectedReturnDate ]
+	const valuesToTest = [
+		[ '2020-01-01', 0, '2020-01-01' ],
+		[ '2020-01-02', 1, '2020-01-01' ],
+		[ '2020-01-08', 7, '2020-01-01' ],
+		[ '2020-02-01', 31, '2020-01-01' ],
+		[ '2021-01-01', 366, '2020-01-01' ],
+		[ '2020-01-01', 1, '2019-12-31' ],
+	];
 	const testName = 'with date of %s and days before value of %s should return %s';
 	it.each( valuesToTest )( testName, ( relativeDate, daysBefore, expected ) => {
 		expect( getPreviousDate( relativeDate, daysBefore ) ).toEqual( expected );

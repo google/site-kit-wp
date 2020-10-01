@@ -22,22 +22,6 @@
 import { INVALID_DATE_INSTANCE_ERROR } from './constants';
 import { getDateString } from './get-date-string';
 
-const JANUARY = 0; // month is 0 indexed
-const date = new Date( 2020, JANUARY, 1 );
-const time = date.getTime();
-const isoString = date.toISOString();
-const gmtString = date.toGMTString();
-const utcString = date.toUTCString();
-
-// [ testName, dateInstance, expectedReturnDate ]
-const valuesToTest = [
-	[ 'should return "2020-01-01" for date instance of the same date', date, '2020-01-01' ],
-	[ `should return "2020-01-01" for millisecond value (${ time }) of the same date`, time, '2020-01-01' ],
-	[ `should return "2020-01-01" for ISO string (${ isoString }) value of the same date`, isoString, '2020-01-01' ],
-	[ `should return "2020-01-01" for GMT string (${ gmtString }) value of the same date`, gmtString, '2020-01-01' ],
-	[ `should return "2020-01-01" for UTC string (${ utcString }) value of the same date`, utcString, '2020-01-01' ],
-];
-
 describe( 'getDateString', () => {
 	it( 'should throw error if no param is passed', () => {
 		try {
@@ -54,6 +38,22 @@ describe( 'getDateString', () => {
 			expect( error.message ).toEqual( INVALID_DATE_INSTANCE_ERROR );
 		}
 	} );
+
+	const JANUARY = 0; // month is 0 indexed
+	const date = new Date( 2020, JANUARY, 1 );
+	const time = date.getTime();
+	const isoString = date.toISOString();
+	const gmtString = date.toGMTString();
+	const utcString = date.toUTCString();
+
+	// [ testName, dateInstance, expectedReturnDate ]
+	const valuesToTest = [
+		[ 'should return "2020-01-01" for date instance of the same date', date, '2020-01-01' ],
+		[ `should return "2020-01-01" for millisecond value (${ time }) of the same date`, time, '2020-01-01' ],
+		[ `should return "2020-01-01" for ISO string (${ isoString }) value of the same date`, isoString, '2020-01-01' ],
+		[ `should return "2020-01-01" for GMT string (${ gmtString }) value of the same date`, gmtString, '2020-01-01' ],
+		[ `should return "2020-01-01" for UTC string (${ utcString }) value of the same date`, utcString, '2020-01-01' ],
+	];
 
 	it.each( valuesToTest )( '%s', ( _testName, dateInstance, expected ) => {
 		expect( getDateString( dateInstance ) ).toEqual( expected );

@@ -21,17 +21,17 @@
  */
 import { isValidDateRange } from './is-valid-date-range';
 
-// [ dateRange, expectedReturnValue ]
-const valuesToTest = [
-	[ 'last-1-days', true ],
-	[ 'last-7-days', true ],
-	[ 'last-28-days', true ],
-	[ 'last-1-day', false ],
-	[ 'invalid-range', false ],
-	[ 'invalid-date-range', false ],
-];
-
 describe( 'isValidDateString', () => {
+	// [ dateRange, expectedReturnValue ]
+	const valuesToTest = [
+		[ 'last-1-days', true ],
+		[ 'last-7-days', true ],
+		[ 'last-28-days', true ],
+		[ 'last-1-day', false ],
+		[ 'invalid-range', false ],
+		[ 'invalid-date-range', false ],
+	];
+
 	it.each( valuesToTest )( 'with date range of %s should return %s', ( dateRange, expected ) => {
 		expect( isValidDateRange( dateRange ) ).toEqual( expected );
 	} );

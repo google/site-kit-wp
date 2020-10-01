@@ -21,22 +21,22 @@
  */
 import { isValidDateInstance } from './is-valid-date-instance';
 
-// [ testName, date, expectedReturnValue ]
-const valuesToTest = [
-	[ 'should return true for valid date instance (no constructor params)', new Date(), true ],
-	[ 'should return true for valid date instance (valid constructor params)', new Date( 100000 ), true ],
-	[ 'should return false for invalid date instance', new Date( 'invalid-date' ), false ],
-	[ 'should return false for `undefined`', undefined, false ],
-	[ 'should return false for `null`', null, false ],
-	[ 'should return false for Boolean', true, false ],
-	[ 'should return false for Number', 100000, false ],
-	[ 'should return false for String', '2020-09-14T01:03:41.493Z', false ],
-	[ 'should return false for Object', {}, false ],
-	[ 'should return false for Array', [], false ],
-	[ 'should return false for Function', () => {}, false ],
-];
-
 describe( 'isValidDateInstance', () => {
+	// [ testName, date, expectedReturnValue ]
+	const valuesToTest = [
+		[ 'should return true for valid date instance (no constructor params)', new Date(), true ],
+		[ 'should return true for valid date instance (valid constructor params)', new Date( 100000 ), true ],
+		[ 'should return false for invalid date instance', new Date( 'invalid-date' ), false ],
+		[ 'should return false for `undefined`', undefined, false ],
+		[ 'should return false for `null`', null, false ],
+		[ 'should return false for Boolean', true, false ],
+		[ 'should return false for Number', 100000, false ],
+		[ 'should return false for String', '2020-09-14T01:03:41.493Z', false ],
+		[ 'should return false for Object', {}, false ],
+		[ 'should return false for Array', [], false ],
+		[ 'should return false for Function', () => {}, false ],
+	];
+
 	it.each( valuesToTest )( '%s', ( _testName, dateInstance, expected ) => {
 		expect( isValidDateInstance( dateInstance ) ).toEqual( expected );
 	} );

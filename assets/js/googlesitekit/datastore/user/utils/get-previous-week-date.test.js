@@ -22,34 +22,13 @@
 import { INVALID_DATE_STRING_ERROR } from './constants';
 import { getPreviousWeekDate } from './get-previous-week-date';
 
-// [ daysBefore, expectedReturnDate ]
-const valuesToTest = [
-	[ 0, '2020-09-24' ],
-	[ 1, '2020-09-17' ],
-	[ 2, '2020-09-17' ],
-	[ 3, '2020-09-17' ],
-	[ 4, '2020-09-17' ],
-	[ 5, '2020-09-17' ],
-	[ 6, '2020-09-17' ],
-	[ 7, '2020-09-17' ],
-	[ 8, '2020-09-17' ],
-	[ 9, '2020-09-17' ],
-	[ 10, '2020-09-10' ],
-	[ 11, '2020-09-10' ],
-	[ 28, '2020-08-27' ],
-	[ 90, '2020-06-25' ],
-	[ 180, '2020-03-26' ],
-];
-
-// [ relativeDate, daysBefore, expectedReturnError ]
-const errorValuesToTest = [
-	[ 'should throw error if no param is passed', undefined, undefined, INVALID_DATE_STRING_ERROR ],
-	[ 'should throw error if date supplied is invalid', 'invalid-date', 1, INVALID_DATE_STRING_ERROR ],
-	[ 'should throw error if date supplied is invalid date', '2020-99-99', 1, INVALID_DATE_STRING_ERROR ],
-];
-
 describe( 'getPreviousWeekDate', () => {
-	const referenceDate = '2020-09-24';
+	// [ relativeDate, daysBefore, expectedReturnError ]
+	const errorValuesToTest = [
+		[ 'should throw error if no param is passed', undefined, undefined, INVALID_DATE_STRING_ERROR ],
+		[ 'should throw error if date supplied is invalid', 'invalid-date', 1, INVALID_DATE_STRING_ERROR ],
+		[ 'should throw error if date supplied is invalid date', '2020-99-99', 1, INVALID_DATE_STRING_ERROR ],
+	];
 
 	it.each( errorValuesToTest )( '%s', ( _testName, relativeDate, daysBefore, expected ) => {
 		try {
@@ -58,6 +37,26 @@ describe( 'getPreviousWeekDate', () => {
 			expect( error.message ).toEqual( expected );
 		}
 	} );
+
+	// [ daysBefore, expectedReturnDate ]
+	const valuesToTest = [
+		[ 0, '2020-09-24' ],
+		[ 1, '2020-09-17' ],
+		[ 2, '2020-09-17' ],
+		[ 3, '2020-09-17' ],
+		[ 4, '2020-09-17' ],
+		[ 5, '2020-09-17' ],
+		[ 6, '2020-09-17' ],
+		[ 7, '2020-09-17' ],
+		[ 8, '2020-09-17' ],
+		[ 9, '2020-09-17' ],
+		[ 10, '2020-09-10' ],
+		[ 11, '2020-09-10' ],
+		[ 28, '2020-08-27' ],
+		[ 90, '2020-06-25' ],
+		[ 180, '2020-03-26' ],
+	];
+	const referenceDate = '2020-09-24';
 
 	it.each( valuesToTest )( 'with daysBefore value of %s should return %s', ( daysBefore, expected ) => {
 		expect( getPreviousWeekDate( referenceDate, daysBefore ) ).toEqual( expected );

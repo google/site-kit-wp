@@ -21,22 +21,22 @@
  */
 import { isValidDateString } from './is-valid-date-string';
 
-// [ testName, dateString, expectedReturnValue ]
-const valuesToTest = [
-	[ 'should return true for valid date', '2020-09-24', true ],
-	[ 'should return false for empty param', undefined, false ],
-	[ 'should return false for completely invalid param: "invalid-date"', 'invalid-date', false ],
-	[ 'should return false for invalid date: "2020-99-99"', '2020-99-99', false ],
-	[ 'should return false for `undefined`', undefined, false ],
-	[ 'should return false for `null`', null, false ],
-	[ 'should return false for Boolean', true, false ],
-	[ 'should return false for Number', 100000, false ],
-	[ 'should return false for Object', {}, false ],
-	[ 'should return false for Array', [], false ],
-	[ 'should return false for Function', () => {}, false ],
-];
-
 describe( 'isValidDateString', () => {
+	// [ testName, dateString, expectedReturnValue ]
+	const valuesToTest = [
+		[ 'should return true for valid date', '2020-09-24', true ],
+		[ 'should return false for empty param', undefined, false ],
+		[ 'should return false for completely invalid param: "invalid-date"', 'invalid-date', false ],
+		[ 'should return false for invalid date: "2020-99-99"', '2020-99-99', false ],
+		[ 'should return false for `undefined`', undefined, false ],
+		[ 'should return false for `null`', null, false ],
+		[ 'should return false for Boolean', true, false ],
+		[ 'should return false for Number', 100000, false ],
+		[ 'should return false for Object', {}, false ],
+		[ 'should return false for Array', [], false ],
+		[ 'should return false for Function', () => {}, false ],
+	];
+
 	it.each( valuesToTest )( '%s', ( _testName, dateString, expected ) => {
 		expect( isValidDateString( dateString ) ).toEqual( expected );
 	} );
