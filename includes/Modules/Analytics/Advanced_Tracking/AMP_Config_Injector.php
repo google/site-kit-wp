@@ -40,6 +40,8 @@ final class AMP_Config_Injector {
 		foreach ( $events as $event ) {
 			$event_config = $event->get_config();
 
+			$amp_trigger_key = md5( "{$event_config['action']}::{$event_config['on']}::{$event_config['selector']}" );
+
 			$amp_trigger = array();
 			if ( 'DOMContentLoaded' === $event_config['on'] ) {
 				$amp_trigger['on'] = 'visible';
@@ -56,7 +58,7 @@ final class AMP_Config_Injector {
 				}
 			}
 
-			$gtag_amp_opt['triggers'][ $event_config['selector'] ] = $amp_trigger;
+			$gtag_amp_opt['triggers'][ $amp_trigger_key ] = $amp_trigger;
 		}
 
 		return $gtag_amp_opt;
