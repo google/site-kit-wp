@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Code_Injector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Script_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
 
@@ -87,7 +87,7 @@ final class Advanced_Tracking {
 	 */
 	private function set_up_advanced_tracking() {
 		$this->compile_events();
-		( new Code_Injector() )->inject_event_tracking( $this->event_configurations );
+		( new Script_Injector() )->inject_event_tracking( $this->event_configurations );
 	}
 
 	/**

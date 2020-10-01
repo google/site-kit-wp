@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Code_Injector
+ * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Script_Injector
  *
  * @package   Google\Site_Kit\Modules\Analytics
  * @copyright 2020 Google LLC
@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
  * @access private
  * @ignore
  */
-final class Code_Injector {
+final class Script_Injector {
 
 	/**
 	 * Creates list of measurement event configurations and javascript to inject.
