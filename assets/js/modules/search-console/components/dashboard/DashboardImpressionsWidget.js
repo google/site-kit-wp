@@ -42,10 +42,10 @@ import { getCurrentDateRange } from '../../../../util/date-range';
 const { useSelect } = Data;
 
 function DashboardImpressionsWidget() {
-	const { data, error, loading, serviceUrl } = useSelect( ( select ) => {
+	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const propertyID = select( STORE_NAME ).getPropertyID();
+		const propertyID = store.getPropertyID();
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 
 		const args = {
@@ -54,20 +54,20 @@ function DashboardImpressionsWidget() {
 			dateRange: select( CORE_USER ).getDateRange(),
 		};
 
-		const serviceBaseUrlArgs = {
+		const serviceBaseURLArgs = {
 			resource_id: propertyID,
 			num_of_days: getCurrentDateRange( args.dateRange, true ),
 		};
 		if ( url ) {
 			args.url = url;
-			serviceBaseUrlArgs.page = `!${ url }`;
+			serviceBaseURLArgs.page = `!${ url }`;
 		}
 
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: store.isResolving( 'getReport', [ args ] ),
-			serviceUrl: store.getServiceURL( { path: '/performance/search-analytics', query: serviceBaseUrlArgs } ),
+			serviceURL: store.getServiceURL( { path: '/performance/search-analytics', query: serviceBaseURLArgs } ),
 		};
 	} );
 
@@ -96,7 +96,7 @@ function DashboardImpressionsWidget() {
 				changeDataUnit="%"
 				source={ {
 					name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
-					link: serviceUrl,
+					link: serviceURL,
 					external: true,
 				} }
 				sparkline={
