@@ -23,7 +23,7 @@ class Event_List_Registry {
 	 * The list of active event lists.
 	 *
 	 * @since n.e.x.t.
-	 * @var Measurement_Event_List[]
+	 * @var Event_List[]
 	 */
 	private $event_lists;
 
@@ -41,10 +41,10 @@ class Event_List_Registry {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param Measurement_Event_List $event_list The event list to be registered.
-	 * @throws \Exception Thrown when $event_list is not an instance of Measurement_Event_List.
+	 * @param Event_List $event_list The event list to be registered.
+	 * @throws \Exception Thrown when $event_list is not an instance of Event_List.
 	 */
-	public function register( Measurement_Event_List $event_list ) {
+	public function register( Event_List $event_list ) {
 		$this->event_lists[] = $event_list;
 	}
 
@@ -53,7 +53,7 @@ class Event_List_Registry {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return Measurement_Event_List[] The list of active event lists.
+	 * @return Event_List[] The list of active event lists.
 	 */
 	public function get_all() {
 		return $this->event_lists;

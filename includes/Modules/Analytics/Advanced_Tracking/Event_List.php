@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_List
+ * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List
  *
  * @package   Google\Site_Kit
  * @copyright 2020 Google LLC
@@ -17,13 +17,13 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
  * @access private
  * @ignore
  */
-class Measurement_Event_List {
+class Event_List {
 
 	/**
 	 * Container for list of events - intended to be used per plugin.
 	 *
 	 * @since n.e.x.t.
-	 * @var Measurement_Event[]
+	 * @var Event[]
 	 */
 	private $measurement_events = array();
 
@@ -41,9 +41,9 @@ class Measurement_Event_List {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param Measurement_Event $event The measurement event object.
+	 * @param Event $event The measurement event object.
 	 */
-	protected function add_event( Measurement_Event $event ) {
+	protected function add_event( Event $event ) {
 		$this->measurement_events[] = $event;
 	}
 
@@ -52,7 +52,7 @@ class Measurement_Event_List {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return Measurement_Event[] The list of Measurement_Events for this plugin's list.
+	 * @return Event[] The list of Events for this plugin's list.
 	 */
 	public function get_events() {
 		return $this->measurement_events;

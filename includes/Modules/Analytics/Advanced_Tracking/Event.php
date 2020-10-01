@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event
+ * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event
  *
  * @package   Google\Site_Kit
  * @copyright 2020 Google LLC
@@ -19,7 +19,7 @@ use \Exception;
  * @access private
  * @ignore
  */
-final class Measurement_Event implements \JsonSerializable {
+final class Event implements \JsonSerializable {
 
 	/**
 	 * The measurement event's configuration.
@@ -30,7 +30,7 @@ final class Measurement_Event implements \JsonSerializable {
 	private $config;
 
 	/**
-	 * Measurement_Event constructor.
+	 * Event constructor.
 	 *
 	 * @since n.e.x.t.
 	 *

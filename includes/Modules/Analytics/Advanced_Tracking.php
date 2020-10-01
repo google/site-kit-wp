@@ -10,8 +10,9 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Code_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
 
 /**
  * Class for Google Analytics Advanced Event Tracking.
@@ -35,7 +36,7 @@ final class Advanced_Tracking {
 	 * List of event configurations to be tracked.
 	 *
 	 * @since n.e.x.t.
-	 * @var Measurement_Event[]
+	 * @var Event[]
 	 */
 	private $event_configurations;
 
@@ -95,7 +96,7 @@ final class Advanced_Tracking {
 	 */
 	private function set_up_advanced_tracking() {
 		$this->compile_events();
-		( new Measurement_Code_Injector() )->inject_event_tracking( $this->event_configurations );
+		( new Code_Injector() )->inject_event_tracking( $this->event_configurations );
 	}
 
 	/**
@@ -141,7 +142,7 @@ final class Advanced_Tracking {
 	}
 
 	/**
-	 * Compiles the list of Measurement_Event objects.
+	 * Compiles the list of Event objects.
 	 *
 	 * @since n.e.x.t.
 	 */
@@ -159,7 +160,7 @@ final class Advanced_Tracking {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return array The list of event configurations.
+	 * @return Event[] The list of event configurations.
 	 */
 	public function get_event_configurations() {
 		return $this->event_configurations;
