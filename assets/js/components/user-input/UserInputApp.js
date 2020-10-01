@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
 export default function UserInputApp() {
-	return featureFlags.widgets.userInput.enabled ? ( <div>TODO: Implement logic and UI.</div> ) : ( <div>You need a higher level of permission.</div> );
+	if ( ! featureFlags.widgets.userInput.enabled ) {
+		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;
+	}
+
+	return <div>TODO: Implement logic and UI.</div>;
 }
