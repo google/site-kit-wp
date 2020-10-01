@@ -31,21 +31,35 @@ import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constan
  * Gets the current dateRange string.
  *
  * @param {string} [dateRange]      Optional. The date range slug.
- * @param {boolean} [returnNumber]  Optional. If true, returns the number only.
  * @return {string} the date range string.
  */
-export function getCurrentDateRange( dateRange = getCurrentDateRangeSlug(), returnNumber = false ) {
+export function getCurrentDateRange( dateRange = getCurrentDateRangeSlug() ) {
 	const daysMatch = dateRange.match( /last-(\d+)-days/ );
 
 	if ( daysMatch && daysMatch[ 1 ] ) {
-		if ( returnNumber ) {
-			return parseInt( daysMatch[ 1 ], 10 );
-		}
 		return sprintf(
 			/* translators: %s: Number of days matched. */
 			_n( '%s day', '%s days', parseInt( daysMatch[ 1 ], 10 ), 'google-site-kit' ),
 			daysMatch[ 1 ]
 		);
+	}
+
+	throw new Error( 'Unrecognized date range slug.' );
+}
+
+/**
+ * Gets the current dateRange day count.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} [dateRange]      Optional. The date range slug.
+ * @return {number} The number of days in the range
+ */
+export function getCurrentDateRangeDayCount( dateRange = getCurrentDateRangeSlug() ) {
+	const daysMatch = dateRange.match( /last-(\d+)-days/ );
+
+	if ( daysMatch && daysMatch[ 1 ] ) {
+		return parseInt( daysMatch[ 1 ], 10 );
 	}
 
 	throw new Error( 'Unrecognized date range slug.' );
