@@ -28,6 +28,8 @@ class Measurement_Event_List {
 	private $measurement_events = array();
 
 	/**
+	 * Registers functionality through WordPress hooks.
+	 *
 	 * Children classes can extend to add dynamic events or collect metadata through WordPress hooks.
 	 *
 	 * @since n.e.x.t.

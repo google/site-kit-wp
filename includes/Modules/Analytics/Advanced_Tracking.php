@@ -13,8 +13,6 @@ namespace Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
 
-// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-
 /**
  * Class for Google Analytics Advanced Event Tracking.
  *
