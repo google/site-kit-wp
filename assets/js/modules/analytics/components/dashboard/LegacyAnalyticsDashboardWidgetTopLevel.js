@@ -112,12 +112,12 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 		pathPageSegment += `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
 	}
 
-	const uniqueVisitorsServiceUrl = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{
 			path: `/report/visitors-overview/${ pathIDSegment }${ pathPageSegment }`,
 		}
 	) );
-	const goalsServiceUrl = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{ path: `/report/conversions-goals-overview/${ pathIDSegment }${ pathPageSegment }` }
 	) );
 
@@ -154,7 +154,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 					changeDataUnit="%"
 					source={ {
 						name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
-						link: uniqueVisitorsServiceUrl,
+						link: uniqueVisitorsServiceURL,
 						external: true,
 					} }
 					sparkline={
@@ -190,7 +190,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 							invertChangeColor
 							source={ {
 								name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
-								link: uniqueVisitorsServiceUrl,
+								link: uniqueVisitorsServiceURL,
 								external: true,
 							} }
 							sparkline={
@@ -220,7 +220,7 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 						changeDataUnit="%"
 						source={ {
 							name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
-							link: goalsServiceUrl,
+							link: goalsServiceURL,
 							external: true,
 						} }
 						sparkline={
