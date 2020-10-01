@@ -25,6 +25,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { reduceAdSenseData } from '../../util';
@@ -35,9 +36,8 @@ import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
-import Widget from '../../../../googlesitekit/widgets/components/Widget';
-
 const { useSelect } = Data;
+const { Widget } = Widgets.components;
 
 function DashboardSummaryWidget() {
 	const {

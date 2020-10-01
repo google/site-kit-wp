@@ -30,7 +30,7 @@ import DashboardCoreSiteAlerts from './dashboard-core-site-alerts';
 import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
 import DashboardWinsAlerts from './dashboard-wins-alerts';
-import DashboardAuthAlert from './dashboard-auth-alert';
+import DashboardAuthScopesAlert from './DashboardAuthScopesAlert';
 
 const { setup } = global._googlesitekitLegacyData;
 const notification = getQueryParameter( 'notification' );
@@ -39,7 +39,7 @@ const addCoreSiteNotifications = createAddToFilter( <DashboardCoreSiteAlerts /> 
 const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
 const addWinsNotifications = createAddToFilter( <DashboardWinsAlerts /> );
-const addAuthNotification = createAddToFilter( <DashboardAuthAlert /> );
+const addAuthNotification = createAddToFilter( <DashboardAuthScopesAlert /> );
 
 addFilter( 'googlesitekit.DashboardNotifications',
 	'googlesitekit.SetupNotification',
