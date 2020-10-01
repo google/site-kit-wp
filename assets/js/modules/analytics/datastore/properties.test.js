@@ -1,4 +1,3 @@
-/* eslint-disable sitekit/camelcase-acronyms */
 /**
  * modules/analytics data store: properties tests.
  *
