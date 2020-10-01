@@ -28,13 +28,15 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
 import ProgressBar from '../../../../components/progress-bar';
 import {
 	AccountCreate,
-	ExistingTagError,
 	AccountCreateLegacy,
+	ExistingTagError,
+	ExistingGTMPropertyError,
 } from '../common';
 const { useSelect, useDispatch } = Data;
 
@@ -44,11 +46,28 @@ export default function SettingsEdit() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
-	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
-	const isCreateAccount = ACCOUNT_CREATE === accountID;
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
+
+	const {
+		gtmAnalyticsPropertyID: hasGTMAnalyticsPropertyID,
+		gtmAnalyticsPropertyIDPermission: hasGTMAnalyticsPropertyIDPermission,
+	} = useSelect( ( select ) => {
+		const data = {
+			gtmAnalyticsPropertyID: '',
+			gtmAnalyticsPropertyIDPermission: false,
+		};
+
+		if ( hasResolvedAccounts && ! hasExistingTag ) {
+			data.gtmAnalyticsPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+			if ( data.gtmAnalyticsPropertyID ) {
+				data.gtmAnalyticsPropertyIDPermission = select( STORE_NAME ).hasTagPermission( data.gtmAnalyticsPropertyID );
+			}
+		}
+
+		return data;
+	} );
 
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
@@ -86,13 +105,17 @@ export default function SettingsEdit() {
 		};
 	}, [] );
 
+	const isCreateAccount = ACCOUNT_CREATE === accountID;
+
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts ) {
+	if ( isDoingSubmitChanges || ! hasResolvedAccounts ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
+	} else if ( hasGTMAnalyticsPropertyID && ! hasGTMAnalyticsPropertyIDPermission ) {
+		viewComponent = <ExistingGTMPropertyError />;
 	} else if ( ! accounts.length || isCreateAccount ) {
 		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
 	} else {

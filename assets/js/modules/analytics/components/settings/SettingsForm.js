@@ -29,7 +29,6 @@ import {
 	UseSnippetSwitch,
 	ProfileNameTextField,
 	ExistingGTMPropertyNotice,
-	ExistingGTMPropertyError,
 } from '../common';
 import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 import { STORE_NAME } from '../../datastore/constants';
@@ -38,7 +37,6 @@ export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
 			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
-			<ExistingGTMPropertyError />
 
 			<ExistingTagNotice />
 			<ExistingGTMPropertyNotice />
