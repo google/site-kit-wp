@@ -80,7 +80,7 @@ export function isValidContainerID( containerID ) {
  *
  * @since 1.11.0
  *
- * @param {?string} value Selected value.
+ * @param {string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidContainerSelection( value ) {
