@@ -114,8 +114,10 @@ final class Event implements \JsonSerializable {
 
 		$vars_config               = array();
 		$vars_config['event_name'] = $this->config['action'];
-		foreach ( $this->config['metadata'] as $key => $value ) {
-			$vars_config[ $key ] = $value;
+		if ( is_array( $this->config['metadata'] ) ) {
+			foreach ( $this->config['metadata'] as $key => $value ) {
+				$vars_config[ $key ] = $value;
+			}
 		}
 		$amp_config['vars'] = $vars_config;
 
