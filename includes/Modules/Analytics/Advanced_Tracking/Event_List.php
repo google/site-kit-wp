@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
 /**
- * Class for containing a specific plugin's tracking event list.
+ * Class representing a tracking event list.
  *
  * @since n.e.x.t.
  * @access private
@@ -20,7 +20,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 class Event_List {
 
 	/**
-	 * Container for list of events - intended to be used per plugin.
+	 * Container for list of events.
 	 *
 	 * @since n.e.x.t.
 	 * @var Event[]

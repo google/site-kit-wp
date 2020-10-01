@@ -24,15 +24,6 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
 final class Advanced_Tracking {
 
 	/**
-	 * List of plugins Site Kit supports for event tracking.
-	 *
-	 * @since n.e.x.t.
-	 * @var array
-	 */
-	private $supported_plugins;
-
-
-	/**
 	 * List of event configurations to be tracked.
 	 *
 	 * @since n.e.x.t.
@@ -124,7 +115,7 @@ final class Advanced_Tracking {
 	}
 
 	/**
-	 * Instantiates and registers the active plugin event lists.
+	 * Instantiates and registers event lists.
 	 *
 	 * @since n.e.x.t.
 	 */

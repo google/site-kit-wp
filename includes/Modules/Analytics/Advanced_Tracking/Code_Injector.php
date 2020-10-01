@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
 /**
- * Class for injecting Javascript based on the current active plugins.
+ * Class for injecting JavaScript based on the registered event configurations.
  *
  * @since n.e.x.t.
  * @access private
