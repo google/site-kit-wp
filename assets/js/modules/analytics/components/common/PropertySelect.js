@@ -35,18 +35,10 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	const {
-		accountID,
-		properties,
-		hasExistingTag,
-		hasGTMTag,
-		hasResolvedProperties,
-	} = useSelect( ( select ) => {
+	const { accountID, properties, hasResolvedProperties } = useSelect( ( select ) => {
 		const data = {
 			accountID: select( STORE_NAME ).getAccountID(),
 			properties: [],
-			hasExistingTag: select( STORE_NAME ).hasExistingTag(),
-			hasGTMTag: false,
 			hasResolvedProperties: false,
 		};
 
@@ -55,8 +47,18 @@ export default function PropertySelect() {
 			data.hasResolvedProperties = select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ data.accountID ] );
 		}
 
+		return data;
+	} );
+
+	const { hasExistingTag, hasGTMPropertyID } = useSelect( ( select ) => {
+		const data = {
+			hasExistingTag: select( STORE_NAME ).hasExistingTag(),
+			hasGTMPropertyID: false,
+		};
+
+		// No need to get a single Analytics property ID if we already have an existing Analytics tag.
 		if ( ! data.hasExistingTag ) {
-			data.hasGTMTag = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+			data.hasGTMPropertyID = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 		}
 
 		return data;
@@ -84,7 +86,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGTMTag || ! isValidAccountID( accountID ) }
+			disabled={ hasExistingTag || hasGTMPropertyID || ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>

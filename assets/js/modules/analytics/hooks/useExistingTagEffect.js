@@ -36,42 +36,36 @@ export default function useExistingTagEffect() {
 	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
 	const gtmModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
 
-	const { existingTag, existingTagAccountID, existingTagPermission } = useSelect( ( select ) => {
+	const {
+		existingTag,
+		existingTagAccountID,
+		existingTagPermission,
+		gtmAnalyticsPropertyID,
+		gtmAnalyticsAccountID,
+	} = useSelect( ( select ) => {
 		const data = {
 			existingTag: select( STORE_NAME ).getExistingTag(),
 			existingTagPermission: false,
 			existingTagAccountID: '',
+			gtmAnalyticsPropertyID: '',
+			gtmAnalyticsAccountID: '',
 		};
 
 		if ( data.existingTag ) {
-			const {
-				permission = false,
-				accountID = '',
-			} = select( STORE_NAME ).getTagPermission( data.existingTag ) || {};
-
+			// Just check existing tag permissions, if it is available and ignore tag manager settigns.
+			const { permission = false, accountID = '' } = select( STORE_NAME ).getTagPermission( data.existingTag ) || {};
 			if ( permission ) {
 				data.existingTagPermission = permission;
 				data.existingTagAccountID = accountID;
 			}
-		}
-
-		return data;
-	} );
-
-	const { gtmAnalyticsPropertyID, gtmAnalyticsAccountID } = useSelect( ( select ) => {
-		const data = {
-			gtmAnalyticsPropertyID: select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID(),
-			gtmAnalyticsAccountID: '',
-		};
-
-		if ( data.gtmAnalyticsPropertyID ) {
-			const {
-				permission = false,
-				accountID = '',
-			} = select( STORE_NAME ).getTagPermission( data.gtmAnalyticsPropertyID ) || {};
-
-			if ( permission ) {
-				data.gtmAnalyticsAccountID = accountID;
+		} else {
+			// There is no existing tag, so we need to try to get a property ID from GTM.
+			data.gtmAnalyticsPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+			if ( data.gtmAnalyticsPropertyID ) {
+				const { permission = false, accountID = '' } = select( STORE_NAME ).getTagPermission( data.gtmAnalyticsPropertyID ) || {};
+				if ( permission ) {
+					data.gtmAnalyticsAccountID = accountID;
+				}
 			}
 		}
 

@@ -40,7 +40,7 @@ export default function AccountSelect() {
 			hasGTMPropertyID: false,
 		};
 
-		// No need to get single Analytics property ID if we already have an existing Analytics tag.
+		// No need to get a single Analytics property ID if we already have an existing Analytics tag.
 		if ( ! data.hasExistingTag ) {
 			data.hasGTMPropertyID = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 		}

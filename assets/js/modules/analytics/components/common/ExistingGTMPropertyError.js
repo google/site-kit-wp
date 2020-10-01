@@ -40,7 +40,7 @@ export default function ExistingGTMPropertyError() {
 		!! existingTag || // There is an existing tag.
 		! gtmAnalyticsPropertyID || // There is no GTM tag.
 		gtmAnalyticsPropertyIDPermission || // There is a GTM tag and user has access to it.
-		typeof gtmAnalyticsPropertyIDPermission === 'undefined' // We don't know yet whether the current user has permissions to the GTM tag.
+		gtmAnalyticsPropertyIDPermission === undefined // We don't know yet whether the current user has permissions to the GTM tag.
 	) {
 		return null;
 	}
