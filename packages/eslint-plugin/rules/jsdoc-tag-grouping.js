@@ -56,7 +56,16 @@ module.exports = iterateJsdoc( ( {
 		return;
 	}
 
-	const firstTagInSecondGroup = findTagInGroup( [ 'param', 'type', 'return' ], utils );
+	const firstTagInSecondGroup = findTagInGroup( [ 'param', 'typedef', 'type', 'return' ], utils );
+
+	if ( firstTagInSecondGroup === null ) {
+		context.report( {
+			data: { name: jsdocNode.name },
+			message: `Unrecognized tag @${ firstTagInSecondGroup } in last group of JSDoc block. You may need to add this to the sitekit/jsdoc-tag-grouping rules.`,
+			node: jsdocNode,
+		} );
+		return;
+	}
 
 	if (
 		! jsdoc.source.match(

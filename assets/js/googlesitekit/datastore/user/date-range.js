@@ -36,6 +36,18 @@ export const initialState = {
 	dateRange: 'last-28-days',
 };
 
+/**
+ * Date Range Object
+ *
+ * @since n.e.x.t
+ *
+ * @typedef {Object} DateRangeReturnObj
+ * @property {string} startDate          Beginning of the original date range.
+ * @property {string} endDate            End of the original date range.
+ * @property {string} [compareStartDate] Beginning of the comparative date range.
+ * @property {string} [compareEndDate]   End of the comparative date range.
+ */
+
 // Actions
 const SET_DATE_RANGE = 'SET_DATE_RANGE';
 
@@ -96,17 +108,11 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @typedef {Object} DateRangeReturnObj
-	 * @property {string} startDate          Beginning of the original date range.
-	 * @property {string} endDate            End of the original date range.
-	 * @property {string} [compareStartDate] Beginning of the comparative date range.
-	 * @property {string} [compareEndDate]   End of the comparative date range.
-	 *
 	 * @param {Object}  state                   The current data store's state.
 	 * @param {Object}  [options]               Options parameter. Default is: {}.
 	 * @param {boolean} [options.compare]       Set to true if date ranges to compare should be included. Default is: false.
 	 * @param {number}  [options.offsetDays]    Number of days to offset. Default is: 0.
-	 * @param {string}  [options.referenceDate] Used for testing to set a static date. Default is: new Date() (today/now)
+	 * @param {string}  [options.referenceDate] Used for testing to set a static date. Default is: `new Date()` (today/now).
 	 * @param {boolean} [options.weekDayAlign]  Set to true if the compared date range should be aligned for the weekdays. Default is: false.
 	 * @return {DateRangeReturnObj}             Object containing dates for date ranges.
 	 */
