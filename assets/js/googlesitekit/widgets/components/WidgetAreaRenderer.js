@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { string } from 'prop-types';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -208,7 +208,7 @@ const WidgetAreaRenderer = ( { slug } ) => {
 };
 
 WidgetAreaRenderer.propTypes = {
-	slug: string.isRequired,
+	slug: PropTypes.string.isRequired,
 };
 
 export default WidgetAreaRenderer;
