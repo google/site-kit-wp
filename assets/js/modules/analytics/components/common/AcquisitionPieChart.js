@@ -105,6 +105,7 @@ function AcquisitionPieChart( { data, args, source } ) {
 								key="link"
 								href={ sourceURI }
 								inherit
+								external
 							/>,
 						}
 					) }
