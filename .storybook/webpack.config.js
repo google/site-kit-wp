@@ -2,12 +2,6 @@ const path = require( 'path' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const mainConfig = require( '../webpack.config' );
 const mapValues = require( 'lodash/mapValues' );
-const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
-
-/**
- * Internal dependencies
- */
-const flagsConfig = require( '../webpack.feature-flags.config' );
 
 module.exports = async ( { config } ) => {
 	// Site Kit loads its API packages as externals,
@@ -31,13 +25,6 @@ module.exports = async ( { config } ) => {
 	config.plugins = [
 		...config.plugins,
 		new MiniCssExtractPlugin(),
-		new FeatureFlagsPlugin(
-			flagsConfig,
-			{
-				modes: [ 'development', 'production' ],
-				mode: config.mode,
-			},
-		),
 	];
 
 	config.module.rules.push(
