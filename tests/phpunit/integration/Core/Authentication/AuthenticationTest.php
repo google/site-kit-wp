@@ -572,6 +572,51 @@ class AuthenticationTest extends TestCase {
 		}
 	}
 
+	/**
+	 * Test handle_proxy_permissions()
+	 */
+	public function test_handle_proxy_permissions() {
+		$action = 'admin_action_' . Google_Proxy::ACTION_PERMISSIONS;
+		remove_all_actions( $action );
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context );
+
+		$authentication = new Authentication( $context, $options, $user_options );
+		$authentication->get_oauth_client()->set_access_token( 'test-access-token', 3600 );
+		$authentication->register();
+
+		// Emulate credentials.
+		$fake_proxy_credentials = $this->fake_proxy_site_connection();
+
+		//Ensure admin user has Permissions::AUTHENTICATE cap regardless of authentication.
+		add_filter(
+			'user_has_cap',
+			function( $caps ) {
+				$caps[ Permissions::AUTHENTICATE ] = true;
+				return $caps;
+			}
+		);
+
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
+
+		try {
+			do_action( $action );
+		} catch ( RedirectException $redirect ) {
+			$location = $redirect->get_location();
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/permissions/', $location );
+
+			$parsed = wp_parse_url( $location );
+			parse_str( $parsed['query'], $query_args );
+
+			$this->assertEquals( $fake_proxy_credentials['client_id'], $query_args['site_id'] );
+		}
+	}
+
 	protected function get_user_option_keys() {
 		return array(
 			OAuth_Client::OPTION_ACCESS_TOKEN,
