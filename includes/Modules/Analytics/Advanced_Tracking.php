@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Script_Injector;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\AMP_Config_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
 
@@ -96,22 +97,11 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 *
 	 * @param array $gtag_amp_opt gtag config options for AMP.
-	 * @return array $gtag_amp_opt gtag config options for AMP.
+	 * @return array Filtered $gtag_amp_opt.
 	 */
 	private function set_up_advanced_tracking_amp( $gtag_amp_opt ) {
 		$this->compile_events();
-
-		if ( empty( $this->event_configurations ) ) {
-			return $gtag_amp_opt;
-		}
-
-		if ( ! array_key_exists( 'triggers', $gtag_amp_opt ) ) {
-			$gtag_amp_opt['triggers'] = array();
-		}
-		foreach ( $this->event_configurations as $event_config ) {
-			$gtag_amp_opt['triggers'][ $event_config->get_amp_trigger_name() ] = $event_config->to_amp_config();
-		}
-		return $gtag_amp_opt;
+		return ( new AMP_Config_Injector() )->inject_event_configurations( $gtag_amp_opt, $this->event_configurations );
 	}
 
 	/**
