@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import AccountCreate from './AccountCreate';
-import { fireEvent, render, waitFor, createTestRegistry, freezeFetch, muteFetch } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render, waitFor, createTestRegistry, muteFetch } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -44,8 +44,6 @@ describe( 'AccountCreate', () => {
 	} );
 
 	it( 'displays a progress bar while accounts are being loaded', () => {
-		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
-
 		const { getByRole, queryByRole } = render( <AccountCreate />, { registry } );
 
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
@@ -58,6 +56,7 @@ describe( 'AccountCreate', () => {
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountA.accountId );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ accountA ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
 			{ body: [ accountA, accountB ], status: 200 }
@@ -69,7 +68,8 @@ describe( 'AccountCreate', () => {
 		muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
 		fireEvent.click( refetchMyAccountButton );
 
-		await waitFor( () => expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ ) );
+		await waitFor( () => registry.select( STORE_NAME ).getAccounts().length > 1 );
+		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 	} );
 
 	describe( '"Create an account" button', () => {
@@ -83,6 +83,7 @@ describe( 'AccountCreate', () => {
 
 		it( 'opens a new window  new account screen for the current user', () => {
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
+			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
 			const { getByRole } = render( <AccountCreate />, { registry } );
 

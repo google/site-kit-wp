@@ -50,6 +50,8 @@ describe( 'AMPContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [ ...webContainers, ...ampContainers ], { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -70,6 +72,8 @@ describe( 'AMPContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -85,6 +89,8 @@ describe( 'AMPContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container, getByText } = render( <AMPContainerSelect />, { registry } );
 
@@ -103,6 +109,8 @@ describe( 'AMPContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container, getByText } = render( <AMPContainerSelect />, { registry } );
 
@@ -122,6 +130,10 @@ describe( 'AMPContainerSelect', () => {
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
+		const account = factories.accountBuilder();
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
 		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -135,6 +147,8 @@ describe( 'AMPContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -149,6 +163,8 @@ describe( 'AMPContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container } = render( <AMPContainerSelect />, { registry } );
 
@@ -162,6 +178,8 @@ describe( 'AMPContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container } = render( <AMPContainerSelect />, { registry } );
 

@@ -50,6 +50,8 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [ ...webContainers, ...ampContainers ], { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <WebContainerSelect />, { registry } );
 
@@ -70,6 +72,8 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <WebContainerSelect />, { registry } );
 
@@ -85,6 +89,8 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container, getByText } = render( <WebContainerSelect />, { registry } );
 
@@ -103,6 +109,8 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container, getByText } = render( <WebContainerSelect />, { registry } );
 
@@ -122,6 +130,10 @@ describe( 'WebContainerSelect', () => {
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
+		const account = factories.accountBuilder();
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
 		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { registry } );
 
@@ -136,6 +148,8 @@ describe( 'WebContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { registry } );
 
@@ -150,6 +164,8 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container } = render( <WebContainerSelect />, { registry } );
 
@@ -163,6 +179,8 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container } = render( <WebContainerSelect />, { registry } );
 
