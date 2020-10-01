@@ -1,5 +1,5 @@
 /**
- * ESLint rules: capitalise sentences.
+ * ESLint rules: verb form.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
