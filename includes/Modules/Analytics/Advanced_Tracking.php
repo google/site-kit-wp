@@ -111,7 +111,7 @@ final class Advanced_Tracking {
 	 */
 	private function set_up_advanced_tracking() {
 		$this->compile_events();
-		( new Script_Injector() )->inject_event_script( $this->events );
+		( new Script_Injector( $this->context ) )->inject_event_script( $this->events );
 	}
 
 	/**

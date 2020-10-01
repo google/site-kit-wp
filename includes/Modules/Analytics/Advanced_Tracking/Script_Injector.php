@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Manifest;
+
 /**
  * Class for injecting JavaScript based on the registered event configurations.
  *
@@ -50,46 +53,32 @@ final class Script_Injector {
 			return;
 		}
 
+		// Get file contents of script and add it to the page, injecting event configurations into it.
+		$filename = 'analytics-advanced-tracking.js';
+		if ( class_exists( '\Google\Site_Kit\Core\Assets\Manifest' ) && isset( Manifest::$assets['analytics-advanced-tracking'] ) ) {
+			$filename = Manifest::$assets['analytics-advanced-tracking'];
+		}
+
+		$script_path = $this->context->path( "dist/assets/js/{$filename}" );
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions, WordPressVIPMinimum.Performance.FetchingRemoteData
+		$script_content = file_get_contents( $script_path );
+		if ( ! $script_content ) {
+			return;
+		}
+
 		?>
 		<script>
-			( function() {
-				function matches( el, selector ) {
-					const matcher =
-						el.matches ||
-						el.webkitMatchesSelector ||
-						el.mozMatchesSelector ||
-						el.msMatchesSelector ||
-						el.oMatchesSelector;
-					if ( matcher ) {
-						return matcher.call( el, selector );
-					}
-					return false;
-				}
-
-				function sendEvent( action, metadata ) {
-					if ( null === metadata ) {
-						gtag( 'event', action );
-					} else {
-						gtag( 'event', action, metadata );
-					}
-				}
-
-				var eventConfigurations = <?php echo wp_json_encode( $events ); ?>;
-				var config;
-				for ( config of eventConfigurations ) {
-					const thisConfig = config;
-					document.addEventListener( config.on, function( e ) {
-						if ( "DOMContentLoaded" === thisConfig.on ) {
-							sendEvent( thisConfig.action, thisConfig.metadata );
-						} else {
-							var el = e.target;
-							if ( matches( el, thisConfig.selector ) || matches( el, thisConfig.selector.concat( ' *' ) ) ) {
-								sendEvent( thisConfig.action, thisConfig.metadata );
-							}
-						}
-					}, true );
-				}
-			} )();
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo str_replace(
+				// This string is defined as external in the Webpack config, and here it gets replaced with the
+				// actual event configurations array.
+				'SITEKIT_ANALYTICS_ADVANCED_TRACKING_EVENTS',
+				wp_json_encode( $events ),
+				$script_content
+			);
+			?>
 		</script>
 		<?php
 	}
