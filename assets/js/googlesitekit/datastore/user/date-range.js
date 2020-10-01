@@ -1,5 +1,5 @@
 /**
- * core/user data store: date-range.
+ * User info data store: date-range.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

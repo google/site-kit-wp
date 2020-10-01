@@ -1,5 +1,5 @@
 /**
- * getNoDataComponent function.
+ * `getNoDataComponent` function.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *

@@ -6,7 +6,7 @@
  * @since 1.0.0
  *
  * @param {Object} options Options object passed to `wp.apiFetch`.
- * @return {*} resolved value from apiFetch promise.
+ * @return {*} Resolved value from `apiFetch` promise.
  */
 export async function wpApiFetch( options ) {
 	try {

@@ -1,5 +1,5 @@
 /**
- * fetchPageContent utility function.
+ * Fetch page content E2E utility function.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

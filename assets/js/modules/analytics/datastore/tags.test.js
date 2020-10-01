@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: tags tests.
+ * Analytics module data store: tags tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

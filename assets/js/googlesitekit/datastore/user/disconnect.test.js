@@ -1,5 +1,5 @@
 /**
- * core/user Data store: disconnect tests.
+ * User info data store: disconnect tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

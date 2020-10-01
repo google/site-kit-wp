@@ -1,5 +1,5 @@
 /**
- * core/modules data store: info.
+ * Modules data store: info.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

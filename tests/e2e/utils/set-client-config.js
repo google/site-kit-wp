@@ -10,7 +10,7 @@ import { testClientConfig } from './test-client-config';
  * @since 1.0.0
  *
  * @param {Object} [config] Client configuration object.
- * @return {*} resolved value from apiFetch promise.
+ * @return {*} Resolved value from `apiFetch` promise.
  */
 export async function setClientConfig( config = testClientConfig ) {
 	return await wpApiFetch( {

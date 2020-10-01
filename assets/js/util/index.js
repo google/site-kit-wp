@@ -395,7 +395,7 @@ export const getModulesData = ( __googlesitekitLegacyData = global._googlesiteki
  *
  * @param {string}  slug                      The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
  * @param {boolean} status                    The module activation status.
- * @param {Object}  __googlesitekitLegacyData _googlesitekitLegacyData global; can be replaced for testing.
+ * @param {Object}  __googlesitekitLegacyData Legacy data global; can be replaced for testing.
  * @return {string} Authentication URL.
  */
 export const getReAuthURL = ( slug, status, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
@@ -499,8 +499,8 @@ export const validateOptimizeID = ( stringToValidate ) => {
  * @param {Object}   restApiClient   Rest API client from data module, this needed so we don't need to import data module in helper.
  * @param {string}   moduleSlug      Module slug to activate or deactivate.
  * @param {boolean}  status          True if module should be activated, false if it should be deactivated.
- * @param {Function} _trackEvent     trackEvent function; can be replaced for testing.
- * @param {Function} _getModulesData getModulesData function; can be replaced for testing.
+ * @param {Function} _trackEvent     Track event function; can be replaced for testing.
+ * @param {Function} _getModulesData Get modules function; can be replaced for testing.
  * @return {Promise} A promise for activating/deactivating a module.
  */
 export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, status, _trackEvent = trackEvent, _getModulesData = getModulesData ) => {
@@ -530,7 +530,7 @@ export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, sta
  * @param {Object} settingsMapping           The mapping between form settings names and saved settings.
  * @param {Object} settingsState             The changed settings component state to compare with.
  * @param {Object} skipDOM                   Skip DOm checks/modifications, used for testing.
- * @param {Object} __googlesitekitLegacyData _googlesitekitLegacyData global; can be replaced for testing.
+ * @param {Object} __googlesitekitLegacyData `_googlesitekitLegacyData` global; can be replaced for testing.
  * @return {(void|boolean)} True if a module has been toggled.
  */
 export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
@@ -601,7 +601,7 @@ export const decodeHTMLEntity = ( str ) => {
  * @param {string}  width                 The icon width.
  * @param {string}  height                The icon height.
  * @param {string}  useClass              Class string to use for icon.
- * @return {HTMLImageElement}             <img> tag with module icon.
+ * @return {HTMLImageElement}             HTML <img> tag with module icon.
  */
 export function moduleIcon( module, blockedByParentModule, width = '33', height = '33', useClass = '' ) {
 	if ( ! global._googlesitekitLegacyData ) {
@@ -627,7 +627,7 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
  *
  * @param {string} userOptionName         User option name.
  * @param {Object} _googlesitekitBaseData Site Kit base data (used for testing).
- * @return {string} meta key name.
+ * @return {string} Meta key name.
  */
 export function getMetaKeyForUserOption( userOptionName, _googlesitekitBaseData = global._googlesitekitBaseData ) {
 	const { blogPrefix, isNetworkMode } = _googlesitekitBaseData;

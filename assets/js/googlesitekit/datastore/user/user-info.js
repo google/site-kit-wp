@@ -1,5 +1,5 @@
 /**
- * core/user Data store: user info
+ * User info data store: user info
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

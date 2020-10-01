@@ -1,5 +1,5 @@
 /**
- * core/site data store tests.
+ * Core site data store tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

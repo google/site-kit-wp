@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: URL channels.
+ * Adsense module data store: URL channels.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -21,8 +21,8 @@
  *
  * @since 1.10.0
  *
- * @param {string|number} optimizeID optimize ID to test.
- * @return {boolean} True if the given optimize ID is valid, false otherwise.
+ * @param {string|number} optimizeID Optimize ID to test.
+ * @return {boolean} `true` if the given optimize ID is valid, `false` otherwise.
  */
 export function isValidOptimizeID( optimizeID ) {
 	return typeof optimizeID === 'string' && /^(GTM|OPT)-[A-Z0-9]+$/.test( optimizeID );
@@ -33,7 +33,7 @@ export function isValidOptimizeID( optimizeID ) {
  *
  * @since 1.10.0
  *
- * @param {string|number} ampExperimentJSON ampExperimentJSON to test.
+ * @param {string|number} ampExperimentJSON `ampExperimentJSON` to test.
  * @return {boolean} True if the given ampExperimentJSON is valid, false otherwise.
  */
 export function isValidAMPExperimentJSON( ampExperimentJSON ) {

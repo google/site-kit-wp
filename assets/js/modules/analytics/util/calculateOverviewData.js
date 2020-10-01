@@ -1,5 +1,5 @@
 /**
- * calculateOverviewData helper.
+ * `calculateOverviewData` helper.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

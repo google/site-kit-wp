@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: tags.
+ * Adsense module data store: tags.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -90,9 +90,9 @@ const baseSelectors = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @return {(boolean|null|undefined)} true or false if tag permission is available,
-	 *                                    null if no existing tag,
-	 *                                    otherwise undefined if resolution is incomplete.
+	 * @return {(boolean|null|undefined)} `true` or `false` if tag permission is available,
+	 *                                    `null` if no existing tag,
+	 *                                    otherwise `undefined` if resolution is incomplete.
 	 */
 	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
 		const hasExistingTag = select( STORE_NAME ).hasExistingTag();

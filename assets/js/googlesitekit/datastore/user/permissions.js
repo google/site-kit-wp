@@ -1,5 +1,5 @@
 /**
- * core/user Data store: permission scopes.
+ * User info data store: permission scopes.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

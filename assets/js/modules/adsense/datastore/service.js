@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: service.
+ * Adsense module data store: service.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

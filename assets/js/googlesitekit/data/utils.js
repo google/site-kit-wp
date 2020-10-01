@@ -229,7 +229,7 @@ export const commonActions = {
  *
  * @since 1.7.0
  *
- * @return {Object} key/value list of common controls most stores will want.
+ * @return {Object} Key/value list of common controls most stores will want.
  */
 export const commonControls = {
 	/**

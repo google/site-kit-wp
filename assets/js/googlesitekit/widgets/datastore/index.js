@@ -1,5 +1,5 @@
 /**
- * core/widgets data store
+ * Widgets data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

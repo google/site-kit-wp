@@ -1,5 +1,5 @@
 /**
- * core/widgets data store: constants.
+ * Widgets data store: constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

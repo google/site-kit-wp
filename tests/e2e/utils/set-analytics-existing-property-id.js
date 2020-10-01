@@ -9,8 +9,8 @@ import { wpApiFetch } from './wp-api-fetch';
  *
  * @since 1.0.0
  *
- * @param {string} id Analytics property ID (e.g. UA-00000000-1).
- * @return {*} resolved value from apiFetch promise.
+ * @param {string} id Analytics property ID (e.g. `UA-00000000-1`).
+ * @return {*} Resolved value from `apiFetch` promise.
  */
 export async function setAnalyticsExistingPropertyID( id ) {
 	return await wpApiFetch( {

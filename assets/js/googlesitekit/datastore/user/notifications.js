@@ -1,5 +1,5 @@
 /**
- * core/user data store: notifications.
+ * User info data store: notifications.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

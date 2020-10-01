@@ -1,5 +1,5 @@
 /**
- * modules/search-console data store
+ * Search Console module data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

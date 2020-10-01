@@ -1,5 +1,5 @@
 /**
- * toHaveValidAMPForUser matcher.
+ * `toHaveValidAMPForUser` matcher.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

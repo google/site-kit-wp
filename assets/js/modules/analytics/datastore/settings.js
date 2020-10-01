@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: settings.
+ * Analytics module data store: settings.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

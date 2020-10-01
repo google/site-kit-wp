@@ -1,5 +1,5 @@
 /**
- * useDebouncedState hook.
+ * `useDebouncedState` hook.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -22,7 +22,7 @@
 import { useState, useEffect } from '@wordpress/element';
 
 /**
- * useDebouncedState hook.
+ * `useDebouncedState` hook.
  *
  * @since 1.16.0
  *

@@ -1,5 +1,5 @@
 /**
- * core/site data store: constants.
+ * Core site data store: constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -1,5 +1,5 @@
 /**
- * modules/tagmanager data store: containers tests.
+ * Tag Manager module data store: containers tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

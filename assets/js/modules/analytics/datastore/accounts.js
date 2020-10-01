@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: accounts.
+ * Analytics module data store: accounts.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

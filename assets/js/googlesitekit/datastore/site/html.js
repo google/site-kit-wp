@@ -1,5 +1,5 @@
 /**
- * core/site data store: HTML for URL.
+ * Core site data store: HTML for URL.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -1,5 +1,5 @@
 /**
- * modules/tagmanager data store: accounts tests.
+ * Tag Manager module data store: accounts tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

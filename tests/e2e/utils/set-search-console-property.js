@@ -9,7 +9,7 @@ import { wpApiFetch } from './wp-api-fetch';
  * @since 1.0.0
  *
  * @param {string} property Property URL.
- * @return {*} resolved value from apiFetch promise.
+ * @return {*} Resolved value from `apiFetch` promise.
  */
 export async function setSearchConsoleProperty( property = process.env.WP_BASE_URL ) {
 	return await wpApiFetch( {

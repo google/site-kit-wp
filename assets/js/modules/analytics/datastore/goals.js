@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: goals.
+ * Analytics module data store: goals.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

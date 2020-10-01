@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: service tests.
+ * Adsense module data store: service tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

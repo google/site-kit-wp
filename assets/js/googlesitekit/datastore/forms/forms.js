@@ -1,5 +1,5 @@
 /**
- * core/forms data store: forms data
+ * Forms data store: forms data
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

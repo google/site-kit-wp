@@ -1,5 +1,5 @@
 /**
- * withData higher-order component.
+ * `withData` higher-order component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *

@@ -26,15 +26,12 @@ module.exports = iterateJsdoc( ( {
 	jsdoc,
 	jsdocNode,
 } ) => {
-	// Skip the first doc block, as these are frequently marked by things like "core/forms".
-	// It's silly to allow-list all those files, and creating exceptions for them seems
-	// silly at this point as well. For now we'll check doc blocks _after_ the first one.
-	if ( jsdoc.line === 0 ) {
-		return;
-	}
-
-	if ( jsdoc.description && ! jsdoc.description.match( /^[A-Z].*/g ) ) {
+	if (
+		jsdoc.description &&
+		! jsdoc.description.match( /^[A-Z`("].*/g )
+	) {
 		context.report( { node: jsdocNode, message: `JSDoc blocks should start with a capital letter.`, data: { name: jsdocNode.name } } );
+		return;
 	}
 
 	// Move on to checking tags for this JSDoc block.
@@ -44,11 +41,18 @@ module.exports = iterateJsdoc( ( {
 
 	jsdoc.tags.forEach( ( tag ) => {
 		// Only check these tags for capitalization.
-		if ( ! [ 'param', 'returns' ].includes( tag.tag ) ) {
+		if ( ! [ 'param', 'return', 'returns' ].includes( tag.tag ) ) {
 			return;
 		}
 
-		if ( tag.description && tag.description.length && ! tag.description.trim().match( /^[A-Z].*/gm ) ) {
+		if (
+			tag.description &&
+			tag.description.length &&
+			// Ignore if the first character is a backtick; this is often used
+			// when marking return values like `true` or `null`.
+			// Also ignore parens and quotes.
+			! tag.description.trim().match( /^[A-Z`("].*/gm )
+		) {
 			context.report( { node: jsdocNode, message: `The description for \`${ tag.source }\` should start with a capital letter.`, data: { name: jsdocNode.name } } );
 		}
 	} );

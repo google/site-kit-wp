@@ -1,5 +1,5 @@
 /**
- * modules/tagmanager data store: existing-tag tests.
+ * Tag Manager module data store: existing-tag tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
