@@ -44,7 +44,7 @@ export default function SettingsView() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-	const editViewSettingsUrl = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+	const editViewSettingsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{
 			path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
 		}
@@ -54,7 +54,7 @@ export default function SettingsView() {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 
 			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice storeName={ STORE_NAME } /> }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 
@@ -89,7 +89,7 @@ export default function SettingsView() {
 				<div className="googlesitekit-settings-module__meta-item">
 					<a
 						className="googlesitekit-cta-link googlesitekit-cta-link--external"
-						href={ editViewSettingsUrl }
+						href={ editViewSettingsURL }
 						target="_blank"
 						rel="noopener noreferrer"
 					>

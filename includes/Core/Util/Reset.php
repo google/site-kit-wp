@@ -106,11 +106,11 @@ final class Reset {
 			$wpdb->prepare(
 				/* phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared */
 				"
-				DELETE FROM $table_name
-				WHERE  $column_name LIKE %s
-					OR $column_name LIKE %s
-					OR $column_name LIKE %s
-					OR $column_name = %s
+				DELETE FROM {$table_name}
+				 WHERE {$column_name} LIKE %s
+				    OR {$column_name} LIKE %s
+				    OR {$column_name} LIKE %s
+				    OR {$column_name} = %s
 				", /* phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared */
 				self::KEY_PATTERN,
 				$transient_prefix . self::KEY_PATTERN,
@@ -138,7 +138,10 @@ final class Reset {
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
-			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $meta_prefix . self::KEY_PATTERN )
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s",
+				$meta_prefix . self::KEY_PATTERN
+			)
 		);
 	}
 

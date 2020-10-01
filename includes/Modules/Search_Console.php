@@ -14,15 +14,18 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Admin_Bar;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Data_Request;
@@ -49,7 +52,7 @@ use WP_Error;
  * @ignore
  */
 final class Search_Console extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Admin_Bar, Module_With_Debug_Fields {
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Admin_Bar, Module_With_Debug_Fields, Module_With_Owner {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait, Module_With_Assets_Trait;
 
 	/**
@@ -66,6 +69,10 @@ final class Search_Console extends Module
 		add_action(
 			'googlesitekit_authorize_user',
 			function( array $token_response ) {
+				if ( ! current_user_can( Permissions::SETUP ) ) {
+					return;
+				}
+
 				// If the response includes the Search Console property, set that.
 				if ( ! empty( $token_response['search_console_property'] ) ) {
 					$this->get_settings()->merge(
@@ -589,4 +596,17 @@ final class Search_Console extends Module
 			),
 		);
 	}
+
+	/**
+	 * Gets an owner ID for the module.
+	 *
+	 * @since 1.16.0
+	 *
+	 * @return int Owner ID.
+	 */
+	public function get_owner_id() {
+		$owner = new Owner_ID( $this->options );
+		return $owner->get();
+	}
+
 }

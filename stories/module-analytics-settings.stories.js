@@ -22,260 +22,171 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters, addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
-import SettingsModule from '../assets/js/components/settings/settings-module';
 import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytics/components/settings';
-import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datastore/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+import { createTestRegistry, provideModules } from '../tests/js/utils';
+import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
-function filterAnalyticsSettings() {
-	// set( global, 'googlesitekit.modules.analytics.setupComplete', true );
-	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-analytics' );
-	addFilter(
-		'googlesitekit.ModuleSettingsDetails-analytics',
-		'googlesitekit.AnalyticsModuleSettings',
-		fillFilterWithComponent( AnalyticsSettings )
-	);
-}
-
-const completeModuleData = {
-	...global._googlesitekitLegacyData.modules.analytics,
-	active: true,
-	setupComplete: true,
+const defaultSettings = {
+	ownerID: 0,
+	accountID: '',
+	adsenseLinked: false,
+	anonymizeIP: true,
+	internalWebPropertyID: '',
+	profileID: '',
+	propertyID: '',
+	trackingDisabled: [ 'loggedinUsers' ],
+	useSnippet: true,
 };
 
-function Settings( props ) {
-	const {
-		callback,
-		module = global._googlesitekitLegacyData.modules.analytics,
-		isEditing = false,
-		isOpen = true,
-		isSaving = false,
-		error = false,
-		// eslint-disable-next-line no-console
-		handleAccordion = ( ...args ) => console.log( 'handleAccordion', ...args ),
-		// eslint-disable-next-line no-console
-		handleDialog = ( ...args ) => console.log( 'handleDialog', ...args ),
-		// eslint-disable-next-line no-console
-		updateModulesList = ( ...args ) => console.log( 'updateModulesList', ...args ),
-		// eslint-disable-next-line no-console
-		handleButtonAction = ( ...args ) => console.log( 'handleButtonAction', ...args ),
-	} = props;
-
-	return (
-		<WithTestRegistry callback={ callback }>
-			<div style={ { background: 'white' } }>
-				<SettingsModule
-					key={ module.slug + '-module' }
-					slug={ module.slug }
-					name={ module.name }
-					description={ module.description }
-					homepage={ module.homepage }
-					learnmore={ module.learnMore }
-					active={ module.active }
-					setupComplete={ module.setupComplete }
-					hasSettings={ true }
-					autoActivate={ module.autoActivate }
-					updateModulesList={ updateModulesList }
-					handleEdit={ handleButtonAction }
-					handleConfirm
-					isEditing={ isEditing ? { 'analytics-module': true } : {} }
-					isOpen={ isOpen }
-					handleAccordion={ handleAccordion }
-					handleDialog={ handleDialog }
-					provides={ module.provides }
-					isSaving={ isSaving }
-					screenID={ module.screenID }
-					error={ error }
-				/>
-			</div>
-		</WithTestRegistry>
-	);
-}
+const Settings = createLegacySettingsWrapper( 'analytics', AnalyticsSettings );
 
 storiesOf( 'Analytics Module/Settings', module )
-	.add( 'View, closed', () => {
-		filterAnalyticsSettings();
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		provideModules( registry, [ {
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		} ] );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-		};
-
-		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
+		return storyFn( registry );
 	} )
-	.add( 'View, open with all settings', () => {
-		filterAnalyticsSettings();
-
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: '1234567890',
-				propertyID: 'UA-1234567890-1',
-				internalWebPropertyID: '135791113',
-				profileID: '9999999',
-				anonymizeIP: true,
-				useSnippet: true,
-				trackingDisabled: [ 'loggedinUsers' ],
-			} );
-		};
-
-		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
+	.add( 'View, closed', ( registry ) => {
+		return <Settings isOpen={ false } registry={ registry } />;
 	} )
-	.add( 'View, open with all settings, no snippet with existing tag', () => {
-		filterAnalyticsSettings();
+	.add( 'View, open with all settings', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			accountID: '1234567890',
+			propertyID: 'UA-1234567890-1',
+			internalWebPropertyID: '135791113',
+			profileID: '9999999',
+		} );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetExistingTag( 'UA-1234567890-1' );
-			dispatch( STORE_NAME ).receiveGetTagPermission( {
-				accountID: '1234567890',
-				permission: true,
-			}, { propertyID: 'UA-1234567890-1' } );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: '1234567890',
-				propertyID: 'UA-1234567890-1',
-				internalWebPropertyID: '135791113',
-				profileID: '9999999',
-				anonymizeIP: true,
-				useSnippet: false,
-				trackingDisabled: [ 'loggedinUsers' ],
-			} );
-		};
-
-		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
+		return <Settings isOpen={ true } registry={ registry } />;
 	} )
-	.add( 'Edit, open with all settings', () => {
-		filterAnalyticsSettings();
+	.add( 'View, open with all settings, no snippet with existing tag', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			accountID: '1234567890',
+			propertyID: 'UA-1234567890-1',
+			internalWebPropertyID: '135791113',
+			profileID: '9999999',
+			useSnippet: false,
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'UA-1234567890-1' );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: '1234567890',
+			permission: true,
+		}, { propertyID: 'UA-1234567890-1' } );
 
+		return <Settings isOpen={ true } registry={ registry } />;
+	} )
+	.add( 'Edit, open with all settings', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				accountID: properties[ 0 ].accountId,
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: accountId,
-				propertyID: webPropertyId,
-				internalWebPropertyID: internalWebPropertyId,
-				profileID,
-				anonymizeIP: true,
-				useSnippet: true,
-				trackingDisabled: [ 'loggedinUsers' ],
-			} );
-		};
 
-		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
+			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
+			propertyID: webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			profileID,
+		} );
+
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
-	.add( 'Edit, open when creating new view', () => {
-		filterAnalyticsSettings();
-
+	.add( 'Edit, open when creating new view', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				accountID: accountId,
-				propertyID: webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: accountId,
-				propertyID: webPropertyId,
-				internalWebPropertyID: internalWebPropertyId,
-				profileID,
-				anonymizeIP: true,
-				useSnippet: true,
-				trackingDisabled: [ 'loggedinUsers' ],
-			} );
-			// This is chosen by the user, not received from API.
-			dispatch( STORE_NAME ).setSettings( {
-				profileID: PROFILE_CREATE,
-			} );
-		};
 
-		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+			accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
+			propertyID: webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			accountID: accountId, // eslint-disable-line sitekit/camelcase-acronyms
+			propertyID: webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+			profileID,
+		} );
+		// This is chosen by the user, not received from API.
+		registry.dispatch( STORE_NAME ).setSettings( {
+			profileID: PROFILE_CREATE,
+		} );
+
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
-	.add( 'Edit, open with no accounts', () => {
-		filterAnalyticsSettings();
+	.add( 'Edit, open with no accounts', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( [] );
-		};
-
-		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
-	.add( 'Edit, with existing tag (with access)', () => {
-		filterAnalyticsSettings();
-
+	.add( 'Edit, with existing tag (with access)', ( registry ) => {
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			accountID: matchedProperty.accountId,
 			propertyID: matchedProperty.id,
 		};
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				accountID: properties[ 0 ].accountId,
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: '',
-				propertyID: '',
-				profileID: '',
-				internalWebPropertyID: '',
-				anonymizeIP: true,
-				useSnippet: true,
-				trackingDisabled: [ 'loggedinUsers' ],
-			} );
-			dispatch( STORE_NAME ).receiveGetTagPermission( {
-				accountID: existingTag.accountID,
-				permission: true,
-			}, { propertyID: existingTag.propertyID } );
-		};
 
-		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
+			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: existingTag.accountID,
+			permission: true,
+		}, { propertyID: existingTag.propertyID } );
+
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
-	.add( 'Edit, with existing tag (no access)', () => {
-		filterAnalyticsSettings();
-
+	.add( 'Edit, with existing tag (no access)', ( registry ) => {
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			accountID: '12345678',
 			propertyID: 'UA-12345678-1',
 		};
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-			dispatch( STORE_NAME ).receiveGetTagPermission( {
-				accountID: existingTag.accountID,
-				permission: false,
-			}, { propertyID: existingTag.propertyID } );
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				accountID: properties[ 0 ].accountId,
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-		};
 
-		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+			accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/camelcase-acronyms
+			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: existingTag.accountID,
+			permission: false,
+		}, { propertyID: existingTag.propertyID } );
+
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
 ;

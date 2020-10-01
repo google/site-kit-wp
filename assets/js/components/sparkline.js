@@ -37,6 +37,7 @@ class Sparkline extends Component {
 		const {
 			data,
 			change,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			instanceId,
 			invertChangeColor,
 			loadSmall,
@@ -84,6 +85,7 @@ class Sparkline extends Component {
 				<GoogleChart
 					data={ data }
 					options={ chartOptions }
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					id={ `googlesitekit-sparkline-${ instanceId }` }
 					loadSmall={ loadSmall }
 					loadCompressed={ loadCompressed }
@@ -96,6 +98,7 @@ class Sparkline extends Component {
 }
 
 Sparkline.propTypes = {
+	// eslint-disable-next-line sitekit/camelcase-acronyms
 	instanceId: PropTypes.number.isRequired,
 	invertChangeColor: PropTypes.bool,
 	loadSmall: PropTypes.bool,

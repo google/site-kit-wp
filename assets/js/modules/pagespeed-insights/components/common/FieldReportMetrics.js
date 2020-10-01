@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -99,26 +99,26 @@ export default function FieldReportMetrics( { data, error } ) {
 				</thead>
 				<tbody>
 					<ReportMetric
-						title={ __( 'First Input Delay', 'google-site-kit' ) }
+						title={ _x( 'First Input Delay', 'core web vitals name', 'google-site-kit' ) }
 						description={ __( 'Time it takes for the browser to respond when people first interact with the page', 'google-site-kit' ) }
 						displayValue={ `${ firstInputDelay.percentile } ms` }
 						category={ firstInputDelay.category }
 					/>
 					<ReportMetric
-						title={ __( 'Largest Contentful Paint', 'google-site-kit' ) }
+						title={ _x( 'Largest Contentful Paint', 'core web vitals name', 'google-site-kit' ) }
 						description={ __( 'Time it takes for the page to load', 'google-site-kit' ) }
 						displayValue={ `${ lcpSeconds } s` }
 						category={ largestContentfulPaint.category }
 					/>
 					<ReportMetric
-						title={ __( 'Cumulative Layout Shift', 'google-site-kit' ) }
+						title={ _x( 'Cumulative Layout Shift', 'core web vitals name', 'google-site-kit' ) }
 						description={ __( 'How stable the elements on the page are', 'google-site-kit' ) }
 						displayValue={ cls }
 						category={ cumulativeLayoutShift.category }
 					/>
 				</tbody>
 			</table>
-			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--last">
+			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--single-item googlesitekit-pagespeed-report__row--last">
 				<ReportDetailsLink />
 			</div>
 		</div>

@@ -25,11 +25,11 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
-import Layout from '../../../../components/layout/layout';
 import PreviewBlock from '../../../../components/preview-block';
 import PreviewTable from '../../../../components/preview-table';
 import getNoDataComponent from '../../../../components/notifications/nodata';
@@ -38,6 +38,7 @@ import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
 import { isDataZeroForReporting } from '../../util';
 const { useSelect } = Data;
+const { Widget } = Widgets.components;
 
 function DashboardAllTrafficWidget() {
 	const {
@@ -85,14 +86,14 @@ function DashboardAllTrafficWidget() {
 
 		return {
 			loading: store.isResolving( 'getReport', [ args ] ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			report: store.getReport( args ),
 			reportArgs: args,
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
 		};
 	} );
 
 	if ( ! loading && error ) {
-		return getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error.message, true, true, false, error );
+		return getDataErrorComponent( 'analytics', error.message, true, true, false, error );
 	}
 
 	if ( ! loading && isDataZeroForReporting( report ) ) {
@@ -100,7 +101,10 @@ function DashboardAllTrafficWidget() {
 	}
 
 	return (
-		<Layout className="googlesitekit-dashboard-all-traffic">
+		<Widget
+			slug="analyticsAllTraffic"
+			noPadding
+		>
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
@@ -117,7 +121,7 @@ function DashboardAllTrafficWidget() {
 					</div>
 				</div>
 			</div>
-		</Layout>
+		</Widget>
 	);
 }
 

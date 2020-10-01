@@ -26,7 +26,6 @@ import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/c
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -75,8 +74,6 @@ describe( 'modules/analytics accounts', () => {
 
 				registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
 
-				// Silence expected API errors.
-				muteConsole( 'error' ); // Request will log an error.
 				await registry.dispatch( STORE_NAME ).createAccount();
 
 				// Ensure the proper body parameters were sent.
@@ -114,10 +111,10 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
-				muteConsole( 'error' ); // Request will log an error.
 				await registry.dispatch( STORE_NAME ).createAccount();
 
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'createAccount' ) ).toMatchObject( response );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -186,8 +183,8 @@ describe( 'modules/analytics accounts', () => {
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
 
-				const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+				const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
 
 				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
 
@@ -252,7 +249,6 @@ describe( 'modules/analytics accounts', () => {
 
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 				await untilResolved( registry, STORE_NAME ).getAccounts();
 
@@ -260,6 +256,7 @@ describe( 'modules/analytics accounts', () => {
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 				expect( accounts ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'passes existing tag ID when fetching accounts', async () => {
@@ -333,8 +330,8 @@ describe( 'modules/analytics accounts', () => {
 				const matchedProfile = {
 					...fixtures.profiles[ 0 ],
 					id: '123456',
-					webPropertyId: matchedProperty.id,
-					accountId: matchedProperty.accountId,
+					webPropertyId: matchedProperty.id, // eslint-disable-line sitekit/camelcase-acronyms
+					accountId: matchedProperty.accountId, // eslint-disable-line sitekit/camelcase-acronyms
 				};
 				const response = {
 					accounts,
@@ -368,10 +365,10 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
-				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId );
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId ); // eslint-disable-line sitekit/camelcase-acronyms
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
-				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProperty.defaultProfileId );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProperty.defaultProfileId ); // eslint-disable-line sitekit/camelcase-acronyms
 			} );
 		} );
 

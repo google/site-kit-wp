@@ -10,8 +10,12 @@ exports[`WidgetRenderer should wrap children when wrapWidget is true 1`] = `
 <div
   class="googlesitekit-widget googlesitekit-widget--TestWidget"
 >
-  <div>
-    Test
+  <div
+    class="googlesitekit-widget__body"
+  >
+    <div>
+      Test
+    </div>
   </div>
 </div>
 `;

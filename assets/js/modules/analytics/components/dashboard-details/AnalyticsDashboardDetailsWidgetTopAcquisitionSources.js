@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -51,7 +51,11 @@ class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 						className="googlesitekit-analytics-acquisition-sources"
 						footer
 						headerCtaLink="https://analytics.google.com"
-						headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+						headerCtaLabel={ sprintf(
+							/* translators: %s: module name. */
+							__( 'See full stats in %s', 'google-site-kit' ),
+							_x( 'Analytics', 'Service name', 'google-site-kit' )
+						) }
 						footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 						footerCtaLink="https://analytics.google.com"
 					>

@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -107,7 +106,6 @@ describe( 'modules/adsense alerts', () => {
 				);
 
 				const fakeAccountID = 'pub-777888999';
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAlerts( fakeAccountID );
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).isFetchingGetAlerts( fakeAccountID ) === false,
@@ -117,6 +115,7 @@ describe( 'modules/adsense alerts', () => {
 
 				const alerts = registry.select( STORE_NAME ).getAlerts( fakeAccountID );
 				expect( alerts ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

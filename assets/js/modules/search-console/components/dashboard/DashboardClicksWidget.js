@@ -67,11 +67,11 @@ function DashboardClicksWidget() {
 
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return getDataErrorComponent( __( 'Search Console', 'google-site-kit' ), error.message );
+		return getDataErrorComponent( 'search-console', error.message, false, false, false, error );
 	}
 
 	if ( ! data || ! data.length ) {
-		return getNoDataComponent( __( 'Search Console', 'google-site-kit' ) );
+		return getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) );
 	}
 
 	const href = getSiteKitAdminURL( 'googlesitekit-module-search-console', {} );

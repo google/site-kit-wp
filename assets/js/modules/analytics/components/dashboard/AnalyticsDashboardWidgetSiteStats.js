@@ -91,6 +91,17 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 					italic: false,
 				},
 			},
+			focusTarget: 'category',
+			crosshair: {
+				color: 'gray',
+				opacity: 0.1,
+				orientation: 'vertical',
+				trigger: 'both',
+			},
+			tooltip: {
+				isHtml: true, // eslint-disable-line sitekit/camelcase-acronyms
+				trigger: 'both',
+			},
 		};
 
 		options.series = series;
@@ -116,7 +127,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 		const options = this.setOptions();
 
 		return (
-			<section className="mdc-layout-grid">
+			<section className="googlesitekit-analytics-site-stats mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<GoogleChart

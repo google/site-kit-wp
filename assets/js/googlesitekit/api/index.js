@@ -37,9 +37,10 @@ import {
 	setItem,
 } from './cache';
 import { stringifyObject } from '../../util';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../util/errors';
 
 // Specific error to handle here, see below.
-import { STORE_NAME as CORE_USER, ERROR_MISSING_REQUIRED_SCOPE } from '../datastore/user/constants';
+import { STORE_NAME as CORE_USER } from '../datastore/user/constants';
 
 // Caching is enabled by default.
 let cachingEnabled = true;
@@ -135,12 +136,17 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 
 		return response;
 	} catch ( error ) {
-		// Check to see if this error was a `ERROR_MISSING_REQUIRED_SCOPE` error;
+		// Check to see if this error was a `ERROR_CODE_MISSING_REQUIRED_SCOPE` error;
 		// if so and there is a data store available to dispatch on, dispatch a
 		// `setPermissionScopeError()` action.
 		// Kind of a hack, but scales to all components.
-		if ( error.code === ERROR_MISSING_REQUIRED_SCOPE && global.googlesitekit?.data?.dispatch?.( CORE_USER ) ) {
-			global.googlesitekit.data.dispatch( CORE_USER ).setPermissionScopeError( error );
+		const dispatch = global.googlesitekit?.data?.dispatch?.( CORE_USER );
+		if ( dispatch ) {
+			if ( error.code === ERROR_CODE_MISSING_REQUIRED_SCOPE ) {
+				dispatch.setPermissionScopeError( error );
+			} else if ( error.data?.reconnectURL ) {
+				dispatch.setAuthError( error );
+			}
 		}
 
 		global.console.error( 'Google Site Kit API Error', error );
