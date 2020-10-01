@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -46,28 +46,30 @@ import getDataErrorComponent from '../../../../components/notifications/data-err
 import { getCurrentDateRange } from '../../../../util/date-range';
 import HelpLink from '../../../../components/help-link';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-const { withSelect } = Data;
+import { STORE_NAME } from '../../datastore/constants';
 
-class AnalyticsDashboardWidget extends Component {
-	constructor( props ) {
-		super( props );
+const { useSelect } = Data;
 
-		this.state = {
-			selectedStats: [ 0 ],
-			receivingData: true,
-			error: false,
-			loading: true,
-		};
+export default function AnalyticsDashboardWidget() {
+	const [ selectedStats, setSelectedStats ] = useState( [ 0 ] );
+	const [ receivingData, setReceivingData ] = useState( true );
+	const [ error, setError ] = useState( false );
+	const [ errorObj, setErrorObj ] = useState();
+	const [ loading, setLoading ] = useState( true );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-		this.handleStatSelection = this.handleStatSelection.bind( this );
-		this.buildSeries = this.buildSeries.bind( this );
-		this.handleDataError = this.handleDataError.bind( this );
-		this.handleDataSuccess = this.handleDataSuccess.bind( this );
-	}
+	const serviceURL = useSelect( ( select ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const profileID = select( STORE_NAME ).getProfileID();
+		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
+		return select( STORE_NAME ).getServiceURL(
+			{ path: `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
+		);
+	} );
 
-	handleStatSelection( stat ) {
-		this.setState( { selectedStats: [ stat ] } );
-	}
+	const handleStatSelection = ( stat ) => {
+		setSelectedStats( [ stat ] );
+	};
 
 	/**
 	 * Handle data errors from the contained Analytics component(s).
@@ -79,31 +81,25 @@ class AnalyticsDashboardWidget extends Component {
 	 * If the component detects no data - in this case all 0s - the callback is called without an error message,
 	 * resulting in the display of a CTA.
 	 *
-	 * @param {string} error    A potential error string.
-	 * @param {Object} errorObj Full error object.
+	 * @param {string} err    A potential error string.
+	 * @param {Object} errObj Full error object.
 	 */
-	handleDataError( error, errorObj ) {
-		this.setState( {
-			receivingData: false,
-			loading: false,
-			error,
-			errorObj,
-		} );
-	}
+	const handleDataError = ( err, errObj ) => {
+		setReceivingData( false );
+		setLoading( false );
+		setError( err );
+		setErrorObj( errObj );
+	};
 
 	/**
 	 * Loading is set to false until data starts to resolve.
 	 */
-	handleDataSuccess() {
-		this.setState( {
-			receivingData: true,
-			loading: false,
-		} );
-	}
+	const handleDataSuccess = () => {
+		setReceivingData( true );
+		setLoading( false );
+	};
 
-	buildSeries() {
-		const { selectedStats } = this.state;
-
+	const buildSeries = () => {
 		const colorMap = {
 			0: '#4285f4',
 			1: '#27bcd4',
@@ -123,168 +119,148 @@ class AnalyticsDashboardWidget extends Component {
 				lineWidth: 1,
 			},
 		};
-	}
+	};
 
-	render() {
-		const {
-			selectedStats,
-			error,
-			errorObj,
-			receivingData,
-			loading,
-		} = this.state;
+	const series = buildSeries();
+	const vAxes = null;
 
-		const {
-			dateRange,
-		} = this.props;
+	// Hide Analytics data display when we don't have data.
+	const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
+	const currentDateRange = getCurrentDateRange( dateRange );
 
-		const series = this.buildSeries();
-		const vAxes = null;
-
-		// Hide Analytics data display when we don't have data.
-		const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
-		const currentDateRange = getCurrentDateRange( dateRange );
-
-		return (
-			<Fragment>
-				<Header />
-				<Alert module="analytics" />
-				<div className="googlesitekit-module-page googlesitekit-module-page--analytics">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
+	return (
+		<Fragment>
+			<Header />
+			<Alert module="analytics" />
+			<div className="googlesitekit-module-page googlesitekit-module-page--analytics">
+				<div className="mdc-layout-grid">
+					<div className="mdc-layout-grid__inner">
+						<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-								<PageHeader
-									title={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-									icon
-									iconWidth="24"
-									iconHeight="26"
-									iconID="analytics"
-									status="connected"
-									statusText={ sprintf(
-										/* translators: %s: module name. */
-										__( '%s is connected', 'google-site-kit' ),
-										_x( 'Analytics', 'Service name', 'google-site-kit' )
-									) }
+							<PageHeader
+								title={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+								icon
+								iconWidth="24"
+								iconHeight="26"
+								iconID="analytics"
+								status="connected"
+								statusText={ sprintf(
+									/* translators: %s: module name. */
+									__( '%s is connected', 'google-site-kit' ),
+									_x( 'Analytics', 'Service name', 'google-site-kit' )
+								) }
+							/>
+							{ loading && <ProgressBar /> }
+						</div>
+						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
+						{ ! receivingData && (
+							error ? getDataErrorComponent( 'analytics', error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true )
+						) }
+						<div className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-12',
+							wrapperClass
+						) }>
+							<Layout
+								header
+								/* translators: %s: date range */
+								title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), currentDateRange ) }
+								headerCtaLabel={ sprintf(
+									/* translators: %s: module name. */
+									__( 'See full stats in %s', 'google-site-kit' ),
+									_x( 'Analytics', 'Service name', 'google-site-kit' )
+								) }
+								headerCtaLink="http://analytics.google.com"
+							>
+								<AnalyticsDashboardWidgetOverview
+									selectedStats={ selectedStats }
+									handleStatSelection={ handleStatSelection }
+									handleDataError={ handleDataError }
+									handleDataSuccess={ handleDataSuccess }
 								/>
-								{ loading && <ProgressBar /> }
-							</div>
-							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
-							{ ! receivingData && (
-								error ? getDataErrorComponent( 'analytics', error, true, true, true, errorObj ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true )
-							) }
-							<div className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12',
-								wrapperClass
-							) }>
-								<Layout
-									header
-									/* translators: %s: date range */
-									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), currentDateRange ) }
-									headerCtaLabel={ sprintf(
-										/* translators: %s: module name. */
-										__( 'See full stats in %s', 'google-site-kit' ),
-										_x( 'Analytics', 'Service name', 'google-site-kit' )
-									) }
-									headerCtaLink="http://analytics.google.com"
-								>
-									<AnalyticsDashboardWidgetOverview
-										selectedStats={ selectedStats }
-										handleStatSelection={ this.handleStatSelection }
-										handleDataError={ this.handleDataError }
-										handleDataSuccess={ this.handleDataSuccess }
-									/>
-									<AnalyticsDashboardWidgetSiteStats
-										selectedStats={ selectedStats }
-										series={ series }
-										vAxes={ vAxes }
-										dateRangeSlug={ dateRange }
-									/>
-								</Layout>
-							</div>
-							<div className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12',
-								wrapperClass
-							) }>
-								<Layout
-									header
-									footer
-									/* translators: %s: date range */
-									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentDateRange ) }
-									headerCtaLink="https://analytics.google.com"
-									headerCtaLabel={ sprintf(
-										/* translators: %s: module name. */
-										__( 'See full stats in %s', 'google-site-kit' ),
-										_x( 'Analytics', 'Service name', 'google-site-kit' )
-									) }
-									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-									footerCtaLink="https://analytics.google.com"
-								>
-									<AnalyticsDashboardWidgetTopPagesTable />
-								</Layout>
-							</div>
-							<div className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12',
-								wrapperClass
-							) }>
-								<Layout
-									header
-									footer
-									/* translators: %s: date range */
-									title={ sprintf( __( 'Top acquisition channels over the last %s', 'google-site-kit' ), currentDateRange ) }
-									headerCtaLink="https://analytics.google.com"
-									headerCtaLabel={ sprintf(
-										/* translators: %s: module name. */
-										__( 'See full stats in %s', 'google-site-kit' ),
-										_x( 'Analytics', 'Service name', 'google-site-kit' )
-									) }
-									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-									footerCtaLink="https://analytics.google.com"
-								>
-									<div className="mdc-layout-grid">
-										<div className="mdc-layout-grid__inner">
-											<div className="
+								<AnalyticsDashboardWidgetSiteStats
+									selectedStats={ selectedStats }
+									series={ series }
+									vAxes={ vAxes }
+									dateRangeSlug={ dateRange }
+								/>
+							</Layout>
+						</div>
+						<div className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-12',
+							wrapperClass
+						) }>
+							<Layout
+								header
+								footer
+								/* translators: %s: date range */
+								title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentDateRange ) }
+								headerCtaLink="https://analytics.google.com"
+								headerCtaLabel={ sprintf(
+									/* translators: %s: module name. */
+									__( 'See full stats in %s', 'google-site-kit' ),
+									_x( 'Analytics', 'Service name', 'google-site-kit' )
+								) }
+								footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+								footerCtaLink={ serviceURL }
+							>
+								<AnalyticsDashboardWidgetTopPagesTable />
+							</Layout>
+						</div>
+						<div className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-12',
+							wrapperClass
+						) }>
+							<Layout
+								header
+								footer
+								/* translators: %s: date range */
+								title={ sprintf( __( 'Top acquisition channels over the last %s', 'google-site-kit' ), currentDateRange ) }
+								headerCtaLink="https://analytics.google.com"
+								headerCtaLabel={ sprintf(
+									/* translators: %s: module name. */
+									__( 'See full stats in %s', 'google-site-kit' ),
+									_x( 'Analytics', 'Service name', 'google-site-kit' )
+								) }
+								footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+								footerCtaLink={ serviceURL }
+							>
+								<div className="mdc-layout-grid">
+									<div className="mdc-layout-grid__inner">
+										<div className="
 												mdc-layout-grid__cell
 												mdc-layout-grid__cell--span-4-desktop
 												mdc-layout-grid__cell--span-8-tablet
 												mdc-layout-grid__cell--span-4-phone
 											">
-												<LegacyDashboardAcquisitionPieChart />
-											</div>
-											<div className="
+											<LegacyDashboardAcquisitionPieChart />
+										</div>
+										<div className="
 												mdc-layout-grid__cell
 												mdc-layout-grid__cell--span-8-desktop
 												mdc-layout-grid__cell--span-8-tablet
 												mdc-layout-grid__cell--span-4-phone
 											">
-												<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
-											</div>
+											<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
 										</div>
 									</div>
-								</Layout>
-							</div>
-							<div className="
+								</div>
+							</Layout>
+						</div>
+						<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 								mdc-layout-grid__cell--align-right
 							">
-								<HelpLink />
-							</div>
+							<HelpLink />
 						</div>
 					</div>
 				</div>
-			</Fragment>
-		);
-	}
+			</div>
+		</Fragment>
+	);
 }
-
-export default withSelect(
-	( select ) => ( {
-		dateRange: select( CORE_USER ).getDateRange(),
-	} ),
-)( AnalyticsDashboardWidget );
