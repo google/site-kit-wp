@@ -104,7 +104,7 @@ export { isValidNumericID as isValidProfileID };
  *
  * @since 1.8.0
  *
- * @param {?string} value Selected value.
+ * @param {string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidProfileSelection( value ) {
