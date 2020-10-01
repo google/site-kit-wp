@@ -24,10 +24,10 @@ final class Script_Injector {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @param Event[] $event_configurations The list of Event objects.
+	 * @param Event[] $events The list of Event objects.
 	 */
-	public function inject_event_tracking( $event_configurations ) {
-		if ( empty( $event_configurations ) ) {
+	public function inject_event_script( $events ) {
+		if ( empty( $events ) ) {
 			return;
 		}
 
@@ -55,7 +55,7 @@ final class Script_Injector {
 					}
 				}
 
-				var eventConfigurations = <?php echo wp_json_encode( $event_configurations ); ?>;
+				var eventConfigurations = <?php echo wp_json_encode( $events ); ?>;
 				var config;
 				for ( config of eventConfigurations ) {
 					const thisConfig = config;

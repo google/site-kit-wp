@@ -25,12 +25,12 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
 final class Advanced_Tracking {
 
 	/**
-	 * List of event configurations to be tracked.
+	 * List of events to be tracked.
 	 *
 	 * @since n.e.x.t.
 	 * @var Event[]
 	 */
-	private $event_configurations;
+	private $events;
 
 	/**
 	 * Main class event list registry instance.
@@ -82,13 +82,24 @@ final class Advanced_Tracking {
 	}
 
 	/**
+	 * Returns the list of events.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @return Event[] The list of Event objects.
+	 */
+	public function get_events() {
+		return $this->events;
+	}
+
+	/**
 	 * Injects javascript to track active events.
 	 *
 	 * @since n.e.x.t.
 	 */
 	private function set_up_advanced_tracking() {
 		$this->compile_events();
-		( new Script_Injector() )->inject_event_tracking( $this->event_configurations );
+		( new Script_Injector() )->inject_event_script( $this->events );
 	}
 
 	/**
@@ -101,7 +112,7 @@ final class Advanced_Tracking {
 	 */
 	private function set_up_advanced_tracking_amp( $gtag_amp_opt ) {
 		$this->compile_events();
-		return ( new AMP_Config_Injector() )->inject_event_configurations( $gtag_amp_opt, $this->event_configurations );
+		return ( new AMP_Config_Injector() )->inject_event_configurations( $gtag_amp_opt, $this->events );
 	}
 
 	/**
@@ -121,8 +132,8 @@ final class Advanced_Tracking {
 		 */
 		do_action( 'googlesitekit_analytics_register_event_lists', $this->event_list_registry );
 
-		foreach ( $this->event_list_registry->get_all() as $registry_event_list ) {
-			$registry_event_list->register();
+		foreach ( $this->event_list_registry->get_all() as $event_list ) {
+			$event_list->register();
 		}
 	}
 
@@ -132,22 +143,11 @@ final class Advanced_Tracking {
 	 * @since n.e.x.t.
 	 */
 	private function compile_events() {
-		$this->event_configurations = array();
-		foreach ( $this->event_list_registry->get_all() as $registry_event_list ) {
-			foreach ( $registry_event_list->get_events() as $measurement_event ) {
-				$this->event_configurations[] = $measurement_event;
+		$this->events = array();
+		foreach ( $this->event_list_registry->get_all() as $event_list ) {
+			foreach ( $event_list->get_events() as $event ) {
+				$this->events[] = $event;
 			}
 		}
-	}
-
-	/**
-	 * Returns list of event configurations.
-	 *
-	 * @since n.e.x.t.
-	 *
-	 * @return Event[] The list of event configurations.
-	 */
-	public function get_event_configurations() {
-		return $this->event_configurations;
 	}
 }
