@@ -20,6 +20,25 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 final class Script_Injector {
 
 	/**
+	 * Plugin context.
+	 *
+	 * @since n.e.x.t.
+	 * @var Context
+	 */
+	protected $context;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param Context $context Plugin context.
+	 */
+	public function __construct( Context $context ) {
+		$this->context = $context;
+	}
+
+	/**
 	 * Creates list of measurement event configurations and javascript to inject.
 	 *
 	 * @since n.e.x.t.

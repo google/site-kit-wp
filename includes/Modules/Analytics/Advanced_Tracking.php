@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Script_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\AMP_Config_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
@@ -23,6 +24,14 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
  * @ignore
  */
 final class Advanced_Tracking {
+
+	/**
+	 * Plugin context.
+	 *
+	 * @since n.e.x.t.
+	 * @var Context
+	 */
+	protected $context;
 
 	/**
 	 * List of events to be tracked.
@@ -44,8 +53,11 @@ final class Advanced_Tracking {
 	 * Advanced_Tracking constructor.
 	 *
 	 * @since n.e.x.t.
+	 *
+	 * @param Context $context Plugin context.
 	 */
-	public function __construct() {
+	public function __construct( Context $context ) {
+		$this->context             = $context;
 		$this->event_list_registry = new Event_List_Registry();
 	}
 
