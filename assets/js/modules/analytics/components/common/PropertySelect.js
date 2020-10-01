@@ -37,28 +37,22 @@ const { useSelect, useDispatch } = Data;
 export default function PropertySelect() {
 	const {
 		accountID,
-		propertyID,
 		properties,
 		hasExistingTag,
 		hasGTMTag,
-		isLoadingAccounts,
-		isLoadingProperties,
+		hasResolvedProperties,
 	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-
 		const data = {
-			accountID: store.getAccountID(),
-			propertyID: store.getPropertyID(),
+			accountID: select( STORE_NAME ).getAccountID(),
 			properties: [],
-			hasExistingTag: store.hasExistingTag(),
+			hasExistingTag: select( STORE_NAME ).hasExistingTag(),
 			hasGTMTag: false,
-			isLoadingAccounts: store.isDoingGetAccounts(),
-			isLoadingProperties: false,
+			hasResolvedProperties: false,
 		};
 
 		if ( data.accountID ) {
-			data.properties = store.getProperties( data.accountID );
-			data.isLoadingProperties = store.isDoingGetProperties( data.accountID );
+			data.properties = select( STORE_NAME ).getProperties( data.accountID );
+			data.hasResolvedProperties = select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ data.accountID ] );
 		}
 
 		if ( ! data.hasExistingTag ) {
@@ -67,6 +61,9 @@ export default function PropertySelect() {
 
 		return data;
 	} );
+
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -77,7 +74,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID ] );
 
-	if ( isLoadingAccounts || isLoadingProperties ) {
+	if ( ! hasResolvedAccounts || ! hasResolvedProperties ) {
 		return <ProgressBar small />;
 	}
 

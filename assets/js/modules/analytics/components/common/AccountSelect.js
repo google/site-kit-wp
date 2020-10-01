@@ -34,29 +34,23 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const {
-		accounts,
-		accountID,
-		hasExistingTag,
-		hasGTMPropertyID,
-		isDoingGetAccounts,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-
+	const { hasExistingTag, hasGTMPropertyID } = useSelect( ( select ) => {
 		const data = {
-			accounts: store.getAccounts(),
-			accountID: store.getAccountID(),
-			hasExistingTag: store.hasExistingTag(),
+			hasExistingTag: select( STORE_NAME ).hasExistingTag(),
 			hasGTMPropertyID: false,
-			isDoingGetAccounts: store.isDoingGetAccounts(),
 		};
 
+		// No need to get single Analytics property ID if we already have an existing Analytics tag.
 		if ( ! data.hasExistingTag ) {
 			data.hasGTMPropertyID = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 		}
 
 		return data;
 	} );
+
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 
 	const { selectAccount } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -67,7 +61,7 @@ export default function AccountSelect() {
 		}
 	}, [ accountID ] );
 
-	if ( accounts === undefined || isDoingGetAccounts ) {
+	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar small />;
 	}
 
