@@ -27,6 +27,10 @@ final class Code_Injector {
 	 * @param Event[] $event_configurations The list of Event objects.
 	 */
 	public function inject_event_tracking( $event_configurations ) {
+		if ( empty( $event_configurations ) ) {
+			return;
+		}
+
 		?>
 		<script>
 			( function() {
@@ -54,16 +58,13 @@ final class Code_Injector {
 				var eventConfigurations = <?php echo wp_json_encode( $event_configurations ); ?>;
 				var config;
 				for ( config of eventConfigurations ) {
-					console.log(config);
 					const thisConfig = config;
 					document.addEventListener( config.on, function( e ) {
 						if ( "DOMContentLoaded" === thisConfig.on ) {
-							alert('got an event called: '.concat(thisConfig.action));
 							sendEvent( thisConfig.action, thisConfig.metadata );
 						} else {
 							var el = e.target;
 							if ( matches( el, thisConfig.selector ) || matches( el, thisConfig.selector.concat( ' *' ) ) ) {
-								alert('got an event called: '.concat(thisConfig.action));
 								sendEvent( thisConfig.action, thisConfig.metadata );
 							}
 						}

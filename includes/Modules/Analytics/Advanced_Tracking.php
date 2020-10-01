@@ -110,6 +110,10 @@ final class Advanced_Tracking {
 	private function set_up_advanced_tracking_amp( $gtag_amp_opt ) {
 		$this->compile_events();
 
+		if ( empty( $this->event_configurations ) ) {
+			return $gtag_amp_opt;
+		}
+
 		if ( ! array_key_exists( 'triggers', $gtag_amp_opt ) ) {
 			$gtag_amp_opt['triggers'] = array();
 		}
