@@ -1,5 +1,5 @@
 /**
- * ESLint rules: capitalise sentences.
+ * ESLint rules: capitalize sentences.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -62,4 +62,3 @@ module.exports = iterateJsdoc( ( {
 		type: 'suggestion',
 	},
 } );
-
