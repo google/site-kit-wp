@@ -28,6 +28,9 @@ const setupRegistry = ( { dispatch } ) => {
 	const { properties, profiles } = fixtures.accountsPropertiesProfiles;
 	const propertyID = properties[ 0 ].id;
 	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 	dispatch( STORE_NAME ).setAccountID( accountID );
 	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
 	dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
@@ -36,6 +39,8 @@ const setupRegistry = ( { dispatch } ) => {
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.getTagPermissionsAccess.propertyID );
 	// Existing tag IDs are set in the resolver so we have to fill those here.
@@ -46,7 +51,10 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 const setupEmptyRegistry = ( { dispatch } ) => {
 	const { properties } = fixtures.accountsPropertiesProfiles;
 	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 	dispatch( STORE_NAME ).setSettings( {} );
+	dispatch( STORE_NAME ).setAccountID( accountID );
 	dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( null );
 };

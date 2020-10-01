@@ -37,11 +37,20 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 } );
 
 const setupRegistry = ( { dispatch } ) => {
-	const { id, webPropertyId, accountId } = fixtures.propertiesProfiles.profiles[ 0 ]; // eslint-disable-line sitekit/camelcase-acronyms
-	dispatch( STORE_NAME ).setAccountID( accountId ); // eslint-disable-line sitekit/camelcase-acronyms
-	dispatch( STORE_NAME ).setPropertyID( webPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+	const {
+		id,
+		webPropertyId: propertyID, // eslint-disable-line sitekit/camelcase-acronyms
+		accountId: accountID, // eslint-disable-line sitekit/camelcase-acronyms
+	} = fixtures.propertiesProfiles.profiles[ 0 ];
+
+	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ '0' ] );
+	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
+	dispatch( STORE_NAME ).setAccountID( accountID );
+	dispatch( STORE_NAME ).setPropertyID( propertyID );
 	dispatch( STORE_NAME ).setProfileID( id );
-	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID: accountId, propertyID: webPropertyId } ); // eslint-disable-line sitekit/camelcase-acronyms
+	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
@@ -50,6 +59,10 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/camelcase-acronyms
 	};
 	const { id } = fixtures.propertiesProfiles.profiles[ 0 ];
+
+	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ existingTag.accountID ] );
+	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ existingTag.accountID, existingTag.propertyID ] );
 	dispatch( STORE_NAME ).setAccountID( existingTag.accountID );
 	dispatch( STORE_NAME ).setPropertyID( existingTag.propertyID );
 	dispatch( STORE_NAME ).setProfileID( id );
@@ -60,7 +73,13 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 const setupEmptyRegistry = ( { dispatch } ) => {
 	const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 	const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
+
+	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
 	dispatch( STORE_NAME ).setSettings( {} );
+	dispatch( STORE_NAME ).setAccountID( accountID );
+	dispatch( STORE_NAME ).setPropertyID( propertyID );
 	dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID, propertyID } );
 };
 

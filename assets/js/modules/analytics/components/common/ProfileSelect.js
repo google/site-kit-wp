@@ -38,9 +38,9 @@ export default function ProfileSelect() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const isLoadingAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
-	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
-	const isLoadingProfiles = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProfiles( accountID, propertyID ) );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+	const hasResolvedProperties = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ accountID ] ) );
+	const hasResolvedProfiles = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getProfiles', [ accountID, propertyID ] ) );
 
 	const { setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -51,7 +51,7 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID ] );
 
-	if ( isLoadingAccounts || isLoadingProperties || isLoadingProfiles ) {
+	if ( ! hasResolvedAccounts || ! hasResolvedProperties || ! hasResolvedProfiles ) {
 		return <ProgressBar small />;
 	}
 
