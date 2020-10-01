@@ -41,7 +41,11 @@ module.exports = iterateJsdoc( ( {
 		const currentPositionInTagOrder = tagOrder.indexOf( tag );
 
 		if ( previousPositionInTagOrder > currentPositionInTagOrder ) {
-			context.report( { node: jsdocNode, message: `The @${ tag } tag should be before @${ previousTag } tag.`, data: { name: jsdocNode.name } } );
+			context.report( {
+				data: { name: jsdocNode.name },
+				message: `The @${ tag } tag should be before @${ previousTag } tag.`,
+				node: jsdocNode,
+			} );
 		}
 	};
 

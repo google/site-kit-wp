@@ -37,7 +37,11 @@ module.exports = iterateJsdoc( ( {
 
 	// Don't match code block examples that end in "```".
 	if ( jsdoc.description && ! jsdoc.description.match( /\.$/g ) && ! jsdoc.description.match( /```$/g ) ) {
-		context.report( { node: jsdocNode, message: `JSDoc block text should end with a period/full-stop.`, data: { name: jsdocNode.name } } );
+		context.report( {
+			data: { name: jsdocNode.name },
+			message: `JSDoc block text should end with a period/full-stop.`,
+			node: jsdocNode,
+		} );
 		return;
 	}
 
@@ -53,7 +57,11 @@ module.exports = iterateJsdoc( ( {
 		}
 
 		if ( tag.description && tag.description.length && ! tag.description.match( /\.$/gm ) ) {
-			context.report( { node: jsdocNode, message: `The description for \`${ tag.source }\` should end with a period/full-stop.`, data: { name: jsdocNode.name } } );
+			context.report( {
+				data: { name: jsdocNode.name },
+				message: `The description for \`${ tag.source }\` should end with a period/full-stop.`,
+				node: jsdocNode,
+			} );
 		}
 	} );
 }, {

@@ -51,7 +51,11 @@ module.exports = {
 		function report( node ) {
 			if ( ! reported.includes( node ) ) {
 				reported.push( node );
-				context.report( { node, message: `\`${ node.name }\` violates naming rules.`, data: { name: node.name } } );
+				context.report( {
+					data: { name: node.name },
+					message: `\`${ node.name }\` violates naming rules.`,
+					node,
+				} );
 			}
 		}
 

@@ -40,7 +40,11 @@ module.exports = iterateJsdoc( ( {
 	}
 
 	if ( jsdoc.description && ! jsdoc.description.match( /^\w+s\W.*/g ) ) {
-		context.report( { node: jsdocNode, message: `The first word in a function's description should end in "s".`, data: { name: jsdocNode.name } } );
+		context.report( {
+			data: { name: jsdocNode.name },
+			message: `The first word in a function's description should end in "s".`,
+			node: jsdocNode,
+		} );
 	}
 }, {
 	iterateAllJsdocs: true,

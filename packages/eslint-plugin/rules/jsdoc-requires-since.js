@@ -48,7 +48,11 @@ module.exports = iterateJsdoc( ( {
 		return;
 	}
 
-	context.report( { node: jsdocNode, message: `Missing @since tag in JSDoc.`, data: { name: jsdocNode.name } } );
+	context.report( {
+		data: { name: jsdocNode.name },
+		message: `Missing @since tag in JSDoc.`,
+		node: jsdocNode,
+	} );
 }, {
 	iterateAllJsdocs: true,
 	meta: {

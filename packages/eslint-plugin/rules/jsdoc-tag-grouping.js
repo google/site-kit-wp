@@ -64,7 +64,11 @@ module.exports = iterateJsdoc( ( {
 		} ).length ? 'type' : 'return' );
 
 	if ( ! jsdoc.source.match( new RegExp( `@${ lastTagInFirstGroup }.*\\n\\n@${ firstTagInSecondGroup }`, 'gm' ) ) ) {
-		context.report( { node: jsdocNode, message: `The @${ lastTagInFirstGroup } tag should be followed by an empty line, and then by the @${ firstTagInSecondGroup } tag.`, data: { name: jsdocNode.name } } );
+		context.report( {
+			data: { name: jsdocNode.name },
+			message: `The @${ lastTagInFirstGroup } tag should be followed by an empty line, and then by the @${ firstTagInSecondGroup } tag.`,
+			node: jsdocNode,
+		} );
 	}
 }, {
 	iterateAllJsdocs: true,

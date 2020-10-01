@@ -30,7 +30,11 @@ module.exports = iterateJsdoc( ( {
 		jsdoc.description &&
 		! jsdoc.description.match( /^[A-Z`("].*/g )
 	) {
-		context.report( { node: jsdocNode, message: `JSDoc blocks should start with a capital letter.`, data: { name: jsdocNode.name } } );
+		context.report( {
+			data: { name: jsdocNode.name },
+			message: `JSDoc blocks should start with a capital letter.`,
+			node: jsdocNode,
+		} );
 		return;
 	}
 
@@ -53,7 +57,11 @@ module.exports = iterateJsdoc( ( {
 			// Also ignore parens and quotes.
 			! tag.description.trim().match( /^[A-Z`("].*/gm )
 		) {
-			context.report( { node: jsdocNode, message: `The description for \`${ tag.source }\` should start with a capital letter.`, data: { name: jsdocNode.name } } );
+			context.report( {
+				data: { name: jsdocNode.name },
+				message: `The description for \`${ tag.source }\` should start with a capital letter.`,
+				node: jsdocNode,
+			} );
 		}
 	} );
 }, {
