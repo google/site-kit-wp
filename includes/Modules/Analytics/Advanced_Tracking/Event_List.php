@@ -52,7 +52,7 @@ class Event_List {
 	 *
 	 * @since n.e.x.t.
 	 *
-	 * @return Event[] The list of Events for this plugin's list.
+	 * @return Event[] The list of events for this list.
 	 */
 	public function get_events() {
 		return $this->measurement_events;

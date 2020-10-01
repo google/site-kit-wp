@@ -52,7 +52,6 @@ final class Event implements \JsonSerializable {
 	 */
 	private function validate_config( $config ) {
 		$valid_keys = array(
-			'pluginName',
 			'action',
 			'selector',
 			'on',
