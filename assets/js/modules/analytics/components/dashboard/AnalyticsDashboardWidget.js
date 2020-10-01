@@ -58,13 +58,21 @@ export default function AnalyticsDashboardWidget() {
 	const [ loading, setLoading ] = useState( true );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-	const serviceURL = useSelect( ( select ) => {
+	const {
+		topContentServiceURL,
+		topAcquisitionServiceURL,
+	} = useSelect( ( select ) => {
 		const accountID = select( STORE_NAME ).getAccountID();
 		const profileID = select( STORE_NAME ).getProfileID();
 		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
-		return select( STORE_NAME ).getServiceURL(
-			{ path: `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
-		);
+		return {
+			topContentServiceURL: select( STORE_NAME ).getServiceURL(
+				{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
+			),
+			topAcquisitionServiceURL: select( STORE_NAME ).getServiceURL(
+				{ path: `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
+			),
+		};
 	} );
 
 	const handleStatSelection = ( stat ) => {
@@ -205,7 +213,7 @@ export default function AnalyticsDashboardWidget() {
 									_x( 'Analytics', 'Service name', 'google-site-kit' )
 								) }
 								footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-								footerCtaLink={ serviceURL }
+								footerCtaLink={ topContentServiceURL }
 							>
 								<AnalyticsDashboardWidgetTopPagesTable />
 							</Layout>
@@ -227,7 +235,7 @@ export default function AnalyticsDashboardWidget() {
 									_x( 'Analytics', 'Service name', 'google-site-kit' )
 								) }
 								footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-								footerCtaLink={ serviceURL }
+								footerCtaLink={ topAcquisitionServiceURL }
 							>
 								<div className="mdc-layout-grid">
 									<div className="mdc-layout-grid__inner">

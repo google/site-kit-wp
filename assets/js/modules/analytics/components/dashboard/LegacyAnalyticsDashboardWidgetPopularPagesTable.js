@@ -37,7 +37,14 @@ import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 const RenderLayout = ( { children } ) => {
-	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL() );
+	const serviceURL = useSelect( ( select ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const profileID = select( STORE_NAME ).getProfileID();
+		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
+		return select( STORE_NAME ).getServiceURL(
+			{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }` }
+		);
+	} );
 	return (
 		<div className="
 			mdc-layout-grid__cell
