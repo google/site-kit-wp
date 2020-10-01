@@ -67,7 +67,7 @@ const customRender = ( ui, options = {} ) => {
  * @param {Object}   [options]          Optional. An options object to modify the execution of the callback function.
  *                                      See the [renderHook Options](@link https://react-hooks-testing-library.com/reference/api#renderhook-options) section for more details.
  * @param {Object}   [options.registry] Registry to use with the RegistryProvider. Default is a new test registry.
- * @return {Object} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result
+ * @return {Object} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
  */
 const customRenderHook = (
 	callback,

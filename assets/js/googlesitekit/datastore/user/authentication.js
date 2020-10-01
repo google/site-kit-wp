@@ -132,7 +132,7 @@ const baseSelectors = {
 	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Array of granted scopes
+	 * @return {(Array|undefined)} Array of granted scopes.
 	 */
 	getGrantedScopes: createGetAuthenticationSelector( 'grantedScopes' ),
 
@@ -145,7 +145,7 @@ const baseSelectors = {
 	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Array of required scopes
+	 * @return {(Array|undefined)} Array of required scopes.
 	 */
 	getRequiredScopes: createGetAuthenticationSelector( 'requiredScopes' ),
 
@@ -158,7 +158,7 @@ const baseSelectors = {
 	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Array of scopes
+	 * @return {(Array|undefined)} Array of scopes.
 	 */
 	getUnsatisfiedScopes: createGetAuthenticationSelector( 'unsatisfiedScopes' ),
 

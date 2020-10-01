@@ -101,7 +101,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {string} containerID Container publicId to check permission for.
-	 * @return {(boolean|undefined)} Permission
+	 * @return {(boolean|undefined)} `true` if user has permission; `false` if not.
 	 */
 	hasTagPermission: createRegistrySelector( ( select ) => ( state, containerID ) => {
 		const { permission } = select( STORE_NAME ).getTagPermission( containerID ) || {};

@@ -231,7 +231,7 @@ export const getLocale = ( _global = global ) => {
  * @since 1.0.0
  *
  * @param {string} period The period to transform.
- * @return {number} The number of seconds
+ * @return {number} The number of seconds.
  */
 export const getTimeInSeconds = ( period ) => {
 	const minute = 60;
@@ -396,7 +396,7 @@ export const getModulesData = ( __googlesitekitLegacyData = global._googlesiteki
  * @param {string}  slug                      The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
  * @param {boolean} status                    The module activation status.
  * @param {Object}  __googlesitekitLegacyData _googlesitekitLegacyData global; can be replaced for testing.
- * @return {string} Authentication URL
+ * @return {string} Authentication URL.
  */
 export const getReAuthURL = ( slug, status, __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
 	const {

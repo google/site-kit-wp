@@ -48,7 +48,7 @@ module.exports = iterateJsdoc( ( {
 
 	jsdoc.tags.forEach( ( tag ) => {
 		// Only check these tags for fullstops.
-		if ( ! [ 'param', 'returns' ].includes( tag.tag ) ) {
+		if ( ! [ 'param', 'return', 'returns' ].includes( tag.tag ) ) {
 			return;
 		}
 

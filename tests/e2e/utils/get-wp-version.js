@@ -13,7 +13,7 @@ import { wpApiFetch } from './wp-api-fetch';
  *
  * @since 1.7.0
  *
- * @return {Object} Version info. { major, minor, version }
+ * @return {Object} Version info with shape `{ major, minor, version }`.
  */
 export const getWPVersion = memoize( async () => {
 	return await wpApiFetch( {

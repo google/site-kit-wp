@@ -139,7 +139,7 @@ const baseActions = {
 	 * @since 1.8.0
 	 *
 	 * @param {string} slug Slug of the module to activate.
-	 * @return {Object}      Object with {response, error}
+	 * @return {Object}      Object with `{response, error}`.
 	 */
 	*activateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, true );
@@ -155,7 +155,7 @@ const baseActions = {
 	 * @since 1.8.0
 	 *
 	 * @param {string} slug Slug of the module to activate.
-	 * @return {Object}      Object with {response, error}
+	 * @return {Object}      Object with `{response, error}`.
 	 */
 	*deactivateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, false );
@@ -174,7 +174,7 @@ const baseActions = {
 	 *
 	 * @param {string}  slug   Slug of the module to activate/deactivate.
 	 * @param {boolean} active `true` to activate; `false` to deactivate.
-	 * @return {Object}         Object with {response, error}
+	 * @return {Object}         Object with `{response, error}`.
 	 */
 	*setModuleActivation( slug, active ) {
 		invariant( slug, 'slug is required.' );
