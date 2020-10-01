@@ -547,7 +547,7 @@ export const getTopPagesReportDataDefaults = () => {
  */
 export const parseTotalUsersData = ( data ) => {
 	return {
-		totalUsers: data?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
-		previousTotalUsers: data?.[ 0 ]?.data?.totals?.[ 1 ]?.values?.[ 0 ],
+		totalUsers: data?.[0]?.data?.totals?.[0]?.values?.[0],
+		previousTotalUsers: data?.[0]?.data?.totals?.[1]?.values?.[0],
 	};
 };
