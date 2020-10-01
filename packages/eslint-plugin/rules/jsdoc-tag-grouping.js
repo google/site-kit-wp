@@ -21,6 +21,11 @@
  */
 const { default: iterateJsdoc } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
 
+/**
+ * Internal dependencies
+ */
+const { findTagInGroup } = require( '../utils' );
+
 module.exports = iterateJsdoc( ( {
 	context,
 	jsdoc,
@@ -32,20 +37,15 @@ module.exports = iterateJsdoc( ( {
 	}
 
 	// If the `@ignore` tag is in this JSDoc block, ignore it and don't require any ordering.
-	const hasIgnoreTag = !! utils.filterTags( ( { tag } ) => {
-		return [ 'ignore' ].includes( tag );
-	} ).length;
-
-	if ( hasIgnoreTag ) {
+	if ( utils.hasTag( 'ignore' ) ) {
 		return;
 	}
 
-	// eslint-disable-next-line no-nested-ternary
-	const lastTagInFirstGroup = !! utils.filterTags( ( { tag } ) => {
-		return [ 'private' ].includes( tag );
-	} ).length ? 'private' : ( !! utils.filterTags( ( { tag } ) => {
-			return [ 'deprecated' ].includes( tag );
-		} ).length ? 'deprecated' : 'since' );
+	const lastTagInFirstGroup = findTagInGroup( [ 'private', 'deprecated', 'since' ], utils );
+	// This is a rule violation, but of a different rule. For now, just skip the check.
+	if ( ! lastTagInFirstGroup ) {
+		return;
+	}
 
 	const hasSecondGroup = !! utils.filterTags( ( { tag } ) => {
 		return ! [ 'see', 'private', 'deprecated', 'since' ].includes( tag );
@@ -56,14 +56,13 @@ module.exports = iterateJsdoc( ( {
 		return;
 	}
 
-	// eslint-disable-next-line no-nested-ternary
-	const firstTagInSecondGroup = !! utils.filterTags( ( { tag } ) => {
-		return [ 'param' ].includes( tag );
-	} ).length ? 'param' : ( !! utils.filterTags( ( { tag } ) => {
-			return [ 'type' ].includes( tag );
-		} ).length ? 'type' : 'return' );
+	const firstTagInSecondGroup = findTagInGroup( [ 'param', 'type', 'return' ], utils );
 
-	if ( ! jsdoc.source.match( new RegExp( `@${ lastTagInFirstGroup }.*\\n\\n@${ firstTagInSecondGroup }`, 'gm' ) ) ) {
+	if (
+		! jsdoc.source.match(
+			new RegExp( `@${ lastTagInFirstGroup }.*\\n\\n@${ firstTagInSecondGroup }`, 'gm' )
+		)
+	) {
 		context.report( {
 			data: { name: jsdocNode.name },
 			message: `The @${ lastTagInFirstGroup } tag should be followed by an empty line, and then by the @${ firstTagInSecondGroup } tag.`,

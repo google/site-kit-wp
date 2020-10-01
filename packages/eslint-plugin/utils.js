@@ -16,12 +16,31 @@
  * limitations under the License.
  */
 
+function findTagInGroup( tagsInGroup, utils, index = 0 ) {
+	const foundTag = !! utils.filterTags( ( { tag } ) => {
+		return [ tagsInGroup[ index ] ].includes( tag );
+	} ).length;
+
+	if ( foundTag ) {
+		return tagsInGroup[ index ];
+	}
+
+	if ( ! tagsInGroup[ index + 1 ] ) {
+		return null;
+	}
+
+	return findTagInGroup( tagsInGroup, utils, index + 1 );
+}
+
+function isDependencyBlock( jsdoc ) {
+	return !! (
+		jsdoc &&
+		jsdoc.description &&
+		/^(Node|External|WordPress|Internal) dependencies$/.test( jsdoc.description.trim() )
+	);
+}
+
 module.exports = {
-	isDependencyBlock: ( jsdoc ) => {
-		return !! (
-			jsdoc &&
-			jsdoc.description &&
-			/^(Node|External|WordPress|Internal) dependencies$/.test( jsdoc.description.trim() )
-		);
-	},
+	findTagInGroup,
+	isDependencyBlock,
 };
