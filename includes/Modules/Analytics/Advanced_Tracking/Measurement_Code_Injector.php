@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event;
-
 /**
  * Class for injecting Javascript based on the current active plugins.
  *

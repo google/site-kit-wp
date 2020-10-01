@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event_List
+ * Class Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Event_List
  *
  * @package   Google\Site_Kit
  * @copyright 2020 Google LLC
@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events;
+namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
 /**
  * Class for containing a specific plugin's tracking event list.

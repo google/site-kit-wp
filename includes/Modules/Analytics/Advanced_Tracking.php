@@ -10,12 +10,6 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\CF7_Event_List;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\FormidableForms_Event_List;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\Measurement_Event;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\NinjaForms_Event_List;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WooCommerce_Event_List;
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Events\WPForms_Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
@@ -214,34 +208,8 @@ final class Advanced_Tracking {
 	 * @return array The list of supported plugins.
 	 */
 	public function get_supported_plugins() {
-		if ( null == $this->supported_plugins ) {
-			$this->supported_plugins = array(
-				'Contact Form 7'   => array(
-					'check_name'       => 'WPCF7_PLUGIN_DIR',
-					'check_type'       => Plugin_Detector::TYPE_CONSTANT,
-					'event_list_class' => CF7_Event_List::class,
-				),
-				'Formidable Forms' => array(
-					'check_name'       => 'load_formidable_forms',
-					'check_type'       => Plugin_Detector::TYPE_FUNCTION,
-					'event_list_class' => FormidableForms_Event_List::class,
-				),
-				'Ninja Forms'      => array(
-					'check_name'       => 'NF_PLUGIN_DIR',
-					'check_type'       => Plugin_Detector::TYPE_CONSTANT,
-					'event_list_class' => NinjaForms_Event_List::class,
-				),
-				'WooCommerce'      => array(
-					'check_name'       => 'WC_PLUGIN_FILE',
-					'check_type'       => Plugin_Detector::TYPE_CONSTANT,
-					'event_list_class' => WooCommerce_Event_List::class,
-				),
-				'WPForms'          => array(
-					'check_name'       => 'WPFORMS_PLUGIN_DIR',
-					'check_type'       => Plugin_Detector::TYPE_CONSTANT,
-					'event_list_class' => WPForms_Event_List::class,
-				),
-			);
+		if ( null === $this->supported_plugins ) {
+			$this->supported_plugins = array();
 		}
 		return $this->supported_plugins;
 	}
