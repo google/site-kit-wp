@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Modules\Analytics;
 
-use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Plugin_Detector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Measurement_Code_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
 
@@ -43,14 +42,6 @@ final class Advanced_Tracking {
 	private $event_configurations;
 
 	/**
-	 * Main class plugin detector instance.
-	 *
-	 * @since n.e.x.t.
-	 * @var Plugin_Detector
-	 */
-	private $plugin_detector;
-
-	/**
 	 * Main class event list registry instance.
 	 *
 	 * @since n.e.x.t.
@@ -62,16 +53,8 @@ final class Advanced_Tracking {
 	 * Advanced_Tracking constructor.
 	 *
 	 * @since n.e.x.t.
-	 *
-	 * @param Plugin_Detector $plugin_detector Optional plugin detector used for testing. Default is a new instance.
 	 */
-	public function __construct( $plugin_detector = null ) {
-		if ( null === $plugin_detector ) {
-			$this->plugin_detector = new Plugin_Detector();
-		} else {
-			$this->plugin_detector = $plugin_detector;
-		}
-
+	public function __construct() {
 		$this->event_list_registry = new Event_List_Registry();
 	}
 
@@ -84,8 +67,7 @@ final class Advanced_Tracking {
 		add_action(
 			'googlesitekit_analytics_init_tag',
 			function() {
-				$active_plugin_configurations = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
-				$this->register_event_lists( $active_plugin_configurations );
+				$this->register_event_lists();
 				add_action(
 					'wp_footer',
 					function() {
@@ -97,8 +79,7 @@ final class Advanced_Tracking {
 		add_action(
 			'googlesitekit_analytics_init_tag_amp',
 			function() {
-				$active_plugin_configurations = $this->plugin_detector->determine_active_plugins( $this->get_supported_plugins() );
-				$this->register_event_lists( $active_plugin_configurations );
+				$this->register_event_lists();
 				add_filter(
 					'googlesitekit_amp_gtag_opt',
 					function( $gtag_amp_opt ) {
@@ -143,21 +124,8 @@ final class Advanced_Tracking {
 	 * Instantiates and registers the active plugin event lists.
 	 *
 	 * @since n.e.x.t.
-	 *
-	 * @param array $active_plugin_configurations The list of active plugin configurations.
 	 */
-	private function register_event_lists( $active_plugin_configurations ) {
-		foreach ( $active_plugin_configurations as $plugin_config ) {
-			$plugin_event_list_class = $plugin_config['event_list_class'];
-			$plugin_event_list       = new $plugin_event_list_class();
-			add_action(
-				'googlesitekit_analytics_register_event_lists',
-				function( $event_list_registry ) use ( $plugin_event_list ) {
-					$event_list_registry->register( $plugin_event_list );
-				}
-			);
-		}
-
+	private function register_event_lists() {
 		/**
 		 * Fires when the Advanced_Tracking class is ready to receive event lists.
 		 *
@@ -197,20 +165,5 @@ final class Advanced_Tracking {
 	 */
 	public function get_event_configurations() {
 		return $this->event_configurations;
-	}
-
-
-	/**
-	 * Returns list of supported plugins.
-	 *
-	 * @since n.e.x.t.
-	 *
-	 * @return array The list of supported plugins.
-	 */
-	public function get_supported_plugins() {
-		if ( null === $this->supported_plugins ) {
-			$this->supported_plugins = array();
-		}
-		return $this->supported_plugins;
 	}
 }
