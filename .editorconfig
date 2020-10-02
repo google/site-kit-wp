@@ -1,6 +1,6 @@
 root = true
 
-[*.js]
+[{*.js}]
 indent_style = tab
 
 [*.php]
