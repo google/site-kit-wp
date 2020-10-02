@@ -32,8 +32,11 @@ import { STORE_NAME } from '../../datastore';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
+		accounts: select( STORE_NAME ).getAccounts(),
+		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+	} ) );
 
 	const { setAccountID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -43,7 +46,7 @@ export default function AccountSelect() {
 		}
 	}, [ accountID ] );
 
-	if ( undefined === accounts ) {
+	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar small />;
 	}
 
@@ -56,7 +59,7 @@ export default function AccountSelect() {
 			enhanced
 			outlined
 		>
-			{ accounts.map( ( { id, name }, index ) => (
+			{ ( accounts || [] ).map( ( { id, name }, index ) => (
 				<Option
 					key={ index }
 					value={ id }

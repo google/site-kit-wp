@@ -21,12 +21,12 @@
  */
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/progress-bar';
-import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 export default function UserProfile() {
-	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
-	const userPicture = useSelect( ( select ) => select( userStoreName ).getPicture() );
+	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+	const userPicture = useSelect( ( select ) => select( CORE_USER ).getPicture() );
 
 	if ( undefined === userEmail || undefined === userPicture ) {
 		return <ProgressBar small />;

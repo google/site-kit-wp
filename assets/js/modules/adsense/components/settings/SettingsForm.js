@@ -31,11 +31,17 @@ import {
 	ErrorNotice,
 	UseSnippetSwitch,
 } from '../common';
+import ProgressBar from '../../../../components/progress-bar';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const clientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+	const hasResolvedGetExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' ) );
+
+	if ( ! hasResolvedGetExistingTag ) {
+		return <ProgressBar />;
+	}
 
 	let checkedMessage, uncheckedMessage;
 	if ( existingTag && existingTag === clientID ) {
