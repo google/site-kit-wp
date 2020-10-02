@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -579,8 +580,10 @@ class AuthenticationTest extends TestCase {
 		$action = 'admin_action_' . Google_Proxy::ACTION_PERMISSIONS;
 		remove_all_actions( $action );
 
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		wp_set_current_user( $editor_id );
 
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$options      = new Options( $context );
@@ -590,19 +593,40 @@ class AuthenticationTest extends TestCase {
 		$authentication->get_oauth_client()->set_access_token( 'test-access-token', 3600 );
 		$authentication->register();
 
-		// Emulate credentials.
-		$fake_proxy_credentials = $this->fake_proxy_site_connection();
-
-		//Ensure admin user has Permissions::AUTHENTICATE cap regardless of authentication.
-		add_filter(
-			'user_has_cap',
-			function( $caps ) {
-				$caps[ Permissions::AUTHENTICATE ] = true;
-				return $caps;
-			}
-		);
+		// Requires 'googlesitekit_proxy_permissions' nonce.
+		try {
+			do_action( $action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+		}
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
+		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
+
+		// Requires Site Kit Authenticate permissions
+		try {
+			do_action( $action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertContains( 'insufficient permissions to manage Site Kit permissions', $e->getMessage() );
+		}
+
+		wp_set_current_user( $admin_id );
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
+		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
+
+		// Requires Proxy Authentication
+		$this->fake_site_connection();
+
+		try {
+			do_action( $action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertContains( 'Site Kit is not configured to use the authentication proxy', $e->getMessage() );
+		}
+
+		$fake_proxy_credentials = $this->fake_proxy_site_connection();
 
 		try {
 			do_action( $action );
