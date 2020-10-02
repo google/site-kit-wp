@@ -1,5 +1,5 @@
 /**
- * Entrypoint for the Forms data store.
+ * Entrypoint for the `core/forms` data store.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

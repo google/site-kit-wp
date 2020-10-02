@@ -1,5 +1,5 @@
 /**
- * Forms data store: constants.
+ * `core/forms` data store: constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

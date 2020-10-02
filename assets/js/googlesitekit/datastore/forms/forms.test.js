@@ -1,5 +1,5 @@
 /**
- * Forms data store tests.
+ * `core/forms` data store tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
