@@ -23,7 +23,6 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
-use Google\Site_Kit\Tests\FakeAMPContextPrimary;
 use Google\Site_Kit\Tests\TestCase;
 use ReflectionMethod;
 
@@ -51,7 +50,7 @@ class AdSenseTest extends TestCase {
 	}
 
 	public function test_register_template_redirect_amp() {
-		$context = new FakeAMPContextPrimary( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$context = $this->get_amp_primary_context();
 		$adsense = new AdSense( $context );
 
 		remove_all_actions( 'template_redirect' );

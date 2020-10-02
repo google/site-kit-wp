@@ -18,8 +18,6 @@ use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
-use Google\Site_Kit\Tests\FakeAMPContextPrimary;
-use Google\Site_Kit\Tests\FakeAMPContextSecondary;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -42,7 +40,7 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_register_template_redirect_amp() {
-		$context    = new FakeAMPContextPrimary( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$context    = $this->get_amp_primary_context();
 		$tagmanager = new Tag_Manager( $context );
 
 		remove_all_actions( 'template_redirect' );
@@ -123,7 +121,7 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_is_connected_primary_amp() {
-		$context    = new FakeAMPContextPrimary( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$context    = $this->get_amp_primary_context();
 		$tagmanager = new Tag_Manager( $context );
 
 		$this->assertFalse( $tagmanager->is_connected() );
@@ -140,7 +138,7 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_is_connected_secondary_amp() {
-		$context    = new FakeAMPContextSecondary( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$context    = $this->get_amp_secondary_context();
 		$tagmanager = new Tag_Manager( $context );
 
 		$this->assertFalse( $tagmanager->is_connected() );
