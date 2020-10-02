@@ -18,6 +18,8 @@ use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
+use Google\Site_Kit\Tests\FakeAMPContextPrimary;
+use Google\Site_Kit\Tests\FakeAMPContextSecondary;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -40,13 +42,8 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_register_template_redirect_amp() {
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
-		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
-
+		$context    = new FakeAMPContextPrimary( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$tagmanager = new Tag_Manager( $context );
-		$this->force_set_property( $tagmanager, 'context', $mock_context );
 
 		remove_all_actions( 'template_redirect' );
 		$tagmanager->register();
@@ -79,13 +76,8 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_register_template_redirect_non_amp() {
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
-		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
-
+		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$tagmanager = new Tag_Manager( $context );
-		$this->force_set_property( $tagmanager, 'context', $mock_context );
 
 		remove_all_actions( 'template_redirect' );
 		$tagmanager->register();
@@ -115,11 +107,7 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_is_connected_web() {
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
-		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( false ) );
-
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $tagmanager, 'context', $mock_context );
 
 		$this->assertFalse( $tagmanager->is_connected() );
 
@@ -135,11 +123,8 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_is_connected_primary_amp() {
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
-		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( Context::AMP_MODE_PRIMARY ) );
-
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $tagmanager, 'context', $mock_context );
+		$context    = new FakeAMPContextPrimary( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$tagmanager = new Tag_Manager( $context );
 
 		$this->assertFalse( $tagmanager->is_connected() );
 
@@ -155,11 +140,8 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_is_connected_secondary_amp() {
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
-		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( Context::AMP_MODE_SECONDARY ) );
-
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $tagmanager, 'context', $mock_context );
+		$context    = new FakeAMPContextSecondary( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$tagmanager = new Tag_Manager( $context );
 
 		$this->assertFalse( $tagmanager->is_connected() );
 

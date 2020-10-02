@@ -23,6 +23,7 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
+use Google\Site_Kit\Tests\FakeAMPContextPrimary;
 use Google\Site_Kit\Tests\TestCase;
 use ReflectionMethod;
 
@@ -50,13 +51,8 @@ class AdSenseTest extends TestCase {
 	}
 
 	public function test_register_template_redirect_amp() {
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
-		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
-
+		$context = new FakeAMPContextPrimary( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$adsense = new AdSense( $context );
-		$this->force_set_property( $adsense, 'context', $mock_context );
 
 		remove_all_actions( 'template_redirect' );
 		$adsense->register();
@@ -80,13 +76,8 @@ class AdSenseTest extends TestCase {
 	}
 
 	public function test_register_template_redirect_non_amp() {
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
-		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
-
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$adsense = new AdSense( $context );
-		$this->force_set_property( $adsense, 'context', $mock_context );
 
 		remove_all_actions( 'template_redirect' );
 		$adsense->register();
