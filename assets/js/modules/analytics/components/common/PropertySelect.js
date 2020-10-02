@@ -50,20 +50,8 @@ export default function PropertySelect() {
 		return data;
 	} );
 
-	const { hasExistingTag, hasGTMPropertyID } = useSelect( ( select ) => {
-		const data = {
-			hasExistingTag: select( STORE_NAME ).hasExistingTag(),
-			hasGTMPropertyID: false,
-		};
-
-		// No need to get a single Analytics property ID if we already have an existing Analytics tag.
-		if ( ! data.hasExistingTag ) {
-			data.hasGTMPropertyID = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
-		}
-
-		return data;
-	} );
-
+	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const hasGTMPropertyID = useSelect( ( select ) => !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 

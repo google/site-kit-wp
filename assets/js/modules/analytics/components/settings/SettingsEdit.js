@@ -50,23 +50,12 @@ export default function SettingsEdit() {
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
-	const {
-		gtmAnalyticsPropertyID: hasGTMAnalyticsPropertyID,
-		gtmAnalyticsPropertyIDPermission: hasGTMAnalyticsPropertyIDPermission,
-	} = useSelect( ( select ) => {
-		const data = {
-			gtmAnalyticsPropertyID: '',
-			gtmAnalyticsPropertyIDPermission: false,
+	const { hasGTMAnalyticsPropertyID, hasGTMAnalyticsPropertyIDPermission } = useSelect( ( select ) => {
+		const gtmPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+		return {
+			hasGTMAnalyticsPropertyID: !! gtmPropertyID,
+			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID ? select( STORE_NAME ).hasTagPermission( gtmPropertyID ) : false,
 		};
-
-		if ( hasResolvedAccounts && ! hasExistingTag ) {
-			data.gtmAnalyticsPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
-			if ( data.gtmAnalyticsPropertyID ) {
-				data.gtmAnalyticsPropertyIDPermission = select( STORE_NAME ).hasTagPermission( data.gtmAnalyticsPropertyID );
-			}
-		}
-
-		return data;
 	} );
 
 	// Set the accountID and containerID if there is an existing tag.
