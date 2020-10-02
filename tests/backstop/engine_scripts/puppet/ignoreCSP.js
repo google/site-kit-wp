@@ -21,7 +21,7 @@
  * @since 1.0.0
  *
  * @param {Request} request HTTP Request.
- * @return     {void}
+ * @return {void}
  */
 
 const fetch = require( 'node-fetch' );

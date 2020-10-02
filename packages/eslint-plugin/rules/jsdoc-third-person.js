@@ -50,7 +50,7 @@ module.exports = iterateJsdoc( ( {
 	iterateAllJsdocs: true,
 	meta: {
 		docs: {
-			description: `Requires that all functions' first word end with "s".`,
+			description: `Requires that all functions' first word end with "s" (assuming that it is a third-person verb).`,
 		},
 		fixable: 'code',
 		type: 'suggestion',
