@@ -1,5 +1,5 @@
 /**
- * Widgets data store: widgets info.
+ * `core/widgets` data store: widgets info.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

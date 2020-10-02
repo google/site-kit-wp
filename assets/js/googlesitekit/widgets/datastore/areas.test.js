@@ -1,5 +1,5 @@
 /**
- * Widgets data store: widget tests.
+ * `core/widgets` data store: widget tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
