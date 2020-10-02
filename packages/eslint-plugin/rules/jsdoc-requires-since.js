@@ -31,11 +31,7 @@ module.exports = iterateJsdoc( ( {
 		return;
 	}
 
-	const hasSinceTag = !! utils.filterTags( ( { tag } ) => {
-		return [ 'since' ].includes( tag );
-	} ).length;
-
-	if ( hasSinceTag ) {
+	if ( utils.hasTag( 'since' ) ) {
 		return;
 	}
 

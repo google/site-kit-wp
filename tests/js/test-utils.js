@@ -21,8 +21,8 @@ import { createTestRegistry } from './utils';
 /**
  * Renders the given UI into a container to make assertions.
  *
- * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
  * @since 1.7.1
+ * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
  * @private
  *
  * @param {*}        ui                    Any valid React child element.

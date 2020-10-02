@@ -189,9 +189,8 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 /**
  * Internationalization Number Format.
  *
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter} For all available formatting options.
- *
  * @since 1.0.0
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter} For all available formatting options.
  *
  * @param {number} number           The number to format.
  * @param {Object} [options]        Formatting options.

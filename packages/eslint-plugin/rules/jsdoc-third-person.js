@@ -42,7 +42,7 @@ module.exports = iterateJsdoc( ( {
 	if ( jsdoc.description && ! jsdoc.description.match( /^\w+s\W.*/g ) ) {
 		context.report( {
 			data: { name: jsdocNode.name },
-			message: `The first word in a function's description should end in "s".`,
+			message: `The first word in a function's description should be a third-person verb (eg "runs" not "run").`,
 			node: jsdocNode,
 		} );
 	}

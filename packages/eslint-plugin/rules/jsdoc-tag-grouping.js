@@ -41,14 +41,14 @@ module.exports = iterateJsdoc( ( {
 		return;
 	}
 
-	const lastTagInFirstGroup = findTagInGroup( [ 'private', 'deprecated', 'since' ], utils );
+	const lastTagInFirstGroup = findTagInGroup( [ 'private', 'deprecated', 'see', 'since' ], utils );
 	// This is a rule violation, but of a different rule. For now, just skip the check.
 	if ( ! lastTagInFirstGroup ) {
 		return;
 	}
 
 	const hasSecondGroup = !! utils.filterTags( ( { tag } ) => {
-		return ! [ 'see', 'private', 'deprecated', 'since' ].includes( tag );
+		return ! [ 'private', 'deprecated', 'see', 'since' ].includes( tag );
 	} ).length;
 
 	// If there's no second group, don't check tag grouping.
@@ -61,7 +61,7 @@ module.exports = iterateJsdoc( ( {
 	if ( firstTagInSecondGroup === null ) {
 		context.report( {
 			data: { name: jsdocNode.name },
-			message: `Unrecognized tag @${ firstTagInSecondGroup } in last group of JSDoc block. You may need to add this to the sitekit/jsdoc-tag-grouping rules.`,
+			message: `Unrecognized tag @${ jsdoc.tags[ jsdoc.tags.length - 1 ].tag } in last group of the JSDoc block. You may need to add this to the sitekit/jsdoc-tag-grouping rules.`,
 			node: jsdocNode,
 		} );
 		return;

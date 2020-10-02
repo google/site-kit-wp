@@ -81,8 +81,8 @@ function capturePageEventsForTearDown() {
  * which is the only way to opt-out in an AMP-friendly way
  * since AMP does not allow for arbitrary JS from the origin.
  *
- * @see {@link https://tools.google.com/dlpage/gaoptout}
  * @since 1.13.0
+ * @see {@link https://tools.google.com/dlpage/gaoptout}
  */
 function optOutOfEventTracking() {
 	page.on( 'load', async () => {

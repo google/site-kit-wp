@@ -26,7 +26,15 @@ module.exports = iterateJsdoc( ( {
 	jsdocNode,
 	utils,
 } ) => {
-	const expectedTagOrder = [ 'since', 'deprecated', 'private', 'param', 'return' ];
+	const expectedTagOrder = [
+		'since',
+		'see',
+		'deprecated',
+		'private',
+		'param',
+		'type',
+		'return',
+	];
 
 	const tags = utils.filterTags( ( { tag } ) => {
 		return expectedTagOrder.includes( tag );

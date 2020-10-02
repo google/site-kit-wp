@@ -20,8 +20,8 @@ export default function createDataLayerPush( target ) {
 	 * Using an ES6 spread operator (i.e. `...args`) will cause tracking events to
 	 * _silently_ fail.
 	 *
-	 * @see {@link https://github.com/google/site-kit-wp/issues/1181}
 	 * @since 1.0.0
+	 * @see {@link https://github.com/google/site-kit-wp/issues/1181}
 	 */
 	return function dataLayerPush() {
 		target[ DATA_LAYER ] = target[ DATA_LAYER ] || [];
