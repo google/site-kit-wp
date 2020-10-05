@@ -27,7 +27,6 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
-	muteConsole,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
@@ -87,6 +86,7 @@ describe( 'modules/analytics settings', () => {
 				const createdProperty = {
 					...fixtures.propertiesProfiles.properties[ 0 ],
 					id: 'UA-12345-1',
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					internalWebPropertyId: '123456789',
 				};
 
@@ -111,6 +111,7 @@ describe( 'modules/analytics settings', () => {
 
 				expect( result.error ).toBeFalsy();
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( createdProperty.internalWebPropertyId );
 			} );
 
@@ -126,7 +127,6 @@ describe( 'modules/analytics settings', () => {
 					{ body: error, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
@@ -136,6 +136,7 @@ describe( 'modules/analytics settings', () => {
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'dispatches createProfile if the "set up a new profile" option is chosen', async () => {
@@ -203,7 +204,6 @@ describe( 'modules/analytics settings', () => {
 					{ body: error, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
@@ -221,6 +221,7 @@ describe( 'modules/analytics settings', () => {
 				expect( result.error ).toEqual( error );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'dispatches both createProperty and createProfile when selected', async () => {
@@ -291,7 +292,6 @@ describe( 'modules/analytics settings', () => {
 					{ body: error, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
@@ -299,6 +299,7 @@ describe( 'modules/analytics settings', () => {
 					{ body: { data: validSettings } },
 				);
 				expect( result.error ).toEqual( error );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'invalidates Analytics API cache on success', async () => {

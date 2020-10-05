@@ -9,7 +9,6 @@ import {
 	enableTracking,
 	isTrackingEnabled,
 } from './index';
-import { muteConsole } from '../../../../tests/js/test-utils';
 
 const resetGlobals = () => {
 	delete global._googlesitekitBaseData;
@@ -85,13 +84,13 @@ describe( 'trackEvent', () => {
 		const { trackEvent } = createTracking( config, dataLayer );
 
 		// Ignore warning (see below) since irrelevant for this test.
-		muteConsole( 'warn' );
 		await fakeTimeouts( () => trackEvent( 'category', 'name', 'label', 'value' ) );
 
 		// dataLayerPush must push an instance of `Arguments` onto the data layer.
 		// Because `arguments` is a special, `Array`-like object (but not an actual `Array`),
 		// we can only create it using the magic `arguments` variable
 		// made available to normal, non-arrow functions.
+		expect( console ).toHaveWarned();
 		expect( pushArgs.length ).toEqual( 1 );
 		expect( Object.prototype.toString.apply( pushArgs[ 0 ] ) ).toEqual( '[object Arguments]' );
 		expect( pushArgs[ 0 ].length ).toEqual( 3 );
@@ -141,12 +140,31 @@ describe( 'trackEvent', () => {
 				push: () => {},
 			},
 		};
+
 		const { trackEvent } = createTracking( { trackingEnabled: true }, dataLayer );
 
-		muteConsole( 'warn' );
 		const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
 		await fakeTimeouts( () => trackEvent( 'test-category', 'test-name', 'test-label', 'test-value' ) );
+		expect( console ).toHaveWarned();
 		expect( consoleWarnSpy ).toHaveBeenCalledWith( 'Tracking event "test-name" (category "test-category") took too long to fire.' );
 		consoleWarnSpy.mockClear();
+	} );
+
+	it( 'not push to dataLayer with the opt-out set', async () => {
+		const push = jest.fn();
+		const dataLayer = {
+			[ DATA_LAYER ]: { push },
+		};
+
+		const mockGlobal = {
+			_gaUserPrefs: {
+				ioo: () => true,
+			},
+		};
+		const iooSpy = jest.spyOn( mockGlobal._gaUserPrefs, 'ioo' );
+		const { trackEvent } = createTracking( { trackingEnabled: true }, dataLayer, mockGlobal );
+		await fakeTimeouts( () => trackEvent( 'test-category', 'test-name', 'test-label', 'test-value' ) );
+		expect( iooSpy ).toHaveBeenCalled();
+		expect( push ).not.toHaveBeenCalled();
 	} );
 } );

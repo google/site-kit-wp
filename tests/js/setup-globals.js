@@ -18,7 +18,6 @@ if ( global.Intl ) {
 // The rest of our code relies on a global, external React being available.
 global.React = React;
 
-// eslint-disable-next-line no-undef
 global._googlesitekitLegacyData = {
 	admin: {
 		connectURL: 'http://sitekit.withgoogle.com/wp-admin/admin.php?googlesitekit_connect=1&nonce=12345&page=googlesitekit-splash',
@@ -26,16 +25,29 @@ global._googlesitekitLegacyData = {
 	},
 	modules: {
 		'search-console': {
-			screenID: 'googlesitekit-module-search-console',
+			slug: 'search-console',
+			name: 'Search Console',
 		},
 		'pagespeed-insights': {
-			screenID: 'googlesitekit-module-pagespeed-insights',
+			slug: 'pagespeed-insights',
+			name: 'PageSpeed Insights',
+		},
+		analytics: {
+			slug: 'analytics',
+			name: 'Analytics',
 		},
 	},
 	setup: {
 
 	},
 };
+
+global._googlesitekitUserData = {
+	user: {},
+};
+
+global._googlesitekitBaseData = {};
+global._googlesitekitEntityData = {};
 
 // eslint-disable-next-line no-undef
 global.gtag = function( type, name, sendto, category, label, value ) {

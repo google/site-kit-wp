@@ -23,7 +23,7 @@ use Google\Site_Kit\Core\Util\Entity_Factory;
  * @access private
  * @ignore
  */
-final class Context {
+class Context {
 
 	/**
 	 * Primary "standard" AMP website mode.

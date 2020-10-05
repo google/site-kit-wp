@@ -22,14 +22,15 @@ use Exception;
  */
 class Google_Proxy {
 
-	const BASE_URL          = 'https://sitekit.withgoogle.com';
-	const OAUTH2_SITE_URI   = '/o/oauth2/site/';
-	const OAUTH2_REVOKE_URI = '/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI  = '/o/oauth2/token/';
-	const OAUTH2_AUTH_URI   = '/o/oauth2/auth/';
-	const SETUP_URI         = '/site-management/setup/';
-	const PERMISSIONS_URI   = '/site-management/permissions/';
-	const ACTION_SETUP      = 'googlesitekit_proxy_setup';
+	const BASE_URL           = 'https://sitekit.withgoogle.com';
+	const OAUTH2_SITE_URI    = '/o/oauth2/site/';
+	const OAUTH2_REVOKE_URI  = '/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI   = '/o/oauth2/token/';
+	const OAUTH2_AUTH_URI    = '/o/oauth2/auth/';
+	const SETUP_URI          = '/site-management/setup/';
+	const PERMISSIONS_URI    = '/site-management/permissions/';
+	const ACTION_SETUP       = 'googlesitekit_proxy_setup';
+	const ACTION_PERMISSIONS = 'googlesitekit_proxy_permissions';
 
 	/**
 	 * Plugin context.
@@ -118,30 +119,33 @@ class Google_Proxy {
 	 * @since 1.5.0
 	 *
 	 * @param Credentials $credentials Credentials instance.
+	 * @param string      $mode        Sync mode.
+	 * @return array Response of the wp_remote_post request or NULL if there are no credentials.
 	 */
-	public function sync_site_fields( Credentials $credentials ) {
+	public function sync_site_fields( Credentials $credentials, $mode = 'async' ) {
 		if ( ! $credentials->has() ) {
-			return;
+			return null;
 		}
 
 		$creds = $credentials->get();
 
-		wp_remote_post(
-			$this->url( self::OAUTH2_SITE_URI ),
-			array(
-				'body'     => array_merge(
-					$this->get_site_fields(),
-					array(
-						'nonce'       => wp_create_nonce( self::ACTION_SETUP ),
-						'site_id'     => $creds['oauth2_client_id'],
-						'site_secret' => $creds['oauth2_client_secret'],
-					)
-				),
-				/** Don't block the process from finishing waiting for a response. @see \spawn_cron(). */
-				'timeout'  => 0.01,
-				'blocking' => false,
-			)
+		$request_args = array(
+			'body' => array_merge(
+				$this->get_site_fields(),
+				array(
+					'nonce'       => wp_create_nonce( self::ACTION_SETUP ),
+					'site_id'     => $creds['oauth2_client_id'],
+					'site_secret' => $creds['oauth2_client_secret'],
+				)
+			),
 		);
+
+		if ( 'async' === $mode ) {
+			$request_args['timeout']  = 0.01;
+			$request_args['blocking'] = false;
+		}
+
+		return wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
 	}
 
 	/**

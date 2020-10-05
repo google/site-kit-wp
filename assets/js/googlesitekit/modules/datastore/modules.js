@@ -19,6 +19,8 @@
 /**
  * External dependencies
  */
+import memize from 'memize';
+import merge from 'lodash/merge';
 import invariant from 'invariant';
 
 /**
@@ -32,28 +34,46 @@ import { WPElement } from '@wordpress/element';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
-import { sortByProperty } from '../../../util/sort-by-property';
-import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 
-const { commonActions, createRegistrySelector, createRegistryControl } = Data;
-
-/**
- * Store our module components by registry, then by module `slug`. We do this because
- * we can't store React components in our data store.
- *
- * @private
- * @since 1.13.0
- */
-export const ModuleComponents = {};
+const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
 const REGISTER_MODULE = 'REGISTER_MODULE';
-const WAIT_FOR_MODULES = 'WAIT_FOR_MODULES';
+
+const moduleDefaults = {
+	slug: '',
+	name: '',
+	description: '',
+	homepage: null,
+	internal: false,
+	active: false,
+	connected: false,
+	dependencies: [],
+	dependants: [],
+	order: 10,
+	icon: null,
+	settingsComponent: DefaultModuleSettings,
+};
+
+const normalizeModules = memize(
+	( modules ) => Object.keys( modules )
+		.map( ( slug ) => {
+			return {
+				...moduleDefaults,
+				name: slug, // Ensure `name` is not empty.
+				...modules[ slug ],
+				slug,
+			};
+		} )
+		.sort( ( a, b ) => a.order - b.order )
+		.reduce( ( acc, module ) => {
+			return { ...acc, [ module.slug ]: module };
+		}, {} )
+);
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
@@ -66,7 +86,7 @@ const fetchGetModulesStore = createFetchStore( {
 		return {
 			...state,
 			isAwaitingModulesRefresh: false,
-			modules: modules.reduce( ( acc, module ) => {
+			serverDefinitions: modules.reduce( ( acc, module ) => {
 				return { ...acc, [ module.slug ]: module };
 			}, {} ),
 		};
@@ -101,8 +121,9 @@ const fetchSetModuleActivationStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
-	modules: undefined,
+const baseInitialState = {
+	clientDefinitions: {},
+	serverDefinitions: undefined,
 	// This value is to indicate that modules data needs to be refreshed after
 	// a module activation update, since the activation is technically complete
 	// before this data has been refreshed.
@@ -110,19 +131,6 @@ const BASE_INITIAL_STATE = {
 };
 
 const baseActions = {
-	/**
-	 * Wait for the modules to be loaded
-	 *
-	 * @since 1.13.0
-	 *
-	 * @return {Object} Redux-style action.
-	 */
-	waitForModules() {
-		return {
-			payload: {},
-			type: WAIT_FOR_MODULES,
-		};
-	},
 	/**
 	 * Activates a module on the server.
 	 *
@@ -200,33 +208,30 @@ const baseActions = {
 	 * @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
 	 * @return {Object} Redux-style action.
 	 */
-	*registerModule( slug, { settingsComponent = DefaultModuleSettings, ...settings } = {} ) {
+	registerModule( slug, {
+		name,
+		description,
+		icon,
+		order,
+		homepage,
+		settingsComponent = DefaultModuleSettings,
+	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
-		const registry = yield commonActions.getRegistry();
-		yield actions.waitForModules();
-		const registryKey = registry.select( CORE_SITE ).getRegistryKey();
-
-		// We do this assignment in the action rather than the reducer because we can't send a
-		// payload that includes a React component to the reducer; we'll get an error about
-		// payloads needing to be plain objects.
-		if ( ModuleComponents[ registryKey ] === undefined ) {
-			ModuleComponents[ registryKey ] = {};
-		}
-		if ( ModuleComponents[ registryKey ][ slug ] === undefined ) {
-			ModuleComponents[ registryKey ][ slug ] = settingsComponent;
-		}
-		// Ensure that active and connected properties are not passed here.
-		delete settings.active;
-		delete settings.connected;
-
-		const mergedModuleSettings = {
-			slug,
-			...settings,
+		const settings = {
+			name,
+			description,
+			icon,
+			order,
+			homepage,
+			settingsComponent,
 		};
 
 		return {
-			payload: { slug, settings: mergedModuleSettings },
+			payload: {
+				settings,
+				slug,
+			},
 			type: REGISTER_MODULE,
 		};
 	},
@@ -236,55 +241,29 @@ export const baseControls = {
 	[ REFETCH_AUTHENTICATION ]: createRegistryControl( ( { dispatch } ) => () => {
 		return dispatch( CORE_USER ).fetchGetAuthentication();
 	} ),
-	[ WAIT_FOR_MODULES ]: createRegistryControl( ( registry ) => ( { payload: {} } ) => {
-		// Select first to ensure resolution is always triggered.
-		const { getModules, hasFinishedResolution } = registry.select( STORE_NAME );
-		getModules();
-		const modulesAreLoaded = () => hasFinishedResolution( 'getModules', [] );
-		if ( modulesAreLoaded() ) {
-			return;
-		}
-		return new Promise( ( resolve ) => {
-			const unsubscribe = registry.subscribe( () => {
-				if ( modulesAreLoaded() ) {
-					unsubscribe();
-					resolve();
-				}
-			} );
-		} );
-	} ),
 };
 
 const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
-			const { modules: existingModules } = state;
-			const defaults = {
-				description: null,
-				icon: null,
-				order: 10,
-				homepage: null,
-				internal: false,
-				active: false,
-				connected: false,
-				name: slug,
-			};
+
+			if ( state.clientDefinitions[ slug ] ) {
+				global.console.warn( `Could not register module with slug "${ slug }". Module "${ slug }" is already registered.` );
+				return state;
+			}
+
 			return {
 				...state,
-				modules: {
-					...existingModules,
-					[ slug ]: {
-						...defaults,
-						...( existingModules?.[ slug ] || {} ),
-						...settings,
-					},
+				clientDefinitions: {
+					...state.clientDefinitions,
+					[ slug ]: settings,
 				},
 			};
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -333,35 +312,20 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Modules available on the site.
 	 */
-	getModules: createRegistrySelector( ( select ) => ( state ) => {
-		const { modules } = state;
+	getModules( state ) {
+		const { clientDefinitions, serverDefinitions } = state;
 
 		// Return `undefined` if modules haven't been loaded yet.
-		if ( modules === undefined ) {
+		if ( serverDefinitions === undefined ) {
 			return undefined;
 		}
 
-		const registryKey = select( CORE_SITE ).getRegistryKey();
-		if ( registryKey === undefined ) {
-			return undefined;
-		}
-		// Sorting the modules object by order property.
-		const sortedModules = sortByProperty( Object.values( modules ), 'order' );
-		const mappedModules = sortedModules.map( ( module ) => {
-			const moduleWithComponent = { ...module };
-			if ( ModuleComponents[ registryKey ] ) {
-				// If there is a settingsComponent that was passed use it, otherwise set to the default.
-				if ( ModuleComponents[ registryKey ][ module.slug ] ) {
-					moduleWithComponent.settingsComponent = ModuleComponents[ registryKey ][ module.slug ];
-				} else {
-					moduleWithComponent.settingsComponent = DefaultModuleSettings;
-				}
-			}
+		// Module properties in `clientDefinitions` will overwrite `serverDefinitions`
+		// but only for keys whose values are not `undefined`.
+		const modules = merge( {}, serverDefinitions, clientDefinitions );
 
-			return moduleWithComponent;
-		} );
-		return convertArrayListToKeyedObjectMap( mappedModules, 'slug' );
-	} ),
+		return normalizeModules( modules );
+	},
 
 	/**
 	 * Gets a specific module by slug.
@@ -404,7 +368,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(Object|undefined)} A specific module object; `undefined` if state is still loading or if said module doesn't exist.
+	 * @return {(boolean|null|undefined)} TRUE when the module exists and is active; `undefined` if state is still loading or `null` if said module doesn't exist.
 	 */
 	isModuleActive: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const module = select( STORE_NAME ).getModule( slug );
@@ -421,6 +385,36 @@ const baseSelectors = {
 		}
 
 		return module.active;
+	} ),
+
+	/**
+	 * Checks whether a module is connected or not.
+	 *
+	 * Returns `true` if the module exists, is active and connected.
+	 * Returns `false` if the module exists but is either not active or not connected.
+	 * Returns `undefined` if state is still loading or if no module with that slug exists.
+	 *
+	 * @since 1.16.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|null|undefined)} TRUE when the module exists, is active and connected, otherwise FALSE; `undefined` if state is still loading or `null` if said module doesn't exist.
+	 */
+	isModuleConnected: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `null` to signify the
+		// "not found" state.
+		if ( module === null ) {
+			return null;
+		}
+
+		return module.active && module.connected;
 	} ),
 
 	/**
@@ -462,7 +456,7 @@ const store = Data.combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		controls: baseControls,
 		reducer: baseReducer,
@@ -471,7 +465,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

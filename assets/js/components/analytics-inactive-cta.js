@@ -63,7 +63,7 @@ class AnalyticsInactiveCTA extends Component {
 	render() {
 		const {
 			title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
-			description = __( 'Connecting with Google Analytics to see unique vistors, goal completions, top pages and more.', 'google-site-kit' ),
+			description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ),
 			ctaLabel = __( 'Set up Analytics', 'google-site-kit' ),
 		} = this.props;
 

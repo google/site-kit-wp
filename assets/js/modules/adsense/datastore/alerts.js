@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
 // Actions
 const RESET_ALERTS = 'RESET_ALERTS';
@@ -57,7 +58,7 @@ const fetchGetAlertsStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	alerts: {},
 };
 
@@ -69,6 +70,8 @@ const baseActions = {
 			payload: {},
 			type: RESET_ALERTS,
 		};
+
+		yield errorStoreActions.clearErrors( 'getAlerts' );
 
 		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getAlerts' );
@@ -86,7 +89,7 @@ const baseReducer = ( state, { type } ) => {
 			} = state.savedSettings || {};
 			return {
 				...state,
-				alerts: INITIAL_STATE.alerts,
+				alerts: initialState.alerts,
 				settings: {
 					...( state.settings || {} ),
 					accountStatus,
@@ -98,7 +101,7 @@ const baseReducer = ( state, { type } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -146,7 +149,7 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchGetAlertsStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
@@ -154,7 +157,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

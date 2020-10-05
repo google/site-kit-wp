@@ -29,6 +29,7 @@ import Button from '../../../../../components/button';
 import Link from '../../../../../components/link';
 import ProgressBar from '../../../../../components/progress-bar';
 import { trackEvent } from '../../../../../util';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import TimezoneSelect from './TimezoneSelect';
 import AccountField from './AccountField';
 import PropertyField from './PropertyField';
@@ -37,9 +38,9 @@ import CountrySelect from './CountrySelect';
 import StoreErrorNotice from '../../../../../components/StoreErrorNotice';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER, ERROR_MISSING_REQUIRED_SCOPE } from '../../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { countryCodesByTimezone } from '../../../util/countries-timezones';
+import { getAccountDefaults } from '../../../util/account';
 import Data from 'googlesitekit-data';
 
 const { useDispatch, useSelect } = Data;
@@ -54,7 +55,7 @@ export default function AccountCreate() {
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' ) );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
-	let timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
+	const timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
@@ -71,15 +72,11 @@ export default function AccountCreate() {
 		// Only set the form if not already present in store.
 		// e.g. after a snapshot has been restored.
 		if ( ! hasAccountCreateForm ) {
-			const { hostname } = new URL( siteURL );
-			timezone = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
-			setValues( FORM_ACCOUNT_CREATE, {
-				accountName: siteName,
-				propertyName: hostname,
-				profileName: __( 'All Web Site Data', 'google-site-kit' ),
-				countryCode: countryCodesByTimezone[ timezone ],
+			setValues( FORM_ACCOUNT_CREATE, getAccountDefaults( {
+				siteName,
+				siteURL,
 				timezone,
-			} );
+			} ) );
 		}
 	}, [ hasAccountCreateForm, siteName, siteURL, timezone ] );
 
@@ -94,7 +91,7 @@ export default function AccountCreate() {
 				// When state is restored, auto-submit the request again.
 				setValues( FORM_ACCOUNT_CREATE, { autoSubmit: true } );
 				setPermissionScopeError( {
-					code: ERROR_MISSING_REQUIRED_SCOPE,
+					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 					message: __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
 					data: {
 						status: 403,
@@ -134,7 +131,8 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			<StoreErrorNotice storeName={ STORE_NAME } />
+			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
+
 			<h3 className="googlesitekit-heading-4">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }
 			</h3>

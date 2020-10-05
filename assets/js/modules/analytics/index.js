@@ -17,18 +17,36 @@
  */
 
 /**
- * Internal dependencies
+ * WordPress dependencies
  */
-import './datastore';
-import { fillFilterWithComponent } from '../../util';
-import { SetupMain as AnalyticsSetup } from './components/setup';
-import { SettingsMain as AnalyticsSettings } from './components/settings';
+import domReady from '@wordpress/dom-ready';
 
 /**
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import './datastore';
+import Widgets from 'googlesitekit-widgets';
+import {
+	AREA_DASHBOARD_ALL_TRAFFIC,
+	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+	AREA_DASHBOARD_SEARCH_FUNNEL,
+	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+	AREA_DASHBOARD_POPULARITY,
+} from '../../googlesitekit/widgets/default-areas';
+import { fillFilterWithComponent } from '../../util';
+import { SetupMain as AnalyticsSetup } from './components/setup';
+import { SettingsMain as AnalyticsSettings } from './components/settings';
+import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
+import DashboardPopularPagesWidget from './components/dashboard/DashboardPopularPagesWidget';
+import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
+import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
+import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 
 addFilter(
 	'googlesitekit.ModuleSetup-analytics',
@@ -41,3 +59,72 @@ addFilter(
 	'googlesitekit.AnalyticsModuleSettings',
 	compose( fillFilterWithComponent )( AnalyticsSettings )
 );
+
+domReady( () => {
+	Widgets.registerWidget(
+		'analyticsAllTraffic',
+		{
+			component: DashboardAllTrafficWidget,
+			width: Widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_ALL_TRAFFIC,
+			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsUniqueVisitors',
+		{
+			component: DashboardUniqueVisitorsWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 3,
+			wrapWidget: true,
+		},
+		[
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsGoals',
+		{
+			component: DashboardGoalsWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 4,
+			wrapWidget: true,
+		},
+		[
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsBounceRate',
+		{
+			component: DashboardBounceRateWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 4,
+			wrapWidget: true,
+		},
+		[
+			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsPopularPages',
+		{
+			component: DashboardPopularPagesWidget,
+			width: Widgets.WIDGET_WIDTHS.HALF,
+			priority: 2,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_POPULARITY,
+		],
+	);
+} );

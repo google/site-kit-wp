@@ -22,6 +22,7 @@
 import AccountCreate from './AccountCreate';
 import { fireEvent, render, waitFor, createTestRegistry, freezeFetch, muteFetch } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import * as factories from '../../datastore/__factories__';
@@ -38,6 +39,8 @@ describe( 'AccountCreate', () => {
 		registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'user@example.com' } );
 		// Prevent error when loading site info.
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+		// Receive empty modules to prevent unexpected fetch by resolver.
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
 	} );
 
 	it( 'displays a progress bar while accounts are being loaded', () => {
@@ -52,6 +55,7 @@ describe( 'AccountCreate', () => {
 	it( 'resets accounts when the re-fetch accounts link is clicked', async () => {
 		const accountA = factories.accountBuilder();
 		const accountB = factories.accountBuilder();
+		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountA.accountId );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ accountA ] );
 		fetchMock.getOnce(

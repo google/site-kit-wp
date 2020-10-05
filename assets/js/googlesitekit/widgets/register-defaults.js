@@ -33,7 +33,7 @@ import {
 	AREA_DASHBOARD_EARNINGS,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
-	AREA_PAGE_DASHBOARD_TOP_QUERIES,
+	AREA_PAGE_DASHBOARD_POPULARITY,
 	AREA_PAGE_DASHBOARD_SPEED,
 } from './default-areas';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
@@ -49,7 +49,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea( AREA_DASHBOARD_ALL_TRAFFIC, {
 		title: __( 'All Traffic', 'google-site-kit' ),
 		subtitle: __( 'How people found your site.', 'google-site-kit' ),
-		style: WIDGET_AREA_STYLES.COMPOSITE,
+		style: WIDGET_AREA_STYLES.BOXES,
 		priority: 1,
 	}, CONTEXT_DASHBOARD );
 
@@ -91,12 +91,12 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea( AREA_PAGE_DASHBOARD_ALL_TRAFFIC, {
 		title: __( 'All Traffic', 'google-site-kit' ),
 		subtitle: __( 'How people found your page.', 'google-site-kit' ),
-		style: WIDGET_AREA_STYLES.COMPOSITE,
+		style: WIDGET_AREA_STYLES.BOXES,
 		priority: 2,
 	}, CONTEXT_PAGE_DASHBOARD );
 
-	widgetsAPI.registerWidgetArea( AREA_PAGE_DASHBOARD_TOP_QUERIES, {
-		title: __( 'Top Queries', 'google-site-kit' ),
+	widgetsAPI.registerWidgetArea( AREA_PAGE_DASHBOARD_POPULARITY, {
+		title: __( 'Popularity', 'google-site-kit' ),
 		subtitle: __( 'What people searched for to find your page.', 'google-site-kit' ),
 		style: WIDGET_AREA_STYLES.BOXES,
 		priority: 3,

@@ -72,13 +72,8 @@ class AnalyticsTest extends TestCase {
 	}
 
 	public function test_register_template_redirect_amp() {
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
-		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
-
+		$context   = $this->get_amp_primary_context();
 		$analytics = new Analytics( $context );
-		$this->force_set_property( $analytics, 'context', $mock_context );
 
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();
@@ -108,13 +103,8 @@ class AnalyticsTest extends TestCase {
 	}
 
 	public function test_register_template_redirect_non_amp() {
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
-		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
-
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$analytics = new Analytics( $context );
-		$this->force_set_property( $analytics, 'context', $mock_context );
 
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();
@@ -145,9 +135,6 @@ class AnalyticsTest extends TestCase {
 				'sort',
 				'homepage',
 				'learnMore',
-				'group',
-				'feature',
-				'module_tags',
 				'required',
 				'autoActivate',
 				'internal',

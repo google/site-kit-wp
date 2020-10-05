@@ -28,7 +28,6 @@ import {
 import {
 	createTestRegistry,
 	subscribeUntil,
-	muteConsole,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
@@ -189,11 +188,11 @@ describe( 'modules/adsense settings', () => {
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
 					{ body: wpError, status: 500 }
 				);
-				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).getSettings() ).toEqual( validSettings );
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( wpError );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'invalidates AdSense API cache on success', async () => {

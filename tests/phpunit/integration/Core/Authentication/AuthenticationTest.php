@@ -10,11 +10,14 @@
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
 use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Authentication\Disconnected_Reason;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
@@ -37,10 +40,12 @@ class AuthenticationTest extends TestCase {
 
 	public function test_register() {
 		remove_all_actions( 'init' );
+		remove_all_actions( 'admin_init' );
 		remove_all_actions( 'admin_head' );
 		remove_all_filters( 'googlesitekit_admin_data' );
-		remove_all_filters( 'googlesitekit_setup_data' );
 		remove_all_filters( 'googlesitekit_admin_notices' );
+		remove_all_filters( 'googlesitekit_authorize_user' );
+		remove_all_filters( 'googlesitekit_setup_data' );
 		remove_all_actions( OAuth_Client::CRON_REFRESH_PROFILE_DATA );
 
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -49,9 +54,10 @@ class AuthenticationTest extends TestCase {
 
 		// Authentication::handle_oauth is invoked on init but we cannot test it due to use of filter_input.
 		$this->assertTrue( has_action( 'init' ) );
-
+		$this->assertTrue( has_action( 'admin_init' ) );
 		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_SETUP ) );
 		$this->assertTrue( has_action( OAuth_Client::CRON_REFRESH_PROFILE_DATA ) );
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
 
 		$this->assertAdminDataExtended();
 		$this->assertSetupDataExtended();
@@ -68,6 +74,7 @@ class AuthenticationTest extends TestCase {
 			array(
 				'needs_reauthentication',
 				'oauth_error',
+				'reconnect_after_url_mismatch',
 			),
 			array_filter( $notice_slugs )
 		);
@@ -94,8 +101,7 @@ class AuthenticationTest extends TestCase {
 
 	public function option_action_provider() {
 		return array(
-			array( 'home', 'http://example.com', 'http://new.example.com' ),
-			array( 'siteurl', 'http://example.com', 'http://new.example.com' ),
+			array( 'blogname', 'example.com', 'new.example.com' ),
 			array( 'googlesitekit_db_version', '1.0', '2.0' ),
 		);
 	}
@@ -442,6 +448,199 @@ class AuthenticationTest extends TestCase {
 		}
 	}
 
+	public function test_get_proxy_setup_url() {
+		$class  = new \ReflectionClass( Authentication::class );
+		$method = $class->getMethod( 'get_proxy_setup_url' );
+		$method->setAccessible( true );
+
+		$url = $method->invokeArgs(
+			new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
+			array()
+		);
+
+		$this->assertNotEmpty( filter_var( $url, FILTER_VALIDATE_URL ) );
+		$this->assertStringStartsWith( admin_url(), $url );
+
+		$args = array();
+		parse_str( wp_parse_url( $url, PHP_URL_QUERY ), $args );
+
+		$this->assertArrayHasKey( 'action', $args );
+		$this->assertArrayHasKey( 'nonce', $args );
+
+		$this->assertEquals( Google_Proxy::ACTION_SETUP, $args['action'] );
+	}
+
+	public function test_set_connected_proxy_url() {
+		remove_all_actions( 'googlesitekit_authorize_user' );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options = new Options( $context );
+
+		$authentication = new Authentication( $context, $options );
+		$authentication->register();
+
+		$home_url_hook = function() {
+			return 'https://example.com/subsite';
+		};
+
+		add_filter( 'home_url', $home_url_hook );
+		do_action( 'googlesitekit_authorize_user' );
+		remove_filter( 'home_url', $home_url_hook );
+
+		$this->assertEquals( 'https://example.com/subsite/', $options->get( Connected_Proxy_URL::OPTION ) );
+	}
+
+	public function test_check_connected_proxy_url() {
+		remove_all_actions( 'admin_init' );
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context );
+
+		$authentication = new Authentication( $context, $options, $user_options );
+		$authentication->register();
+
+		// Set connected proxy URL to something else to emulate URL mismatch.
+		$options->set( Connected_Proxy_URL::OPTION, '/' );
+
+		// Emulate credentials.
+		$this->fake_proxy_site_connection();
+
+		// Emulate OAuth acccess token.
+		$this->force_set_property( $authentication->get_oauth_client(), 'access_token', 'valid-auth-token' );
+
+		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
+		add_filter(
+			'user_has_cap',
+			function( $caps ) {
+				$caps[ Permissions::SETUP ] = true;
+				return $caps;
+			}
+		);
+
+		do_action( 'admin_init' );
+
+		$this->assertEquals(
+			Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH,
+			$user_options->get( Disconnected_Reason::OPTION )
+		);
+	}
+
+	public function test_handle_sync_site_fields() {
+		remove_all_actions( 'admin_action_' . Google_Proxy::ACTION_SETUP );
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$options           = new Options( $context );
+		$user_options      = new User_Options( $context );
+		$encrypted_options = new Encrypted_Options( $options );
+
+		$authentication = new Authentication( $context, $options, $user_options );
+		$authentication->register();
+
+		// Emulate credentials.
+		$fake_proxy_credentials = $this->fake_proxy_site_connection();
+
+		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
+		add_filter(
+			'user_has_cap',
+			function( $caps ) {
+				$caps[ Permissions::SETUP ] = true;
+				return $caps;
+			}
+		);
+
+		$_GET['nonce']              = wp_create_nonce( Google_Proxy::ACTION_SETUP );
+		$_GET['googlesitekit_code'] = 'test-code';
+
+		try {
+			do_action( 'admin_action_' . Google_Proxy::ACTION_SETUP );
+			$this->fail( 'Expected redirection to proxy setup URL!' );
+		} catch ( RedirectException $redirect ) {
+			$location = $redirect->get_location();
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+
+			$parsed = wp_parse_url( $location );
+			parse_str( $parsed['query'], $query_args );
+
+			$this->assertEquals( $fake_proxy_credentials['client_id'], $query_args['site_id'] );
+			$this->assertEquals( 'test-code', $query_args['code'] );
+		}
+	}
+
+	/**
+	 * Test handle_proxy_permissions()
+	 */
+	public function test_handle_proxy_permissions() {
+		$action = 'admin_action_' . Google_Proxy::ACTION_PERMISSIONS;
+		remove_all_actions( $action );
+
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		wp_set_current_user( $editor_id );
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context );
+
+		$authentication = new Authentication( $context, $options, $user_options );
+		$authentication->get_oauth_client()->set_access_token( 'test-access-token', 3600 );
+		$authentication->register();
+
+		// Requires 'googlesitekit_proxy_permissions' nonce.
+		try {
+			do_action( $action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+		}
+
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
+		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
+
+		// Requires Site Kit Authenticate permissions
+		try {
+			do_action( $action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertContains( 'insufficient permissions to manage Site Kit permissions', $e->getMessage() );
+		}
+
+		wp_set_current_user( $admin_id );
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
+		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
+
+		// Requires Proxy Authentication
+		$this->fake_site_connection();
+
+		try {
+			do_action( $action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertContains( 'Site Kit is not configured to use the authentication proxy', $e->getMessage() );
+		}
+
+		$fake_proxy_credentials = $this->fake_proxy_site_connection();
+
+		try {
+			do_action( $action );
+		} catch ( RedirectException $redirect ) {
+			$location = $redirect->get_location();
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/permissions/', $location );
+
+			$parsed = wp_parse_url( $location );
+			parse_str( $parsed['query'], $query_args );
+
+			$this->assertEquals( $fake_proxy_credentials['client_id'], $query_args['site_id'] );
+		}
+	}
+
 	protected function get_user_option_keys() {
 		return array(
 			OAuth_Client::OPTION_ACCESS_TOKEN,
@@ -456,4 +655,5 @@ class AuthenticationTest extends TestCase {
 			Verification_Meta::OPTION,
 		);
 	}
+
 }

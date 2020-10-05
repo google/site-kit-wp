@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './index';
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -100,24 +99,6 @@ describe( 'modules/pagespeed-insights report', () => {
 				expect( report ).toEqual( fixtures.pagespeedDesktop );
 			} );
 
-			it( 'does not make a network request if report for given options is already present', async () => {
-				const strategy = 'mobile';
-				const url = 'http://example.com/';
-
-				// Load data into this store so there are matches for the data we're about to select,
-				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy } );
-
-				const report = registry.select( STORE_NAME ).getReport( url, strategy );
-
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
-				);
-
-				expect( fetchMock ).not.toHaveFetched();
-				expect( report ).toEqual( fixtures.pagespeedMobile );
-			} );
-
 			it( 'dispatches an error if the request fails', async () => {
 				const response = {
 					code: 'internal_server_error',
@@ -132,7 +113,6 @@ describe( 'modules/pagespeed-insights report', () => {
 				const strategy = 'mobile';
 				const url = 'http://example.com/';
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getReport( url, strategy );
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
@@ -142,6 +122,7 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				const report = registry.select( STORE_NAME ).getReport( url, strategy );
 				expect( report ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

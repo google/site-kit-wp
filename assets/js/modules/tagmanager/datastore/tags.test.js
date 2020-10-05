@@ -24,7 +24,6 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
@@ -104,7 +103,6 @@ describe( 'modules/tagmanager existing-tag', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getExistingTag();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
@@ -118,6 +116,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 		describe( 'getTagPermission', () => {
 			it( 'uses a resolver to make a network request', async () => {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const { accountId: accountID, publicId: containerID } = factories.containerBuilder();
 				const permission = true;
 				const permissionResponse = { accountID, containerID, permission };
@@ -158,7 +157,6 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const containerID = 'GTM-ABC1234';
 
-				muteConsole( 'error' ); // 500 response expected.
 				registry.select( STORE_NAME ).hasTagPermission( containerID );
 
 				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
@@ -166,6 +164,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( registry.select( STORE_NAME ).getTagPermission( containerID ) ).toEqual( undefined );
 				expect( registry.select( STORE_NAME ).getErrorForSelector( 'getTagPermission', [ containerID ] ) ).toEqual( errorResponse );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -204,10 +203,13 @@ describe( 'modules/tagmanager existing-tag', () => {
 			it( 'returns true if a user has access to this tag', async () => {
 				const container = factories.containerBuilder();
 				const permissionResponse = {
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					accountID: container.accountId,
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					containerID: container.publicId,
 					permission: true,
 				};
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const containerID = container.publicId;
 				registry.dispatch( STORE_NAME ).receiveGetTagPermission( permissionResponse, { containerID } );
 
@@ -217,10 +219,13 @@ describe( 'modules/tagmanager existing-tag', () => {
 			it( 'returns false if a user cannot access the requested tag', async () => {
 				const container = factories.containerBuilder();
 				const permissionResponse = {
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					accountID: container.accountId,
+					// eslint-disable-next-line sitekit/camelcase-acronyms
 					containerID: container.publicId,
 					permission: false,
 				};
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const containerID = container.publicId;
 				registry.dispatch( STORE_NAME ).receiveGetTagPermission( permissionResponse, { containerID } );
 
@@ -228,6 +233,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 			} );
 
 			it( 'returns undefined if the tag permission is not loaded yet', async () => {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const { publicId: containerID } = factories.containerBuilder();
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/ );

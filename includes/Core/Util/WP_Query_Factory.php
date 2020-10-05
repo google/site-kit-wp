@@ -20,12 +20,13 @@ use WP_Query;
  * @ignore
  */
 final class WP_Query_Factory {
+	use WP_Context_Switcher_Trait;
 
 	/**
 	 * Creates a `WP_Query` instance to use for a given URL.
 	 *
 	 * The `WP_Query` instance returned is initialized with the correct query arguments, but the actual query will not
-	 * have run yet. The `WP_Query::get_posts()` method can be used to do that.
+	 * have run yet. The `WP_Query::get_posts()` method should be used to do that.
 	 *
 	 * This is an expensive function that works similarly to WordPress core's `url_to_postid()` function, however also
 	 * covering non-post URLs. It follows logic used in `WP::parse_request()` to cover the other kinds of URLs. The
@@ -47,8 +48,14 @@ final class WP_Query_Factory {
 
 		$query_args = self::parse_wp_query_args( $url_path_vars, $url_query_vars );
 
-		$query = new WP_Query();
+		$restore_context = self::with_frontend_context();
+
+		// Return extended version of `WP_Query` with self-contained 404 detection.
+		$query = new Synthetic_WP_Query();
 		$query->parse_query( $query_args );
+		$query->enable_404_detection( true );
+
+		$restore_context();
 
 		return $query;
 	}

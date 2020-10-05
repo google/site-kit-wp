@@ -47,17 +47,21 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 
 // Rename generated pieces to adhere to our convention.
 baseModuleStore = ( ( { actions, selectors, ...store } ) => {
+	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const { setAmpContainerID, ...restActions } = actions;
+	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const { getAmpContainerID, ...restSelectors } = selectors;
 
 	return {
 		...store,
 		actions: {
 			...restActions,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			setAMPContainerID: setAmpContainerID,
 		},
 		selectors: {
 			...restSelectors,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			getAMPContainerID: getAmpContainerID,
 		},
 	};
@@ -78,7 +82,7 @@ const store = Data.combineStores(
 Data.registerStore( STORE_NAME, store );
 
 export const {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,
