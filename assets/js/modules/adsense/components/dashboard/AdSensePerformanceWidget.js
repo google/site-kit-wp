@@ -29,6 +29,7 @@ import { isUndefined } from 'lodash';
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
+	changeToPercent,
 } from '../../../../util';
 import { TYPE_MODULES } from '../../../../components/data';
 import DataBlock from '../../../../components/data-block.js';
@@ -80,28 +81,28 @@ class AdSensePerformanceWidget extends Component {
 				className: 'googlesitekit-data-block--page-rpm',
 				title: __( 'Earnings', 'google-site-kit' ),
 				datapoint: readableLargeNumber( currentRangeData.totals[ 0 ], currentRangeData.headers[ 0 ]?.currency ),
-				change: ( ! isUndefined( prevRangeData.totals ) ) ? prevRangeData.totals[ 0 ] : 0,
+				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 0 ], currentRangeData.totals[ 0 ] ) : 0,
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--page-rpm',
 				title: __( 'Page RPM', 'google-site-kit' ),
 				datapoint: readableLargeNumber( currentRangeData.totals[ 1 ], currentRangeData.headers[ 1 ]?.currency ),
-				change: ( ! isUndefined( prevRangeData.totals ) ) ? prevRangeData.totals[ 1 ] : 0,
+				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 1 ], currentRangeData.totals[ 1 ] ) : 0,
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--impression',
 				title: __( 'Impressions', 'google-site-kit' ),
 				datapoint: readableLargeNumber( currentRangeData.totals[ 2 ], currentRangeData.headers[ 2 ]?.currency ),
-				change: ! isUndefined( prevRangeData.totals ) ? prevRangeData.totals[ 2 ] : 0,
+				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 2 ], currentRangeData.totals[ 2 ] ) : 0,
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--impression',
 				title: __( 'Page CTR', 'google-site-kit' ),
 				datapoint: readableLargeNumber( currentRangeData.totals[ 3 ], currentRangeData.headers[ 3 ]?.currency ),
-				change: ! isUndefined( prevRangeData.totals ) ? prevRangeData.totals[ 3 ] : 0,
+				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 3 ], currentRangeData.totals[ 3 ] ) : 0,
 				changeDataUnit: '%',
 			},
 		] : [];
@@ -146,7 +147,6 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
-				dateRange: 'last-28-days',
 				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
 			},
 			priority: 1,
@@ -165,6 +165,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
+				// dateRange: 'prev-date-range-placeholder',
 				dateRange: 'prev-28-days',
 				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
 			},
