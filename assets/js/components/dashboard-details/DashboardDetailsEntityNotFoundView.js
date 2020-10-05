@@ -32,8 +32,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { sanitizeHTML } from '../../util';
 import DashboardDetailsEntityHeaderContainer from './DashboardDetailsEntityHeaderContainer';
 
-export default function DashboardDetailsEntityNotFoundView( { url } ) {
-	const currentEntityURL = url || ( new URL( global.location.href ) ).searchParams.get( 'permaLink' );
+export default function DashboardDetailsEntityNotFoundView( { permalink } ) {
+	const currentEntityURL = permalink || ( new URL( global.location.href ) ).searchParams.get( 'permaLink' );
 
 	const message = sprintf(
 		/* translators: %s: current entity URL */
@@ -47,16 +47,16 @@ export default function DashboardDetailsEntityNotFoundView( { url } ) {
 	};
 
 	return (
-		<DashboardDetailsEntityHeaderContainer url={ currentEntityURL }>
+		<DashboardDetailsEntityHeaderContainer permalink={ currentEntityURL }>
 			<p dangerouslySetInnerHTML={ sanitizeHTML( message, sanitizeArgs ) } />
 		</DashboardDetailsEntityHeaderContainer>
 	);
 }
 
 DashboardDetailsEntityNotFoundView.propTypes = {
-	url: PropTypes.string,
+	permalink: PropTypes.string,
 };
 
 DashboardDetailsEntityNotFoundView.defaultProps = {
-	url: '',
+	permalink: '',
 };

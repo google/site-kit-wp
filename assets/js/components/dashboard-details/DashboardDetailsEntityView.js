@@ -50,11 +50,11 @@ export default function DashboardDetailsEntityView() {
 				<DateRangeSelector />
 			</div>
 
-			<DashboardDetailsEntityHeaderContainer url={ currentEntityURL }>
+			<DashboardDetailsEntityHeaderContainer permalink={ currentEntityURL }>
 				<h3 className="
-						googlesitekit-heading-3
-						googlesitekit-dashboard-single-url__title
-					">
+					googlesitekit-heading-3
+					googlesitekit-dashboard-single-url__title
+				">
 					{ decodeHTMLEntity( currentEntityTitle ) }
 				</h3>
 			</DashboardDetailsEntityHeaderContainer>

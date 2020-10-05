@@ -28,6 +28,6 @@ import DashboardDetailsEntityNotFoundView from '../assets/js/components/dashboar
 
 storiesOf( 'Dashboard Details', module )
 	.add( 'Not Found Entity', () => (
-		<DashboardDetailsEntityNotFoundView url="https://example.com/test-page" />
+		<DashboardDetailsEntityNotFoundView permalink="https://example.com/test-page" />
 	) )
 ;
