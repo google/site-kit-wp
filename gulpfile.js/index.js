@@ -29,7 +29,6 @@ const del = require( 'del' );
  */
 const copy = require( './copy' );
 const svgmin = require( './svgmin' );
-const svgstore = require( './svgstore' );
 const zip = require( './zip' );
 
 /**
@@ -66,7 +65,6 @@ exports.imagemin = function( cb ) {
  * Gulp task to minify and combine svg's.
  */
 exports.svg = gulp.series(
-	svgstore,
 	svgmin,
 );
 

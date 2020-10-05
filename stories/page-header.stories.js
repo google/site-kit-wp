@@ -27,7 +27,13 @@ storiesOf( 'Global', module )
 			<p>
 				<PageHeader
 					title="Module Page Title with Icon"
-					icon={ <AnalyticsIcon width={ 23 } height={ 26 } className="googlesitekit-page-header__icon" /> }
+					icon={
+						<AnalyticsIcon
+							className="googlesitekit-page-header__icon"
+							width={ 23 }
+							height={ 26 }
+						/>
+					}
 					status="not-connected"
 					statusText="Analytics is not connected"
 				/>

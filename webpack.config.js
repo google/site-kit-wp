@@ -81,18 +81,20 @@ const siteKitExternals = {
 
 const externals = { ...siteKitExternals };
 
+const svgRule = {
+	test: /\.svg$/,
+	use: [ {
+		loader: '@svgr/webpack',
+		options: {
+			// strip width & height to allow manual override using props
+			dimensions: false,
+		},
+	} ],
+};
+
 const rules = [
 	noAMDParserRule,
-	{
-		test: /\.svg$/,
-		use: [ {
-			loader: '@svgr/webpack',
-			options: {
-				// strip width & height to allow manual override using props
-				dimensions: false,
-			},
-		} ],
-	},
+	svgRule,
 	{
 		test: /\.js$/,
 		exclude: /node_modules/,
@@ -334,6 +336,7 @@ module.exports = {
 	resolve,
 	rules,
 	siteKitExternals,
+	svgRule,
 };
 
 module.exports.default = ( ...args ) => {

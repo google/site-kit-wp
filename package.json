@@ -179,7 +179,6 @@
     "gulp": "^4.0.2",
     "gulp-imagemin": "^7.1.0",
     "gulp-svgmin": "^3.0.0",
-    "gulp-svgstore": "^7.0.1",
     "gulp-zip": "^5.0.2",
     "husky": "^3.1.0",
     "jest-localstorage-mock": "^2.4.2",
