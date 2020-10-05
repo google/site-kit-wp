@@ -192,7 +192,7 @@ class AdSenseDashboardWidget extends Component {
 								<Layout
 									header
 									/* translators: %s: date range */
-									title={ sprintf( __( 'Performance over the last %s days', 'google-site-kit' ), currentDateRange ) }
+									title={ sprintf( __( 'Performance over the last %s', 'google-site-kit' ), currentDateRange ) }
 									headerCtaLabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
 									headerCtaLink={ homepage }
 								>
