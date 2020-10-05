@@ -24,50 +24,37 @@ import { delay } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Header from '../header';
 import Link from '../link';
 import HelpLink from '../help-link';
 import { getSiteKitAdminURL } from '../../util';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+const { useSelect } = Data;
 
-class BaseComponent extends Component {
-	render() {
-		const { children } = this.props;
-		return (
-			<Fragment>
-				{ children }
-			</Fragment>
-		);
-	}
-}
+export default function SetupWrapper() {
+	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL() );
+	const { moduleToSetup } = global._googlesitekitLegacyData.setup;
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleToSetup ) );
 
-class SetupWrapper extends Component {
-	constructor( props ) {
-		super( props );
-
-		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
-		this.state = {
-			currentModule: moduleToSetup,
-		};
+	if ( ! module ) {
+		return null;
 	}
 
-	static loadSetupModule( slug ) {
-		// Disabled because this rule doesn't acknowledge our use of the variable
-		// as a component in JSX.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const FilteredModuleSetup = withFilters( `googlesitekit.ModuleSetup-${ slug }` )( BaseComponent );
+	function loadSetupModule() {
+		const { setupComponent: SetupComponent } = module;
 
 		return (
-			<FilteredModuleSetup
-				finishSetup={ SetupWrapper.finishSetup }
-				onSettingsPage={ false }
-				isEditing={ true }
+			<SetupComponent
+				module={ module }
+				finishSetup={ finishSetup }
 			/>
 		);
 	}
@@ -75,7 +62,7 @@ class SetupWrapper extends Component {
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
 	 */
-	static finishSetup() {
+	function finishSetup() {
 		const args = {
 			notification: 'authentication_success',
 		};
@@ -94,75 +81,66 @@ class SetupWrapper extends Component {
 		}, 500, 'later' );
 	}
 
-	render() {
-		const { currentModule } = this.state;
-		const setupModule = SetupWrapper.loadSetupModule( currentModule );
-		const settingsPageURL = getSiteKitAdminURL(
-			'googlesitekit-settings',
-			{}
-		);
+	const setupModule = loadSetupModule();
 
-		return (
-			<Fragment>
-				<Header />
-				<div className="googlesitekit-setup">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-							">
-								<section className="googlesitekit-setup__wrapper">
+	return (
+		<Fragment>
+			<Header />
+			<div className="googlesitekit-setup">
+				<div className="mdc-layout-grid">
+					<div className="mdc-layout-grid__inner">
+						<div className="
+							mdc-layout-grid__cell
+							mdc-layout-grid__cell--span-12
+						">
+							<section className="googlesitekit-setup__wrapper">
+								<div className="mdc-layout-grid">
+									<div className="mdc-layout-grid__inner">
+										<div className="
+											mdc-layout-grid__cell
+											mdc-layout-grid__cell--span-12
+										">
+											<p className="
+												googlesitekit-setup__intro-title
+												googlesitekit-overline
+											">
+												{ __( 'Connect Service', 'google-site-kit' ) }
+											</p>
+											{ setupModule }
+										</div>
+									</div>
+								</div>
+								<div className="googlesitekit-setup__footer">
 									<div className="mdc-layout-grid">
 										<div className="mdc-layout-grid__inner">
 											<div className="
-												mdc-layout-grid__cell
-												mdc-layout-grid__cell--span-12
+													mdc-layout-grid__cell
+													mdc-layout-grid__cell--span-2-phone
+													mdc-layout-grid__cell--span-4-tablet
+													mdc-layout-grid__cell--span-6-desktop
+												">
+												<Link
+													id={ `setup-${ moduleToSetup }-cancel` }
+													href={ settingsPageURL }
+												>{ __( 'Cancel', 'google-site-kit' ) }</Link>
+											</div>
+											<div className="
+													mdc-layout-grid__cell
+													mdc-layout-grid__cell--span-2-phone
+													mdc-layout-grid__cell--span-4-tablet
+													mdc-layout-grid__cell--span-6-desktop
+													mdc-layout-grid__cell--align-right
 											">
-												<p className="
-													googlesitekit-setup__intro-title
-													googlesitekit-overline
-												">
-													{ __( 'Connect Service', 'google-site-kit' ) }
-												</p>
-												{ setupModule }
+												<HelpLink />
 											</div>
 										</div>
 									</div>
-									<div className="googlesitekit-setup__footer">
-										<div className="mdc-layout-grid">
-											<div className="mdc-layout-grid__inner">
-												<div className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-2-phone
-														mdc-layout-grid__cell--span-4-tablet
-														mdc-layout-grid__cell--span-6-desktop
-													">
-													<Link
-														id={ `setup-${ currentModule }-cancel` }
-														href={ settingsPageURL }
-													>{ __( 'Cancel', 'google-site-kit' ) }</Link>
-												</div>
-												<div className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-2-phone
-														mdc-layout-grid__cell--span-4-tablet
-														mdc-layout-grid__cell--span-6-desktop
-														mdc-layout-grid__cell--align-right
-												">
-													<HelpLink />
-												</div>
-											</div>
-										</div>
-									</div>
-								</section>
-							</div>
+								</div>
+							</section>
 						</div>
 					</div>
 				</div>
-			</Fragment>
-		);
-	}
+			</div>
+		</Fragment>
+	);
 }
-
-export default SetupWrapper;
