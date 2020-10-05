@@ -136,12 +136,12 @@ class User_Input_Settings {
 			foreach ( $settings as $setting_key => $setting_data ) {
 				if ( isset( $setting_data['scope'] ) ) {
 					if ( 'site' === $setting_data['scope'] ) {
-						$site_settings[ $setting_key ] = ! empty( $setting_data['value'] )
-							? $setting_data['value']
+						$site_settings[ $setting_key ] = ! empty( $setting_data['values'] )
+							? $setting_data['values']
 							: array();
 					} elseif ( 'user' === $setting_data['scope'] ) {
-						$user_settings[ $setting_key ] = ! empty( $setting_data['value'] )
-							? $setting_data['value']
+						$user_settings[ $setting_key ] = ! empty( $setting_data['values'] )
+							? $setting_data['values']
 							: array();
 					}
 				}
@@ -179,7 +179,7 @@ class User_Input_Settings {
 
 		foreach ( $data as $scope => $values ) {
 			foreach ( $values as $key => $value ) {
-				$settigns[ $key ] = array(
+				$settings[ $key ] = array(
 					'value' => $value,
 					'scope' => $scope,
 				);
