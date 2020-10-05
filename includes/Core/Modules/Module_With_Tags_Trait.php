@@ -95,18 +95,29 @@ trait Module_With_Tags_Trait {
 		 */
 		$block_on_consent = apply_filters( "googlesitekit_{$this->slug}_tag_amp_block_on_consent", false );
 
-		switch ( $block_on_consent ) {
-			case true:
-				return 'data-block-on-consent';
-
-			// Intentional fallthrough.
-			case '_till_responded':
-			case '_till_accepted':
-			case '_auto_reject':
-				return sprintf( 'data-block-on-consent="%s"', $block_on_consent );
-
-			default:
-				return '';
+		if ( in_array( $block_on_consent, $this->get_allowed_block_on_consent_values(), true ) ) {
+			return sprintf( 'data-block-on-consent="%s"', $block_on_consent );
 		}
+
+		if ( filter_var( $block_on_consent, FILTER_VALIDATE_BOOLEAN ) ) {
+			return 'data-block-on-consent';
+		}
+
+		return '';
+	}
+
+	/**
+	 * Gets the list of allowed block on consent values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] Block on consent attribute values.
+	 */
+	protected function get_allowed_block_on_consent_values() {
+		return array(
+			'_till_responded',
+			'_till_accepted',
+			'_auto_reject',
+		);
 	}
 }
