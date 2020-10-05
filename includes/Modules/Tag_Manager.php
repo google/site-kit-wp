@@ -107,6 +107,10 @@ final class Tag_Manager extends Module
 					return;
 				}
 
+				if ( $this->is_tag_blocked() ) {
+					return;
+				}
+
 				if ( ! $this->get_settings()->get()['useSnippet'] ) {
 					return;
 				}

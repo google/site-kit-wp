@@ -128,6 +128,10 @@ final class Analytics extends Module
 					return;
 				}
 
+				if ( $this->is_tag_blocked() ) {
+					return;
+				}
+
 				$use_snippet = $this->get_data( 'use-snippet' );
 				if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
 					return;
