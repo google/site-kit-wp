@@ -48,8 +48,66 @@ const fetchGetAuthenticationStore = createFetchStore( {
 	},
 } );
 
+// Actions
+const SET_AUTH_ERROR = 'SET_AUTH_ERROR';
+const CLEAR_AUTH_ERROR = 'CLEAR_AUTH_ERROR';
+
 const baseInitialState = {
 	authentication: undefined,
+	authError: null,
+};
+
+const baseActions = {
+	/**
+	 * Sets the authentication error.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} error Authentication error object.
+	 * @return {Object} Redux-style action.
+	 */
+	setAuthError( error ) {
+		return {
+			payload: { error },
+			type: SET_AUTH_ERROR,
+		};
+	},
+
+	/**
+	 * Clears the authentication error, if one was previously set.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	clearAuthError() {
+		return {
+			payload: {},
+			type: CLEAR_AUTH_ERROR,
+		};
+	},
+};
+
+export const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_AUTH_ERROR: {
+			return {
+				...state,
+				authError: payload.error,
+			};
+		}
+
+		case CLEAR_AUTH_ERROR: {
+			return {
+				...state,
+				authError: null,
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
 };
 
 const baseResolvers = {
@@ -178,18 +236,33 @@ const baseSelectors = {
 	/**
 	 * Gets the current disconnected reason.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.17.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The current disconnected reason.
 	 */
 	getDisconnectedReason: createGetAuthenticationSelector( 'disconnectedReason' ),
+
+	/**
+	 * Gets the authentication error.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|null)} Authentication error object if available, otherwise null.
+	 */
+	getAuthError( state ) {
+		const { authError } = state;
+		return authError;
+	},
 };
 
 const store = Data.combineStores(
 	fetchGetAuthenticationStore,
 	{
 		initialState: baseInitialState,
+		actions: baseActions,
+		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

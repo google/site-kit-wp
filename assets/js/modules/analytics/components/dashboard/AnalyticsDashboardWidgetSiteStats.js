@@ -99,7 +99,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 				trigger: 'both',
 			},
 			tooltip: {
-				isHtml: true,
+				isHtml: true, // eslint-disable-line sitekit/camelcase-acronyms
 				trigger: 'both',
 			},
 		};
