@@ -41,8 +41,8 @@ class AdSensePerformanceWidget extends Component {
 		super( props );
 
 		this.state = {
-			twentyEightDays: false,
-			prev28Days: false,
+			currentRangeData: false,
+			prevRangeData: false,
 		};
 	}
 
@@ -71,23 +71,37 @@ class AdSensePerformanceWidget extends Component {
 
 	render() {
 		const {
-			twentyEightDays,
-			prev28Days,
+			currentRangeData,
+			prevRangeData,
 		} = this.state;
 
-		const dataBlocks = twentyEightDays.totals ? [
+		const dataBlocks = currentRangeData.totals ? [
+			{
+				className: 'googlesitekit-data-block--page-rpm',
+				title: __( 'Earnings', 'google-site-kit' ),
+				datapoint: readableLargeNumber( currentRangeData.totals[ 0 ], currentRangeData.headers[ 0 ]?.currency ),
+				change: ( ! isUndefined( prevRangeData.totals ) ) ? prevRangeData.totals[ 0 ] : 0,
+				changeDataUnit: '%',
+			},
 			{
 				className: 'googlesitekit-data-block--page-rpm',
 				title: __( 'Page RPM', 'google-site-kit' ),
-				datapoint: readableLargeNumber( twentyEightDays.totals[ 1 ] ),
-				change: ( ! isUndefined( prev28Days.totals ) ) ? prev28Days.totals[ 1 ] : 0,
+				datapoint: readableLargeNumber( currentRangeData.totals[ 1 ], currentRangeData.headers[ 1 ]?.currency ),
+				change: ( ! isUndefined( prevRangeData.totals ) ) ? prevRangeData.totals[ 1 ] : 0,
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--impression',
 				title: __( 'Impressions', 'google-site-kit' ),
-				datapoint: readableLargeNumber( twentyEightDays.totals[ 2 ] ),
-				change: ! isUndefined( prev28Days.totals ) ? prev28Days.totals[ 2 ] : 0,
+				datapoint: readableLargeNumber( currentRangeData.totals[ 2 ], currentRangeData.headers[ 2 ]?.currency ),
+				change: ! isUndefined( prevRangeData.totals ) ? prevRangeData.totals[ 2 ] : 0,
+				changeDataUnit: '%',
+			},
+			{
+				className: 'googlesitekit-data-block--impression',
+				title: __( 'Page CTR', 'google-site-kit' ),
+				datapoint: readableLargeNumber( currentRangeData.totals[ 3 ], currentRangeData.headers[ 3 ]?.currency ),
+				change: ! isUndefined( prevRangeData.totals ) ? prevRangeData.totals[ 3 ] : 0,
 				changeDataUnit: '%',
 			},
 		] : [];
@@ -102,7 +116,7 @@ class AdSensePerformanceWidget extends Component {
 								mdc-layout-grid__cell--align-top
 								mdc-layout-grid__cell--span-2-phone
 								mdc-layout-grid__cell--span-2-tablet
-								mdc-layout-grid__cell--span-4-desktop
+								mdc-layout-grid__cell--span-3-desktop
 							">
 								<DataBlock
 									stat={ i }
@@ -133,14 +147,15 @@ export default withData(
 			datapoint: 'earnings',
 			data: {
 				dateRange: 'last-28-days',
+				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				if ( ! state.twentyEightDays ) {
+				if ( ! state.currentRangeData ) {
 					return {
-						twentyEightDays: data,
+						currentRangeData: data,
 					};
 				}
 			},
@@ -151,14 +166,15 @@ export default withData(
 			datapoint: 'earnings',
 			data: {
 				dateRange: 'prev-28-days',
+				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				if ( ! state.prev28Days ) {
+				if ( ! state.prevRangeData ) {
 					return {
-						prev28Days: data,
+						prevRangeData: data,
 					};
 				}
 			},
