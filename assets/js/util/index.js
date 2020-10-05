@@ -58,6 +58,15 @@ export * from './storage';
 export * from './i18n';
 export * from './helpers';
 
+const moduleMap = {
+	adsense: AdSenseIcon,
+	analytics: AnalyticsIcon,
+	optimize: OptimizeIcon,
+	'pagespeed-insights': PageSpeedInsightsIcon,
+	'search-console': SearchConsoleIcon,
+	tagmanager: TagManagerIcon,
+};
+
 /**
  * Removes a parameter from a URL string.
  *
@@ -606,26 +615,19 @@ export const decodeHTMLEntity = ( str ) => {
  * @return {HTMLImageElement}             HTML <img> tag with module icon.
  */
 export function moduleIcon( module, width = '33', height = '33', useClass = '' ) {
-	if ( ! global._googlesitekitLegacyData ) {
+	if ( ! global._googlesitekitLegacyData || ! moduleMap.hasOwnProperty( module ) ) {
 		return;
 	}
 
-	switch ( module ) {
-		case 'adsense':
-			return <AdSenseIcon width={ width } height={ height } className={ useClass } />;
-		case 'analytics':
-			return <AnalyticsIcon width={ width } height={ height } className={ useClass } />;
-		case 'optimize':
-			return <OptimizeIcon width={ width } height={ height } className={ useClass } />;
-		case 'pagespeed-insights':
-			return <PageSpeedInsightsIcon width={ undefined } height={ height } className={ useClass } />;
-		case 'search-console':
-			return <SearchConsoleIcon width={ width } height={ height } className={ useClass } />;
-		case 'tagmanager':
-			return <TagManagerIcon width={ width } height={ height } className={ useClass } />;
-		default:
-			throw new Error( `Invalid module slug: "${ module }"` );
-	}
+	const ModuleIconComponent = moduleMap[ module ];
+
+	return (
+		<ModuleIconComponent
+			width={ module === 'pagespeed-insights' ? undefined : width }
+			height={ height }
+			className={ useClass }
+		/>
+	);
 }
 
 /**
