@@ -180,8 +180,8 @@ class User_Input_Settings {
 		foreach ( $data as $scope => $values ) {
 			foreach ( $values as $key => $value ) {
 				$settings[ $key ] = array(
-					'value' => $value,
-					'scope' => $scope,
+					'values' => $value,
+					'scope'  => $scope,
 				);
 			}
 		}
