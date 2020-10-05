@@ -19,12 +19,14 @@
 /**
  * WordPress dependencies
  */
+import domReady from '@wordpress/dom-ready';
 import { addFilter } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
 import './datastore';
+import Modules from 'googlesitekit-modules';
 import { SetupMain as OptimizeSetup } from './components/setup';
 import { SettingsMain as OptimizeSettings } from './components/settings';
 import { fillFilterWithComponent } from '../../util';
@@ -38,11 +40,11 @@ addFilter(
 	fillFilterWithComponent( OptimizeSettings )
 );
 
-/**
- * Add component to the setup wizard.
- */
-addFilter(
-	'googlesitekit.ModuleSetup-optimize',
-	'googlesitekit.OptimizeModuleSetupWizard',
-	fillFilterWithComponent( OptimizeSetup )
-);
+domReady( () => {
+	Modules.registerModule(
+		'optimize',
+		{
+			setupComponent: OptimizeSetup,
+		},
+	);
+} );

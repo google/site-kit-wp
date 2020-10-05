@@ -31,6 +31,7 @@ import { addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import './datastore';
+import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
@@ -47,12 +48,6 @@ import DashboardPopularPagesWidget from './components/dashboard/DashboardPopular
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
-
-addFilter(
-	'googlesitekit.ModuleSetup-analytics',
-	'googlesitekit.AnalyticsModuleSetup',
-	compose( fillFilterWithComponent )( AnalyticsSetup )
-);
 
 addFilter(
 	'googlesitekit.ModuleSettingsDetails-analytics',
@@ -126,5 +121,12 @@ domReady( () => {
 		[
 			AREA_DASHBOARD_POPULARITY,
 		],
+	);
+
+	Modules.registerModule(
+		'analytics',
+		{
+			setupComponent: AnalyticsSetup,
+		},
 	);
 } );

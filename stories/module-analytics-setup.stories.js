@@ -22,33 +22,17 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters, addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
 import { SetupMain as AnalyticsSetup } from '../assets/js/modules/analytics/components/setup/index';
-import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 
 import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
-import { WithTestRegistry } from '../tests/js/utils';
-
-function filterAnalyticsSetup() {
-	global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
-
-	removeAllFilters( 'googlesitekit.ModuleSetup-analytics' );
-	addFilter(
-		'googlesitekit.ModuleSetup-analytics',
-		'googlesitekit.AnalyticsModuleSetup',
-		fillFilterWithComponent( AnalyticsSetup )
-	);
-}
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
+import { WithTestRegistry, createTestRegistry } from '../tests/js/utils';
 
 function Setup( props ) {
 	return (
@@ -59,195 +43,177 @@ function Setup( props ) {
 }
 
 storiesOf( 'Analytics Module/Setup', module )
-	.add( 'Loading', () => {
-		filterAnalyticsSetup();
+	.addDecorator( ( storyFn ) => {
+		global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
+		const registry = createTestRegistry();
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
+		registry.dispatch( CORE_MODULES ).registerModule( 'analytics', {
+			setupComponent: AnalyticsSetup,
+		} );
 
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		};
-
-		return <Setup callback={ setupRegistry } />;
+		return storyFn( registry );
 	} )
-	.add( 'Start', () => {
-		filterAnalyticsSetup();
+	.add( 'Loading', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Start', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		};
+			accountID: properties[ 0 ].accountId,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			propertyID: profiles[ 0 ].webPropertyId,
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
 	} )
-	.add( 'Start (with matched property)', () => {
-		filterAnalyticsSetup();
-
+	.add( 'Start (with matched property)', ( registry ) => {
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
-		};
+			accountID: properties[ 0 ].accountId,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			propertyID: profiles[ 0 ].webPropertyId,
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
 
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
 	} )
-	.add( 'Create new view', () => {
-		filterAnalyticsSetup();
-
+	.add( 'Create new view', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const { accountId, webPropertyId } = profiles[ 0 ];
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				accountID: accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				propertyID: webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).setSettings( {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				accountID: accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				propertyID: webPropertyId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				internalWebPropertyID: internalWebPropertyId,
-				profileID: PROFILE_CREATE,
-				anonymizeIP: true,
-				useSnippet: true,
-				trackingDisabled: [ 'loggedinUsers' ],
-			} );
-		};
+			accountID: accountId,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			propertyID: webPropertyId,
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( STORE_NAME ).setSettings( {
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			accountID: accountId,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			propertyID: webPropertyId,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			internalWebPropertyID: internalWebPropertyId,
+			profileID: PROFILE_CREATE,
+			anonymizeIP: true,
+			useSnippet: true,
+			trackingDisabled: [ 'loggedinUsers' ],
+		} );
 
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
 	} )
-	.add( 'Create Account Legacy (no accounts)', () => {
-		filterAnalyticsSetup();
+	.add( 'Create Account Legacy (no accounts)', ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( [] );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		};
-
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
 	} )
-	.add( 'Create Account Legacy (new account option)', () => {
-		filterAnalyticsSetup();
-
+	.add( 'Create Account Legacy (new account option)', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: ACCOUNT_CREATE,
-			} );
-		};
+			accountID: properties[ 0 ].accountId,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			propertyID: profiles[ 0 ].webPropertyId,
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			accountID: ACCOUNT_CREATE,
+		} );
 
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
 	} )
-	.add( 'Create Account (scope not granted)', () => {
-		filterAnalyticsSetup();
-
+	.add( 'Create Account (scope not granted)', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				usingProxy: true,
-				referenceSiteURL: 'http://example.com',
-				timezone: 'America/Detroit',
-				siteName: 'My Site Name',
-			} );
-			dispatch( CORE_USER ).receiveGetAuthentication( {
-				authenticated: true,
-				requiredScopes: [],
-				grantedScopes: [],
-			} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			usingProxy: true,
+			referenceSiteURL: 'http://example.com',
+			timezone: 'America/Detroit',
+			siteName: 'My Site Name',
+		} );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+			authenticated: true,
+			requiredScopes: [],
+			grantedScopes: [],
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: ACCOUNT_CREATE,
-			} );
-		};
+			accountID: properties[ 0 ].accountId,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			propertyID: profiles[ 0 ].webPropertyId,
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			accountID: ACCOUNT_CREATE,
+		} );
 
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
 	} )
-	.add( 'Create Account (scope granted)', () => {
-		filterAnalyticsSetup();
-
+	.add( 'Create Account (scope granted)', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				usingProxy: true,
-				referenceSiteURL: 'http://example.com',
-				timezone: 'America/Detroit',
-				siteName: 'My Site Name',
-			} );
-			dispatch( CORE_USER ).receiveGetAuthentication( {
-				authenticated: true,
-				requiredScopes: [],
-				grantedScopes: [ PROVISIONING_SCOPE ],
-			} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			usingProxy: true,
+			referenceSiteURL: 'http://example.com',
+			timezone: 'America/Detroit',
+			siteName: 'My Site Name',
+		} );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+			authenticated: true,
+			requiredScopes: [],
+			grantedScopes: [ PROVISIONING_SCOPE ],
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				accountID: ACCOUNT_CREATE,
-			} );
-		};
+			accountID: properties[ 0 ].accountId,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			propertyID: profiles[ 0 ].webPropertyId,
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			accountID: ACCOUNT_CREATE,
+		} );
 
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
 	} )
-	.add( 'Existing Tag (with access)', () => {
-		filterAnalyticsSetup();
-
+	.add( 'Existing Tag (with access)', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
@@ -255,52 +221,46 @@ storiesOf( 'Analytics Module/Setup', module )
 			propertyID: properties[ 0 ].id,
 		};
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-			dispatch( STORE_NAME ).receiveGetTagPermission( {
-				accountID: existingTag.accountID,
-				permission: true,
-			}, { propertyID: existingTag.propertyID } );
-		};
+			accountID: properties[ 0 ].accountId,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			propertyID: profiles[ 0 ].webPropertyId,
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: existingTag.accountID,
+			permission: true,
+		}, { propertyID: existingTag.propertyID } );
 
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
 	} )
-	.add( 'Existing Tag (no access)', () => {
-		filterAnalyticsSetup();
-
+	.add( 'Existing Tag (no access)', ( registry ) => {
 		const existingTag = {
 			accountID: '12345678',
 			propertyID: 'UA-12345678-1',
 		};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/camelcase-acronyms
-				propertyID: profiles[ 0 ].webPropertyId,
-			} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-			dispatch( STORE_NAME ).receiveGetTagPermission( {
-				accountID: existingTag.accountID,
-				permission: false,
-			}, { propertyID: existingTag.propertyID } );
-		};
+			accountID: properties[ 0 ].accountId,
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			propertyID: profiles[ 0 ].webPropertyId,
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+			accountID: existingTag.accountID,
+			permission: false,
+		}, { propertyID: existingTag.propertyID } );
 
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
 	} )
 ;

@@ -26,6 +26,7 @@ import domReady from '@wordpress/dom-ready';
  * Internal dependencies
  */
 import './datastore';
+import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
 import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
@@ -40,12 +41,6 @@ import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
-
-addFilter(
-	'googlesitekit.ModuleSetup-adsense',
-	'googlesitekit.AdSenseModuleSetup',
-	fillFilterWithComponent( SetupMain )
-);
 
 addFilter(
 	'googlesitekit.ModuleSettingsDetails-adsense',
@@ -112,5 +107,11 @@ domReady( () => {
 		[
 			AREA_DASHBOARD_EARNINGS,
 		],
+	);
+	Modules.registerModule(
+		'adsense',
+		{
+			setupComponent: SetupMain,
+		},
 	);
 } );

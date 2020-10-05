@@ -30,24 +30,15 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { WithTestRegistry, createTestRegistry, freezeFetch } from '../tests/js/utils';
-import { fillFilterWithComponent } from '../assets/js/util';
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
 import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user';
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { SetupMain as TagManagerSetup } from '../assets/js/modules/tagmanager/components/setup';
 import { STORE_NAME, ACCOUNT_CREATE } from '../assets/js/modules/tagmanager/datastore/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 
 function Setup( props ) {
-	global._googlesitekitLegacyData.setup.moduleToSetup = 'tagmanager';
-
-	removeAllFilters( 'googlesitekit.ModuleSetup-tagmanager' );
-	addFilter(
-		'googlesitekit.ModuleSetup-tagmanager',
-		'googlesitekit.TagManagerModuleSetup',
-		fillFilterWithComponent( TagManagerSetup )
-	);
-
 	return (
 		<WithTestRegistry { ...props }>
 			<SetupWrapper />
@@ -57,7 +48,18 @@ function Setup( props ) {
 
 storiesOf( 'Tag Manager Module/Setup', module )
 	.addDecorator( ( storyFn ) => {
+		global._googlesitekitLegacyData.setup.moduleToSetup = 'tagmanager';
 		const registry = createTestRegistry();
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [
+			{
+				slug: 'tagmanager',
+				active: true,
+				connected: true,
+			},
+		] );
+		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
+			setupComponent: TagManagerSetup,
+		} );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
