@@ -32,7 +32,6 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import AdSenseEstimateEarningsWidget from './AdSenseEstimateEarningsWidget';
 import AdSensePerformanceWidget from './AdSensePerformanceWidget';
 import Alert from '../../../../components/alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
@@ -190,17 +189,6 @@ class AdSenseDashboardWidget extends Component {
 								wrapperClass
 							) }>
 								<ModuleSettingsWarning slug="adsense" context="module-dashboard" />
-								<Layout
-									header
-									title={ __( 'Estimated earnings', 'google-site-kit' ) }
-									headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
-									headerCtaLink={ homepage }
-								>
-									<AdSenseEstimateEarningsWidget
-										handleDataError={ this.handleDataError }
-										handleDataSuccess={ this.handleDataSuccess }
-									/>
-								</Layout>
 							</div>
 							<div className={ classnames(
 								'mdc-layout-grid__cell',
