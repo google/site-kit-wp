@@ -27,12 +27,12 @@ const agent = new https.Agent( {
 } );
 
 module.exports = async function( page, scenario ) {
-	const intercept = async ( request, targetUrl ) => {
-		const requestUrl = request.url();
+	const intercept = async ( request, targetURL ) => {
+		const requestURL = request.url();
 
 		// FIND TARGET URL REQUEST
-		if ( requestUrl === targetUrl ) {
-			const cookiesList = await page.cookies( requestUrl );
+		if ( requestURL === targetURL ) {
+			const cookiesList = await page.cookies( requestURL );
 			const cookies = cookiesList.map( ( cookie ) => `${ cookie.name }=${ cookie.value }` ).join( '; ' );
 			const headers = Object.assign( request.headers(), { cookie: cookies } );
 			const options = {
@@ -43,7 +43,7 @@ module.exports = async function( page, scenario ) {
 				agent,
 			};
 
-			const result = await fetch( requestUrl, options );
+			const result = await fetch( requestURL, options );
 
 			const buffer = await result.buffer();
 			const cleanedHeaders = result.headers._headers || {};
