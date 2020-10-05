@@ -22,7 +22,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 function PageHeader( props ) {
-	const { title, icon, className, status, statusText, fullWidth } = props;
+	const { title, icon, className, status, statusText, fullWidth, children } = props;
 
 	const widthClasses = fullWidth
 		? `
@@ -37,7 +37,7 @@ function PageHeader( props ) {
 		`;
 
 	// Determine whether the details cell should display.
-	const hasDetails = '' !== status || typeof props.children !== 'undefined';
+	const hasDetails = '' !== status || Boolean( children );
 
 	return (
 		<header className="googlesitekit-page-header">

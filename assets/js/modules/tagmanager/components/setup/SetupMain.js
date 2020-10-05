@@ -79,7 +79,7 @@ export default function SetupMain( { finishSetup } ) {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--tagmanager">
 
 			<div className="googlesitekit-setup-module__logo">
-				<TagManagerIcon id="tagmanager" width="33" height="33" />
+				<TagManagerIcon width="33" height="33" />
 			</div>
 
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">

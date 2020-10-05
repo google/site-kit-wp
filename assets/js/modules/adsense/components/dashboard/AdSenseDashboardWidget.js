@@ -157,7 +157,13 @@ class AdSenseDashboardWidget extends Component {
 							">
 								<PageHeader
 									title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
-									icon={ <SearchConsoleIcon height="30" width="26" className="googlesitekit-page-header__icon" /> }
+									icon={
+										<SearchConsoleIcon
+											className="googlesitekit-page-header__icon"
+											height="30"
+											width="26"
+										/>
+									}
 									iconID="adsense"
 									status={ moduleStatus }
 									statusText={ moduleStatusText }

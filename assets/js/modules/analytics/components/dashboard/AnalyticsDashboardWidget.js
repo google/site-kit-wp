@@ -162,7 +162,13 @@ class AnalyticsDashboardWidget extends Component {
 							">
 								<PageHeader
 									title={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-									icon={ <AnalyticsIcon height="26" width="24" className="googlesitekit-page-header__icon" /> }
+									icon={
+										<AnalyticsIcon
+											className="googlesitekit-page-header__icon"
+											height="26"
+											width="24"
+										/>
+									}
 									iconID="analytics"
 									status="connected"
 									statusText={ sprintf(

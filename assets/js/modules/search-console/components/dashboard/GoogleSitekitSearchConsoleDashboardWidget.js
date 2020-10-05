@@ -159,7 +159,14 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 							">
 							<PageHeader
 								title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-								icon={ <SearchConsoleIcon id="search-console" height="21" width="23" className="googlesitekit-page-header__icon" /> }
+								icon={
+									<SearchConsoleIcon
+										id="search-console"
+										className="googlesitekit-page-header__icon"
+										height="21"
+										width="23"
+									/>
+								}
 								iconID="search-console"
 								status="connected"
 								statusText={ sprintf(
