@@ -1,7 +1,7 @@
 /**
- * DashboardDetailsApp component.
+ * DashboardDetailsEntityView component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,10 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { decodeHTMLEntity } from '../../util';
-import Link from '../link';
-import Layout from '../layout/layout';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DateRangeSelector from '../date-range-selector';
 import DashboardDetailsModules from './dashboard-details-modules';
+import DashboardDetailsEntityHeaderContainer from './DashboardDetailsEntityHeaderContainer';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
@@ -51,31 +50,14 @@ export default function DashboardDetailsEntityView() {
 				<DateRangeSelector />
 			</div>
 
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
-				<Layout>
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-							">
-								<h3 className="
-										googlesitekit-heading-3
-										googlesitekit-dashboard-single-url__title
-									">
-									{ decodeHTMLEntity( currentEntityTitle ) }
-								</h3>
-								<Link href={ currentEntityURL } inherit external>
-									{ currentEntityURL }
-								</Link>
-							</div>
-						</div>
-					</div>
-				</Layout>
-			</div>
+			<DashboardDetailsEntityHeaderContainer url={ currentEntityURL }>
+				<h3 className="
+						googlesitekit-heading-3
+						googlesitekit-dashboard-single-url__title
+					">
+					{ decodeHTMLEntity( currentEntityTitle ) }
+				</h3>
+			</DashboardDetailsEntityHeaderContainer>
 
 			{ featureFlags.widgets.pageDashboard.enabled && (
 				<div className="

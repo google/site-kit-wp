@@ -31,11 +31,14 @@ import Link from '../link';
 import PageHeader from '../page-header';
 import HelpLink from '../help-link';
 import DashboardDetailsEntityView from './DashboardDetailsEntityView';
+import DashboardDetailsEntityNotFoundView from './DashboardDetailsEntityNotFoundView';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
+	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+
 	if ( ! dashboardURL ) {
 		return null;
 	}
@@ -67,7 +70,8 @@ export default function DashboardDetailsApp() {
 								/>
 							</div>
 
-							<DashboardDetailsEntityView />
+							{ currentEntityURL && <DashboardDetailsEntityView /> }
+							{ ! currentEntityURL && <DashboardDetailsEntityNotFoundView /> }
 
 							<div className="
 								mdc-layout-grid__cell
