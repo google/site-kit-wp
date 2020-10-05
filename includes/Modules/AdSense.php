@@ -793,12 +793,24 @@ tag_partner: "site_kit"
 					gmdate( 'Y-m-d', strtotime( '14 days ago' ) ),
 					gmdate( 'Y-m-d', strtotime( '8 days ago' ) ),
 				);
+			case 'prev-14-days':
+				return array(
+					gmdate( 'Y-m-d', strtotime( '28 days ago' ) ),
+					gmdate( 'Y-m-d', strtotime( '15 days ago' ) ),
+				);
 			case 'prev-28-days':
 				return array(
 					gmdate( 'Y-m-d', strtotime( '56 days ago' ) ),
 					gmdate( 'Y-m-d', strtotime( '29 days ago' ) ),
 				);
+			case 'prev-90-days':
+				return array(
+					gmdate( 'Y-m-d', strtotime( '180 days ago' ) ),
+					gmdate( 'Y-m-d', strtotime( '91 days ago' ) ),
+				);
 			// Intentional fallthrough.
+			// Allow place holder to be able to query the prev-**-days value.
+			case 'prev-date-range-placeholder':
 			case 'last-7-days':
 			case 'last-14-days':
 			case 'last-28-days':
