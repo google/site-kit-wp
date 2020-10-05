@@ -24,20 +24,26 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { sanitizeHTML } from '../../util';
 import DashboardDetailsEntityHeaderContainer from './DashboardDetailsEntityHeaderContainer';
 
 export default function DashboardDetailsEntityNotFoundView() {
-	const currentEntityURL = '#';
+	const currentEntityURL = ( new URL( global.location.href ) ).searchParams.get( 'permaLink' );
+
+	const message = sprintf(
+		/* translators: %s: current entity URL */
+		__( 'It looks like the URL %s is not part of this site, therefore there is no data available to display.', 'google-site-kit' ),
+		`<strong>${ currentEntityURL }</strong>`
+	);
+
+	const sanitizeArgs = {
+		ALLOWED_TAGS: [ 'strong' ],
+		ALLOWED_ATTR: [],
+	};
 
 	return (
 		<DashboardDetailsEntityHeaderContainer url={ currentEntityURL }>
-			<p>
-				{ sprintf(
-					/* translators: %s: current entity URL */
-					__( 'It looks like the URL %s is not part of this site, therefore there is no data available to display.', 'google-site-kit' ),
-					currentEntityURL
-				) }
-			</p>
+			<p dangerouslySetInnerHTML={ sanitizeHTML( message, sanitizeArgs ) } />
 		</DashboardDetailsEntityHeaderContainer>
 	);
 }
