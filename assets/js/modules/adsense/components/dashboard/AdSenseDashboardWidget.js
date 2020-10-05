@@ -37,7 +37,6 @@ import Alert from '../../../../components/alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import ProgressBar from '../../../../components/progress-bar';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
 import HelpLink from '../../../../components/help-link';
@@ -58,7 +57,6 @@ class AdSenseDashboardWidget extends Component {
 		this.state = {
 			receivingData: true,
 			error: false,
-			loading: true,
 			zeroData: false,
 		};
 		this.handleDataError = this.handleDataError.bind( this );
@@ -84,7 +82,6 @@ class AdSenseDashboardWidget extends Component {
 			receivingData: false,
 			error,
 			errorObj,
-			loading: false,
 		} );
 	}
 
@@ -94,7 +91,6 @@ class AdSenseDashboardWidget extends Component {
 	handleDataSuccess() {
 		this.setState( {
 			receivingData: true,
-			loading: false,
 		} );
 	}
 
@@ -104,7 +100,6 @@ class AdSenseDashboardWidget extends Component {
 	handleZeroData() {
 		this.setState( {
 			zeroData: true,
-			loading: false,
 		} );
 	}
 
@@ -167,7 +162,6 @@ class AdSenseDashboardWidget extends Component {
 									status={ moduleStatus }
 									statusText={ moduleStatusText }
 								/>
-								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 							{ zeroData &&
