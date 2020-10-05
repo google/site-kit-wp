@@ -165,8 +165,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
-				// dateRange: 'prev-date-range-placeholder',
-				dateRange: 'prev-28-days',
+				dateRange: 'prev-date-range-placeholder',
 				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
 			},
 			priority: 1,
