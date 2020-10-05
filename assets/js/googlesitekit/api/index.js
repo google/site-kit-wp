@@ -140,8 +140,13 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 		// if so and there is a data store available to dispatch on, dispatch a
 		// `setPermissionScopeError()` action.
 		// Kind of a hack, but scales to all components.
-		if ( error.code === ERROR_CODE_MISSING_REQUIRED_SCOPE && global.googlesitekit?.data?.dispatch?.( CORE_USER ) ) {
-			global.googlesitekit.data.dispatch( CORE_USER ).setPermissionScopeError( error );
+		const dispatch = global.googlesitekit?.data?.dispatch?.( CORE_USER );
+		if ( dispatch ) {
+			if ( error.code === ERROR_CODE_MISSING_REQUIRED_SCOPE ) {
+				dispatch.setPermissionScopeError( error );
+			} else if ( error.data?.reconnectURL ) {
+				dispatch.setAuthError( error );
+			}
 		}
 
 		global.console.error( 'Google Site Kit API Error', error );
