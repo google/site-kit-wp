@@ -238,6 +238,13 @@ final class Authentication {
 			}
 		);
 
+		add_action(
+			'admin_action_' . Google_Proxy::ACTION_PERMISSIONS,
+			function () {
+				$this->handle_proxy_permissions();
+			}
+		);
+
 		add_action( 'googlesitekit_authorize_user', $this->get_method_proxy( 'set_connected_proxy_url' ) );
 
 		add_filter(
@@ -468,7 +475,6 @@ final class Authentication {
 
 		return ! empty( $access_token );
 	}
-
 	/**
 	 * Checks whether the Site Kit setup is considered complete.
 	 *
@@ -608,7 +614,7 @@ final class Authentication {
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
 			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_setup_url() );
-			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
+			$data['proxyPermissionsURL'] = esc_url_raw( $this->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
 		}
 
@@ -1105,4 +1111,44 @@ final class Authentication {
 		);
 	}
 
+	/**
+	 * Handles proxy permissions.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function handle_proxy_permissions() {
+		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
+		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_PERMISSIONS ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
+		}
+
+		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+			wp_die( esc_html__( 'You have insufficient permissions to manage Site Kit permissions.', 'google-site-kit' ) );
+		}
+
+		if ( ! $this->credentials->using_proxy() ) {
+			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
+		}
+
+		wp_safe_redirect( $this->get_oauth_client()->get_proxy_permissions_url() );
+		exit;
+
+	}
+
+	/**
+	 * Gets the proxy permission URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Proxy permission URL.
+	 */
+	private function get_proxy_permissions_url() {
+		return add_query_arg(
+			array(
+				'action' => Google_Proxy::ACTION_PERMISSIONS,
+				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS ),
+			),
+			admin_url( 'index.php' )
+		);
+	}
 }

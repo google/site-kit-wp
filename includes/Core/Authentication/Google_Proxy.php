@@ -31,6 +31,7 @@ class Google_Proxy {
 	const PERMISSIONS_URI         = '/site-management/permissions/';
 	const USER_INPUT_SETTINGS_URI = '/settings/';
 	const ACTION_SETUP            = 'googlesitekit_proxy_setup';
+	const ACTION_PERMISSIONS      = 'googlesitekit_proxy_permissions';
 
 	/**
 	 * Plugin context.
