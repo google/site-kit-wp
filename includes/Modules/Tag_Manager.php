@@ -34,8 +34,6 @@ use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListAccountsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListTagsResponse;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListWorkspacesResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
