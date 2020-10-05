@@ -112,13 +112,7 @@ class AssetsTest extends TestCase {
 	public function test_enqueue_fonts() {
 		remove_all_actions( 'login_enqueue_scripts' );
 
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp' ) )->getMock();
-		$mock_context->expects( $this->once() )
-			->method( 'is_amp' )
-			->will( $this->returnValue( false ) );
-
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $assets, 'context', $mock_context );
 
 		add_action( 'login_enqueue_scripts', array( $assets, 'enqueue_fonts' ) );
 		do_action( 'login_enqueue_scripts' );

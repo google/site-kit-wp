@@ -10,7 +10,10 @@
 
 namespace Google\Site_Kit\Tests;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Tests\Exception\RedirectException;
+use PHPUnit_Framework_MockObject_MockObject;
 
 class TestCase extends \WP_UnitTestCase {
 
@@ -141,6 +144,49 @@ class TestCase extends \WP_UnitTestCase {
 		call_user_func_array( 'do_action', func_get_args() );
 
 		return ob_get_clean();
+	}
+
+	/**
+	 * Gets a mock Context instance fixed to a primary AMP mode.
+	 *
+	 * @param string $main_file Main file for Context to use. Defaults to main plugin file.
+	 * @param Input  $input     Input instance. Defaults to new Input.
+	 * @return Context
+	 */
+	protected function get_amp_primary_context( $main_file = GOOGLESITEKIT_PLUGIN_MAIN_FILE, $input = null ) {
+		$mock_context = $this->new_mock_amp_context( $main_file, $input );
+		$mock_context->method( 'is_amp' )->willReturn( true );
+		$mock_context->method( 'get_amp_mode' )->willReturn( Context::AMP_MODE_PRIMARY );
+
+		return $mock_context;
+	}
+
+	/**
+	 * Gets a mock Context instance fixed to a secondary AMP mode.
+	 *
+	 * @param string $main_file Main file for Context to use. Defaults to main plugin file.
+	 * @param Input  $input     Input instance. Defaults to new Input.
+	 * @return Context
+	 */
+	protected function get_amp_secondary_context( $main_file = GOOGLESITEKIT_PLUGIN_MAIN_FILE, $input = null ) {
+		$mock_context = $this->new_mock_amp_context( $main_file, $input );
+		$mock_context->method( 'is_amp' )->willReturn( true );
+		$mock_context->method( 'get_amp_mode' )->willReturn( Context::AMP_MODE_SECONDARY );
+
+		return $mock_context;
+	}
+
+	/**
+	 * Creates a new mock AMP Context instance.
+	 *
+	 * @param mixed ...$args Constructor arguments to pass to the mocked Context.
+	 * @return PHPUnit_Framework_MockObject_MockObject
+	 */
+	private function new_mock_amp_context( ...$args ) {
+		return $this->getMockBuilder( Context::class )
+					->setConstructorArgs( $args )
+					->setMethods( array( 'is_amp', 'get_amp_mode' ) )
+					->getMock();
 	}
 
 	protected function network_activate_site_kit() {
