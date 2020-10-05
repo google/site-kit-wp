@@ -19,14 +19,7 @@
 /**
  * External dependencies
  */
-import { each } from 'lodash';
-
-/**
- * Internal dependencies
- */
-import { getModulesData } from '../../../util';
-import { analyticsAdsenseReportDataDefaults } from '../../analytics/util';
-import data, { TYPE_MODULES } from '../../../components/data';
+import each from 'lodash/each';
 
 export * from './parsing';
 export * from './status';
@@ -57,36 +50,6 @@ export function reduceAdSenseData( rows ) {
 		dataMap,
 	};
 }
-
-/**
- * Check if adsense is connected from Analytics API.
- *
- * @return {Promise} Resolves to a boolean, whether or not AdSense is connected.
- */
-export const isAdsenseConnectedAnalytics = async () => {
-	const modulesData = getModulesData();
-
-	const { active: adsenseActive } = modulesData.adsense;
-	const { active: analyticsActive } = modulesData.analytics;
-
-	let adsenseConnect = true;
-
-	if ( adsenseActive && analyticsActive ) {
-		await data.get( TYPE_MODULES, 'analytics', 'report', analyticsAdsenseReportDataDefaults ).then( ( res ) => {
-			if ( res ) {
-				adsenseConnect = true;
-			}
-		} ).catch( ( err ) => {
-			if ( 400 === err.code && 'INVALID_ARGUMENT' === err.message ) {
-				adsenseConnect = false;
-			}
-		} );
-	}
-
-	return new Promise( ( resolve ) => {
-		resolve( adsenseConnect );
-	} );
-};
 
 /**
  * Check for any value higher than 0 in values from AdSense data.

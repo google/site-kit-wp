@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { string } from 'prop-types';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
@@ -43,7 +43,7 @@ const WidgetContextRenderer = ( { slug } ) => {
 };
 
 WidgetContextRenderer.propTypes = {
-	slug: string.isRequired,
+	slug: PropTypes.string.isRequired,
 };
 
 export default WidgetContextRenderer;

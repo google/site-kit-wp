@@ -1,8 +1,10 @@
 /* eslint-disable no-restricted-globals */
 /* global __STORYBOOK_CLIENT_API__ */
+
 /**
  * External dependencies
  */
+import lodash from 'lodash';
 import React from 'react';
 import { addDecorator, configure } from '@storybook/react';
 
@@ -22,7 +24,6 @@ import {
 	getQueryString,
 	addQueryArgs,
 } from '@wordpress/url';
-import lodash from 'lodash';
 import {
 	addFilter,
 	removeFilter,
@@ -32,16 +33,14 @@ import {
 	removeAction,
 	removeAllFilters,
 } from '@wordpress/hooks';
+
 /**
  * Internal dependencies
  */
 import '../assets/sass/wpdashboard.scss';
 import '../assets/sass/adminbar.scss';
 import '../assets/sass/admin.scss';
-import '../vendor/johnpbloch/wordpress-core/wp-admin/css/common.css';
-import '../vendor/johnpbloch/wordpress-core/wp-admin/css/dashboard.css';
-import '../vendor/johnpbloch/wordpress-core/wp-admin/css/edit.css';
-import '../vendor/johnpbloch/wordpress-core/wp-admin/css/forms.css';
+import './assets/sass/wp-admin.scss';
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 import { bootstrapFetchMocks } from './fetch-mocks';
 
@@ -104,9 +103,11 @@ global._googlesitekitEntityData = {
 bootstrapFetchMocks();
 
 // Global Decorator.
-addDecorator( ( story ) => <div className="googlesitekit-plugin-preview">
-	<div className="googlesitekit-plugin">{ story() }</div>
-</div> );
+addDecorator( ( story ) => (
+	<div className="googlesitekit-plugin-preview">
+		<div className="googlesitekit-plugin">{ story() }</div>
+	</div>
+) );
 
 const req = require.context( '../stories', true, /\.stories\.js$/ );
 

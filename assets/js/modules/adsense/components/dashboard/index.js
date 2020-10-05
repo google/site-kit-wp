@@ -16,4 +16,13 @@
  * limitations under the License.
  */
 
+export { default as AdSenseDashboardWidget } from './AdSenseDashboardWidget';
+export { default as AdSenseEstimateEarningsWidget } from './AdSenseEstimateEarningsWidget';
+export { default as AdSensePerformanceWidget } from './AdSensePerformanceWidget';
+export { default as DashboardAdSenseTopPages } from './DashboardAdSenseTopPages';
 export { default as DashboardZeroData } from './DashboardZeroData';
+export { default as DashboardSummaryWidget } from './DashboardSummaryWidget';
+export { default as DashboardTopEarningPagesWidget } from './DashboardTopEarningPagesWidget';
+export { default as LegacyAdSenseDashboardMainSummary } from './LegacyAdSenseDashboardMainSummary';
+export { default as LegacyDashboardAdSenseTopEarningPagesSmall } from './LegacyDashboardAdSenseTopEarningPagesSmall';
+export { default as LegacyDashboardEarnings } from './LegacyDashboardEarnings';

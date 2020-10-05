@@ -130,7 +130,7 @@ final class OAuth_Client {
 	/**
 	 * Owner_ID instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 * @var Owner_ID
 	 */
 	private $owner_id;
@@ -237,15 +237,9 @@ final class OAuth_Client {
 
 		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
 		if ( $this->http_proxy->is_enabled() ) {
-			if ( $this->http_proxy->use_authentication() ) {
-				// The "Authorization" header is used to authenticate the end request; use the dedicated proxy header.
-				$http_client->setDefaultOption(
-					'headers/Proxy-Authorization',
-					'Basic ' . base64_encode( $this->http_proxy->authentication() )
-				);
-			}
-
-			$http_client->setDefaultOption( 'proxy', $this->http_proxy->host() . ':' . $this->http_proxy->port() );
+			// See http://docs.guzzlephp.org/en/5.3/clients.html#proxy for reference.
+			$auth = $this->http_proxy->use_authentication() ? "{$this->http_proxy->authentication()}@" : '';
+			$http_client->setDefaultOption( 'proxy', "{$auth}{$this->http_proxy->host()}:{$this->http_proxy->port()}" );
 			$ssl_verify = $http_client->getDefaultOption( 'verify' );
 			// Allow SSL verification to be filtered, as is often necessary with HTTP proxies.
 			$http_client->setDefaultOption(
@@ -725,11 +719,6 @@ final class OAuth_Client {
 		);
 		$this->set_granted_scopes( $scopes );
 
-		$current_user_id = get_current_user_id();
-		if ( $this->should_update_owner_id( $current_user_id ) ) {
-			$this->owner_id->set( $current_user_id );
-		}
-
 		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
 		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
@@ -748,6 +737,13 @@ final class OAuth_Client {
 			 * @param array $token_response Token response data.
 			 */
 			do_action( 'googlesitekit_authorize_user', $token_response );
+		}
+
+		// This must happen after googlesitekit_authorize_user as the permissions checks depend on
+		// values set which affect the meta capability mapping.
+		$current_user_id = get_current_user_id();
+		if ( $this->should_update_owner_id( $current_user_id ) ) {
+			$this->owner_id->set( $current_user_id );
 		}
 
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
@@ -878,7 +874,7 @@ final class OAuth_Client {
 	/**
 	 * Determines whether the current owner ID must be changed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.16.0
 	 *
 	 * @param int $user_id Current user ID.
 	 * @return bool TRUE if owner needs to be changed, otherwise FALSE.
@@ -1054,6 +1050,9 @@ final class OAuth_Client {
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
 		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
+
+		$this->access_token  = '';
+		$this->refresh_token = '';
 	}
 
 	/**

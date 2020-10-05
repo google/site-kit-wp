@@ -22,7 +22,6 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
@@ -143,7 +142,6 @@ describe( 'core/site connection', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				select.getConnection();
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
@@ -155,6 +153,7 @@ describe( 'core/site connection', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( connection ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -197,12 +196,12 @@ describe( 'core/site connection', () => {
 					{ body: response, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				select[ selector ]();
 				await untilResolved( registry, STORE_NAME ).getConnection();
 
 				expect( select[ selector ]() ).toBeUndefined();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'returns undefined if connection info is not available', async () => {

@@ -15,13 +15,15 @@ import DashboardModuleHeader from '../assets/js/components/dashboard/dashboard-m
 import CTA from '../assets/js/components/notifications/cta';
 import { createAddToFilter } from '../assets/js/util/helpers';
 import Layout from '../assets/js/components/layout/layout';
-import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/DashboardAcquisitionPieChart';
-import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
-import DashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/DashboardSearchFunnelInner';
-import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/AnalyticsDashboardWidgetTopLevel';
-import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/SearchConsoleDashboardWidgetTopLevel';
-import PostSearcher from '../assets/js/components/post-searcher';
+import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
+import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
+import LegacyDashboardSearchFunnelInner from '../assets/js/modules/search-console/components/dashboard/LegacyDashboardSearchFunnelInner';
+import LegacyAnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
+import LegacySearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
+import PostSearcher from '../assets/js/components/PostSearcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
+import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Dashboard', module )
 	.add( 'Module Header', () => (
@@ -50,7 +52,7 @@ storiesOf( 'Dashboard', module )
 							mdc-layout-grid__cell--span-4-tablet
 							mdc-layout-grid__cell--span-4-phone
 						">
-							<DashboardAcquisitionPieChart source />
+							<LegacyDashboardAcquisitionPieChart source />
 						</div>
 						<div className="
 							mdc-layout-grid__cell
@@ -58,7 +60,7 @@ storiesOf( 'Dashboard', module )
 							mdc-layout-grid__cell--span-4-tablet
 							mdc-layout-grid__cell--span-4-phone
 						">
-							<AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
+							<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
 						</div>
 					</div>
 				</div>
@@ -66,19 +68,33 @@ storiesOf( 'Dashboard', module )
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
-	.add( 'Post Searcher', () => (
-		<PostSearcher />
-	) )
+	.add( 'Post Searcher', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				usingProxy: true,
+				referenceSiteURL: 'http://example.com',
+				adminURL: 'http://example.com/wp-admin',
+				timezone: 'America/Detroit',
+				siteName: 'My Site Name',
+			} );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry } >
+				<PostSearcher />
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Search Funnel Analytics Inactive', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
-		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
+		const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
 		removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
 
 		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.SearchConsoleSearchFunnel',
-			addSearchConsoleDashboardWidgetTopLevel );
+			addLegacySearchConsoleDashboardWidgetTopLevel );
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -92,7 +108,7 @@ storiesOf( 'Dashboard', module )
 			<Layout className="googlesitekit-analytics-search-funnel">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<DashboardSearchFunnelInner />
+						<LegacyDashboardSearchFunnelInner />
 						<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-4-phone
@@ -115,17 +131,17 @@ storiesOf( 'Dashboard', module )
 	.add( 'Search Funnel', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
-		const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
-		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
+		const addLegacyAnalyticsDashboardWidgetTopLevel = createAddToFilter( <LegacyAnalyticsDashboardWidgetTopLevel /> );
+		const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
 		removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
 		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.Analytics',
-			addAnalyticsDashboardWidgetTopLevel, 11 );
+			addLegacyAnalyticsDashboardWidgetTopLevel, 11 );
 
 		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.SearchConsoleSearchFunnel',
-			addSearchConsoleDashboardWidgetTopLevel );
+			addLegacySearchConsoleDashboardWidgetTopLevel );
 
 		// Manual set some missing goals data;
 		const datacacheIsString = 'string' === typeof global._googlesitekitLegacyData.admin.datacache;
@@ -149,7 +165,7 @@ storiesOf( 'Dashboard', module )
 			<Layout className="googlesitekit-analytics-search-funnel">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<DashboardSearchFunnelInner />
+						<LegacyDashboardSearchFunnelInner />
 					</div>
 				</div>
 			</Layout>

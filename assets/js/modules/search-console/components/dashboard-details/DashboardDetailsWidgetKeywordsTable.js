@@ -26,7 +26,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/SearchConsoleDashboardWidgetKeywordTable';
+import LegacySearchConsoleDashboardWidgetKeywordTable from '../dashboard/LegacySearchConsoleDashboardWidgetKeywordTable';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME } from '../../datastore/constants';
@@ -57,7 +57,7 @@ const DashboardDetailsWidgetKeywordsTable = () => {
 					footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 					footerCtaLink={ footerCtaLink }
 				>
-					<SearchConsoleDashboardWidgetKeywordTable />
+					<LegacySearchConsoleDashboardWidgetKeywordTable />
 				</Layout>
 			</div>
 		</Fragment>

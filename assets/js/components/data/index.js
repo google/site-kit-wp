@@ -34,8 +34,9 @@ import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction }
 import { getCurrentDateRangeSlug } from '../../util/date-range';
 import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
-import { isWPError } from '../../util/is-wp-error';
-import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
+import { isWPError } from '../../util/errors';
+import AuthError from '../notifications/AuthError';
+import DashboardAuthScopesAlert from '../notifications/DashboardAuthScopesAlert';
 import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
 import { getCacheKey, getCache, setCache } from './cache';
 import { TYPE_CORE, TYPE_MODULES } from './constants';
@@ -216,7 +217,7 @@ const dataAPI = {
 		console.warn( 'WP Error in data response', error );
 		const { data } = error;
 
-		if ( ! data || ! data.reason ) {
+		if ( ! data || ( ! data.reason && ! data.reconnectURL ) ) {
 			return;
 		}
 
@@ -226,7 +227,7 @@ const dataAPI = {
 		if ( [ 'authError', 'insufficientPermissions' ].includes( data.reason ) ) {
 			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
-				fillFilterWithComponent( DashboardAuthAlert ), 1 );
+				fillFilterWithComponent( DashboardAuthScopesAlert ), 1 );
 			addedNoticeCount++;
 		}
 
@@ -235,6 +236,13 @@ const dataAPI = {
 			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
 				fillFilterWithComponent( DashboardPermissionAlert ), 1 );
+			addedNoticeCount++;
+		}
+
+		if ( data.reconnectURL ) {
+			addFilter( 'googlesitekit.ErrorNotification',
+				'googlesitekit.AuthNotification',
+				fillFilterWithComponent( AuthError ), 1 );
 			addedNoticeCount++;
 		}
 

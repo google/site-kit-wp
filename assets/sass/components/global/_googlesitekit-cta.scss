@@ -83,7 +83,7 @@
 
 	&--error .googlesitekit-cta__description {
 		color: $c-primary;
-		word-break: break-all;
+		word-break: break-word;
 	}
 
 	/* stylelint-disable selector-id-pattern */

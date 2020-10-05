@@ -24,7 +24,6 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -153,7 +152,6 @@ describe( 'modules/analytics tags', () => {
 
 				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getTagPermission( propertyID );
 				await subscribeUntil( registry,
 					() => registry.select( STORE_NAME ).isFetchingGetTagPermission( propertyID ) === false,
@@ -163,6 +161,7 @@ describe( 'modules/analytics tags', () => {
 
 				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID );
 				expect( permissionForTag ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 

@@ -82,7 +82,7 @@ const RECEIVE_GET_ACCOUNTS = 'RECEIVE_GET_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
-const BASE_INITIAL_STATE = {
+const baseInitialState = {
 	accounts: undefined,
 	isAwaitingAccountsPropertiesProfilesCompletion: false,
 	accountTicketID: undefined,
@@ -187,7 +187,7 @@ const baseReducer = ( state, { type, payload } ) => {
 		case RESET_ACCOUNTS: {
 			return {
 				...state,
-				accounts: BASE_INITIAL_STATE.accounts,
+				accounts: baseInitialState.accounts,
 				settings: {
 					...state.settings,
 					accountID: undefined,
@@ -199,7 +199,7 @@ const baseReducer = ( state, { type, payload } ) => {
 		}
 
 		default: {
-			return { ...state };
+			return state;
 		}
 	}
 };
@@ -228,14 +228,14 @@ const baseResolvers = {
 			if ( response ) {
 				dispatch( STORE_NAME ).receiveGetAccounts( response.accounts );
 
-				if ( response.properties?.[ 0 ]?.accountId ) {
-					const accountID = response.properties[ 0 ].accountId;
+				if ( response.properties?.[ 0 ]?.accountId ) { // eslint-disable-line sitekit/camelcase-acronyms
+					const accountID = response.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 					dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 				}
 
-				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
-					const propertyID = response.profiles[ 0 ].webPropertyId;
-					const accountID = response.profiles[ 0 ].accountId;
+				if ( response.profiles?.[ 0 ]?.webPropertyId ) { // eslint-disable-line sitekit/camelcase-acronyms
+					const propertyID = response.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
+					const accountID = response.profiles[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
 				}
 
@@ -257,8 +257,8 @@ const baseResolvers = {
 		const accountID = registry.select( STORE_NAME ).getAccountID();
 		// Pre-select values from the matched property if no account is selected.
 		if ( matchedProperty && ! accountID ) {
-			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // Capitalization rule exception: accountId
-			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
+			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // eslint-disable-line sitekit/camelcase-acronyms
+			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
 		}
 	},
 };
@@ -369,7 +369,7 @@ const store = Data.combineStores(
 	fetchGetAccountsPropertiesProfilesStore,
 	fetchCreateAccountStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
 		actions: baseActions,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
@@ -377,7 +377,7 @@ const store = Data.combineStores(
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

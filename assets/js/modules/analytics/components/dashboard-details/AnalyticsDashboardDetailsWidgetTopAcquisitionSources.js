@@ -20,15 +20,15 @@
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import Layout from '../../../../components/layout/layout';
-import AnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/AnalyticsDashboardWidgetTopAcquisitionSources';
-import DashboardAcquisitionPieChart from '../dashboard/DashboardAcquisitionPieChart';
+import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
+import LegacyDashboardAcquisitionPieChart from '../dashboard/LegacyDashboardAcquisitionPieChart';
 
 class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 	render() {
@@ -51,7 +51,11 @@ class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 						className="googlesitekit-analytics-acquisition-sources"
 						footer
 						headerCtaLink="https://analytics.google.com"
-						headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+						headerCtaLabel={ sprintf(
+							/* translators: %s: module name. */
+							__( 'See full stats in %s', 'google-site-kit' ),
+							_x( 'Analytics', 'Service name', 'google-site-kit' )
+						) }
 						footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 						footerCtaLink="https://analytics.google.com"
 					>
@@ -63,7 +67,7 @@ class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 									mdc-layout-grid__cell--span-8-tablet
 									mdc-layout-grid__cell--span-4-phone
 								">
-									<DashboardAcquisitionPieChart />
+									<LegacyDashboardAcquisitionPieChart />
 								</div>
 								<div className="
 									mdc-layout-grid__cell
@@ -71,7 +75,7 @@ class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 									mdc-layout-grid__cell--span-8-tablet
 									mdc-layout-grid__cell--span-4-phone
 								">
-									<AnalyticsDashboardWidgetTopAcquisitionSources />
+									<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
 								</div>
 							</div>
 						</div>

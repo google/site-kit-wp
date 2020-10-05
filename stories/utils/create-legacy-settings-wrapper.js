@@ -61,8 +61,8 @@ export default function createLegacySettingsWrapper( moduleSlug, moduleComponent
 		useEffect( () => {
 			removeAllFilters( `googlesitekit.ModuleSettingsDetails-${ moduleSlug }` );
 			addFilter(
-				'googlesitekit.ModuleSettingsDetails-tagmanager',
-				'googlesitekit.TagManagerModuleSettings',
+				`googlesitekit.ModuleSettingsDetails-${ moduleSlug }`,
+				'googlesitekit.SettingsLegacy',
 				fillFilterWithComponent( moduleComponent )
 			);
 			return () => removeAllFilters( `googlesitekit.ModuleSettingsDetails-${ moduleSlug }` );
@@ -82,7 +82,7 @@ export default function createLegacySettingsWrapper( moduleSlug, moduleComponent
 						learnmore={ module.learnMore }
 						active={ module.active }
 						setupComplete={ module.setupComplete }
-						hasSettings={ true }
+						hasSettings={ !! module.settings && 'search-console' !== moduleSlug }
 						autoActivate={ module.autoActivate }
 						updateModulesList={ updateModulesList }
 						handleEdit={ handleButtonAction }

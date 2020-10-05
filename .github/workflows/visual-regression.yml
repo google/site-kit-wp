@@ -1,0 +1,47 @@
+name: Visual Regression Testing
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+jobs:
+  visual-regression:
+    name: Run VR Tests
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v2
+      - name: Read .nvmrc
+        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+        id: nvm
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v1
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+      - name: Cache Node - npm
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-cache-
+      - name: npm install
+        run: npm ci
+      - name: Run Backstopjs
+        run: npm run test:visualtest
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: vrt-report
+          path: |
+            tests/backstop/html_report
+            tests/backstop/reference
+            tests/backstop/tests

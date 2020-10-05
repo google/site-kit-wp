@@ -17,12 +17,27 @@
  */
 
 /**
+ * External dependencies
+ */
+import domReady from '@wordpress/dom-ready';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Widgets from 'googlesitekit-widgets';
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
 import { SettingsMain as SearchConsolesSettings } from './components/settings';
+import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
+import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
+import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
+import {
+	AREA_DASHBOARD_POPULARITY,
+	AREA_DASHBOARD_SEARCH_FUNNEL,
+	AREA_PAGE_DASHBOARD_POPULARITY,
+	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+} from '../../googlesitekit/widgets/default-areas';
 
 /**
  * WordPress dependencies
@@ -47,3 +62,45 @@ addFilter(
 		onSettingsPage: true,
 	} )
 );
+
+domReady( () => {
+	Widgets.registerWidget(
+		'searchConsoleImpressions',
+		{
+			component: DashboardImpressionsWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: true,
+		},
+		[
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+	Widgets.registerWidget(
+		'searchConsoleClicks',
+		{
+			component: DashboardClicksWidget,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 2,
+			wrapWidget: true,
+		},
+		[
+			AREA_DASHBOARD_SEARCH_FUNNEL,
+			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+		],
+	);
+	Widgets.registerWidget(
+		'searchConsolePopularKeywords',
+		{
+			component: DashboardPopularKeywordsWidget,
+			width: Widgets.WIDGET_WIDTHS.HALF,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_POPULARITY,
+			AREA_PAGE_DASHBOARD_POPULARITY,
+		],
+	);
+} );

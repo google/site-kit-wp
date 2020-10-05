@@ -26,6 +26,13 @@ import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
+function createGetAuthenticationSelector( property ) {
+	return createRegistrySelector( ( select ) => () => {
+		const data = select( STORE_NAME ).getAuthentication() || {};
+		return data[ property ];
+	} );
+}
+
 const fetchGetAuthenticationStore = createFetchStore( {
 	baseName: 'getAuthentication',
 	controlCallback: () => {
@@ -41,8 +48,66 @@ const fetchGetAuthenticationStore = createFetchStore( {
 	},
 } );
 
-const BASE_INITIAL_STATE = {
+// Actions
+const SET_AUTH_ERROR = 'SET_AUTH_ERROR';
+const CLEAR_AUTH_ERROR = 'CLEAR_AUTH_ERROR';
+
+const baseInitialState = {
 	authentication: undefined,
+	authError: null,
+};
+
+const baseActions = {
+	/**
+	 * Sets the authentication error.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} error Authentication error object.
+	 * @return {Object} Redux-style action.
+	 */
+	setAuthError( error ) {
+		return {
+			payload: { error },
+			type: SET_AUTH_ERROR,
+		};
+	},
+
+	/**
+	 * Clears the authentication error, if one was previously set.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	clearAuthError() {
+		return {
+			payload: {},
+			type: CLEAR_AUTH_ERROR,
+		};
+	},
+};
+
+export const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_AUTH_ERROR: {
+			return {
+				...state,
+				authError: payload.error,
+			};
+		}
+
+		case CLEAR_AUTH_ERROR: {
+			return {
+				...state,
+				authError: null,
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
 };
 
 const baseResolvers = {
@@ -114,10 +179,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} User authentication status.
 	 */
-	isAuthenticated: createRegistrySelector( ( select ) => () => {
-		const { authenticated } = select( STORE_NAME ).getAuthentication() || {};
-		return authenticated;
-	} ),
+	isAuthenticated: createGetAuthenticationSelector( 'authenticated' ),
 
 	/**
 	 * Gets the granted scopes for the user.
@@ -130,10 +192,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of granted scopes
 	 */
-	getGrantedScopes: createRegistrySelector( ( select ) => () => {
-		const { grantedScopes } = select( STORE_NAME ).getAuthentication() || {};
-		return grantedScopes;
-	} ),
+	getGrantedScopes: createGetAuthenticationSelector( 'grantedScopes' ),
 
 	/**
 	 * Gets the required scopes for the user.
@@ -146,10 +205,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of required scopes
 	 */
-	getRequiredScopes: createRegistrySelector( ( select ) => () => {
-		const { requiredScopes } = select( STORE_NAME ).getAuthentication() || {};
-		return requiredScopes;
-	} ),
+	getRequiredScopes: createGetAuthenticationSelector( 'requiredScopes' ),
 
 	/**
 	 * Gets the unsatisfied scopes for the user.
@@ -162,10 +218,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of scopes
 	 */
-	getUnsatisfiedScopes: createRegistrySelector( ( select ) => () => {
-		const { unsatisfiedScopes } = select( STORE_NAME ).getAuthentication() || {};
-		return unsatisfiedScopes;
-	} ),
+	getUnsatisfiedScopes: createGetAuthenticationSelector( 'unsatisfiedScopes' ),
 
 	/**
 	 * Checks reauthentication status for this user.
@@ -178,22 +231,44 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} User reauthentication status.
 	 */
-	needsReauthentication: createRegistrySelector( ( select ) => () => {
-		const { needsReauthentication } = select( STORE_NAME ).getAuthentication() || {};
-		return needsReauthentication;
-	} ),
+	needsReauthentication: createGetAuthenticationSelector( 'needsReauthentication' ),
+
+	/**
+	 * Gets the current disconnected reason.
+	 *
+	 * @since 1.17.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The current disconnected reason.
+	 */
+	getDisconnectedReason: createGetAuthenticationSelector( 'disconnectedReason' ),
+
+	/**
+	 * Gets the authentication error.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|null)} Authentication error object if available, otherwise null.
+	 */
+	getAuthError( state ) {
+		const { authError } = state;
+		return authError;
+	},
 };
 
 const store = Data.combineStores(
 	fetchGetAuthenticationStore,
 	{
-		INITIAL_STATE: BASE_INITIAL_STATE,
+		initialState: baseInitialState,
+		actions: baseActions,
+		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
 );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
+export const initialState = store.initialState;
 export const actions = store.actions;
 export const controls = store.controls;
 export const reducer = store.reducer;

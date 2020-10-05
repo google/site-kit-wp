@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	muteConsole,
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
@@ -82,7 +81,9 @@ describe( 'modules/tagmanager versions', () => {
 	describe( 'selectors', () => {
 		describe( 'getLiveContainerVersion', () => {
 			it( 'uses a resolver to make a network request', async () => {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const accountID = fixtures.liveContainerVersion.accountId;
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 
 				fetchMock.getOnce(
@@ -101,7 +102,9 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'does not make a network request if the container version is already present', async () => {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const accountID = fixtures.liveContainerVersion.accountId;
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 
 				registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion(
@@ -117,7 +120,9 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const accountID = fixtures.liveContainerVersion.accountId;
+				// eslint-disable-next-line sitekit/camelcase-acronyms
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 				const errorResponse = {
 					code: 'internal_server_error',
@@ -129,13 +134,13 @@ describe( 'modules/tagmanager versions', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 				await untilResolved( registry, STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( registry.select( STORE_NAME ).getErrorForSelector( 'getLiveContainerVersion', [ accountID, internalContainerID ] ) ).toEqual( errorResponse );
 				expect( registry.select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 

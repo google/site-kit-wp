@@ -41,7 +41,7 @@ const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
 const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
 const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
 
-export const INITIAL_STATE = {
+export const initialState = {
 	isDoingSubmitChanges: false,
 };
 
@@ -93,7 +93,7 @@ export const controls = {
 			}
 			propertyID = property.id;
 			await registry.dispatch( STORE_NAME ).setPropertyID( property.id );
-			await registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
+			await registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
 		}
 
 		const profileID = registry.select( STORE_NAME ).getProfileID();
@@ -209,7 +209,7 @@ export const selectors = {
 };
 
 export default {
-	INITIAL_STATE,
+	initialState,
 	actions,
 	controls,
 	reducer,

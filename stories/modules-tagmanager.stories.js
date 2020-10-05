@@ -67,6 +67,7 @@ storiesOf( 'Tag Manager Module', module )
 	} )
 	.add( 'WebContainerSelect', () => {
 		const setupRegistry = ( registry ) => {
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			const accountID = fixtures.getContainers.all[ 0 ].accountId;
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID,
@@ -89,6 +90,7 @@ storiesOf( 'Tag Manager Module', module )
 	} )
 	.add( 'AMPContainerSelect', () => {
 		const setupRegistry = ( registry ) => {
+			// eslint-disable-next-line sitekit/camelcase-acronyms
 			const accountID = fixtures.getContainers.all[ 0 ].accountId;
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID,
