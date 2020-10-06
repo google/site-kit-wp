@@ -145,6 +145,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
 				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
 				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
+				'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
