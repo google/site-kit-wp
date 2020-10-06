@@ -103,7 +103,7 @@ export default function SettingsEdit() {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
-	} else if ( hasGTMAnalyticsPropertyID && ! hasGTMAnalyticsPropertyIDPermission ) {
+	} else if ( ! hasExistingTag && hasGTMAnalyticsPropertyID && ! hasGTMAnalyticsPropertyIDPermission ) {
 		viewComponent = <ExistingGTMPropertyError />;
 	} else if ( ! accounts.length || isCreateAccount ) {
 		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;

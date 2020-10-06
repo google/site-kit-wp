@@ -85,7 +85,7 @@ export default function SetupForm( { finishSetup } ) {
 			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
 
 			<ExistingTagNotice />
-			<ExistingGTMPropertyNotice />
+			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (
 				<p className="googlesitekit-margin-bottom-0">

@@ -86,7 +86,7 @@ export default function SetupMain( { finishSetup } ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
-	} else if ( hasGTMAnalyticsPropertyID && ! hasGTMAnalyticsPropertyIDPermission ) {
+	} else if ( ! hasExistingTag && hasGTMAnalyticsPropertyID && ! hasGTMAnalyticsPropertyIDPermission ) {
 		viewComponent = <ExistingGTMPropertyError />;
 	} else if ( isCreateAccount || ( Array.isArray( accounts ) && ! accounts.length ) ) {
 		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;

@@ -30,13 +30,11 @@ import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyNotice() {
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
 	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( gtmAnalyticsPropertyID ) );
 
 	// Don't display this notice if:
 	if (
-		existingTag || // There is an existing tag.
 		! gtmAnalyticsPropertyID || // There is no GTM tag.
 		! gtmAnalyticsPropertyIDPermission // The current user doesn't have permissions for the GTM tag.
 	) {

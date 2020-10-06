@@ -31,13 +31,11 @@ import ErrorText from '../../../../components/error-text';
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyError() {
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
 	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( gtmAnalyticsPropertyID ) );
 
 	// Don't display error notice if:
 	if (
-		!! existingTag || // There is an existing tag.
 		! gtmAnalyticsPropertyID || // There is no GTM tag.
 		gtmAnalyticsPropertyIDPermission || // There is a GTM tag and user has access to it.
 		gtmAnalyticsPropertyIDPermission === undefined // We don't know yet whether the current user has permissions to the GTM tag.
