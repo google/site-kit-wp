@@ -26,6 +26,8 @@ use WP_Error;
  */
 class User_Input_Settings {
 
+	const TRANSIENT_NAME = 'googlesitekit_user_input_settings';
+
 	/**
 	 * Authentication instance.
 	 *
@@ -156,8 +158,8 @@ class User_Input_Settings {
 			}
 		}
 
-		$this->transients->set( 'googlesitekit_user_input_settings', $site_settings, WEEK_IN_SECONDS );
-		$this->user_transients->set( 'googlesitekit_user_input_settings', $user_settings, WEEK_IN_SECONDS );
+		$this->transients->set( self::TRANSIENT_NAME, $site_settings, WEEK_IN_SECONDS );
+		$this->user_transients->set( self::TRANSIENT_NAME, $user_settings, WEEK_IN_SECONDS );
 	}
 
 	/**
@@ -177,8 +179,8 @@ class User_Input_Settings {
 		}
 
 		$data = array(
-			'site' => $this->transients->get( 'user_input_settings' ),
-			'user' => $this->user_transients->get( 'user_input_settings' ),
+			'site' => $this->transients->get( self::TRANSIENT_NAME ),
+			'user' => $this->user_transients->get( self::TRANSIENT_NAME ),
 		);
 
 		if ( ! is_array( $data['site'] ) || ! is_array( $data['user'] ) ) {
