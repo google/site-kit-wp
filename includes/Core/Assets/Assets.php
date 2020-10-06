@@ -521,6 +521,13 @@ final class Assets {
 					),
 				)
 			),
+			new Script(
+				'googlesitekit-user-input',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-user-input.js',
+					'dependencies' => $dependencies,
+				)
+			),
 			// End JSR Assets.
 			new Script(
 				'googlesitekit-pagead2.ads',
