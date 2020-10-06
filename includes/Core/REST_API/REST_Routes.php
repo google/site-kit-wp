@@ -358,37 +358,50 @@ final class REST_Routes {
 						'methods'             => WP_REST_Server::CREATABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
+							$data                = $request->get_param( 'data' );
+
+							if ( ! isset( $data['settings'] ) || ! is_array( $data['settings'] ) ) {
+								return new WP_Error(
+									'rest_missing_callback_param',
+									__( 'Missing settings data.', 'google-site-kit' ),
+									array( 'status' => 400 )
+								);
+							}
+
 							return rest_ensure_response(
 								$user_input_settings->set_settings(
-									$request->get_param( 'settings' )
+									$data['settings']
 								)
 							);
 						},
 						'permission_callback' => $can_authenticate,
 						'args'                => array(
-							'settings' => array(
-								'type'       => 'object',
-								'required'   => true,
-								'properties' => array(
-									'role'          => array(
-										'type'  => 'array',
-										'items' => array( 'type' => 'string' ),
-									),
-									'postFrequency' => array(
-										'type'  => 'array',
-										'items' => array( 'type' => 'string' ),
-									),
-									'goals'         => array(
-										'type'  => 'array',
-										'items' => array( 'type' => 'string' ),
-									),
-									'helpNeeded'    => array(
-										'type'  => 'array',
-										'items' => array( 'type' => 'string' ),
-									),
-									'searchTerms'   => array(
-										'type'  => 'array',
-										'items' => array( 'type' => 'string' ),
+							'data' => array(
+								'type'     => 'object',
+								'required' => true,
+								'settings' => array(
+									'type'       => 'object',
+									'properties' => array(
+										'role'          => array(
+											'type'  => 'array',
+											'items' => array( 'type' => 'string' ),
+										),
+										'postFrequency' => array(
+											'type'  => 'array',
+											'items' => array( 'type' => 'string' ),
+										),
+										'goals'         => array(
+											'type'  => 'array',
+											'items' => array( 'type' => 'string' ),
+										),
+										'helpNeeded'    => array(
+											'type'  => 'array',
+											'items' => array( 'type' => 'string' ),
+										),
+										'searchTerms'   => array(
+											'type'  => 'array',
+											'items' => array( 'type' => 'string' ),
+										),
 									),
 								),
 							),

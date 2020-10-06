@@ -143,14 +143,11 @@ class User_Input_Settings {
 		$user_settings = array();
 
 		foreach ( $settings as $setting_key => $setting_data ) {
-			if ( ! isset( $setting_data['scope'] ) ) {
+			if ( ! isset( $setting_data['scope'] ) || ! isset( $setting_data['values'] ) ) {
 				continue;
 			}
 
-			$values = isset( $setting_data['values'] ) && is_array( $setting_data['values'] )
-				? $setting_data['values']
-				: array();
-
+			$values = is_array( $setting_data['values'] ) ? $setting_data['values'] : array();
 			if ( 'site' === $setting_data['scope'] ) {
 				$site_settings[ $setting_key ] = $values;
 			} elseif ( 'user' === $setting_data['scope'] ) {
