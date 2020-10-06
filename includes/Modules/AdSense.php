@@ -269,7 +269,11 @@ final class AdSense extends Module
 		// If we haven't completed the account connection yet, we still insert the AdSense tag
 		// because it is required for account verification.
 		?>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+<script
+	async
+	src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+		<?php echo $this->get_tag_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+></script>
 <script>
 (adsbygoogle = window.adsbygoogle || []).push({
 google_ad_client: "<?php echo esc_attr( $client_id ); ?>",
@@ -295,7 +299,11 @@ tag_partner: "site_kit"
 		$this->adsense_tag_printed = true;
 
 		?>
-		<amp-auto-ads type="adsense" data-ad-client="<?php echo esc_attr( $client_id ); ?>"></amp-auto-ads>
+<amp-auto-ads
+	type="adsense"
+	data-ad-client="<?php echo esc_attr( $client_id ); ?>"
+		<?php echo $this->get_tag_amp_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+></amp-auto-ads>
 		<?php
 	}
 
