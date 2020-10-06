@@ -315,18 +315,20 @@ final class Tag_Manager extends Module
 	 */
 	protected function print_gtm_js( $container_id ) {
 		?>
-		<!-- Google Tag Manager added by Site Kit -->
-		<script>( function( w, d, s, l, i ) {
-				w[l] = w[l] || [];
-				w[l].push( {'gtm.start': new Date().getTime(), event: 'gtm.js'} );
-				var f = d.getElementsByTagName( s )[0],
-					j = d.createElement( s ), dl = l != 'dataLayer' ? '&l=' + l : '';
-				j.async = true;
-				j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-				f.parentNode.insertBefore( j, f );
-			} )( window, document, 'script', 'dataLayer', '<?php echo esc_js( $container_id ); ?>' );
-		</script>
-		<!-- End Google Tag Manager -->
+<!-- Google Tag Manager added by Site Kit -->
+<script
+		<?php echo $this->get_tag_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+>( function( w, d, s, l, i ) {
+	w[l] = w[l] || [];
+	w[l].push( {'gtm.start': new Date().getTime(), event: 'gtm.js'} );
+	var f = d.getElementsByTagName( s )[0],
+		j = d.createElement( s ), dl = l != 'dataLayer' ? '&l=' + l : '';
+	j.async = true;
+	j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+	f.parentNode.insertBefore( j, f );
+} )( window, document, 'script', 'dataLayer', '<?php echo esc_js( $container_id ); ?>' );
+</script>
+<!-- End Google Tag Manager -->
 		<?php
 	}
 
@@ -346,6 +348,10 @@ final class Tag_Manager extends Module
 
 		$this->did_gtm_no_js = true;
 
+		// Consent-based blocking requires JS to be enabled so we need to bail here if present.
+		if ( $this->get_tag_block_on_consent_attribute() ) {
+			return;
+		}
 		?>
 		<!-- Google Tag Manager (noscript) added by Site Kit -->
 		<noscript>
@@ -378,13 +384,17 @@ final class Tag_Manager extends Module
 		);
 
 		?>
-		<!-- Google Tag Manager added by Site Kit -->
-		<amp-analytics config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>" data-credentials="include">
-			<script type="application/json">
-				<?php echo wp_json_encode( $gtm_amp_opt ); ?>
-			</script>
-		</amp-analytics>
-		<!-- End Google Tag Manager -->
+<!-- Google Tag Manager added by Site Kit -->
+<amp-analytics
+	config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>"
+	data-credentials="include"
+		<?php echo $this->get_tag_amp_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+>
+	<script type="application/json">
+		<?php echo wp_json_encode( $gtm_amp_opt ); ?>
+	</script>
+</amp-analytics>
+<!-- End Google Tag Manager -->
 		<?php
 	}
 
