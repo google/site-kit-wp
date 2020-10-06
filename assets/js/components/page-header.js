@@ -71,7 +71,7 @@ function PageHeader( props ) {
 									{ statusText }
 								</span>
 							}
-							{ props.children }
+							{ children }
 						</div>
 					</div>
 				}
@@ -83,7 +83,6 @@ function PageHeader( props ) {
 PageHeader.propTypes = {
 	title: PropTypes.string,
 	icon: PropTypes.node,
-	iconID: PropTypes.string,
 	className: PropTypes.string,
 	status: PropTypes.string,
 	statusText: PropTypes.string,
@@ -93,7 +92,6 @@ PageHeader.propTypes = {
 PageHeader.defaultProps = {
 	title: '',
 	icon: null,
-	iconID: '',
 	iconWidth: '',
 	iconHeight: '',
 	className: 'googlesitekit-heading-3',

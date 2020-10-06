@@ -39,7 +39,6 @@ import TrashIcon from '../../../svg/trash.svg';
 import {
 	activateOrDeactivateModule,
 	getReAuthURL,
-	moduleIcon,
 	showErrorNotification,
 	getModulesData,
 } from '../../util';
@@ -52,6 +51,7 @@ import SettingsOverlay from '../../components/settings/settings-overlay';
 import GenericError from '../../components/notifications/generic-error';
 import SetupModule from '../../components/setup-module';
 import Dialog from '../../components/dialog';
+import ModuleIcon from '../../components/module-icon';
 import ModuleSettingsDetails from '../../components/settings/module-settings-details';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
 
@@ -276,7 +276,7 @@ class SettingsModule extends Component {
 											googlesitekit-heading-4
 											googlesitekit-settings-module__title
 										">
-											{ moduleIcon( slug, '24', '26', 'googlesitekit-settings-module__title-icon' ) }
+											<ModuleIcon slug={ slug } width={ 24 } height={ 26 } className="googlesitekit-settings-module__title-icon" />
 											{ name }
 										</h3>
 									</div>

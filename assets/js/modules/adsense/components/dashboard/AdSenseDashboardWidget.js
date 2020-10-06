@@ -31,7 +31,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SearchConsoleIcon from '../../../../../svg/search-console.svg';
+import AdSenseIcon from '../../../../../svg/adsense.svg';
 import AdSenseEstimateEarningsWidget from './AdSenseEstimateEarningsWidget';
 import AdSensePerformanceWidget from './AdSensePerformanceWidget';
 import Alert from '../../../../components/alert';
@@ -158,13 +158,12 @@ class AdSenseDashboardWidget extends Component {
 								<PageHeader
 									title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
 									icon={
-										<SearchConsoleIcon
+										<AdSenseIcon
 											className="googlesitekit-page-header__icon"
-											height="30"
-											width="26"
+											height="33"
+											width="33"
 										/>
 									}
-									iconID="adsense"
 									status={ moduleStatus }
 									statusText={ moduleStatusText }
 								>

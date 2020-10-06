@@ -169,7 +169,6 @@ class AnalyticsDashboardWidget extends Component {
 											width="24"
 										/>
 									}
-									iconID="analytics"
 									status="connected"
 									statusText={ sprintf(
 										/* translators: %s: module name. */

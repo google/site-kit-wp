@@ -167,7 +167,6 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 										width="23"
 									/>
 								}
-								iconID="search-console"
 								status="connected"
 								statusText={ sprintf(
 									/* translators: %s: module name. */

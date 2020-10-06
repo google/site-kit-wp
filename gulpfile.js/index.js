@@ -28,7 +28,6 @@ const del = require( 'del' );
  * Gulp tasks.
  */
 const copy = require( './copy' );
-const svgmin = require( './svgmin' );
 const zip = require( './zip' );
 
 /**
@@ -60,13 +59,6 @@ exports.imagemin = function( cb ) {
 		cb
 	);
 };
-
-/**
- * Gulp task to minify and combine svg's.
- */
-exports.svg = gulp.series(
-	svgmin,
-);
 
 /**
  * Gulp task to run the default release processes in a sequential order.

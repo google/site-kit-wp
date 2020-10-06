@@ -42,12 +42,6 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import AdSenseIcon from '../../svg/adsense.svg';
-import AnalyticsIcon from '../../svg/analytics.svg';
-import OptimizeIcon from '../../svg/optimize.svg';
-import PageSpeedInsightsIcon from '../../svg/pagespeed-insights.svg';
-import SearchConsoleIcon from '../../svg/search-console.svg';
-import TagManagerIcon from '../../svg/tagmanager.svg';
 import { trackEvent } from './tracking';
 import { fillFilterWithComponent } from './helpers';
 export { trackEvent };
@@ -57,15 +51,6 @@ export * from './standalone';
 export * from './storage';
 export * from './i18n';
 export * from './helpers';
-
-const moduleMap = {
-	adsense: AdSenseIcon,
-	analytics: AnalyticsIcon,
-	optimize: OptimizeIcon,
-	'pagespeed-insights': PageSpeedInsightsIcon,
-	'search-console': SearchConsoleIcon,
-	tagmanager: TagManagerIcon,
-};
 
 /**
  * Removes a parameter from a URL string.
@@ -602,33 +587,6 @@ export const decodeHTMLEntity = ( str ) => {
 
 	return unescape( decoded );
 };
-
-/**
- * Gets the icon for a module.
- *
- * @since 1.0.0
- *
- * @param {string}  module                The module slug.
- * @param {string}  width                 The icon width.
- * @param {string}  height                The icon height.
- * @param {string}  useClass              Class string to use for icon.
- * @return {HTMLImageElement}             HTML <img> tag with module icon.
- */
-export function moduleIcon( module, width = '33', height = '33', useClass = '' ) {
-	if ( ! global._googlesitekitLegacyData || ! moduleMap.hasOwnProperty( module ) ) {
-		return;
-	}
-
-	const ModuleIconComponent = moduleMap[ module ];
-
-	return (
-		<ModuleIconComponent
-			width={ module === 'pagespeed-insights' ? undefined : width }
-			height={ height }
-			className={ useClass }
-		/>
-	);
-}
 
 /**
  * Gets the meta key for the given user option.
