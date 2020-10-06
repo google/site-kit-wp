@@ -27,15 +27,6 @@ import invariant from 'invariant';
 import { WIDGET_AREA_STYLES } from './constants';
 import { sortByProperty } from '../../../util/sort-by-property';
 
-/**
- * Store our widget components by registry, then by widget `slug`. We do this because
- * we can't store React components in our data store.
- *
- * @private
- * @since 1.9.0
- */
-export const WidgetComponents = {};
-
 const ASSIGN_WIDGET_AREA = 'ASSIGN_WIDGET_AREA';
 const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
 
