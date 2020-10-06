@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Transients;
+use WP_Error;
 
 /**
  * Class managing requests to user input settings endpoint.
@@ -26,7 +27,7 @@ use Google\Site_Kit\Core\Storage\User_Transients;
 class User_Input_Settings {
 
 	/**
-	 * Authentication object.
+	 * Authentication instance.
 	 *
 	 * @since n.e.x.t
 	 * @var Authentication
@@ -34,7 +35,7 @@ class User_Input_Settings {
 	private $authentication;
 
 	/**
-	 * Transients object.
+	 * Transients instance.
 	 *
 	 * @since n.e.x.t
 	 * @var Transients
@@ -42,7 +43,7 @@ class User_Input_Settings {
 	private $transients;
 
 	/**
-	 * User_Transients object.
+	 * User_Transients instance.
 	 *
 	 * @since n.e.x.t
 	 * @var User_Transients
@@ -78,18 +79,9 @@ class User_Input_Settings {
 	 * @return boolean TRUE if connected, otherwise FALSE.
 	 */
 	private function is_connected_to_proxy() {
-		if ( ! $this->authentication->is_authenticated() ) {
-			return false;
-		}
-
-		$credentials = $this->authentication->credentials();
-		if ( $credentials ) {
-			if ( ! $credentials->using_proxy() || ! $credentials->has() ) {
-				return false;
-			}
-		}
-
-		return true;
+		return (bool) $this->authentication->is_authenticated()
+			&& $this->authentication->credentials()->has()
+			&& $this->authentication->credentials()->using_proxy();
 	}
 
 	/**
@@ -98,9 +90,9 @@ class User_Input_Settings {
 	 * @since n.e.x.t
 	 *
 	 * @param array $settings User settings.
-	 * @return array User input settings.
+	 * @return array|WP_Error User input settings.
 	 */
-	private function sync_with_proxy( $settings ) {
+	private function sync_with_proxy( $settings = null ) {
 		$user_input_settings_url  = $this->authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
 		$user_input_settings_args = array(
 			'headers' => array(
@@ -129,29 +121,43 @@ class User_Input_Settings {
 
 		$body     = wp_remote_retrieve_body( $response );
 		$settings = json_decode( $body, true );
+
 		if ( is_array( $settings ) ) {
-			$site_settings = array();
-			$user_settings = array();
-
-			foreach ( $settings as $setting_key => $setting_data ) {
-				if ( isset( $setting_data['scope'] ) ) {
-					if ( 'site' === $setting_data['scope'] ) {
-						$site_settings[ $setting_key ] = ! empty( $setting_data['values'] )
-							? $setting_data['values']
-							: array();
-					} elseif ( 'user' === $setting_data['scope'] ) {
-						$user_settings[ $setting_key ] = ! empty( $setting_data['values'] )
-							? $setting_data['values']
-							: array();
-					}
-				}
-			}
-
-			$this->transients->set( 'user_input_settings', $site_settings, WEEK_IN_SECONDS );
-			$this->user_transients->set( 'user_input_settings', $user_settings, WEEK_IN_SECONDS );
+			$this->cache_settings( $settings );
 		}
 
 		return $settings;
+	}
+
+	/**
+	 * Caches user input settings received from the proxy server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $settings Array with user input settings.
+	 */
+	private function cache_settings( array $settings ) {
+		$site_settings = array();
+		$user_settings = array();
+
+		foreach ( $settings as $setting_key => $setting_data ) {
+			if ( ! isset( $setting_data['scope'] ) ) {
+				continue;
+			}
+
+			$values = isset( $setting_data['values'] ) && is_array( $setting_data['values'] )
+				? $setting_data['values']
+				: array();
+
+			if ( 'site' === $setting_data['scope'] ) {
+				$site_settings[ $setting_key ] = $values;
+			} elseif ( 'user' === $setting_data['scope'] ) {
+				$user_settings[ $setting_key ] = $values;
+			}
+		}
+
+		$this->transients->set( 'googlesitekit_user_input_settings', $site_settings, WEEK_IN_SECONDS );
+		$this->user_transients->set( 'googlesitekit_user_input_settings', $user_settings, WEEK_IN_SECONDS );
 	}
 
 	/**
@@ -159,11 +165,15 @@ class User_Input_Settings {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array User input settings.
+	 * @return array|WP_Error User input settings.
 	 */
 	public function get_settings() {
 		if ( ! $this->is_connected_to_proxy() ) {
-			return new \WP_Error( 'not_connected', __( 'Not Connected', 'google-site-kit' ), array( 'status' => 400 ) );
+			return new WP_Error(
+				'not_connected',
+				__( 'Not Connected', 'google-site-kit' ),
+				array( 'status' => 400 )
+			);
 		}
 
 		$data = array(
@@ -172,7 +182,7 @@ class User_Input_Settings {
 		);
 
 		if ( ! is_array( $data['site'] ) || ! is_array( $data['user'] ) ) {
-			return $this->sync_with_proxy( null );
+			return $this->sync_with_proxy();
 		}
 
 		$settings = array();
@@ -195,7 +205,7 @@ class User_Input_Settings {
 	 * @since n.e.x.t
 	 *
 	 * @param array $settings User settings.
-	 * @return array User input settings.
+	 * @return array|WP_Error User input settings.
 	 */
 	public function set_settings( $settings ) {
 		return $this->is_connected_to_proxy()
