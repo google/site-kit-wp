@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
@@ -28,8 +29,9 @@ import {
 	isValidContainerID,
 	isValidInternalContainerID,
 	isValidContainerSelection,
+	isValidContainerName,
 } from '../util/validation';
-import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP, FORM_SETUP } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
@@ -162,6 +164,7 @@ export const selectors = {
 			getAMPContainerID,
 			getInternalContainerID,
 			getInternalAMPContainerID,
+			getWebContainers,
 			hasExistingTagPermission,
 			haveSettingsChanged,
 			isDoingSubmitChanges,
@@ -177,9 +180,26 @@ export const selectors = {
 		if ( ! haveSettingsChanged() ) {
 			return false;
 		}
-		if ( ! isValidAccountID( getAccountID() ) ) {
+
+		const accountID = getAccountID();
+		if ( ! isValidAccountID( accountID ) ) {
 			return false;
 		}
+
+		const containerID = getContainerID();
+		if ( containerID === CONTAINER_CREATE ) {
+			const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
+			if ( ! isValidContainerName( containerName ) ) {
+				return false;
+			}
+
+			const containers = getWebContainers( accountID );
+			const existingContainer = Array.isArray( containers ) && containers.some( ( { name } ) => name === containerName );
+			if ( existingContainer ) {
+				return false;
+			}
+		}
+
 		// If AMP is active, the AMP container ID must be valid, regardless of mode.
 		if ( isAMP() && ! isValidContainerSelection( getAMPContainerID() ) ) {
 			return false;
@@ -190,11 +210,11 @@ export const selectors = {
 		}
 		// If AMP is not active, or in a secondary mode, validate the web container IDs.
 		if ( ! isAMP() || isSecondaryAMP() ) {
-			if ( ! isValidContainerSelection( getContainerID() ) ) {
+			if ( ! isValidContainerSelection( containerID ) ) {
 				return false;
 			}
 			// If a valid container ID is selected, the internal ID must also be valid.
-			if ( isValidContainerID( getContainerID() ) && ! isValidInternalContainerID( getInternalContainerID() ) ) {
+			if ( isValidContainerID( containerID ) && ! isValidInternalContainerID( getInternalContainerID() ) ) {
 				return false;
 			}
 		}

@@ -76,6 +76,18 @@ export function isValidContainerID( containerID ) {
 }
 
 /**
+ * Checks if the given container name appears to be valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} value Container name to test.
+ * @return {boolean} True if valid, otherwise false.
+ */
+export function isValidContainerName( value ) {
+	return typeof value === 'string' && value.trim().length > 0;
+}
+
+/**
  * Checks if the given value is a valid selection for a container.
  *
  * @since 1.11.0
