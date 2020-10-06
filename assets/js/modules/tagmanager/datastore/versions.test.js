@@ -28,12 +28,12 @@ import {
 	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import * as factories from './__factories__';
-import * as fixtures from './__fixtures__';
 import {
 	createBuildAndReceivers,
 	parseLiveContainerVersionIDs as parseIDs,
 } from './__factories__/utils';
+import * as factories from './__factories__';
+import * as fixtures from './__fixtures__';
 
 describe( 'modules/tagmanager versions', () => {
 	let registry;

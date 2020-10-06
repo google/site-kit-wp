@@ -115,7 +115,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	} )
 	.add( 'Container with property ID, Analytics inactive', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		const accountID = webContainerVersion.accountId;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -129,7 +129,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	// Multiple property IDs are only possible with secondary AMP.
 	.add( 'Container with property ID, Analytics active, ID match', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		const accountID = webContainerVersion.accountId;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -146,7 +146,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	} )
 	.add( 'Container with property ID, Analytics active, ID mismatch error', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
-		const accountID = webContainerVersion.accountId;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -198,7 +198,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 	} )
 	.add( 'Container with property ID, Analytics inactive', ( registry ) => {
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = ampContainerVersion.accountId;
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			ampContainerVersion.container,
@@ -212,7 +212,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 	// Multiple property IDs are only possible with secondary AMP.
 	.add( 'Container with property ID, Analytics active, ID match', ( registry ) => {
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = ampContainerVersion.accountId;
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			ampContainerVersion.container,
@@ -229,7 +229,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 	} )
 	.add( 'Container with property ID, Analytics active, ID mismatch error', ( registry ) => {
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = ampContainerVersion.accountId;
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			ampContainerVersion.container,
@@ -287,7 +287,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Singular property ID, Analytics inactive', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = webContainerVersion.accountId;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -305,7 +305,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Multiple property IDs, Analytics inactive', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.noGA;
-		const accountID = webContainerVersion.accountId;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -323,7 +323,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Multiple property IDs, Analytics active', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.noGA;
-		const accountID = webContainerVersion.accountId;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -343,7 +343,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Singular property ID, Analytics active, ID match', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = ampContainerVersion.accountId;
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,
@@ -365,7 +365,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.add( 'Singular property ID, Analytics active, ID mismatch error', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
-		const accountID = ampContainerVersion.accountId;
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [
 			webContainerVersion.container,

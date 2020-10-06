@@ -22,6 +22,8 @@
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
+import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
@@ -160,6 +162,7 @@ export const selectors = {
 			getProfileID,
 			getPropertyID,
 			hasExistingTagPermission,
+			hasTagPermission,
 			haveSettingsChanged,
 			isDoingSubmitChanges,
 		} = select( STORE_NAME );
@@ -167,26 +170,41 @@ export const selectors = {
 		if ( isDoingSubmitChanges() ) {
 			return false;
 		}
+
+		const gtmIsActive = select( CORE_MODULES ).isModuleActive( 'tagmanager' );
+		if ( gtmIsActive ) {
+			const gtmAnalyticsPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+			if ( isValidPropertyID( gtmAnalyticsPropertyID ) && hasTagPermission( gtmAnalyticsPropertyID ) === false ) {
+				return false;
+			}
+		}
+
 		if ( ! haveSettingsChanged() ) {
 			return false;
 		}
+
 		if ( ! isValidAccountID( getAccountID() ) ) {
 			return false;
 		}
+
 		if ( ! isValidPropertySelection( getPropertyID() ) ) {
 			return false;
 		}
+
 		if ( ! isValidProfileSelection( getProfileID() ) ) {
 			return false;
 		}
+
 		const { getValue } = select( CORE_FORMS );
 		if ( getProfileID() === PROFILE_CREATE && ! isValidProfileName( getValue( FORM_SETUP, 'profileName' ) ) ) {
 			return false;
 		}
+
 		// If the property ID is valid (non-create) the internal ID must be valid as well.
 		if ( isValidPropertyID( getPropertyID() ) && ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) ) {
 			return false;
 		}
+
 		// Do existing tag check last.
 		if ( hasExistingTagPermission() === false ) {
 			return false;
