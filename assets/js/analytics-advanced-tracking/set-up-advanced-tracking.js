@@ -28,17 +28,29 @@
  *                                       `action`, `on`, `selector`, and optionally `metadata`.
  * @param {Function} sendEvent           Function that handles the event. It will receive the event action as first
  *                                       parameter and the event metadata (may be `null`) as second parameter.
+ * @return {Function} Returns parameter-less function to destroy the tracking, i.e. remove all added listeners.
  */
 export default function setUpAdvancedTracking( eventConfigurations, sendEvent ) {
+	const toRemove = [];
+
 	eventConfigurations.forEach( ( eventConfig ) => {
-		document.addEventListener( eventConfig.on, function( e ) {
+		const handleDOMEvent = ( domEvent ) => {
 			if ( 'DOMContentLoaded' === eventConfig.on ) {
 				sendEvent( eventConfig.action, eventConfig.metadata );
-			} else if ( matches( e.target, eventConfig.selector ) || matches( e.target, eventConfig.selector.concat( ' *' ) ) ) {
+			} else if ( matches( domEvent.target, eventConfig.selector ) || matches( domEvent.target, eventConfig.selector.concat( ' *' ) ) ) {
 				sendEvent( eventConfig.action, eventConfig.metadata );
 			}
-		}, true );
+		};
+
+		document.addEventListener( eventConfig.on, handleDOMEvent, true );
+		toRemove.push( [ eventConfig.on, handleDOMEvent, true ] );
 	} );
+
+	return () => {
+		toRemove.forEach( ( listenerArgs ) => {
+			document.removeEventListener( ...listenerArgs );
+		} );
+	};
 }
 
 /**
