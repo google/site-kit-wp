@@ -63,6 +63,7 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 	return generateGTMAnalyticsPropertyStory( {
 		...args,
 		Component: Setup,
+		setUp: filterAnalyticsSetup,
 	} );
 }
 

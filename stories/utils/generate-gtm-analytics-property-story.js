@@ -36,6 +36,7 @@ import { createBuildAndReceivers } from '../../assets/js/modules/tagmanager/data
  * @param {boolean}     args.useExistingTag Whether to use an existing tag or not.
  * @param {boolean}     args.gaPermission   Whether the current user has GA tag permissions.
  * @param {boolean}     args.gtmPermission  Whether the current user has GTM tag permissions.
+ * @param {Function}    args.setUp          Custom setup function.
  * @return {Function} Story callback function.
  */
 export function generateGTMAnalyticsPropertyStory( {
@@ -43,8 +44,11 @@ export function generateGTMAnalyticsPropertyStory( {
 	useExistingTag = false,
 	gaPermission = false,
 	gtmPermission = false,
+	setUp = () => {},
 } ) {
 	return () => {
+		setUp();
+
 		const setupRegistry = ( registry ) => {
 			const existingTagAccountID = '151753095';
 			const existingTagPropertyID = 'UA-151753095-1';
