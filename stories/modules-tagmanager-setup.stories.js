@@ -22,11 +22,6 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters, addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import { WithTestRegistry, createTestRegistry, freezeFetch } from '../tests/js/utils';
