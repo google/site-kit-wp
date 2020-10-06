@@ -276,7 +276,7 @@ final class AdSense extends Module
 ></script>
 <script>
 (adsbygoogle = window.adsbygoogle || []).push({
-google_ad_client: "<?php echo esc_attr( $client_id ); ?>",
+google_ad_client: '<?php echo esc_js( $client_id ); ?>',
 enable_page_level_ads: true,
 tag_partner: "site_kit"
 });
