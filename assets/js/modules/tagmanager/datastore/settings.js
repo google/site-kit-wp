@@ -85,7 +85,8 @@ export const controls = {
 		const containerID = select( STORE_NAME ).getContainerID();
 
 		if ( containerID === CONTAINER_CREATE ) {
-			const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_WEB );
+			const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
+			const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_WEB, { containerName } );
 
 			if ( error ) {
 				return { error };
