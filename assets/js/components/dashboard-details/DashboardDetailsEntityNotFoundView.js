@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -33,7 +34,7 @@ import { sanitizeHTML } from '../../util';
 import DashboardDetailsEntityHeaderContainer from './DashboardDetailsEntityHeaderContainer';
 
 export default function DashboardDetailsEntityNotFoundView( { permalink } ) {
-	const currentEntityURL = permalink || ( new URL( global.location.href ) ).searchParams.get( 'permaLink' );
+	const currentEntityURL = permalink || getQueryArg( global.location.href, 'permaLink' );
 
 	const message = sprintf(
 		/* translators: %s: current entity URL */
@@ -55,8 +56,4 @@ export default function DashboardDetailsEntityNotFoundView( { permalink } ) {
 
 DashboardDetailsEntityNotFoundView.propTypes = {
 	permalink: PropTypes.string,
-};
-
-DashboardDetailsEntityNotFoundView.defaultProps = {
-	permalink: '',
 };
