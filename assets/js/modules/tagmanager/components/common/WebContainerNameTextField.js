@@ -16,6 +16,36 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import ContainerNameTextField from './ContainerNameTextField';
+const { useSelect } = Data;
+
 export default function WebContainerNameTextField() {
-	return 'WebContainerNameTextField';
+	const containers = useSelect( ( select ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		return select( STORE_NAME ).getWebContainers( accountID );
+	} );
+
+	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
+
+	const label = isSecondaryAMP
+		? __( 'Web Container Name', 'google-site-kit' )
+		: __( 'Container Name', 'google-site-kit' );
+
+	return (
+		<ContainerNameTextField
+			label={ label }
+			containers={ containers }
+		/>
+	);
 }
