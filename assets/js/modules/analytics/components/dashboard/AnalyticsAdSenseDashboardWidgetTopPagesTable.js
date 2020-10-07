@@ -124,7 +124,7 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 };
 
 /**
- * Check error data response, and handle the INVALID_ARGUMENT specifically.
+ * Checks error data response, and handle the INVALID_ARGUMENT specifically.
  *
  * @since 1.0.0
  *

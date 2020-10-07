@@ -75,7 +75,7 @@ export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex ) {
 }
 
 /**
- * Reduce and process an array of analytics row data.
+ * Reduces and processes an array of analytics row data.
  *
  * @since 1.0.0
  *
@@ -100,7 +100,7 @@ function reduceAnalyticsRowsData( rows, selectedStats ) {
 }
 
 /**
- * Extract the data required from an analytics 'site-analytics' request.
+ * Extracts the data required from an analytics 'site-analytics' request.
  *
  * @since 1.0.0
  *
@@ -232,7 +232,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 };
 
 /**
- * Extract the data required from an analytics 'site-analytics' request.
+ * Extracts the data required from an analytics 'site-analytics' request.
  *
  * @since 1.0.0
  *
@@ -329,7 +329,7 @@ export const getAnalyticsErrorMessageFromData = ( data ) => {
 };
 
 /**
- * Check for Zero data from Analytics API.
+ * Checks for Zero data from Analytics API.
  *
  * @since 1.0.0
  *

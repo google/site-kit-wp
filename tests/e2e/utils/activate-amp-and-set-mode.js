@@ -38,7 +38,7 @@ export const allowedAMPModes = {
 };
 
 /**
- * Activate AMP and set it to the correct mode.
+ * Activates AMP and set it to the correct mode.
  *
  * @since 1.10.0
  *

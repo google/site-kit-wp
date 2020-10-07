@@ -24,18 +24,26 @@ const { default: iterateJsdoc } = require( 'eslint-plugin-jsdoc/dist/iterateJsdo
 /**
  * Internal dependencies
  */
-const { isDependencyBlock } = require( '../utils' );
+const { isDependencyBlock, isFunction } = require( '../utils' );
 
 module.exports = iterateJsdoc( ( {
 	context,
 	jsdoc,
 	jsdocNode,
+	node,
 } ) => {
 	if ( isDependencyBlock( jsdoc ) ) {
 		return;
 	}
 
-	if ( jsdoc.line === 0 ) {
+	if ( jsdoc.description && jsdoc.description.match( /Site Kit by Google, Copyright/gm )	 ) {
+		return;
+	}
+
+	// Only apply this rule to code that documents a function; constants don't need third-party
+	// rules and would in fact be made awkward by this rule.
+	// See: https://github.com/google/site-kit-wp/pull/2047#discussion_r498509940.
+	if ( ! isFunction( node ) ) {
 		return;
 	}
 

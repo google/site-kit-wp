@@ -22,7 +22,7 @@
 import { getStablePath } from '@wordpress/api-fetch/build/middlewares/preloading';
 
 /**
- * `createPreloadingMiddleware` function.
+ * Creates a preloading middleware.
  *
  * Based on preloadMiddleware from from @wordpress/api-fetch, this middle is a single-use per-endpoint and provides cached
  * data for the first request only and any subsequent requests hit the server.

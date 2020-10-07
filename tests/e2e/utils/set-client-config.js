@@ -5,7 +5,7 @@ import { wpApiFetch } from './wp-api-fetch';
 import { testClientConfig } from './test-client-config';
 
 /**
- * Set oAuth client configuration used by Site Kit.
+ * Sets oAuth client configuration used by Site Kit.
  *
  * @since 1.0.0
  *

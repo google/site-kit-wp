@@ -40,7 +40,43 @@ function isDependencyBlock( jsdoc ) {
 	);
 }
 
+function isFunction( node ) {
+	if ( ! node ) {
+		return false;
+	}
+
+	const isFunctionDeclaration = node.type && (
+		[ 'ArrowFunctionExpression', 'FunctionDeclaration', 'FunctionExpression' ].includes( node.type )
+	);
+
+	if ( isFunctionDeclaration ) {
+		return true;
+	}
+
+	if (
+		( node.type === 'ExportNamedDeclaration' || node.type === 'VariableDeclaration' ) &&
+		node.declarations &&
+		node.declarations.length
+	) {
+		const hasFunctionDeclaration = node.declarations.some( ( declaration ) => {
+			return isFunction( declaration.init );
+		} );
+
+		if ( hasFunctionDeclaration ) {
+			return true;
+		}
+	}
+
+	if (
+		( node.type === 'ExportNamedDeclaration' || node.type === 'VariableDeclaration' ) &&
+		node.declaration
+	) {
+		return isFunction( node.declaration );
+	}
+}
+
 module.exports = {
 	findTagInGroup,
 	isDependencyBlock,
+	isFunction,
 };

@@ -33,7 +33,7 @@ import { createURL } from '@wordpress/e2e-test-utils';
 import { fetchPageContent } from '../utils';
 
 /**
- * Matcher to determine if the path has valid AMP for users.
+ * Determines if the path has valid AMP for users.
  *
  * @since 1.10.0
  *

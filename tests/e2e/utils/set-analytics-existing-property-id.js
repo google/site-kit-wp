@@ -5,7 +5,7 @@
 import { wpApiFetch } from './wp-api-fetch';
 
 /**
- * Set the property ID to render on the site, outside of Site Kit.
+ * Sets the property ID to render on the site, outside of Site Kit.
  *
  * @since 1.0.0
  *

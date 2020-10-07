@@ -1,4 +1,22 @@
 /**
+ * E2E tests: config bootstrapping.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
 import { setDefaultOptions } from 'expect-puppeteer';
@@ -180,7 +198,7 @@ function observeConsoleLogging() {
 }
 
 /**
- * Observe the given navigation request.
+ * Observes the given navigation request.
  *
  * @since 1.0.0
  *
@@ -198,7 +216,7 @@ function observeNavigationRequest( req ) {
 }
 
 /**
- * Observe the given navigation response.
+ * Observes the given navigation response.
  *
  * @since 1.0.0
  *
@@ -217,7 +235,7 @@ function observeNavigationResponse( res ) {
 }
 
 /**
- * Observe the given REST request.
+ * Observes the given REST request.
  *
  * @since 1.0.0
  *
@@ -235,7 +253,7 @@ function observeRestRequest( req ) {
 }
 
 /**
- * Observe the given REST response.
+ * Observes the given REST response.
  *
  * @since 1.0.0
  *

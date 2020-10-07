@@ -17,7 +17,7 @@
  */
 
 /**
- * Error Icon - Red triangle with an exclamation mark.
+ * Outputs an error icon - Red triangle with an exclamation mark.
  *
  * @since 1.0.0
  *

@@ -110,7 +110,7 @@ class LegacyAdSenseDashboardWidgetTopPagesTableSmall extends Component {
 }
 
 /**
- * Check error data response.
+ * Checks error data response.
  *
  * @since 1.0.0
  *

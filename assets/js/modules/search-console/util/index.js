@@ -101,7 +101,7 @@ export const extractSearchConsoleDashboardData = ( rows ) => {
 };
 
 /**
- * Check for Zero data from Search Console API.
+ * Checks for Zero data from Search Console API.
  *
  * @since 1.0.0
  *

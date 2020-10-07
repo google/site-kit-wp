@@ -22,7 +22,7 @@
 import { createElement, Fragment } from '@wordpress/element';
 
 /**
- * Append the passed component to a filtered component.
+ * Appends the passed component to a filtered component.
  *
  * Components wrapped in the 'withFilters' higher order component have a filter applied to them (wp.hooks.applyFilters).
  * This helper is used to append a filtered component with a passed component. To use, pass as the third
@@ -59,7 +59,7 @@ export const createAddToFilter = ( NewComponent ) => {
 };
 
 /**
- * Replace a filtered component with the passed component and merge their props.
+ * Replaces a filtered component with the passed component and merge their props.
  *
  * Components wrapped in the 'withFilters' higher order component have a filter applied
  * to them (wp.hooks.applyFilters).

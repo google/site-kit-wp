@@ -59,7 +59,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
 
 	/**
-	 * Handle data errors from the contained AdSense component(s).
+	 * Handles data errors from the contained AdSense component(s).
 	 *
 	 * Currently handled in the SearchConsoleDashboardWidgetOverview component.
 	 *
@@ -81,7 +81,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	};
 
 	/**
-	 * Loading is set to false until data starts to resolve.
+	 * Sets loading to `false` and "receiving data" to `true` until data starts to resolve.
 	 */
 	const handleDataSuccess = () => {
 		setReceivingData( true );

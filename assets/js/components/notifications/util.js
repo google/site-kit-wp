@@ -40,7 +40,7 @@ export const modulesNotificationsToRequest = () => {
 };
 
 /**
- * Retrieves total number of notifications from session storage.
+ * Retrieves the total number of notifications from session storage.
  *
  * Otherwise make the requests to get modules and page wins notifications.
  *
@@ -106,7 +106,7 @@ const removeDismissed = ( notifications ) => {
 };
 
 /**
- * Remove displayed wins set to show once.
+ * Removes displayed wins set to show once.
  * Display 1 win at a time. So user would see something new each time.
  *
  * @since 1.0.0
@@ -208,7 +208,7 @@ export async function getModulesNotifications() {
 }
 
 /**
- * Gets win notifications, fallback to callback declared function.
+ * Gets "win" notifications, fallback to callback declared function.
  *
  * @since 1.0.0
  *

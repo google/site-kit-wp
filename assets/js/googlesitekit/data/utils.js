@@ -154,7 +154,7 @@ export const collectName = ( ...args ) => {
 };
 
 /**
- * An empty reducer.
+ * Passes through state unmodified; eg. an empty reducer.
  *
  * @since 1.8.0
  * @private

@@ -4,7 +4,7 @@
 import { wpApiFetch } from './wp-api-fetch';
 
 /**
- * Set the connected search console property.
+ * Sets the connected search console property.
  *
  * @since 1.0.0
  *

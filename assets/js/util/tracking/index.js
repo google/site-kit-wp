@@ -46,7 +46,7 @@ const {
 } = createTracking( initialConfig );
 
 /**
- * Change the active state of tracking.
+ * Changes the active state of tracking.
  *
  * @since 1.3.0
  *

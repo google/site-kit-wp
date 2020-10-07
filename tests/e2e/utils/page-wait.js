@@ -19,7 +19,7 @@
 export const E2E_PAGE_WAIT = 250;
 
 /**
- * Set the page to wait for the passed time. Defaults to 250 milliseconds.
+ * Sets the page to wait for the passed time. Defaults to 250 milliseconds.
  *
  * @since 1.10.0
  *

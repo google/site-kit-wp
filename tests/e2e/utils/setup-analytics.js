@@ -12,7 +12,7 @@ const defaultSettings = {
 };
 
 /**
- * Activate and set up the Analytics module.
+ * Activates the Analytics module and complete the setup process.
  *
  * @since 1.0.0
  *

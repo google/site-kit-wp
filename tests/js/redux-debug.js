@@ -45,7 +45,7 @@ function createLoggerMiddleware() {
 }
 
 /**
- * Redux DevTools logger implementation.
+ * Adds a Redux DevTools logger implementation.
  *
  * We set this because wp.data registry middleware is not extendable,
  * but it has built-in support for the devtools extension.

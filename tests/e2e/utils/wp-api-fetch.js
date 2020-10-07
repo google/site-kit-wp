@@ -1,5 +1,5 @@
 /**
- * Proxy calls to wp.apiFetch within the page context.
+ * Proxies calls to `wp.apiFetch` within the page context.
  *
  * @since 1.0.0
  * @see {@link https://github.com/WordPress/gutenberg/blob/master/packages/api-fetch/README.md}

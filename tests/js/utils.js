@@ -27,7 +27,7 @@ import modulesOptimizeStore, { STORE_NAME as modulesOptimizeStoreName } from '..
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
 
 /**
- * Create a registry with all available stores.
+ * Creates a registry with all available stores.
  *
  * @since 1.5.0
  * @private
@@ -238,7 +238,7 @@ export const freezeFetch = ( matcher ) => {
 };
 
 /**
- * Register all Site Kit stores on a registry.
+ * Registers all Site Kit stores on a registry.
  *
  * Use this to register every available Site Kit store on a registry.
  * Useful for testing, when you want to ensure that every registry is
@@ -316,7 +316,7 @@ export const unsubscribeFromAll = () => {
 };
 
 /**
- * Return a rejection.
+ * Returns a rejection.
  *
  * Used to ensure that a test will fail if it reaches this point.
  * Useful for asynchronous code that has multiple code paths, eg:

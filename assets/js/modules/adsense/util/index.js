@@ -52,7 +52,7 @@ export function reduceAdSenseData( rows ) {
 }
 
 /**
- * Check for any value higher than 0 in values from AdSense data.
+ * Checks for any value higher than 0 in values from AdSense data.
  *
  * @since 1.0.0
  *

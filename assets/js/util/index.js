@@ -55,7 +55,7 @@ export * from './i18n';
 export * from './helpers';
 
 /**
- * Remove a parameter from a URL string.
+ * Removes a parameter from a URL string.
  *
  * Fallback for when URL is unable to handle parsedURL.searchParams.delete.
  *
@@ -84,7 +84,7 @@ const removeURLFallBack = ( url, parameter ) => {
 };
 
 /**
- * Remove a parameter from a URL string.
+ * Removes a parameter from a URL string.
  *
  * Leverages the URL object internally.
  *
@@ -187,7 +187,7 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 };
 
 /**
- * Internationalization Number Format.
+ * Formats a number using the Internationalization Number Format API.
  *
  * @since 1.0.0
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter} For all available formatting options.
@@ -225,7 +225,7 @@ export const getLocale = ( _global = global ) => {
 };
 
 /**
- * Transform a period string into a number of seconds.
+ * Transforms a period string into a number of seconds.
  *
  * @since 1.0.0
  *
@@ -292,7 +292,7 @@ export const prepareSecondsForDisplay = ( seconds ) => {
 };
 
 /**
- * Retrieve number of days between 2 dates.
+ * Retrieves the number of days between 2 dates.
  *
  * @since 1.0.0
  *
@@ -309,7 +309,7 @@ export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
 };
 
 /**
- * Calculate the percent change between two values.
+ * Calculates the percent change between two values.
  *
  * @since 1.0.0
  *
@@ -333,7 +333,7 @@ export const changeToPercent = ( previous, current ) => {
 };
 
 /**
- * Extract a single column of data for a sparkline from a dataset prepared for Google charts.
+ * Extracts a single column of data for a sparkline from a dataset prepared for Google charts.
  *
  * @since 1.0.0
  *
@@ -388,7 +388,7 @@ export const getModulesData = ( __googlesitekitLegacyData = global._googlesiteki
 };
 
 /**
- * Get the URL needed to initiate a reAuth flow.
+ * Gets the URL needed to initiate a reAuth flow.
  *
  * @since 1.0.0
  *
@@ -491,7 +491,7 @@ export const validateOptimizeID = ( stringToValidate ) => {
 };
 
 /**
- * Activate or Deactivate a Module.
+ * Activates/deactivates a Module.
  *
  * @since 1.0.0
  *
@@ -568,7 +568,7 @@ export const showErrorNotification = ( ErrorComponent, props = {} ) => {
 };
 
 /**
- * HTML text into HTML entity.
+ * Converts HTML text into an HTML entity.
  *
  * _.unescape doesn't seem to decode some entities for admin bar titles.
  * adding combination in this helper as a workaround.
@@ -591,7 +591,7 @@ export const decodeHTMLEntity = ( str ) => {
 };
 
 /**
- * Get the icon for a module.
+ * Gets the icon for a module.
  *
  * @since 1.0.0
  *

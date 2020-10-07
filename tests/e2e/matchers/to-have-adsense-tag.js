@@ -4,7 +4,7 @@
 import { createURL } from '@wordpress/e2e-test-utils';
 
 /**
- * Jest matcher for asserting the URL at the given path contains an AdSense tag.
+ * Asserts the URL at the given path contains an AdSense tag.
  *
  * @since 1.10.0
  *

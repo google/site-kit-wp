@@ -1,5 +1,5 @@
 /**
- * Simulate pasting text into an element.
+ * Simulates pasting text into an element.
  *
  * It's necessary to get the underlying setter from the input's prototype
  * as this is overridden by elements rendered by React.

@@ -37,6 +37,8 @@ import getDataErrorComponent from '../notifications/data-error';
 import getSetupIncompleteComponent from '../notifications/setup-incomplete';
 
 /**
+ * Provides data from the API to components. (Legacy HOC.)
+ *
  * A Higher order Component that provides data functionality to Components.
  *
  * This function takes a React Component that is data dependent, resolving via the data API.
@@ -161,7 +163,7 @@ const withData = (
 			);
 
 			/**
-			 * Handle a single datapoint returned from the data API.
+			 * Handles a single datapoint returned from the data API.
 			 *
 			 * Each resolved data point is passed thru this handler to detect errors and zero data conditions, and
 			 * to trigger `handleDataError` and `handleDataSuccess` helpers.

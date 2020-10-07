@@ -23,7 +23,7 @@ import { getDefaultOptions } from 'expect-puppeteer';
 import { Page, ElementHandle } from 'puppeteer';
 
 /**
- * Jest matcher for asserting the given instance has tracking loaded or not.
+ * Asserts that the given instance has tracking loaded or not.
  *
  * @since 1.11.0
  *

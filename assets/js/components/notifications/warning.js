@@ -17,7 +17,7 @@
  */
 
 /**
- * Warning Icon - Yellow circle with an exclamation mark.
+ * Outputs a warning icon - Yellow circle with an exclamation mark.
  *
  * @since 1.0.0
  *

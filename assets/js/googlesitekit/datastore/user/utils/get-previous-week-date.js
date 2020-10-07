@@ -22,6 +22,8 @@
 import { getPreviousDate } from './get-previous-date';
 
 /**
+ * Gets the previous date in the week, relative to the supplied date.
+ *
  * Similar to `getPreviousDate` but shifts the resulting date so that it returns a date
  * that falls on the same day of the week as the `relativeDate` while preserving the
  * `daysBefore` as a minimum.

@@ -1,5 +1,5 @@
 /**
- * Add a request handler for intercepting requests.
+ * Adds a request handler for intercepting requests.
  *
  * Used intercept HTTP requests during tests with a custom handler function.
  * Returns a function that, when called, stops further request

@@ -100,7 +100,7 @@ export const clearWebStorage = () => {
 };
 
 /**
- * Fallback helper to get a query parameter from the current URL.
+ * Gets a query parameter from the current URL. (Fallback.)
  *
  * Used when URL.searchParams is unavailable.
  *
@@ -126,7 +126,7 @@ const fallbackGetQueryParamater = ( name ) => {
 };
 
 /**
- * Get query parameter from the current URL.
+ * Gets the query parameter from the current URL.
  *
  * @since 1.2.0
  *

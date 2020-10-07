@@ -34,7 +34,7 @@ export function loadTranslations() {
 }
 
 /**
- * Internationalization Number Format.
+ * Formats a number using the JS Internationalization Number Format API.
  *
  * @since 1.8.0
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter} For all available formatting options.

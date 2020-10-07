@@ -22,7 +22,7 @@
 import { useState, useEffect } from '@wordpress/element';
 
 /**
- * `useDebouncedState` hook.
+ * Debounces a value after the specified delay.
  *
  * @since 1.16.0
  *
