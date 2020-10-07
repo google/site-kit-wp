@@ -121,6 +121,8 @@ class SearchConsole extends Component {
 	/**
 	 * Sets the Search Console property and adds it if necessary through the API.
 	 *
+	 * @since 1.3.0
+	 *
 	 * @param {string}  siteURL The siteURL for the property.
 	 * @param {boolean} isNew   Whether siteURL is for a new property.
 	 */

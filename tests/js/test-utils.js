@@ -21,16 +21,15 @@ import { createTestRegistry } from './utils';
 /**
  * Renders the given UI into a container to make assertions.
  *
+ * @since 1.7.1
  * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
- *
  * @private
  *
- * @param {*} ui Any valid React child element.
- * @param {Object} options Render options.
+ * @param {*}        ui                    Any valid React child element.
+ * @param {Object}   options               Render options.
  * @param {Function} options.setupRegistry A function which accepts the registry instance to configure it.
- * @param {Function} options.registry A specific registry instance to use. Defaults to a fresh test registry with all stores.
- * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result}
- *                 as well as the `registry`.
+ * @param {Function} options.registry      A specific registry instance to use. Defaults to a fresh test registry with all stores.
+ * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {
 	const {
@@ -68,7 +67,7 @@ const customRender = ( ui, options = {} ) => {
  * @param {Object}   [options]          Optional. An options object to modify the execution of the callback function.
  *                                      See the [renderHook Options](@link https://react-hooks-testing-library.com/reference/api#renderhook-options) section for more details.
  * @param {Object}   [options.registry] Registry to use with the RegistryProvider. Default is a new test registry.
- * @return {Object} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result
+ * @return {Object} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
  */
 const customRenderHook = (
 	callback,
