@@ -82,12 +82,16 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 
 	const dataMapped = data[ 0 ].data.rows.map( ( row ) => {
 		/**
+		 * The shape of the dimensions and metrics objects:
+		 *
+		 * ```
 		 * dimensions[0] = ga:pageTitle
 		 * dimensions[1] = ga:pagePath
 		 *
 		 * metrics[0] = ga:adsenseECPM
 		 * metrics[1] = ga:adsensePageImpressions
 		 * metrics[2] = ga:adsenseRevenue
+		 * ```
 		 */
 		return [
 			row.dimensions[ 0 ],
@@ -120,10 +124,11 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 };
 
 /**
- * Check error data response, and handle the INVALID_ARGUMENT specifically.
+ * Checks error data response, and handle the INVALID_ARGUMENT specifically.
+ *
+ * @since 1.0.0
  *
  * @param {Object} data Response data.
- *
  * @return {(string|boolean|null)}  Returns a string with an error message if there is an error. Returns `false` when there is no data and no error message. Will return `null` when arguments are invalid.
  *                            string   data error message if it exists or unidentified error.
  *                            false    if no data and no error message

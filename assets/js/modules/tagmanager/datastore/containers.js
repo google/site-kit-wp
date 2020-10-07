@@ -1,5 +1,5 @@
 /**
- * modules/tagmanager data store: containers.
+ * `modules/tagmanager` data store: containers.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -97,7 +97,7 @@ const baseActions = {
 	 * @since 1.11.0
 	 *
 	 * @param {string} accountID    Google Tag Manager account ID.
-	 * @param {string} usageContext Container usage context. (Either 'web', or 'amp')
+	 * @param {string} usageContext Container usage context. (Either 'web', or 'amp').
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createContainer( accountID, usageContext ) {

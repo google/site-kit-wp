@@ -39,7 +39,7 @@ addFilter(
 );
 
 /**
- * Add component to the setup wizard
+ * Add component to the setup wizard.
  */
 addFilter(
 	'googlesitekit.ModuleSetup-optimize',

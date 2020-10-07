@@ -59,7 +59,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
 
 	/**
-	 * Handle data errors from the contained AdSense component(s).
+	 * Handles data errors from the contained AdSense component(s).
 	 *
 	 * Currently handled in the SearchConsoleDashboardWidgetOverview component.
 	 *
@@ -67,6 +67,8 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	 *
 	 * If the component detects no data - in this case all 0s - the callback is called without an error message,
 	 * resulting in the display of a CTA.
+	 *
+	 * @since 1.0.0
 	 *
 	 * @param {string} receivedError    A potential error string.
 	 * @param {Object} receivedErrorObj Full error object.
@@ -79,7 +81,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	};
 
 	/**
-	 * Loading is set to false until data starts to resolve.
+	 * Sets loading to `false` and "receiving data" to `true` until data starts to resolve.
 	 */
 	const handleDataSuccess = () => {
 		setReceivingData( true );

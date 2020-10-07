@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: clients tests.
+ * `modules/adsense` data store: clients tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
