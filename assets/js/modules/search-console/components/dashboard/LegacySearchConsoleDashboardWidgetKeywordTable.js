@@ -32,19 +32,25 @@ import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/preview-table';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 const { useSelect } = Data;
 
 const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const baseServiceURLArgs = {
+		resource_id: domain,
+		num_of_days: getCurrentDateRangeDayCount(),
+	};
+	if ( url ) {
+		baseServiceURLArgs.page = `!${ url }`;
+	}
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{
 			path: '/performance/search-analytics',
-			query: {
-				resource_id: domain,
-				num_of_days: getCurrentDateRangeDayCount(),
-			},
+			query: baseServiceURLArgs,
 		}
 	) );
 
