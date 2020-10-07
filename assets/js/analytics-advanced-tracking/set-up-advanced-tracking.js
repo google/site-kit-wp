@@ -59,7 +59,7 @@ export default function setUpAdvancedTracking( eventConfigurations, sendEvent ) 
  * @since n.e.x.t
  *
  * @param {Element} el       A DOM element.
- * @param {string } selector A selector to check for.
+ * @param {string}  selector A selector to check for.
  * @return {boolean} True if the DOM element matches the selector, false otherwise.
  */
 function matches( el, selector ) {
