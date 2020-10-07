@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useMemo, useState } from '@wordpress/element';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -106,19 +106,18 @@ const WidgetAreaRenderer = ( { slug } ) => {
 	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
 	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
 
-	// State handled by WidgetRenderer instances, based on whether the widget
-	// renders content or `null`.
-	const [ activeWidgets, setActiveWidgets ] = useState( {} );
+	// Verify that widgets are active (do not render null)
+	const isActiveWidget = ( widget ) =>
+		widgets.find( ( item ) => item.slug === widget.slug ) &&
+		typeof widget.component === 'function' &&
+		widget.component( {} );
+
+	const activeWidgets = widgets.filter( isActiveWidget );
 
 	const widgetClassNames = useMemo( () => {
-		let classNames = [].fill( null, 0, widgets.length );
+		let classNames = [].fill( null, 0, activeWidgets.length );
 		let counter = 0;
-		widgets.forEach( ( widget, i ) => {
-			// If this widget is not active (outputs `null`), there's no sense in outputting classes for it.
-			if ( ! activeWidgets[ widget.slug ] ) {
-				return;
-			}
-
+		activeWidgets.forEach( ( widget, i ) => {
 			const width = widget.width;
 
 			// Increase column counter based on width.
@@ -155,16 +154,18 @@ const WidgetAreaRenderer = ( { slug } ) => {
 		}
 
 		return classNames;
-	}, [ widgets, activeWidgets ] );
+	}, [ activeWidgets ] );
 
-	const widgetsOutput = widgets.map( ( widget, i ) => {
+	if ( activeWidgets.length === 0 ) {
+		return null;
+	}
+
+	const widgetsOutput = activeWidgets.map( ( widget, i ) => {
 		return (
 			<WidgetRenderer
 				gridClassName={ widgetClassNames[ i ] !== null ? classnames( widgetClassNames[ i ] ) : 'googlesitekit-widget-area--hidden' }
 				key={ widget.slug }
 				slug={ widget.slug }
-				activeWidgets={ activeWidgets }
-				setActiveWidgets={ setActiveWidgets }
 			/>
 		);
 	} );
