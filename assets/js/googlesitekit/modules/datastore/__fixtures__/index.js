@@ -27,6 +27,8 @@ const alwaysActive = [ 'search-console', 'site-verification' ];
 /**
  * Makes a copy of the modules with the given module activation set.
  *
+ * @since n.e.x.t
+ *
  * @param {...string} slugs Active module slugs.
  * @return {Object[]} Array of module objects.
  */
