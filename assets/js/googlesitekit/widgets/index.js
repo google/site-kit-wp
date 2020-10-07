@@ -106,8 +106,8 @@ const Widgets = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {string}         slug          Widget Area's slug.
-	 * @param {(string|Array)} contextSlugs  Widget context slug(s).
+	 * @param {string}            slug         Widget Area's slug.
+	 * @param {(string|string[])} contextSlugs Widget context slug(s).
 	 */
 	assignWidgetArea( slug, contextSlugs ) {
 		dispatch( STORE_NAME ).assignWidgetArea( slug, contextSlugs );
@@ -118,8 +118,8 @@ const Widgets = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param  {string}         slug            Widget slug.
-	 * @param  {(string|Array)} widgetAreaSlugs Widget area slug(s).
+	 * @param {string}            slug            Widget slug.
+	 * @param {(string|string[])} widgetAreaSlugs Widget area slug(s).
 	 */
 	assignWidget( slug, widgetAreaSlugs ) {
 		dispatch( STORE_NAME ).assignWidget( slug, widgetAreaSlugs );
@@ -133,7 +133,7 @@ const Widgets = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param  {string} slug Widget Area's slug.
+	 * @param {string} slug Widget Area's slug.
 	 * @return {boolean} `true`/`false` based on whether widget area has been registered.
 	 */
 	isWidgetAreaRegistered( slug ) {
@@ -148,7 +148,7 @@ const Widgets = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param  {string}  slug  Widget's slug.
+	 * @param {string} slug Widget's slug.
 	 * @return {boolean} `true`/`false` based on whether widget has been registered.
 	 */
 	isWidgetRegistered( slug ) {

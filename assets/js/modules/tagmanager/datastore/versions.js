@@ -1,5 +1,5 @@
 /**
- * modules/tagmanager data store: versions.
+ * `modules/tagmanager` data store: versions.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

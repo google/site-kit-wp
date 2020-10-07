@@ -1,5 +1,5 @@
 /**
- * addToFilter higher-order component.
+ * `addToFilter` higher-order component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *

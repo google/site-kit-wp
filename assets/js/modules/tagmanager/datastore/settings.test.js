@@ -1,5 +1,5 @@
 /**
- * modules/tagmanager data store: settings tests.
+ * `modules/tagmanager` data store: settings tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
