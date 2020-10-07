@@ -166,6 +166,19 @@ class Context {
 	}
 
 	/**
+	 * Gets the cannonical "home" URL.
+	 *
+	 * Returns the value from the `"googlesitekit_canonical_home_url"` filter.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Cannonical home URL.
+	 */
+	public function get_canonical_home_url() {
+		return apply_filters( 'googlesitekit_canonical_home_url', home_url() );
+	}
+
+	/**
 	 * Gets the site URL of the reference site to use for stats.
 	 *
 	 * @since 1.0.0
@@ -218,7 +231,7 @@ class Context {
 		// Ensure local URL is used for lookup.
 		$url = str_replace(
 			$this->get_reference_site_url(),
-			untrailingslashit( home_url() ),
+			untrailingslashit( $this->get_canonical_home_url() ),
 			$url
 		);
 
@@ -411,7 +424,7 @@ class Context {
 	 * @return string URL that starts with the reference site URL.
 	 */
 	private function filter_reference_url( $url = '' ) {
-		$site_url = untrailingslashit( home_url() );
+		$site_url = untrailingslashit( $this->get_canonical_home_url() );
 
 		/**
 		 * Filters the reference site URL to use for stats.
