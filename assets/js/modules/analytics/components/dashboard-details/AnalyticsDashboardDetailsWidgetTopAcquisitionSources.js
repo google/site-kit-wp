@@ -31,6 +31,7 @@ import Layout from '../../../../components/layout/layout';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import LegacyDashboardAcquisitionPieChart from '../dashboard/LegacyDashboardAcquisitionPieChart';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const { useSelect } = Data;
 
@@ -39,9 +40,15 @@ export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
 		const accountID = select( STORE_NAME ).getAccountID();
 		const profileID = select( STORE_NAME ).getProfileID();
 		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
-		return select( STORE_NAME ).getServiceURL(
-			{ path: `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
-		);
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+
+		let path = `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
+		if ( url ) {
+			const parsedURL = new URL( url );
+			path += `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
+		}
+
+		return select( STORE_NAME ).getServiceURL( { path } );
 	} );
 	return (
 		<Fragment>

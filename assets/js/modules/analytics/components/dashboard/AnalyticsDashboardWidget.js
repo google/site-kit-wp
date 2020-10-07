@@ -61,6 +61,7 @@ export default function AnalyticsDashboardWidget() {
 	const {
 		topContentServiceURL,
 		topAcquisitionServiceURL,
+		visitorsOverview,
 	} = useSelect( ( select ) => {
 		const accountID = select( STORE_NAME ).getAccountID();
 		const profileID = select( STORE_NAME ).getProfileID();
@@ -71,6 +72,9 @@ export default function AnalyticsDashboardWidget() {
 			),
 			topAcquisitionServiceURL: select( STORE_NAME ).getServiceURL(
 				{ path: `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
+			),
+			visitorsOverview: select( STORE_NAME ).getServiceURL(
+				{ path: `/report/visitorss-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
 			),
 		};
 	} );
@@ -180,7 +184,7 @@ export default function AnalyticsDashboardWidget() {
 									__( 'See full stats in %s', 'google-site-kit' ),
 									_x( 'Analytics', 'Service name', 'google-site-kit' )
 								) }
-								headerCtaLink="http://analytics.google.com"
+								headerCtaLink={ visitorsOverview }
 							>
 								<AnalyticsDashboardWidgetOverview
 									selectedStats={ selectedStats }
@@ -206,7 +210,7 @@ export default function AnalyticsDashboardWidget() {
 								footer
 								/* translators: %s: date range */
 								title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentDateRange ) }
-								headerCtaLink="https://analytics.google.com"
+								headerCtaLink={ topContentServiceURL }
 								headerCtaLabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
@@ -228,7 +232,7 @@ export default function AnalyticsDashboardWidget() {
 								footer
 								/* translators: %s: date range */
 								title={ sprintf( __( 'Top acquisition channels over the last %s', 'google-site-kit' ), currentDateRange ) }
-								headerCtaLink="https://analytics.google.com"
+								headerCtaLink={ topAcquisitionServiceURL }
 								headerCtaLabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
