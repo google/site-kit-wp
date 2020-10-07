@@ -30,6 +30,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
+use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
@@ -189,6 +190,8 @@ final class Search_Console extends Module
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
+		$url_normalizer = new Google_URL_Normalizer();
+
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
 				return $this->get_webmasters_service()->sites->listSites();
@@ -209,7 +212,7 @@ final class Search_Console extends Module
 				);
 
 				if ( ! empty( $data['url'] ) ) {
-					$data_request['page'] = $data['url'];
+					$data_request['page'] = $url_normalizer->normalize_url( $data['url'] );
 				}
 
 				if ( isset( $data['limit'] ) ) {
@@ -232,7 +235,7 @@ final class Search_Console extends Module
 					);
 				}
 
-				$site_url = $data['siteURL'];
+				$site_url = $url_normalizer->normalize_url( $data['siteURL'] );
 				if ( 0 !== strpos( $site_url, 'sc-domain:' ) ) {
 					$site_url = trailingslashit( $site_url );
 				}
