@@ -175,6 +175,17 @@ class Context {
 	 * @return string Cannonical home URL.
 	 */
 	public function get_canonical_home_url() {
+		/**
+		 * Filters the canonical home URL considered by Site Kit.
+		 *
+		 * Typically this is okay to be the unmodified `home_url()`, but certain plugins (e.g. multilingual plugins)
+		 * that dynamically modify that value based on context can use this filter to ensure that the URL considered
+		 * by Site Kit remains stable.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param string $home_url The value of `home_url()`.
+		 */
 		return apply_filters( 'googlesitekit_canonical_home_url', home_url() );
 	}
 
