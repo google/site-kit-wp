@@ -120,7 +120,11 @@ export default withData(
 			context: [ 'Dashboard' ],
 		},
 	],
-	<PreviewTable padding />,
+	<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet">
+		<Layout className="googlesitekit-popular-content" fill>
+			<PreviewTable padding />
+		</Layout>
+	</div>,
 	{
 		inGrid: true,
 		createGrid: true,
