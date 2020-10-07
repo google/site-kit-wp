@@ -78,12 +78,14 @@ function DashboardTopEarningPagesWidget() {
 		);
 	}
 
-	if ( error ) {
-		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
-	}
-
+	// A restricted metrics error will cause this value to change in the resolver
+	// so this check should happen before an error, which is only relevant if they are linked.
 	if ( ! isAdSenseLinked ) {
 		return <AdSenseLinkCTA />;
+	}
+
+	if ( error ) {
+		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
 	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
