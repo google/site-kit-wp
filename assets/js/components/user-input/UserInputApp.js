@@ -1,5 +1,5 @@
 /**
- * Feature flags configuration.
+ * User Input App.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,16 +16,15 @@
  * limitations under the License.
  */
 
-exports.featureFlags = {
-	widgets: {
-		dashboard: {
-			enabled: 'development',
-		},
-		pageDashboard: {
-			enabled: 'development',
-		},
-		userInput: {
-			enabled: 'development',
-		},
-	},
-};
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+export default function UserInputApp() {
+	if ( ! featureFlags.widgets.userInput.enabled ) {
+		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;
+	}
+
+	return <div>TODO: Implement logic and UI.</div>;
+}
