@@ -46,6 +46,8 @@ import {
 	userReportDataDefaults,
 	parseTotalUsersData,
 } from '../../util';
+
+import appendEntityToPath from '../../util/appendEntityToPath';
 import Data from 'googlesitekit-data';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
@@ -105,20 +107,16 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
 	const pathIDSegment = `a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
-	let pathPageSegment = '';
-
-	if ( url ) {
-		const parsedURL = new URL( url );
-		pathPageSegment += `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
-	}
 
 	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{
-			path: `/report/visitors-overview/${ pathIDSegment }${ pathPageSegment }`,
+			path: appendEntityToPath( url, `/report/visitors-overview/${ pathIDSegment }` ),
 		}
 	) );
 	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{ path: `/report/conversions-goals-overview/${ pathIDSegment }${ pathPageSegment }` }
+		{
+			path: appendEntityToPath( url, `/report/conversions-goals-overview/${ pathIDSegment }` ),
+		}
 	) );
 
 	const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
