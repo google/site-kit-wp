@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -68,12 +68,6 @@ export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
 				<Layout
 					className="googlesitekit-analytics-acquisition-sources"
 					footer
-					headerCtaLink="https://analytics.google.com"
-					headerCtaLabel={ sprintf(
-						/* translators: %s: module name. */
-						__( 'See full stats in %s', 'google-site-kit' ),
-						_x( 'Analytics', 'Service name', 'google-site-kit' )
-					) }
 					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 					footerCtaLink={ serviceURL }
 				>
