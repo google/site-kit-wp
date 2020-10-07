@@ -1,5 +1,5 @@
 /**
- * Tag Manager module data store: service tests.
+ * `modules/tagmanager` data store: service tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

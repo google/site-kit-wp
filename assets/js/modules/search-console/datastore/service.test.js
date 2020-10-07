@@ -1,5 +1,5 @@
 /**
- * Search Console module data store: service tests.
+ * `modules/search-console` data store: service tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

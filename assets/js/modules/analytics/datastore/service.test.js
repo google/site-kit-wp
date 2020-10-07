@@ -1,5 +1,5 @@
 /**
- * Analytics module data store: service tests.
+ * `modules/analytics` data store: service tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

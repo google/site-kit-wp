@@ -1,5 +1,5 @@
 /**
- * Search Console module data store: report.
+ * `modules/search-console` data store: report.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -1,5 +1,5 @@
 /**
- * Analytics module data store: tags.
+ * `modules/analytics` data store: tags.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

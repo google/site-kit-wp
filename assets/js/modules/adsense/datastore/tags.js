@@ -1,5 +1,5 @@
 /**
- * Adsense module data store: tags.
+ * `modules/adsense` data store: tags.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

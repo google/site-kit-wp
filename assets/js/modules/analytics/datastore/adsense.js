@@ -1,5 +1,5 @@
 /**
- * Analytics module data store: adsense.
+ * `modules/analytics` data store: adsense.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

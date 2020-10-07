@@ -1,5 +1,5 @@
 /**
- * Optimize module data store: settings.
+ * `modules/optimize` data store: settings.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

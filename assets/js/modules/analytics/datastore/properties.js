@@ -1,5 +1,5 @@
 /**
- * Analytics module data store: properties.
+ * `modules/analytics` data store: properties.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

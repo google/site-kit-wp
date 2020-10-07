@@ -1,5 +1,5 @@
 /**
- * Tag Manager module data store: existing tag.
+ * `modules/tagmanager` data store: existing tag.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

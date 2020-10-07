@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights module data store: report.
+ * `modules/pagespeed-insights` data store: report.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

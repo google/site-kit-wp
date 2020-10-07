@@ -1,5 +1,5 @@
 /**
- * Adsense module data store: accounts.
+ * `modules/adsense` data store: accounts.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

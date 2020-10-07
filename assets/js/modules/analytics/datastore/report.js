@@ -1,5 +1,5 @@
 /**
- * Analytics module data store: report.
+ * `modules/analytics` data store: report.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -1,5 +1,5 @@
 /**
- * Search Console module data store: selectors test.
+ * `modules/search-console` data store: selectors test.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -1,5 +1,5 @@
 /**
- * Adsense module data store: adblocker tests.
+ * `modules/adsense` data store: adblocker tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -1,5 +1,5 @@
 /**
- * Tag Manager module data store: settings.
+ * `modules/tagmanager` data store: settings.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

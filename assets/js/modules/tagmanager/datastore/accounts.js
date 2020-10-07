@@ -1,5 +1,5 @@
 /**
- * Tag Manager module data store: accounts.
+ * `modules/tagmanager` data store: accounts.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

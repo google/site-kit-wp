@@ -1,5 +1,5 @@
 /**
- * Analytics module data store: profiles tests.
+ * `modules/analytics` data store: profiles tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
