@@ -1,5 +1,5 @@
 /**
- * modules/optimize data store: settings tests.
+ * `modules/optimize` data store: settings tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

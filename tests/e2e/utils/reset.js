@@ -31,7 +31,7 @@ import {
 } from '../utils';
 
 /**
- * Reset Site Kit using utility plugin.
+ * Resets Site Kit using a utility plugin.
  */
 export async function resetSiteKit() {
 	if ( ! page.url().includes( '/wp-admin' ) ) {

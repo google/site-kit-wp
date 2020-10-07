@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: properties tests.
+ * `modules/analytics` data store: properties tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

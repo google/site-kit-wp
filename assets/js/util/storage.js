@@ -19,6 +19,8 @@
 /**
  * Detects whether browser storage is both supported and available.
  *
+ * @since 1.0.0
+ *
  * @param {string} type Browser storage to test. ex localStorage or sessionStorage.
  * @return {boolean} True if the given storage is available, false otherwise.
  */
@@ -85,6 +87,8 @@ let storageObj;
 
 /**
  * Gets the storage object to use.
+ *
+ * @since 1.0.0
  *
  * @return {Storage} Either window.sessionStorage, window.localStorage', or a
  *                   no-op implementation if neither is available.
