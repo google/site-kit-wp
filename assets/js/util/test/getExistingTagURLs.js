@@ -1,5 +1,5 @@
 /**
- * util/tag getExistingTag tests.
+ * `getExistingTag` tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

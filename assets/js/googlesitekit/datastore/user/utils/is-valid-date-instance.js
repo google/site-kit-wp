@@ -1,5 +1,5 @@
 /**
- * core/user isValidDateInstance utility.
+ * `core/user` isValidDateInstance utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

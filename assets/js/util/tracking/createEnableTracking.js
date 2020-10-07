@@ -7,7 +7,9 @@ import { SCRIPT_IDENTIFIER, DATA_LAYER } from './constants';
 /**
  * Returns a function which, when invoked enables tracking and injects the gtag script if necessary.
  *
- * @param {Object} config Tracking configuration.
+ * @since 1.3.0
+ *
+ * @param {Object} config          Tracking configuration.
  * @param {Object} dataLayerTarget Data layer parent object.
  * @return {Function} Function that tracks an event.
  */

@@ -1,5 +1,5 @@
 /**
- * activateAMPWithMode utility.
+ * `activateAMPWithMode` utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -38,7 +38,9 @@ export const allowedAMPModes = {
 };
 
 /**
- * Activate AMP and set it to the correct mode.
+ * Activates AMP and set it to the correct mode.
+ *
+ * @since 1.10.0
  *
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */
@@ -48,7 +50,9 @@ export const activateAMPWithMode = async ( mode ) => {
 };
 
 /**
- * Set AMP Mode
+ * Sets AMP Mode.
+ *
+ * @since 1.10.0
  *
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */

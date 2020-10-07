@@ -21,8 +21,8 @@
  *
  * @since 1.13.0
  *
- * @param {string|string[]|Object|Object[]} data The data to check.
- * @param {Function} verifyFunction The callback to verify an object.
+ * @param {string|string[]|Object|Object[]} data           The data to check.
+ * @param {Function}                        verifyFunction The callback to verify an object.
  * @return {boolean} TRUE if data is valid, otherwise FALSE.
  */
 export function isValidStringsOrObjects( data, verifyFunction ) {

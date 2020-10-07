@@ -79,6 +79,8 @@ class AnalyticsDashboardWidget extends Component {
 	 * If the component detects no data - in this case all 0s - the callback is called without an error message,
 	 * resulting in the display of a CTA.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param {string} error    A potential error string.
 	 * @param {Object} errorObj Full error object.
 	 */
