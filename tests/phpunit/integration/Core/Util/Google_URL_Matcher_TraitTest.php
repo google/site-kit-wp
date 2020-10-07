@@ -121,6 +121,12 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 				'‬ביקדקוםה.קום',
 				true,
 			),
+			'url with and without bidirectional control characters' => array(
+				'xn--5dbedds0a1eb4361d.xn--9dbq2a',
+				'http://‫בדיקה‬.‫קום‬/',
+				//'‬ביקדקוםה.קום',
+				true,
+			),
 
 		);
 	}
