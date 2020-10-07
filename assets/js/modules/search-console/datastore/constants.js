@@ -1,5 +1,5 @@
 /**
- * `modules/search-console` data store constants
+ * `modules/search-console` data store constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

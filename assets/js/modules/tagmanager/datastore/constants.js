@@ -1,5 +1,5 @@
 /**
- * `modules/tagmanager` data store constants
+ * `modules/tagmanager` data store constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
