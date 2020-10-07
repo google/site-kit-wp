@@ -1,5 +1,5 @@
 /**
- * User info data store: userInfo tests.
+ * `core/user` data store: userInfo tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

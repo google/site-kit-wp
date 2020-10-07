@@ -1,5 +1,5 @@
 /**
- * Core site data store: reset connection tests.
+ * `core/site` data store: reset connection tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

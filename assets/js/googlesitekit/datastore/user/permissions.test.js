@@ -1,5 +1,5 @@
 /**
- * User info data store: Authentication info tests.
+ * `core/user` data store: Authentication info tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

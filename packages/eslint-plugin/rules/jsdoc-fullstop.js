@@ -36,11 +36,7 @@ module.exports = iterateJsdoc( ( {
 	}
 
 	// Don't match code block examples that end in "```".
-	if (
-		jsdoc.description &&
-		! jsdoc.description &&
-		! jsdoc.description.match( /(\.|```)$/ )
-	) {
+	if ( jsdoc.description && ! jsdoc.description.match( /(\.|```)$/ ) ) {
 		context.report( {
 			data: { name: jsdocNode.name },
 			message: `JSDoc block text should end with a period/full-stop.`,

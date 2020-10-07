@@ -1,5 +1,5 @@
 /**
- * Core site data store: notifications.
+ * `core/site` data store: notifications.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

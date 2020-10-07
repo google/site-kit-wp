@@ -1,5 +1,5 @@
 /**
- * User info data store: date-range.
+ * `core/user` data store: date-range.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -37,7 +37,7 @@ export const initialState = {
 };
 
 /**
- * Date Range Object
+ * Date Range Object.
  *
  * @since n.e.x.t
  *

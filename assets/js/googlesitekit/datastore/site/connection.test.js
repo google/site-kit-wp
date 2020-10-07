@@ -1,5 +1,5 @@
 /**
- * Core site data store: connection info tests.
+ * `core/site` data store: connection info tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

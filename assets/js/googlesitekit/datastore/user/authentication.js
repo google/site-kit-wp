@@ -1,5 +1,5 @@
 /**
- * User info data store: Authentication info.
+ * `core/user` data store: Authentication info.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
