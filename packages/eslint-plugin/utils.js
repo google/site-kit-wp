@@ -53,6 +53,10 @@ function isFunction( node ) {
 		return true;
 	}
 
+	if ( node.type === 'Property' && node.value ) {
+		return isFunction( node.value );
+	}
+
 	if (
 		( node.type === 'ExportNamedDeclaration' || node.type === 'VariableDeclaration' ) &&
 		node.declarations &&
@@ -73,6 +77,8 @@ function isFunction( node ) {
 	) {
 		return isFunction( node.declaration );
 	}
+
+	return false;
 }
 
 module.exports = {

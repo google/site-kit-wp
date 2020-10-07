@@ -352,7 +352,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Get all Google Analytics properties this account can access.
+	 * Gets all Google Analytics properties this account can access.
 	 *
 	 * Returns an array of all analytics properties.
 	 *

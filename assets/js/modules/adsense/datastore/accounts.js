@@ -112,7 +112,7 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Get all Google AdSense accounts this user has available.
+	 * Gets all Google AdSense accounts this user has available.
 	 *
 	 * @since 1.9.0
 	 *

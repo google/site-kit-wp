@@ -47,7 +47,8 @@ module.exports = iterateJsdoc( ( {
 		return;
 	}
 
-	if ( jsdoc.description && ! jsdoc.description.match( /^\w+s\W.*/g ) ) {
+	// Verbs can include dashes or in some cases also parentheses.
+	if ( jsdoc.description && ! jsdoc.description.match( /^[\w\(\)\-]+s\W.*/g ) ) {
 		context.report( {
 			data: { name: jsdocNode.name },
 			message: `The first word in a function's description should be a third-person verb (eg "runs" not "run").`,
