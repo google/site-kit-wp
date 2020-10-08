@@ -29,8 +29,6 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_register() {
-		global $wp_filter;
-
 		$actions_to_test = array(
 			'admin_enqueue_scripts',
 			'wp_enqueue_scripts',
