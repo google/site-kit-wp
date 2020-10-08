@@ -99,7 +99,8 @@ export const controls = {
 		const ampContainerID = select( STORE_NAME ).getAMPContainerID();
 
 		if ( ampContainerID === CONTAINER_CREATE ) {
-			const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_AMP );
+			const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
+			const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_AMP, { containerName } );
 
 			if ( error ) {
 				return { error };
