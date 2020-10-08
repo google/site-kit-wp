@@ -50,7 +50,7 @@ class Module_With_Blockable_Tags_TraitTest extends TestCase {
 		// Returns attributes to prevent script loading if truthy.
 		add_filter( 'googlesitekit_fake-module_tag_block_on_consent', '__return_true' );
 
-		$this->assertEquals( 'type="text/plain" data-block-on-consent', $module->get_tag_block_on_consent_attribute() );
+		$this->assertEquals( ' type="text/plain" data-block-on-consent', $module->get_tag_block_on_consent_attribute() );
 	}
 
 	/**
@@ -76,23 +76,23 @@ class Module_With_Blockable_Tags_TraitTest extends TestCase {
 		return array(
 			'boolean true'    => array(
 				true,
-				'data-block-on-consent',
+				' data-block-on-consent',
 			),
 			'_till_responded' => array(
 				'_till_responded',
-				'data-block-on-consent="_till_responded"',
+				' data-block-on-consent="_till_responded"',
 			),
 			'_till_accepted'  => array(
 				'_till_accepted',
-				'data-block-on-consent="_till_accepted"',
+				' data-block-on-consent="_till_accepted"',
 			),
 			'_auto_reject'    => array(
 				'_auto_reject',
-				'data-block-on-consent="_auto_reject"',
+				' data-block-on-consent="_auto_reject"',
 			),
 			'int 1'           => array(
 				1,
-				'data-block-on-consent',
+				' data-block-on-consent',
 			),
 			'empty string'    => array(
 				'',
@@ -100,7 +100,7 @@ class Module_With_Blockable_Tags_TraitTest extends TestCase {
 			),
 			'string true'     => array(
 				'true',
-				'data-block-on-consent',
+				' data-block-on-consent',
 			),
 			'string false'    => array(
 				'false',
