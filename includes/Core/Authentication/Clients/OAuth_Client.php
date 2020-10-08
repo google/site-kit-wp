@@ -926,7 +926,7 @@ final class OAuth_Client {
 	 * @return bool
 	 */
 	private function supports_file_verification() {
-		$home_path = wp_parse_url( home_url(), PHP_URL_PATH );
+		$home_path = wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_PATH );
 
 		return ( ! $home_path || '/' === $home_path );
 	}

@@ -13,6 +13,24 @@
     "featureFlags": false
   },
   "rules": {
+    "jsdoc/check-tag-names": "error",
+    "jsdoc/check-types": "error",
+    "jsdoc/check-line-alignment": [
+      "error",
+      "always"
+    ],
+    "jsdoc/require-description": "error",
+    "jsdoc/require-description-complete-sentence": "off",
+    "jsdoc/require-param": "error",
+    "jsdoc/require-param-description": "error",
+    "jsdoc/require-param-name": "error",
+    "jsdoc/require-param-type": "error",
+    "jsdoc/require-returns-check": "error",
+    "jsdoc/require-returns-description": "error",
+    "jsdoc/require-returns-type": "error",
+    "jsdoc/require-returns": "error",
+    "jsdoc/no-undefined-types": "error",
+    "jsdoc/valid-types": "error",
     "no-restricted-globals": [
       "error",
       {
@@ -70,6 +88,7 @@
   ],
   "plugins": [
     "filenames",
-    "sitekit"
+    "sitekit",
+    "jsdoc"
   ]
 }

@@ -22,7 +22,7 @@
 import { createElement, Fragment } from '@wordpress/element';
 
 /**
- * Append the passed component to a filtered component.
+ * Appends the passed component to a filtered component.
  *
  * Components wrapped in the 'withFilters' higher order component have a filter applied to them (wp.hooks.applyFilters).
  * This helper is used to append a filtered component with a passed component. To use, pass as the third
@@ -33,8 +33,9 @@ import { createElement, Fragment } from '@wordpress/element';
  *			createAddToFilter( <LegacyDashboardEarnings /> ), // Using the helper to append a component.
  * 			11 ); // Priority will determine the order items are appended.
  *
- * @param {WPElement} NewComponent The new component to append to the filtered component.
+ * @since 1.0.0
  *
+ * @param {WPElement} NewComponent The new component to append to the filtered component.
  * @return {WPElement} Filtered component with appended component.
  *
  */
@@ -58,21 +59,26 @@ export const createAddToFilter = ( NewComponent ) => {
 };
 
 /**
- * Replace a filtered component with the passed component and merge their props.
+ * Replaces a filtered component with the passed component and merge their props.
  *
- * Components wrapped in the 'withFilters' higher order component have a filter applied to them (wp.hooks.applyFilters).
- * This helper is used to replace (or "Fill") a filtered component with a passed component. To use, pass as the third
- * argument to an addFilter call, eg:
+ * Components wrapped in the 'withFilters' higher order component have a filter applied
+ * to them (wp.hooks.applyFilters).
  *
+ * This helper is used to replace (or "Fill") a filtered component with a passed component.
+ * To use, pass as the third argument to an addFilter call, eg:
+ *
+ * ```
  * 	addFilter( `googlesitekit.ModuleSettingsDetails-${slug}`,
  * 		'googlesitekit.AdSenseModuleSettingsDetails',
  * 		fillFilterWithComponent( AdSenseSettings, {
  * 			onSettingsPage: true,
  * 		} ) );
+ * ```
+ *
+ * @since 1.0.0
  *
  * @param {WPElement} NewComponent The component to render in place of the filtered component.
  * @param {Object}    newProps     The props to pass down to the new component.
- *
  * @return {WPElement} React Component after overriding filtered component with NewComponent.
  */
 export const fillFilterWithComponent = ( NewComponent, newProps ) => {

@@ -1544,7 +1544,7 @@ final class Analytics extends Module
 	 * @return string
 	 */
 	private function get_home_domain() {
-		return wp_parse_url( home_url(), PHP_URL_HOST );
+		return wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST );
 	}
 
 	/**

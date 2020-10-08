@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: tags.
+ * `modules/analytics` data store: tags.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -123,9 +123,9 @@ const baseSelectors = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @return {(boolean|undefined)} true or false if tag permission is available,
-	 *                    null if no existing tag,
-	 *                    otherwise undefined if resolution is incomplete.
+	 * @return {(boolean|undefined)} `true` or `false` if tag permission is available,
+	 *                    `           null` if no existing tag,
+	 *                                otherwise undefined if resolution is incomplete.
 	 */
 	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
 		const hasExistingTag = select( STORE_NAME ).hasExistingTag();

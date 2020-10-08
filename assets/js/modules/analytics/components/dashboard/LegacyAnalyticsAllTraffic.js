@@ -58,6 +58,8 @@ class LegacyAnalyticsAllTraffic extends Component {
 	 * If this component's API data calls returns an error or empty results, this callback is invoke,
 	 * resulting the hiding of this panel.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param {string} error    A potential error string.
 	 * @param {Object} errorObj Full error object.
 	 */

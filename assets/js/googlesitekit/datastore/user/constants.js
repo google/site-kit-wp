@@ -1,5 +1,5 @@
 /**
- * core/user data store: constants.
+ * `core/user` data store: constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

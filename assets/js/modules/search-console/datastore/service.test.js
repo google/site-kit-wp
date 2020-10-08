@@ -1,5 +1,5 @@
 /**
- * modules/search-console data store: service tests.
+ * `modules/search-console` data store: service tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,7 +17,7 @@
  */
 
 /**
- * Wordpress dependencies
+ * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
 

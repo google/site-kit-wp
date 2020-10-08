@@ -54,6 +54,8 @@ class ModulesList extends Component {
 	/**
 	 * Handle setup module click event.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param {string} slug Module slug.
 	 */
 	async setupModuleClick( slug ) {

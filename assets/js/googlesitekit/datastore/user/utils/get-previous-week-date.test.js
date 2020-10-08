@@ -1,5 +1,5 @@
 /**
- * core/user getPreviousWeekDate utility tests.
+ * `core/user` getPreviousWeekDate utility tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

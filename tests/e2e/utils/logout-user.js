@@ -4,7 +4,7 @@
 import { createURL, isCurrentURL } from '@wordpress/e2e-test-utils';
 
 /**
- * Log out the current user.
+ * Deletes authentication cookies to sign out the current user.
  */
 export async function logoutUser() {
 	const cookies = ( await page.cookies() )

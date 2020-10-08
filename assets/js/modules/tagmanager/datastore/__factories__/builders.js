@@ -29,9 +29,8 @@ import { CONTEXT_WEB, CONTEXT_AMP } from '../constants';
 /**
  * Creates an account object in the format returned by the list endpoint.
  *
- * @see {@link https://developers.google.com/tag-manager/api/v2/reference/accounts/list}
- *
  * @since 1.11.0
+ * @see {@link https://developers.google.com/tag-manager/api/v2/reference/accounts/list}
  * @private
  *
  * @param {Object} [args]           Optional arguments to the builder.
@@ -57,9 +56,8 @@ export const accountBuilder = build( 'Tag Manager Account', {
 /**
  * Creates a container object in the format returned by the list endpoint.
  *
- * @see {@link https://developers.google.com/tag-manager/api/v2/reference/accounts/containers/list}
- *
  * @since 1.11.0
+ * @see {@link https://developers.google.com/tag-manager/api/v2/reference/accounts/containers/list}
  * @private
  *
  * @param {Object} [args]           Optional arguments to the builder.

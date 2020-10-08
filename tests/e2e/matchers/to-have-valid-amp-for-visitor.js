@@ -1,5 +1,5 @@
 /**
- * toHaveValidAMPForVistor matcher.
+ * `toHaveValidAMPForVistor` matcher.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -34,11 +34,12 @@ import { createURL } from '@wordpress/e2e-test-utils';
 import { fetchPageContent } from '../utils';
 
 /**
- * Matcher to determine if the path has valid AMP for vistors ( not logged in)
+ * Determines if the path has valid AMP for vistors (not logged in).
  *
- * @param {(string|Object)} path The string URI or page object
+ * @since 1.10.0
  *
- * @return {Object} Matcher results
+ * @param {(string|Object)} path The string URI or page object.
+ * @return {Object} Matcher results.
  */
 export async function toHaveValidAMPForVisitor( path ) {
 	const urlToFetch = 'object' === typeof path ? path.url() : createURL( path );

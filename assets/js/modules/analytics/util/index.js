@@ -45,7 +45,7 @@ export * from './validation';
  *
  * @since 1.16.0 Added keyColumnIndex argument.
  *
- * @param {Array} reports         The array with reports data.
+ * @param {Array}  reports        The array with reports data.
  * @param {number} keyColumnIndex The number of a column to extract metrics data from.
  * @return {Array} Extracted data.
  */
@@ -75,11 +75,12 @@ export function extractAnalyticsDataForTrafficChart( reports, keyColumnIndex ) {
 }
 
 /**
- * Reduce and process an array of analytics row data.
+ * Reduces and processes an array of analytics row data.
  *
- * @param {Array} rows An array of rows to reduce.
+ * @since 1.0.0
+ *
+ * @param {Array} rows          An array of rows to reduce.
  * @param {Array} selectedStats The currently selected stat we need to return data for.
- *
  * @return {Array} Array of selected stats from analytics row data.
  */
 function reduceAnalyticsRowsData( rows, selectedStats ) {
@@ -99,12 +100,13 @@ function reduceAnalyticsRowsData( rows, selectedStats ) {
 }
 
 /**
- * Extract the data required from an analytics 'site-analytics' request.
+ * Extracts the data required from an analytics 'site-analytics' request.
+ *
+ * @since 1.0.0
  *
  * @param {Object} reports       The data returned from the Analytics API call.
  * @param {Array}  selectedStats The currently selected stat we need to return data for.
  * @param {number} days          The number of days to extract data for. Pads empty data days.
- *
  * @return {Array} The dataMap ready for charting.
  */
 export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) => {
@@ -230,10 +232,11 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 };
 
 /**
- * Extract the data required from an analytics 'site-analytics' request.
+ * Extracts the data required from an analytics 'site-analytics' request.
+ *
+ * @since 1.0.0
  *
  * @param {Object} reports The data returned from the Analytics API call.
- *
  * @return {Array} Required data from 'site-analytics' request.
  */
 export const extractAnalyticsDashboardSparklineData = ( reports ) => {
@@ -269,12 +272,13 @@ export const extractAnalyticsDashboardSparklineData = ( reports ) => {
 };
 
 /**
- * Translate Analytics API Error Response.
- * See https://developers.google.com/analytics/devguides/reporting/core/v4/errors
+ * Translates Analytics API Error Response.
+ *
+ * @since 1.0.0
+ * @see {@link https://developers.google.com/analytics/devguides/reporting/core/v4/errors}
  *
  * @param {string} status  Error status code.
  * @param {string} message Error message.
- *
  * @return {string} Human readable Analytics API error message based on error status.
  */
 export const translateAnalyticsError = ( status, message ) => {
@@ -325,7 +329,9 @@ export const getAnalyticsErrorMessageFromData = ( data ) => {
 };
 
 /**
- * Check for Zero data from Analytics API.
+ * Checks for Zero data from Analytics API.
+ *
+ * @since 1.0.0
  *
  * @param {Object} data The data returned from the Analytics API call.
  * @return {boolean} Indicates if zero data returned from Analytics API call or not.
@@ -354,6 +360,8 @@ export const isDataZeroForReporting = ( data ) => {
 
 /**
  * Default data object for making Analytics adsense requests.
+ *
+ * @since 1.0.0
  *
  * @type {Object}
  */
@@ -388,6 +396,8 @@ export const analyticsAdsenseReportDataDefaults = {
 /**
  * Default data object for making Analytics site analytics report requests.
  *
+ * @since 1.0.0
+ *
  * @type {Object}
  */
 export const siteAnalyticsReportDataDefaults = {
@@ -420,6 +430,8 @@ export const siteAnalyticsReportDataDefaults = {
 
 /**
  * Default data object for making Analytics site analytics report requests.
+ *
+ * @since 1.0.0
  *
  * @type {Object}
  */
@@ -458,6 +470,8 @@ export const overviewReportDataDefaults = {
 /**
  * Default data object for making Analytics user report requests.
  *
+ * @since 1.0.0
+ *
  * @type {Object}
  */
 export const userReportDataDefaults = {
@@ -472,6 +486,8 @@ export const userReportDataDefaults = {
 
 /**
  * Default data object for making Analytics traffic sources report requests.
+ *
+ * @since 1.0.0
  *
  * @type {Object}
  */
@@ -502,6 +518,8 @@ export const trafficSourcesReportDataDefaults = {
 
 /**
  * Returns the default data object for making Analytics top pages report requests.
+ *
+ * @since 1.0.0
  *
  * @return {Object} Request data object defaults.
  */

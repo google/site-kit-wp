@@ -86,7 +86,7 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
  * @param {Component} args.component                    Widget component.
  * @param {boolean}   [args.wrapWidget]                 Whether to wrap in default <Widget> component. Default true.
  * @param {Array}     [args.additionalVariants]         Optional. Additional story variants.
- * @param {Array}     [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants
+ * @param {Array}     [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants.
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {

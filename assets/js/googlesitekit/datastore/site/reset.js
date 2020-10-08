@@ -1,5 +1,5 @@
 /**
- * core/site data store: reset connection.
+ * `core/site` data store: reset connection.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
