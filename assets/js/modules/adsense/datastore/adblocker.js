@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: adblocker.
+ * `modules/adsense` data store: adblocker.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

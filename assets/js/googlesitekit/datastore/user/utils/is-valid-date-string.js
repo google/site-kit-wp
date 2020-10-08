@@ -1,5 +1,5 @@
 /**
- * core/user isValidDateString utility.
+ * `core/user` isValidDateString utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

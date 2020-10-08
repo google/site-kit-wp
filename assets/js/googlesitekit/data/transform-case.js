@@ -22,7 +22,7 @@
  * @since 1.10.0
  * @private
  *
- * @param {string} name camelCase name to transform.
+ * @param {string} name "camelCase" name to transform.
  * @return {string} PascalCase name.
  */
 export const camelCaseToPascalCase = ( name ) => {
@@ -35,7 +35,7 @@ export const camelCaseToPascalCase = ( name ) => {
  * @since 1.10.0
  * @private
  *
- * @param {string} name camelCase name to transform.
+ * @param {string} name "camelCase" name to transform.
  * @return {string} CONSTANT_CASE name.
  */
 export const camelCaseToConstantCase = ( name ) => {
@@ -48,7 +48,7 @@ export const camelCaseToConstantCase = ( name ) => {
  * @since 1.16.0
  * @private
  *
- * @param {string} name kebab-case name to transform.
+ * @param {string} name "kebab-case" name to transform.
  * @return {string} PascalCase name.
  */
 export function kebabCaseToPascalCase( name ) {
