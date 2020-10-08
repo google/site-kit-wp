@@ -107,7 +107,7 @@ class Advanced_TrackingTest extends TestCase {
 		add_action(
 			'googlesitekit_analytics_register_event_lists',
 			function( $event_list_registry ) use ( $event_list ) {
-				$event_list_registry->register( $event_list );
+				$event_list_registry->register_list( $event_list );
 			}
 		);
 	}

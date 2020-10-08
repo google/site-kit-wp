@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Tests\Modules\Dynamic_Blog_Post_Link_Event_List
  *
  * @package   Google\Site_Kit\Tests\Modules
- * @copyright 2019 Google LLC
+ * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */

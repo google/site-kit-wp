@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
-use \Exception;
+use Exception;
 
 /**
  * Class for representing a single tracking event that Advanced_Tracking tracks.
@@ -44,7 +44,7 @@ final class Event implements \JsonSerializable {
 	 *     @type array|null $metadata Optional. Associative array of event metadata to send, such as 'event_category',
 	 *                                'event_label' etc, or null to not send any extra event data.
 	 * }
-	 * @throws \Exception Thrown when config param is undefined.
+	 * @throws Exception Thrown when config param is undefined.
 	 */
 	public function __construct( $config ) {
 		$this->config = $this->validate_config( $config );
@@ -79,7 +79,7 @@ final class Event implements \JsonSerializable {
 	 *
 	 * @param array $config The event's configuration.
 	 * @return array The event's configuration.
-	 * @throws \Exception Thrown when invalid keys or value type.
+	 * @throws Exception Thrown when invalid keys or value type.
 	 */
 	private function validate_config( $config ) {
 		$valid_keys = array(
@@ -90,7 +90,7 @@ final class Event implements \JsonSerializable {
 		);
 		foreach ( $config as $key => $value ) {
 			if ( ! in_array( $key, $valid_keys, true ) ) {
-				throw new \Exception( 'Invalid configuration parameter: ' . $key );
+				throw new Exception( 'Invalid configuration parameter: ' . $key );
 			}
 		}
 		if ( ! array_key_exists( 'metadata', $config ) ) {
@@ -101,7 +101,7 @@ final class Event implements \JsonSerializable {
 		}
 		foreach ( $valid_keys as $key ) {
 			if ( ! array_key_exists( $key, $config ) ) {
-				throw new \Exception( 'Missed configuration parameter: ' . $key );
+				throw new Exception( 'Missed configuration parameter: ' . $key );
 			}
 		}
 		return $config;

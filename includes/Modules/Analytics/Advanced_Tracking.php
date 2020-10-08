@@ -144,7 +144,7 @@ final class Advanced_Tracking {
 		 */
 		do_action( 'googlesitekit_analytics_register_event_lists', $this->event_list_registry );
 
-		foreach ( $this->event_list_registry->get_all() as $event_list ) {
+		foreach ( $this->event_list_registry->get_lists() as $event_list ) {
 			$event_list->register();
 		}
 	}
@@ -156,7 +156,7 @@ final class Advanced_Tracking {
 	 */
 	private function compile_events() {
 		$this->events = array();
-		foreach ( $this->event_list_registry->get_all() as $event_list ) {
+		foreach ( $this->event_list_registry->get_lists() as $event_list ) {
 			foreach ( $event_list->get_events() as $event ) {
 				$this->events[] = $event;
 			}
