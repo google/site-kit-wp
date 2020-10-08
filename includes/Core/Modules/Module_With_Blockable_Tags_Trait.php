@@ -94,11 +94,11 @@ trait Module_With_Blockable_Tags_Trait {
 		$block_on_consent = apply_filters( "googlesitekit_{$this->slug}_tag_amp_block_on_consent", false );
 
 		if ( in_array( $block_on_consent, $this->get_allowed_amp_block_on_consent_values(), true ) ) {
-			return sprintf( 'data-block-on-consent="%s"', $block_on_consent );
+			return sprintf( ' data-block-on-consent="%s"', $block_on_consent );
 		}
 
 		if ( filter_var( $block_on_consent, FILTER_VALIDATE_BOOLEAN ) ) {
-			return 'data-block-on-consent';
+			return ' data-block-on-consent';
 		}
 
 		return '';
