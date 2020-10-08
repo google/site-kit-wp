@@ -44,6 +44,7 @@ export default function WebContainerNameTextField() {
 
 	return (
 		<ContainerNameTextField
+			formFieldID="containerName"
 			label={ label }
 			containers={ containers }
 		/>

@@ -36,24 +36,20 @@ import { TextField, HelperText, Input } from '../../../../material-components';
 import { FORM_SETUP } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function ContainerNameTextField( { label, containers } ) {
-	const containerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' ) );
+export default function ContainerNameTextField( { label, containers, formFieldID } ) {
+	const containerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, formFieldID ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( ( { currentTarget } ) => {
-		setValues( FORM_SETUP, { containerName: currentTarget.value } );
-	}, [] );
+		setValues( FORM_SETUP, { [ formFieldID ]: currentTarget.value } );
+	}, [ formFieldID ] );
 
 	let helperText;
 	let trailingIcon;
 
 	const existingContainer = Array.isArray( containers ) && containers.some( ( { name } ) => name === containerName );
 	if ( existingContainer ) {
-		helperText = (
-			<HelperText persistent>
-				{ __( 'A container with this name already exists.', 'google-site-kit' ) }
-			</HelperText>
-		);
+		helperText = __( 'A container with this name already exists.', 'google-site-kit' );
 
 		trailingIcon = (
 			<span className="googlesitekit-text-field-icon--warning">
@@ -69,7 +65,7 @@ export default function ContainerNameTextField( { label, containers } ) {
 			<TextField
 				label={ label }
 				outlined
-				helperText={ helperText }
+				helperText={ <HelperText persistent>{ helperText }</HelperText> }
 				trailingIcon={ trailingIcon }
 			>
 				<Input value={ containerName } onChange={ onChange } />
@@ -80,5 +76,6 @@ export default function ContainerNameTextField( { label, containers } ) {
 
 ContainerNameTextField.propTypes = {
 	label: PropTypes.string.isRequired,
+	formFieldID: PropTypes.string.isRequired,
 	containers: PropTypes.arrayOf( PropTypes.object ),
 };

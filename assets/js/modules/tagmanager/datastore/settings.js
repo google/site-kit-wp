@@ -163,6 +163,7 @@ export const selectors = {
 			getAccountID,
 			getContainerID,
 			getAMPContainerID,
+			getAMPContainers,
 			getInternalContainerID,
 			getInternalAMPContainerID,
 			getWebContainers,
@@ -194,31 +195,52 @@ export const selectors = {
 				return false;
 			}
 
-			const containers = getWebContainers( accountID );
-			const existingContainer = Array.isArray( containers ) && containers.some( ( { name } ) => name === containerName );
+			const webContainers = getWebContainers( accountID );
+			const existingContainer = Array.isArray( webContainers ) && webContainers.some( ( { name } ) => name === containerName );
 			if ( existingContainer ) {
 				return false;
 			}
 		}
 
-		// If AMP is active, the AMP container ID must be valid, regardless of mode.
-		if ( isAMP() && ! isValidContainerSelection( getAMPContainerID() ) ) {
-			return false;
+		if ( isAMP() ) {
+			const ampContainerID = getAMPContainerID();
+
+			// If AMP is active, the AMP container ID must be valid, regardless of mode.
+			if ( ! isValidContainerSelection( ampContainerID ) ) {
+				return false;
+			}
+
+			// If AMP is active, and a valid AMP container ID is selected, the internal ID must also be valid.
+			if ( isValidContainerID( ampContainerID ) && ! isValidInternalContainerID( getInternalAMPContainerID() ) ) {
+				return false;
+			}
+
+			if ( ampContainerID === CONTAINER_CREATE ) {
+				const ampContainerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
+				if ( ! isValidContainerName( ampContainerName ) ) {
+					return false;
+				}
+
+				const ampContainers = getAMPContainers( accountID );
+				const existingContainer = Array.isArray( ampContainers ) && ampContainers.some( ( { name } ) => name === ampContainerName );
+				if ( existingContainer ) {
+					return false;
+				}
+			}
 		}
-		// If AMP is active, and a valid AMP container ID is selected, the internal ID must also be valid.
-		if ( isAMP() && isValidContainerID( getAMPContainerID() ) && ! isValidInternalContainerID( getInternalAMPContainerID() ) ) {
-			return false;
-		}
+
 		// If AMP is not active, or in a secondary mode, validate the web container IDs.
 		if ( ! isAMP() || isSecondaryAMP() ) {
 			if ( ! isValidContainerSelection( containerID ) ) {
 				return false;
 			}
+
 			// If a valid container ID is selected, the internal ID must also be valid.
 			if ( isValidContainerID( containerID ) && ! isValidInternalContainerID( getInternalContainerID() ) ) {
 				return false;
 			}
 		}
+
 		// Do existing tag check last.
 		if ( hasExistingTagPermission() === false ) {
 			return false;

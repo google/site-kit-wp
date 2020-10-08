@@ -33,6 +33,7 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { isPermissionScopeError } from '../../../../util/errors';
 import {
 	AccountSelect,
+	AMPContainerNameTextField,
 	AMPContainerSelect,
 	FormInstructions,
 	WebContainerNameTextField,
@@ -46,6 +47,7 @@ export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
 	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
+	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( STORE_NAME );
@@ -69,6 +71,24 @@ export default function SetupForm( { finishSetup } ) {
 		}
 	}, [ hasEditScope, autoSubmit, submitForm ] );
 
+	let containerNames = null;
+	if ( containerID === CONTAINER_CREATE || ampContainerID === CONTAINER_CREATE ) {
+		const webContainerName = containerID === CONTAINER_CREATE
+			? <WebContainerNameTextField />
+			: null;
+
+		const ampContainerName = ampContainerID === CONTAINER_CREATE
+			? <AMPContainerNameTextField />
+			: null;
+
+		containerNames = (
+			<div className="googlesitekit-setup-module__inputs">
+				{ webContainerName }
+				{ ampContainerName }
+			</div>
+		);
+	}
+
 	return (
 		<form className="googlesitekit-tagmanager-setup__form" onSubmit={ submitForm }>
 			<StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } />
@@ -82,11 +102,7 @@ export default function SetupForm( { finishSetup } ) {
 				<AMPContainerSelect />
 			</div>
 
-			{ containerID === CONTAINER_CREATE && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-					<WebContainerNameTextField />
-				</div>
-			) }
+			{ containerNames }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
