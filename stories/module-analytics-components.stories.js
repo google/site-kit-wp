@@ -52,7 +52,9 @@ import {
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
 /**
- * Additional setup function
+ * Additional setup function.
+ *
+ * @since n.e.x.t
  *
  * @param {wp.data.registry} registry Registry with all available stores registered.
  */

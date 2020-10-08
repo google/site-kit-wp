@@ -1,5 +1,5 @@
 /**
- * applyEntityToReportPath util.
+ * Utility function applyEntityToReportPath.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,8 +20,9 @@
  * Parses an entity URL and appends to the given path.
  *
  * @since n.e.x.t
- * @param {string} currentEntityURL  The entity to append to the path
- * @param {string} reportPath              The path
+ *
+ * @param {string} currentEntityURL The entity URL to append to the path.
+ * @param {string} reportPath       The report path.
  * @return {string} The final url if entity is defined, otherwise the original path.
  */
 export default function applyEntityToReportPath( currentEntityURL, reportPath ) {

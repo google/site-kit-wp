@@ -1,5 +1,5 @@
 /**
- * applyEntityToReportPath tests.
+ * Tests for applyEntityToReportPath.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
