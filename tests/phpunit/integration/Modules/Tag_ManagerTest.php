@@ -71,6 +71,30 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertTrue( has_action( 'wp_footer' ) );
 		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
 		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+
+		remove_all_actions( 'amp_print_analytics' );
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'amp_post_template_footer' );
+		remove_all_filters( 'amp_post_template_data' );
+
+		// Tag not hooked when blocked.
+		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		// Tag not hooked when only AMP blocked
+		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_false' );
+		add_filter( 'googlesitekit_tagmanager_tag_amp_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 	}
 
 	public function test_register_template_redirect_non_amp() {
@@ -99,6 +123,27 @@ class Tag_ManagerTest extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'wp_body_open' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'wp_body_open' );
+		remove_all_actions( 'wp_footer' );
+
+		// Tag not hooked when blocked.
+		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+
+		$this->assertFalse( has_action( 'wp_head' ) );
+		$this->assertFalse( has_action( 'wp_body_open' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+
+		// Tag hooked when only AMP blocked.
+		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_false' );
+		add_filter( 'googlesitekit_tagmanager_tag_amp_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+
 		$this->assertTrue( has_action( 'wp_head' ) );
 		$this->assertTrue( has_action( 'wp_body_open' ) );
 		$this->assertTrue( has_action( 'wp_footer' ) );
