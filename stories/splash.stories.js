@@ -80,7 +80,7 @@ storiesOf( 'Splash', module )
 							mdc-layout-grid__cell--span-3-desktop
 						">
 							<DashboardSplashModule
-								icon={ <PageSpeedInsightsIcon height="33" /> }
+								icon={ <PageSpeedInsightsIcon width="33" height="33" /> }
 								title={ _x( 'PageSpeed', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Analyze your site’s performance and get actionable tips to improve its speed across all devices.', 'google-site-kit' ) }
 							/>

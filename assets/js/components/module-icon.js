@@ -42,7 +42,7 @@ const moduleMap = {
 
 export default function ModuleIcon( { slug, width = 33, height = 33, ...props } ) {
 	if ( ! moduleMap.hasOwnProperty( slug ) ) {
-		return;
+		return null;
 	}
 
 	const ModuleIconComponent = moduleMap[ slug ];
