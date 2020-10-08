@@ -98,6 +98,48 @@ const resizeClasses = ( classNames, counter ) => {
 	return [ classNames, counter ];
 };
 
+const getWidgetClassNames = ( activeWidgets ) => {
+	let classNames = [].fill( null, 0, activeWidgets.length );
+	let counter = 0;
+	activeWidgets.forEach( ( widget, i ) => {
+		const width = widget.width;
+
+		// Increase column counter based on width.
+		counter += WIDTH_GRID_COUNTER_MAP[ width ];
+
+		// If counter is exactly 12, the next widget is going to be in a new row.
+		if ( counter % 12 === 0 ) {
+			counter = 0;
+		}
+
+		// If counter is going above 12, this widget is too wide for the current row.
+		// So it's going to be the first widget in the next row instead.
+		if ( counter > 12 ) {
+			counter -= WIDTH_GRID_COUNTER_MAP[ width ];
+
+			// If the column count without the overflowing widget is exactly 9, expand
+			// the widths of these widgets slightly to fill the entire 12 columns.
+			if ( counter === 9 ) {
+				[ classNames, counter ] = resizeClasses( classNames, counter );
+			}
+
+			// See above, initial counter for the next row of widgets.
+			counter = WIDTH_GRID_COUNTER_MAP[ width ];
+		}
+
+		// Actually set the class for the current widget. This must be set after
+		// potentially resizing classes, since in that case this will be the overflowing
+		// widget which should NOT be adjusted because it will be in the next row.
+		classNames[ i ] = WIDTH_GRID_CLASS_MAP[ width ];
+	} );
+
+	if ( counter === 9 ) {
+		[ classNames, counter ] = resizeClasses( classNames, counter );
+	}
+
+	return classNames;
+};
+
 const WidgetAreaRenderer = ( { slug } ) => {
 	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
 	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
@@ -113,48 +155,6 @@ const WidgetAreaRenderer = ( { slug } ) => {
 	if ( activeWidgets.length === 0 ) {
 		return null;
 	}
-
-	const getWidgetClassNames = () => {
-		let classNames = [].fill( null, 0, activeWidgets.length );
-		let counter = 0;
-		activeWidgets.forEach( ( widget, i ) => {
-			const width = widget.width;
-
-			// Increase column counter based on width.
-			counter += WIDTH_GRID_COUNTER_MAP[ width ];
-
-			// If counter is exactly 12, the next widget is going to be in a new row.
-			if ( counter % 12 === 0 ) {
-				counter = 0;
-			}
-
-			// If counter is going above 12, this widget is too wide for the current row.
-			// So it's going to be the first widget in the next row instead.
-			if ( counter > 12 ) {
-				counter -= WIDTH_GRID_COUNTER_MAP[ width ];
-
-				// If the column count without the overflowing widget is exactly 9, expand
-				// the widths of these widgets slightly to fill the entire 12 columns.
-				if ( counter === 9 ) {
-					[ classNames, counter ] = resizeClasses( classNames, counter );
-				}
-
-				// See above, initial counter for the next row of widgets.
-				counter = WIDTH_GRID_COUNTER_MAP[ width ];
-			}
-
-			// Actually set the class for the current widget. This must be set after
-			// potentially resizing classes, since in that case this will be the overflowing
-			// widget which should NOT be adjusted because it will be in the next row.
-			classNames[ i ] = WIDTH_GRID_CLASS_MAP[ width ];
-		} );
-
-		if ( counter === 9 ) {
-			[ classNames, counter ] = resizeClasses( classNames, counter );
-		}
-
-		return classNames;
-	};
 
 	const widgetClassNames = getWidgetClassNames();
 
