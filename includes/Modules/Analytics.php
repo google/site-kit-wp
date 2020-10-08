@@ -438,10 +438,10 @@ final class Analytics extends Module
 						"<script type=\"text/javascript\" src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 					),
 					array( // `type` attribute intentionally excluded in replacements.
-						"<script $block_on_consent_attrs src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script $block_on_consent_attrs src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script $block_on_consent_attrs src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script $block_on_consent_attrs src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script{$block_on_consent_attrs} src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script{$block_on_consent_attrs} src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script{$block_on_consent_attrs} src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script{$block_on_consent_attrs} src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 					),
 					$tag
 				);
@@ -503,17 +503,12 @@ final class Analytics extends Module
 		}
 
 		$gtag_amp_opt_filtered['vars']['gtag_id'] = $property_id;
-		?>
-<amp-analytics
-	type="gtag"
-	data-credentials="include"
-		<?php echo $this->get_tag_amp_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
->
-	<script type="application/json">
-		<?php echo wp_json_encode( $gtag_amp_opt_filtered ); ?>
-	</script>
-</amp-analytics>
-		<?php
+
+		printf(
+			'<amp-analytics type="gtag" data-credentials="include"%s><script type="application/json">%s</script></amp-analytics>',
+			$this->get_tag_amp_block_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			wp_json_encode( $gtag_amp_opt_filtered )
+		);
 	}
 
 	/**
