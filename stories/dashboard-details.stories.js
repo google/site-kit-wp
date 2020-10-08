@@ -22,14 +22,21 @@
 import { storiesOf } from '@storybook/react';
 
 /**
+ * WordPress dependencies
+ */
+import { removeAllFilters } from '@wordpress/hooks';
+
+/**
  * Internal dependencies
  */
 import { provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
+import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import DashboardDetailsApp from '../assets/js/components/dashboard-details/dashboard-details-app';
-import DashboardDetailsEntityNotFoundView from '../assets/js/components/dashboard-details/DashboardDetailsEntityNotFoundView';
 
 storiesOf( 'Dashboard Details', module )
 	.add( 'Existing Entity', () => {
+		// Ensure widget API is disabled and don't display legacy widgets either.
+		// TODO: Expand this story to include new widgets once legacy widgets are no longer used.
 		global.featureFlags = {
 			widgets: {
 				pageDashboard: {
@@ -37,12 +44,15 @@ storiesOf( 'Dashboard Details', module )
 				},
 			},
 		};
+		removeAllFilters( 'googlesitekit.DashboardDetailsModule' );
 
 		const setupRegistry = ( registry ) => {
 			provideUserAuthentication( registry );
 			provideSiteInfo( registry, {
 				currentEntityTitle: 'Test Page',
 				currentEntityURL: 'https://example.com/test-page',
+				currentEntityType: 'post',
+				currentEntityID: 5,
 			} );
 		};
 
@@ -52,7 +62,18 @@ storiesOf( 'Dashboard Details', module )
 			</WithTestRegistry>
 		);
 	} )
-	.add( 'Not Found Entity', () => (
-		<DashboardDetailsEntityNotFoundView permalink="https://example.com/test-page" />
-	) )
+	.add( 'Not Found Entity', () => {
+		const setupRegistry = ( registry ) => {
+			provideUserAuthentication( registry );
+			// By default, the current entity info is all `null` as needed here.
+			provideSiteInfo( registry );
+			registry.dispatch( CORE_SITE ).receivePermaLinkParam( 'https://example.com/invalid-page' );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<DashboardDetailsApp />
+			</WithTestRegistry>
+		);
+	} )
 ;
