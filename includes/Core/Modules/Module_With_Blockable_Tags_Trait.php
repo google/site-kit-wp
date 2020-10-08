@@ -93,7 +93,7 @@ trait Module_With_Blockable_Tags_Trait {
 		 */
 		$block_on_consent = apply_filters( "googlesitekit_{$this->slug}_tag_amp_block_on_consent", false );
 
-		if ( in_array( $block_on_consent, $this->get_allowed_block_on_consent_values(), true ) ) {
+		if ( in_array( $block_on_consent, $this->get_allowed_amp_block_on_consent_values(), true ) ) {
 			return sprintf( 'data-block-on-consent="%s"', $block_on_consent );
 		}
 
@@ -105,13 +105,15 @@ trait Module_With_Blockable_Tags_Trait {
 	}
 
 	/**
-	 * Gets the list of allowed block on consent values.
+	 * Gets the list of allowed block on consent values for AMP.
+	 *
+	 * @see https://amp.dev/documentation/components/amp-consent/#advanced-predefined-consent-blocking-behaviors
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return string[] Block on consent attribute values.
 	 */
-	protected function get_allowed_block_on_consent_values() {
+	protected function get_allowed_amp_block_on_consent_values() {
 		return array(
 			'_till_responded',
 			'_till_accepted',
