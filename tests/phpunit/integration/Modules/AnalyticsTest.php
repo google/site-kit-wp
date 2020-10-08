@@ -92,7 +92,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 
 		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'amp_print_analytics' ) );
@@ -100,6 +100,31 @@ class AnalyticsTest extends TestCase {
 		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
 		$this->assertTrue( has_action( 'web_stories_print_analytics' ) );
 		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+
+		remove_all_actions( 'amp_print_analytics' );
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'amp_post_template_footer' );
+		remove_all_actions( 'web_stories_print_analytics' );
+		remove_all_filters( 'amp_post_template_data' );
+
+		// Tag not hooked when blocked.
+		add_filter( 'googlesitekit_analytics_tag_amp_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_action( 'web_stories_print_analytics' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		// Tag not hooked when only AMP blocked
+		add_filter( 'googlesitekit_analytics_tag_blocked', '__return_false' );
+		add_filter( 'googlesitekit_analytics_tag_amp_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_action( 'web_stories_print_analytics' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 	}
 
 	public function test_register_template_redirect_non_amp() {
@@ -115,10 +140,100 @@ class AnalyticsTest extends TestCase {
 		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
 
 		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
+
+		// Tag not hooked when blocked.
+		remove_all_actions( 'wp_enqueue_scripts' );
+		add_filter( 'googlesitekit_analytics_tag_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
+
+		// Tag hooked when only AMP blocked.
+		add_filter( 'googlesitekit_analytics_tag_blocked', '__return_false' );
+		add_filter( 'googlesitekit_analytics_tag_amp_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
+	}
+
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_non_amp( $enabled ) {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_enqueue_scripts' );
+		$analytics->register();
+
+		// Hook `wp_print_head_scripts` on dummy action for capturing.
+		add_action( '__test_print_scripts', 'wp_print_head_scripts' );
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_analytics_tag_block_on_consent', '__return_true' );
+		}
+
+		do_action( 'template_redirect' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$output = $this->capture_action( '__test_print_scripts' );
+
+		$this->assertContains( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+		}
+	}
+
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_amp( $enabled ) {
+		$analytics = new Analytics( $this->get_amp_primary_context() );
+		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_footer' );
+		$analytics->register();
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_analytics_tag_amp_block_on_consent', '__return_true' );
+		}
+
+		do_action( 'template_redirect' );
+
+		$output = $this->capture_action( 'wp_footer' );
+
+		$this->assertContains( '<amp-analytics', $output );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+		}
+	}
+
+	public function block_on_consent_provider() {
+		return array(
+			'default (disabled)' => array(
+				false,
+			),
+			'enabled'            => array(
+				true,
+			),
+		);
 	}
 
 	public function test_prepare_info_for_js() {
