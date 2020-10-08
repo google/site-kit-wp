@@ -28,15 +28,11 @@ final class Google_URL_Normalizer {
 	 * @return string The normalized URL.
 	 */
 	public function normalize_url( $url ) {
-		// Remove bidirectional control characters. Careful when editing, these
-		// are not empty strings.
-		$rtr_control = '‫';
-		$url         = str_replace( $rtr_control, '', $url );
-		$ltr_control = '‬';
-		$url         = str_replace( $ltr_control, '', $url );
-		$url         = $this->decode_unicode_url_or_domain( $url );
-		$url         = untrailingslashit( $url );
-		$url         = strtolower( $url );
+		// Remove bidirectional control characters.
+		$url = preg_replace( array( '/\xe2\x80\xac/', '/\xe2\x80\xab/' ), '', $url );
+		$url = $this->decode_unicode_url_or_domain( $url );
+		$url = untrailingslashit( $url );
+		$url = strtolower( $url );
 
 		return $url;
 	}
