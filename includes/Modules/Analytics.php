@@ -348,9 +348,11 @@ final class Analytics extends Module
 	 * @param string $property_id Analytics property ID to use in the snippet.
 	 */
 	protected function enqueue_gtag_js( $property_id ) {
+		$gtag_src = "https://www.googletagmanager.com/gtag/js?id=$property_id";
+
 		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			'google_gtagjs',
-			'https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $property_id ),
+			$gtag_src,
 			false,
 			null,
 			false
@@ -419,6 +421,28 @@ final class Analytics extends Module
 				'gtag(\'config\', \'' . esc_attr( $property_id ) . '\', ' . wp_json_encode( $gtag_opt ) . ' );'
 			);
 		}
+
+		$block_on_consent_attrs = $this->get_tag_block_on_consent_attribute();
+
+		if ( $block_on_consent_attrs ) {
+			$apply_block_on_consent_attrs = function ( $tag, $handle ) use ( $block_on_consent_attrs, $gtag_src ) {
+				if ( 'google_gtagjs' !== $handle ) {
+					return $tag;
+				}
+
+				return str_replace(
+					array(
+						"<script src='$gtag_src", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script type='text/javascript' src='$gtag_src", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script type=\"text/javascript\" src=\"$gtag_src", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					),
+					"<script $block_on_consent_attrs src='$gtag_src", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					$tag
+				);
+			};
+			add_filter( 'script_loader_tag', $apply_block_on_consent_attrs, 10, 2 );
+		}
 	}
 
 	/**
@@ -475,11 +499,15 @@ final class Analytics extends Module
 
 		$gtag_amp_opt_filtered['vars']['gtag_id'] = $property_id;
 		?>
-		<amp-analytics type="gtag" data-credentials="include">
-			<script type="application/json">
-				<?php echo wp_json_encode( $gtag_amp_opt_filtered ); ?>
-			</script>
-		</amp-analytics>
+<amp-analytics
+	type="gtag"
+	data-credentials="include"
+		<?php echo $this->get_tag_amp_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+>
+	<script type="application/json">
+		<?php echo wp_json_encode( $gtag_amp_opt_filtered ); ?>
+	</script>
+</amp-analytics>
 		<?php
 	}
 
