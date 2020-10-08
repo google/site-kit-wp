@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Core\Util;
 
-use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
-
 /**
  * Trait for matching URLs and domains for Google Site Verification and Search Console.
  *
@@ -34,6 +32,8 @@ trait Google_URL_Matcher_Trait {
 	 * @return bool True if the URLs are considered a match, false otherwise.
 	 */
 	protected function is_url_match( $url, $compare ) {
+		$url            = untrailingslashit( $url );
+		$compare        = untrailingslashit( $compare );
 		$url_normalizer = new Google_URL_Normalizer();
 		$url            = $url_normalizer->normalize_url( $url );
 		$compare        = $url_normalizer->normalize_url( $compare );

@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 /**
- * Handles URL normalization for comparisons and API requests.
+ * Class handling URL normalization for comparisons and API requests.
  *
  * @since n.e.x.t
  * @access private
@@ -20,27 +20,27 @@ namespace Google\Site_Kit\Core\Util;
 final class Google_URL_Normalizer {
 
 	/**
-	 * Normalize a URL by converting to all lowercase, converting Unicode characters
-	 * to punycode, removing trailing slashes and removing bidirectional control
-	 * characters.
+	 * Normalizes a URL by converting to all lowercase, converting Unicode characters
+	 * to punycode, and removing bidirectional control characters.
 	 *
-	 * @param string $url The URL to normalize.
-	 * @return string The normalized URL.
+	 * @since n.e.x.t
+	 *
+	 * @param string $url The URL or domain to normalize.
+	 * @return string The normalized URL or domain.
 	 */
 	public function normalize_url( $url ) {
 		// Remove bidirectional control characters.
 		$url = preg_replace( array( '/\xe2\x80\xac/', '/\xe2\x80\xab/' ), '', $url );
 		$url = $this->decode_unicode_url_or_domain( $url );
-		$url = untrailingslashit( $url );
 		$url = strtolower( $url );
 
 		return $url;
 	}
 
 	/**
-	 * Returns a punycode encoded unicode URL or domain name.
+	 * Returns the Punycode version of a Unicode URL or domain name.
 	 *
-	 * @since 1.6.0
+	 * @since n.e.x.t
 	 *
 	 * @param string $url The URL or domain name to decode.
 	 */

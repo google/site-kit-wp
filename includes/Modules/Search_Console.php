@@ -190,8 +190,6 @@ final class Search_Console extends Module
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$url_normalizer = new Google_URL_Normalizer();
-
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
 				return $this->get_webmasters_service()->sites->listSites();
@@ -212,7 +210,7 @@ final class Search_Console extends Module
 				);
 
 				if ( ! empty( $data['url'] ) ) {
-					$data_request['page'] = $url_normalizer->normalize_url( $data['url'] );
+					$data_request['page'] = ( new Google_URL_Normalizer() )->normalize_url( $data['url'] );
 				}
 
 				if ( isset( $data['limit'] ) ) {
@@ -235,9 +233,13 @@ final class Search_Console extends Module
 					);
 				}
 
-				$site_url = $url_normalizer->normalize_url( $data['siteURL'] );
-				if ( 0 !== strpos( $site_url, 'sc-domain:' ) ) {
-					$site_url = trailingslashit( $site_url );
+				$url_normalizer = new Google_URL_Normalizer();
+
+				$site_url = $data['siteURL'];
+				if ( 0 === strpos( $site_url, 'sc-domain:' ) ) { // Domain property.
+					$site_url = 'sc-domain:' . $url_normalizer->normalize_url( str_replace( 'sc-domain:', '', $site_url, 1 ) );
+				} else { // URL property.
+					$site_url = $url_normalizer->normalize_url( trailingslashit( $site_url ) );
 				}
 
 				return function () use ( $site_url ) {
