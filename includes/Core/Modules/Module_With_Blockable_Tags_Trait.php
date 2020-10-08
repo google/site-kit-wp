@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait Google\Site_Kit\Core\Modules\Module_With_Tags_Trait
+ * Trait Google\Site_Kit\Core\Modules\Module_With_Blockable_Tags_Trait
  *
  * @package   Google\Site_Kit
  * @copyright 2019 Google LLC
@@ -11,13 +11,13 @@
 namespace Google\Site_Kit\Core\Modules;
 
 /**
- * Trait for a module that outputs tags.
+ * Trait for a module that has blockable tags.
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-trait Module_With_Tags_Trait {
+trait Module_With_Blockable_Tags_Trait {
 
 	/**
 	 * Checks whether or not the tag should be blocked from rendering.
