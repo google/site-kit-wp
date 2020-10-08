@@ -24,7 +24,7 @@ import { delay } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,29 +40,14 @@ import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastor
 const { useSelect } = Data;
 
 export default function SetupWrapper() {
-	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL() );
+	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
 	const { moduleToSetup } = global._googlesitekitLegacyData.setup;
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleToSetup ) );
-
-	if ( ! module ) {
-		return null;
-	}
-
-	function loadSetupModule() {
-		const { setupComponent: SetupComponent } = module;
-
-		return (
-			<SetupComponent
-				module={ module }
-				finishSetup={ finishSetup }
-			/>
-		);
-	}
 
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
 	 */
-	function finishSetup() {
+	const finishSetup = useCallback( () => {
 		const args = {
 			notification: 'authentication_success',
 		};
@@ -79,9 +64,13 @@ export default function SetupWrapper() {
 		delay( function() {
 			global.location.replace( redirectURL );
 		}, 500, 'later' );
+	}, [] );
+
+	if ( ! module ) {
+		return null;
 	}
 
-	const setupModule = loadSetupModule();
+	const { setupComponent: SetupComponent } = module;
 
 	return (
 		<Fragment>
@@ -106,7 +95,10 @@ export default function SetupWrapper() {
 											">
 												{ __( 'Connect Service', 'google-site-kit' ) }
 											</p>
-											{ setupModule }
+											<SetupComponent
+												module={ module }
+												finishSetup={ finishSetup }
+											/>
 										</div>
 									</div>
 								</div>
@@ -120,7 +112,7 @@ export default function SetupWrapper() {
 													mdc-layout-grid__cell--span-6-desktop
 												">
 												<Link
-													id={ `setup-${ moduleToSetup }-cancel` }
+													id={ `setup-${ module.slug }-cancel` }
 													href={ settingsPageURL }
 												>{ __( 'Cancel', 'google-site-kit' ) }</Link>
 											</div>

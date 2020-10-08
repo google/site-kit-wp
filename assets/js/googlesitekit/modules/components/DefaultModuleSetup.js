@@ -31,11 +31,11 @@ import { __ } from '@wordpress/i18n';
  */
 import Button from '../../../components/button';
 
-export default function DefaultModuleSetup( { finishSetup, moduleName, moduleSlug } ) {
+export default function DefaultModuleSetup( { finishSetup, module = {} } ) {
 	return (
-		<div className={ `googlesitekit-setup-module googlesitekit-setup-module--${ moduleSlug }` }>
+		<div className={ `googlesitekit-setup-module googlesitekit-setup-module--${ module.slug }` }>
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ moduleName }
+				{ module.name }
 			</h2>
 			<form className="googlesitekit-{moduleSlug}-setup__form" onSubmit={ finishSetup }>
 				<div className="googlesitekit-setup-module__action">
@@ -49,7 +49,9 @@ export default function DefaultModuleSetup( { finishSetup, moduleName, moduleSlu
 }
 
 DefaultModuleSetup.propTypes = {
-	finishSetup: PropTypes.func,
-	moduleName: PropTypes.string,
-	moduleSlug: PropTypes.string,
+	finishSetup: PropTypes.func.isRequired,
+	module: PropTypes.shape( {
+		name: PropTypes.string,
+		slug: PropTypes.string,
+	} ),
 };
