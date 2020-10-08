@@ -23,11 +23,6 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { useMemo } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -108,13 +103,17 @@ const WidgetAreaRenderer = ( { slug } ) => {
 
 	// Verify that widgets are active (do not render null)
 	const isActiveWidget = ( widget ) =>
-		widgets.find( ( item ) => item.slug === widget.slug ) &&
+		widgets.some( ( item ) => item.slug === widget.slug ) &&
 		typeof widget.component === 'function' &&
 		widget.component( {} );
 
 	const activeWidgets = widgets.filter( isActiveWidget );
 
-	const widgetClassNames = useMemo( () => {
+	if ( activeWidgets.length === 0 ) {
+		return null;
+	}
+
+	const getWidgetClassNames = () => {
 		let classNames = [].fill( null, 0, activeWidgets.length );
 		let counter = 0;
 		activeWidgets.forEach( ( widget, i ) => {
@@ -154,11 +153,9 @@ const WidgetAreaRenderer = ( { slug } ) => {
 		}
 
 		return classNames;
-	}, [ activeWidgets ] );
+	};
 
-	if ( activeWidgets.length === 0 ) {
-		return null;
-	}
+	const widgetClassNames = getWidgetClassNames();
 
 	const widgetsOutput = activeWidgets.map( ( widget, i ) => {
 		return (
