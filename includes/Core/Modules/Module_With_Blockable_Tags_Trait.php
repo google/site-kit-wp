@@ -35,7 +35,7 @@ trait Module_With_Blockable_Tags_Trait {
 			 *
 			 * @since n.e.x.t
 			 *
-			 * @param bool $blocked Whether or not the tag output is suppressed. Defaults to the value of the 'googlesitekit_{slug}_tag_blocked' filter.
+			 * @param bool $blocked Whether or not the tag output is suppressed. Default: false.
 			 */
 			return (bool) apply_filters( "googlesitekit_{$this->slug}_tag_amp_blocked", false );
 		} else {
@@ -89,7 +89,8 @@ trait Module_With_Blockable_Tags_Trait {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param bool $blocked Whether or not the tag requires user consent to load. Default: false.
+		 * @param bool|string $blocked Whether or not the tag requires user consent to load. Alternatively, this can also be one of
+		 *                             the special string values '_till_responded', '_till_accepted', or '_auto_reject'. Default: false.
 		 */
 		$block_on_consent = apply_filters( "googlesitekit_{$this->slug}_tag_amp_block_on_consent", false );
 
