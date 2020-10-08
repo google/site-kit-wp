@@ -156,7 +156,7 @@ const WidgetAreaRenderer = ( { slug } ) => {
 		return null;
 	}
 
-	const widgetClassNames = getWidgetClassNames();
+	const widgetClassNames = getWidgetClassNames( activeWidgets );
 
 	const widgetsOutput = activeWidgets.map( ( widget, i ) => {
 		return (
