@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { renderToStaticMarkup } from 'react-dom/server';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
@@ -148,7 +147,9 @@ const WidgetAreaRenderer = ( { slug } ) => {
 	const isActiveWidget = ( widget ) =>
 		widgets.some( ( item ) => item.slug === widget.slug ) &&
 		typeof widget.component === 'function' &&
-		renderToStaticMarkup( <widget.component /> );
+		widget.component.prototype.render
+			? new widget.component().render()
+			: widget.component();
 
 	const activeWidgets = widgets.filter( isActiveWidget );
 
