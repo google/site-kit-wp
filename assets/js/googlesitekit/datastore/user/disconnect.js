@@ -1,5 +1,5 @@
 /**
- * core/user Data store: disconnect
+ * `core/user` data store: disconnect
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

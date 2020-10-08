@@ -1,23 +1,27 @@
 /**
- * IGNORE CSP HEADERS
+ * IGNORE CSP HEADERS.
+ *
  * Listen to all requests. If a request matches scenario.url
  * then fetch the request again manually, strip out CSP headers
  * and respond to the original request without CSP headers.
  * Allows `ignoreHTTPSErrors: true` BUT... requires `debugWindow: true`
  *
- * see https://github.com/GoogleChrome/puppeteer/issues/1229#issuecomment-380133332
- * this is the workaround until Page.setBypassCSP lands... https://github.com/GoogleChrome/puppeteer/pull/2324
+ * See: https://github.com/GoogleChrome/puppeteer/issues/1229#issuecomment-380133332.
+ * This is the workaround until Page.setBypassCSP lands: https://github.com/GoogleChrome/puppeteer/pull/2324.
  *
- * @param      {Request}  request
- * @return     {void}
  *
- * Use this in an onBefore script E.G.
-  ```
-  module.exports = async function(page, scenario) {
-    require('./removeCSP')(page, scenario);
-  }
-  ```
+ * Use this in an `onBefore` script:
  *
+ * ```
+ * module.exports = async function( page, scenario ) {
+ *   require( './removeCSP' )( page, scenario );
+ * }
+ * ```
+ *
+ * @since 1.0.0
+ *
+ * @param {Request} request HTTP Request.
+ * @return {void}
  */
 
 const fetch = require( 'node-fetch' );

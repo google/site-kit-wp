@@ -4,10 +4,12 @@
 import { wpApiFetch } from './wp-api-fetch';
 
 /**
- * Set the authentication token used by Site Kit.
+ * Sets the authentication token used by Site Kit.
+ *
+ * @since 1.0.0
  *
  * @param {string} token Access token to set.
- * @return {*} resolved value from apiFetch promise.
+ * @return {*} Resolved value from `apiFetch` promise.
  */
 export async function setAuthToken( token = 'test-access-token' ) {
 	return await wpApiFetch( {

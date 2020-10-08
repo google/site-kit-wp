@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: tags tests.
+ * `modules/adsense` data store: tags tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

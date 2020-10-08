@@ -1,5 +1,5 @@
 /**
- * core/user getDateString utility.
+ * `core/user` getDateString utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

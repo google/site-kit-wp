@@ -1,5 +1,5 @@
 /**
- * validateOptimizeID tests
+ * `validateOptimizeID` tests
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
