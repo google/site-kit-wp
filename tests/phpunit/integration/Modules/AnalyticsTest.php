@@ -158,6 +158,84 @@ class AnalyticsTest extends TestCase {
 		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
 	}
 
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_non_amp( $enabled ) {
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_enqueue_scripts' );
+		$analytics->register();
+
+		// Hook `wp_print_head_scripts` on dummy action for capturing.
+		add_action( '__test_print_scripts', 'wp_print_head_scripts' );
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_analytics_tag_block_on_consent', '__return_true' );
+		}
+
+		do_action( 'template_redirect' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$output = $this->capture_action( '__test_print_scripts' );
+
+		$this->assertContains( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+		}
+	}
+
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_amp( $enabled ) {
+		$analytics = new Analytics( $this->get_amp_primary_context() );
+		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_footer' );
+		$analytics->register();
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_analytics_tag_amp_block_on_consent', '__return_true' );
+		}
+
+		do_action( 'template_redirect' );
+
+		$output = $this->capture_action( 'wp_footer' );
+
+		$this->assertContains( '<amp-analytics', $output );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+		}
+	}
+
+	public function block_on_consent_provider() {
+		return array(
+			'default (disabled)' => array(
+				false,
+			),
+			'enabled'            => array(
+				true,
+			),
+		);
+	}
+
 	public function test_prepare_info_for_js() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
