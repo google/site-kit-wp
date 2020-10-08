@@ -371,7 +371,12 @@ tag_partner: "site_kit"
 		}
 
 		$this->adsense_tag_printed = true;
-		return '<amp-auto-ads type="adsense" data-ad-client="' . esc_attr( $client_id ) . '"></amp-auto-ads> ' . $content;
+
+		return sprintf(
+			'<amp-auto-ads type="adsense" data-ad-client="%s" %s></amp-auto-ads> ',
+			esc_attr( $client_id ),
+			$this->get_tag_amp_block_on_consent_attribute()
+		) . $content;
 	}
 
 	/**
