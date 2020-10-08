@@ -90,8 +90,7 @@ export default function SetupForm( { finishSetup } ) {
 			if ( submitMode === SETUP_MODE_WITH_ANALYTICS && ! analyticsModuleActive ) {
 				await throwOnError( () => activateModule( 'analytics' ) );
 
-				global.location.assign( analyticsModuleReauthURL );
-				// Don't call finishSetup as this navigates to a different location.
+				finishSetup( analyticsModuleReauthURL );
 			} else {
 				// If we got here, call finishSetup to navigate to the success screen.
 				finishSetup();
