@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Modules\FakeModule__With_Tags
+ * Class Google\Site_Kit\Tests\Core\Modules\FakeModule_With_Tags
  *
  * @package   Google\Site_Kit\Tests\Core\Modules
  * @copyright 2020 Google LLC
