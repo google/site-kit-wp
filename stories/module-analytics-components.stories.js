@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
@@ -56,11 +51,20 @@ import {
 	dashboardUniqueVisitorsVisitorData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
-import {
-	WithTestRegistry,
-	createTestRegistry,
-	provideModules,
-} from '../tests/js/utils';
+/**
+ * Additional setup function
+ *
+ * @param {wp.data.registry} registry Registry with all available stores registered.
+ */
+const setup = ( registry ) => {
+	const [ property ] = accountsPropertiesProfiles.properties;
+	// eslint-disable-next-line sitekit/camelcase-acronyms
+	registry.dispatch( STORE_NAME ).setAccountID( property.accountId );
+	// eslint-disable-next-line sitekit/camelcase-acronyms
+	registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId );
+	// eslint-disable-next-line sitekit/camelcase-acronyms
+	registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId );
+};
 
 generateReportBasedWidgetStories( {
 	moduleSlug: 'analytics',
@@ -70,6 +74,7 @@ generateReportBasedWidgetStories( {
 	options: dashboardAllTrafficArgs,
 	component: DashboardAllTrafficWidget,
 	wrapWidget: false,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
@@ -80,6 +85,7 @@ generateReportBasedWidgetStories( {
 	options: pageDashboardAllTrafficArgs,
 	component: DashboardAllTrafficWidget,
 	wrapWidget: false,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
@@ -89,6 +95,7 @@ generateReportBasedWidgetStories( {
 	data: dashboardBounceRateWidgetData,
 	options: dashboardBounceRateWidgetArgs,
 	component: DashboardBounceRateWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
@@ -98,62 +105,25 @@ generateReportBasedWidgetStories( {
 	data: pageDashboardBounceRateWidgetData,
 	options: pageDashboardBounceRateWidgetArgs,
 	component: DashboardBounceRateWidget,
+	setup,
 } );
 
-storiesOf( 'Analytics Module/Components/Dashboard/Goals Widget', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		const [ property ] = accountsPropertiesProfiles.properties;
-		provideModules( registry, [ {
-			slug: 'analytics',
-			active: true,
-			connected: true,
-		} ] );
-
-		// eslint-disable-next-line sitekit/camelcase-acronyms
-		registry.dispatch( STORE_NAME ).setAccountID( property.accountId );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
-		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId );
-		// eslint-disable-next-line sitekit/camelcase-acronyms
-		registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId );
-
-		return storyFn( registry );
-	} )
-	.add( 'Loaded', ( registry ) => {
-		const { dispatch } = registry;
-		dispatch( STORE_NAME ).receiveGetReport( dashboardGoalsWidgetData, { options: dashboardGoalsWidgetArgs } );
-		dispatch( STORE_NAME ).receiveGetGoals( goals );
-		return (
-			<WithTestRegistry registry={ registry }>
-				<DashboardGoalsWidget />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Data Unavailable', ( registry ) => {
-		const { dispatch } = registry;
-		dispatch( STORE_NAME ).receiveGetReport( [], { options: dashboardGoalsWidgetArgs } );
-		dispatch( STORE_NAME ).receiveGetGoals( goals );
-		return (
-			<WithTestRegistry registry={ registry }>
-				<DashboardGoalsWidget />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Error', ( registry ) => {
-		const error = {
-			code: 'missing_required_param',
-			message: 'Request parameter is empty: metrics.',
-			data: {},
-		};
-		const { dispatch } = registry;
-		dispatch( STORE_NAME ).receiveError( error, 'getReport', [ dashboardGoalsWidgetArgs ] );
-		dispatch( STORE_NAME ).finishResolution( 'getReport', [ dashboardGoalsWidgetArgs ] );
-		return (
-			<WithTestRegistry registry={ registry }>
-				<DashboardGoalsWidget />
-			</WithTestRegistry>
-		);
-	} );
+generateReportBasedWidgetStories( {
+	moduleSlug: 'analytics',
+	datastore: STORE_NAME,
+	group: 'Analytics Module/Components/Dashboard/Goals Widget',
+	data: dashboardGoalsWidgetData,
+	options: dashboardGoalsWidgetArgs,
+	component: DashboardGoalsWidget,
+	additionalVariants: {
+		'No Goals': { data: dashboardGoalsWidgetData, options: dashboardGoalsWidgetArgs },
+	},
+	additionalVariantCallbacks: {
+		Loaded: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
+		'Data Unavailable': ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
+	},
+	setup,
+} );
 
 generateReportBasedWidgetStories( {
 	moduleSlug: 'analytics',
@@ -168,6 +138,7 @@ generateReportBasedWidgetStories( {
 		dashboardUniqueVisitorsSparkArgs,
 	],
 	component: DashboardUniqueVisitorsWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
@@ -183,6 +154,7 @@ generateReportBasedWidgetStories( {
 		pageDashboardUniqueVisitorsSparkArgs,
 	],
 	component: DashboardUniqueVisitorsWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
@@ -193,4 +165,5 @@ generateReportBasedWidgetStories( {
 	options: dashboardPopularPagesArgs,
 	component: DashboardPopularPagesWidget,
 	wrapWidget: false,
+	setup,
 } );
