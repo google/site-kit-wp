@@ -39,13 +39,6 @@ class Module_With_Blockable_Tags_TraitTest extends TestCase {
 		add_filter( 'googlesitekit_fake-module_tag_amp_blocked', '__return_true' );
 
 		$this->assertTrue( $module->is_tag_blocked() );
-
-		// Inherits default value from non-amp filter.
-		remove_all_filters( 'googlesitekit_fake-module_tag_amp_blocked' );
-		$this->assertFalse( $module->is_tag_blocked() );
-		add_filter( 'googlesitekit_fake-module_tag_blocked', '__return_true' );
-
-		$this->assertTrue( $module->is_tag_blocked() );
 	}
 
 	public function test_get_tag_block_on_consent_attribute() {

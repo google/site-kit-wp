@@ -108,7 +108,7 @@ class AnalyticsTest extends TestCase {
 		remove_all_filters( 'amp_post_template_data' );
 
 		// Tag not hooked when blocked.
-		add_filter( 'googlesitekit_analytics_tag_blocked', '__return_true' );
+		add_filter( 'googlesitekit_analytics_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
 		$this->assertFalse( has_action( 'amp_print_analytics' ) );
 		$this->assertFalse( has_action( 'wp_footer' ) );

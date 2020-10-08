@@ -29,15 +29,6 @@ trait Module_With_Blockable_Tags_Trait {
 	protected function is_tag_blocked() {
 		/* @var Module $this The module instance. */
 
-		/**
-		 * Filters whether or not the tag should be blocked from rendering.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param bool $blocked Whether or not the tag output is suppressed. Default: false.
-		 */
-		$blocked = (bool) apply_filters( "googlesitekit_{$this->slug}_tag_blocked", false );
-
 		if ( $this->context->is_amp() ) {
 			/**
 			 * Filters whether or not the AMP tag should be blocked from rendering.
@@ -46,10 +37,17 @@ trait Module_With_Blockable_Tags_Trait {
 			 *
 			 * @param bool $blocked Whether or not the tag output is suppressed. Defaults to the value of the 'googlesitekit_{slug}_tag_blocked' filter.
 			 */
-			return (bool) apply_filters( "googlesitekit_{$this->slug}_tag_amp_blocked", $blocked );
+			return (bool) apply_filters( "googlesitekit_{$this->slug}_tag_amp_blocked", false );
+		} else {
+			/**
+			 * Filters whether or not the tag should be blocked from rendering.
+			 *
+			 * @since n.e.x.t
+			 *
+			 * @param bool $blocked Whether or not the tag output is suppressed. Default: false.
+			 */
+			return (bool) apply_filters( "googlesitekit_{$this->slug}_tag_blocked", false );
 		}
-
-		return $blocked;
 	}
 
 	/**

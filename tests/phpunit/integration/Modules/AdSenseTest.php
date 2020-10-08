@@ -77,7 +77,7 @@ class AdSenseTest extends TestCase {
 		remove_all_actions( 'wp_body_open' );
 		remove_all_filters( 'the_content' );
 		remove_all_filters( 'amp_post_template_data' );
-		add_filter( 'googlesitekit_adsense_tag_blocked', '__return_true' );
+		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_true' );
 
 		do_action( 'template_redirect' );
 		$this->assertFalse( has_action( 'wp_body_open' ) );
