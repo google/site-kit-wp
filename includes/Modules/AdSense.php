@@ -273,7 +273,7 @@ final class AdSense extends Module
 			$this->get_tag_block_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 		printf(
-			'<script>(adsbygoogle = window.adsbygoogle || []).push(JSON.parse(%s));</script>',
+			'<script>(adsbygoogle = window.adsbygoogle || []).push(%s);</script>',
 			wp_json_encode(
 				array(
 					'google_ad_client'      => $client_id,
