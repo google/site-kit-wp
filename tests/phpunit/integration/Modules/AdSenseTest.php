@@ -72,6 +72,25 @@ class AdSenseTest extends TestCase {
 		$this->assertTrue( has_action( 'wp_body_open' ) );
 		$this->assertTrue( has_filter( 'the_content' ) );
 		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+
+		// Tag not hooked when blocked.
+		remove_all_actions( 'wp_body_open' );
+		remove_all_filters( 'the_content' );
+		remove_all_filters( 'amp_post_template_data' );
+		add_filter( 'googlesitekit_adsense_tag_blocked', '__return_true' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_body_open' ) );
+		$this->assertFalse( has_filter( 'the_content' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		// Tag hooked when AMP specifically not blocked.
+		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_false' );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_body_open' ) );
+		$this->assertTrue( has_filter( 'the_content' ) );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
 	}
 
 	public function test_register_template_redirect_non_amp() {
@@ -88,6 +107,21 @@ class AdSenseTest extends TestCase {
 
 		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
 		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_head' ) );
+
+		// Tag not hooked when blocked.
+		remove_all_actions( 'wp_head' );
+		add_filter( 'googlesitekit_adsense_tag_blocked', '__return_true' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_head' ) );
+
+		// Tag hooked when only AMP blocked.
+		remove_all_actions( 'wp_head' );
+		add_filter( 'googlesitekit_adsense_tag_blocked', '__return_false' );
+		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_true' );
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_head' ) );
