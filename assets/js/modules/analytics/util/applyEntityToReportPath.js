@@ -1,5 +1,5 @@
 /**
- * appendEntityToPath util.
+ * applyEntityToReportPath util.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,18 +20,21 @@
  * Parses an entity URL and appends to the given path.
  *
  * @since n.e.x.t
- *
- * @param {string} entity  The entity to append to the path
- * @param {string} path    The path
+ * @param {string} currentEntityURL  The entity to append to the path
+ * @param {string} reportPath              The path
  * @return {string} The final url if entity is defined, otherwise the original path.
  */
-export default function appendEntityToPath( entity, path ) {
-	// If there is no entity, return the original path.
-	if ( ! entity ) {
-		return path;
+export default function applyEntityToReportPath( currentEntityURL, reportPath ) {
+	// If there is no currentEntityURL, return the original path.
+	if ( ! currentEntityURL ) {
+		return reportPath;
 	}
-
-	const parsedURL = new URL( entity );
-	const pageSegment = `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
-	return `${ path }${ pageSegment }`;
+	try {
+		const parsedURL = new URL( currentEntityURL );
+		const pageSegment = `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
+		// Ensure there is always a trailing slash after the reportPath.
+		return `${ reportPath.replace( /\/$/, '' ) }/${ pageSegment }`;
+	} catch ( error ) {
+		throw new Error( 'currentEntityURL must be a valid URL.' );
+	}
 }

@@ -47,7 +47,7 @@ import {
 	parseTotalUsersData,
 } from '../../util';
 
-import appendEntityToPath from '../../util/appendEntityToPath';
+import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import Data from 'googlesitekit-data';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
@@ -110,12 +110,12 @@ function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) 
 
 	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{
-			path: appendEntityToPath( url, `/report/visitors-overview/${ pathIDSegment }` ),
+			path: applyEntityToReportPath( url, `/report/visitors-overview/${ pathIDSegment }` ),
 		}
 	) );
 	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{
-			path: appendEntityToPath( url, `/report/conversions-goals-overview/${ pathIDSegment }` ),
+			path: applyEntityToReportPath( url, `/report/conversions-goals-overview/${ pathIDSegment }` ),
 		}
 	) );
 
