@@ -63,14 +63,25 @@ export default function setUpAdvancedTracking( eventConfigurations, sendEvent ) 
  * @return {boolean} True if the DOM element matches the selector, false otherwise.
  */
 function matches( el, selector ) {
+	// Use fallbacks for older browsers.
+	// See https://developer.mozilla.org/en-US/docs/Web/API/Element/matches#Polyfill.
 	const matcher =
 		el.matches ||
+		el.matchesSelector ||
 		el.webkitMatchesSelector ||
 		el.mozMatchesSelector ||
 		el.msMatchesSelector ||
-		el.oMatchesSelector;
+		el.oMatchesSelector ||
+		function( s ) {
+			const elements = ( this.document || this.ownerDocument ).querySelectorAll( s );
+			let i = elements.length;
+			while ( --i >= 0 && elements.item( i ) !== this ) {}
+			return i > -1;
+		};
+
 	if ( matcher ) {
 		return matcher.call( el, selector );
 	}
+
 	return false;
 }
