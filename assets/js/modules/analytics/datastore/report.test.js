@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: report tests.
+ * `modules/analytics` data store: report tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -1,5 +1,5 @@
 /**
- * modules/tagmanager data store: existing tag.
+ * `modules/tagmanager` data store: existing tag.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -86,7 +86,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.11.0
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state       Data store's state.
 	 * @param {string} containerID Container publicId to check permission for.
 	 * @return {(Object|undefined)} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
 	 */
@@ -101,7 +101,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {string} containerID Container publicId to check permission for.
-	 * @return {(boolean|undefined)} Permission
+	 * @return {(boolean|undefined)} Boolean: `true` if user has permission; `false` if not.
 	 */
 	hasTagPermission: createRegistrySelector( ( select ) => ( state, containerID ) => {
 		const { permission } = select( STORE_NAME ).getTagPermission( containerID ) || {};
@@ -118,8 +118,8 @@ const baseSelectors = {
 	 *
 	 * @since 1.11.0
 	 *
-	 * @return {(boolean|null|undefined)} true or false if tag permission is available,
-	 *                                    null if no existing tag,
+	 * @return {(boolean|null|undefined)} Boolean: `true` or `false` if tag permission is
+	 * 					                          available; `null` if no existing tag,
 	 *                                    otherwise undefined if resolution is incomplete.
 	 */
 	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {

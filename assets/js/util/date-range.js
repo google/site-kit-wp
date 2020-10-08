@@ -30,8 +30,10 @@ import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constan
 /**
  * Gets the current dateRange string.
  *
- * @param {string} [dateRange]      Optional. The date range slug.
- * @return {string} the date range string.
+ * @since 1.8.0
+ *
+ * @param {string} [dateRange] Optional. The date range slug.
+ * @return {string} The date range string.
  */
 export function getCurrentDateRange( dateRange = getCurrentDateRangeSlug() ) {
 	const daysMatch = dateRange.match( /last-(\d+)-days/ );
@@ -52,8 +54,8 @@ export function getCurrentDateRange( dateRange = getCurrentDateRangeSlug() ) {
  *
  * @since n.e.x.t
  *
- * @param {string} [dateRange]      Optional. The date range slug.
- * @return {number} The number of days in the range
+ * @param {string} [dateRange] Optional. The date range slug.
+ * @return {number} The number of days in the range.
  */
 export function getCurrentDateRangeDayCount( dateRange = getCurrentDateRangeSlug() ) {
 	const daysMatch = dateRange.match( /last-(\d+)-days/ );
@@ -68,7 +70,9 @@ export function getCurrentDateRangeDayCount( dateRange = getCurrentDateRangeSlug
 /**
  * Gets the current dateRange slug.
  *
- * @return {string} the date range slug.
+ * @since 1.8.0
+ *
+ * @return {string} The date range slug.
  */
 export function getCurrentDateRangeSlug() {
 	return Data.select( CORE_USER ).getDateRange();

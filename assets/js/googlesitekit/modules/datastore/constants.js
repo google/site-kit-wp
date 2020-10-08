@@ -1,5 +1,5 @@
 /**
- * core/site data store: constants.
+ * `core/modules` data store: constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

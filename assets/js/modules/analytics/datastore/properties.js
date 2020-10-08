@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: properties.
+ * `modules/analytics` data store: properties.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -136,7 +136,7 @@ const baseActions = {
 	 * @since 1.8.0
 	 * @private
 	 *
-	 * @param {string} propertyID Property ID to select.
+	 * @param {string} propertyID           Property ID to select.
 	 * @param {string} [internalPropertyID] Internal property ID (if available).
 	 * @return {Object} A Generator function.
 	 */
@@ -325,7 +325,7 @@ const baseSelectors = {
 	 * @since 1.8.0
 	 * @private
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID Property ID.
 	 * @return {(Object|undefined)} Property object, or undefined if not present in store.
 	 */
@@ -352,7 +352,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Get all Google Analytics properties this account can access.
+	 * Gets all Google Analytics properties this account can access.
 	 *
 	 * Returns an array of all analytics properties.
 	 *

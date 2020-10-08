@@ -49,8 +49,8 @@ const { components: { Widget } } = Widgets;
  * @param {Component} args.component                    Widget component.
  * @param {boolean}   [args.wrapWidget]                 Whether to wrap in default <Widget> component. Default true.
  * @param {Array}     [args.additionalVariants]         Optional. Additional story variants.
- * @param {Function}  [args.setup]                      Optional. Setup function to be run for all Stories being generated.
  * @param {Array}     [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants
+ * @param {Function}  [args.setup]                      Optional. Setup function to be run for all Stories being generated.
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {

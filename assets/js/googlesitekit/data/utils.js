@@ -127,8 +127,9 @@ export const collectSelectors = collect;
 /**
  * Collects all state values.
  *
- * @param {...Object} args A list of objects, each containing their own state values.
+ * @since 1.5.0
  *
+ * @param {...Object} args A list of objects, each containing their own state values.
  * @return {Object} The combined object.
  */
 export const collectState = collect;
@@ -153,7 +154,7 @@ export const collectName = ( ...args ) => {
 };
 
 /**
- * An empty reducer.
+ * Passes through state unmodified; eg. an empty reducer.
  *
  * @since 1.8.0
  * @private
@@ -168,7 +169,7 @@ const passthroughReducer = ( state ) => state;
  *
  * @since 1.8.0
  *
- * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: initialState, actions, controls, reducer, resolvers, selectors
+ * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: initialState, actions, controls, reducer, resolvers, selectors.
  * @return {Object} The combined store.
  */
 export const combineStores = ( ...stores ) => {
@@ -202,7 +203,7 @@ export const combineStores = ( ...stores ) => {
  *
  * @since 1.7.0
  *
- * @return {Object} key/value list of common actions most stores will want.
+ * @return {Object} Key/value list of common actions most stores will want.
  */
 export const commonActions = {
 	/**
@@ -228,7 +229,7 @@ export const commonActions = {
  *
  * @since 1.7.0
  *
- * @return {Object} key/value list of common controls most stores will want.
+ * @return {Object} Key/value list of common controls most stores will want.
  */
 export const commonControls = {
 	/**

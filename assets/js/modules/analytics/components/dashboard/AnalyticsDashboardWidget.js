@@ -84,7 +84,7 @@ export default function AnalyticsDashboardWidget() {
 	};
 
 	/**
-	 * Handle data errors from the contained Analytics component(s).
+	 * Handles data errors from the contained Analytics component(s).
 	 *
 	 * Currently handled in the AnalyticsDashboardWidget component.
 	 *
@@ -92,6 +92,8 @@ export default function AnalyticsDashboardWidget() {
 	 *
 	 * If the component detects no data - in this case all 0s - the callback is called without an error message,
 	 * resulting in the display of a CTA.
+	 *
+	 * @since 1.0.0
 	 *
 	 * @param {string} err    A potential error string.
 	 * @param {Object} errObj Full error object.
@@ -104,7 +106,7 @@ export default function AnalyticsDashboardWidget() {
 	};
 
 	/**
-	 * Loading is set to false until data starts to resolve.
+	 * Sets Loading to false until data starts to resolve.
 	 */
 	const handleDataSuccess = () => {
 		setReceivingData( true );
