@@ -1,5 +1,5 @@
 /**
- * core/modules data store: modules tests.
+ * `core/modules` data store: modules tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

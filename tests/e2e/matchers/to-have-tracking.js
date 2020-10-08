@@ -23,13 +23,13 @@ import { getDefaultOptions } from 'expect-puppeteer';
 import { Page, ElementHandle } from 'puppeteer';
 
 /**
- * Jest matcher for asserting the given instance has tracking loaded or not.
+ * Asserts that the given instance has tracking loaded or not.
  *
  * @since 1.11.0
  *
- * @param {(Page|ElementHandle)} instance Page or element handle instance.
- * @param {Object} [options]              Matcher options.
- * @param {number} [options.timeout]      Maximum time to wait for selector in milliseconds.
+ * @param {(Page|ElementHandle)} instance          Page or element handle instance.
+ * @param {Object}               [options]         Matcher options.
+ * @param {number}               [options.timeout] Maximum time to wait for selector in milliseconds.
  * @return {Object} Object with `pass` and `message` keys.
  */
 export async function toHaveTracking( instance, { timeout } = getDefaultOptions() ) {

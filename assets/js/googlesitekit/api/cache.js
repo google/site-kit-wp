@@ -124,7 +124,7 @@ export const isStorageAvailable = async ( type ) => {
  * @since 1.5.0
  * @private
  *
- * @return {Object|null} A storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`;
+ * @return {Storage|null} A storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`.
  */
 export const getStorage = async () => {
 	// If `googlesitekit.admin.nojscache` is `true`, we should never use
@@ -160,8 +160,8 @@ export const getStorage = async () => {
  *
  * @since 1.5.0
  *
- * @param {string} key              Name of cache key.
- * @param {number} cacheTimeToLive  The number of seconds before cached data will be considered stale. If the cached data is more than this many seconds old no data will be returned. If not set/set to `null`, any data will be returned.
+ * @param {string} key             Name of cache key.
+ * @param {number} cacheTimeToLive The number of seconds before cached data will be considered stale. If the cached data is more than this many seconds old no data will be returned. If not set/set to `null`, any data will be returned.
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
  */
 export const getItem = async ( key, cacheTimeToLive = null ) => {

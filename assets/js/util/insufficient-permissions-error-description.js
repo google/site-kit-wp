@@ -1,5 +1,5 @@
 /**
- * getInsufficientPermissionsErrorDescription function.
+ * `getInsufficientPermissionsErrorDescription` function.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -26,7 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  *
  * @since 1.16.0
  *
- * @param {string} error Original error message.
+ * @param {string} error  Original error message.
  * @param {Object} module Module data.
  * @return {string} Error description.
  */

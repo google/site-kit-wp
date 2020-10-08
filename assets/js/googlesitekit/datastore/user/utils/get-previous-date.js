@@ -1,5 +1,5 @@
 /**
- * core/user getPreviousDate utility.
+ * `core/user` getPreviousDate utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

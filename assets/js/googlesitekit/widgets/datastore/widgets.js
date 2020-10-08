@@ -1,5 +1,5 @@
 /**
- * core/widgets data store: widgets info.
+ * `core/widgets` data store: widgets info.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -36,8 +36,8 @@ const { commonActions, createRegistrySelector } = Data;
  * Store our widget components by registry, then by widget `slug`. We do this because
  * we can't store React components in our data store.
  *
- * @private
  * @since 1.9.0
+ * @private
  */
 export const WidgetComponents = {};
 
@@ -73,7 +73,7 @@ export const actions = {
 	},
 
 	/**
-	 * Register a widget with a given slug and settings.
+	 * Registers a widget with a given slug and settings.
 	 *
 	 * @since 1.9.0
 	 * @since 1.12.0 Added wrapWidget setting.
@@ -233,8 +233,8 @@ export const selectors = {
 	 *
 	 * @since 1.11.0
 	 *
-	 * @param {Object} state  Data store's state.
-	 * @param {string} slug   Widget slug.
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget slug.
 	 * @return {Object|null} A widget object, if one exists.
 	 */
 	getWidget: createRegistrySelector( ( select ) => ( state, slug ) => {
