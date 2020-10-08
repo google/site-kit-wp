@@ -1,5 +1,5 @@
 /**
- * core/site data store: connection info.
+ * `core/site` data store: connection info.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -72,8 +72,8 @@ const baseSelectors = {
 	 * }
 	 * ```
 	 *
-	 * @private
 	 * @since 1.5.0
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Site connection info.

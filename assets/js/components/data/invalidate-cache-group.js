@@ -25,6 +25,8 @@ import { getCacheKey, lazilySetupLocalCache } from './cache';
 /**
  * Invalidates all caches associated with a specific cache group.
  *
+ * @since 1.0.0
+ *
  * @param {string} type       The data to access. One of 'core' or 'modules'.
  * @param {string} identifier The data identifier, for example a module slug.
  * @param {string} datapoint  The datapoint.

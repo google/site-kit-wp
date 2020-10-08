@@ -1,5 +1,5 @@
 /**
- * useDebouncedState hook tests.
+ * `useDebouncedState` hook tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

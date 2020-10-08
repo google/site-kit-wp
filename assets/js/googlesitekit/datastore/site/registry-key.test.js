@@ -1,5 +1,5 @@
 /**
- * core/site data store: registryKey tests.
+ * `core/site` data store: registryKey tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -77,6 +77,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
+	'analytics-advanced-tracking-events': 'SITEKIT_ANALYTICS_ADVANCED_TRACKING_EVENTS',
 };
 
 const externals = { ...siteKitExternals };
@@ -144,6 +145,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
 				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
 				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
+				'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
@@ -154,6 +156,8 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-adminbar-loader': './assets/js/googlesitekit-adminbar-loader.js',
 				'googlesitekit-base': './assets/js/googlesitekit-base.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
+				// Analytics advanced tracking script to be injected in the frontend.
+				'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
 				// Needed to test if a browser extension blocks this by naming convention.
 				'pagead2.ads': './assets/js/pagead2.ads.js',
 			},
@@ -163,12 +167,12 @@ const webpackConfig = ( mode ) => {
 				path: __dirname + '/dist/assets/js',
 				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
-				/**
-				 * If multiple webpack runtimes (from different compilations) are used on the same webpage,
-				 * there is a risk of conflicts of on-demand chunks in the global namespace.
-				 *
-				 * @see (@link https://webpack.js.org/configuration/output/#outputjsonpfunction)
-				 */
+				/*
+					If multiple webpack runtimes (from different compilations) are used on the
+					same webpage, there is a risk of conflicts of on-demand chunks in the global
+					namespace.
+					See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
+				*/
 				jsonpFunction: '__googlesitekit_webpackJsonp',
 			},
 			performance: {
