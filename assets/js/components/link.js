@@ -25,6 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { _x } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 
 class Link extends Component {
@@ -77,6 +78,10 @@ class Link extends Component {
 				dangerouslySetInnerHTML={ dangerouslySetInnerHTML }
 			>
 				{ children }
+
+				{ external && (
+					<span className="screen-reader-text">{ _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' ) }</span>
+				) }
 			</SemanticLink>
 		);
 	}
