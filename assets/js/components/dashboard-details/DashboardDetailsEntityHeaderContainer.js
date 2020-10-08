@@ -24,10 +24,9 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Link from '../link';
 import Layout from '../layout/layout';
 
-export default function DashboardDetailsEntityHeaderContainer( { children, permalink } ) {
+export default function DashboardDetailsEntityHeaderContainer( { children } ) {
 	return (
 		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 			<Layout>
@@ -35,9 +34,6 @@ export default function DashboardDetailsEntityHeaderContainer( { children, perma
 					<div className="mdc-layout-grid__inner">
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							{ children }
-							<Link href={ permalink } inherit external>
-								{ permalink }
-							</Link>
 						</div>
 					</div>
 				</div>
@@ -47,6 +43,5 @@ export default function DashboardDetailsEntityHeaderContainer( { children, perma
 }
 
 DashboardDetailsEntityHeaderContainer.propTypes = {
-	permalink: PropTypes.string.isRequired,
 	children: PropTypes.node.isRequired,
 };

@@ -48,7 +48,7 @@ export default function DashboardDetailsEntityNotFoundView( { permalink } ) {
 	};
 
 	return (
-		<DashboardDetailsEntityHeaderContainer permalink={ currentEntityURL }>
+		<DashboardDetailsEntityHeaderContainer>
 			<p dangerouslySetInnerHTML={ sanitizeHTML( message, sanitizeArgs ) } />
 		</DashboardDetailsEntityHeaderContainer>
 	);

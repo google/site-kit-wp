@@ -26,6 +26,7 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { decodeHTMLEntity } from '../../util';
+import Link from '../link';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DateRangeSelector from '../date-range-selector';
 import DashboardDetailsModules from './dashboard-details-modules';
@@ -50,13 +51,16 @@ export default function DashboardDetailsEntityView() {
 				<DateRangeSelector />
 			</div>
 
-			<DashboardDetailsEntityHeaderContainer permalink={ currentEntityURL }>
+			<DashboardDetailsEntityHeaderContainer>
 				<h3 className="
 					googlesitekit-heading-3
 					googlesitekit-dashboard-single-url__title
 				">
 					{ decodeHTMLEntity( currentEntityTitle ) }
 				</h3>
+				<Link href={ currentEntityURL } inherit external>
+					{ currentEntityURL }
+				</Link>
 			</DashboardDetailsEntityHeaderContainer>
 
 			{ featureFlags.widgets.pageDashboard.enabled && (
