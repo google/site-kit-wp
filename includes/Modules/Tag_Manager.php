@@ -316,9 +316,8 @@ final class Tag_Manager extends Module
 	protected function print_gtm_js( $container_id ) {
 		?>
 <!-- Google Tag Manager added by Site Kit -->
-<script
-		<?php echo $this->get_tag_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
->( function( w, d, s, l, i ) {
+<script<?php echo $this->get_tag_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+( function( w, d, s, l, i ) {
 	w[l] = w[l] || [];
 	w[l].push( {'gtm.start': new Date().getTime(), event: 'gtm.js'} );
 	var f = d.getElementsByTagName( s )[0],
@@ -383,19 +382,13 @@ final class Tag_Manager extends Module
 			'optoutElementId' => '__gaOptOutExtension',
 		);
 
-		?>
-<!-- Google Tag Manager added by Site Kit -->
-<amp-analytics
-	config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>"
-	data-credentials="include"
-		<?php echo $this->get_tag_amp_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
->
-	<script type="application/json">
-		<?php echo wp_json_encode( $gtm_amp_opt ); ?>
-	</script>
-</amp-analytics>
-<!-- End Google Tag Manager -->
-		<?php
+		printf( '%s<!-- Google Tag Manager added by Site Kit -->%s', "\n", "\n" );
+		printf(
+			'<amp-analytics	config="%s" data-credentials="include"%s><script type="application/json">%s</script></amp-analytics>',
+			esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			wp_json_encode( $gtm_amp_opt )
+		);
+		printf( '%s<!-- End Google Tag Manager -->%s', "\n", "\n" );
 	}
 
 	/**
