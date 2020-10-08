@@ -149,6 +149,95 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertTrue( has_action( 'wp_footer' ) );
 	}
 
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_amp( $enabled ) {
+		$tagmanager = new Tag_Manager( $this->get_amp_primary_context() );
+		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_footer' );
+
+		$tagmanager->register();
+
+		do_action( 'template_redirect' );
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_tagmanager_tag_amp_block_on_consent', '__return_true' );
+		}
+
+		$output = $this->capture_action( 'wp_footer' );
+
+		$this->assertContains( 'Google Tag Manager added by Site Kit', $output );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+		}
+	}
+
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_non_amp( $enabled ) {
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'wp_footer' );
+
+		$tagmanager->register();
+
+		do_action( 'template_redirect' );
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_tagmanager_tag_block_on_consent', '__return_true' );
+		}
+
+		$header = $this->capture_action( 'wp_head' );
+		$footer = $this->capture_action( 'wp_footer' );
+
+		$this->assertContains( 'Google Tag Manager added by Site Kit', $header );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $header );
+			// If enabled, the no-JS fallback must not be output.
+			$this->assertNotContains( '<noscript>', $footer );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $header );
+			$this->assertContains( '<noscript>', $footer );
+		}
+	}
+
+	public function block_on_consent_provider() {
+		return array(
+			'default (disabled)' => array(
+				false,
+			),
+			'enabled'            => array(
+				true,
+			),
+		);
+	}
+
 	public function test_is_connected_web() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
