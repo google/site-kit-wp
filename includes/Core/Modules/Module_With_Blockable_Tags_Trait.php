@@ -68,7 +68,7 @@ trait Module_With_Blockable_Tags_Trait {
 		 * @param bool $blocked Whether or not the tag requires user consent to load. Default: false.
 		 */
 		if ( apply_filters( "googlesitekit_{$this->slug}_tag_block_on_consent", false ) ) {
-			return 'type="text/plain" data-block-on-consent';
+			return ' type="text/plain" data-block-on-consent';
 		}
 
 		return '';
