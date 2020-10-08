@@ -185,6 +185,35 @@ class AdSenseTest extends TestCase {
 		}
 	}
 
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_amp_content( $enabled ) {
+		$adsense = new AdSense( $this->get_amp_primary_context() );
+		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'the_content' );
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_adsense_tag_amp_block_on_consent', '__return_true' );
+		}
+
+		$output = apply_filters( 'the_content', 'test content' );
+		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+		}
+	}
+
 	public function block_on_consent_provider() {
 		return array(
 			'default (disabled)' => array(
