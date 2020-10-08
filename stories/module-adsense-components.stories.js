@@ -36,7 +36,7 @@ import {
 } from '../assets/js/modules/adsense/datastore/__fixtures__';
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'adsense',
+	moduleSlug: [ 'adsense' ],
 	datastore: STORE_NAME,
 	group: 'AdSense Module/Components/Dashboard/Summary Widget',
 	data: [

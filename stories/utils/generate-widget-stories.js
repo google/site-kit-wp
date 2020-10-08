@@ -39,8 +39,9 @@ const { components: { Widget } } = Widgets;
  * Generates stories for a report based widget using provided data.
  *
  * @since 1.16.0
+ *
  * @param {Object}    args                              Widget arguments.
- * @param {string}    args.moduleSlug                   Module slug.
+ * @param {Array}     args.moduleSlug                   List of modules to activate
  * @param {string}    args.datastore                    Module datastore name.
  * @param {string}    args.group                        Stories group name.
  * @param {Array}     args.data                         Widget data.
@@ -68,11 +69,14 @@ export function generateReportBasedWidgetStories( {
 		.addDecorator( ( storyFn ) => {
 			const registry = createTestRegistry();
 			// Activate the module.
-			provideModules( registry, [ {
-				slug: moduleSlug,
-				active: true,
-				connected: true,
-			} ] );
+			provideModules( registry, moduleSlug.map( ( module ) => {
+				return {
+					slug: module,
+					active: true,
+					connected: true,
+				};
+			} ) );
+
 			// Set some site information.
 			provideSiteInfo( registry, {
 				currentEntityURL: options.url || null,

@@ -67,7 +67,7 @@ const setup = ( registry ) => {
 };
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlug: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget',
 	data: dashboardAllTrafficData,
@@ -78,7 +78,7 @@ generateReportBasedWidgetStories( {
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlug: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
 	data: pageDashboardAllTrafficData,
@@ -89,7 +89,7 @@ generateReportBasedWidgetStories( {
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlug: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/Bounce Rate Widget',
 	data: dashboardBounceRateWidgetData,
@@ -99,7 +99,7 @@ generateReportBasedWidgetStories( {
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlug: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/Bounce Rate Widget',
 	data: pageDashboardBounceRateWidgetData,
@@ -109,7 +109,7 @@ generateReportBasedWidgetStories( {
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlug: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/Goals Widget',
 	data: dashboardGoalsWidgetData,
@@ -126,7 +126,7 @@ generateReportBasedWidgetStories( {
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlug: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/Unique Visitors Widget',
 	data: [
@@ -142,7 +142,7 @@ generateReportBasedWidgetStories( {
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlug: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/Unique Visitors Widget',
 	data: [
@@ -158,7 +158,7 @@ generateReportBasedWidgetStories( {
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlug: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/Popular Pages Widget',
 	data: dashboardPopularPagesData,
