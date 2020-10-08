@@ -208,6 +208,11 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 				'turkish.com',
 				false,
 			),
+			'domain with and without bidirectional control characters' => array(
+				'xn--5dbedds0a1eb.xn--9dbq2a',
+				'‬ביקדקוםה.קום',
+				true,
+			),
 		);
 	}
 
@@ -297,7 +302,7 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 				'http://turkish.com',
 				false,
 			),
-			'url with and without bidirectional control characters' => array(
+			'domain with and without bidirectional control characters' => array(
 				'xn--5dbedds0a1eb.xn--9dbq2a',
 				'‬ביקדקוםה.קום',
 				true,
