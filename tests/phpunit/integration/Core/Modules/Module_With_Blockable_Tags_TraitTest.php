@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Modules\Module_With_Tags_TraitTest
+ * Class Google\Site_Kit\Tests\Core\Modules\Module_With_Blockable_Tags_TraitTest
  *
  * @package   Google\Site_Kit\Tests\Core\Modules
  * @copyright 2020 Google LLC
@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Tests\TestCase;
 
-class Module_With_Tags_TraitTest extends TestCase {
+class Module_With_Blockable_Tags_TraitTest extends TestCase {
 
 	public function test_is_tag_blocked() {
 		$module = new FakeModule_With_Tags( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
