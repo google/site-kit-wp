@@ -92,7 +92,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 
 		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'amp_print_analytics' ) );
@@ -115,7 +115,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
 
 		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => 'UA-12345678-1' ) );
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
