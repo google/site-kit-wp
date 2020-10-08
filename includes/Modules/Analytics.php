@@ -432,12 +432,17 @@ final class Analytics extends Module
 
 				return str_replace(
 					array(
-						"<script src='$gtag_src", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 						"<script src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script type='text/javascript' src='$gtag_src", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						"<script type=\"text/javascript\" src=\"$gtag_src", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script type='text/javascript' src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script type=\"text/javascript\" src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 					),
-					"<script $block_on_consent_attrs src='$gtag_src", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					array( // `type` attribute intentionally excluded in replacements.
+						"<script $block_on_consent_attrs src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script $block_on_consent_attrs src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script $block_on_consent_attrs src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+						"<script $block_on_consent_attrs src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					),
 					$tag
 				);
 			};
