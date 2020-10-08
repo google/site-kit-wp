@@ -74,20 +74,24 @@ class SetupWrapper extends Component {
 
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
+	 *
+	 * @since 1.0.0
+	 * @since n.e.x.t Added optional redirectURL parameter.
+	 *
+	 * @param {string} [redirectURL] URL to redirect to when complete. Defaults to Site Kit dashboard.
 	 */
-	static finishSetup() {
-		const args = {
-			notification: 'authentication_success',
-		};
+	static finishSetup( redirectURL ) {
+		if ( ! redirectURL ) {
+			const args = {
+				notification: 'authentication_success',
+			};
 
-		if ( global._googlesitekitLegacyData.setup && global._googlesitekitLegacyData.setup.moduleToSetup ) {
-			args.slug = global._googlesitekitLegacyData.setup.moduleToSetup;
+			if ( global._googlesitekitLegacyData?.setup?.moduleToSetup ) {
+				args.slug = global._googlesitekitLegacyData.setup.moduleToSetup;
+			}
+
+			redirectURL = getSiteKitAdminURL( 'googlesitekit-dashboard', args );
 		}
-
-		const redirectURL = getSiteKitAdminURL(
-			'googlesitekit-dashboard',
-			args,
-		);
 
 		delay( function() {
 			global.location.replace( redirectURL );
