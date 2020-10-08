@@ -52,7 +52,7 @@ import {
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
 /**
- * Additional setup function.
+ * Defines some additional setup for all tests.
  *
  * @since n.e.x.t
  *
