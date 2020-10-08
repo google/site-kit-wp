@@ -42,14 +42,20 @@ module.exports = {
 		/**
 		 * Reports an AST node as a rule violation.
 		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
 		 * @param {Object} node The node to report.
 		 * @return {void}
-		 * @private
 		 */
 		function report( node ) {
 			if ( ! reported.includes( node ) ) {
 				reported.push( node );
-				context.report( { node, message: `\`${ node.name }\` violates naming rules.`, data: { name: node.name } } );
+				context.report( {
+					data: { name: node.name },
+					message: `\`${ node.name }\` violates naming rules.`,
+					node,
+				} );
 			}
 		}
 

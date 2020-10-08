@@ -650,7 +650,7 @@ final class Assets {
 		$current_user = wp_get_current_user();
 
 		$inline_data = array(
-			'homeURL'          => trailingslashit( home_url() ),
+			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
 			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
 			'userIDHash'       => md5( $site_url . $current_user->ID ),
 			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
@@ -755,7 +755,7 @@ final class Assets {
 			'reAuth'           => $input->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN ),
 			'ampEnabled'       => (bool) $this->context->get_amp_mode(),
 			'ampMode'          => $this->context->get_amp_mode(),
-			'homeURL'          => home_url(),
+			'homeURL'          => $this->context->get_canonical_home_url(),
 		);
 
 		$current_entity = $this->context->get_reference_entity();

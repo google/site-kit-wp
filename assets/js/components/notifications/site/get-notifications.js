@@ -5,7 +5,10 @@ import data, { TYPE_CORE } from '../../data';
 
 /**
  * Gets core site notifications.
+ *
  * Leverages data cache.
+ *
+ * @since 1.0.0
  *
  * @return {Array} List of notification objects.
  */

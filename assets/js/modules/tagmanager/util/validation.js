@@ -52,7 +52,7 @@ export function isValidAccountID( accountID ) {
  *
  * @since 1.11.0
  *
- * @param {?string} value Selected value
+ * @param {string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidAccountSelection( value ) {
@@ -92,7 +92,7 @@ export function isValidContainerName( value ) {
  *
  * @since 1.11.0
  *
- * @param {?string} value Selected value
+ * @param {string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidContainerSelection( value ) {
