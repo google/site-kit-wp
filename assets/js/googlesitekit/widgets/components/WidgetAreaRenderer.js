@@ -148,8 +148,8 @@ const WidgetAreaRenderer = ( { slug } ) => {
 		widgets.some( ( item ) => item.slug === widget.slug ) &&
 		typeof widget.component === 'function' &&
 		widget.component.prototype.render
-			? new widget.component().render()
-			: widget.component();
+			? new widget.component( {} ).render()
+			: widget.component( {} );
 
 	const activeWidgets = widgets.filter( isActiveWidget );
 
