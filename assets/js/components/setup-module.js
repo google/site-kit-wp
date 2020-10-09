@@ -36,11 +36,11 @@ import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
-	moduleIcon,
 	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
+import ModuleIcon from '../components/module-icon';
 import Spinner from '../components/spinner';
 import Link from '../components/link';
 import ModuleSettingsWarning from '../components/notifications/module-settings-warning';
@@ -126,7 +126,7 @@ class SetupModule extends Component {
 					<Spinner isSaving={ isSaving } />
 				</div>
 				<div className="googlesitekit-settings-connect-module__logo">
-					{ moduleIcon( slug ) }
+					<ModuleIcon slug={ slug } />
 				</div>
 				<h3 className="
 					googlesitekit-subheading-1

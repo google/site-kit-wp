@@ -1,7 +1,7 @@
 /**
- * Gulp svgstore task.
+ * PageHeaderDateRange component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,14 @@
  */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-const { src, dest } = require( 'gulp' );
-const svgstore = require( 'gulp-svgstore' );
-const svgmin = require( 'gulp-svgmin' );
-const pump = require( 'pump' );
+import DateRangeSelector from './date-range-selector';
 
-const config = {
-	input: './assets/svg/**/*.svg',
-	output: './dist/assets/svg',
-};
-
-module.exports = function( cb ) {
-	pump(
-		[
-			src( config.input ),
-			svgmin( {
-				plugins: [ {
-					removeViewBox: false,
-				} ],
-			} ),
-			svgstore( { inlineSvg: true } ),
-			dest( config.output ),
-		],
-		cb
+export default function PageHeaderDateRange() {
+	return (
+		<span className="googlesitekit-page-header__range">
+			<DateRangeSelector />
+		</span>
 	);
-};
+}

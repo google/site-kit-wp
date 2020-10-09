@@ -82,8 +82,20 @@ const siteKitExternals = {
 
 const externals = { ...siteKitExternals };
 
+const svgRule = {
+	test: /\.svg$/,
+	use: [ {
+		loader: '@svgr/webpack',
+		options: {
+			// strip width & height to allow manual override using props
+			dimensions: false,
+		},
+	} ],
+};
+
 const rules = [
 	noAMDParserRule,
+	svgRule,
 	{
 		test: /\.js$/,
 		exclude: /node_modules/,
@@ -276,7 +288,7 @@ const webpackConfig = ( mode ) => {
 						],
 					},
 					{
-						test: /\.(png|woff|woff2|eot|ttf|svg|gif)$/,
+						test: /\.(png|woff|woff2|eot|ttf|gif)$/,
 						use: { loader: 'url-loader?limit=100000' },
 					},
 				],
@@ -327,6 +339,7 @@ module.exports = {
 	resolve,
 	rules,
 	siteKitExternals,
+	svgRule,
 };
 
 module.exports.default = ( ...args ) => {
