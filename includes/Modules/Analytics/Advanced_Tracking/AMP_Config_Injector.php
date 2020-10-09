@@ -24,8 +24,8 @@ final class AMP_Config_Injector {
 	 *
 	 * @since 1.18.0.
 	 *
-	 * @param array   $gtag_amp_opt gtag config options for AMP.
-	 * @param Event[] $events       The list of Event objects.
+	 * @param array $gtag_amp_opt gtag config options for AMP.
+	 * @param array $events       The map of Event objects, keyed by their unique ID.
 	 * @return array Filtered $gtag_amp_opt.
 	 */
 	public function inject_event_configurations( $gtag_amp_opt, $events ) {
@@ -37,10 +37,8 @@ final class AMP_Config_Injector {
 			$gtag_amp_opt['triggers'] = array();
 		}
 
-		foreach ( $events as $event ) {
+		foreach ( $events as $amp_trigger_key => $event ) {
 			$event_config = $event->get_config();
-
-			$amp_trigger_key = md5( "{$event_config['action']}::{$event_config['on']}::{$event_config['selector']}" );
 
 			$amp_trigger = array();
 			if ( 'DOMContentLoaded' === $event_config['on'] ) {
