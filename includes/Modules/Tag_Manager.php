@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Blockable_Tags_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
@@ -34,8 +35,6 @@ use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListAccountsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListTagsResponse;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListWorkspacesResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -49,7 +48,11 @@ use Exception;
  */
 final class Tag_Manager extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
-	use Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
+	use Module_With_Assets_Trait;
+	use Module_With_Blockable_Tags_Trait;
+	use Module_With_Owner_Trait;
+	use Module_With_Scopes_Trait;
+	use Module_With_Settings_Trait;
 
 	/**
 	 * Container usage context for web.
@@ -101,6 +104,10 @@ final class Tag_Manager extends Module
 			function() {
 				// Bail early if we are checking for the tag presence from the back end.
 				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+					return;
+				}
+
+				if ( $this->is_tag_blocked() ) {
 					return;
 				}
 
@@ -308,18 +315,19 @@ final class Tag_Manager extends Module
 	 */
 	protected function print_gtm_js( $container_id ) {
 		?>
-		<!-- Google Tag Manager added by Site Kit -->
-		<script>( function( w, d, s, l, i ) {
-				w[l] = w[l] || [];
-				w[l].push( {'gtm.start': new Date().getTime(), event: 'gtm.js'} );
-				var f = d.getElementsByTagName( s )[0],
-					j = d.createElement( s ), dl = l != 'dataLayer' ? '&l=' + l : '';
-				j.async = true;
-				j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-				f.parentNode.insertBefore( j, f );
-			} )( window, document, 'script', 'dataLayer', '<?php echo esc_js( $container_id ); ?>' );
-		</script>
-		<!-- End Google Tag Manager -->
+<!-- Google Tag Manager added by Site Kit -->
+<script<?php echo $this->get_tag_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+( function( w, d, s, l, i ) {
+	w[l] = w[l] || [];
+	w[l].push( {'gtm.start': new Date().getTime(), event: 'gtm.js'} );
+	var f = d.getElementsByTagName( s )[0],
+		j = d.createElement( s ), dl = l != 'dataLayer' ? '&l=' + l : '';
+	j.async = true;
+	j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+	f.parentNode.insertBefore( j, f );
+} )( window, document, 'script', 'dataLayer', '<?php echo esc_js( $container_id ); ?>' );
+</script>
+<!-- End Google Tag Manager -->
 		<?php
 	}
 
@@ -339,6 +347,10 @@ final class Tag_Manager extends Module
 
 		$this->did_gtm_no_js = true;
 
+		// Consent-based blocking requires JS to be enabled so we need to bail here if present.
+		if ( $this->get_tag_block_on_consent_attribute() ) {
+			return;
+		}
 		?>
 		<!-- Google Tag Manager (noscript) added by Site Kit -->
 		<noscript>
@@ -370,15 +382,14 @@ final class Tag_Manager extends Module
 			'optoutElementId' => '__gaOptOutExtension',
 		);
 
-		?>
-		<!-- Google Tag Manager added by Site Kit -->
-		<amp-analytics config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>" data-credentials="include">
-			<script type="application/json">
-				<?php echo wp_json_encode( $gtm_amp_opt ); ?>
-			</script>
-		</amp-analytics>
-		<!-- End Google Tag Manager -->
-		<?php
+		printf( '%s<!-- Google Tag Manager added by Site Kit -->%s', "\n", "\n" );
+		printf(
+			'<amp-analytics config="%s" data-credentials="include"%s><script type="application/json">%s</script></amp-analytics>',
+			esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$this->get_tag_amp_block_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			wp_json_encode( $gtm_amp_opt )
+		);
+		printf( '%s<!-- End Google Tag Manager -->%s', "\n", "\n" );
 	}
 
 	/**

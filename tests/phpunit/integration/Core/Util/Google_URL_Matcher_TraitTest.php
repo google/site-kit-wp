@@ -205,6 +205,17 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 				'turkish.com',
 				false,
 			),
+			'domain with and without bidirectional control characters' => array(
+				'xn--5dbedds0a1eb.xn--9dbq2a',
+				'‬ביקדקוםה.קום',
+				true,
+			),
+			'domain with and without camelcase'       => array(
+				'soccerisgreat.org',
+				'‬soccerIsGreat.org',
+				true,
+			),
 		);
 	}
 }
+
