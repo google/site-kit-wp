@@ -269,6 +269,9 @@ const webpackConfig = ( mode ) => {
 					color: '#fb1105',
 				} ),
 			],
+			optimization: {
+				concatenateModules: true,
+			},
 			resolve,
 		},
 
