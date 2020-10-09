@@ -51,39 +51,32 @@ class AMP_Config_InjectorTest extends TestCase {
 			)
 		);
 
-		$key1 = md5( 'test_event_without_metadata::click::.some-button' );
-		$key2 = md5( 'test_event_with_metadata::click::.a-very-specific-button' );
-		$key3 = md5( 'test_event_onload::DOMContentLoaded::' );
-
-		$expected = array_merge(
-			$input,
+		$this->assertEqualSets(
 			array(
-				'triggers' => array(
-					$key1 => array(
-						'on'       => 'click',
-						'selector' => '.some-button',
-						'vars'     => array(
-							'event_name' => 'test_event_without_metadata',
-						),
-					),
-					$key2 => array(
-						'on'       => 'click',
-						'selector' => '.a-very-specific-button',
-						'vars'     => array(
-							'event_name'     => 'test_event_with_metadata',
-							'event_category' => 'test_event_category',
-						),
-					),
-					$key3 => array(
-						'on'   => 'visible',
-						'vars' => array(
-							'event_name' => 'test_event_onload',
-						),
+				array(
+					'on'       => 'click',
+					'selector' => '.some-button',
+					'vars'     => array(
+						'event_name' => 'test_event_without_metadata',
 					),
 				),
-			)
+				array(
+					'on'       => 'click',
+					'selector' => '.a-very-specific-button',
+					'vars'     => array(
+						'event_name'     => 'test_event_with_metadata',
+						'event_category' => 'test_event_category',
+					),
+				),
+				array(
+					'on'   => 'visible',
+					'vars' => array(
+						'event_name' => 'test_event_onload',
+					),
+				),
+			),
+			$gtag_amp_opt['triggers']
 		);
-		$this->assertEquals( $expected, $gtag_amp_opt );
 	}
 
 	public function test_inject_event_configurations_no_events() {

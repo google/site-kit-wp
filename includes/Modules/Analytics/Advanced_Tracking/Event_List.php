@@ -20,10 +20,10 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 abstract class Event_List {
 
 	/**
-	 * Container for list of events.
+	 * Container for events.
 	 *
 	 * @since 1.18.0.
-	 * @var Event[]
+	 * @var array Map of events for this list, keyed by their unique ID.
 	 */
 	private $events = array();
 
@@ -45,7 +45,8 @@ abstract class Event_List {
 	 * @param Event $event The measurement event object.
 	 */
 	protected function add_event( Event $event ) {
-		$this->events[] = $event;
+		$hash                  = md5( wp_json_encode( $event ) );
+		$this->events[ $hash ] = $event;
 	}
 
 	/**
@@ -53,7 +54,7 @@ abstract class Event_List {
 	 *
 	 * @since 1.18.0.
 	 *
-	 * @return Event[] The list of events for this list.
+	 * @return array The map of events for this list, keyed by their unique ID.
 	 */
 	public function get_events() {
 		return $this->events;
