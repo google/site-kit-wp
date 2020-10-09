@@ -77,7 +77,6 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
-	'analytics-advanced-tracking-events': 'SITEKIT_ANALYTICS_ADVANCED_TRACKING_EVENTS',
 };
 
 const externals = { ...siteKitExternals };

@@ -21,7 +21,6 @@
 /**
  * Internal dependencies
  */
-import SITEKIT_ANALYTICS_ADVANCED_TRACKING_EVENTS from 'analytics-advanced-tracking-events';
 import setUpAdvancedTracking from './analytics-advanced-tracking/set-up-advanced-tracking';
 
 /**
@@ -34,10 +33,13 @@ import setUpAdvancedTracking from './analytics-advanced-tracking/set-up-advanced
  */
 function sendEvent( action, metadata ) {
 	if ( ! metadata ) {
-		global.gtag( 'event', action );
+		window.gtag( 'event', action ); // eslint-disable-line no-restricted-globals
 	} else {
-		global.gtag( 'event', action, metadata );
+		window.gtag( 'event', action, metadata ); // eslint-disable-line no-restricted-globals
 	}
 }
 
-setUpAdvancedTracking( SITEKIT_ANALYTICS_ADVANCED_TRACKING_EVENTS, sendEvent );
+const events = window._googlesitekitAnalyticsTrackingData || []; // eslint-disable-line no-restricted-globals
+if ( Array.isArray( events ) ) {
+	setUpAdvancedTracking( events, sendEvent );
+}
