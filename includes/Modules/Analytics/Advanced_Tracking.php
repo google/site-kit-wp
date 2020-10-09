@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Script_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\AMP_Config_Injector;
 use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event_List_Registry;
@@ -155,9 +156,12 @@ final class Advanced_Tracking {
 	 * @since 1.18.0.
 	 */
 	private function compile_events() {
-		$this->events = array();
-		foreach ( $this->event_list_registry->get_lists() as $event_list ) {
-			$this->events = array_merge( $this->events, $event_list->get_events() );
-		}
+		$this->events = array_reduce(
+			$this->event_list_registry->get_lists(),
+			function ( $events, Event_List $event_list ) {
+				return array_merge( $events, $event_list->get_events() );
+			},
+			array()
+		);
 	}
 }
