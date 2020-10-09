@@ -32,11 +32,7 @@ import setUpAdvancedTracking from './analytics-advanced-tracking/set-up-advanced
  * @param {Object} metadata Additional event metadata to send, or `null`.
  */
 function sendEvent( action, metadata ) {
-	/* eslint-disable no-restricted-globals */
-	if ( window.gtag ) {
-		window.gtag( 'event', action, metadata );
-	}
-	/* eslint-enable */
+	window.gtag( 'event', action, metadata || undefined ); // eslint-disable-line no-restricted-globals
 }
 
 const events = window._googlesitekitAnalyticsTrackingData || []; // eslint-disable-line no-restricted-globals
