@@ -27,7 +27,7 @@ import setUpAdvancedTracking from './analytics-advanced-tracking/set-up-advanced
 /**
  * Sends a tracking event to Analytics via gtag.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  *
  * @param {string} action   Event action / event name.
  * @param {Object} metadata Additional event metadata to send, or `null`.

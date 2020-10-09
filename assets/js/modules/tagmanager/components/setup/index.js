@@ -16,5 +16,7 @@
  * limitations under the License.
  */
 
+export { default as SetupErrorNotice } from './SetupErrorNotice';
 export { default as SetupForm } from './SetupForm';
+export { default as SetupFormInstructions } from './SetupFormInstructions';
 export { default as SetupMain } from './SetupMain';

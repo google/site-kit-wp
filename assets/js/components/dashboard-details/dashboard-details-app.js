@@ -26,22 +26,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { decodeHTMLEntity } from '../../util';
 import Header from '../header';
 import Link from '../link';
 import PageHeader from '../page-header';
-import Layout from '../layout/layout';
-import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
-import DateRangeSelector from '../date-range-selector';
 import HelpLink from '../help-link';
-import DashboardDetailsModules from './dashboard-details-modules';
+import DashboardDetailsEntityView from './DashboardDetailsEntityView';
+import DashboardDetailsEntityNotFoundView from './DashboardDetailsEntityNotFoundView';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
-const DashboardDetailsApp = () => {
+export default function DashboardDetailsApp() {
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
 
 	if ( ! dashboardURL ) {
 		return null;
@@ -63,6 +59,7 @@ const DashboardDetailsApp = () => {
 								<Link href={ dashboardURL } inherit back small>
 									{ __( 'Back to the Site Kit Dashboard', 'google-site-kit' ) }
 								</Link>
+
 								<PageHeader
 									title={ __( 'Detailed Page Stats', 'google-site-kit' ) }
 									className="
@@ -72,50 +69,10 @@ const DashboardDetailsApp = () => {
 									fullWidth
 								/>
 							</div>
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-2-phone
-								mdc-layout-grid__cell--span-4-tablet
-								mdc-layout-grid__cell--span-4-desktop
-								mdc-layout-grid__cell--align-right
-								mdc-layout-grid__cell--align-bottom
-							">
-								<DateRangeSelector />
-							</div>
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-							">
-								<Layout>
-									<div className="mdc-layout-grid">
-										<div className="mdc-layout-grid__inner">
-											<div className="
-												mdc-layout-grid__cell
-												mdc-layout-grid__cell--span-12
-											">
-												<h3 className="
-														googlesitekit-heading-3
-														googlesitekit-dashboard-single-url__title
-													">
-													{ decodeHTMLEntity( currentEntityTitle ) }
-												</h3>
-												<Link href={ currentEntityURL } inherit external>
-													{ currentEntityURL }
-												</Link>
-											</div>
-										</div>
-									</div>
-								</Layout>
-							</div>
-							{ featureFlags.widgets.pageDashboard.enabled && (
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-12
-								">
-									<WidgetContextRenderer slug="pageDashboard" />
-								</div>
-							) }
-							<DashboardDetailsModules />
+
+							{ currentEntityURL && <DashboardDetailsEntityView /> }
+							{ ! currentEntityURL && <DashboardDetailsEntityNotFoundView /> }
+
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
@@ -129,6 +86,4 @@ const DashboardDetailsApp = () => {
 			</div>
 		</Fragment>
 	);
-};
-
-export default DashboardDetailsApp;
+}

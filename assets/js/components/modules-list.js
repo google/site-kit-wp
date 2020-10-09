@@ -80,10 +80,18 @@ class ModulesList extends Component {
 	}
 
 	render() {
+		const { moduleSlugs } = this.props;
 		const modulesData = getModulesData();
 
+		// Filter specific modules
+		const moduleObjects = Array.isArray( moduleSlugs ) && moduleSlugs.length
+			? moduleSlugs
+				.filter( ( slug ) => modulesData.hasOwnProperty( slug ) )
+				.reduce( ( acc, slug ) => ( { ...acc, [ slug ]: modulesData[ slug ] } ), {} )
+			: modulesData;
+
 		// Filter out internal modules.
-		const modules = Object.values( modulesData ).filter( ( module ) => ! module.internal );
+		const modules = Object.values( moduleObjects ).filter( ( module ) => ! module.internal );
 
 		// Map of slug => name for every module that is active and completely set up.
 		const completedModuleNames = modules

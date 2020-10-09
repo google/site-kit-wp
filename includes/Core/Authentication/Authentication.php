@@ -1103,7 +1103,7 @@ final class Authentication {
 	/**
 	 * Handles proxy permissions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 */
 	private function handle_proxy_permissions() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
@@ -1127,7 +1127,7 @@ final class Authentication {
 	/**
 	 * Gets the proxy permission URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return string Proxy permission URL.
 	 */

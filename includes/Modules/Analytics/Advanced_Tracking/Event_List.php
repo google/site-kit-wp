@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 /**
  * Base class representing a tracking event list.
  *
- * @since n.e.x.t.
+ * @since 1.18.0.
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ abstract class Event_List {
 	/**
 	 * Container for list of events.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 * @var Event[]
 	 */
 	private $events = array();
@@ -33,14 +33,14 @@ abstract class Event_List {
 	 * Children classes should extend this to add their events, either generically or by dynamically collecting
 	 * metadata through WordPress hooks.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 */
 	abstract public function register();
 
 	/**
 	 * Adds a measurement event to the measurement events array.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @param Event $event The measurement event object.
 	 */
@@ -51,7 +51,7 @@ abstract class Event_List {
 	/**
 	 * Gets the measurement events array.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @return Event[] The list of events for this list.
 	 */

@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 /**
  * Class for registering third party event lists.
  *
- * @since n.e.x.t.
+ * @since 1.18.0.
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Event_List_Registry {
 	/**
 	 * The list of registered event lists.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 * @var Event_List[]
 	 */
 	private $event_lists = array();
@@ -30,7 +30,7 @@ class Event_List_Registry {
 	/**
 	 * Registers an event list.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @param Event_List $event_list The event list to be registered.
 	 */
@@ -41,7 +41,7 @@ class Event_List_Registry {
 	/**
 	 * Gets the list of registered event lists.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @return Event_List[] The list of registered event lists.
 	 */

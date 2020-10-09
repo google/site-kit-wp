@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -32,7 +37,10 @@ import {
 	isValidContainerName,
 } from '../util/validation';
 import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP, FORM_SETUP } from './constants';
+import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
+import { createStrictSelect } from '../../../googlesitekit/data/utils';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -160,94 +168,12 @@ export const selectors = {
 	 * @return {boolean} `true` if can submit changes, otherwise false.
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => () => {
-		const {
-			getAccountID,
-			getContainerID,
-			getAMPContainerID,
-			getAMPContainers,
-			getInternalContainerID,
-			getInternalAMPContainerID,
-			getWebContainers,
-			hasExistingTagPermission,
-			haveSettingsChanged,
-			isDoingSubmitChanges,
-		} = select( STORE_NAME );
-		const {
-			isAMP,
-			isSecondaryAMP,
-		} = select( CORE_SITE );
-
-		if ( isDoingSubmitChanges() ) {
+		try {
+			validateCanSubmitChanges( select );
+			return true;
+		} catch {
 			return false;
 		}
-		if ( ! haveSettingsChanged() ) {
-			return false;
-		}
-
-		const accountID = getAccountID();
-		if ( ! isValidAccountID( accountID ) ) {
-			return false;
-		}
-
-		const containerID = getContainerID();
-		if ( containerID === CONTAINER_CREATE ) {
-			const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
-			if ( ! isValidContainerName( containerName ) ) {
-				return false;
-			}
-
-			const webContainers = getWebContainers( accountID );
-			const existingContainer = Array.isArray( webContainers ) && webContainers.some( ( { name } ) => name === containerName );
-			if ( existingContainer ) {
-				return false;
-			}
-		}
-
-		if ( isAMP() ) {
-			const ampContainerID = getAMPContainerID();
-
-			// If AMP is active, the AMP container ID must be valid, regardless of mode.
-			if ( ! isValidContainerSelection( ampContainerID ) ) {
-				return false;
-			}
-
-			// If AMP is active, and a valid AMP container ID is selected, the internal ID must also be valid.
-			if ( isValidContainerID( ampContainerID ) && ! isValidInternalContainerID( getInternalAMPContainerID() ) ) {
-				return false;
-			}
-
-			if ( ampContainerID === CONTAINER_CREATE ) {
-				const ampContainerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
-				if ( ! isValidContainerName( ampContainerName ) ) {
-					return false;
-				}
-
-				const ampContainers = getAMPContainers( accountID );
-				const existingContainer = Array.isArray( ampContainers ) && ampContainers.some( ( { name } ) => name === ampContainerName );
-				if ( existingContainer ) {
-					return false;
-				}
-			}
-		}
-
-		// If AMP is not active, or in a secondary mode, validate the web container IDs.
-		if ( ! isAMP() || isSecondaryAMP() ) {
-			if ( ! isValidContainerSelection( containerID ) ) {
-				return false;
-			}
-
-			// If a valid container ID is selected, the internal ID must also be valid.
-			if ( isValidContainerID( containerID ) && ! isValidInternalContainerID( getInternalContainerID() ) ) {
-				return false;
-			}
-		}
-
-		// Do existing tag check last.
-		if ( hasExistingTagPermission() === false ) {
-			return false;
-		}
-
-		return true;
 	} ),
 
 	/**
@@ -261,6 +187,101 @@ export const selectors = {
 	isDoingSubmitChanges( state ) {
 		return !! state.isDoingSubmitChanges;
 	},
+};
+
+/**
+ * Validates whether changes can be submitted or not.
+ *
+ * If changes cannot be submitted, an appropriate error is thrown.
+ *
+ * @since 1.18.0
+ * @private
+ *
+ * @param {Function} select The current registry.select instance.
+ */
+export const validateCanSubmitChanges = ( select ) => {
+	const strictSelect = createStrictSelect( select );
+	// Strict select will cause all selector functions to throw an error
+	// if `undefined` is returned, otherwise it behaves the same as `select`.
+	// This ensures that the selector returns `false` until all data dependencies are resolved.
+	const {
+		getAccountID,
+		getContainerID,
+		getAMPContainers,
+		getAMPContainerID,
+		getInternalContainerID,
+		getInternalAMPContainerID,
+		getSingleAnalyticsPropertyID,
+		getWebContainers,
+		hasAnyAnalyticsPropertyID,
+		hasExistingTag,
+		hasExistingTagPermission,
+		hasMultipleAnalyticsPropertyIDs,
+		haveSettingsChanged,
+		isDoingSubmitChanges,
+	} = strictSelect( STORE_NAME );
+	const {
+		isAMP,
+		isSecondaryAMP,
+	} = strictSelect( CORE_SITE );
+	const { isModuleActive } = strictSelect( CORE_MODULES );
+	const { getPropertyID } = strictSelect( MODULES_ANALYTICS );
+
+	const accountID = getAccountID();
+	const ampContainerID = getAMPContainerID();
+
+	// Note: these error messages are referenced in test assertions.
+	invariant( ! isDoingSubmitChanges(), 'cannot submit changes while submitting changes' );
+	invariant( haveSettingsChanged(), 'cannot submit changes if settings have not changed' );
+	invariant( isValidAccountID( accountID ), 'a valid accountID is required to submit changes' );
+
+	const containerID = getContainerID();
+	if ( containerID === CONTAINER_CREATE ) {
+		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
+		invariant( isValidContainerName( containerName ), `a container name is invalid` );
+
+		const webContainers = getWebContainers( accountID );
+		const existingContainer = Array.isArray( webContainers ) && webContainers.some( ( { name } ) => name === containerName );
+		invariant( ! existingContainer, `a container with "${ containerName }" name already exists` );
+	}
+
+	if ( ampContainerID === CONTAINER_CREATE ) {
+		const ampContainerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
+		invariant( isValidContainerName( ampContainerName ), `a container name is invalid` );
+
+		const ampContainers = getAMPContainers( accountID );
+		const existingContainer = Array.isArray( ampContainers ) && ampContainers.some( ( { name } ) => name === ampContainerName );
+		invariant( ! existingContainer, `an AMP container with "${ ampContainerName }" name already exists` );
+	}
+
+	if ( isAMP() ) {
+		// If AMP is active, the AMP container ID must be valid, regardless of mode.
+		invariant( isValidContainerSelection( ampContainerID ), 'a valid ampContainerID selection is required to submit changes' );
+		// If AMP is active, and a valid AMP container ID is selected, the internal ID must also be valid.
+		if ( isValidContainerID( ampContainerID ) ) {
+			invariant( isValidInternalContainerID( getInternalAMPContainerID() ), 'a valid internalAMPContainerID is required to submit changes' );
+		}
+	}
+
+	if ( ! isAMP() || isSecondaryAMP() ) {
+		// If AMP is not active, or in a secondary mode, validate the web container IDs.
+		invariant( isValidContainerSelection( getContainerID() ), 'a valid containerID selection is required to submit changes' );
+		// If a valid container ID is selected, the internal ID must also be valid.
+		if ( isValidContainerID( getContainerID() ) ) {
+			invariant( isValidInternalContainerID( getInternalContainerID() ), 'a valid internalContainerID is required to submit changes' );
+		}
+	}
+
+	invariant( ! hasMultipleAnalyticsPropertyIDs(), 'containers with Analytics tags must reference a single property ID to submit changes' );
+
+	if ( isModuleActive( 'analytics' ) && getPropertyID() && hasAnyAnalyticsPropertyID() ) {
+		invariant( getSingleAnalyticsPropertyID() === getPropertyID(), 'single GTM Analytics property ID must match Analytics property ID' );
+	}
+
+	// Do existing tag check last.
+	if ( hasExistingTag() ) {
+		invariant( hasExistingTagPermission(), 'existing tag permission is required to submit changes' );
+	}
 };
 
 export default {

@@ -19,7 +19,7 @@ use Google\Site_Kit\Modules\Analytics\Advanced_Tracking\Event;
 /**
  * Class for Google Analytics Advanced Event Tracking.
  *
- * @since n.e.x.t.
+ * @since 1.18.0.
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ final class Advanced_Tracking {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 * @var Context
 	 */
 	protected $context;
@@ -36,7 +36,7 @@ final class Advanced_Tracking {
 	/**
 	 * List of events to be tracked.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 * @var Event[]
 	 */
 	private $events;
@@ -44,7 +44,7 @@ final class Advanced_Tracking {
 	/**
 	 * Main class event list registry instance.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 * @var Event_List_Registry
 	 */
 	private $event_list_registry;
@@ -52,7 +52,7 @@ final class Advanced_Tracking {
 	/**
 	 * Advanced_Tracking constructor.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -64,7 +64,7 @@ final class Advanced_Tracking {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 */
 	public function register() {
 		add_action(
@@ -96,7 +96,7 @@ final class Advanced_Tracking {
 	/**
 	 * Returns the list of events.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @return Event[] The list of Event objects.
 	 */
@@ -107,7 +107,7 @@ final class Advanced_Tracking {
 	/**
 	 * Injects javascript to track active events.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 */
 	private function set_up_advanced_tracking() {
 		$this->compile_events();
@@ -117,7 +117,7 @@ final class Advanced_Tracking {
 	/**
 	 * Adds triggers to AMP configuration.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @param array $gtag_amp_opt gtag config options for AMP.
 	 * @return array Filtered $gtag_amp_opt.
@@ -130,7 +130,7 @@ final class Advanced_Tracking {
 	/**
 	 * Instantiates and registers event lists.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 */
 	private function register_event_lists() {
 		/**
@@ -138,7 +138,7 @@ final class Advanced_Tracking {
 		 *
 		 * This means that Advanced_Tracking class stores the event lists in the Event_List_Registry instance.
 		 *
-		 * @since n.e.x.t.
+		 * @since 1.18.0.
 		 *
 		 * @param Event_List_Registry $event_list_registry
 		 */
@@ -152,7 +152,7 @@ final class Advanced_Tracking {
 	/**
 	 * Compiles the list of Event objects.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 */
 	private function compile_events() {
 		$this->events = array();

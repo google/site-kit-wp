@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Assets\Manifest;
 /**
  * Class for injecting JavaScript based on the registered event configurations.
  *
- * @since n.e.x.t.
+ * @since 1.18.0.
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ final class Script_Injector {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 * @var Context
 	 */
 	protected $context;
@@ -33,7 +33,7 @@ final class Script_Injector {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -44,7 +44,7 @@ final class Script_Injector {
 	/**
 	 * Creates list of measurement event configurations and javascript to inject.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @param Event[] $events The list of Event objects.
 	 */
