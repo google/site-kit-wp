@@ -98,7 +98,7 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 **Enhanced**
 
 * Introduce `googlesitekit_canonical_home_url` filter, allowing (e.g. multilingual) plugins that contextually alter the home URL to fix potential issues with Site Kit. See [#2131](https://github.com/google/site-kit-wp/issues/2131).
-* Remove unused properties in module PHP classes. Props asvinb. See [#2050](https://github.com/google/site-kit-wp/issues/2050).
+* Remove unused properties in module PHP classes. See [#2050](https://github.com/google/site-kit-wp/issues/2050).
 * Scaffold new `googlesitekit-user-input` screen. See [#2038](https://github.com/google/site-kit-wp/issues/2038).
 * Expand `Widget` component to correctly align vertically and support optional header and footer component props. See [#2022](https://github.com/google/site-kit-wp/issues/2022).
 * Improve authentication service permissions link to check Site Kit permissions first while not exposing the actual URL on the client. See [#1985](https://github.com/google/site-kit-wp/issues/1985).
