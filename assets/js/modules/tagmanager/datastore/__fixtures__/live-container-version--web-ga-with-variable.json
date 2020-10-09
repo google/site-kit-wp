@@ -4,7 +4,7 @@
   "containerVersionId": "1",
   "deleted": null,
   "description": null,
-  "fingerprint": "1595495746757",
+  "fingerprint": "1583861079595",
   "name": null,
   "path": "accounts/100/containers/299/versions/1",
   "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/100/containers/299/versions/1?apiLink=version",
@@ -12,8 +12,8 @@
     "accountId": "100",
     "containerId": "299",
     "domainName": null,
-    "fingerprint": "1594931861697",
-    "name": "Test Web Container",
+    "fingerprint": "1583860729873",
+    "name": "Testing Web GA",
     "notes": null,
     "path": "accounts/100/containers/299",
     "publicId": "GTM-G000GL3",
@@ -28,14 +28,14 @@
       "blockingRuleId": null,
       "blockingTriggerId": null,
       "containerId": "299",
-      "fingerprint": "1595495735119",
+      "fingerprint": "1583860984069",
       "firingRuleId": null,
       "firingTriggerId": [
         "2147479553"
       ],
       "liveOnly": null,
       "monitoringMetadataTagNameKey": null,
-      "name": "Custom HTML",
+      "name": "Analytics",
       "notes": null,
       "parentFolderId": null,
       "path": null,
@@ -43,20 +43,25 @@
       "scheduleEndMs": null,
       "scheduleStartMs": null,
       "tagFiringOption": "oncePerEvent",
-      "tagId": "3",
+      "tagId": "4",
       "tagManagerUrl": null,
-      "type": "html",
+      "type": "ua",
       "workspaceId": null,
       "parameter": [
         {
-          "key": "html",
-          "type": "template",
-          "value": "<!-- Hello world! -->"
-        },
-        {
-          "key": "supportDocumentWrite",
+          "key": "overrideGaSettings",
           "type": "boolean",
           "value": "false"
+        },
+        {
+          "key": "trackType",
+          "type": "template",
+          "value": "TRACK_PAGEVIEW"
+        },
+        {
+          "key": "gaSettings",
+          "type": "template",
+          "value": "{{My GA Tracking ID}}"
         }
       ],
       "monitoringMetadata": {
@@ -64,6 +69,72 @@
         "type": "map",
         "value": null
       }
+    }
+  ],
+  "variable": [
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "disablingTriggerId": null,
+      "enablingTriggerId": null,
+      "fingerprint": "1583860931402",
+      "name": "My GA Tracking ID",
+      "notes": null,
+      "parentFolderId": null,
+      "path": null,
+      "scheduleEndMs": null,
+      "scheduleStartMs": null,
+      "tagManagerUrl": null,
+      "type": "gas",
+      "variableId": "3",
+      "workspaceId": null,
+      "parameter": [
+        {
+          "key": "cookieDomain",
+          "type": "template",
+          "value": "auto"
+        },
+        {
+          "key": "doubleClick",
+          "type": "boolean",
+          "value": "false"
+        },
+        {
+          "key": "setTrackerName",
+          "type": "boolean",
+          "value": "false"
+        },
+        {
+          "key": "useDebugVersion",
+          "type": "boolean",
+          "value": "false"
+        },
+        {
+          "key": "useHashAutoLink",
+          "type": "boolean",
+          "value": "false"
+        },
+        {
+          "key": "decorateFormsAutoLink",
+          "type": "boolean",
+          "value": "false"
+        },
+        {
+          "key": "enableLinkId",
+          "type": "boolean",
+          "value": "false"
+        },
+        {
+          "key": "enableEcommerce",
+          "type": "boolean",
+          "value": "false"
+        },
+        {
+          "key": "trackingId",
+          "type": "template",
+          "value": "UA-123456789-1"
+        }
+      ]
     }
   ],
   "builtInVariable": [

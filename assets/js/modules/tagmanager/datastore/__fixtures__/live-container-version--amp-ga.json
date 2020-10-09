@@ -1,25 +1,25 @@
 {
   "accountId": "100",
-  "containerId": "299",
+  "containerId": "300",
   "containerVersionId": "1",
   "deleted": null,
   "description": null,
-  "fingerprint": "1595495746757",
+  "fingerprint": "1595516402087",
   "name": null,
-  "path": "accounts/100/containers/299/versions/1",
-  "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/100/containers/299/versions/1?apiLink=version",
+  "path": "accounts/100/containers/300/versions/1",
+  "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/100/containers/300/versions/1?apiLink=version",
   "container": {
     "accountId": "100",
-    "containerId": "299",
+    "containerId": "300",
     "domainName": null,
-    "fingerprint": "1594931861697",
-    "name": "Test Web Container",
+    "fingerprint": "1595516290292",
+    "name": "Test AMP Container",
     "notes": null,
-    "path": "accounts/100/containers/299",
-    "publicId": "GTM-G000GL3",
-    "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/100/containers/299/workspaces?apiLink=container",
+    "path": "accounts/100/containers/300",
+    "publicId": "GTM-AMPRULZ",
+    "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/100/containers/300/workspaces?apiLink=container",
     "usageContext": [
-      "web"
+      "amp"
     ]
   },
   "tag": [
@@ -27,15 +27,15 @@
       "accountId": "100",
       "blockingRuleId": null,
       "blockingTriggerId": null,
-      "containerId": "299",
-      "fingerprint": "1595495735119",
+      "containerId": "300",
+      "fingerprint": "1595516361823",
       "firingRuleId": null,
       "firingTriggerId": [
         "2147479553"
       ],
       "liveOnly": null,
       "monitoringMetadataTagNameKey": null,
-      "name": "Custom HTML",
+      "name": "Google Analytics",
       "notes": null,
       "parentFolderId": null,
       "path": null,
@@ -45,31 +45,26 @@
       "tagFiringOption": "oncePerEvent",
       "tagId": "3",
       "tagManagerUrl": null,
-      "type": "html",
+      "type": "ua_amp",
       "workspaceId": null,
       "parameter": [
         {
-          "key": "html",
+          "key": "trackType",
           "type": "template",
-          "value": "<!-- Hello world! -->"
+          "value": "TRACK_PAGEVIEW"
         },
         {
-          "key": "supportDocumentWrite",
-          "type": "boolean",
-          "value": "false"
+          "key": "trackingId",
+          "type": "template",
+          "value": "UA-123456789-1"
         }
-      ],
-      "monitoringMetadata": {
-        "key": null,
-        "type": "map",
-        "value": null
-      }
+      ]
     }
   ],
   "builtInVariable": [
     {
       "accountId": "100",
-      "containerId": "299",
+      "containerId": "300",
       "name": "Page URL",
       "path": null,
       "type": "pageUrl",
@@ -77,7 +72,7 @@
     },
     {
       "accountId": "100",
-      "containerId": "299",
+      "containerId": "300",
       "name": "Page Hostname",
       "path": null,
       "type": "pageHostname",
@@ -85,7 +80,7 @@
     },
     {
       "accountId": "100",
-      "containerId": "299",
+      "containerId": "300",
       "name": "Page Path",
       "path": null,
       "type": "pagePath",
@@ -93,18 +88,18 @@
     },
     {
       "accountId": "100",
-      "containerId": "299",
-      "name": "Referrer",
+      "containerId": "300",
+      "name": "Browser Language",
       "path": null,
-      "type": "referrer",
+      "type": "ampBrowserLanguage",
       "workspaceId": null
     },
     {
       "accountId": "100",
-      "containerId": "299",
-      "name": "Event",
+      "containerId": "300",
+      "name": "Document Referrer",
       "path": null,
-      "type": "event",
+      "type": "ampReferrer",
       "workspaceId": null
     }
   ]

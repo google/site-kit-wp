@@ -27,7 +27,9 @@ import { storiesOf } from '@storybook/react';
 import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytics/components/settings';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datastore/constants';
+
 import { createTestRegistry, provideModules } from '../tests/js/utils';
+import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 const defaultSettings = {
@@ -43,6 +45,15 @@ const defaultSettings = {
 };
 
 const Settings = createLegacySettingsWrapper( 'analytics', AnalyticsSettings );
+
+function usingGenerateGTMAnalyticsPropertyStory( args ) {
+	return generateGTMAnalyticsPropertyStory( {
+		...args,
+		Component( { callback } ) {
+			return <Settings isOpen={ true } isEditing={ true } callback={ callback } />;
+		},
+	} );
+}
 
 storiesOf( 'Analytics Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
@@ -144,7 +155,7 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
-	.add( 'Edit, with existing tag (with access)', ( registry ) => {
+	.add( 'Edit, with existing tag w/ access', ( registry ) => {
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
@@ -167,8 +178,9 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
-	.add( 'Edit, with existing tag (no access)', ( registry ) => {
+	.add( 'Edit, with existing tag w/o access', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+
 		const existingTag = {
 			accountID: '12345678',
 			propertyID: 'UA-12345678-1',
@@ -189,4 +201,10 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
+	.add( 'No Tag, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: true } ) )
+	.add( 'No Tag, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: false } ) )
+	.add( 'Existing Tag w/ access, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: true } ) )
+	.add( 'Existing Tag w/ access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: true } ) )
+	.add( 'Existing Tag w/o access, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: false } ) )
+	.add( 'Existing Tag w/o access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: false } ) )
 ;

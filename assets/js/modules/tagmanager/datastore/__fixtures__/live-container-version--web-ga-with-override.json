@@ -4,7 +4,7 @@
   "containerVersionId": "1",
   "deleted": null,
   "description": null,
-  "fingerprint": "1595495746757",
+  "fingerprint": "1594208394970",
   "name": null,
   "path": "accounts/100/containers/299/versions/1",
   "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/100/containers/299/versions/1?apiLink=version",
@@ -12,8 +12,8 @@
     "accountId": "100",
     "containerId": "299",
     "domainName": null,
-    "fingerprint": "1594931861697",
-    "name": "Test Web Container",
+    "fingerprint": "1594208296415",
+    "name": "Test Web with GA Override",
     "notes": null,
     "path": "accounts/100/containers/299",
     "publicId": "GTM-G000GL3",
@@ -28,14 +28,14 @@
       "blockingRuleId": null,
       "blockingTriggerId": null,
       "containerId": "299",
-      "fingerprint": "1595495735119",
+      "fingerprint": "1594208365493",
       "firingRuleId": null,
       "firingTriggerId": [
         "2147479553"
       ],
       "liveOnly": null,
       "monitoringMetadataTagNameKey": null,
-      "name": "Custom HTML",
+      "name": "Google Analytics",
       "notes": null,
       "parentFolderId": null,
       "path": null,
@@ -45,18 +45,23 @@
       "tagFiringOption": "oncePerEvent",
       "tagId": "3",
       "tagManagerUrl": null,
-      "type": "html",
+      "type": "ua",
       "workspaceId": null,
       "parameter": [
         {
-          "key": "html",
-          "type": "template",
-          "value": "<!-- Hello world! -->"
+          "key": "overrideGaSettings",
+          "type": "boolean",
+          "value": "true"
         },
         {
-          "key": "supportDocumentWrite",
-          "type": "boolean",
-          "value": "false"
+          "key": "trackType",
+          "type": "template",
+          "value": "TRACK_PAGEVIEW"
+        },
+        {
+          "key": "trackingId",
+          "type": "template",
+          "value": "UA-1234567-99"
         }
       ],
       "monitoringMetadata": {

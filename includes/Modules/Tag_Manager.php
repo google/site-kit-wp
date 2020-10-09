@@ -859,7 +859,8 @@ final class Tag_Manager extends Module
 			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),
 			'learn_more'  => __( 'https://marketingplatform.google.com/about/tag-manager/', 'google-site-kit' ),
-			'depends_on'  => array( 'analytics' ),
+			'group'       => __( 'Marketing Platform', 'google-site-kit' ),
+			'tags'        => array( 'marketing' ),
 		);
 	}
 
@@ -909,11 +910,12 @@ final class Tag_Manager extends Module
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules-tagmanager.js',
 					'dependencies' => array(
-						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
-						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
+						'googlesitekit-modules',
+						'googlesitekit-modules-analytics',
+						'googlesitekit-vendor',
 					),
 				)
 			),
