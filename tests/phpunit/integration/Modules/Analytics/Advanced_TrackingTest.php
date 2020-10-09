@@ -99,8 +99,8 @@ class Advanced_TrackingTest extends TestCase {
 		// Triggers Advanced_Tracking::compile_events() call.
 		apply_filters( 'googlesitekit_amp_gtag_opt', array() );
 
-		// The class adds 2 events, it's registered 3 times, i.e. 6 events in total.
-		$this->assertCount( 6, $advanced_tracking->get_events() );
+		// The class adds 2 unique events, registered 3 times.
+		$this->assertCount( 2, $advanced_tracking->get_events() );
 	}
 
 	private function add_action_register_event_list( $event_list ) {

@@ -48,7 +48,7 @@ export default function setUpAdvancedTracking( eventConfigurations, sendEvent ) 
 
 	return () => {
 		toRemove.forEach( ( listenerArgs ) => {
-			document.removeEventListener( ...listenerArgs );
+			document.removeEventListener.apply( document, listenerArgs );
 		} );
 	};
 }
