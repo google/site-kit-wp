@@ -1,5 +1,5 @@
 /**
- * core/user isValidDateRange utility.
+ * `core/user` isValidDateRange utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,9 +19,9 @@
 /**
  * Asserts whether a given dateRange string is valid or invalid.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  *
- * @param {string} dateRange  Date string to be asserted against. Defaults to an empty string.
+ * @param {string} dateRange Date string to be asserted against. Defaults to an empty string.
  * @return {boolean}          True if the given dateRange string is valid.
  */
 export const isValidDateRange = ( dateRange = '' ) => {

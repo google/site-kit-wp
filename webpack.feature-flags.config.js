@@ -24,5 +24,8 @@ exports.featureFlags = {
 		pageDashboard: {
 			enabled: 'development',
 		},
+		userInput: {
+			enabled: 'development',
+		},
 	},
 };

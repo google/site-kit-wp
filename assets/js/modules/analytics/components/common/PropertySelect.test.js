@@ -21,6 +21,7 @@
  */
 import PropertySelect from './PropertySelect';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { fireEvent, muteFetch, render, act } from '../../../../../../tests/js/test-utils';
 
@@ -28,6 +29,7 @@ const setupRegistry = ( { dispatch } ) => {
 	const { properties, profiles } = fixtures.accountsPropertiesProfiles;
 	const propertyID = properties[ 0 ].id;
 	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
@@ -39,6 +41,7 @@ const setupRegistry = ( { dispatch } ) => {
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
@@ -51,6 +54,7 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 const setupEmptyRegistry = ( { dispatch } ) => {
 	const { properties } = fixtures.accountsPropertiesProfiles;
 	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
+	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 	dispatch( STORE_NAME ).setSettings( {} );

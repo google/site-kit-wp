@@ -1,5 +1,5 @@
 /**
- * core/site data store: HTML for URL.
+ * `core/site` data store: HTML for URL.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -165,11 +165,11 @@ export const baseSelectors = {
 	 *
 	 * Returns a string representation of the HTML when successful.
 	 *
-	 * @private
 	 * @since 1.13.0
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} url URL for which to fetch HTML.
+	 * @param {string} url   URL for which to fetch HTML.
 	 * @return {(string|undefined)} String representation of HTML for given URL, or `undefined` if not loaded yet.
 	 */
 	getHTMLForURL( state, url ) {

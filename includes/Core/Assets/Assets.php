@@ -97,6 +97,15 @@ final class Assets {
 		add_action( 'admin_enqueue_scripts', $register_callback );
 		add_action( 'wp_enqueue_scripts', $register_callback );
 
+		add_filter(
+			'script_loader_tag',
+			function( $tag, $handle ) {
+				return $this->add_async_defer_attribute( $tag, $handle );
+			},
+			10,
+			2
+		);
+
 		// All other asset-related general logic should only be active when the
 		// current user can actually use Site Kit (which only is so if they can
 		// authenticate).
@@ -126,15 +135,6 @@ final class Assets {
 		};
 		add_action( 'wp_print_styles', $styles_print_callback );
 		add_action( 'admin_print_styles', $styles_print_callback );
-
-		add_filter(
-			'script_loader_tag',
-			function( $tag, $handle ) {
-				return $this->add_async_defer_attribute( $tag, $handle );
-			},
-			10,
-			2
-		);
 	}
 
 	/**
@@ -521,6 +521,13 @@ final class Assets {
 					),
 				)
 			),
+			new Script(
+				'googlesitekit-user-input',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-user-input.js',
+					'dependencies' => $dependencies,
+				)
+			),
 			// End JSR Assets.
 			new Script(
 				'googlesitekit-pagead2.ads',
@@ -643,7 +650,7 @@ final class Assets {
 		$current_user = wp_get_current_user();
 
 		$inline_data = array(
-			'homeURL'          => trailingslashit( home_url() ),
+			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
 			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
 			'userIDHash'       => md5( $site_url . $current_user->ID ),
 			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
@@ -748,7 +755,7 @@ final class Assets {
 			'reAuth'           => $input->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN ),
 			'ampEnabled'       => (bool) $this->context->get_amp_mode(),
 			'ampMode'          => $this->context->get_amp_mode(),
-			'homeURL'          => home_url(),
+			'homeURL'          => $this->context->get_canonical_home_url(),
 		);
 
 		$current_entity = $this->context->get_reference_entity();

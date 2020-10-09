@@ -40,13 +40,8 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_register_template_redirect_amp() {
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
-		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->method( 'is_amp' )->will( $this->returnValue( true ) );
-
+		$context    = $this->get_amp_primary_context();
 		$tagmanager = new Tag_Manager( $context );
-		$this->force_set_property( $tagmanager, 'context', $mock_context );
 
 		remove_all_actions( 'template_redirect' );
 		$tagmanager->register();
@@ -76,16 +71,35 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertTrue( has_action( 'wp_footer' ) );
 		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
 		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+
+		remove_all_actions( 'amp_print_analytics' );
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'amp_post_template_footer' );
+		remove_all_filters( 'amp_post_template_data' );
+
+		// Tag not hooked when blocked.
+		add_filter( 'googlesitekit_tagmanager_tag_amp_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		// Tag not hooked when only AMP blocked
+		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_false' );
+		add_filter( 'googlesitekit_tagmanager_tag_amp_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+
+		$this->assertFalse( has_action( 'amp_print_analytics' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 	}
 
 	public function test_register_template_redirect_non_amp() {
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp', 'input' ) )->getMock();
-		$mock_context->method( 'input' )->will( $this->returnValue( $context->input() ) );
-		$mock_context->method( 'is_amp' )->will( $this->returnValue( false ) );
-
+		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$tagmanager = new Tag_Manager( $context );
-		$this->force_set_property( $tagmanager, 'context', $mock_context );
 
 		remove_all_actions( 'template_redirect' );
 		$tagmanager->register();
@@ -112,14 +126,120 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertTrue( has_action( 'wp_head' ) );
 		$this->assertTrue( has_action( 'wp_body_open' ) );
 		$this->assertTrue( has_action( 'wp_footer' ) );
+
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'wp_body_open' );
+		remove_all_actions( 'wp_footer' );
+
+		// Tag not hooked when blocked.
+		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+
+		$this->assertFalse( has_action( 'wp_head' ) );
+		$this->assertFalse( has_action( 'wp_body_open' ) );
+		$this->assertFalse( has_action( 'wp_footer' ) );
+
+		// Tag hooked when only AMP blocked.
+		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_false' );
+		add_filter( 'googlesitekit_tagmanager_tag_amp_blocked', '__return_true' );
+		do_action( 'template_redirect' );
+
+		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'wp_body_open' ) );
+		$this->assertTrue( has_action( 'wp_footer' ) );
+	}
+
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_amp( $enabled ) {
+		$tagmanager = new Tag_Manager( $this->get_amp_primary_context() );
+		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_footer' );
+
+		$tagmanager->register();
+
+		do_action( 'template_redirect' );
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_tagmanager_tag_amp_block_on_consent', '__return_true' );
+		}
+
+		$output = $this->capture_action( 'wp_footer' );
+
+		$this->assertContains( 'Google Tag Manager added by Site Kit', $output );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+		}
+	}
+
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_non_amp( $enabled ) {
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => 'GTM-999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_WEB,
+			)
+		);
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'wp_footer' );
+
+		$tagmanager->register();
+
+		do_action( 'template_redirect' );
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_tagmanager_tag_block_on_consent', '__return_true' );
+		}
+
+		$header = $this->capture_action( 'wp_head' );
+		$footer = $this->capture_action( 'wp_footer' );
+
+		$this->assertContains( 'Google Tag Manager added by Site Kit', $header );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $header );
+			// If enabled, the no-JS fallback must not be output.
+			$this->assertNotContains( '<noscript>', $footer );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $header );
+			$this->assertContains( '<noscript>', $footer );
+		}
+	}
+
+	public function block_on_consent_provider() {
+		return array(
+			'default (disabled)' => array(
+				false,
+			),
+			'enabled'            => array(
+				true,
+			),
+		);
 	}
 
 	public function test_is_connected_web() {
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
-		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( false ) );
-
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $tagmanager, 'context', $mock_context );
 
 		$this->assertFalse( $tagmanager->is_connected() );
 
@@ -135,11 +255,8 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_is_connected_primary_amp() {
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
-		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( Context::AMP_MODE_PRIMARY ) );
-
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $tagmanager, 'context', $mock_context );
+		$context    = $this->get_amp_primary_context();
+		$tagmanager = new Tag_Manager( $context );
 
 		$this->assertFalse( $tagmanager->is_connected() );
 
@@ -155,11 +272,8 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_is_connected_secondary_amp() {
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'get_amp_mode' ) )->getMock();
-		$mock_context->method( 'get_amp_mode' )->will( $this->returnValue( Context::AMP_MODE_SECONDARY ) );
-
-		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $tagmanager, 'context', $mock_context );
+		$context    = $this->get_amp_secondary_context();
+		$tagmanager = new Tag_Manager( $context );
 
 		$this->assertFalse( $tagmanager->is_connected() );
 

@@ -1,5 +1,5 @@
 /**
- * core/site data store: site info.
+ * `core/site` data store: site info.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,8 +20,12 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { addQueryArgs } from '@wordpress/url';
 import queryString from 'query-string';
+
+/**
+ * WordPress dependencies
+ */
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -40,9 +44,11 @@ function getSiteInfoProperty( propName ) {
 
 // Actions
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
+const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
 
 export const initialState = {
 	siteInfo: undefined,
+	permaLink: false,
 };
 
 export const actions = {
@@ -65,6 +71,15 @@ export const actions = {
 		return {
 			payload: { siteInfo },
 			type: RECEIVE_SITE_INFO,
+		};
+	},
+
+	receivePermaLinkParam( permaLink ) {
+		invariant( permaLink, 'permaLink is required.' );
+
+		return {
+			payload: { permaLink },
+			type: RECEIVE_PERMALINK_PARAM,
 		};
 	},
 };
@@ -109,6 +124,13 @@ export const reducer = ( state, { payload, type } ) => {
 				},
 			};
 		}
+
+		case RECEIVE_PERMALINK_PARAM:
+			const { permaLink } = payload;
+			return {
+				...state,
+				permaLink,
+			};
 
 		default: {
 			return state;
@@ -187,9 +209,9 @@ export const selectors = {
 	 *
 	 * @since 1.7.0
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {(string|undefined)} page Optional page query argument ( Simple format: 'test-page' or Full format: 'custom.php?page=test-page' ) to add to admin URL. If not provided, the base admin URL is returned.
-	 * @param {(Object|undefined)} args Optional additional query arguments to add to admin URL.
+	 * @param {Object}             state Data store's state.
+	 * @param {(string|undefined)} page  Optional page query argument ( Simple format: 'test-page' or Full format: 'custom.php?page=test-page' ) to add to admin URL. If not provided, the base admin URL is returned.
+	 * @param {(Object|undefined)} args  Optional additional query arguments to add to admin URL.
 	 * @return {(string|undefined)} This site's admin URL.
 	 */
 	getAdminURL: createRegistrySelector( ( select ) => ( state, page, args = {} ) => {
@@ -429,6 +451,23 @@ export const selectors = {
 	 * @return {(string|undefined)} The site name.
 	 */
 	getSiteName: getSiteInfoProperty( 'siteName' ),
+
+	/**
+	 * Gets the 'permaLink' query parameter.
+	 *
+	 * @since 1.18.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|boolean)} Value of the 'permaLink' query parameter or `false` if not set.
+	 */
+	getPermaLinkParam: ( state ) => {
+		if ( state.permaLink ) {
+			return state.permaLink;
+		}
+
+		const queryArg = getQueryArg( global.location.href, 'permaLink' );
+		return queryArg ? queryArg : false;
+	},
 
 };
 
