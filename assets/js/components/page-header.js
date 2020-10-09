@@ -92,8 +92,6 @@ PageHeader.propTypes = {
 PageHeader.defaultProps = {
 	title: '',
 	icon: null,
-	iconWidth: '',
-	iconHeight: '',
 	className: 'googlesitekit-heading-3',
 	status: '',
 	statusText: '',
