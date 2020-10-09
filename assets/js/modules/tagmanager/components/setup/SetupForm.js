@@ -53,7 +53,6 @@ export default function SetupForm( { finishSetup } ) {
 	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
-	const analyticsModuleReauthURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAdminReauthURL() );
 	// Only select the initial autosubmit + submitMode once from form state which will already be set if a snapshot was restored.
 	const initialAutoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ), [] );
 	const initialSubmitMode = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ), [] );
@@ -89,8 +88,13 @@ export default function SetupForm( { finishSetup } ) {
 			// activate it, and navigate to its reauth/setup URL to proceed with its setup.
 			if ( submitMode === SETUP_MODE_WITH_ANALYTICS && ! analyticsModuleActive ) {
 				await throwOnError( () => activateModule( 'analytics' ) );
+				const { response, error } = await activateModule( 'analytics' );
+				if ( error ) {
+					throw error;
+				}
 
-				finishSetup( analyticsModuleReauthURL );
+				// Reauth/setup URL needs to come from async activateModule action to be fresh.
+				finishSetup( response.moduleReauthURL );
 			} else {
 				// If we got here, call finishSetup to navigate to the success screen.
 				finishSetup();
@@ -102,7 +106,7 @@ export default function SetupForm( { finishSetup } ) {
 		}
 		// Mark the submit as no longer in progress in all cases.
 		setValues( FORM_SETUP, { submitInProgress: false } );
-	}, [ finishSetup, dispatchAnalytics, singleAnalyticsPropertyID, analyticsModuleActive, analyticsModuleReauthURL ] );
+	}, [ finishSetup, dispatchAnalytics, singleAnalyticsPropertyID, analyticsModuleActive ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
