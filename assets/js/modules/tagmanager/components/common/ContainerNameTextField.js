@@ -45,12 +45,29 @@ export default function ContainerNameTextField( { label, containers, formFieldID
 	}, [ formFieldID ] );
 
 	let helperText;
+
+	if ( containerName ) {
+		const existingContainer = Array.isArray( containers ) && containers.some( ( { name } ) => name === containerName );
+		if ( existingContainer ) {
+			helperText = __( 'A container with this name already exists.', 'google-site-kit' );
+		} else if ( containerName.trim() !== containerName ) {
+			helperText = __( 'The container name should not have leading or trailing spaces.', 'google-site-kit' );
+		} else if ( containerName[ 0 ] === '_' ) {
+			helperText = __( 'The container name should not start with an underscore.', 'google-site-kit' );
+		}
+
+		// // Decode entities for special characters so that they are stripped properly.
+		// $name = wp_specialchars_decode( $name, ENT_QUOTES );
+		// // Convert accents to basic characters to prevent them from being stripped.
+		// $name = remove_accents( $name );
+		// // Strip all non-simple characters.
+		// $name = preg_replace( '/[^a-zA-Z0-9_., -]/', '', $name );
+		// // Collapse multiple whitespaces.
+		// $name = preg_replace( '/\s+/', ' ', $name );
+	}
+
 	let trailingIcon;
-
-	const existingContainer = Array.isArray( containers ) && containers.some( ( { name } ) => name === containerName );
-	if ( existingContainer ) {
-		helperText = __( 'A container with this name already exists.', 'google-site-kit' );
-
+	if ( helperText ) {
 		trailingIcon = (
 			<span className="googlesitekit-text-field-icon--warning">
 				<span className="screen-reader-text">
