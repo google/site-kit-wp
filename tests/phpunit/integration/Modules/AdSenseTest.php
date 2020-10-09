@@ -72,6 +72,25 @@ class AdSenseTest extends TestCase {
 		$this->assertTrue( has_action( 'wp_body_open' ) );
 		$this->assertTrue( has_filter( 'the_content' ) );
 		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+
+		// Tag not hooked when blocked.
+		remove_all_actions( 'wp_body_open' );
+		remove_all_filters( 'the_content' );
+		remove_all_filters( 'amp_post_template_data' );
+		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_true' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_body_open' ) );
+		$this->assertFalse( has_filter( 'the_content' ) );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+
+		// Tag hooked when AMP specifically not blocked.
+		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_false' );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_body_open' ) );
+		$this->assertTrue( has_filter( 'the_content' ) );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
 	}
 
 	public function test_register_template_redirect_non_amp() {
@@ -91,6 +110,119 @@ class AdSenseTest extends TestCase {
 
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'wp_head' ) );
+
+		// Tag not hooked when blocked.
+		remove_all_actions( 'wp_head' );
+		add_filter( 'googlesitekit_adsense_tag_blocked', '__return_true' );
+
+		do_action( 'template_redirect' );
+		$this->assertFalse( has_action( 'wp_head' ) );
+
+		// Tag hooked when only AMP blocked.
+		remove_all_actions( 'wp_head' );
+		add_filter( 'googlesitekit_adsense_tag_blocked', '__return_false' );
+		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_true' );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_head' ) );
+	}
+
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_non_amp( $enabled ) {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_head' );
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_adsense_tag_block_on_consent', '__return_true' );
+		}
+
+		$output = $this->capture_action( 'wp_head' );
+		$this->assertContains( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', $output );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+		}
+	}
+
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_amp( $enabled ) {
+		$adsense = new AdSense( $this->get_amp_primary_context() );
+		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_body_open' );
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_adsense_tag_amp_block_on_consent', '__return_true' );
+		}
+
+		$output = $this->capture_action( 'wp_body_open' );
+		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+		}
+	}
+
+	/**
+	 * @dataProvider block_on_consent_provider
+	 * @param bool $enabled
+	 */
+	public function test_block_on_consent_amp_content( $enabled ) {
+		$adsense = new AdSense( $this->get_amp_primary_context() );
+		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'the_content' );
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		if ( $enabled ) {
+			add_filter( 'googlesitekit_adsense_tag_amp_block_on_consent', '__return_true' );
+		}
+
+		$output = apply_filters( 'the_content', 'test content' );
+		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
+
+		if ( $enabled ) {
+			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+		} else {
+			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+		}
+	}
+
+	public function block_on_consent_provider() {
+		return array(
+			'default (disabled)' => array(
+				false,
+			),
+			'enabled'            => array(
+				true,
+			),
+		);
 	}
 
 	public function test_get_module_scope() {

@@ -28,6 +28,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import {
 	clearWebStorage,
+	sanitizeHTML,
 } from '../util';
 import data, { TYPE_CORE } from './data';
 import Dialog from './dialog';
@@ -88,6 +89,7 @@ export default class ResetButton extends Component {
 			dialogActive,
 		} = this.state;
 
+		const subtitle = __( `Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. <br />You and any other users who wish to use Site Kit will need to reconnect to restore access.`, 'google-site-kit' );
 		return (
 			<Fragment>
 				<Link
@@ -103,7 +105,11 @@ export default class ResetButton extends Component {
 						handleConfirm={ this.handleUnlinkConfirm }
 						handleDialog={ this.handleDialog }
 						title={ __( 'Reset Site Kit', 'google-site-kit' ) }
-						subtitle={ __( 'Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. You and any other users who wish to use Site Kit will need to reconnect to restore access.', 'google-site-kit' ) }
+						subtitle={ (
+							<span dangerouslySetInnerHTML={ sanitizeHTML( subtitle, {
+								ALLOWED_TAGS: [ 'br' ],
+							} ) } />
+						) }
 						confirmButton={ __( 'Reset', 'google-site-kit' ) }
 						provides={ [] }
 						danger

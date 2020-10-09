@@ -34,6 +34,7 @@ import { WPElement } from '@wordpress/element';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
@@ -42,6 +43,7 @@ const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
+const SELECT_MODULE_REAUTH_URL = 'SELECT_MODULE_REAUTH_URL';
 const REGISTER_MODULE = 'REGISTER_MODULE';
 
 const moduleDefaults = {
@@ -139,10 +141,23 @@ const baseActions = {
 	 * @since 1.8.0
 	 *
 	 * @param {string} slug Slug of the module to activate.
-	 * @return {Object}      Object with `{response, error}`.
+	 * @return {Object} Object with `{response, error}`. On success, `response.moduleReauthURL`
+	 *                  is set to redirect the user to the corresponding module setup or OAuth
+	 *                  consent screen.
 	 */
 	*activateModule( slug ) {
 		const { response, error } = yield baseActions.setModuleActivation( slug, true );
+
+		if ( response?.success === true ) {
+			const moduleReauthURL = yield {
+				payload: { slug },
+				type: SELECT_MODULE_REAUTH_URL,
+			};
+			return {
+				response: { ...response, moduleReauthURL },
+				error,
+			};
+		}
 
 		return { response, error };
 	},
@@ -240,6 +255,14 @@ const baseActions = {
 export const baseControls = {
 	[ REFETCH_AUTHENTICATION ]: createRegistryControl( ( { dispatch } ) => () => {
 		return dispatch( CORE_USER ).fetchGetAuthentication();
+	} ),
+	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl( ( { select } ) => ( { payload } ) => {
+		const { slug } = payload;
+		const getAdminReauthURL = select( `modules/${ slug }` )?.getAdminReauthURL;
+		if ( getAdminReauthURL ) {
+			return getAdminReauthURL();
+		}
+		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' );
 	} ),
 };
 

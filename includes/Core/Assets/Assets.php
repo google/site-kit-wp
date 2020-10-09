@@ -97,6 +97,15 @@ final class Assets {
 		add_action( 'admin_enqueue_scripts', $register_callback );
 		add_action( 'wp_enqueue_scripts', $register_callback );
 
+		add_filter(
+			'script_loader_tag',
+			function( $tag, $handle ) {
+				return $this->add_async_defer_attribute( $tag, $handle );
+			},
+			10,
+			2
+		);
+
 		// All other asset-related general logic should only be active when the
 		// current user can actually use Site Kit (which only is so if they can
 		// authenticate).
@@ -126,15 +135,6 @@ final class Assets {
 		};
 		add_action( 'wp_print_styles', $styles_print_callback );
 		add_action( 'admin_print_styles', $styles_print_callback );
-
-		add_filter(
-			'script_loader_tag',
-			function( $tag, $handle ) {
-				return $this->add_async_defer_attribute( $tag, $handle );
-			},
-			10,
-			2
-		);
 	}
 
 	/**

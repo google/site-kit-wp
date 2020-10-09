@@ -39,7 +39,7 @@ export const initialState = {
 /**
  * Date Range Object.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  *
  * @typedef {Object} DateRangeReturnObj
  * @property {string} startDate          Beginning of the original date range.
@@ -106,7 +106,7 @@ export const selectors = {
 	/**
 	 * Returns the current date range as a list of date strings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param {Object}  state                   The current data store's state.
 	 * @param {Object}  [options]               Options parameter. Default is: {}.
