@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 /**
  * Class for injecting JavaScript based on the registered event configurations.
  *
- * @since n.e.x.t.
+ * @since 1.18.0.
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ final class AMP_Config_Injector {
 	/**
 	 * Creates list of measurement event configurations and javascript to inject.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @param array   $gtag_amp_opt gtag config options for AMP.
 	 * @param Event[] $events       The list of Event objects.

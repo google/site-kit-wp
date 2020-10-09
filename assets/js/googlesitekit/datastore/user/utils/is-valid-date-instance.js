@@ -19,7 +19,7 @@
 /**
  * Asserts whether a given date instance is valid or invalid.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  *
  * @param {Date} date Date instance to be asserted against.
  * @return {boolean}  True if the given date instance is valid.

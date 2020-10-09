@@ -29,7 +29,8 @@ import { createBuildAndReceivers } from '../../assets/js/modules/tagmanager/data
 /**
  * Generates a story for a case when a GTM with Analytics property ID is already connected.
  *
- * @since n.e.x.t
+ * @since 1.18.0
+ * @private
  *
  * @param {Object}      args                Story arguments.
  * @param {WPComponent} args.Component      Story component.

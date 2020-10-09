@@ -190,7 +190,7 @@ export const selectors = {
  *
  * If changes cannot be submitted, an appropriate error is thrown.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  * @private
  *
  * @param {Function} select The current registry.select instance.

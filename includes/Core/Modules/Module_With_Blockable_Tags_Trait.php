@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Trait for a module that has blockable tags.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ trait Module_With_Blockable_Tags_Trait {
 	/**
 	 * Checks whether or not the tag should be blocked from rendering.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return bool
 	 */
@@ -33,7 +33,7 @@ trait Module_With_Blockable_Tags_Trait {
 			/**
 			 * Filters whether or not the AMP tag should be blocked from rendering.
 			 *
-			 * @since n.e.x.t
+			 * @since 1.18.0
 			 *
 			 * @param bool $blocked Whether or not the tag output is suppressed. Default: false.
 			 */
@@ -42,7 +42,7 @@ trait Module_With_Blockable_Tags_Trait {
 			/**
 			 * Filters whether or not the tag should be blocked from rendering.
 			 *
-			 * @since n.e.x.t
+			 * @since 1.18.0
 			 *
 			 * @param bool $blocked Whether or not the tag output is suppressed. Default: false.
 			 */
@@ -53,7 +53,7 @@ trait Module_With_Blockable_Tags_Trait {
 	/**
 	 * Gets the HTML attributes for a script tag that may potentially require user consent before loading.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return string HTML attributes to add if the tag requires consent to load, or an empty string.
 	 */
@@ -63,7 +63,7 @@ trait Module_With_Blockable_Tags_Trait {
 		/**
 		 * Filters whether the tag requires user consent before loading.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.18.0
 		 *
 		 * @param bool $blocked Whether or not the tag requires user consent to load. Default: false.
 		 */
@@ -77,7 +77,7 @@ trait Module_With_Blockable_Tags_Trait {
 	/**
 	 * Gets the HTML attributes for an AMP tag that may potentially require user consent before loading.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return string HTML attributes to add if the tag requires consent to load, or an empty string.
 	 */
@@ -87,7 +87,7 @@ trait Module_With_Blockable_Tags_Trait {
 		/**
 		 * Filters whether the tag requires user consent before loading.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.18.0
 		 *
 		 * @param bool|string $blocked Whether or not the tag requires user consent to load. Alternatively, this can also be one of
 		 *                             the special string values '_till_responded', '_till_accepted', or '_auto_reject'. Default: false.
@@ -110,7 +110,7 @@ trait Module_With_Blockable_Tags_Trait {
 	 *
 	 * @see https://amp.dev/documentation/components/amp-consent/#advanced-predefined-consent-blocking-behaviors
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return string[] Block on consent attribute values.
 	 */

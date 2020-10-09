@@ -299,7 +299,7 @@ export const commonStore = {
  * dependent selectors that have resolvers as many selectors are composed of
  * higher-level selectors internally which is where a resolver is normally implemented.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  * @private
  *
  * @param {Function} select The registry.select function.

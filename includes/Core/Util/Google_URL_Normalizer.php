@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Class handling URL normalization for comparisons and API requests.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  * @access private
  * @ignore
  */
@@ -23,7 +23,7 @@ final class Google_URL_Normalizer {
 	 * Normalizes a URL by converting to all lowercase, converting Unicode characters
 	 * to punycode, and removing bidirectional control characters.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $url The URL or domain to normalize.
 	 * @return string The normalized URL or domain.
@@ -40,7 +40,7 @@ final class Google_URL_Normalizer {
 	/**
 	 * Returns the Punycode version of a Unicode URL or domain name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $url The URL or domain name to decode.
 	 */

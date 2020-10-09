@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 /**
  * Interface for Options implementations.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface User_Aware_Interface {
 	/**
 	 * Gets the associated user ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return int User ID.
 	 */
@@ -31,7 +31,7 @@ interface User_Aware_Interface {
 	/**
 	 * Switches the current user to the one with the given ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return callable A closure to switch back to the original user.

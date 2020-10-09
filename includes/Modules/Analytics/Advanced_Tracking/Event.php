@@ -15,7 +15,7 @@ use Exception;
 /**
  * Class for representing a single tracking event that Advanced_Tracking tracks.
  *
- * @since n.e.x.t.
+ * @since 1.18.0.
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ final class Event implements \JsonSerializable {
 	/**
 	 * The measurement event's configuration.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 * @var array
 	 */
 	private $config;
@@ -32,7 +32,7 @@ final class Event implements \JsonSerializable {
 	/**
 	 * Event constructor.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @param array $config {
 	 *     The event's configuration.
@@ -53,7 +53,7 @@ final class Event implements \JsonSerializable {
 	/**
 	 * Returns an associative event containing the event attributes.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @return array The configuration in JSON-serializable format.
 	 */
@@ -64,7 +64,7 @@ final class Event implements \JsonSerializable {
 	/**
 	 * Returns the Measurment_Event configuration.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @return array The config.
 	 */
@@ -75,7 +75,7 @@ final class Event implements \JsonSerializable {
 	/**
 	 * Validates the configuration keys and value types.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.18.0.
 	 *
 	 * @param array $config The event's configuration.
 	 * @return array The event's configuration.

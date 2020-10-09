@@ -455,7 +455,7 @@ export const selectors = {
 	/**
 	 * Gets the 'permaLink' query parameter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|boolean)} Value of the 'permaLink' query parameter or `false` if not set.

@@ -87,7 +87,7 @@ const baseSelectors = {
 	/**
 	 * Gets a unique list of Analytics property IDs for all effective containers based on current selections.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return {(Array|undefined)} Array of unique property IDs, including `null` if none, or `undefined` if not fully loaded.
 	 */
@@ -126,7 +126,7 @@ const baseSelectors = {
 	/**
 	 * Gets the live container Universal Analytics property ID for the given account and container ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param {Object} state               Data store's state.
 	 * @param {string} accountID           Account ID the container belongs to.
@@ -165,7 +165,7 @@ const baseSelectors = {
 	/**
 	 * Gets the live container Universal Analytics tag object for the given account and container ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param {Object} state               Data store's state.
 	 * @param {string} accountID           Account ID the container belongs to.
@@ -190,7 +190,7 @@ const baseSelectors = {
 	/**
 	 * Gets the live container variable object by the given name for the given account and container ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param {Object} state               Data store's state.
 	 * @param {string} accountID           Account ID the container belongs to.
@@ -229,7 +229,7 @@ const baseSelectors = {
 	/**
 	 * Gets the single property ID used by all selected containers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return {(string|null|boolean|undefined)} String property ID used by all containers,
 	 *                                           `null` if no property ID was found in either container,
@@ -253,7 +253,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether any Analytics property ID is present in either selected container.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return {(boolean|undefined)} `true` if an Analytics property ID is present in either container,
 	 *                               `false` if no Analytics property ID is present in either container,
@@ -272,7 +272,7 @@ const baseSelectors = {
 	/**
 	 * Checks if there are multiple unique Analytics property IDs for all effective containers based on current selections.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return {(boolean|undefined)} `true` if multiple unique Analytics property IDs are found in selected GTM containers
 	 *                               `false` if no Analytics property IDs are found, or the same property ID is found in both (if secondary AMP)

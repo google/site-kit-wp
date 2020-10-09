@@ -43,7 +43,7 @@ module.exports = {
 		/**
 		 * Reports an AST node as a rule violation.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.18.0
 		 * @private
 		 *
 		 * @param {Object} node The node to report.
