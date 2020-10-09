@@ -46,7 +46,7 @@ final class Script_Injector {
 	 *
 	 * @since 1.18.0.
 	 *
-	 * @param Event[] $events The list of Event objects.
+	 * @param array $events The map of Event objects, keyed by their unique ID.
 	 */
 	public function inject_event_script( $events ) {
 		if ( empty( $events ) ) {
@@ -69,7 +69,7 @@ final class Script_Injector {
 
 		?>
 		<script>
-			var _googlesitekitAnalyticsTrackingData = <?php echo wp_json_encode( $events ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+			var _googlesitekitAnalyticsTrackingData = <?php echo wp_json_encode( array_values( $events ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
 			<?php echo $script_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		</script>
 		<?php
