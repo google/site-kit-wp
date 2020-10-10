@@ -172,6 +172,27 @@ function observeConsoleLogging() {
 			return;
 		}
 
+		// Some error messages which don't impact test results can
+		// be safely ignored.
+		if (
+			text.startsWith( 'Powered by AMP' ) ||
+			text.startsWith( 'data_error unknown response key' ) ||
+			text.startsWith( 'WP Error in data response' ) ||
+			text.startsWith( 'Error caught during combinedGet' ) ||
+			text.includes( 'No triggers were found in the config. No analytics data will be sent.' ) ||
+			text.includes( 'Google Site Kit API Error' )
+		) {
+			return;
+		}
+
+		// As of WordPress 5.3.2 in Chrome 79, navigating to the block editor
+		// (Posts > Add New) will display a console warning about
+		// non - unique IDs.
+		// See: https://core.trac.wordpress.org/ticket/23165
+		if ( text.includes( 'elements with non-unique id #_wpnonce' ) ) {
+			return;
+		}
+
 		const logFunction = OBSERVED_CONSOLE_MESSAGE_TYPES[ type ];
 
 		// As of Puppeteer 1.6.1, `message.text()` wrongly returns an object of
@@ -297,6 +318,9 @@ beforeAll( async () => {
 			const req = res.request();
 			// eslint-disable-next-line no-console
 			console.warn( res.status(), req.method(), req.url() );
+			// As we're throwing up a console warning,
+			// Let's simultaneously expect it to occur.
+			expect( console ).toHaveWarned();
 		}
 	} );
 
