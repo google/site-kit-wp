@@ -20,13 +20,20 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP, FORM_SETUP } from './constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY, AMP_MODE_PRIMARY } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import defaultModules, * as modulesFixtures from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
-import { accountBuilder, containerBuilder, buildLiveContainerVersionWeb, buildLiveContainerVersionAMP } from './__factories__';
+import {
+	accountBuilder,
+	containerBuilder,
+	buildAccountWithContainers,
+	buildLiveContainerVersionWeb,
+	buildLiveContainerVersionAMP,
+} from './__factories__';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
@@ -40,6 +47,15 @@ import { parseLiveContainerVersionIDs, createBuildAndReceivers } from './__facto
 
 describe( 'modules/tagmanager settings', () => {
 	let registry;
+
+	const defaultSettings = {
+		accountID: '',
+		ampContainerID: '',
+		containerID: '',
+		internalAMPContainerID: '',
+		internalContainerID: '',
+		useSnippet: true,
+	};
 
 	const validSettings = {
 		accountID: '100',
@@ -103,6 +119,11 @@ describe( 'modules/tagmanager settings', () => {
 						accountID: '12345',
 						containerID: CONTAINER_CREATE,
 					} );
+
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						containerName: 'Sitekit',
+					} );
+
 					const createdContainer = {
 						...fixtures.createContainer,
 					};
@@ -126,7 +147,11 @@ describe( 'modules/tagmanager settings', () => {
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
 						{
 							body: {
-								data: { accountID: '12345', usageContext: CONTEXT_WEB },
+								data: {
+									accountID: '12345',
+									usageContext: CONTEXT_WEB,
+									name: 'Sitekit',
+								},
 							},
 						}
 					);
@@ -145,6 +170,10 @@ describe( 'modules/tagmanager settings', () => {
 						containerID: CONTAINER_CREATE,
 					} );
 
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						containerName: 'Sitekit',
+					} );
+
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
 						{ body: WPError, status: 500 }
@@ -156,7 +185,11 @@ describe( 'modules/tagmanager settings', () => {
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
 						{
 							body: {
-								data: { accountID: '12345', usageContext: CONTEXT_WEB },
+								data: {
+									accountID: '12345',
+									usageContext: CONTEXT_WEB,
+									name: 'Sitekit',
+								},
 							},
 						}
 					);
@@ -229,6 +262,11 @@ describe( 'modules/tagmanager settings', () => {
 						accountID: '12345',
 						ampContainerID: CONTAINER_CREATE,
 					} );
+
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						ampContainerName: 'Sitekit AMP',
+					} );
+
 					// eslint-disable-next-line sitekit/camelcase-acronyms
 					const createdAMPContainer = containerBuilder( { accountId: '12345', usageContext: [ CONTEXT_AMP ] } );
 
@@ -252,7 +290,11 @@ describe( 'modules/tagmanager settings', () => {
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
 						{
 							body: {
-								data: { accountID: '12345', usageContext: CONTEXT_AMP },
+								data: {
+									accountID: '12345',
+									usageContext: CONTEXT_AMP,
+									name: 'Sitekit AMP',
+								},
 							},
 						}
 					);
@@ -266,12 +308,18 @@ describe( 'modules/tagmanager settings', () => {
 				beforeEach( () => setSecondaryAMP() );
 
 				it( 'dispatches createContainer for both web and AMP containers when selected', async () => {
-					const account = accountBuilder();
 					registry.dispatch( STORE_NAME ).setSettings( {
 						...validSettings,
 						containerID: CONTAINER_CREATE,
 						ampContainerID: CONTAINER_CREATE,
 					} );
+
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						containerName: 'Sitekit',
+						ampContainerName: 'Sitekit AMP',
+					} );
+
+					const account = accountBuilder();
 					// eslint-disable-next-line sitekit/camelcase-acronyms
 					const createdWebContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } );
 					// eslint-disable-next-line sitekit/camelcase-acronyms
@@ -333,6 +381,12 @@ describe( 'modules/tagmanager settings', () => {
 		} );
 
 		describe( 'canSubmitChanges', () => {
+			beforeEach( () => {
+				// Preload default settings to prevent the resolver from making unexpected requests
+				// as this is covered in settings store tests.
+				registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+			} );
+
 			describe( 'with no AMP', () => {
 				beforeEach( () => {
 					const { accountID, internalContainerID } = validSettings;
@@ -387,7 +441,17 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'supports creating a web container', () => {
+					const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+					const { accountID } = buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-1' } );
+
+					registry.dispatch( STORE_NAME ).setAccountID( accountID );
+					registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+
 					registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
+					registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						containerName: 'Sitekit',
+					} );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 				} );
@@ -472,8 +536,17 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'supports creating an AMP container', () => {
+					const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+					const { accountID } = buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-1' } );
+
+					registry.dispatch( STORE_NAME ).setAccountID( accountID );
+					registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+
 					registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						ampContainerName: 'Sitekit AMP',
+					} );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 				} );
@@ -597,24 +670,54 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'supports creating a web container', () => {
+					const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+					const { accountID } = buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-1' } );
+
+					registry.dispatch( STORE_NAME ).setAccountID( accountID );
+					registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+
 					registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
 					registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						containerName: 'Sitekit',
+					} );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 				} );
 
 				it( 'supports creating an AMP container', () => {
+					const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+					const { accountID } = buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-1' } );
+
+					registry.dispatch( STORE_NAME ).setAccountID( accountID );
+					registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+
 					registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						ampContainerName: 'Sitekit AMP',
+					} );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 				} );
 
 				it( 'supports creating an AMP container and a web container', () => {
+					const { account, containers } = buildAccountWithContainers( {
+						container: { usageContext: [ CONTEXT_WEB, CONTEXT_AMP ] },
+					} );
+					const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+
+					registry.dispatch( STORE_NAME ).setAccountID( accountID );
+					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
 					registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
 					registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
 					registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						containerName: 'Sitekit',
+						ampContainerName: 'Sitekit AMP',
+					} );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 				} );
