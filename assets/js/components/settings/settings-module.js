@@ -34,11 +34,11 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import SvgIcon from '../../util/svg-icon';
+import PencilIcon from '../../../svg/pencil.svg';
+import TrashIcon from '../../../svg/trash.svg';
 import {
 	activateOrDeactivateModule,
 	getReAuthURL,
-	moduleIcon,
 	showErrorNotification,
 	getModulesData,
 } from '../../util';
@@ -51,6 +51,7 @@ import SettingsOverlay from '../../components/settings/settings-overlay';
 import GenericError from '../../components/notifications/generic-error';
 import SetupModule from '../../components/setup-module';
 import Dialog from '../../components/dialog';
+import ModuleIcon from '../../components/module-icon';
 import ModuleSettingsDetails from '../../components/settings/module-settings-details';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
 
@@ -275,7 +276,7 @@ class SettingsModule extends Component {
 											googlesitekit-heading-4
 											googlesitekit-settings-module__title
 										">
-											{ moduleIcon( slug, false, '24', '26', 'googlesitekit-settings-module__title-icon' ) }
+											<ModuleIcon slug={ slug } width={ 24 } height={ 26 } className="googlesitekit-settings-module__title-icon" />
 											{ name }
 										</h3>
 									</div>
@@ -385,9 +386,8 @@ class SettingsModule extends Component {
 												inherit
 											>
 												{ __( 'Edit', 'google-site-kit' ) }
-												<SvgIcon
+												<PencilIcon
 													className="googlesitekit-settings-module__edit-button-icon"
-													id="pencil"
 													width="10"
 													height="10"
 												/>
@@ -413,9 +413,8 @@ class SettingsModule extends Component {
 														/* translators: %s: module name */
 														sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
 													}
-													<SvgIcon
+													<TrashIcon
 														className="googlesitekit-settings-module__remove-button-icon"
-														id="trash"
 														width="13"
 														height="13"
 													/>

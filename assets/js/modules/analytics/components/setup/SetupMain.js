@@ -31,9 +31,10 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import AnalyticsIcon from '../../../../../svg/analytics.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/progress-bar';
-import { SvgIcon, trackEvent } from '../../../../util';
+import { trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
@@ -97,7 +98,7 @@ export default function SetupMain( { finishSetup } ) {
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 			<div className="googlesitekit-setup-module__logo">
-				<SvgIcon id="analytics" width="33" height="33" />
+				<AnalyticsIcon width="33" height="33" />
 			</div>
 
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">

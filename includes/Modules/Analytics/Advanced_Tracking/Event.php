@@ -62,7 +62,7 @@ final class Event implements \JsonSerializable {
 	}
 
 	/**
-	 * Returns the Measurment_Event configuration.
+	 * Returns the measurement event configuration.
 	 *
 	 * @since 1.18.0.
 	 *

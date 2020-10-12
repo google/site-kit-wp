@@ -93,7 +93,7 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 **Added**
 
 * Introduce several filters to allow blocking rendering or execution of Google service scripts in the frontend, allowing integration with e.g. 3P cookie consent plugins. See [#2087](https://github.com/google/site-kit-wp/issues/2087).
-* Introduce API layer for advanced Analytics event tracking configurations from other plugins. Props j-ka11. See [#1728](https://github.com/google/site-kit-wp/issues/1728).
+* Introduce API layer for advanced Analytics event tracking configurations from other plugins. See [#1728](https://github.com/google/site-kit-wp/issues/1728).
 
 **Enhanced**
 

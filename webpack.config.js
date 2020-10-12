@@ -77,13 +77,24 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
-	'analytics-advanced-tracking-events': 'SITEKIT_ANALYTICS_ADVANCED_TRACKING_EVENTS',
 };
 
 const externals = { ...siteKitExternals };
 
+const svgRule = {
+	test: /\.svg$/,
+	use: [ {
+		loader: '@svgr/webpack',
+		options: {
+			// strip width & height to allow manual override using props
+			dimensions: false,
+		},
+	} ],
+};
+
 const rules = [
 	noAMDParserRule,
+	svgRule,
 	{
 		test: /\.js$/,
 		exclude: /node_modules/,
@@ -156,8 +167,6 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-adminbar-loader': './assets/js/googlesitekit-adminbar-loader.js',
 				'googlesitekit-base': './assets/js/googlesitekit-base.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
-				// Analytics advanced tracking script to be injected in the frontend.
-				'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
 				// Needed to test if a browser extension blocks this by naming convention.
 				'pagead2.ads': './assets/js/pagead2.ads.js',
 			},
@@ -250,6 +259,33 @@ const webpackConfig = ( mode ) => {
 			resolve,
 		},
 
+		// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
+		{
+			entry: {
+				// Analytics advanced tracking script to be injected in the frontend.
+				'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
+			},
+			externals,
+			output: {
+				filename: '[name].js',
+				path: __dirname + '/dist/assets/js',
+				publicPath: '',
+			},
+			module: {
+				rules,
+			},
+			plugins: [
+				new WebpackBar( {
+					name: 'Basic Modules',
+					color: '#fb1105',
+				} ),
+			],
+			optimization: {
+				concatenateModules: true,
+			},
+			resolve,
+		},
+
 		// Build the main plugin admin css.
 		{
 			entry: {
@@ -276,7 +312,7 @@ const webpackConfig = ( mode ) => {
 						],
 					},
 					{
-						test: /\.(png|woff|woff2|eot|ttf|svg|gif)$/,
+						test: /\.(png|woff|woff2|eot|ttf|gif)$/,
 						use: { loader: 'url-loader?limit=100000' },
 					},
 				],
@@ -327,6 +363,7 @@ module.exports = {
 	resolve,
 	rules,
 	siteKitExternals,
+	svgRule,
 };
 
 module.exports.default = ( ...args ) => {
