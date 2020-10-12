@@ -32,8 +32,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DeviceSizeMobileIcon from './icons/DeviceSizeMobileIcon';
-import DeviceSizeDesktopIcon from './icons/DeviceSizeDesktopIcon';
+import DeviceSizeMobileIcon from '../../svg/device-size-mobile-icon.svg';
+import DeviceSizeDesktopIcon from '../../svg/device-size-desktop-icon.svg';
 
 const DeviceSizeTabBar = ( {
 	activeTab,

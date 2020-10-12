@@ -15,7 +15,7 @@ use Google\Site_Kit\Context;
 /**
  * Class providing access to per-user transients.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 * @var Context
 	 */
 	private $context;
@@ -32,7 +32,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * User_Options object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 * @var User_Options
 	 */
 	private $user_options;
@@ -40,7 +40,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * External cache group.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 * @var string
 	 */
 	private $ext_cache_group;
@@ -48,7 +48,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @param int     $user_id Optional. User ID for whom transients should be managed. Default is the current user.
@@ -62,7 +62,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Gets the associated user ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return int User ID.
 	 */
@@ -78,7 +78,7 @@ class User_Transients implements User_Aware_Interface {
 	 * be applied when the entire chain of class main instances need to be updated to rely on another user, i.e. when
 	 * the current WordPress user has changed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return callable A closure to switch back to the original user.
@@ -90,7 +90,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Gets the value of the given transient.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient Transient name.
 	 * @return mixed Value set for the transient, or false if not set.
@@ -104,7 +104,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Sets the value for a transient.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient  Transient name.
 	 * @param mixed  $value      Transient value.
@@ -120,7 +120,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Deletes the given transient.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient Transient name.
 	 * @return bool True on success, false on failure.
@@ -134,7 +134,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Gets prefixed transient name for an external cache.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient Transient name.
 	 * @return string Prefixed transient name.
@@ -147,7 +147,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Gets the value of the given transient from an external cache.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient Transient name.
 	 * @return mixed Value set for the transient, or false if not set.
@@ -162,7 +162,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Sets the value for a transient in an external cache.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient  Transient name.
 	 * @param mixed  $value      Transient value.
@@ -181,7 +181,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Deletes the given transient in an external cache.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient Transient name.
 	 * @return bool True on success, false on failure.
@@ -196,7 +196,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Gets prefixed transient name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient Transient name.
 	 * @return string Prefixed transient name.
@@ -208,7 +208,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Gets prefixed transient timeout name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient Transient name.
 	 * @return string Prefixed transient timeout name.
@@ -220,7 +220,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Gets the value of the given transient.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient Transient name.
 	 * @return mixed Value set for the transient, or false if not set.
@@ -240,7 +240,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Sets the value for a transient.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient  Transient name.
 	 * @param mixed  $value      Transient value.
@@ -258,7 +258,7 @@ class User_Transients implements User_Aware_Interface {
 	/**
 	 * Deletes the given transient.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param string $transient Transient name.
 	 * @return bool True on success, false on failure.

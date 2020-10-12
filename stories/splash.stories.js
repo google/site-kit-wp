@@ -10,6 +10,10 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import AdSenseIcon from '../assets/svg/adsense.svg';
+import AnalyticsIcon from '../assets/svg/analytics.svg';
+import PageSpeedInsightsIcon from '../assets/svg/pagespeed-insights.svg';
+import SearchConsoleIcon from '../assets/svg/search-console.svg';
 import DashboardSplashIntro from '../assets/js/components/dashboard-splash/dashboard-splash-intro';
 import DashboardSplashModule from '../assets/js/components/dashboard-splash/dashboard-splash-module';
 import DashboardSplashService from '../assets/js/components/dashboard-splash/dashboard-splash-service';
@@ -40,7 +44,7 @@ storiesOf( 'Splash', module )
 							mdc-layout-grid__cell--span-3-desktop
 						">
 							<DashboardSplashModule
-								icon="search-console"
+								icon={ <SearchConsoleIcon width="33" height="33" /> }
 								title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Keep track of how people find you in Search, and how many of them visit your site.', 'google-site-kit' ) }
 							/>
@@ -52,7 +56,7 @@ storiesOf( 'Splash', module )
 							mdc-layout-grid__cell--span-3-desktop
 						">
 							<DashboardSplashModule
-								icon="analytics"
+								icon={ <AnalyticsIcon width="33" height="33" /> }
 								title={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Understand your customers better: track how they navigate across your site and evaluate the performance of your products or posts.', 'google-site-kit' ) }
 							/>
@@ -64,7 +68,7 @@ storiesOf( 'Splash', module )
 							mdc-layout-grid__cell--span-3-desktop
 						">
 							<DashboardSplashModule
-								icon="adsense"
+								icon={ <AdSenseIcon width="33" height="33" /> }
 								title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Make your content work for you -- earning money by placing ads on your site.', 'google-site-kit' ) }
 							/>
@@ -76,7 +80,7 @@ storiesOf( 'Splash', module )
 							mdc-layout-grid__cell--span-3-desktop
 						">
 							<DashboardSplashModule
-								icon="pagespeed"
+								icon={ <PageSpeedInsightsIcon width="33" height="33" /> }
 								title={ _x( 'PageSpeed', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Analyze your site’s performance and get actionable tips to improve its speed across all devices.', 'google-site-kit' ) }
 							/>

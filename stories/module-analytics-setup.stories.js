@@ -33,6 +33,7 @@ import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/si
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { WithTestRegistry, createTestRegistry } from '../tests/js/utils';
+import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 
 function Setup( props ) {
 	return (
@@ -40,6 +41,19 @@ function Setup( props ) {
 			<SetupWrapper />
 		</WithTestRegistry>
 	);
+}
+
+function usingGenerateGTMAnalyticsPropertyStory( args ) {
+	return generateGTMAnalyticsPropertyStory( {
+		...args,
+		Component: Setup,
+		setUp: ( registry ) => {
+			global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
+			registry.dispatch( CORE_MODULES ).registerModule( 'analytics', {
+				setupComponent: AnalyticsSetup,
+			} );
+		},
+	} );
 }
 
 storiesOf( 'Analytics Module/Setup', module )
@@ -213,7 +227,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup registry={ registry } />;
 	} )
-	.add( 'Existing Tag (with access)', ( registry ) => {
+	.add( 'Existing Tag w/ access', ( registry ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			// eslint-disable-next-line sitekit/camelcase-acronyms
@@ -239,7 +253,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup registry={ registry } />;
 	} )
-	.add( 'Existing Tag (no access)', ( registry ) => {
+	.add( 'Existing Tag w/o access', ( registry ) => {
 		const existingTag = {
 			accountID: '12345678',
 			propertyID: 'UA-12345678-1',
@@ -263,4 +277,10 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup registry={ registry } />;
 	} )
+	.add( 'No Tag, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: true } ) )
+	.add( 'No Tag, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: false, gtmPermission: false } ) )
+	.add( 'Existing Tag w/ access, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: true } ) )
+	.add( 'Existing Tag w/ access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: true } ) )
+	.add( 'Existing Tag w/o access, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: false } ) )
+	.add( 'Existing Tag w/o access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: false } ) )
 ;

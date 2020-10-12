@@ -31,9 +31,9 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import AdSenseIcon from '../../../../../svg/adsense.svg';
 import ProgressBar from '../../../../components/progress-bar';
 import ErrorText from '../../../../components/error-text';
-import { SvgIcon } from '../../../../util';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
 import {
@@ -349,7 +349,7 @@ export default function SetupMain( { finishSetup } ) {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
 			<div className="googlesitekit-setup-module__step">
 				<div className="googlesitekit-setup-module__logo">
-					<SvgIcon id="adsense" width="33" height="33" />
+					<AdSenseIcon width="33" height="33" />
 				</div>
 
 				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">

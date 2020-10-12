@@ -31,7 +31,10 @@ import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/us
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { SetupMain as TagManagerSetup } from '../assets/js/modules/tagmanager/components/setup';
 import { STORE_NAME, ACCOUNT_CREATE } from '../assets/js/modules/tagmanager/datastore/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
+import * as modulesFixtures from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import { parseLiveContainerVersionIDs } from '../assets/js/modules/tagmanager/datastore/__factories__/utils';
 
 function Setup( props ) {
 	return (
@@ -58,6 +61,10 @@ storiesOf( 'Tag Manager Module/Setup', module )
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } );
+		const activeModules = modulesFixtures.withActive( 'tagmanager' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( { propertyID: '' } );
 
 		return storyFn( registry );
 	} )
@@ -102,6 +109,53 @@ storiesOf( 'Tag Manager Module/Setup', module )
 
 		return <Setup registry={ registry } />;
 	} )
+	.add( 'Container with property ID, Analytics inactive', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			webContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+		} );
+
+		return <Setup registry={ registry } />;
+	} )
+	// Multiple property IDs are only possible with secondary AMP.
+	.add( 'Container with property ID, Analytics active, ID match', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			webContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+			const propertyID = registry.select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID );
+			registry.dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
+		} );
+		const activeModules = modulesFixtures.withActive( 'tagmanager', 'analytics' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Container with property ID, Analytics active, ID mismatch error', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			webContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+		} );
+		registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-99999-9' );
+		const activeModules = modulesFixtures.withActive( 'tagmanager', 'analytics' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+
+		return <Setup registry={ registry } />;
+	} )
 ;
 
 storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
@@ -111,6 +165,9 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
+		const activeModules = modulesFixtures.withActive( 'tagmanager' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( { propertyID: '' } );
 
 		return storyFn( registry );
 	} )
@@ -135,6 +192,53 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 
 		return <Setup registry={ registry } />;
 	} )
+	.add( 'Container with property ID, Analytics inactive', ( registry ) => {
+		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			ampContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
+
+		return <Setup registry={ registry } />;
+	} )
+	// Multiple property IDs are only possible with secondary AMP.
+	.add( 'Container with property ID, Analytics active, ID match', ( registry ) => {
+		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			ampContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+			const propertyID = registry.select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID );
+			registry.dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
+		} );
+		const activeModules = modulesFixtures.withActive( 'tagmanager', 'analytics' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Container with property ID, Analytics active, ID mismatch error', ( registry ) => {
+		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			ampContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
+		registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-99999-9' );
+		const activeModules = modulesFixtures.withActive( 'tagmanager', 'analytics' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+
+		return <Setup registry={ registry } />;
+	} )
 ;
 
 storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
@@ -144,6 +248,9 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
+		const activeModules = modulesFixtures.withActive( 'tagmanager' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( { propertyID: '' } );
 
 		return storyFn( registry );
 	} )
@@ -170,6 +277,105 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		registry.dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Singular property ID, Analytics inactive', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			webContainerVersion.container,
+			ampContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+		} );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Multiple property IDs, Analytics inactive', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const ampContainerVersion = fixtures.liveContainerVersions.amp.noGA;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			webContainerVersion.container,
+			ampContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+		} );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Multiple property IDs, Analytics active', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const ampContainerVersion = fixtures.liveContainerVersions.amp.noGA;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			webContainerVersion.container,
+			ampContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+		} );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
+		const activeModules = modulesFixtures.withActive( 'tagmanager', 'analytics' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Singular property ID, Analytics active, ID match', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			webContainerVersion.container,
+			ampContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+			const propertyID = registry.select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID );
+			registry.dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
+		} );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
+		const activeModules = modulesFixtures.withActive( 'tagmanager', 'analytics' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Singular property ID, Analytics active, ID mismatch error', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const ampContainerVersion = fixtures.liveContainerVersions.amp.ga;
+		const accountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [
+			webContainerVersion.container,
+			ampContainerVersion.container,
+		], { accountID } );
+		parseLiveContainerVersionIDs( webContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( webContainerVersion, { accountID, internalContainerID } );
+		} );
+		parseLiveContainerVersionIDs( ampContainerVersion, ( { internalContainerID } ) => {
+			registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion( ampContainerVersion, { accountID, internalContainerID } );
+		} );
+		registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-99999-9' );
+		const activeModules = modulesFixtures.withActive( 'tagmanager', 'analytics' );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
 
 		return <Setup registry={ registry } />;
 	} )
