@@ -19,21 +19,34 @@
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms';
 import ContainerNameTextField from './ContainerNameTextField';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function AMPContainerNameTextField() {
 	const containers = useSelect( ( select ) => {
 		const accountID = select( STORE_NAME ).getAccountID();
 		return select( STORE_NAME ).getAMPContainers( accountID );
 	} );
+
+	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
+	const ampContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ) );
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	useEffect( () => {
+		if ( ! ampContainerName ) {
+			setValues( FORM_SETUP, { ampContainerName: `${ siteName || global.location.hostname } AMP` } );
+		}
+	}, [] );
 
 	return (
 		<ContainerNameTextField

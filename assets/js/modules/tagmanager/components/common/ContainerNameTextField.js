@@ -45,10 +45,9 @@ export default function ContainerNameTextField( { label, containers, formFieldID
 		setValues( FORM_SETUP, { [ formFieldID ]: currentTarget.value } );
 	}, [ formFieldID ] );
 
-	let helperText;
-	if ( containerName && ! isUniqueContainerName( containerName, containers ) ) {
-		helperText = __( 'A container with this name already exists.', 'google-site-kit' );
-	}
+	const helperText = containerName && ! isUniqueContainerName( containerName, containers )
+		? <HelperText persistent>{ __( 'A container with this name already exists.', 'google-site-kit' ) }</HelperText>
+		: undefined;
 
 	let trailingIcon;
 	if ( helperText ) {
@@ -63,12 +62,7 @@ export default function ContainerNameTextField( { label, containers, formFieldID
 
 	return (
 		<div className="googlesitekit-tagmanager-containername">
-			<TextField
-				label={ label }
-				outlined
-				helperText={ <HelperText persistent>{ helperText }</HelperText> }
-				trailingIcon={ trailingIcon }
-			>
+			<TextField label={ label } outlined helperText={ helperText } trailingIcon={ trailingIcon }>
 				<Input value={ containerName } onChange={ onChange } />
 			</TextField>
 		</div>

@@ -19,16 +19,18 @@
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms';
 import ContainerNameTextField from './ContainerNameTextField';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function WebContainerNameTextField() {
 	const containers = useSelect( ( select ) => {
@@ -36,7 +38,16 @@ export default function WebContainerNameTextField() {
 		return select( STORE_NAME ).getWebContainers( accountID );
 	} );
 
+	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
+	const containerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' ) );
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	useEffect( () => {
+		if ( ! containerName ) {
+			setValues( FORM_SETUP, { containerName: siteName || global.location.hostname } );
+		}
+	}, [] );
 
 	const label = isSecondaryAMP
 		? __( 'Web Container Name', 'google-site-kit' )
