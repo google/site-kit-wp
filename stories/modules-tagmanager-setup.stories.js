@@ -96,6 +96,15 @@ storiesOf( 'Tag Manager Module/Setup', module )
 
 		return <Setup registry={ registry } />;
 	} )
+	.add( 'Set up a new container', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+
+		return <Setup registry={ registry } />;
+	} )
 	.add( 'Existing tag (with access)', ( registry ) => {
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const accountID = fixtures.accounts[ 0 ].accountId;
@@ -380,6 +389,15 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 		registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-99999-9' );
 		const activeModules = modulesFixtures.withActive( 'tagmanager', 'analytics' );
 		registry.dispatch( CORE_MODULES ).receiveGetModules( activeModules );
+
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Set up a new container', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
 
 		return <Setup registry={ registry } />;
 	} )
