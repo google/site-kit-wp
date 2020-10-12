@@ -292,4 +292,3 @@ export default {
 	resolvers,
 	selectors,
 };
-
