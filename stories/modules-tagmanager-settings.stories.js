@@ -133,6 +133,15 @@ storiesOf( 'Tag Manager Module/Settings', module )
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
+	.add( 'Edit, with "Set up a new container"', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	} )
 	.add( 'Edit, with all settings, with existing tag (with access)', ( registry ) => {
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		const accountID = fixtures.accounts[ 0 ].accountId;
@@ -221,6 +230,15 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		registry.dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
+
+		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+	} )
+	.add( 'Edit, with "Set up a new container"', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
 
 		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
 	} )
