@@ -31,40 +31,41 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import AnalyticsIcon from '../../../../../svg/analytics.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/progress-bar';
-import { SvgIcon, trackEvent } from '../../../../util';
+import { trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import {
 	AccountCreate,
 	AccountCreateLegacy,
 	ExistingTagError,
+	ExistingGTMPropertyError,
 } from '../common';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).getTagPermission( existingTag ) );
-	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
-	const isCreateAccount = ACCOUNT_CREATE === accountID;
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
-	// Set the accountID and property if there is an existing tag.
-	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
-	useEffect( () => {
-		if ( hasExistingTag && existingTagPermission ) {
-			const { accountID: existingTagAccountID } = existingTagPermission;
-			setAccountID( existingTagAccountID );
-			selectProperty( existingTag );
-		}
-	}, [ hasExistingTag, existingTag, existingTagPermission ] );
+	const { hasGTMAnalyticsPropertyID, hasGTMAnalyticsPropertyIDPermission } = useSelect( ( select ) => {
+		const gtmPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+		return {
+			hasGTMAnalyticsPropertyID: !! gtmPropertyID,
+			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID ? select( STORE_NAME ).hasTagPermission( gtmPropertyID ) : false,
+		};
+	} );
+
+	// Set the accountID and containerID if there is an existing tag.
+	useExistingTagEffect();
 
 	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -77,13 +78,17 @@ export default function SetupMain( { finishSetup } ) {
 		trackEvent( 'analytics_setup', 'configure_analytics_screen' );
 	}, [] );
 
+	const isCreateAccount = ACCOUNT_CREATE === accountID;
+
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating ) {
+	if ( isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
+	} else if ( ! hasExistingTag && hasGTMAnalyticsPropertyID && ! hasGTMAnalyticsPropertyIDPermission ) {
+		viewComponent = <ExistingGTMPropertyError />;
 	} else if ( isCreateAccount || ( Array.isArray( accounts ) && ! accounts.length ) ) {
 		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
 	} else {
@@ -92,9 +97,8 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-
 			<div className="googlesitekit-setup-module__logo">
-				<SvgIcon id="analytics" width="33" height="33" />
+				<AnalyticsIcon width="33" height="33" />
 			</div>
 
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">

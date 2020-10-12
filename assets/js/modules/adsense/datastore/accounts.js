@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: accounts.
+ * `modules/adsense` data store: accounts.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -112,7 +112,7 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Get all Google AdSense accounts this user has available.
+	 * Gets all Google AdSense accounts this user has available.
 	 *
 	 * @since 1.9.0
 	 *

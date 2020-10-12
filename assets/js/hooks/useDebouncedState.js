@@ -1,5 +1,5 @@
 /**
- * useDebouncedState hook.
+ * `useDebouncedState` hook.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -22,13 +22,13 @@
 import { useState, useEffect } from '@wordpress/element';
 
 /**
- * useDebouncedState hook
+ * Debounces a value after the specified delay.
  *
  * @since 1.16.0
  *
  * @param {string} value The value to be debounced.
- * @param {number} delay Number of milliseconds to debounce
- * @return {string} The update value after the delay
+ * @param {number} delay Number of milliseconds to debounce.
+ * @return {string} The update value after the delay.
  */
 export function useDebouncedState( value, delay ) {
 	const [ debouncedValue, setDebouncedValue ] = useState( value );

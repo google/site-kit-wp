@@ -1,5 +1,5 @@
 /**
- * core/forms data store: forms data
+ * `core/forms` data store: forms data
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
 
 const SET_FORM_VALUES = 'SET_FORM_VALUES';
 
@@ -37,8 +38,8 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setValues( formName, formData ) {
-		invariant( formName, 'formName is required for setting values.' );
-		invariant( formData instanceof Object && formData.constructor === Object, 'formData must be an object.' );
+		invariant( formName && typeof formName === 'string', 'a valid formName is required for setting values.' );
+		invariant( isPlainObject( formData ), 'formData must be an object.' );
 
 		return {
 			payload: { formName, formData },

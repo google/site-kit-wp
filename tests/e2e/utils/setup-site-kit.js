@@ -1,5 +1,5 @@
 /**
- * setupSiteKit utility.
+ * Site Kit setup helper utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -22,7 +22,7 @@
 import { activatePlugin } from '@wordpress/e2e-test-utils';
 
 /**
- * Internal depedencies
+ * Internal dependencies
  */
 import {
 	setSiteVerification,

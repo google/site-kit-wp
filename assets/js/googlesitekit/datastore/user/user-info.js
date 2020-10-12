@@ -1,5 +1,5 @@
 /**
- * core/user Data store: user info
+ * `core/user` data store: user info
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -205,8 +205,8 @@ export const selectors = {
 	 * }
 	 * ```
 	 *
-	 * @private
 	 * @since 1.9.0
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User info.

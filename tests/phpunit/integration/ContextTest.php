@@ -127,10 +127,36 @@ class ContextTest extends TestCase {
 		$this->assertEquals( $context->is_network_active(), $context->is_network_mode() );
 	}
 
-	public function test_get_reference_site_url() {
+	public function test_get_cannonical_home_url() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
 		$home_url = home_url();
+
+		// By default, the cannonical home URL should match `home_url()`.
+		$this->assertEquals( $home_url, $context->get_canonical_home_url() );
+
+		$url_filter = function () {
+			return 'https://test.com';
+		};
+
+		// Make sure that the filter is applied.
+		add_filter( 'googlesitekit_canonical_home_url', $url_filter );
+		$this->assertEquals( 'https://test.com', $context->get_canonical_home_url() );
+		remove_filter( 'googlesitekit_canonical_home_url', $url_filter );
+
+		$trailing_slash_url_filter = function () {
+			return 'https://test.com/';
+		};
+
+		// It returns a URL with a trailing slash, if the filter sets one.
+		add_filter( 'googlesitekit_canonical_home_url', $trailing_slash_url_filter );
+		$this->assertEquals( 'https://test.com/', $context->get_canonical_home_url() );
+	}
+
+	public function test_get_reference_site_url() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$home_url = $context->get_canonical_home_url();
 
 		// By default, the reference site_url uses the home_url
 		$this->assertEquals( $home_url, $context->get_reference_site_url() );

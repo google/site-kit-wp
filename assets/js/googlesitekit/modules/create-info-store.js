@@ -1,5 +1,5 @@
 /**
- * core/modules data store: info.
+ * `core/modules` data store: info.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -40,7 +40,7 @@ const { createRegistrySelector } = Data;
  * @param {Object}  options               Options to consider for the store.
  * @param {number}  options.storeName     Store name to use.
  * @param {string}  options.adminPage     Store admin page. Default is 'googlesitekit-dashboard'.
- * @param {boolean} options.requiresSetup Store flag, for requires setup. Default is 'true'
+ * @param {boolean} options.requiresSetup Store flag, for requires setup. Default is 'true'.
  * @return {Object} The info store object.
  */
 export const createInfoStore = ( slug, {

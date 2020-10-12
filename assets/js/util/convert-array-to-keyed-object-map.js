@@ -1,5 +1,5 @@
 /**
- * convertArrayListToKeyedObjectMap utility function.
+ * `convertArrayListToKeyedObjectMap` utility function.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,10 +20,9 @@
  *
  * @since 1.13.0
  *
- * @param {Array} arrayData       Array data to be converted to an Object
- * @param {string} propertyKey  Object property to be used for the property name in the main object.
- *
- * @return {Object} An object containing objects
+ * @param {Array}  arrayData   Array data to be converted to an `Object`.
+ * @param {string} propertyKey Object property to be used for the property name in the main object.
+ * @return {Array} An object containing objects.
  */
 export function convertArrayListToKeyedObjectMap( arrayData, propertyKey ) {
 	return arrayData.reduce( ( acc, item ) => {

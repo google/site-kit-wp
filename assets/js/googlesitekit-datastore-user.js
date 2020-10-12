@@ -1,5 +1,5 @@
 /**
- * Entrypoint for the core/user data store.
+ * Entrypoint for the `core/user` data store.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
