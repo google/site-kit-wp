@@ -76,15 +76,54 @@ export function isValidContainerID( containerID ) {
 }
 
 /**
+ * Gets normalized container name.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} containerName Container name to normalize.
+ * @return {string} Normalized container name.
+ */
+export function getNormalizedContainerName( containerName ) {
+	let sanitizedContainerName = containerName;
+
+	// Remove any leading or trailing whitespace.
+	sanitizedContainerName = sanitizedContainerName.trim();
+	// Must not start with an underscore.
+	sanitizedContainerName = sanitizedContainerName.replace( /^_+/, '' );
+	// Convert accents to basic characters to prevent them from being stripped.
+	sanitizedContainerName = sanitizedContainerName.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' );
+	// Strip all non-simple characters.
+	sanitizedContainerName = sanitizedContainerName.replace( /[^a-zA-Z0-9_., -]/g, '' );
+	// Collapse multiple whitespaces.
+	sanitizedContainerName = sanitizedContainerName.replace( /\s+/g, ' ' );
+
+	return sanitizedContainerName;
+}
+
+/**
  * Checks if the given container name appears to be valid.
  *
  * @since n.e.x.t
  *
- * @param {string} value Container name to test.
+ * @param {string} containerName Container name to test.
  * @return {boolean} True if valid, otherwise false.
  */
-export function isValidContainerName( value ) {
-	return typeof value === 'string' && value.trim().length > 0;
+export function isValidContainerName( containerName ) {
+	return typeof containerName === 'string' && getNormalizedContainerName( containerName ).length > 0;
+}
+
+/**
+ * Checks if the given cotnainer name is unique accross account containers.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string}         containerName Container name to test.
+ * @param {Array.<Object>} containers    Available containers.
+ * @return {boolean} True if unique, otherwise false.
+ */
+export function isUniqueContainerName( containerName, containers ) {
+	const normalizedContainerName = getNormalizedContainerName( containerName );
+	return ! Array.isArray( containers ) || ! containers.some( ( { name } ) => name === normalizedContainerName );
 }
 
 /**

@@ -34,6 +34,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms';
 import { TextField, HelperText, Input } from '../../../../material-components';
 import { FORM_SETUP } from '../../datastore/constants';
+import { isUniqueContainerName } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function ContainerNameTextField( { label, containers, formFieldID } ) {
@@ -45,25 +46,8 @@ export default function ContainerNameTextField( { label, containers, formFieldID
 	}, [ formFieldID ] );
 
 	let helperText;
-
-	if ( containerName ) {
-		const existingContainer = Array.isArray( containers ) && containers.some( ( { name } ) => name === containerName );
-		if ( existingContainer ) {
-			helperText = __( 'A container with this name already exists.', 'google-site-kit' );
-		} else if ( containerName.trim() !== containerName ) {
-			helperText = __( 'The container name should not have leading or trailing spaces.', 'google-site-kit' );
-		} else if ( containerName[ 0 ] === '_' ) {
-			helperText = __( 'The container name should not start with an underscore.', 'google-site-kit' );
-		}
-
-		// // Decode entities for special characters so that they are stripped properly.
-		// $name = wp_specialchars_decode( $name, ENT_QUOTES );
-		// // Convert accents to basic characters to prevent them from being stripped.
-		// $name = remove_accents( $name );
-		// // Strip all non-simple characters.
-		// $name = preg_replace( '/[^a-zA-Z0-9_., -]/', '', $name );
-		// // Collapse multiple whitespaces.
-		// $name = preg_replace( '/\s+/', ' ', $name );
+	if ( containerName && ! isUniqueContainerName( containerName, containers ) ) {
+		helperText = __( 'A container with this name already exists.', 'google-site-kit' );
 	}
 
 	let trailingIcon;
