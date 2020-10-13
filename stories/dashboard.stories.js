@@ -24,6 +24,7 @@ import PostSearcher from '../assets/js/components/PostSearcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore/constants';
+import { STORE_NAME as SEARCH_CONSOLE_STORE } from '../assets/js/modules/search-console/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Dashboard', module )
@@ -37,11 +38,12 @@ storiesOf( 'Dashboard', module )
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( ANALYTICS_STORE ).receiveGetSettings( {} );
-			dispatch( ANALYTICS_STORE ).setAccountID( '123456789' );
-			dispatch( ANALYTICS_STORE ).setPropertyID( '123456789' );
-			dispatch( ANALYTICS_STORE ).setInternalWebPropertyID( '123456789' );
-			dispatch( ANALYTICS_STORE ).setProfileID( '123456789' );
+			dispatch( ANALYTICS_STORE ).receiveGetSettings( {
+				accountID: '123456789',
+				propertyID: '123456789',
+				internalWebPropertyID: '123456789',
+				profileID: '123456789',
+			} );
 		};
 
 		// Load the datacache with data.
@@ -100,11 +102,15 @@ storiesOf( 'Dashboard', module )
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( ANALYTICS_STORE ).receiveGetSettings( {} );
-			dispatch( ANALYTICS_STORE ).setAccountID( '123456789' );
-			dispatch( ANALYTICS_STORE ).setPropertyID( '123456789' );
-			dispatch( ANALYTICS_STORE ).setInternalWebPropertyID( '123456789' );
-			dispatch( ANALYTICS_STORE ).setProfileID( '123456789' );
+			dispatch( ANALYTICS_STORE ).receiveGetSettings( {
+				accountID: '123456789',
+				propertyID: '123456789',
+				internalWebPropertyID: '123456789',
+				profileID: '123456789',
+			} );
+			dispatch( SEARCH_CONSOLE_STORE ).receiveGetSettings( {
+				propertyID: 'https://example.com/',
+			} );
 		};
 
 		const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
@@ -182,11 +188,15 @@ storiesOf( 'Dashboard', module )
 			);
 		}, 250 );
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( ANALYTICS_STORE ).receiveGetSettings( {} );
-			dispatch( ANALYTICS_STORE ).setAccountID( '123456789' );
-			dispatch( ANALYTICS_STORE ).setPropertyID( '123456789' );
-			dispatch( ANALYTICS_STORE ).setInternalWebPropertyID( '123456789' );
-			dispatch( ANALYTICS_STORE ).setProfileID( '123456789' );
+			dispatch( ANALYTICS_STORE ).receiveGetSettings( {
+				accountID: '123456789',
+				propertyID: '123456789',
+				internalWebPropertyID: '123456789',
+				profileID: '123456789',
+			} );
+			dispatch( SEARCH_CONSOLE_STORE ).receiveGetSettings( {
+				propertyID: 'https://example.com/',
+			} );
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry } >

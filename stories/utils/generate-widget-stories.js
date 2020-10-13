@@ -40,9 +40,8 @@ const { components: { Widget } } = Widgets;
  *
  * @since 1.16.0
  * @private
- *
  * @param {Object}    args                              Widget arguments.
- * @param {Array}     args.moduleSlug                   List of modules to activate.
+ * @param {Array}     args.moduleSlugs                  List of modules to activate.
  * @param {string}    args.datastore                    Module datastore name.
  * @param {string}    args.group                        Stories group name.
  * @param {Array}     args.data                         Widget data.
@@ -55,7 +54,7 @@ const { components: { Widget } } = Widgets;
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {
-	moduleSlug,
+	moduleSlugs,
 	datastore,
 	group,
 	data,
@@ -70,7 +69,7 @@ export function generateReportBasedWidgetStories( {
 		.addDecorator( ( storyFn ) => {
 			const registry = createTestRegistry();
 			// Activate the module.
-			provideModules( registry, moduleSlug.map( ( module ) => {
+			provideModules( registry, moduleSlugs.map( ( module ) => {
 				return {
 					slug: module,
 					active: true,
@@ -199,8 +198,11 @@ export function generateReportBasedWidgetStories( {
 
 	let widget;
 	if ( wrapWidget ) {
+		const slugs = moduleSlugs.map( ( slug ) => {
+			return `${ slug }-widget`;
+		} );
 		widget = (
-			<Widget slug={ `${ moduleSlug }-widget` }>
+			<Widget slug={ slugs.join( ' ' ) }>
 				<WidgetComponent />
 			</Widget>
 		);
