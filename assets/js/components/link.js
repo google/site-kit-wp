@@ -32,8 +32,6 @@ import { VisuallyHidden } from '@wordpress/components';
 class Link extends Component {
 	render() {
 		const {
-			dangerouslySetInnerHTML,
-			onClick,
 			href,
 			children,
 			className,
@@ -46,7 +44,7 @@ class Link extends Component {
 			caps,
 			danger,
 			disabled,
-			id,
+			...extraProps
 		} = this.props;
 		// Note: the disabled attribute does not alter behavior of anchor tags,
 		// so if disabled we force it to be a button.
@@ -70,13 +68,11 @@ class Link extends Component {
 						'googlesitekit-cta-link--disabled': disabled,
 					}
 				) }
-				onClick={ onClick }
-				id={ id }
 				href={ isAnchor ? href : undefined }
 				target={ isAnchor && external ? '_blank' : undefined }
 				rel={ external ? 'noopener noreferrer' : undefined }
 				disabled={ disabled }
-				dangerouslySetInnerHTML={ dangerouslySetInnerHTML }
+				{ ...extraProps }
 			>
 				{ children }
 

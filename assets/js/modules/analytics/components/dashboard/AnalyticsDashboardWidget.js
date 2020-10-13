@@ -31,6 +31,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import AnalyticsIcon from '../../../../../svg/analytics.svg';
 import Header from '../../../../components/header';
 import AnalyticsDashboardWidgetSiteStats from './AnalyticsDashboardWidgetSiteStats';
 import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTopPagesTable';
@@ -38,6 +39,7 @@ import AnalyticsDashboardWidgetOverview from './AnalyticsDashboardWidgetOverview
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import Layout from '../../../../components/layout/layout';
 import PageHeader from '../../../../components/page-header';
+import PageHeaderDateRange from '../../../../components/page-header-date-range';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
 import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/progress-bar';
@@ -160,17 +162,22 @@ class AnalyticsDashboardWidget extends Component {
 							">
 								<PageHeader
 									title={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-									icon
-									iconWidth="24"
-									iconHeight="26"
-									iconID="analytics"
+									icon={
+										<AnalyticsIcon
+											className="googlesitekit-page-header__icon"
+											height="26"
+											width="24"
+										/>
+									}
 									status="connected"
 									statusText={ sprintf(
 										/* translators: %s: module name. */
 										__( '%s is connected', 'google-site-kit' ),
 										_x( 'Analytics', 'Service name', 'google-site-kit' )
 									) }
-								/>
+								>
+									<PageHeaderDateRange />
+								</PageHeader>
 								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

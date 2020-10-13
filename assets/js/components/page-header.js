@@ -21,98 +21,68 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-import { applyFilters } from '@wordpress/hooks';
+function PageHeader( props ) {
+	const { title, icon, className, status, statusText, fullWidth, children } = props;
 
-/**
- * Internal dependencies
- */
-import SvgIcon from '../util/svg-icon';
-import DateRangeSelector from './date-range-selector';
+	const widthClasses = fullWidth
+		? `
+		mdc-layout-grid__cell
+		mdc-layout-grid__cell--span-12
+		`
+		: `
+		mdc-layout-grid__cell
+		mdc-layout-grid__cell--span-4-phone
+		mdc-layout-grid__cell--span-4-tablet
+		mdc-layout-grid__cell--span-6-desktop
+		`;
 
-class PageHeader extends Component {
-	render() {
-		const { title, icon, iconWidth, iconHeight, iconID, className, status, statusText, fullWidth } = this.props;
+	// Determine whether the details cell should display.
+	const hasDetails = '' !== status || Boolean( children );
 
-		const widthClasses = fullWidth
-			? `
-			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-12
-			`
-			: `
-			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-4-phone
-			mdc-layout-grid__cell--span-4-tablet
-			mdc-layout-grid__cell--span-6-desktop
-			`;
-
-		/**
-		 * Filter whether to show a date range selector.
-		 *
-		 * Modules can op into the date range selection feature by returning true.
-		 */
-		const showDateRangeSelector = applyFilters( `googlesitekit.showDateRangeSelector-${ iconID }`, false );
-
-		// Determine whether the details cell should display.
-		const hasDetails = '' !== status || showDateRangeSelector ? true : false;
-
-		return (
-			<header className="googlesitekit-page-header">
-				<div className="mdc-layout-grid__inner">
-					{ title &&
-						<div className={ widthClasses }>
-							{ icon &&
-								<SvgIcon id={ iconID } height={ iconHeight } width={ iconWidth } className="googlesitekit-page-header__icon" />
+	return (
+		<header className="googlesitekit-page-header">
+			<div className="mdc-layout-grid__inner">
+				{ title &&
+					<div className={ widthClasses }>
+						{ icon }
+						<h1 className={ classnames(
+							'googlesitekit-page-header__title',
+							className
+						) }>
+							{ title }
+						</h1>
+					</div>
+				}
+				{ hasDetails &&
+					<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--align-bottom
+						mdc-layout-grid__cell--align-right-tablet
+						mdc-layout-grid__cell--span-4-phone
+						mdc-layout-grid__cell--span-4-tablet
+						mdc-layout-grid__cell--span-6-desktop
+					">
+						<div className="googlesitekit-page-header__details">
+							{ status &&
+								<span className={ classnames(
+									'googlesitekit-page-header__status',
+									`googlesitekit-page-header__status--${ status }`
+								) }>
+									{ statusText }
+								</span>
 							}
-							<h1 className={ classnames(
-								'googlesitekit-page-header__title',
-								className
-							) }>
-								{ title }
-							</h1>
+							{ children }
 						</div>
-					}
-					{ hasDetails &&
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--align-bottom
-							mdc-layout-grid__cell--align-right-tablet
-							mdc-layout-grid__cell--span-4-phone
-							mdc-layout-grid__cell--span-4-tablet
-							mdc-layout-grid__cell--span-6-desktop
-						">
-							<div className="googlesitekit-page-header__details">
-								{ status &&
-									<span className={ classnames(
-										'googlesitekit-page-header__status',
-										`googlesitekit-page-header__status--${ status }`
-									) }>
-										{ statusText }
-									</span>
-								}
-								{ showDateRangeSelector &&
-									<span className="googlesitekit-page-header__range">
-										<DateRangeSelector />
-									</span>
-								}
-							</div>
-						</div>
-					}
-				</div>
-			</header>
-		);
-	}
+					</div>
+				}
+			</div>
+		</header>
+	);
 }
 
 PageHeader.propTypes = {
 	title: PropTypes.string,
-	icon: PropTypes.bool,
-	iconID: PropTypes.string,
-	iconWidth: PropTypes.string,
-	iconHeight: PropTypes.string,
+	icon: PropTypes.node,
 	className: PropTypes.string,
 	status: PropTypes.string,
 	statusText: PropTypes.string,
@@ -121,10 +91,7 @@ PageHeader.propTypes = {
 
 PageHeader.defaultProps = {
 	title: '',
-	icon: false,
-	iconID: '',
-	iconWidth: '',
-	iconHeight: '',
+	icon: null,
 	className: 'googlesitekit-heading-3',
 	status: '',
 	statusText: '',

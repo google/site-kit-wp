@@ -45,5 +45,7 @@ module.exports = {
 		'@wordpress/element__non-shim': '@wordpress/element',
 		// New (JSR) modules.
 		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
+		// Necessary mock to prevent test failures caused by SVGR
+		'\\.svg$': '<rootDir>/tests/js/svgrMock.js',
 	},
 };

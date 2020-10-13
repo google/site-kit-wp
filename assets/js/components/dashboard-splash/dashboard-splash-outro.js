@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SvgIcon from '../../util/svg-icon';
+import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Button from '../button';
 
 class DashboardSplashOutro extends Component {
@@ -50,7 +50,7 @@ class DashboardSplashOutro extends Component {
 							mdc-layout-grid__cell--span-12
 						">
 							<div className="googlesitekit-splash-outro__logo">
-								<SvgIcon id="logo-g" height="33" width="29" />
+								<GoogleLogoIcon height="33" width="29" />
 							</div>
 							<h3 className="
 								googlesitekit-heading-2
