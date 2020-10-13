@@ -27,7 +27,6 @@ describe( 'Site Kit noscript notice', () => {
 			await expect( page ).toMatchElement( '[id^=js-googlesitekit-]', { visible: false } );
 			await expect( page ).not.toMatchElement( '.googlesitekit-header' );
 			await expect( page ).not.toMatchElement( '.googlesitekit-module-page' );
-			expect( console ).toHaveErrored();
 		} );
 
 		it( 'Should display noscript notice', async () => {
