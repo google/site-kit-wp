@@ -67,7 +67,9 @@ function DashboardBounceRateWidget() {
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-
+		if ( url ) {
+			args.url = url;
+		}
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),

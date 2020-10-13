@@ -59,6 +59,9 @@ function DashboardUniqueVisitorsWidget() {
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			commonArgs.url = url;
+		}
 		const sparklineArgs = {
 			dimensions: 'ga:date',
 			metrics: [
