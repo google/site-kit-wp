@@ -24,17 +24,18 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import TagManagerIcon from '../../../../../svg/tagmanager.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/progress-bar';
-import { SvgIcon } from '../../../../util';
-import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { STORE_NAME, ACCOUNT_CREATE, FORM_SETUP } from '../../datastore/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { useExistingTagEffect } from '../../hooks';
 import {
 	AccountCreate,
@@ -50,6 +51,7 @@ export default function SetupMain( { finishSetup } ) {
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+	const submitInProgress = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.
@@ -57,15 +59,15 @@ export default function SetupMain( { finishSetup } ) {
 
 	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
 	const [ isNavigating, setIsNavigating ] = useState( false );
-	const finishSetupAndNavigate = ( ...args ) => {
-		finishSetup( ...args );
+	const finishSetupAndNavigate = useCallback( ( ...args ) => {
 		setIsNavigating( true );
-	};
+		finishSetup( ...args );
+	}, [ setIsNavigating, finishSetup ] );
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating ) {
+	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating || submitInProgress ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
@@ -79,7 +81,7 @@ export default function SetupMain( { finishSetup } ) {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--tagmanager">
 
 			<div className="googlesitekit-setup-module__logo">
-				<SvgIcon id="tagmanager" width="33" height="33" />
+				<TagManagerIcon width="33" height="33" />
 			</div>
 
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">

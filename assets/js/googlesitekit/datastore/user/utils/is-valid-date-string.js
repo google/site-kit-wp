@@ -24,7 +24,7 @@ import { isValidDateInstance } from './is-valid-date-instance';
 /**
  * Asserts whether a given date string is valid or invalid.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  *
  * @param {string} dateString Date string to be asserted against. Defaults to an empty string.
  * @return {boolean}          True if the given date string is valid.

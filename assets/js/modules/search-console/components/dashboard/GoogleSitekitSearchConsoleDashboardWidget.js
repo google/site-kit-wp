@@ -31,11 +31,13 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import SearchConsoleIcon from '../../../../../svg/search-console.svg';
 import Header from '../../../../components/header';
 import SearchConsoleDashboardWidgetSiteStats from './SearchConsoleDashboardWidgetSiteStats';
 import LegacySearchConsoleDashboardWidgetKeywordTable from './LegacySearchConsoleDashboardWidgetKeywordTable';
 import SearchConsoleDashboardWidgetOverview from './SearchConsoleDashboardWidgetOverview';
 import PageHeader from '../../../../components/page-header';
+import PageHeaderDateRange from '../../../../components/page-header-date-range';
 import Layout from '../../../../components/layout/layout';
 import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/progress-bar';
@@ -164,17 +166,22 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 							">
 							<PageHeader
 								title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-								icon
-								iconWidth="23"
-								iconHeight="21"
-								iconID="search-console"
+								icon={
+									<SearchConsoleIcon
+										className="googlesitekit-page-header__icon"
+										height="21"
+										width="23"
+									/>
+								}
 								status="connected"
 								statusText={ sprintf(
 									/* translators: %s: module name. */
 									__( '%s is connected', 'google-site-kit' ),
 									_x( 'Search Console', 'Service name', 'google-site-kit' )
 								) }
-							/>
+							>
+								<PageHeaderDateRange />
+							</PageHeader>
 							{ loading && <ProgressBar /> }
 						</div>
 						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

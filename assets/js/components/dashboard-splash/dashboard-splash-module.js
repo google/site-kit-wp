@@ -21,46 +21,27 @@
  */
 import PropTypes from 'prop-types';
 
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-/**
- * Internal dependencies
- */
-import SvgIcon from '../../util/svg-icon';
-
-class DashboardSplashModule extends Component {
-	render() {
-		const { icon, title, content } = this.props;
-
-		return (
-			<div className="googlesitekit-splash-module">
-				<div className="googlesitekit-splash-module__logo">
-					{ 'pagespeed' === icon ? (
-						<img
-							alt="PageSpeed Icon"
-							src={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/icon-pagespeed.png` }
-						/>
-					) : <SvgIcon id={ icon } width="33" height="33" /> }
-				</div>
-				<h3 className="
-					googlesitekit-subheading-1
-					googlesitekit-splash-module__title
-				">
-					{ title }
-				</h3>
-				<p className="googlesitekit-splash-module__text">
-					{ content }
-				</p>
+function DashboardSplashModule( { icon, title, content } ) {
+	return (
+		<div className="googlesitekit-splash-module">
+			<div className="googlesitekit-splash-module__logo">
+				{ icon }
 			</div>
-		);
-	}
+			<h3 className="
+				googlesitekit-subheading-1
+				googlesitekit-splash-module__title
+			">
+				{ title }
+			</h3>
+			<p className="googlesitekit-splash-module__text">
+				{ content }
+			</p>
+		</div>
+	);
 }
 
 DashboardSplashModule.propTypes = {
-	icon: PropTypes.string,
+	icon: PropTypes.node,
 	title: PropTypes.string,
 	content: PropTypes.string,
 };

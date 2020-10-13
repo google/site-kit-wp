@@ -31,6 +31,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import AdSenseIcon from '../../../../../svg/adsense.svg';
 import AdSenseEstimateEarningsWidget from './AdSenseEstimateEarningsWidget';
 import AdSensePerformanceWidget from './AdSensePerformanceWidget';
 import Alert from '../../../../components/alert';
@@ -43,6 +44,7 @@ import { getModulesData } from '../../../../util';
 import HelpLink from '../../../../components/help-link';
 import Header from '../../../../components/header';
 import PageHeader from '../../../../components/page-header';
+import PageHeaderDateRange from '../../../../components/page-header-date-range';
 import Layout from '../../../../components/layout/layout';
 
 // Empty component to allow filtering in refactored version.
@@ -155,13 +157,18 @@ class AdSenseDashboardWidget extends Component {
 							">
 								<PageHeader
 									title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
-									icon
-									iconWidth="30"
-									iconHeight="26"
-									iconID="adsense"
+									icon={
+										<AdSenseIcon
+											className="googlesitekit-page-header__icon"
+											height="33"
+											width="33"
+										/>
+									}
 									status={ moduleStatus }
 									statusText={ moduleStatusText }
-								/>
+								>
+									<PageHeaderDateRange />
+								</PageHeader>
 								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

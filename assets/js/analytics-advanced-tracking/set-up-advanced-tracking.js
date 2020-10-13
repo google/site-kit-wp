@@ -22,7 +22,7 @@
  * This will for each provided event configuration add a DOM event listener that,
  * when triggered, results in a call to the provided sendEvent function.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  *
  * @param {Object[]} eventConfigurations List of event configuration objects. Each event object must have properties
  *                                       `action`, `on`, `selector`, and optionally `metadata`.
@@ -48,7 +48,7 @@ export default function setUpAdvancedTracking( eventConfigurations, sendEvent ) 
 
 	return () => {
 		toRemove.forEach( ( listenerArgs ) => {
-			document.removeEventListener( ...listenerArgs );
+			document.removeEventListener.apply( document, listenerArgs );
 		} );
 	};
 }
@@ -56,7 +56,7 @@ export default function setUpAdvancedTracking( eventConfigurations, sendEvent ) 
 /**
  * Checks whether the given element matches the given selector.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  *
  * @param {Element} el       A DOM element.
  * @param {string}  selector A selector to check for.

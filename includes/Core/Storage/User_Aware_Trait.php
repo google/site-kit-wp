@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 /**
  * Trait for user aware entities.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ trait User_Aware_Trait {
 	/**
 	 * User ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 * @var int
 	 */
 	private $user_id;
@@ -30,7 +30,7 @@ trait User_Aware_Trait {
 	/**
 	 * Gets the associated user ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return int User ID.
 	 */
@@ -46,7 +46,7 @@ trait User_Aware_Trait {
 	 * be applied when the entire chain of class main instances need to be updated to rely on another user, i.e. when
 	 * the current WordPress user has changed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return callable A closure to switch back to the original user.

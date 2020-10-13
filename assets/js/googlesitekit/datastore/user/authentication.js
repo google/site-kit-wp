@@ -61,7 +61,7 @@ const baseActions = {
 	/**
 	 * Sets the authentication error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param {Object} error Authentication error object.
 	 * @return {Object} Redux-style action.
@@ -76,7 +76,7 @@ const baseActions = {
 	/**
 	 * Clears the authentication error, if one was previously set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -246,7 +246,7 @@ const baseSelectors = {
 	/**
 	 * Gets the authentication error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|null)} Authentication error object if available, otherwise null.

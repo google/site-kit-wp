@@ -35,12 +35,12 @@ import {
 	getReAuthURL,
 	activateOrDeactivateModule,
 	showErrorNotification,
-	moduleIcon,
 	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import Link from './link';
 import data from '../components/data';
+import ModuleIcon from '../components/module-icon';
 import GenericError from './notifications/generic-error';
 import ModuleSettingsWarning from './notifications/module-settings-warning';
 
@@ -80,10 +80,18 @@ class ModulesList extends Component {
 	}
 
 	render() {
+		const { moduleSlugs } = this.props;
 		const modulesData = getModulesData();
 
+		// Filter specific modules
+		const moduleObjects = Array.isArray( moduleSlugs ) && moduleSlugs.length
+			? moduleSlugs
+				.filter( ( slug ) => modulesData.hasOwnProperty( slug ) )
+				.reduce( ( acc, slug ) => ( { ...acc, [ slug ]: modulesData[ slug ] } ), {} )
+			: modulesData;
+
 		// Filter out internal modules.
-		const modules = Object.values( modulesData ).filter( ( module ) => ! module.internal );
+		const modules = Object.values( moduleObjects ).filter( ( module ) => ! module.internal );
 
 		// Map of slug => name for every module that is active and completely set up.
 		const completedModuleNames = modules
@@ -132,7 +140,7 @@ class ModulesList extends Component {
 						>
 							<div className="googlesitekit-settings-connect-module__wrapper">
 								<div className="googlesitekit-settings-connect-module__logo">
-									{ moduleIcon( slug, blockedByParentModule ) }
+									<ModuleIcon slug={ slug } />
 								</div>
 								<h3 className="googlesitekit-settings-connect-module__title">
 									{ name }
