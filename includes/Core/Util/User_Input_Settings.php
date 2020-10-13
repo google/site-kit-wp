@@ -114,7 +114,7 @@ class User_Input_Settings {
 
 		$code = wp_remote_retrieve_response_code( $response );
 		if ( $code < 200 || 299 < $code ) {
-			return new \WP_Error(
+			return new WP_Error(
 				'user_input_settings_request',
 				__( 'User input settings request failed.', 'google-site-kit' ),
 				array( 'status' => $code )
