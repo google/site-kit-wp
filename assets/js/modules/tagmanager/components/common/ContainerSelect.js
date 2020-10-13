@@ -43,10 +43,7 @@ export default function ContainerSelect( {
 	value,
 	...props
 } ) {
-	const {
-		accounts,
-		hasResolvedAccounts,
-	} = useSelect( ( select ) => ( {
+	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( STORE_NAME ).getAccounts(),
 		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
 	} ) );

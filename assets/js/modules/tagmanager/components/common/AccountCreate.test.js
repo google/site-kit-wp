@@ -37,6 +37,7 @@ describe( 'AccountCreate', () => {
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		// Set user info.
 		registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'user@example.com' } );
+		registry.dispatch( CORE_USER ).finishResolution( 'getUser', [] );
 		// Prevent error when loading site info.
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 		// Receive empty modules to prevent unexpected fetch by resolver.

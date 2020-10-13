@@ -27,8 +27,9 @@ const { useSelect } = Data;
 export default function UserProfile() {
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
 	const userPicture = useSelect( ( select ) => select( CORE_USER ).getPicture() );
+	const hasResolvedGetUser = useSelect( ( select ) => select( CORE_USER ).hasFinishedResolution( 'getUser' ) );
 
-	if ( undefined === userEmail || undefined === userPicture ) {
+	if ( ! hasResolvedGetUser ) {
 		return <ProgressBar small />;
 	}
 

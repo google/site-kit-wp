@@ -35,9 +35,11 @@ import StoreErrorNotice from '../../../../components/StoreErrorNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
+	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
+		accounts: select( STORE_NAME ).getAccounts(),
+		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+	} ) );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/provision/SignUp' } ) );
 
@@ -52,7 +54,7 @@ export default function AccountCreateLegacy() {
 		resetAccounts();
 	} );
 
-	if ( isDoingGetAccounts ) {
+	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar />;
 	}
 

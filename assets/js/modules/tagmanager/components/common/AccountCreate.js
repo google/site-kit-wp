@@ -36,7 +36,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function AccountCreate() {
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
-	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+	const hasResolvedGetUser = useSelect( ( select ) => select( CORE_USER ).hasFinishedResolution( 'getUser' ) );
 	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: 'admin/accounts/create' } ) );
 
 	const { resetAccounts } = useDispatch( STORE_NAME );
@@ -49,7 +49,7 @@ export default function AccountCreate() {
 		global.window.open( createAccountURL, '_blank' );
 	}, [ createAccountURL ] );
 
-	if ( ! hasResolvedAccounts || ! userEmail ) {
+	if ( ! hasResolvedAccounts || ! hasResolvedGetUser ) {
 		return <ProgressBar />;
 	}
 

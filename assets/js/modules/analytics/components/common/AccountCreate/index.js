@@ -46,10 +46,7 @@ import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
-	const {
-		accounts,
-		hasResolvedAccounts,
-	} = useSelect( ( select ) => ( {
+	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( STORE_NAME ).getAccounts(),
 		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
 	} ) );

@@ -32,10 +32,7 @@ import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const {
-		accounts,
-		hasResolvedAccounts,
-	} = useSelect( ( select ) => ( {
+	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( STORE_NAME ).getAccounts(),
 		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
 	} ) );
