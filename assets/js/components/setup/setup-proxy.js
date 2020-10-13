@@ -33,7 +33,8 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { SvgIcon, trackEvent } from '../../util';
+import PersonWalking from '../../../svg/person-walking.svg';
+import { trackEvent } from '../../util';
 import Header from '../header';
 import Button from '../button';
 import ResetButton from '../reset-button';
@@ -123,7 +124,12 @@ function SetupUsingProxy() {
 								<section className="googlesitekit-wizard-progress">
 									<div className="googlesitekit-setup__footer">
 										<div className="mdc-layout-grid">
-											<div className="mdc-layout-grid__inner">
+											<div className={ classnames(
+												'mdc-layout-grid__inner',
+												{
+													'googlesitekit-wizard-progress__content': featureFlags.widgets.userInput.enabled,
+												}
+											) }>
 												{ featureFlags.widgets.userInput.enabled && (
 													<div
 														className="
@@ -133,7 +139,7 @@ function SetupUsingProxy() {
 															mdc-layout-grid__cell--span-6-desktop
 														"
 													>
-														<SvgIcon id="person-walking" width="570" height="337" />
+														<PersonWalking width="570" height="337" />
 													</div>
 												) }
 
@@ -143,6 +149,7 @@ function SetupUsingProxy() {
 														'mdc-layout-grid__cell--span-12-tablet',
 														{
 															'mdc-layout-grid__cell--span-6-desktop': featureFlags.widgets.userInput.enabled,
+															'mdc-layout-grid__cell--span-12-desktop': ! featureFlags.widgets.userInput.enabled,
 														}
 													) }
 												>
