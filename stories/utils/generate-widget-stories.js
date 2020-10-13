@@ -39,7 +39,9 @@ const { components: { Widget } } = Widgets;
  * Generates stories for a report based widget using provided data.
  *
  * @since 1.16.0
+ *
  * @private
+ *
  * @param {Object}    args                              Widget arguments.
  * @param {Array}     args.moduleSlugs                  List of modules to activate.
  * @param {string}    args.datastore                    Module datastore name.
