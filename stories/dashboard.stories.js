@@ -23,6 +23,8 @@ import LegacySearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/sea
 import PostSearcher from '../assets/js/components/PostSearcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Dashboard', module )
@@ -35,6 +37,15 @@ storiesOf( 'Dashboard', module )
 	.add( 'All Traffic', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				accountID: '123456789',
+				propertyID: '123456789',
+				internalWebPropertyID: '123456789',
+				profileID: '123456789',
+			} );
+		};
+
 		// Load the datacache with data.
 		setTimeout( () => {
 			doAction(
@@ -43,28 +54,30 @@ storiesOf( 'Dashboard', module )
 			);
 		}, 250 );
 		return (
-			<Layout className="googlesitekit-dashboard-all-traffic">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="
+			<WithTestRegistry callback={ setupRegistry } >
+				<Layout className="googlesitekit-dashboard-all-traffic">
+					<div className="mdc-layout-grid">
+						<div className="mdc-layout-grid__inner">
+							<div className="
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--span-4-desktop
 							mdc-layout-grid__cell--span-4-tablet
 							mdc-layout-grid__cell--span-4-phone
 						">
-							<LegacyDashboardAcquisitionPieChart source />
-						</div>
-						<div className="
+								<LegacyDashboardAcquisitionPieChart source />
+							</div>
+							<div className="
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--span-8-desktop
 							mdc-layout-grid__cell--span-4-tablet
 							mdc-layout-grid__cell--span-4-phone
 						">
-							<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
+								<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
+							</div>
 						</div>
 					</div>
-				</div>
-			</Layout>
+				</Layout>
+			</WithTestRegistry>
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
@@ -88,6 +101,18 @@ storiesOf( 'Dashboard', module )
 	.add( 'Search Funnel Analytics Inactive', () => {
 		global._googlesitekitLegacyData = analyticsDashboardData;
 
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				accountID: '123456789',
+				propertyID: '123456789',
+				internalWebPropertyID: '123456789',
+				profileID: '123456789',
+			} );
+			dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
+				propertyID: 'https://example.com/',
+			} );
+		};
+
 		const addLegacySearchConsoleDashboardWidgetTopLevel = createAddToFilter( <LegacySearchConsoleDashboardWidgetTopLevel /> );
 
 		removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
@@ -105,26 +130,28 @@ storiesOf( 'Dashboard', module )
 		}, 250 );
 
 		return (
-			<Layout className="googlesitekit-analytics-search-funnel">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<LegacyDashboardSearchFunnelInner />
-						<div className="
+			<WithTestRegistry callback={ setupRegistry } >
+				<Layout className="googlesitekit-analytics-search-funnel">
+					<div className="mdc-layout-grid">
+						<div className="mdc-layout-grid__inner">
+							<LegacyDashboardSearchFunnelInner />
+							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-4-phone
 								mdc-layout-grid__cell--span-4-tablet
 								mdc-layout-grid__cell--span-6-desktop
 							">
-							<CTA
-								title={ __( 'Learn more about what visitors do on your site.', 'google-site-kit' ) }
-								description={ __( 'Connecting with Google Analytics to see unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }
-								ctaLink="#"
-								ctaLabel={ __( 'Set up analytics', 'google-site-kit' ) }
-							/>
+								<CTA
+									title={ __( 'Learn more about what visitors do on your site.', 'google-site-kit' ) }
+									description={ __( 'Connecting with Google Analytics to see unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }
+									ctaLink="#"
+									ctaLabel={ __( 'Set up analytics', 'google-site-kit' ) }
+								/>
+							</div>
 						</div>
 					</div>
-				</div>
-			</Layout>
+				</Layout>
+			</WithTestRegistry>
 		);
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
@@ -160,15 +187,27 @@ storiesOf( 'Dashboard', module )
 				'Dashboard'
 			);
 		}, 250 );
-
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				accountID: '123456789',
+				propertyID: '123456789',
+				internalWebPropertyID: '123456789',
+				profileID: '123456789',
+			} );
+			dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
+				propertyID: 'https://example.com/',
+			} );
+		};
 		return (
-			<Layout className="googlesitekit-analytics-search-funnel">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<LegacyDashboardSearchFunnelInner />
+			<WithTestRegistry callback={ setupRegistry } >
+				<Layout className="googlesitekit-analytics-search-funnel">
+					<div className="mdc-layout-grid">
+						<div className="mdc-layout-grid__inner">
+							<LegacyDashboardSearchFunnelInner />
+						</div>
 					</div>
-				</div>
-			</Layout>
+				</Layout>
+			</WithTestRegistry>
 		);
 	}, {
 		options: {

@@ -25,7 +25,7 @@ import { isEmpty } from 'lodash';
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment, useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,7 +34,6 @@ import {
 	getTimeInSeconds,
 	readableLargeNumber,
 	extractForSparkline,
-	getSiteKitAdminURL,
 	changeToPercent,
 } from '../../../../util';
 import {
@@ -47,174 +46,197 @@ import {
 	userReportDataDefaults,
 	parseTotalUsersData,
 } from '../../util';
+
+import applyEntityToReportPath from '../../util/applyEntityToReportPath';
+import Data from 'googlesitekit-data';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import Sparkline from '../../../../components/sparkline';
 import CTA from '../../../../components/notifications/cta';
 import PreviewBlock from '../../../../components/preview-block';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME } from '../../datastore/constants';
 
-class LegacyAnalyticsDashboardWidgetTopLevel extends Component {
-	constructor( props ) {
-		super( props );
-		this.state = {
-			accounts: false,
-			goals: false,
-			totalUsers: false,
-			previousTotalUsers: false,
-		};
-	}
+const { useSelect } = Data;
 
-	// When additional data is returned, componentDidUpdate will fire.
-	componentDidUpdate() {
-		this.processCallbackData();
-	}
+function LegacyAnalyticsDashboardWidgetTopLevel( { data, requestDataToState } ) {
+	const [ goals, setGoals ] = useState( false );
+	const [ totalUsers, setTotalUsers ] = useState( false );
+	const [ previousTotalUsers, setPreviousTotalUsers ] = useState( false );
+	const [ overview, setOverview ] = useState( false );
+	const [ extractedAnalytics, setExtractedAnalytics ] = useState( false );
 
-	componentDidMount() {
-		this.processCallbackData();
-	}
-
-	/**
-	 * Process callback data received from the API.
-	 */
-	processCallbackData() {
-		const {
-			data,
-			requestDataToState,
-		} = this.props;
-
+	useEffect( () => {
 		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
-			this.setState( requestDataToState );
+			const {
+				goals: goalsData,
+				overview: overviewData,
+				extractedAnalytics: extractedAnalyticsData,
+				totalUsers: totalUsersData,
+				previousTotalUsers: previousTotalUsersData,
+			} = requestDataToState( { goals, overview, extractedAnalytics, totalUsers, previousTotalUsers }, { data } ) || {};
+
+			if ( undefined !== goalsData ) {
+				setGoals( goalsData );
+			}
+
+			if ( undefined !== overviewData ) {
+				setOverview( overviewData );
+			}
+
+			if ( undefined !== extractedAnalyticsData ) {
+				setExtractedAnalytics( extractedAnalyticsData );
+			}
+
+			if ( undefined !== totalUsersData ) {
+				setTotalUsers( totalUsersData );
+			}
+
+			if ( undefined !== previousTotalUsersData ) {
+				setPreviousTotalUsers( previousTotalUsersData );
+			}
 		}
+	}, [ data, requestDataToState, goals, overview, extractedAnalytics, totalUsers, previousTotalUsers, setGoals, setOverview, setExtractedAnalytics, setTotalUsers, setPreviousTotalUsers ] );
+
+	const { permaLink } = global._googlesitekitLegacyData;
+
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+
+	const pathIDSegment = `a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
+
+	const uniqueVisitorsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: applyEntityToReportPath( url, `/report/visitors-overview/${ pathIDSegment }` ),
+		}
+	) );
+	const goalsServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: applyEntityToReportPath( url, `/report/conversions-goals-overview/${ pathIDSegment }` ),
+		}
+	) );
+
+	const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
+
+	let goalCompletions = '',
+		goalCompletionsChange = '',
+		averageBounceRate = '',
+		averageBounceRateChange = '';
+
+	if ( overview ) {
+		goalCompletions = overview.goalCompletions;
+		goalCompletionsChange = overview.goalCompletionsChange;
+		averageBounceRate = overview.averageBounceRate;
+		averageBounceRateChange = overview.averageBounceRateChange;
 	}
 
-	render() {
-		const {
-			overview,
-			extractedAnalytics,
-			goals,
-			totalUsers,
-			previousTotalUsers,
-		} = this.state;
+	const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
 
-		const { permaLink } = global._googlesitekitLegacyData;
-
-		const href = getSiteKitAdminURL( 'googlesitekit-module-analytics', {} );
-		const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
-
-		let goalCompletions = '',
-			goalCompletionsChange = '',
-			averageBounceRate = '',
-			averageBounceRateChange = '';
-
-		if ( overview ) {
-			goalCompletions = overview.goalCompletions;
-			goalCompletionsChange = overview.goalCompletionsChange;
-			averageBounceRate = overview.averageBounceRate;
-			averageBounceRateChange = overview.averageBounceRateChange;
-		}
-
-		const totalUsersChange = changeToPercent( previousTotalUsers, totalUsers );
-
-		return (
-			<Fragment>
-				<div className="
+	return (
+		<Fragment>
+			<div className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--align-bottom
 					mdc-layout-grid__cell--span-2-phone
 					mdc-layout-grid__cell--span-2-tablet
 					mdc-layout-grid__cell--span-3-desktop
 				">
+				<DataBlock
+					className="overview-total-users"
+					title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
+					datapoint={ readableLargeNumber( totalUsers ) }
+					change={ totalUsersChange }
+					changeDataUnit="%"
+					source={ {
+						name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
+						link: uniqueVisitorsServiceURL,
+						external: true,
+					} }
+					sparkline={
+						extractedAnalytics &&
+						<Sparkline
+							data={ extractForSparkline( extractedAnalytics, 1 ) }
+							change={ totalUsersChange }
+						/>
+					}
+				/>
+			</div>
+			<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--align-bottom
+					mdc-layout-grid__cell--span-2-phone
+					mdc-layout-grid__cell--span-2-tablet
+					mdc-layout-grid__cell--span-3-desktop
+				">
+				{
+					/**
+					 * The forth block shows goals for general view, and average time on page for detail view.
+					 */
+				}
+				{
+					permaLink && (
+						<DataBlock
+							className="overview-bounce-rate"
+							title={ __( 'Bounce Rate', 'google-site-kit' ) }
+							datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
+							datapointUnit="%"
+							change={ averageBounceRateChange }
+							changeDataUnit="%"
+							invertChangeColor
+							source={ {
+								name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
+								link: uniqueVisitorsServiceURL,
+								external: true,
+							} }
+							sparkline={
+								extractedAnalytics &&
+									<Sparkline
+										data={ extractForSparkline( extractedAnalytics, 2 ) }
+										change={ averageBounceRateChange }
+									/>
+							}
+						/>
+					) }
+				{ ! permaLink && goals && isEmpty( goals.items ) && (
+					<CTA
+						title={ __( 'Use goals to measure success.', 'google-site-kit' ) }
+						description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
+						ctaLink={ goalURL }
+						ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
+					/>
+				)
+				}
+				{ ! permaLink && goals && ! isEmpty( goals.items ) && (
 					<DataBlock
-						className="overview-total-users"
-						title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( totalUsers ) }
-						change={ totalUsersChange }
+						className="overview-goals-completed"
+						title={ __( 'Goals Completed', 'google-site-kit' ) }
+						datapoint={ readableLargeNumber( goalCompletions ) }
+						change={ goalCompletionsChange }
 						changeDataUnit="%"
 						source={ {
 							name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
-							link: href,
+							link: goalsServiceURL,
+							external: true,
 						} }
 						sparkline={
 							extractedAnalytics &&
 								<Sparkline
-									data={ extractForSparkline( extractedAnalytics, 1 ) }
-									change={ totalUsersChange }
-								/>
-						}
-					/>
-				</div>
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--align-bottom
-					mdc-layout-grid__cell--span-2-phone
-					mdc-layout-grid__cell--span-2-tablet
-					mdc-layout-grid__cell--span-3-desktop
-				">
-					{
-						/**
-						 * The forth block shows goals for general view, and average time on page for detail view.
-						 */
-					}
-					{
-						permaLink && (
-							<DataBlock
-								className="overview-bounce-rate"
-								title={ __( 'Bounce Rate', 'google-site-kit' ) }
-								datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
-								datapointUnit="%"
-								change={ averageBounceRateChange }
-								changeDataUnit="%"
-								invertChangeColor
-								source={ {
-									name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
-									link: href,
-								} }
-								sparkline={
-									extractedAnalytics &&
-										<Sparkline
-											data={ extractForSparkline( extractedAnalytics, 2 ) }
-											change={ averageBounceRateChange }
-										/>
-								}
-							/>
-						) }
-					{ ! permaLink && goals && isEmpty( goals.items ) && (
-						<CTA
-							title={ __( 'Use goals to measure success.', 'google-site-kit' ) }
-							description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
-							ctaLink={ goalURL }
-							ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
-						/>
-					)
-					}
-					{ ! permaLink && goals && ! isEmpty( goals.items ) && (
-						<DataBlock
-							className="overview-goals-completed"
-							title={ __( 'Goals Completed', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( goalCompletions ) }
-							change={ goalCompletionsChange }
-							changeDataUnit="%"
-							source={ {
-								name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
-								link: href,
-							} }
-							sparkline={
-								extractedAnalytics &&
-								<Sparkline
 									data={ extractForSparkline( extractedAnalytics, 3 ) }
 									change={ goalCompletionsChange }
 								/>
-							}
-						/>
-					) }
-					{ ! permaLink && ! goals && (
-						<PreviewBlock width="100%" height="202px" />
-					) }
-				</div>
-			</Fragment>
-		);
-	}
+						}
+					/>
+				) }
+				{ ! permaLink && ! goals && (
+					<PreviewBlock width="100%" height="202px" />
+				) }
+			</div>
+		</Fragment>
+	);
+	//}
 }
 
 const isDataZero = ( data, datapoint ) => {
