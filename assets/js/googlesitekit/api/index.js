@@ -48,7 +48,7 @@ let cachingEnabled = true;
 const KEY_SEPARATOR = '::';
 
 /**
- * Create a cache key for a set of type/identifier/datapoint values.
+ * Creates a cache key for a set of type/identifier/datapoint values.
  *
  * @since 1.5.0
  * @private
@@ -78,7 +78,7 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
 };
 
 /**
- * Make a request to a WP REST API Site Kit endpoint.
+ * Makes a request to a WP REST API Site Kit endpoint.
  *
  * @since 1.5.0
  * @private
@@ -88,10 +88,10 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
  * @param {string}  datapoint           The endpoint to request data from.
  * @param {Object}  options             Optional. Options to pass to the request.
  * @param {number}  options.cacheTTL    The oldest cache data to use, in seconds.
- * @param {Object}  options.bodyParams  Request body data to send. (Eg. used for `POST`/`PUT` request variables.)
+ * @param {Object}  options.bodyParams  Request body data to send. Used for `POST`/`PUT` request variables.
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {Object}  options.queryParams Query params to send with the request.
- * @param {boolean} options.useCache    Enable or disable caching for this request only. (Caching is only used for `GET` requests.)
+ * @param {boolean} options.useCache    Enable or disable caching for this request only. Caching is only used for `GET` requests.
  * @return {Promise} Response of HTTP request.
  */
 export const siteKitRequest = async ( type, identifier, datapoint, {
@@ -156,7 +156,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 };
 
 /**
- * Get Google Site Kit data.
+ * Gets Google Site Kit data.
  *
  * Makes a request to this site's WordPress REST API, which will in
  * turn make GET requests to the relevant Google services' APIs.
@@ -190,7 +190,7 @@ export const get = async (
 };
 
 /**
- * Set Google Site Kit data.
+ * Sets Google Site Kit data.
  *
  * Makes a request to this site's WordPress REST API, which will in
  * turn make requests to the relevant Google services' APIs to save
@@ -201,10 +201,10 @@ export const get = async (
  *
  * @since 1.5.0
  *
- * @param {string} type                 The data to access. One of 'core' or 'modules'.
- * @param {string} identifier           The data identifier, eg. a module slug like `'adsense'`.
- * @param {string} datapoint            The endpoint to send data to.
- * @param {Object} data                 Request body data (eg. post data) to send with the request.
+ * @param {string}  type                The data to access. One of 'core' or 'modules'.
+ * @param {string}  identifier          The data identifier, eg. a module slug like `'adsense'`.
+ * @param {string}  datapoint           The endpoint to send data to.
+ * @param {Object}  data                Request body data (eg. post data) to send with the request.
  * @param {Object}  options             Extra options for this request.
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {boolean} options.queryParams Query params to send with the request.
@@ -230,7 +230,7 @@ export const set = async (
 };
 
 /**
- * Enable/disable caching.
+ * Enables/disables caching.
  *
  * Set the caching to on/off for the entire API library.
  *
@@ -249,7 +249,7 @@ export const setUsingCache = ( shouldUseCache ) => {
 };
 
 /**
- * Get current caching state for the API.
+ * Gets the current caching state for the API.
  *
  * @since 1.5.0
  *
@@ -260,7 +260,7 @@ export const usingCache = () => {
 };
 
 /**
- * Invalidate the cache for a specific datapoint or all data.
+ * Invalidates the cache for a specific datapoint or all data.
  *
  * Invalidate cache data for either a specific datapoint, identifier, type, or
  * all data. The more specificity supplied the more granularly cache data will

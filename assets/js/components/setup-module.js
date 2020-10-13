@@ -36,11 +36,11 @@ import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
-	moduleIcon,
 	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
+import ModuleIcon from '../components/module-icon';
 import Spinner from '../components/spinner';
 import Link from '../components/link';
 import ModuleSettingsWarning from '../components/notifications/module-settings-warning';
@@ -97,6 +97,7 @@ class SetupModule extends Component {
 		} = this.props;
 
 		let blockedByParentModule = false;
+		let parentModule;
 
 		const modules = getModulesData();
 
@@ -107,6 +108,7 @@ class SetupModule extends Component {
 			requiredModules.forEach( ( requiredModule ) => {
 				if ( ! modules[ requiredModule ].setupComplete ) {
 					blockedByParentModule = true;
+					parentModule = modules[ requiredModule ].name;
 				}
 			} );
 		}
@@ -124,7 +126,7 @@ class SetupModule extends Component {
 					<Spinner isSaving={ isSaving } />
 				</div>
 				<div className="googlesitekit-settings-connect-module__logo">
-					{ moduleIcon( slug ) }
+					<ModuleIcon slug={ slug } />
 				</div>
 				<h3 className="
 					googlesitekit-subheading-1
@@ -155,8 +157,9 @@ class SetupModule extends Component {
 										name
 									)
 									: sprintf(
-										/* translators: %s: module name */
-										__( 'Set up Analytics to gain access to %s', 'google-site-kit' ),
+										/* translators: 1: required module name 2: module name */
+										__( 'Set up %1$s to gain access to %2$s', 'google-site-kit' ),
+										parentModule,
 										name
 									)
 							}

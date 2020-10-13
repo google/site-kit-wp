@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights Constants.
+ * `modules/pagespeed-insights` data store constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

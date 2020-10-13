@@ -1,5 +1,5 @@
 /**
- * core/user isValidDateRange utility tests.
+ * `core/user` isValidDateRange utility tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

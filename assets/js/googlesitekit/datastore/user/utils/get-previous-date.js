@@ -1,5 +1,5 @@
 /**
- * core/user getPreviousDate utility.
+ * `core/user` getPreviousDate utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -30,7 +30,7 @@ import { isValidDateString } from './is-valid-date-string';
 /**
  * Parses the given date and returns the previous date (daysBefore).
  *
- * @since n.e.x.t
+ * @since 1.18.0
  *
  * @param {string} relativeDate Date string (YYYY-MM-DD) to subtract days from.
  * @param {number} daysBefore   Number of days to subtract from relativeDate.
