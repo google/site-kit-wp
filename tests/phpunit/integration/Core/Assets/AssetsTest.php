@@ -29,8 +29,6 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_register() {
-		global $wp_filter;
-
 		$actions_to_test = array(
 			'admin_enqueue_scripts',
 			'wp_enqueue_scripts',
@@ -48,7 +46,10 @@ class AssetsTest extends TestCase {
 			'wp_print_styles',
 		);
 		$authorized_filters = array(
-			'script_loader_tag',
+			// Both script_loader_tag and style_loader_tag are hooked by add_amp_dev_mode_attributes
+			// which requires authorization, however script_loader_tag is also filtered
+			// to apply script_execution attributes for all users, so it must be excluded here.
+			// 'script_loader_tag',
 			'style_loader_tag',
 		);
 		foreach ( $authorized_actions as $hook ) {
@@ -112,13 +113,7 @@ class AssetsTest extends TestCase {
 	public function test_enqueue_fonts() {
 		remove_all_actions( 'login_enqueue_scripts' );
 
-		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp' ) )->getMock();
-		$mock_context->expects( $this->once() )
-			->method( 'is_amp' )
-			->will( $this->returnValue( false ) );
-
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $assets, 'context', $mock_context );
 
 		add_action( 'login_enqueue_scripts', array( $assets, 'enqueue_fonts' ) );
 		do_action( 'login_enqueue_scripts' );

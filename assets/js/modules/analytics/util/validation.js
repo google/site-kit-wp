@@ -24,6 +24,8 @@ import { ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from '../datastore/co
 /**
  * Checks the given value to see if it is a positive integer.
  *
+ * @since 1.8.0
+ *
  * @param {*} input Value to check.
  * @return {boolean} Validity.
  */
@@ -36,6 +38,8 @@ const isValidNumericID = function( input ) {
 /**
  * Checks if the given account ID appears to be a valid Analyics account.
  *
+ * @since 1.8.0
+ *
  * @param {(string|number)} accountID Account ID to test.
  * @return {boolean} Whether or not the given account ID is valid.
  */
@@ -44,7 +48,9 @@ export { isValidNumericID as isValidAccountID };
 /**
  * Checks if the given value is a valid selection for an Account.
  *
- * @param {?string} value Selected value
+ * @since 1.8.0
+ *
+ * @param {?string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidAccountSelection( value ) {
@@ -58,6 +64,8 @@ export function isValidAccountSelection( value ) {
 /**
  * Checks whether the given property ID appears to be valid.
  *
+ * @since 1.8.0
+ *
  * @param {*} propertyID Property ID to check.
  * @return {boolean} Whether or not the given property ID is valid.
  */
@@ -68,7 +76,9 @@ export function isValidPropertyID( propertyID ) {
 /**
  * Checks if the given value is a valid selection for a Property.
  *
- * @param {?string} value Selected value
+ * @since 1.8.0
+ *
+ * @param {?string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidPropertySelection( value ) {
@@ -82,6 +92,8 @@ export function isValidPropertySelection( value ) {
 /**
  * Checks if the given profile ID appears to be valid.
  *
+ * @since 1.8.0
+ *
  * @param {(string|number)} accountID Account ID to test.
  * @return {boolean} Whether or not the given account ID is valid.
  */
@@ -90,7 +102,9 @@ export { isValidNumericID as isValidProfileID };
 /**
  * Checks if the given value is a valid selection for a Profile.
  *
- * @param {?string} value Selected value
+ * @since 1.8.0
+ *
+ * @param {string} value Selected value.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidProfileSelection( value ) {
@@ -106,7 +120,7 @@ export function isValidProfileSelection( value ) {
  *
  * @since 1.11.0
  *
- * @param {string} value Profile name to test
+ * @param {string} value Profile name to test.
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidProfileName( value ) {
@@ -115,6 +129,8 @@ export function isValidProfileName( value ) {
 
 /**
  * Checks if the given internal web property ID appears to be valid.
+ *
+ * @since 1.8.0
  *
  * @param {(string|number)} accountID Account ID to test.
  * @return {boolean} Whether or not the given account ID is valid.

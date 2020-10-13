@@ -146,7 +146,9 @@ export function createErrorStore() {
 		/**
 		 * Retrieves the error object from state.
 		 *
-		 *```
+		 * Error object has the format:
+		 *
+		 * ```
 		 * {
 		 *   code: <String>,
 		 *   message: <String>,
@@ -156,9 +158,9 @@ export function createErrorStore() {
 		 *
 		 * @since 1.15.0
 		 *
-		 * @param {Object} state        Data store's state.
-		 * @param {string} selectorName Selector name.
-		 * @param {Array.<any>} [args]  Arguments passed to selector (default `[]`).
+		 * @param {Object}      state        Data store's state.
+		 * @param {string}      selectorName Selector name.
+		 * @param {Array.<any>} [args]       Arguments passed to selector (default `[]`).
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getErrorForSelector( state, selectorName, args = [] ) {
@@ -179,9 +181,9 @@ export function createErrorStore() {
 		 *
 		 * @since 1.15.0
 		 *
-		 * @param {Object} state        Data store's state.
-		 * @param {string} actionName   Action name.
-		 * @param {Array.<any>} [args]  Arguments passed to action (default `[]`).
+		 * @param {Object}      state      Data store's state.
+		 * @param {string}      actionName Action name.
+		 * @param {Array.<any>} [args]     Arguments passed to action (default `[]`).
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getErrorForAction( state, actionName, args = [] ) {
@@ -203,9 +205,9 @@ export function createErrorStore() {
 		 * @since 1.15.0
 		 * @private
 		 *
-		 * @param {Object} state        Data store's state.
-		 * @param {string} [baseName]   Selector or action name.
-		 * @param {Array.<any>} [args]  Arguments array.
+		 * @param {Object}      state      Data store's state.
+		 * @param {string}      [baseName] Selector or action name.
+		 * @param {Array.<any>} [args]     Arguments array.
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getError( state, baseName, args ) {

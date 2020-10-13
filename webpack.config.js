@@ -81,8 +81,20 @@ const siteKitExternals = {
 
 const externals = { ...siteKitExternals };
 
+const svgRule = {
+	test: /\.svg$/,
+	use: [ {
+		loader: '@svgr/webpack',
+		options: {
+			// strip width & height to allow manual override using props
+			dimensions: false,
+		},
+	} ],
+};
+
 const rules = [
 	noAMDParserRule,
+	svgRule,
 	{
 		test: /\.js$/,
 		exclude: /node_modules/,
@@ -144,6 +156,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
 				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
 				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
+				'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
@@ -163,12 +176,12 @@ const webpackConfig = ( mode ) => {
 				path: __dirname + '/dist/assets/js',
 				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
-				/**
-				 * If multiple webpack runtimes (from different compilations) are used on the same webpage,
-				 * there is a risk of conflicts of on-demand chunks in the global namespace.
-				 *
-				 * @see (@link https://webpack.js.org/configuration/output/#outputjsonpfunction)
-				 */
+				/*
+					If multiple webpack runtimes (from different compilations) are used on the
+					same webpage, there is a risk of conflicts of on-demand chunks in the global
+					namespace.
+					See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
+				*/
 				jsonpFunction: '__googlesitekit_webpackJsonp',
 			},
 			performance: {
@@ -246,6 +259,33 @@ const webpackConfig = ( mode ) => {
 			resolve,
 		},
 
+		// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
+		{
+			entry: {
+				// Analytics advanced tracking script to be injected in the frontend.
+				'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
+			},
+			externals,
+			output: {
+				filename: '[name].js',
+				path: __dirname + '/dist/assets/js',
+				publicPath: '',
+			},
+			module: {
+				rules,
+			},
+			plugins: [
+				new WebpackBar( {
+					name: 'Basic Modules',
+					color: '#fb1105',
+				} ),
+			],
+			optimization: {
+				concatenateModules: true,
+			},
+			resolve,
+		},
+
 		// Build the main plugin admin css.
 		{
 			entry: {
@@ -272,7 +312,7 @@ const webpackConfig = ( mode ) => {
 						],
 					},
 					{
-						test: /\.(png|woff|woff2|eot|ttf|svg|gif)$/,
+						test: /\.(png|woff|woff2|eot|ttf|gif)$/,
 						use: { loader: 'url-loader?limit=100000' },
 					},
 				],
@@ -323,6 +363,7 @@ module.exports = {
 	resolve,
 	rules,
 	siteKitExternals,
+	svgRule,
 };
 
 module.exports.default = ( ...args ) => {

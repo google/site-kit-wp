@@ -1,5 +1,5 @@
 /**
- * parseDimensionStringToDate utility tests
+ * `parseDimensionStringToDate` utility tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

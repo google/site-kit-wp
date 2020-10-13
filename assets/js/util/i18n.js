@@ -34,14 +34,14 @@ export function loadTranslations() {
 }
 
 /**
- * Internationalization Number Format.
+ * Formats a number using the JS Internationalization Number Format API.
  *
- * @param {number} number The number to format.
- * @param {Object} [options] Formatting options.
+ * @since 1.8.0
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter} For all available formatting options.
+ *
+ * @param {number} number           The number to format.
+ * @param {Object} [options]        Formatting options.
  * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter}
- *      For all available formatting options.
- *
  * @return {string} The formatted number.
  */
 export const numberFormat = ( number, options = {} ) => {
@@ -53,8 +53,9 @@ export const numberFormat = ( number, options = {} ) => {
 /**
  * Gets the current locale for use with browser APIs.
  *
- * @param {Object} _global The global window object.
+ * @since 1.8.0
  *
+ * @param {Object} _global The global window object.
  * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
  *                  E.g. `en-US` or `de-DE`
  */

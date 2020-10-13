@@ -1,5 +1,5 @@
 /**
- * getDataErrorComponent function.
+ * `getDataErrorComponent` function.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -34,6 +34,8 @@ import InvalidCredentialsWarning from './invalid-credentials-warning';
 
 /**
  * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
+ *
+ * @since 1.0.0
  *
  * @param {string}  moduleSlug   Module slug.
  * @param {string}  errorMessage Description of error.
