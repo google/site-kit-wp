@@ -209,7 +209,7 @@ class User_Input_Settings {
 	public function set_settings( $settings ) {
 		return $this->is_connected_to_proxy()
 			? $this->sync_with_proxy( $settings )
-			: new \WP_Error( 'not_connected', __( 'Not Connected', 'google-site-kit' ), array( 'status' => 400 ) );
+			: new WP_Error( 'not_connected', __( 'Not Connected', 'google-site-kit' ), array( 'status' => 400 ) );
 	}
 
 }
