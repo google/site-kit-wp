@@ -83,8 +83,8 @@ export const actions = {
 		return {
 			payload: {
 				slug,
-				component,
 				settings: {
+					component,
 					priority,
 					width,
 					wrapWidget,
@@ -120,7 +120,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case REGISTER_WIDGET: {
-			const { slug, component, settings } = payload;
+			const { slug, settings } = payload;
 
 			if ( state.widgets[ slug ] !== undefined ) {
 				global.console.warn( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
@@ -134,7 +134,6 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.widgets,
 					[ slug ]: {
 						...settings,
-						component,
 						slug,
 					},
 				},
