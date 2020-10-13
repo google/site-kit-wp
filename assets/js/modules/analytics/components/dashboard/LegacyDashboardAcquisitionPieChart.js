@@ -40,6 +40,7 @@ import { TYPE_MODULES } from '../../../../components/data';
 import Link from '../../../../components/link';
 import PreviewBlock from '../../../../components/preview-block';
 import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
+import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
 const { useSelect } = Data;
 
@@ -49,14 +50,8 @@ const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-	let path = `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
-	if ( url ) {
-		const parsedURL = new URL( url );
-		path += `&_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
-	}
-
 	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{ path }
+		{ path: applyEntityToReportPath( url, `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ) }
 	) );
 
 	if ( ! data || data.error || ! data.length ) {

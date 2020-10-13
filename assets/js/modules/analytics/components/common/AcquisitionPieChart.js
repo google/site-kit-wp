@@ -36,6 +36,7 @@ import Link from '../../../../components/link';
 import { extractAnalyticsDataForTrafficChart } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
 const { useSelect } = Data;
 
@@ -70,13 +71,10 @@ function AcquisitionPieChart( { data, args, source } ) {
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-
-	let path = `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
-	if ( url ) {
-		const parsedURL = new URL( url );
-		path += `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
-	}
-	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path } ) );
+	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: applyEntityToReportPath( url, `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
+		} ) );
 
 	if ( ! data ) {
 		return null;

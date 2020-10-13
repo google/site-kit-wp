@@ -34,6 +34,7 @@ import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
 import { changeToPercent } from '../../../../util';
+import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
@@ -52,7 +53,6 @@ function DashboardBounceRateWidget() {
 		const accountID = store.getAccountID();
 		const profileID = store.getProfileID();
 		const internalWebPropertyID = store.getInternalWebPropertyID();
-		let path = `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
 
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
@@ -67,17 +67,16 @@ function DashboardBounceRateWidget() {
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-			const parsedURL = new URL( url );
-			path += `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
-		}
 
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: store.isResolving( 'getReport', [ args ] ),
-			serviceURL: store.getServiceURL( { path } ),
+			serviceURL: store.getServiceURL(
+				{
+					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
+				}
+			),
 		};
 	} );
 

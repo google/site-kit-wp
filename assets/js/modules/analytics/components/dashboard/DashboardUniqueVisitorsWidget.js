@@ -37,6 +37,7 @@ import { changeToPercent, readableLargeNumber } from '../../../../util';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
+import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
 const { useSelect } = Data;
 
@@ -53,18 +54,11 @@ function DashboardUniqueVisitorsWidget() {
 		const accountID = store.getAccountID();
 		const profileID = store.getProfileID();
 		const internalWebPropertyID = store.getInternalWebPropertyID();
-		let path = `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
 		const commonArgs = {
 			dateRange: select( CORE_USER ).getDateRange(),
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			commonArgs.url = url;
-			const parsedURL = new URL( url );
-			path += `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
-		}
-
 		const sparklineArgs = {
 			dimensions: 'ga:date',
 			metrics: [
@@ -93,7 +87,11 @@ function DashboardUniqueVisitorsWidget() {
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
-			serviceURL: store.getServiceURL( { path } ),
+			serviceURL: store.getServiceURL(
+				{
+					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
+				}
+			),
 			visitorsData: store.getReport( args ),
 		};
 	} );

@@ -32,6 +32,7 @@ import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/Le
 import LegacyDashboardAcquisitionPieChart from '../dashboard/LegacyDashboardAcquisitionPieChart';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
 const { useSelect } = Data;
 
@@ -41,14 +42,7 @@ export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
 		const profileID = select( STORE_NAME ).getProfileID();
 		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-
-		let path = `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
-		if ( url ) {
-			const parsedURL = new URL( url );
-			path += `_r.drilldown=analytics.pagePath:${ parsedURL.pathname.replace( /\//g, '~2F' ) }`;
-		}
-
-		return select( STORE_NAME ).getServiceURL( { path } );
+		return select( STORE_NAME ).getServiceURL( { path: applyEntityToReportPath( url, `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ) } );
 	} );
 	return (
 		<Fragment>
