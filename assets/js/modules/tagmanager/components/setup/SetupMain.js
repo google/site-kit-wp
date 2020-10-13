@@ -31,9 +31,9 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import TagManagerIcon from '../../../../../svg/tagmanager.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/progress-bar';
-import { SvgIcon } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE, FORM_SETUP } from '../../datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { useExistingTagEffect } from '../../hooks';
@@ -80,7 +80,7 @@ export default function SetupMain( { finishSetup } ) {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--tagmanager">
 
 			<div className="googlesitekit-setup-module__logo">
-				<SvgIcon id="tagmanager" width="33" height="33" />
+				<TagManagerIcon width="33" height="33" />
 			</div>
 
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">

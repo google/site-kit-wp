@@ -231,48 +231,6 @@ final class Assets {
 	}
 
 	/**
-	 * Renders an SVG sprite.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $name Name of SVG icon.
-	 * @param array  $args {
-	 *     Additional arguments.
-	 *
-	 *     @type string $role   Role attribute to use. Default 'img'.
-	 *     @type string $label  Icon label, for accessibility. Default empty string.
-	 *     @type string $height Height attribute to use. Default '25'.
-	 *     @type string $width  Width attribute to use. Default '25'.
-	 * }
-	 * @return string SVG markup.
-	 */
-	public function svg_sprite( $name = '', $args = array() ) {
-		$args = wp_parse_args(
-			$args,
-			array(
-				'label'  => '',
-				'role'   => 'img',
-				'height' => '25',
-				'width'  => '25',
-			)
-		);
-
-		$href  = $this->context->url( 'dist/assets/svg/svg.svg' ) . '#' . $name;
-		$label = 'aria-label="' . ( empty( $args['label'] ) ? esc_attr( $name ) : esc_attr( $args['label'] ) ) . '"';
-		$label = 'presentation' === $args['role'] ? '' : $label;
-
-		return sprintf(
-			'<svg role="%s" class="%s" %s height="%s" width="%s"><use xlink:href="%s"/></svg>',
-			esc_attr( $args['role'] ),
-			esc_attr( 'svg googlesitekit-svg-' . $name ),
-			$label,
-			esc_attr( $args['height'] ),
-			esc_attr( $args['width'] ),
-			esc_url( $href )
-		);
-	}
-
-	/**
 	 * Registers all plugin assets.
 	 *
 	 * @since 1.0.0

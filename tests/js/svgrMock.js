@@ -1,5 +1,5 @@
 /**
- * Gulp svgmin task.
+ * SVGR import mocks.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,29 +16,8 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-const { src, dest } = require( 'gulp' );
-const svgmin = require( 'gulp-svgmin' );
-const pump = require( 'pump' );
+export default function() {
+	return <svg />;
+}
 
-const config = {
-	input: './assets/svg/**/*.svg',
-	output: './dist/assets/svg',
-};
-
-module.exports = function( cb ) {
-	pump(
-		[
-			src( config.input ),
-			svgmin( {
-				plugins: [ {
-					removeViewBox: false,
-				} ],
-			} ),
-			dest( config.output ),
-		],
-		cb
-	);
-};
+export const ReactComponent = () => <svg />;

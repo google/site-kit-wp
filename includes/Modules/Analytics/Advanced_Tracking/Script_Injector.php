@@ -46,7 +46,7 @@ final class Script_Injector {
 	 *
 	 * @since 1.18.0.
 	 *
-	 * @param Event[] $events The list of Event objects.
+	 * @param array $events The map of Event objects, keyed by their unique ID.
 	 */
 	public function inject_event_script( $events ) {
 		if ( empty( $events ) ) {
@@ -69,16 +69,8 @@ final class Script_Injector {
 
 		?>
 		<script>
-			<?php
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo str_replace(
-				// This string is defined as external in the Webpack config, and here it gets replaced with the
-				// actual event configurations array.
-				'SITEKIT_ANALYTICS_ADVANCED_TRACKING_EVENTS',
-				wp_json_encode( $events ),
-				$script_content
-			);
-			?>
+			var _googlesitekitAnalyticsTrackingData = <?php echo wp_json_encode( array_values( $events ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
+			<?php echo $script_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		</script>
 		<?php
 	}
