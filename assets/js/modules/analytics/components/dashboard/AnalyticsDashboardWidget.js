@@ -76,7 +76,7 @@ export default function AnalyticsDashboardWidget() {
 				{ path: `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
 			),
 			visitorsOverview: select( STORE_NAME ).getServiceURL(
-				{ path: `/report/visitorss-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
+				{ path: `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
 			),
 		};
 	} );
