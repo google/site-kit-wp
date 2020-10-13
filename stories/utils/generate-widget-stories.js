@@ -39,7 +39,6 @@ const { components: { Widget } } = Widgets;
  * Generates stories for a report based widget using provided data.
  *
  * @since 1.16.0
- *
  * @private
  *
  * @param {Object}    args                              Widget arguments.
