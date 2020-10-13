@@ -19,49 +19,31 @@
 /**
  * External dependencies
  */
-import isPlainObject from 'lodash/isPlainObject';
 import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { isPermissionScopeError, isInsufficientPermissionsError } from '../util/errors';
-import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
+import { isPermissionScopeError } from '../util/errors';
 import ErrorText from '../components/error-text';
-const { useSelect } = Data;
 
-export default function ErrorNotice( { moduleSlug, shouldDisplayError, error } ) {
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
-
+export default function ErrorNotice( { error, shouldDisplayError = () => true } ) {
 	// Do not display if no error, or if the error is for missing scopes.
 	if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
 		return null;
 	}
 
-	let message = error.message;
-	if ( isInsufficientPermissionsError( error ) && isPlainObject( module ) ) {
-		message = getInsufficientPermissionsErrorDescription( message, module );
-	}
-
 	return (
 		<ErrorText
-			message={ message }
+			message={ error.message }
 			reconnectURL={ error.data?.reconnectURL }
 		/>
 	);
 }
 
 ErrorNotice.propTypes = {
-	moduleSlug: PropTypes.string,
-	shouldDisplayError: PropTypes.func,
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
-};
-
-ErrorNotice.defaultProps = {
-	moduleSlug: '',
-	shouldDisplayError: () => true,
+	shouldDisplayError: PropTypes.func,
 };
