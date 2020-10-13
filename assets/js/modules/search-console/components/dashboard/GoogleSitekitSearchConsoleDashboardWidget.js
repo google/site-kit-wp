@@ -43,7 +43,7 @@ import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/progress-bar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import { getCurrentDateRange } from '../../../../util/date-range';
+import { getCurrentDateRange, getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import HelpLink from '../../../../components/help-link';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -58,7 +58,14 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	const [ loading, setLoading ] = useState( true );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
+	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: '/performance/search-analytics',
+			query: {
+				resource_id: propertyID,
+				num_of_days: getCurrentDateRangeDayCount(),
+			},
+		} ) );
 
 	/**
 	 * Handles data errors from the contained AdSense component(s).
