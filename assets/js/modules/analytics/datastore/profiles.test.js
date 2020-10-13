@@ -24,7 +24,6 @@ import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
-	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
 } from 'tests/js/utils';
@@ -63,7 +62,7 @@ describe( 'modules/analytics profiles', () => {
 					{ body: fixtures.createProfile, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
+				await registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -73,12 +72,6 @@ describe( 'modules/analytics profiles', () => {
 							data: { accountID, propertyID, profileName },
 						},
 					}
-				);
-
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getProfiles( accountID, propertyID )
-					),
 				);
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
@@ -158,11 +151,7 @@ describe( 'modules/analytics profiles', () => {
 				);
 
 				expect( initialProfiles ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID ) !== undefined
-					),
-				);
+				await untilResolved( registry, STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
@@ -205,9 +194,7 @@ describe( 'modules/analytics profiles', () => {
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
 
 				registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingGetProfiles( testAccountID, testPropertyID ) === false
-				);
+				await untilResolved( registry, STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
