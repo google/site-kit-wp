@@ -22,7 +22,7 @@
 import { deactivatePlugin, activatePlugin, createURL } from '@wordpress/e2e-test-utils';
 
 /**
- * Internal depedencies
+ * Internal dependencies
  */
 import {
 	activateAMPWithMode,

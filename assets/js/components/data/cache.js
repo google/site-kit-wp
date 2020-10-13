@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { cloneDeep } from 'lodash';
+
 /**
  * Internal dependencies
  */
@@ -43,6 +44,8 @@ export const lazilySetupLocalCache = () => {
 
 /**
  * Sets data in the cache.
+ *
+ * @since 1.0.0
  *
  * @param {string} key  The cache key.
  * @param {Object} data The data to cache.
@@ -71,9 +74,10 @@ export const setCache = ( key, data ) => {
 /**
  * Gets data from the cache.
  *
+ * @since 1.0.0
+ *
  * @param {string} key    The cache key.
  * @param {number} maxAge The cache TTL in seconds. If not provided, no TTL will be checked.
- *
  * @return {(Object|undefined)} Cached data, or undefined if lookup failed.
  */
 export const getCache = ( key, maxAge ) => {
@@ -107,6 +111,8 @@ export const getCache = ( key, maxAge ) => {
 /**
  * Removes data from the cache.
  *
+ * @since 1.0.0
+ *
  * @param {string} key The cache key.
  */
 export const deleteCache = ( key ) => {
@@ -119,6 +125,8 @@ export const deleteCache = ( key ) => {
 
 /**
  * Returns a consistent cache key for the given arguments.
+ *
+ * @since 1.0.0
  *
  * @param {string}  type       The data type. Either 'core' or 'modules'.
  * @param {string}  identifier The data identifier, for example a module slug.

@@ -10,8 +10,11 @@ const DISMISSED = 'dismissed';
 /**
  * Marks the given notification with the provided state.
  *
+ * @since 1.4.0
+ *
  * @param {string} id    Notification ID.
  * @param {string} state Notification state.
+ * @return {Promise} Promise from setting the notification.
  */
 export async function markNotification( id, state ) {
 	// Invalidate the cache so that notifications will be fetched fresh
@@ -29,7 +32,10 @@ export async function markNotification( id, state ) {
 /**
  * Marks the given notification as accepted.
  *
+ * @since 1.4.0
+ *
  * @param {string} id Notification ID.
+ * @return {Promise} Promise that is fulfilled after the notification is marked as accepted.
  */
 export async function acceptNotification( id ) {
 	return await markNotification( id, ACCEPTED );
@@ -38,7 +44,10 @@ export async function acceptNotification( id ) {
 /**
  * Marks the given notification as dismissed.
  *
+ * @since 1.4.0
+ *
  * @param {string} id Notification ID.
+ * @return {Promise} Promise that is fulfilled after the notification is marked as dismissed.
  */
 export async function dismissNotification( id ) {
 	return await markNotification( id, DISMISSED );

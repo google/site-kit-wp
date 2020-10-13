@@ -1,5 +1,5 @@
 /**
- * withData higher-order component.
+ * `withData` higher-order component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -37,6 +37,8 @@ import getDataErrorComponent from '../notifications/data-error';
 import getSetupIncompleteComponent from '../notifications/setup-incomplete';
 
 /**
+ * Provides data from the API to components. (Legacy HOC.)
+ *
  * A Higher order Component that provides data functionality to Components.
  *
  * This function takes a React Component that is data dependent, resolving via the data API.
@@ -50,8 +52,10 @@ import getSetupIncompleteComponent from '../notifications/setup-incomplete';
  * called with the error message string if there is a data error and called with no string if the data is empty.
  * `handleDataSuccess` will be called when data resolves correctly.
  *
- * @param {WPElement}       DataDependentComponent The React Component to render once we have its required data.
- * @param {Array}           selectData             An array of data objects to resolve.
+ * @since 1.0.0
+ *
+ * @param {WPElement} DataDependentComponent The React Component to render once we have its required data.
+ * @param {Array}     selectData             An array of data objects to resolve.
  *                                                 Each object includes the following properties:
  *                                                 {string}         type       The data type. Either 'core' or 'modules'.
  *                                                 {string}         identifier The data identifier, for example a module slug.
@@ -61,13 +65,12 @@ import getSetupIncompleteComponent from '../notifications/setup-incomplete';
  *                                                 {number}         maxAge     How long to cache the data results.
  *                                                 {string | array} context    The context(s) to resolve data, eg 'Dashboard'.
  *
- * @param {WPElement}       loadingComponent       A React Component to render while the data is resolving.
- * @param {Object}          layoutOptions          An object with layout options that are passed to the getNoDataComponent and getDataErrorComponent components.
- * @param {Function}        isDataZero             A callback function that is passed the resolved data and returns true
+ * @param {WPElement} loadingComponent       A React Component to render while the data is resolving.
+ * @param {Object}    layoutOptions          An object with layout options that are passed to the getNoDataComponent and getDataErrorComponent components.
+ * @param {Function}  isDataZero             A callback function that is passed the resolved data and returns true
  *                                                 if the data is "zero".
- * @param {Function}        getDataError           A callback function that is passed the resolved data and returns the
+ * @param {Function}  getDataError           A callback function that is passed the resolved data and returns the
  *                                                 error message.
- *
  * @return {WPElement} Component  	Returns React.Components based on data and state.
  *                                  If has data  	  Return DataDependentComponent with data.
  *                                  has no data		  Fallback message when no data.
@@ -160,10 +163,12 @@ const withData = (
 			);
 
 			/**
-			 * Handle a single datapoint returned from the data API.
+			 * Handles a single datapoint returned from the data API.
 			 *
 			 * Each resolved data point is passed thru this handler to detect errors and zero data conditions, and
 			 * to trigger `handleDataError` and `handleDataSuccess` helpers.
+			 *
+			 * @since 1.0.0
 			 *
 			 * @param {Object} returnedData The data returned from the API.
 			 * @param {Object} requestData  The data object for the request.

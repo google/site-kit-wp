@@ -35,6 +35,7 @@ const { components: { Widget } } = Widgets;
  * Generates a function to set up registry for widget stories.
  *
  * @since 1.16.0
+ * @private
  *
  * @param {(string|Array)} moduleSlug Module slug or slugs to activate.
  * @param {string|null}    url        Current entity URL.
@@ -76,6 +77,7 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
  * Generates stories for a report based widget using provided data.
  *
  * @since 1.16.0
+ * @private
  *
  * @param {Object}    args                              Widget arguments.
  * @param {string}    args.moduleSlug                   Module slug.
@@ -86,7 +88,7 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
  * @param {Component} args.component                    Widget component.
  * @param {boolean}   [args.wrapWidget]                 Whether to wrap in default <Widget> component. Default true.
  * @param {Array}     [args.additionalVariants]         Optional. Additional story variants.
- * @param {Array}     [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants
+ * @param {Array}     [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants.
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {

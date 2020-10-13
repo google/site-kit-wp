@@ -1030,7 +1030,7 @@ final class Authentication {
 	 * @since 1.17.0
 	 */
 	private function set_connected_proxy_url() {
-		$this->connected_proxy_url->set( home_url() );
+		$this->connected_proxy_url->set( $this->context->get_canonical_home_url() );
 	}
 
 	/**
@@ -1040,7 +1040,7 @@ final class Authentication {
 	 * @since 1.17.0
 	 */
 	private function check_connected_proxy_url() {
-		if ( $this->connected_proxy_url->matches_url( home_url() ) ) {
+		if ( $this->connected_proxy_url->matches_url( $this->context->get_canonical_home_url() ) ) {
 			return;
 		}
 
@@ -1114,7 +1114,7 @@ final class Authentication {
 	/**
 	 * Handles proxy permissions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 */
 	private function handle_proxy_permissions() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
@@ -1138,7 +1138,7 @@ final class Authentication {
 	/**
 	 * Gets the proxy permission URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return string Proxy permission URL.
 	 */
