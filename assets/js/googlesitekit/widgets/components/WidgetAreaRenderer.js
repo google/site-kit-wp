@@ -139,19 +139,21 @@ const getWidgetClassNames = ( activeWidgets ) => {
 	return classNames;
 };
 
+const isActiveWidget = ( widgets ) => ( widget ) => {
+	const widgetExists = widgets.some( ( item ) => item.slug === widget.slug );
+	const isComponent = typeof widget.component === 'function';
+	const isActive = 	widget.component.prototype.render
+		? new widget.component( {} ).render()
+		: widget.component( {} );
+
+	return widgetExists && isComponent && isActive;
+};
+
 const WidgetAreaRenderer = ( { slug } ) => {
 	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
 	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
 
-	// Verify that widgets are active (do not render null)
-	const isActiveWidget = ( widget ) =>
-		widgets.some( ( item ) => item.slug === widget.slug ) &&
-		typeof widget.component === 'function' &&
-		widget.component.prototype.render
-			? new widget.component( {} ).render()
-			: widget.component( {} );
-
-	const activeWidgets = widgets.filter( isActiveWidget );
+	const activeWidgets = widgets.filter( isActiveWidget( widgets ) );
 
 	if ( activeWidgets.length === 0 ) {
 		return null;
