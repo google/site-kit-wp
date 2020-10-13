@@ -75,6 +75,7 @@ describe( 'core site notifications', () => {
 					.find( ( text ) => text.match( /test notification title/i ) ) || false;
 			} );
 			expect( hasTestNotification ).toStrictEqual( false );
+			expect( console ).toHaveWarned();
 		} );
 	} );
 	describe( 'when not using proxy', () => {
@@ -111,6 +112,7 @@ describe( 'core site notifications', () => {
 			expect(
 				notificationDescription.filter( ( { textContent } ) => textContent.match( /test notification content/i ) )
 			).toHaveLength( 0 );
+			expect( console ).toHaveWarned();
 		} );
 	} );
 } );

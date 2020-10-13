@@ -73,6 +73,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 
 		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Site Kit!/i } );
+		expect( console ).toHaveWarned();
 	} );
 
 	it( 'disconnects user from Site Kit', async () => {
@@ -87,6 +88,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 			'.googlesitekit-wizard-progress-step__number-text--inprogress',
 			{ text: '1' }
 		);
+		expect( console ).toHaveWarned();
 	} );
 } );
 

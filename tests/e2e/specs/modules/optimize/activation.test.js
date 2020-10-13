@@ -90,6 +90,7 @@ describe( 'Optimize Activation', () => {
 		await setupHandle.dispose();
 
 		await finishOptimizeSetup();
+		expect( console ).toHaveWarned();
 	} );
 
 	it( 'prompts to insert your Optimize ID when Analytics snippet is disabled, with extra instructions', async () => {
@@ -109,6 +110,7 @@ describe( 'Optimize Activation', () => {
 		await setupHandle.dispose();
 
 		await finishOptimizeSetup();
+		expect( console ).toHaveWarned();
 	} );
 
 	describe( 'Settings with AMP enabled', () => {

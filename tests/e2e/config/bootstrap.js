@@ -177,10 +177,7 @@ function observeConsoleLogging() {
 		if (
 			text.startsWith( 'Powered by AMP' ) ||
 			text.startsWith( 'data_error unknown response key' ) ||
-			text.startsWith( 'WP Error in data response' ) ||
-			text.startsWith( 'Error caught during combinedGet' ) ||
-			text.includes( 'No triggers were found in the config. No analytics data will be sent.' ) ||
-			text.includes( 'Google Site Kit API Error' )
+			text.includes( 'No triggers were found in the config. No analytics data will be sent.' )
 		) {
 			return;
 		}
@@ -232,7 +229,7 @@ function observeNavigationRequest( req ) {
 			data.push( req.postData() );
 		}
 		// eslint-disable-next-line no-console
-		console.log( 'NAV', ...data );
+		console.debug( 'NAV', ...data );
 	}
 }
 
@@ -251,7 +248,7 @@ function observeNavigationResponse( res ) {
 			data.push( { redirect } );
 		}
 		// eslint-disable-next-line no-console
-		console.log( ...data );
+		console.debug( ...data );
 	}
 }
 
@@ -269,7 +266,7 @@ function observeRestRequest( req ) {
 			data.push( req.postData() );
 		}
 		// eslint-disable-next-line no-console
-		console.log( '>>>', ...data );
+		console.debug( '>>>', ...data );
 	}
 }
 
@@ -287,7 +284,7 @@ async function observeRestResponse( res ) {
 		// The response may fail to resolve if the test ends before it completes.
 		try {
 			data.push( await res.text() );
-			console.log( ...data ); // eslint-disable-line no-console
+			console.debug( ...data ); // eslint-disable-line no-console
 		} catch ( err ) {} // eslint-disable-line no-empty
 	}
 }
@@ -302,7 +299,7 @@ beforeAll( async () => {
 	observeConsoleLogging();
 	// Log uncaught exceptions on the client.
 	// eslint-disable-next-line no-console
-	page.on( 'pageerror', console.error );
+	page.on( 'pageerror', console.debug );
 
 	if ( '1' === process.env.DEBUG_NAV ) {
 		page.on( 'request', observeNavigationRequest );
@@ -317,10 +314,7 @@ beforeAll( async () => {
 		if ( res.status() > 399 ) {
 			const req = res.request();
 			// eslint-disable-next-line no-console
-			console.warn( res.status(), req.method(), req.url() );
-			// As we're throwing up a console warning,
-			// Let's simultaneously expect it to occur.
-			expect( console ).toHaveWarned();
+			console.debug( res.status(), req.method(), req.url() );
 		}
 	} );
 

@@ -134,6 +134,7 @@ describe( 'Tag Manager module setup', () => {
 				page.waitForNavigation(),
 			] );
 			await expect( page ).toMatchElement( 'script[src^="https://www.googletagmanager.com/gtm.js?id=GTM-ABCXYZ"]' );
+			expect( console ).toHaveErrored();
 		} );
 
 		it( 'displays available accounts and containers for the chosen account', async () => {
@@ -179,6 +180,7 @@ describe( 'Tag Manager module setup', () => {
 				page.waitForNavigation(),
 			] );
 			await expect( page ).toMatchElement( 'script[src^="https://www.googletagmanager.com/gtm.js?id=GTM-BCDWXY"]' );
+			expect( console ).toHaveErrored();
 		} );
 
 		it( 'displays instructions for account creation when "Set up a new account" option is selected', async () => {
@@ -198,6 +200,7 @@ describe( 'Tag Manager module setup', () => {
 			// Ensure buttons are present.
 			await expect( page ).toMatchElement( '.googlesitekit-setup-module .mdc-button', { text: /create an account/i } );
 			await expect( page ).toMatchElement( '.googlesitekit-setup-module .googlesitekit-cta-link', { text: /re-fetch my account/i } );
+			expect( console ).toHaveErrored();
 		} );
 	} );
 
@@ -224,14 +227,17 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'Container' } );
 				await expect( page ).not.toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'validates Homepage AMP for logged-in users', async () => {
 				await expect( '/' ).toHaveValidAMPForUser();
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'validates Homepage AMP for non-logged-in users', async () => {
 				await expect( '/' ).toHaveValidAMPForVisitor();
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -245,6 +251,7 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web .mdc-floating-label', { text: 'Web Container' } );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'AMP Container' } );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'validates homepage AMP for logged-in users', async () => {
@@ -253,6 +260,7 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
 				await page.goto( createURL( '/', 'amp' ), { waitUntil: 'load' } );
 				await expect( page ).toHaveValidAMPForUser();
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'validates homepage AMP for non-logged-in users', async () => {
@@ -261,6 +269,7 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
 				await page.goto( createURL( '/', 'amp' ), { waitUntil: 'load' } );
 				await expect( page ).toHaveValidAMPForVisitor();
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

@@ -197,6 +197,7 @@ describe( 'Analytics write scope requests', () => {
 			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
 		] );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+		expect( console ).toHaveErrored();
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
@@ -244,5 +245,6 @@ describe( 'Analytics write scope requests', () => {
 			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
 		] );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+		expect( console ).toHaveErrored();
 	} );
 } );

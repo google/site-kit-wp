@@ -177,6 +177,7 @@ describe( 'initialization on load for Site Kit screens', () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 			await expect( page ).not.toHaveTracking();
+			expect( console ).toHaveWarned();
 		} );
 
 		it( 'loads tracking when opted-in', async () => {
@@ -185,6 +186,7 @@ describe( 'initialization on load for Site Kit screens', () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 			await expect( page ).toHaveTracking();
+			expect( console ).toHaveWarned();
 		} );
 	} );
 
@@ -200,6 +202,7 @@ describe( 'initialization on load for Site Kit screens', () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
 
 			await expect( page ).not.toHaveTracking();
+			expect( console ).toHaveWarned();
 		} );
 
 		it( 'loads tracking when opted-in', async () => {
@@ -208,6 +211,7 @@ describe( 'initialization on load for Site Kit screens', () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
 
 			await expect( page ).toHaveTracking();
+			expect( console ).toHaveWarned();
 		} );
 	} );
 } );
@@ -220,6 +224,7 @@ describe( 'initialization on load for non-Site Kit screens', () => {
 			await visitAdminPage( 'plugins.php' );
 
 			await expect( page ).not.toHaveTracking();
+			expect( console ).toHaveWarned();
 		} );
 
 		it( 'does not load tracking if opted-in', async () => {
