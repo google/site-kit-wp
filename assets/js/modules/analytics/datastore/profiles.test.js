@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -117,24 +118,16 @@ describe( 'modules/analytics profiles', () => {
 					{ body: response, status: 500 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProfile( ...args );
-
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingCreateProfile( ...args ) === false
-				);
+				await registry.dispatch( STORE_NAME ).createProfile( ...args );
 
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'createProfile', args ) ).toMatchObject( response );
 
-				// Ignore the request fired by the `getProperties` selector.
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: {}, status: 200 }
-				);
+				// Ignore the request fired by the `getProfiles` selector.
+				muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, [] );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
-				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-
-				// No properties should have been added yet, as the property creation failed.
-				expect( properties ).toEqual( undefined );
+				// No profiles should have been added yet, as the profile creation failed.
+				expect( profiles ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
 		} );
