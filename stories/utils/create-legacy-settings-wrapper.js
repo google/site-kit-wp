@@ -33,6 +33,7 @@ import { WithTestRegistry } from '../../tests/js/utils';
  * Creates a legacy settings wrapper component for the given module.
  *
  * @since 1.12.0
+ * @private
  *
  * @param {string}    moduleSlug      The module's slug.
  * @param {WPElement} moduleComponent Module settings component to filter in.

@@ -30,6 +30,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
+use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
@@ -209,7 +210,7 @@ final class Search_Console extends Module
 				);
 
 				if ( ! empty( $data['url'] ) ) {
-					$data_request['page'] = $data['url'];
+					$data_request['page'] = ( new Google_URL_Normalizer() )->normalize_url( $data['url'] );
 				}
 
 				if ( isset( $data['limit'] ) ) {
@@ -232,9 +233,13 @@ final class Search_Console extends Module
 					);
 				}
 
+				$url_normalizer = new Google_URL_Normalizer();
+
 				$site_url = $data['siteURL'];
-				if ( 0 !== strpos( $site_url, 'sc-domain:' ) ) {
-					$site_url = trailingslashit( $site_url );
+				if ( 0 === strpos( $site_url, 'sc-domain:' ) ) { // Domain property.
+					$site_url = 'sc-domain:' . $url_normalizer->normalize_url( str_replace( 'sc-domain:', '', $site_url, 1 ) );
+				} else { // URL property.
+					$site_url = $url_normalizer->normalize_url( trailingslashit( $site_url ) );
 				}
 
 				return function () use ( $site_url ) {

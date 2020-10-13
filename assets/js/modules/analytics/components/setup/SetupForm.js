@@ -37,6 +37,7 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	AccountSelect,
+	ExistingGTMPropertyNotice,
 	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
@@ -82,7 +83,9 @@ export default function SetupForm( { finishSetup } ) {
 	return (
 		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
 			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
+
 			<ExistingTagNotice />
+			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (
 				<p className="googlesitekit-margin-bottom-0">
