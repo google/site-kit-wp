@@ -26,15 +26,22 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import ErrorNotice from '../components/ErrorNotice';
+import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { isInsufficientPermissionsError } from '../util/errors';
+import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 const { useSelect } = Data;
 
 export default function StoreErrorNotice( { storeName, shouldDisplayError, moduleSlug } ) {
 	const error = useSelect( ( select ) => select( storeName ).getError() );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
+
+	if ( isInsufficientPermissionsError( error ) ) {
+		error.message = getInsufficientPermissionsErrorDescription( error.message, module );
+	}
 
 	return (
 		<ErrorNotice
 			error={ error }
-			moduleSlug={ moduleSlug }
 			shouldDisplayError={ shouldDisplayError }
 		/>
 	);
