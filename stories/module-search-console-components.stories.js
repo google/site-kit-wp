@@ -36,58 +36,77 @@ import {
 	dashboardPopularKeyWordsWidgetData,
 } from '../assets/js/modules/search-console/datastore/__fixtures__';
 
+/**
+ * Defines some additional setup for all stories.
+ *
+ * @since n.e.x.t
+ *
+ * @param {wp.data.registry} registry Registry with all available stores registered.
+ */
+const setup = ( registry ) => {
+	registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		propertyID: 'https://example.com/',
+	} );
+};
+
 generateReportBasedWidgetStories( {
-	moduleSlug: 'search-console',
+	moduleSlugs: [ 'search-console' ],
 	datastore: STORE_NAME,
 	group: 'Search Console Module/Components/Dashboard/Clicks Widget',
 	data: clicksAndImpressionsWidgetData,
 	options: dashboardClicksWidgetArgs,
 	component: DashboardClicksWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'search-console',
+	moduleSlugs: [ 'search-console' ],
 	datastore: STORE_NAME,
 	group: 'Search Console Module/Components/Page Dashboard/Clicks Widget',
 	data: clicksAndImpressionsWidgetData,
 	options: pageDashboardClicksWidgetArgs,
 	component: DashboardClicksWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'search-console',
+	moduleSlugs: [ 'search-console' ],
 	datastore: STORE_NAME,
 	group: 'Search Console Module/Components/Dashboard/Impressions Widget',
 	data: clicksAndImpressionsWidgetData,
 	options: dashboardImpressionsWidgetArgs,
 	component: DashboardImpressionsWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'search-console',
+	moduleSlugs: [ 'search-console' ],
 	datastore: STORE_NAME,
 	group: 'Search Console Module/Components/Page Dashboard/Impressions Widget',
 	data: clicksAndImpressionsWidgetData,
 	options: pageDashboardImpressionsArgs,
 	component: DashboardImpressionsWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'search-console',
+	moduleSlugs: [ 'search-console' ],
 	datastore: STORE_NAME,
 	group: 'Search Console Module/Components/Dashboard/Popular Keywords Widget',
 	data: dashboardPopularKeyWordsWidgetData,
 	options: dashboardPopularKeyWordsWidgetArgs,
 	component: DashboardPopularKeywordsWidget,
 	wrapWidget: false,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'search-console',
+	moduleSlugs: [ 'search-console' ],
 	datastore: STORE_NAME,
 	group: 'Search Console Module/Components/Page Dashboard/Popular Keywords Widget',
 	data: pageDashboardPopularKeyWordsWidgetData,
 	options: pageDashboardPopularKeyWordsWidgetArgs,
 	component: DashboardPopularKeywordsWidget,
 	wrapWidget: false,
+	setup,
 } );
