@@ -55,9 +55,15 @@ module.exports = async ( { config } ) => {
 		},
 	);
 
+	// exclude existing svg rule created by storybook before pushing custom rule
+	const fileLoaderRule = config.module.rules.find( ( rule ) => rule.test && rule.test.test( '.svg' ) );
+	fileLoaderRule.exclude = /\.svg$/;
+
+	config.module.rules.push( mainConfig.svgRule );
+
 	config.module.rules.push(
 		{
-			test: /\.(png|woff|woff2|eot|ttf|svg|gif)$/,
+			test: /\.(png|woff|woff2|eot|ttf|gif)$/,
 			use: { loader: 'url-loader?limit=100000' },
 		}
 	);

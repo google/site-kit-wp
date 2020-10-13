@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SvgIcon from '../../util/svg-icon';
+import LockIcon from '../../../svg/lock.svg';
 
 class SettingsOverlay extends Component {
 	render() {
@@ -44,7 +44,7 @@ class SettingsOverlay extends Component {
 			) }>
 				<div className="googlesitekit-overlay__wrapper">
 					<div className="googlesitekit-overlay__icon">
-						<SvgIcon id="lock" width="22" height="30" />
+						<LockIcon width="22" height="30" />
 					</div>
 					<h3 className="
 						googlesitekit-heading-2

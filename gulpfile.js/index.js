@@ -25,15 +25,15 @@ const pump = require( 'pump' );
 const del = require( 'del' );
 
 /**
- * Gulp tasks
+ * Gulp tasks.
  */
 const copy = require( './copy' );
-const svgmin = require( './svgmin' );
-const svgstore = require( './svgstore' );
 const zip = require( './zip' );
 
 /**
- * Gulp task to clean up release folder.
+ * Removes the release folder.
+ *
+ * @since 1.0.0
  *
  * @param {Function} cb The callback indicating the end of the task execution.
  */
@@ -44,6 +44,8 @@ function cleanRelease( cb ) {
 
 /**
  * Gulp task to minify images.
+ *
+ * @since 1.0.0
  *
  * @param {Function} cb The callback indicating the end of the task execution.
  */
@@ -57,14 +59,6 @@ exports.imagemin = function( cb ) {
 		cb
 	);
 };
-
-/**
- * Gulp task to minify and combine svg's.
- */
-exports.svg = gulp.series(
-	svgstore,
-	svgmin,
-);
 
 /**
  * Gulp task to run the default release processes in a sequential order.

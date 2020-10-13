@@ -25,7 +25,15 @@ export function bootstrapFetchMocks() {
 	// Reset first to prevent errors when hot reloading.
 	fetchMock.reset();
 	fetchMockSaveSettings();
+	fetchMockGetModules();
 	fetchMockCatchAll();
+}
+
+export function fetchMockGetModules() {
+	fetchMock.get(
+		/\/google-site-kit\/v1\/core\/modules\/data\/list/,
+		{ body: [], status: 200 }
+	);
 }
 
 export function fetchMockSaveSettings() {
@@ -52,4 +60,3 @@ export function fetchMockCatchAll() {
 		};
 	} );
 }
-

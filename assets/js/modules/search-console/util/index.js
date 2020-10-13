@@ -101,7 +101,9 @@ export const extractSearchConsoleDashboardData = ( rows ) => {
 };
 
 /**
- * Check for Zero data from Search Console API.
+ * Checks for Zero data from Search Console API.
+ *
+ * @since 1.0.0
  *
  * @param {Object} data The data returned from the Search Console API call.
  * @return {boolean} Indicates zero data was returned from Search Console API call.

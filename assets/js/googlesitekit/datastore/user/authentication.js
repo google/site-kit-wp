@@ -1,5 +1,5 @@
 /**
- * core/user Data store: Authentication info.
+ * `core/user` data store: Authentication info.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -61,7 +61,7 @@ const baseActions = {
 	/**
 	 * Sets the authentication error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param {Object} error Authentication error object.
 	 * @return {Object} Redux-style action.
@@ -76,7 +76,7 @@ const baseActions = {
 	/**
 	 * Clears the authentication error, if one was previously set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -135,8 +135,8 @@ const baseSelectors = {
 	 * }
 	 * ```
 	 *
-	 * @private
 	 * @since 1.9.0
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User authentication info.
@@ -190,7 +190,7 @@ const baseSelectors = {
 	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Array of granted scopes
+	 * @return {(Array|undefined)} Array of granted scopes.
 	 */
 	getGrantedScopes: createGetAuthenticationSelector( 'grantedScopes' ),
 
@@ -203,7 +203,7 @@ const baseSelectors = {
 	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Array of required scopes
+	 * @return {(Array|undefined)} Array of required scopes.
 	 */
 	getRequiredScopes: createGetAuthenticationSelector( 'requiredScopes' ),
 
@@ -216,7 +216,7 @@ const baseSelectors = {
 	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Array of scopes
+	 * @return {(Array|undefined)} Array of scopes.
 	 */
 	getUnsatisfiedScopes: createGetAuthenticationSelector( 'unsatisfiedScopes' ),
 
@@ -246,7 +246,7 @@ const baseSelectors = {
 	/**
 	 * Gets the authentication error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|null)} Authentication error object if available, otherwise null.

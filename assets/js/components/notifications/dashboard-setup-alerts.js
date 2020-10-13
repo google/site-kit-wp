@@ -90,7 +90,9 @@ class DashboardSetupAlerts extends Component {
 							anchorLink={ 'pagespeed-insights' === slug ? '#googlesitekit-pagespeed-header' : '' }
 							anchorLinkLabel={ 'pagespeed-insights' === slug ? __( 'Jump to the bottom of the dashboard to see how fast your home page is.', 'google-site-kit' ) : '' }
 						>
-							<ModulesList />
+							<ModulesList
+								moduleSlugs={ [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ] }
+							/>
 						</Notification>
 					</Fragment>
 				);

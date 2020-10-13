@@ -1,5 +1,5 @@
 /**
- * Tag Manager constants.
+ * `modules/tagmanager` data store constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -30,3 +30,5 @@ export const CONTEXT_AMP = 'amp';
 export const FORM_SETUP = 'tagmanagerSetup';
 // OAuth scope needed for creating containers.
 export const EDIT_SCOPE = 'https://www.googleapis.com/auth/tagmanager.edit.containers';
+// A special setupMode value for when completing setup with Analytics.
+export const SETUP_MODE_WITH_ANALYTICS = 'SETUP_WITH_ANALYTICS';
