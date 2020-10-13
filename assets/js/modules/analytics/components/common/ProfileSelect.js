@@ -37,12 +37,12 @@ export default function ProfileSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const hasResolvedProperties = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ accountID ] ) );
-
 	const { profiles, hasResolvedProfiles } = useSelect( ( select ) => ( {
 		profiles: select( STORE_NAME ).getProfiles( accountID, propertyID ),
 		hasResolvedProfiles: select( STORE_NAME ).hasFinishedResolution( 'getProfiles', [ accountID, propertyID ] ),
-	} ), [ accountID, propertyID ] );
+	} ) );
 
 	const { setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -53,7 +53,7 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID ] );
 
-	if ( ! hasResolvedProperties || ! hasResolvedProfiles ) {
+	if ( ! hasResolvedAccounts || ( accountID && ! hasResolvedProperties ) || ! hasResolvedProfiles ) {
 		return <ProgressBar small />;
 	}
 
