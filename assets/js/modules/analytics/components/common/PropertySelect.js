@@ -29,17 +29,31 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/progress-bar';
 import { STORE_NAME, PROPERTY_CREATE } from '../../datastore/constants';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) );
+	const { accountID, properties, hasResolvedProperties } = useSelect( ( select ) => {
+		const data = {
+			accountID: select( STORE_NAME ).getAccountID(),
+			properties: [],
+			hasResolvedProperties: false,
+		};
+
+		if ( data.accountID ) {
+			data.properties = select( STORE_NAME ).getProperties( data.accountID );
+			data.hasResolvedProperties = select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ data.accountID ] );
+		}
+
+		return data;
+	} );
+
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const isLoadingAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
-	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
+	const hasGTMPropertyID = useSelect( ( select ) => !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -50,7 +64,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID ] );
 
-	if ( isLoadingAccounts || isLoadingProperties ) {
+	if ( ! hasResolvedAccounts || ( accountID && ! hasResolvedProperties ) ) {
 		return <ProgressBar small />;
 	}
 
@@ -60,7 +74,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || ! isValidAccountID( accountID ) }
+			disabled={ hasExistingTag || hasGTMPropertyID || ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>

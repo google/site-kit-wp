@@ -170,7 +170,7 @@ class Context {
 	 *
 	 * Returns the value from the `"googlesitekit_canonical_home_url"` filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.18.0
 	 *
 	 * @return string Cannonical home URL.
 	 */
@@ -182,7 +182,7 @@ class Context {
 		 * that dynamically modify that value based on context can use this filter to ensure that the URL considered
 		 * by Site Kit remains stable.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.18.0
 		 *
 		 * @param string $home_url The value of `home_url()`.
 		 */
