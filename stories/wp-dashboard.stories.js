@@ -11,7 +11,8 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import SvgIcon from '../assets/js/util/svg-icon';
+import GoogleLogoIcon from '../assets/svg/logo-g.svg';
+import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
 import WPDashboardMain from '../assets/js/components/wp-dashboard/wp-dashboard-main';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
 import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
@@ -73,8 +74,8 @@ storiesOf( 'WordPress', module )
 					<div id="google_dashboard_widget" className="postbox">
 						<h2 className="hndle ui-sortable-handle">
 							<span><span className="googlesitekit-logo googlesitekit-logo--mini">
-								<SvgIcon id="logo-g" height="19" width="19" />
-								<SvgIcon id="logo-sitekit" height="17" width="78" />
+								<GoogleLogoIcon height="19" width="19" />
+								<SiteKitLogoIcon height="17" width="78" />
 							</span></span>
 						</h2>
 						<div className="inside">

@@ -45,7 +45,7 @@ import {
 import Button from '../../../../components/button';
 import Link from '../../../../components/link';
 import SetupErrorNotice from './SetupErrorNotice';
-import SetupFormInstructions from './SetupFormInstructions';
+import FormInstructions from '../common/FormInstructions';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -134,7 +134,7 @@ export default function SetupForm( { finishSetup } ) {
 			onSubmit={ onSubmit }
 		>
 			<SetupErrorNotice />
-			<SetupFormInstructions />
+			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />

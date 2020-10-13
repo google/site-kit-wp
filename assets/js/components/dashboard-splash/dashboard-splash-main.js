@@ -25,6 +25,10 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import AdSenseIcon from '../../../svg/adsense.svg';
+import AnalyticsIcon from '../../../svg/analytics.svg';
+import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
+import SearchConsoleIcon from '../../../svg/search-console.svg';
 import DashboardSplashIntro from './dashboard-splash-intro';
 import DashboardSplashService from './dashboard-splash-service';
 import DashboardSplashOutro from './dashboard-splash-outro';
@@ -51,22 +55,22 @@ class DashboardSplashMain extends Component {
 
 		const splashModules = {
 			searchConsole: {
-				icon: 'search-console',
+				icon: <SearchConsoleIcon />,
 				title: _x( 'Search Console', 'Service name', 'google-site-kit' ),
 				content: __( 'Keep track of how people find you in Search, and how many of them visit your site.', 'google-site-kit' ),
 			},
 			analytics: {
-				icon: 'analytics',
+				icon: <AnalyticsIcon />,
 				title: _x( 'Analytics', 'Service name', 'google-site-kit' ),
 				content: __( 'Understand your customers better: track how they navigate across your site and evaluate the performance of your products or posts.', 'google-site-kit' ),
 			},
 			adsense: {
-				icon: 'adsense',
+				icon: <AdSenseIcon />,
 				title: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 				content: __( 'Make your content work for you -- earning money by placing ads on your site.', 'google-site-kit' ),
 			},
 			pagespeed: {
-				icon: 'pagespeed',
+				icon: <PageSpeedInsightsIcon />,
 				title: _x( 'PageSpeed', 'Service name', 'google-site-kit' ),
 				content: __( 'Analyze your site’s performance and get actionable tips to improve its speed across all devices.', 'google-site-kit' ),
 			},

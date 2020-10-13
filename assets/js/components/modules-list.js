@@ -35,12 +35,12 @@ import {
 	getReAuthURL,
 	activateOrDeactivateModule,
 	showErrorNotification,
-	moduleIcon,
 	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import Link from './link';
 import data from '../components/data';
+import ModuleIcon from '../components/module-icon';
 import GenericError from './notifications/generic-error';
 import ModuleSettingsWarning from './notifications/module-settings-warning';
 
@@ -140,7 +140,7 @@ class ModulesList extends Component {
 						>
 							<div className="googlesitekit-settings-connect-module__wrapper">
 								<div className="googlesitekit-settings-connect-module__logo">
-									{ moduleIcon( slug, blockedByParentModule ) }
+									<ModuleIcon slug={ slug } />
 								</div>
 								<h3 className="googlesitekit-settings-connect-module__title">
 									{ name }
