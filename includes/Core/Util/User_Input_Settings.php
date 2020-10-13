@@ -80,7 +80,7 @@ class User_Input_Settings {
 	 *
 	 * @return boolean TRUE if connected, otherwise FALSE.
 	 */
-	private function is_connected_to_proxy() {
+	protected function is_connected_to_proxy() {
 		return (bool) $this->authentication->is_authenticated()
 			&& $this->authentication->credentials()->has()
 			&& $this->authentication->credentials()->using_proxy();
@@ -209,7 +209,11 @@ class User_Input_Settings {
 	public function set_settings( $settings ) {
 		return $this->is_connected_to_proxy()
 			? $this->sync_with_proxy( $settings )
-			: new WP_Error( 'not_connected', __( 'Not Connected', 'google-site-kit' ), array( 'status' => 400 ) );
+			: new WP_Error(
+				'not_connected',
+				__( 'Not Connected', 'google-site-kit' ),
+				array( 'status' => 400 )
+			);
 	}
 
 }
