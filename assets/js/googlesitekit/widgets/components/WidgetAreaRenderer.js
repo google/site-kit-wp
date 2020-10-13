@@ -146,7 +146,7 @@ const isActiveWidget = ( widgets ) => ( widget ) => {
 		? new widget.component( {} ).render()
 		: widget.component( {} );
 
-	return widgetExists && isComponent && isActive;
+	return widgetExists && isComponent && Boolean( isActive );
 };
 
 const WidgetAreaRenderer = ( { slug } ) => {
