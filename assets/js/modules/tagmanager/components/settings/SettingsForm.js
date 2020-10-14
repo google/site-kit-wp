@@ -19,42 +19,18 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
-	AMPContainerNameTextField,
 	AMPContainerSelect,
+	ContainerNames,
 	FormInstructions,
 	UseSnippetSwitch,
-	WebContainerNameTextField,
 	WebContainerSelect,
 } from '../common';
 import StoreErrorNotice from '../../../../components/StoreErrorNotice';
-import { CONTAINER_CREATE, STORE_NAME } from '../../datastore/constants';
-const { useSelect } = Data;
+import { STORE_NAME } from '../../datastore/constants';
 
 export default function SettingsForm() {
-	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
-	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
-
-	let containerNames = null;
-	if ( containerID === CONTAINER_CREATE || ampContainerID === CONTAINER_CREATE ) {
-		const webContainerName = containerID === CONTAINER_CREATE
-			? <WebContainerNameTextField />
-			: null;
-
-		const ampContainerName = ampContainerID === CONTAINER_CREATE
-			? <AMPContainerNameTextField />
-			: null;
-
-		containerNames = (
-			<div className="googlesitekit-setup-module__inputs">
-				{ webContainerName }
-				{ ampContainerName }
-			</div>
-		);
-	}
-
 	return (
 		<div className="googlesitekit-tagmanager-settings-fields">
 			<StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } />
@@ -68,7 +44,7 @@ export default function SettingsForm() {
 				<AMPContainerSelect />
 			</div>
 
-			{ containerNames }
+			<ContainerNames />
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				<UseSnippetSwitch />

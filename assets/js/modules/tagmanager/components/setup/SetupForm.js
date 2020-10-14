@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_SETUP, EDIT_SCOPE, CONTAINER_CREATE, SETUP_MODE_WITH_ANALYTICS } from '../../datastore/constants';
+import { STORE_NAME, FORM_SETUP, EDIT_SCOPE, SETUP_MODE_WITH_ANALYTICS } from '../../datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -39,9 +39,8 @@ import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/da
 import { isPermissionScopeError } from '../../../../util/errors';
 import {
 	AccountSelect,
-	AMPContainerNameTextField,
 	AMPContainerSelect,
-	WebContainerNameTextField,
+	ContainerNames,
 	WebContainerSelect,
 } from '../common';
 import Button from '../../../../components/button';
@@ -55,8 +54,6 @@ export default function SetupForm( { finishSetup } ) {
 	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
-	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
-	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
 	// Only select the initial autosubmit + submitMode once from form state which will already be set if a snapshot was restored.
 	const initialAutoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ), [] );
 	const initialSubmitMode = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ), [] );
@@ -132,24 +129,6 @@ export default function SetupForm( { finishSetup } ) {
 	// Click handler for secondary option when setting up with option to include Analytics.
 	const onSetupWithoutAnalytics = useCallback( () => submitForm(), [ submitForm ] );
 
-	let containerNames = null;
-	if ( containerID === CONTAINER_CREATE || ampContainerID === CONTAINER_CREATE ) {
-		const webContainerName = containerID === CONTAINER_CREATE
-			? <WebContainerNameTextField />
-			: null;
-
-		const ampContainerName = ampContainerID === CONTAINER_CREATE
-			? <AMPContainerNameTextField />
-			: null;
-
-		containerNames = (
-			<div className="googlesitekit-setup-module__inputs">
-				{ webContainerName }
-				{ ampContainerName }
-			</div>
-		);
-	}
-
 	return (
 		<form
 			className="googlesitekit-tagmanager-setup__form"
@@ -166,7 +145,7 @@ export default function SetupForm( { finishSetup } ) {
 				<AMPContainerSelect />
 			</div>
 
-			{ containerNames }
+			<ContainerNames />
 
 			<div className="googlesitekit-setup-module__action">
 				{ isSetupWithAnalytics && (

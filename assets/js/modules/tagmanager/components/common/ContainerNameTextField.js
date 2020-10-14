@@ -49,16 +49,9 @@ export default function ContainerNameTextField( { label, containers, formFieldID
 		? <HelperText persistent>{ __( 'A container with this name already exists.', 'google-site-kit' ) }</HelperText>
 		: undefined;
 
-	let trailingIcon;
-	if ( helperText ) {
-		trailingIcon = (
-			<span className="googlesitekit-text-field-icon--warning">
-				<span className="screen-reader-text">
-					{ __( 'Warning', 'google-site-kit' ) }
-				</span>
-			</span>
-		);
-	}
+	const trailingIcon = helperText
+		? <span className="googlesitekit-text-field-icon--warning" />
+		: undefined;
 
 	return (
 		<div className="googlesitekit-tagmanager-containername">
