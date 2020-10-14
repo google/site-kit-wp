@@ -22,6 +22,17 @@ beforeEach( () => {
 	} );
 } );
 
-afterEach( () => {
+afterEach( async () => {
+	// In order to catch (most) unhandled promise rejections
+	// we need to wait at least one more event cycle.
+	// To do this, we need to use real timers temporarily if not already configured.
+	const nextTick = () => new Promise( ( resolve ) => setTimeout( resolve ) );
+	if ( jest.isMockFunction( setTimeout ) ) {
+		jest.useRealTimers();
+		await nextTick();
+		jest.useFakeTimers();
+	} else {
+		await nextTick();
+	}
 	fetchMock.mockReset();
 } );

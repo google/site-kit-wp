@@ -126,10 +126,12 @@ describe( 'createSettingsStore store', () => {
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 					{ body: {}, status: 200 }
 				);
+				const values = { setting1: 'serverside' };
+				dispatch.setSettings( values, {} );
 				expect( async () => {
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
-						{ body: { setting1: 'serverside' }, status: 200 }
+						{ body: values, status: 200 }
 					);
 					await dispatch.saveSettings();
 				} ).not.toThrow();
