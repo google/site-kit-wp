@@ -22,15 +22,16 @@ use Exception;
  */
 class Google_Proxy {
 
-	const BASE_URL           = 'https://sitekit.withgoogle.com';
-	const OAUTH2_SITE_URI    = '/o/oauth2/site/';
-	const OAUTH2_REVOKE_URI  = '/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI   = '/o/oauth2/token/';
-	const OAUTH2_AUTH_URI    = '/o/oauth2/auth/';
-	const SETUP_URI          = '/site-management/setup/';
-	const PERMISSIONS_URI    = '/site-management/permissions/';
-	const ACTION_SETUP       = 'googlesitekit_proxy_setup';
-	const ACTION_PERMISSIONS = 'googlesitekit_proxy_permissions';
+	const BASE_URL                = 'https://sitekit.withgoogle.com';
+	const OAUTH2_SITE_URI         = '/o/oauth2/site/';
+	const OAUTH2_REVOKE_URI       = '/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI        = '/o/oauth2/token/';
+	const OAUTH2_AUTH_URI         = '/o/oauth2/auth/';
+	const SETUP_URI               = '/site-management/setup/';
+	const PERMISSIONS_URI         = '/site-management/permissions/';
+	const USER_INPUT_SETTINGS_URI = '/settings/';
+	const ACTION_SETUP            = 'googlesitekit_proxy_setup';
+	const ACTION_PERMISSIONS      = 'googlesitekit_proxy_permissions';
 
 	/**
 	 * Plugin context.
