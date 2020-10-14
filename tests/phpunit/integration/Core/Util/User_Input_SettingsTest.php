@@ -66,7 +66,7 @@ class User_Input_SettingsTest extends TestCase {
 		);
 
 		foreach ( $results as $result ) {
-			$this->assertTrue( is_wp_error( $result ) );
+			$this->assertWPError( $result );
 			$this->assertEquals( 'not_connected', $result->get_error_code() );
 
 			$data = $result->get_error_data();
@@ -129,7 +129,7 @@ class User_Input_SettingsTest extends TestCase {
 		);
 	}
 
-	public function test_get_settigns_from_remote() {
+	public function test_get_settings_from_remote() {
 		$settings = $this->get_connected_to_proxy_mock();
 		$data     = array(
 			'goals'         => array(
