@@ -20,7 +20,8 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { AMPContainerNameTextField, WebContainerNameTextField } from '../common';
+import AMPContainerNameTextField from './AMPContainerNameTextField';
+import WebContainerNameTextField from './WebContainerNameTextField';
 import { CONTAINER_CREATE, STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
