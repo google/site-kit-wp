@@ -20,90 +20,97 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { Component } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, numberFormat, getModulesData } from '../../../../util';
+import Data from 'googlesitekit-data';
+import { getTimeInSeconds, numberFormat } from '../../../../util';
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/preview-table';
 import Layout from '../../../../components/layout/layout';
+import { STORE_NAME } from '../../datastore/constants';
 
-class LegacyAnalyticsDashboardWidgetPopularPagesTable extends Component {
-	static renderLayout( component ) {
-		return (
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-6-desktop
-				mdc-layout-grid__cell--span-4-tablet
-			">
-				<Layout
-					className="googlesitekit-popular-content"
-					footer
-					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCtaLink={ getModulesData().analytics.homepage }
-					fill
-				>
-					{ component }
-				</Layout>
-			</div>
+const { useSelect } = Data;
+
+const RenderLayout = ( { children } ) => {
+	const serviceURL = useSelect( ( select ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const profileID = select( STORE_NAME ).getProfileID();
+		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
+		return select( STORE_NAME ).getServiceURL(
+			{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }` }
 		);
+	} );
+	return (
+		<div className="
+			mdc-layout-grid__cell
+			mdc-layout-grid__cell--span-6-desktop
+			mdc-layout-grid__cell--span-4-tablet
+		">
+			<Layout
+				className="googlesitekit-popular-content"
+				footer
+				footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				footerCtaLink={ serviceURL }
+				fill
+			>
+				{ children }
+			</Layout>
+		</div>
+	);
+};
+
+function LegacyAnalyticsDashboardWidgetPopularPagesTable( { data } ) {
+	if ( ! data || ! data.length ) {
+		return null;
 	}
 
-	render() {
-		const { data } = this.props;
+	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+		return null;
+	}
 
-		if ( ! data || ! data.length ) {
-			return null;
-		}
+	const headers = [
+		{
+			title: __( 'Most popular content', 'google-site-kit' ),
+			primary: true,
+		},
+		{
+			title: __( 'Views', 'google-site-kit' ),
+		},
+	];
 
-		if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
-			return null;
-		}
+	const links = [];
+	const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
+		const [ title, url ] = row.dimensions;
+		links[ i ] = url.startsWith( '/' ) ? url : '/' + url;
 
-		const headers = [
-			{
-				title: __( 'Most popular content', 'google-site-kit' ),
-				primary: true,
-			},
-			{
-				title: __( 'Views', 'google-site-kit' ),
-			},
+		return [
+			title,
+			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
 		];
+	} );
 
-		const links = [];
-		const dataMapped = data[ 0 ].data.rows.map( ( row, i ) => {
-			const [ title, url ] = row.dimensions;
-			links[ i ] = url.startsWith( '/' ) ? url : '/' + url;
+	const options = {
+		hideHeader: false,
+		chartsEnabled: false,
+		links,
+		showURLs: true,
+		useAdminURLs: true,
+	};
 
-			return [
-				title,
-				numberFormat( row.metrics[ 0 ].values[ 0 ] ),
-			];
-		} );
+	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
-		const options = {
-			hideHeader: false,
-			chartsEnabled: false,
-			links,
-			showURLs: true,
-			useAdminURLs: true,
-		};
-
-		const dataTable = getDataTableFromData( dataMapped, headers, options );
-
-		return (
-			LegacyAnalyticsDashboardWidgetPopularPagesTable.renderLayout(
-				<TableOverflowContainer>
-					{ dataTable }
-				</TableOverflowContainer>
-			)
-		);
-	}
+	return (
+		<RenderLayout>
+			<TableOverflowContainer>
+				{ dataTable }
+			</TableOverflowContainer>
+		</RenderLayout>
+	);
 }
 
 export default withData(
@@ -119,9 +126,9 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ],
 		},
 	],
-	LegacyAnalyticsDashboardWidgetPopularPagesTable.renderLayout(
+	<RenderLayout>
 		<PreviewTable padding />
-	),
+	</RenderLayout>,
 	{
 		inGrid: true,
 		createGrid: true,

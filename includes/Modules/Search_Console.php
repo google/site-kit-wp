@@ -402,7 +402,7 @@ final class Search_Console extends Module
 			$single_url_filter = new Google_Service_Webmasters_ApiDimensionFilter();
 			$single_url_filter->setDimension( 'page' );
 			$single_url_filter->setOperator( 'equals' );
-			$single_url_filter->setExpression( esc_url_raw( $args['page'] ) );
+			$single_url_filter->setExpression( rawurldecode( esc_url_raw( $args['page'] ) ) );
 			$filters[] = $single_url_filter;
 		}
 

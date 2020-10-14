@@ -36,7 +36,7 @@ import {
 } from '../assets/js/modules/adsense/datastore/__fixtures__';
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'adsense',
+	moduleSlugs: [ 'adsense' ],
 	datastore: STORE_NAME,
 	group: 'AdSense Module/Components/Dashboard/Summary Widget',
 	data: [
@@ -54,7 +54,7 @@ generateReportBasedWidgetStories( {
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: [ 'adsense', 'analytics' ],
+	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: ANALYTICS_STORE,
 	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
 	data: dashboardTopEarningPageWidgetData,

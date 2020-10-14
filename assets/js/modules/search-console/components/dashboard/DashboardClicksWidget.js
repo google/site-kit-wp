@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { extractForSparkline, getSiteKitAdminURL } from '../../../../util';
+import { extractForSparkline } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
 import { extractSearchConsoleDashboardData } from '../../util';
 import whenActive from '../../../../util/when-active';
@@ -37,27 +37,37 @@ import Sparkline from '../../../../components/sparkline';
 import PreviewBlock from '../../../../components/preview-block';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
 
 function DashboardClicksWidget() {
-	const { data, error, loading } = useSelect( ( select ) => {
+	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
+
+		const propertyID = store.getPropertyID();
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+
 		const args = {
 			dimensions: 'date',
 			compareDateRanges: true,
 			dateRange: select( CORE_USER ).getDateRange(),
 		};
+		const serviceBaseURLArgs = {
+			resource_id: propertyID,
+			num_of_days: getCurrentDateRangeDayCount( args.dateRange ),
+		};
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			args.url = url;
+			serviceBaseURLArgs.page = `!${ url }`;
 		}
 
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: store.isResolving( 'getReport', [ args ] ),
+			serviceURL: store.getServiceURL( { path: '/performance/search-analytics', query: serviceBaseURLArgs } ),
 		};
 	} );
 
@@ -74,7 +84,6 @@ function DashboardClicksWidget() {
 		return getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) );
 	}
 
-	const href = getSiteKitAdminURL( 'googlesitekit-module-search-console', {} );
 	const { totalClicks, totalClicksChange, dataMap } = extractSearchConsoleDashboardData( data );
 
 	return (
@@ -87,7 +96,8 @@ function DashboardClicksWidget() {
 				changeDataUnit="%"
 				source={ {
 					name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
-					link: href,
+					link: serviceURL,
+					external: true,
 				} }
 				sparkline={
 					<Sparkline
