@@ -108,11 +108,19 @@ class ScreensTest extends TestCase {
 			'googlesitekit-dashboard',
 		);
 
+		$overridden_menu_order = array_merge(
+			array(
+				'third-party-host',
+			),
+			$menu_order
+		);
+
 		$this->screens->register();
 
 		// Imitate WordPress core running these filters.
 		if ( apply_filters( 'custom_menu_order', false ) ) {
-			$menu_order = apply_filters( 'menu_order', $menu_order );
+			$menu_order            = apply_filters( 'menu_order', $menu_order );
+			$overridden_menu_order = apply_filters( 'menu_order', $overridden_menu_order );
 		}
 
 		$expected_order = array(
@@ -123,6 +131,14 @@ class ScreensTest extends TestCase {
 			'options-general.php',
 		);
 
+		$overridden_expected_order = array_merge(
+			array(
+				'third-party-host',
+			),
+			$expected_order
+		);
+
 		$this->assertEquals( $expected_order, $menu_order );
+		$this->assertEquals( $overridden_expected_order, $overridden_menu_order );
 	}
 }
