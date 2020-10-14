@@ -114,7 +114,7 @@ class User_Input_SettingsTest extends TestCase {
 		);
 	}
 
-	public function test_get_settigns_from_remote() {
+	public function test_get_settings_from_remote() {
 		$settings = new FakeUser_Input_Settings( $this->context );
 		$data     = array(
 			'goals'         => array(
