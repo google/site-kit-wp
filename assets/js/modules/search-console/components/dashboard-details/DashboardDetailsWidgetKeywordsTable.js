@@ -30,12 +30,25 @@ import LegacySearchConsoleDashboardWidgetKeywordTable from '../dashboard/LegacyS
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
 
 const DashboardDetailsWidgetKeywordsTable = () => {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const footerCtaLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const footerCtaLinkArgs = {
+		resource_id: propertyID,
+		num_of_days: getCurrentDateRangeDayCount(),
+	};
+	if ( url ) {
+		footerCtaLinkArgs.page = `!${ url }`;
+	}
+	const footerCtaLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
+		path: '/performance/search-analytics',
+		query: footerCtaLinkArgs,
+	} ) );
 
 	return (
 		<Fragment>

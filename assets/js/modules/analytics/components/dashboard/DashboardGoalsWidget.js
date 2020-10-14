@@ -33,7 +33,7 @@ import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import CTA from '../../../../components/notifications/cta';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
-import { getSiteKitAdminURL, readableLargeNumber, changeToPercent } from '../../../../util';
+import { readableLargeNumber, changeToPercent } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
@@ -45,9 +45,13 @@ function DashboardGoalsWidget() {
 		data,
 		error,
 		loading,
+		serviceURL,
 		goals,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
+		const accountID = store.getAccountID();
+		const profileID = store.getProfileID();
+		const internalWebPropertyID = store.getInternalWebPropertyID();
 
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
@@ -62,9 +66,10 @@ function DashboardGoalsWidget() {
 		};
 
 		return {
-			loading: store.isResolving( 'getReport', [ args ] ) || store.isResolving( 'getGoals', [] ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
 			data: store.getReport( args ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
+			loading: store.isResolving( 'getReport', [ args ] ) || store.isResolving( 'getGoals', [] ),
+			serviceURL: store.getServiceURL( { path: `/report/conversions-goals-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` } ),
 			goals: store.getGoals(),
 		};
 	} );
@@ -126,7 +131,8 @@ function DashboardGoalsWidget() {
 			changeDataUnit="%"
 			source={ {
 				name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
-				link: getSiteKitAdminURL( 'googlesitekit-module-analytics', {} ),
+				link: serviceURL,
+				external: true,
 			} }
 			sparkline={
 				sparkLineData &&
