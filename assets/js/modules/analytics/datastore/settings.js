@@ -35,8 +35,9 @@ import {
 	isValidProfileName,
 } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
+import { createStrictSelect, createValidationSelector } from '../../../googlesitekit/data/utils';
 
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createRegistryControl } = Data;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -153,67 +154,6 @@ export const resolvers = {};
 
 export const selectors = {
 	/**
-	 * Checks if changes can be submitted.
-	 */
-	canSubmitChanges: createRegistrySelector( ( select ) => () => {
-		const {
-			getAccountID,
-			getInternalWebPropertyID,
-			getProfileID,
-			getPropertyID,
-			hasExistingTagPermission,
-			hasTagPermission,
-			haveSettingsChanged,
-			isDoingSubmitChanges,
-		} = select( STORE_NAME );
-
-		if ( isDoingSubmitChanges() ) {
-			return false;
-		}
-
-		const gtmIsActive = select( CORE_MODULES ).isModuleActive( 'tagmanager' );
-		if ( gtmIsActive ) {
-			const gtmAnalyticsPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
-			if ( isValidPropertyID( gtmAnalyticsPropertyID ) && hasTagPermission( gtmAnalyticsPropertyID ) === false ) {
-				return false;
-			}
-		}
-
-		if ( ! haveSettingsChanged() ) {
-			return false;
-		}
-
-		if ( ! isValidAccountID( getAccountID() ) ) {
-			return false;
-		}
-
-		if ( ! isValidPropertySelection( getPropertyID() ) ) {
-			return false;
-		}
-
-		if ( ! isValidProfileSelection( getProfileID() ) ) {
-			return false;
-		}
-
-		const { getValue } = select( CORE_FORMS );
-		if ( getProfileID() === PROFILE_CREATE && ! isValidProfileName( getValue( FORM_SETUP, 'profileName' ) ) ) {
-			return false;
-		}
-
-		// If the property ID is valid (non-create) the internal ID must be valid as well.
-		if ( isValidPropertyID( getPropertyID() ) && ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) ) {
-			return false;
-		}
-
-		// Do existing tag check last.
-		if ( hasExistingTagPermission() === false ) {
-			return false;
-		}
-
-		return true;
-	} ),
-
-	/**
 	 * Checks whether changes are currently being submitted.
 	 *
 	 * @since 1.8.0
@@ -226,12 +166,78 @@ export const selectors = {
 	},
 };
 
+const {
+	safeSelector: canSubmitChanges,
+	dangerousSelector: __dangerousCanSubmitChanges,
+} = createValidationSelector( ( select ) => {
+	const strictSelect = createStrictSelect( select );
+	const {
+		getAccountID,
+		getInternalWebPropertyID,
+		getProfileID,
+		getPropertyID,
+		hasExistingTagPermission,
+		hasTagPermission,
+		haveSettingsChanged,
+		isDoingSubmitChanges,
+	} = strictSelect( STORE_NAME );
+
+	if ( isDoingSubmitChanges() ) {
+		return false;
+	}
+
+	const gtmIsActive = strictSelect( CORE_MODULES ).isModuleActive( 'tagmanager' );
+	if ( gtmIsActive ) {
+		const gtmAnalyticsPropertyID = strictSelect( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+		if ( isValidPropertyID( gtmAnalyticsPropertyID ) && hasTagPermission( gtmAnalyticsPropertyID ) === false ) {
+			return false;
+		}
+	}
+
+	if ( ! haveSettingsChanged() ) {
+		return false;
+	}
+
+	if ( ! isValidAccountID( getAccountID() ) ) {
+		return false;
+	}
+
+	if ( ! isValidPropertySelection( getPropertyID() ) ) {
+		return false;
+	}
+
+	if ( ! isValidProfileSelection( getProfileID() ) ) {
+		return false;
+	}
+
+	const { getValue } = strictSelect( CORE_FORMS );
+	if ( getProfileID() === PROFILE_CREATE && ! isValidProfileName( getValue( FORM_SETUP, 'profileName' ) ) ) {
+		return false;
+	}
+
+	// If the property ID is valid (non-create) the internal ID must be valid as well.
+	if ( isValidPropertyID( getPropertyID() ) && ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) ) {
+		return false;
+	}
+
+	// Do existing tag check last.
+	if ( hasExistingTagPermission() === false ) {
+		return false;
+	}
+
+	return true;
+} );
+
 export default {
 	initialState,
 	actions,
 	controls,
 	reducer,
 	resolvers,
-	selectors,
+	selectors: {
+		...selectors,
+		canSubmitChanges,
+		__dangerousCanSubmitChanges,
+	},
 };
 

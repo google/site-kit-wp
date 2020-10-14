@@ -23,13 +23,14 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
+import { createStrictSelect, createValidationSelector } from '../../../googlesitekit/data/utils';
 import {
 	isValidOptimizeID,
 	isValidAMPExperimentJSON,
 } from '../util';
 import { STORE_NAME } from './constants';
 
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createRegistryControl } = Data;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -118,38 +119,6 @@ export const resolvers = {};
 
 export const selectors = {
 	/**
-	 * Checks if changes can be submitted.
-	 */
-	canSubmitChanges: createRegistrySelector( ( select ) => () => {
-		const {
-			getOptimizeID,
-			getAMPExperimentJSON,
-			haveSettingsChanged,
-			isDoingSubmitChanges,
-		} = select( STORE_NAME );
-
-		if ( isDoingSubmitChanges() ) {
-			return false;
-		}
-		if ( ! haveSettingsChanged() ) {
-			return false;
-		}
-		// Require an ampExperimentJSON to be valid JSON if set.
-		const ampExperimentJSON = getAMPExperimentJSON();
-		if ( ! isValidAMPExperimentJSON( ampExperimentJSON ) ) {
-			return false;
-		}
-		// Require optimize ID to be either empty (if impossible to determine)
-		// or valid.
-		const optimizeID = getOptimizeID();
-		if ( '' !== optimizeID && ! isValidOptimizeID( optimizeID ) ) {
-			return false;
-		}
-
-		return true;
-	} ),
-
-	/**
 	 * Checks whether changes are currently being submitted.
 	 *
 	 * @since 1.10.0
@@ -162,11 +131,48 @@ export const selectors = {
 	},
 };
 
+const {
+	safeSelector: canSubmitChanges,
+	dangerousSelector: __dangerousCanSubmitChanges,
+} = createValidationSelector( ( select ) => {
+	const strictSelect = createStrictSelect( select );
+	const {
+		getOptimizeID,
+		getAMPExperimentJSON,
+		haveSettingsChanged,
+		isDoingSubmitChanges,
+	} = strictSelect( STORE_NAME );
+
+	if ( isDoingSubmitChanges() ) {
+		return false;
+	}
+	if ( ! haveSettingsChanged() ) {
+		return false;
+	}
+	// Require an ampExperimentJSON to be valid JSON if set.
+	const ampExperimentJSON = getAMPExperimentJSON();
+	if ( ! isValidAMPExperimentJSON( ampExperimentJSON ) ) {
+		return false;
+	}
+	// Require optimize ID to be either empty (if impossible to determine)
+	// or valid.
+	const optimizeID = getOptimizeID();
+	if ( '' !== optimizeID && ! isValidOptimizeID( optimizeID ) ) {
+		return false;
+	}
+
+	return true;
+} );
+
 export default {
 	initialState,
 	actions,
 	controls,
 	reducer,
 	resolvers,
-	selectors,
+	selectors: {
+		...selectors,
+		canSubmitChanges,
+		__dangerousCanSubmitChanges,
+	},
 };

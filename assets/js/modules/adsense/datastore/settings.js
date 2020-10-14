@@ -34,8 +34,9 @@ import {
 } from '../util';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createStrictSelect, createValidationSelector } from '../../../googlesitekit/data/utils';
 
-const { commonActions, createRegistrySelector, createRegistryControl } = Data;
+const { commonActions, createRegistryControl } = Data;
 
 const fetchSaveUseSnippetStore = createFetchStore( {
 	baseName: 'saveUseSnippet',
@@ -310,48 +311,6 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Checks if changes can be submitted.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @return {boolean} True if changes can be submitted, false otherwise.
-	 */
-	canSubmitChanges: createRegistrySelector( ( select ) => () => {
-		const {
-			getAccountID,
-			getClientID,
-			getAccountStatus,
-			haveSettingsChanged,
-			isDoingSubmitChanges,
-		} = select( STORE_NAME );
-
-		if ( isDoingSubmitChanges() ) {
-			return false;
-		}
-		if ( ! haveSettingsChanged() ) {
-			return false;
-		}
-		// Require an account status to be present.
-		if ( ! getAccountStatus() ) {
-			return false;
-		}
-		// Require account ID to be either empty (if impossible to determine)
-		// or valid.
-		const accountID = getAccountID();
-		if ( '' !== accountID && ! isValidAccountID( accountID ) ) {
-			return false;
-		}
-		// Require client ID to be either empty (if impossible to determine)
-		// or valid.
-		const clientID = getClientID();
-		if ( '' !== clientID && ! isValidClientID( clientID ) ) {
-			return false;
-		}
-
-		return true;
-	} ),
-
-	/**
 	 * Checks whether changes are currently being submitted.
 	 *
 	 * @since 1.9.0
@@ -394,6 +353,45 @@ const baseSelectors = {
 	},
 };
 
+const {
+	safeSelector: canSubmitChanges,
+	dangerousSelector: __dangerousCanSubmitChanges,
+} = createValidationSelector( ( select ) => {
+	const strictSelect = createStrictSelect( select );
+	const {
+		getAccountID,
+		getClientID,
+		getAccountStatus,
+		haveSettingsChanged,
+		isDoingSubmitChanges,
+	} = strictSelect( STORE_NAME );
+
+	if ( isDoingSubmitChanges() ) {
+		return false;
+	}
+	if ( ! haveSettingsChanged() ) {
+		return false;
+	}
+	// Require an account status to be present.
+	if ( ! getAccountStatus() ) {
+		return false;
+	}
+	// Require account ID to be either empty (if impossible to determine)
+	// or valid.
+	const accountID = getAccountID();
+	if ( '' !== accountID && ! isValidAccountID( accountID ) ) {
+		return false;
+	}
+	// Require client ID to be either empty (if impossible to determine)
+	// or valid.
+	const clientID = getClientID();
+	if ( '' !== clientID && ! isValidClientID( clientID ) ) {
+		return false;
+	}
+
+	return true;
+} );
+
 const store = Data.combineStores(
 	fetchSaveUseSnippetStore,
 	{
@@ -402,7 +400,11 @@ const store = Data.combineStores(
 		controls: baseControls,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
-		selectors: baseSelectors,
+		selectors: {
+			...baseSelectors,
+			canSubmitChanges,
+			__dangerousCanSubmitChanges,
+		},
 	}
 );
 

@@ -38,9 +38,9 @@ import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from './consta
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
-import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { createStrictSelect, createValidationSelector } from '../../../googlesitekit/data/utils';
 
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createRegistryControl } = Data;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -157,22 +157,6 @@ export const resolvers = {};
 
 export const selectors = {
 	/**
-	 * Checks if changes can be submitted.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @return {boolean} `true` if can submit changes, otherwise false.
-	 */
-	canSubmitChanges: createRegistrySelector( ( select ) => () => {
-		try {
-			validateCanSubmitChanges( select );
-			return true;
-		} catch {
-			return false;
-		}
-	} ),
-
-	/**
 	 * Checks whether changes are currently being submitted.
 	 *
 	 * @since 1.11.0
@@ -185,17 +169,10 @@ export const selectors = {
 	},
 };
 
-/**
- * Validates whether changes can be submitted or not.
- *
- * If changes cannot be submitted, an appropriate error is thrown.
- *
- * @since 1.18.0
- * @private
- *
- * @param {Function} select The current registry.select instance.
- */
-export const validateCanSubmitChanges = ( select ) => {
+const {
+	safeSelector: canSubmitChanges,
+	dangerousSelector: __dangerousCanSubmitChanges,
+} = createValidationSelector( ( select ) => {
 	const strictSelect = createStrictSelect( select );
 	// Strict select will cause all selector functions to throw an error
 	// if `undefined` is returned, otherwise it behaves the same as `select`.
@@ -254,7 +231,7 @@ export const validateCanSubmitChanges = ( select ) => {
 	if ( hasExistingTag() ) {
 		invariant( hasExistingTagPermission(), 'existing tag permission is required to submit changes' );
 	}
-};
+} );
 
 export default {
 	initialState,
@@ -262,6 +239,9 @@ export default {
 	controls,
 	reducer,
 	resolvers,
-	selectors,
+	selectors: {
+		...selectors,
+		canSubmitChanges,
+		__dangerousCanSubmitChanges,
+	},
 };
-
