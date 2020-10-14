@@ -11,9 +11,10 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
-use Google\Site_Kit\Tests\Core\Util\FakeUser_Input_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
 class User_Input_SettingsTest extends TestCase {
@@ -43,6 +44,20 @@ class User_Input_SettingsTest extends TestCase {
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 	}
 
+	private function get_connected_to_proxy_mock() {
+		$settings = $this->getMockBuilder( User_Input_Settings::class )
+			->setConstructorArgs( array( $this->context ) )
+			->setMethods( array( 'is_connected_to_proxy' ) )
+			->getMock();
+
+		$settings
+			->expects( $this->once() )
+			->method( 'is_connected_to_proxy' )
+			->willReturn( true );
+
+		return $settings;
+	}
+
 	public function test_not_connected_to_proxy() {
 		$settings = new User_Input_Settings( $this->context );
 		$results  = array(
@@ -67,7 +82,7 @@ class User_Input_SettingsTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		$user_options = new User_Options( $this->context, $user_id );
-		$settings     = new FakeUser_Input_Settings( $this->context );
+		$settings     = $this->get_connected_to_proxy_mock();
 
 		set_transient(
 			'googlesitekit_user_input_settings',
@@ -115,7 +130,7 @@ class User_Input_SettingsTest extends TestCase {
 	}
 
 	public function test_get_settigns_from_remote() {
-		$settings = new FakeUser_Input_Settings( $this->context );
+		$settings = $this->get_connected_to_proxy_mock();
 		$data     = array(
 			'goals'         => array(
 				'values' => array( 'goal4', 'goal5', 'goal6' ),
@@ -143,20 +158,28 @@ class User_Input_SettingsTest extends TestCase {
 
 		add_filter(
 			'pre_http_request',
-			function() use ( $data ) {
+			function( $pre, $args, $url ) use ( $data ) {
+				$authentication          = new Authentication( $this->context );
+				$user_input_settings_url = $authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
+				if ( $url !== $user_input_settings_url ) {
+					return $pre;
+				}
+
 				return array(
 					'headers'  => array(),
 					'body'     => wp_json_encode( $data ),
 					'response' => array( 'code' => 200 ),
 				);
-			}
+			},
+			10,
+			3
 		);
 
 		$this->assertEquals( $data, $settings->get_settings() );
 	}
 
 	public function test_set_settings() {
-		$settings = new FakeUser_Input_Settings( $this->context );
+		$settings = $this->get_connected_to_proxy_mock();
 		$body     = array();
 		$data     = array(
 			'goals'         => array( 'goal7' ),
@@ -170,7 +193,13 @@ class User_Input_SettingsTest extends TestCase {
 
 		add_filter(
 			'pre_http_request',
-			function( $pre, $args ) use ( &$body ) {
+			function( $pre, $args, $url ) use ( &$body ) {
+				$authentication          = new Authentication( $this->context );
+				$user_input_settings_url = $authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
+				if ( $url !== $user_input_settings_url ) {
+					return $pre;
+				}
+
 				if ( ! empty( $args['body'] ) ) {
 					$body = json_decode( $args['body'], true );
 				}
@@ -182,7 +211,7 @@ class User_Input_SettingsTest extends TestCase {
 				);
 			},
 			10,
-			2
+			3
 		);
 
 		$settings->set_settings( $data );
