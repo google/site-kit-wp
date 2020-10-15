@@ -38,7 +38,10 @@ export default function StoreErrorNotices( { moduleSlug, storeName, shouldDispla
 	return errors
 		.map( ( error ) => {
 			if ( isInsufficientPermissionsError( error ) ) {
-				error.message = getInsufficientPermissionsErrorDescription( error.message, module );
+				error = {
+					...error,
+					message: getInsufficientPermissionsErrorDescription( error.message, module ),
+				};
 			}
 			return error;
 		} )
