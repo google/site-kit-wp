@@ -15,8 +15,10 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Util\Developer_Plugin_Installer;
 use Google\Site_Kit\Core\Util\Reset;
+use Google\Site_Kit\Core\Util\User_Input_Settings;
 use WP_Post;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -126,6 +128,66 @@ final class REST_Routes {
 			},
 			10,
 			2
+		);
+
+		// @TODO: Remove this hook when /settings/ endpoint is implemented on the Google Proxy side.
+		add_filter(
+			'pre_http_request',
+			function( $pre, $args, $url ) {
+				$user_input_settings_url = $this->authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
+				if ( $url !== $user_input_settings_url ) {
+					return $pre;
+				}
+
+				$defaults = array(
+					'role'          => array(
+						'values' => array(),
+						'scope'  => 'user',
+					),
+					'postFrequency' => array(
+						'values' => array(),
+						'scope'  => 'user',
+					),
+					'goals'         => array(
+						'values' => array(),
+						'scope'  => 'site',
+					),
+					'helpNeeded'    => array(
+						'values' => array(),
+						'scope'  => 'site',
+					),
+					'searchTerms'   => array(
+						'values' => array(),
+						'scope'  => 'site',
+					),
+				);
+
+				if ( ! empty( $args['body'] ) ) {
+					$body = json_decode( $args['body'], true );
+					if ( ! empty( $body ) ) {
+						$user_input = array();
+
+						foreach ( $defaults as $key => $values ) {
+							$user_input[ $key ] = array(
+								'values' => ! empty( $body[ $key ] ) ? $body[ $key ] : array(),
+								'scope'  => $values['scope'],
+							);
+						}
+
+						update_option( 'googlesitekit_temp_userinput', $user_input, 'no' );
+					}
+				}
+
+				$user_input = get_option( 'googlesitekit_temp_userinput', $defaults );
+
+				return array(
+					'headers'  => array(),
+					'body'     => wp_json_encode( $user_input ),
+					'response' => array( 'code' => 200 ),
+				);
+			},
+			10,
+			3
 		);
 	}
 
@@ -277,6 +339,72 @@ final class REST_Routes {
 							'type'        => 'string',
 							'description' => __( 'Text content to search for.', 'google-site-kit' ),
 							'required'    => true,
+						),
+					),
+				)
+			),
+			new REST_Route(
+				'core/user/data/user-input-settings',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
+							return rest_ensure_response( $user_input_settings->get_settings() );
+						},
+						'permission_callback' => $can_authenticate,
+					),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
+							$data                = $request->get_param( 'data' );
+
+							if ( ! isset( $data['settings'] ) || ! is_array( $data['settings'] ) ) {
+								return new WP_Error(
+									'rest_missing_callback_param',
+									__( 'Missing settings data.', 'google-site-kit' ),
+									array( 'status' => 400 )
+								);
+							}
+
+							return rest_ensure_response(
+								$user_input_settings->set_settings(
+									$data['settings']
+								)
+							);
+						},
+						'permission_callback' => $can_authenticate,
+						'args'                => array(
+							'data' => array(
+								'type'     => 'object',
+								'required' => true,
+								'settings' => array(
+									'type'       => 'object',
+									'properties' => array(
+										'role'          => array(
+											'type'  => 'array',
+											'items' => array( 'type' => 'string' ),
+										),
+										'postFrequency' => array(
+											'type'  => 'array',
+											'items' => array( 'type' => 'string' ),
+										),
+										'goals'         => array(
+											'type'  => 'array',
+											'items' => array( 'type' => 'string' ),
+										),
+										'helpNeeded'    => array(
+											'type'  => 'array',
+											'items' => array( 'type' => 'string' ),
+										),
+										'searchTerms'   => array(
+											'type'  => 'array',
+											'items' => array( 'type' => 'string' ),
+										),
+									),
+								),
+							),
 						),
 					),
 				)
