@@ -44,6 +44,17 @@ import { createStrictSelect, createValidationSelector } from '../../../googlesit
 
 const { createRegistryControl } = Data;
 
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
+export const INVARIANT_DONT_HAVE_SETTINGS_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
+export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is required to submit changes';
+export const INVARIANT_INVALID_PROFILE_SELECTION = 'a valid profileID is required to submit changes';
+export const INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS = 'cannot submit changes without having permissions for GTM property ID';
+export const INVARIANT_INVALID_PROFILE_NAME = 'a valid profile name is required to submit changes';
+export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID = 'cannot submit changes with incorrect internal webPropertyID';
+export const INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSIONS = 'cannot submit without proper permissions';
+
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
 const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
@@ -187,33 +198,30 @@ const {
 		isDoingSubmitChanges,
 	} = strictSelect( STORE_NAME );
 
-	const accountID = getAccountID();
-	const propertyID = getPropertyID();
-	const profileID = getProfileID();
-
 	// Note: these error messages are referenced in test assertions.
-	invariant( ! isDoingSubmitChanges(), 'cannot submit changes while submitting changes' );
-	invariant( haveSettingsChanged(), 'cannot submit changes if settings have not changed' );
-	invariant( isValidAccountID( accountID ), 'a valid accountID is required to submit changes' );
-	invariant( isValidPropertySelection( propertyID ), 'a valid propertyID is required to submit changes' );
-	invariant( isValidProfileSelection( profileID ), 'a valid profileID is required to submit changes' );
+	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 
 	const gtmIsActive = strictSelect( CORE_MODULES ).isModuleActive( 'tagmanager' );
 	if ( gtmIsActive ) {
 		const gtmAnalyticsPropertyID = strictSelect( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
-		invariant( ! isValidPropertyID( gtmAnalyticsPropertyID ) || hasTagPermission( gtmAnalyticsPropertyID ), 'cannot submit changes without having permissions for GTM property ID' );
+		invariant( ! isValidPropertyID( gtmAnalyticsPropertyID ) || hasTagPermission( gtmAnalyticsPropertyID ) !== false, INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS );
 	}
 
-	if ( profileID === PROFILE_CREATE ) {
+	invariant( haveSettingsChanged(), INVARIANT_DONT_HAVE_SETTINGS_CHANGED );
+	invariant( isValidAccountID( getAccountID() ), INVARIANT_INVALID_ACCOUNT_ID );
+	invariant( isValidPropertySelection( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
+	invariant( isValidProfileSelection( getProfileID() ), INVARIANT_INVALID_PROFILE_SELECTION );
+
+	if ( getProfileID() === PROFILE_CREATE ) {
 		const profileName = select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' );
-		invariant( isValidProfileName( profileName ), 'a valid profile name is required to submit changes' );
+		invariant( isValidProfileName( profileName ), INVARIANT_INVALID_PROFILE_NAME );
 	}
 
 	// If the property ID is valid (non-create) the internal ID must be valid as well.
-	invariant( ! isValidPropertyID( propertyID ) || isValidInternalWebPropertyID( getInternalWebPropertyID() ), 'cannot submit changes with incorrect internal webPropertyID' );
+	invariant( ! isValidPropertyID( getPropertyID() ) || isValidInternalWebPropertyID( getInternalWebPropertyID() ), INVARIANT_INVALID_INTERNAL_PROPERTY_ID );
 
 	// Do existing tag check last.
-	invariant( hasExistingTagPermission() !== false, 'cannot submit without proper permissions' );
+	invariant( hasExistingTagPermission() !== false, INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSIONS );
 } );
 
 export default {

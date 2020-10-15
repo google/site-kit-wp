@@ -34,6 +34,14 @@ import {
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
+import {
+	INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSIONS,
+	INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS,
+	INVARIANT_INVALID_ACCOUNT_ID,
+	INVARIANT_INVALID_PROFILE_NAME,
+	INVARIANT_INVALID_PROFILE_SELECTION,
+	INVARIANT_INVALID_PROPERTY_SELECTION,
+} from './settings';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -356,7 +364,8 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 			} );
 
 			it( 'requires a valid propertyID', () => {
@@ -368,7 +377,8 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( STORE_NAME ).setPropertyID( '0' );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
 			} );
 
 			it( 'requires a valid profileID', () => {
@@ -380,7 +390,8 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( STORE_NAME ).setProfileID( '0' );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_PROFILE_SELECTION );
 			} );
 
 			it( 'requires permission for GTM Analytics tag if the tag is present', () => {
@@ -405,7 +416,8 @@ describe( 'modules/analytics settings', () => {
 				const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
 				buildAndReceiveWebAndAMP( data );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS );
 
 				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID: data.accountID,
@@ -420,7 +432,8 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( STORE_NAME ).setPropertyID( PROPERTY_CREATE );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.not.toThrow( INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS );
 				expect( console ).toHaveWarned();
 			} );
 
@@ -447,7 +460,8 @@ describe( 'modules/analytics settings', () => {
 				}, { propertyID: existingTag.propertyID } );
 				expect( registry.select( STORE_NAME ).hasTagPermission( existingTag.propertyID ) ).toBe( false );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSIONS );
 			} );
 
 			it( 'supports creating a property', () => {
@@ -473,7 +487,8 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
 				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { profileName: '' } );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBeFalsy();
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_PROFILE_NAME );
 			} );
 
 			it( 'should not support creating a new profile when the profile name is not set at all', () => {
@@ -481,14 +496,16 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBeFalsy();
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_PROFILE_NAME );
 			} );
 
 			it( 'does not support creating an account', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 			} );
 		} );
 	} );
