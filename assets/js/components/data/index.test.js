@@ -27,14 +27,8 @@ import { enableTracking } from '../../util/tracking';
 
 describe( 'dataAPI', () => {
 	let dataLayerPushSpy;
-	const backupBaseData = global._googlesitekitBaseData;
-	const restoreGlobal = () => global._googlesitekitBaseData = backupBaseData;
-
-	beforeAll( () => {
-		global._googlesitekitBaseData = {
-			trackingEnabled: true,
-		};
-	} );
+	const backupDatalayer = global[ DATA_LAYER ];
+	const restoreDatalayer = () => global[ DATA_LAYER ] = backupDatalayer;
 
 	beforeEach( () => {
 		enableTracking();
@@ -42,7 +36,10 @@ describe( 'dataAPI', () => {
 		dataLayerPushSpy = jest.spyOn( global[ DATA_LAYER ], 'push' );
 	} );
 
-	afterAll( restoreGlobal );
+	// The global dataLayer shouldn't be significant between tests,
+	// and ideally wouldn't even be necessary to touch,
+	// but this makes sure this test leaves no trace.
+	afterAll( restoreDatalayer );
 
 	const errorResponse = {
 		code: 'internal_server_error',
