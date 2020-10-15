@@ -165,6 +165,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
+				// This will be dynamically replaced with the previous date range based on the current date range.
 				dateRange: 'prev-date-range-placeholder',
 				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
 			},
