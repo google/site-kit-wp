@@ -99,46 +99,76 @@ class ScreensTest extends TestCase {
 		$this->assertNotEmpty( ob_get_clean() );
 	}
 
-	public function test_menu_order() {
-		$menu_order = array(
-			'index.php',
-			'third-party-plugin',
-			'edit.php',
-			'options-general.php',
-			'googlesitekit-dashboard',
-		);
 
-		$overridden_menu_order = array_merge(
+	public function menu_order() {
+		return array(
+			// Typical plugin scenario
 			array(
-				'third-party-host',
+				array(
+					'index.php',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+					'googlesitekit-dashboard',
+				),
+				array(
+					'index.php',
+					'googlesitekit-dashboard',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+				),
 			),
-			$menu_order
+			// Hosting provider has a custom menu item prior to the Dashboard menu item
+			array(
+				array(
+					'third-party-host',
+					'index.php',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+					'googlesitekit-dashboard',
+				),
+				array(
+					'third-party-host',
+					'index.php',
+					'googlesitekit-dashboard',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+				),
+			),
+			// For some reason our plugin is above the Dashboard
+			array(
+				array(
+					'googlesitekit-dashboard',
+					'third-party-plugin',
+					'index.php',
+					'edit.php',
+					'options-general.php',
+				),
+				array(
+					'third-party-plugin',
+					'index.php',
+					'googlesitekit-dashboard',
+					'edit.php',
+					'options-general.php',
+				),
+			),
 		);
+	}
 
+	/**
+	 * @dataProvider menu_order
+	 */
+	public function test_menu_order( $given_menu_order, $expected_order ) {
 		$this->screens->register();
 
 		// Imitate WordPress core running these filters.
 		if ( apply_filters( 'custom_menu_order', false ) ) {
-			$menu_order            = apply_filters( 'menu_order', $menu_order );
-			$overridden_menu_order = apply_filters( 'menu_order', $overridden_menu_order );
+			$menu_order = apply_filters( 'menu_order', $given_menu_order );
 		}
 
-		$expected_order = array(
-			'index.php',
-			'googlesitekit-dashboard',
-			'third-party-plugin',
-			'edit.php',
-			'options-general.php',
-		);
-
-		$overridden_expected_order = array_merge(
-			array(
-				'third-party-host',
-			),
-			$expected_order
-		);
-
 		$this->assertEquals( $expected_order, $menu_order );
-		$this->assertEquals( $overridden_expected_order, $overridden_menu_order );
 	}
 }
