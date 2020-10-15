@@ -157,9 +157,10 @@ final class Screens {
 
 				$sitekit_index = false;
 				foreach ( $menu_order as $key => $value ) {
-					if ( substr( $value, 0, strlen( self::PREFIX ) ) === self::PREFIX ) {
+					if ( strpos( $value, self::PREFIX ) === 0 ) {
 						$sitekit_index = $key;
 						$sitekit_value = $value;
+						break;
 					}
 				}
 
