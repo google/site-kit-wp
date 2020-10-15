@@ -102,7 +102,7 @@ class AdSensePerformanceWidget extends Component {
 				className: 'googlesitekit-data-block--impression',
 				title: __( 'Page CTR', 'google-site-kit' ),
 				/* translators: %s: percentage value. */
-				datapoint: sprintf( _x( ' %1$s%%', 'google-site-kit', 'google-site-kit' ), currentRangeData.totals[ 3 ] * 100 ),
+				datapoint: sprintf( _x( ' %1$s%%', 'AdSense performance Page CTA percentage', 'google-site-kit' ), currentRangeData.totals[ 3 ] * 100 ),
 				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 3 ], currentRangeData.totals[ 3 ] ) : 0,
 				changeDataUnit: '%',
 			},
