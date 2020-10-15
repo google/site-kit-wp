@@ -27,7 +27,6 @@ import classnames from 'classnames';
  */
 import { _x } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
-import { VisuallyHidden } from '@wordpress/components';
 
 class Link extends Component {
 	render() {
@@ -77,9 +76,9 @@ class Link extends Component {
 				{ children }
 
 				{ external && (
-					<VisuallyHidden as="span" className="screen-reader-text">
+					<span className="screen-reader-text">
 						{ _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' ) }
-					</VisuallyHidden>
+					</span>
 				) }
 			</SemanticLink>
 		);
