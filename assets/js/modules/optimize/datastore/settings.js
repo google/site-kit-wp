@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -143,25 +148,15 @@ const {
 		isDoingSubmitChanges,
 	} = strictSelect( STORE_NAME );
 
-	if ( isDoingSubmitChanges() ) {
-		return false;
-	}
-	if ( ! haveSettingsChanged() ) {
-		return false;
-	}
-	// Require an ampExperimentJSON to be valid JSON if set.
-	const ampExperimentJSON = getAMPExperimentJSON();
-	if ( ! isValidAMPExperimentJSON( ampExperimentJSON ) ) {
-		return false;
-	}
-	// Require optimize ID to be either empty (if impossible to determine)
-	// or valid.
-	const optimizeID = getOptimizeID();
-	if ( '' !== optimizeID && ! isValidOptimizeID( optimizeID ) ) {
-		return false;
-	}
+	// Note: these error messages are referenced in test assertions.
+	invariant( ! isDoingSubmitChanges(), 'cannot submit changes while submitting changes' );
+	invariant( haveSettingsChanged(), 'cannot submit changes if settings have not changed' );
 
-	return true;
+	const ampExperimentJSON = getAMPExperimentJSON();
+	invariant( isValidAMPExperimentJSON( ampExperimentJSON ), 'require an ampExperimentJSON to be valid JSON if set' );
+
+	const optimizeID = getOptimizeID();
+	invariant( '' === optimizeID || isValidOptimizeID( optimizeID ), 'require optimize ID to be either empty (if impossible to determine) or valid' );
 } );
 
 export default {
