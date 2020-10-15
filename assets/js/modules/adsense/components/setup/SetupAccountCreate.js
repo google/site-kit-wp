@@ -35,7 +35,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
 import {
-	ErrorNotice,
+	ErrorNotices,
 	UserProfile,
 } from '../common';
 const { useSelect } = Data;
@@ -62,7 +62,7 @@ export default function SetupAccountCreate() {
 				{ __( 'Create your AdSense account', 'google-site-kit' ) }
 			</h3>
 
-			<ErrorNotice />
+			<ErrorNotices />
 
 			<p>
 				{ __( 'Site Kit will place AdSense code on every page across your site. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' ) }

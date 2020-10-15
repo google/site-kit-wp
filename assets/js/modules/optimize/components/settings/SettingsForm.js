@@ -34,7 +34,7 @@ import {
 	UseSnippetInstructions,
 	OptimizeIDFieldInstructions,
 } from '../common/';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
@@ -42,7 +42,7 @@ export default function SettingsForm() {
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
-			<StoreErrorNotice moduleSlug="optimize" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="optimize" storeName={ STORE_NAME } />
 			<OptimizeIDFieldInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">

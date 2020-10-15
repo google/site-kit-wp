@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/link';
 import { STORE_NAME } from '../../datastore/constants';
-import { ErrorNotice } from '../common';
+import { ErrorNotices } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountPending() {
@@ -44,7 +44,7 @@ export default function SetupAccountPending() {
 				{ __( 'Your account is getting ready', 'google-site-kit' ) }
 			</h3>
 
-			<ErrorNotice />
+			<ErrorNotices />
 
 			<p>
 				{ __( 'Site Kit has placed AdSense code on every page across your site.', 'google-site-kit' ) }

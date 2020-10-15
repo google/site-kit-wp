@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import Button from '../../../../components/button';
 import { STORE_NAME } from '../../datastore/constants';
 import { isValidOptimizeID } from '../../util';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import ErrorText from '../../../../components/error-text';
 import {
 	AMPExperimentJSONField,
@@ -59,7 +59,7 @@ export default function SetupForm( { finishSetup } ) {
 
 	return (
 		<form className="googlesitekit-optimize-setup__form" onSubmit={ submitForm }>
-			<StoreErrorNotice moduleSlug="optimize" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="optimize" storeName={ STORE_NAME } />
 			<OptimizeIDFieldInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
