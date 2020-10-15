@@ -37,6 +37,12 @@ import { STORE_NAME } from './constants';
 
 const { createRegistryControl } = Data;
 
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
+export const INVARIANT_DONT_HAVE_SETTINGS_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_INVALID_AMP_EXPIREMENT_JSON = 'require an ampExperimentJSON to be valid JSON if set';
+export const INVARIANT_INVALID_OPTIMIZE_ID = 'require optimize ID to be either empty (if impossible to determine) or valid';
+
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
 const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
@@ -149,14 +155,14 @@ const {
 	} = strictSelect( STORE_NAME );
 
 	// Note: these error messages are referenced in test assertions.
-	invariant( ! isDoingSubmitChanges(), 'cannot submit changes while submitting changes' );
-	invariant( haveSettingsChanged(), 'cannot submit changes if settings have not changed' );
+	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
+	invariant( haveSettingsChanged(), INVARIANT_DONT_HAVE_SETTINGS_CHANGED );
 
 	const ampExperimentJSON = getAMPExperimentJSON();
-	invariant( isValidAMPExperimentJSON( ampExperimentJSON ), 'require an ampExperimentJSON to be valid JSON if set' );
+	invariant( isValidAMPExperimentJSON( ampExperimentJSON ), INVARIANT_INVALID_AMP_EXPIREMENT_JSON );
 
 	const optimizeID = getOptimizeID();
-	invariant( '' === optimizeID || isValidOptimizeID( optimizeID ), 'require optimize ID to be either empty (if impossible to determine) or valid' );
+	invariant( '' === optimizeID || isValidOptimizeID( optimizeID ), INVARIANT_INVALID_OPTIMIZE_ID );
 } );
 
 export default {

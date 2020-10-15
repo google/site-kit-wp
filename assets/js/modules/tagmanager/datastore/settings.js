@@ -42,6 +42,18 @@ import { createStrictSelect, createValidationSelector } from '../../../googlesit
 
 const { createRegistryControl } = Data;
 
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
+export const INVARIANT_DONT_HAVE_SETTINGS_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
+export const INVARIANT_INVALID_AMP_CONTAINER_SELECTION = 'a valid ampContainerID selection is required to submit changes';
+export const INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID = 'a valid internalAMPContainerID is required to submit changes';
+export const INVARIANT_INVALID_CONTAINER_SELECTION = 'a valid containerID selection is required to submit changes';
+export const INVARIANT_INVALID_INTERNAL_CONTAINER_ID = 'a valid internalContainerID is required to submit changes';
+export const INVARIANT_HAVE_MULTIPLE_ANALYTICS_PROPERTY_IDS = 'containers with Analytics tags must reference a single property ID to submit changes';
+export const INVARIANT_GTM_AND_ANALYTICS_PROPERTY_IDS_DONT_MATCH = 'single GTM Analytics property ID must match Analytics property ID';
+export const INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSION = 'existing tag permission is required to submit changes';
+
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
 const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
@@ -199,37 +211,37 @@ const {
 	const { getPropertyID } = strictSelect( MODULES_ANALYTICS );
 
 	// Note: these error messages are referenced in test assertions.
-	invariant( ! isDoingSubmitChanges(), 'cannot submit changes while submitting changes' );
-	invariant( haveSettingsChanged(), 'cannot submit changes if settings have not changed' );
-	invariant( isValidAccountID( getAccountID() ), 'a valid accountID is required to submit changes' );
+	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
+	invariant( haveSettingsChanged(), INVARIANT_DONT_HAVE_SETTINGS_CHANGED );
+	invariant( isValidAccountID( getAccountID() ), INVARIANT_INVALID_ACCOUNT_ID );
 
 	if ( isAMP() ) {
 		// If AMP is active, the AMP container ID must be valid, regardless of mode.
-		invariant( isValidContainerSelection( getAMPContainerID() ), 'a valid ampContainerID selection is required to submit changes' );
+		invariant( isValidContainerSelection( getAMPContainerID() ), INVARIANT_INVALID_AMP_CONTAINER_SELECTION );
 		// If AMP is active, and a valid AMP container ID is selected, the internal ID must also be valid.
 		if ( isValidContainerID( getAMPContainerID() ) ) {
-			invariant( isValidInternalContainerID( getInternalAMPContainerID() ), 'a valid internalAMPContainerID is required to submit changes' );
+			invariant( isValidInternalContainerID( getInternalAMPContainerID() ), INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID );
 		}
 	}
 
 	if ( ! isAMP() || isSecondaryAMP() ) {
 		// If AMP is not active, or in a secondary mode, validate the web container IDs.
-		invariant( isValidContainerSelection( getContainerID() ), 'a valid containerID selection is required to submit changes' );
+		invariant( isValidContainerSelection( getContainerID() ), INVARIANT_INVALID_CONTAINER_SELECTION );
 		// If a valid container ID is selected, the internal ID must also be valid.
 		if ( isValidContainerID( getContainerID() ) ) {
-			invariant( isValidInternalContainerID( getInternalContainerID() ), 'a valid internalContainerID is required to submit changes' );
+			invariant( isValidInternalContainerID( getInternalContainerID() ), INVARIANT_INVALID_INTERNAL_CONTAINER_ID );
 		}
 	}
 
-	invariant( ! hasMultipleAnalyticsPropertyIDs(), 'containers with Analytics tags must reference a single property ID to submit changes' );
+	invariant( ! hasMultipleAnalyticsPropertyIDs(), INVARIANT_HAVE_MULTIPLE_ANALYTICS_PROPERTY_IDS );
 
 	if ( isModuleActive( 'analytics' ) && getPropertyID() && hasAnyAnalyticsPropertyID() ) {
-		invariant( getSingleAnalyticsPropertyID() === getPropertyID(), 'single GTM Analytics property ID must match Analytics property ID' );
+		invariant( getSingleAnalyticsPropertyID() === getPropertyID(), INVARIANT_GTM_AND_ANALYTICS_PROPERTY_IDS_DONT_MATCH );
 	}
 
 	// Do existing tag check last.
 	if ( hasExistingTag() ) {
-		invariant( hasExistingTagPermission(), 'existing tag permission is required to submit changes' );
+		invariant( hasExistingTagPermission(), INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSION );
 	}
 } );
 
