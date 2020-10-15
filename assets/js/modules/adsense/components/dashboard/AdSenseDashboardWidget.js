@@ -32,16 +32,19 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import AdSenseIcon from '../../../../../svg/adsense.svg';
 import AdSensePerformanceWidget from './AdSensePerformanceWidget';
 import Alert from '../../../../components/alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
+import ProgressBar from '../../../../components/progress-bar';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
 import HelpLink from '../../../../components/help-link';
 import Header from '../../../../components/header';
 import PageHeader from '../../../../components/page-header';
+import PageHeaderDateRange from '../../../../components/page-header-date-range';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { getCurrentDateRange } from '../../../../util/date-range';
@@ -157,13 +160,19 @@ class AdSenseDashboardWidget extends Component {
 							">
 								<PageHeader
 									title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
-									icon
-									iconWidth="30"
-									iconHeight="26"
-									iconID="adsense"
+									icon={
+										<AdSenseIcon
+											className="googlesitekit-page-header__icon"
+											height="33"
+											width="33"
+										/>
+									}
 									status={ moduleStatus }
 									statusText={ moduleStatusText }
-								/>
+								>
+									<PageHeaderDateRange />
+								</PageHeader>
+								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 							{ zeroData &&

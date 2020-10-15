@@ -26,59 +26,23 @@ import { Component } from 'react';
  * Internal dependencies
  */
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
-import { WithTestRegistry } from '../../tests/js/utils';
+import {
+	createTestRegistry,
+	WithTestRegistry,
+	provideModules,
+	provideSiteInfo,
+} from '../../tests/js/utils';
+
 const { components: { Widget } } = Widgets;
-
-/**
- * Generates a function to set up registry for widget stories.
- *
- * @since 1.16.0
- *
- * @param {(string|Array)} moduleSlug Module slug or slugs to activate.
- * @param {string|null}    url        Current entity URL.
- * @param {Function}       [cb]       Callback for additional setup. Default is no-op.
- * @return {Function} A function to set up registry for widget stories.
- */
-function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
-	return ( { dispatch } ) => {
-		cb( { dispatch } );
-
-		dispatch( CORE_SITE ).receiveSiteInfo( {
-			referenceSiteURL: null,
-			currentEntityURL: url,
-		} );
-
-		let modules = [];
-		if ( Array.isArray( moduleSlug ) ) {
-			modules = moduleSlug.map( ( module ) => {
-				return {
-					slug: module,
-					active: true,
-					connected: true,
-				};
-			} );
-		} else {
-			modules = [
-				{
-					slug: moduleSlug,
-					active: true,
-					connected: true,
-				},
-			];
-		}
-		dispatch( CORE_MODULES ).receiveGetModules( modules );
-	};
-}
 
 /**
  * Generates stories for a report based widget using provided data.
  *
  * @since 1.16.0
+ * @private
  *
  * @param {Object}    args                              Widget arguments.
- * @param {string}    args.moduleSlug                   Module slug.
+ * @param {Array}     args.moduleSlugs                  List of modules to activate.
  * @param {string}    args.datastore                    Module datastore name.
  * @param {string}    args.group                        Stories group name.
  * @param {Array}     args.data                         Widget data.
@@ -87,10 +51,11 @@ function getSetupRegistry( moduleSlug, url, cb = () => {} ) {
  * @param {boolean}   [args.wrapWidget]                 Whether to wrap in default <Widget> component. Default true.
  * @param {Array}     [args.additionalVariants]         Optional. Additional story variants.
  * @param {Array}     [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants.
+ * @param {Function}  [args.setup]                      Optional. Setup function to be run for all Stories being generated.
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {
-	moduleSlug,
+	moduleSlugs,
 	datastore,
 	group,
 	data,
@@ -99,8 +64,30 @@ export function generateReportBasedWidgetStories( {
 	wrapWidget = true,
 	additionalVariants = {},
 	additionalVariantCallbacks = {},
+	setup = () => {},
 } ) {
-	const stories = storiesOf( group, module );
+	const stories = storiesOf( group, module )
+		.addDecorator( ( storyFn ) => {
+			const registry = createTestRegistry();
+			// Activate the module.
+			provideModules( registry, moduleSlugs.map( ( module ) => {
+				return {
+					slug: module,
+					active: true,
+					connected: true,
+				};
+			} ) );
+
+			// Set some site information.
+			provideSiteInfo( registry, {
+				currentEntityURL: options.url || null,
+			} );
+
+			// Call the optional setup function.
+			setup( registry );
+
+			return storyFn( registry );
+		} );
 
 	if ( Array.isArray( options ) ) {
 		// 	If options is an array, so must data.
@@ -212,8 +199,11 @@ export function generateReportBasedWidgetStories( {
 
 	let widget;
 	if ( wrapWidget ) {
+		const slugs = moduleSlugs.map( ( slug ) => {
+			return `${ slug }-widget`;
+		} );
 		widget = (
-			<Widget slug={ `${ moduleSlug }-widget` }>
+			<Widget slug={ slugs.join( ' ' ) }>
 				<WidgetComponent />
 			</Widget>
 		);
@@ -222,8 +212,8 @@ export function generateReportBasedWidgetStories( {
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
-		stories.add( variant, () => (
-			<WithTestRegistry callback={ getSetupRegistry( moduleSlug, options.url || null, variants[ variant ] ) }>
+		stories.add( variant, ( registry ) => (
+			<WithTestRegistry registry={ registry } callback={ variants[ variant ] }>
 				{ widget }
 			</WithTestRegistry>
 		) );

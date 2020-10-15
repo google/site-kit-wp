@@ -31,17 +31,19 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import SearchConsoleIcon from '../../../../../svg/search-console.svg';
 import Header from '../../../../components/header';
 import SearchConsoleDashboardWidgetSiteStats from './SearchConsoleDashboardWidgetSiteStats';
 import LegacySearchConsoleDashboardWidgetKeywordTable from './LegacySearchConsoleDashboardWidgetKeywordTable';
 import SearchConsoleDashboardWidgetOverview from './SearchConsoleDashboardWidgetOverview';
 import PageHeader from '../../../../components/page-header';
+import PageHeaderDateRange from '../../../../components/page-header-date-range';
 import Layout from '../../../../components/layout/layout';
 import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/progress-bar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import { getCurrentDateRange } from '../../../../util/date-range';
+import { getCurrentDateRange, getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import HelpLink from '../../../../components/help-link';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -56,7 +58,14 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	const [ loading, setLoading ] = useState( true );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
+	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: '/performance/search-analytics',
+			query: {
+				resource_id: propertyID,
+				num_of_days: getCurrentDateRangeDayCount(),
+			},
+		} ) );
 
 	/**
 	 * Handles data errors from the contained AdSense component(s).
@@ -157,17 +166,22 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 							">
 							<PageHeader
 								title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-								icon
-								iconWidth="23"
-								iconHeight="21"
-								iconID="search-console"
+								icon={
+									<SearchConsoleIcon
+										className="googlesitekit-page-header__icon"
+										height="21"
+										width="23"
+									/>
+								}
 								status="connected"
 								statusText={ sprintf(
 									/* translators: %s: module name. */
 									__( '%s is connected', 'google-site-kit' ),
 									_x( 'Search Console', 'Service name', 'google-site-kit' )
 								) }
-							/>
+							>
+								<PageHeaderDateRange />
+							</PageHeader>
 							{ loading && <ProgressBar /> }
 						</div>
 						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

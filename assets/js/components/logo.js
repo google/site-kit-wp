@@ -24,19 +24,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SvgIcon from '../util/svg-icon';
+import GoogleLogoIcon from '../../svg/logo-g.svg';
+import SiteKitLogoIcon from '../../svg/logo-sitekit.svg';
 
 const Logo = () => {
 	return (
 		<div className="googlesitekit-logo" aria-hidden="true">
-			<SvgIcon
-				id="logo-g"
+			<GoogleLogoIcon
 				className="googlesitekit-logo__logo-g"
 				height="34"
 				width="32"
 			/>
-			<SvgIcon
-				id="logo-sitekit"
+			<SiteKitLogoIcon
 				className="googlesitekit-logo__logo-sitekit"
 				height="26"
 				width="99"

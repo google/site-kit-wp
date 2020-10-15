@@ -19,7 +19,7 @@
 /**
  * Checks whether the given error is a restricted metrics error.
  *
- * @since n.e.x.t
+ * @since 1.18.0
  *
  * @param {Object}          error         Error object instance.
  * @param {(RegExp|string)} [metricMatch] Expression for matching specific metrics. Defaults to match any metric.

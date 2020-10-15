@@ -42,11 +42,9 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import SvgIcon from './svg-icon';
 import { trackEvent } from './tracking';
 import { fillFilterWithComponent } from './helpers';
 export { trackEvent };
-export { SvgIcon };
 export * from './sanitize';
 export * from './stringify';
 export * from './standalone';
@@ -589,35 +587,6 @@ export const decodeHTMLEntity = ( str ) => {
 
 	return unescape( decoded );
 };
-
-/**
- * Gets the icon for a module.
- *
- * @since 1.0.0
- *
- * @param {string}  module                The module slug.
- * @param {boolean} blockedByParentModule Whether the module is blocked by a parent module.
- * @param {string}  width                 The icon width.
- * @param {string}  height                The icon height.
- * @param {string}  useClass              Class string to use for icon.
- * @return {HTMLImageElement}             HTML <img> tag with module icon.
- */
-export function moduleIcon( module, blockedByParentModule, width = '33', height = '33', useClass = '' ) {
-	if ( ! global._googlesitekitLegacyData ) {
-		return;
-	}
-
-	/* Set module icons. Page Speed Insights is a special case because only a .png is available. */
-	let iconComponent = <SvgIcon id={ module } width={ width } height={ height } className={ useClass } />;
-
-	if ( blockedByParentModule ) {
-		iconComponent = <SvgIcon id={ `${ module }-disabled` } width={ width } height={ height } className={ useClass } />;
-	} else if ( 'pagespeed-insights' === module ) {
-		iconComponent = <img src={ global._googlesitekitLegacyData.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
-	}
-
-	return iconComponent;
-}
 
 /**
  * Gets the meta key for the given user option.

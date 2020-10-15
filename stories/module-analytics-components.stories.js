@@ -27,6 +27,7 @@ import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dash
 import DashboardUniqueVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardUniqueVisitorsWidget';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
 import {
+	accountsPropertiesProfiles,
 	goals,
 	dashboardAllTrafficArgs,
 	dashboardAllTrafficData,
@@ -50,46 +51,69 @@ import {
 	dashboardUniqueVisitorsVisitorData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 
+/**
+ * Defines some additional setup for all stories.
+ *
+ * @since n.e.x.t
+ *
+ * @param {wp.data.registry} registry Registry with all available stores registered.
+ */
+const setup = ( registry ) => {
+	const [ property ] = accountsPropertiesProfiles.properties;
+	registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		accountID: property.accountId,
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		internalWebPropertyID: property.internalWebPropertyId,
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		profileID: property.defaultProfileId,
+	} );
+};
+
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget',
 	data: dashboardAllTrafficData,
 	options: dashboardAllTrafficArgs,
 	component: DashboardAllTrafficWidget,
 	wrapWidget: false,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
 	data: pageDashboardAllTrafficData,
 	options: pageDashboardAllTrafficArgs,
 	component: DashboardAllTrafficWidget,
 	wrapWidget: false,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/Bounce Rate Widget',
 	data: dashboardBounceRateWidgetData,
 	options: dashboardBounceRateWidgetArgs,
 	component: DashboardBounceRateWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/Bounce Rate Widget',
 	data: pageDashboardBounceRateWidgetData,
 	options: pageDashboardBounceRateWidgetArgs,
 	component: DashboardBounceRateWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/Goals Widget',
 	data: dashboardGoalsWidgetData,
@@ -102,10 +126,11 @@ generateReportBasedWidgetStories( {
 		Loaded: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
 		'Data Unavailable': ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
 	},
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/Unique Visitors Widget',
 	data: [
@@ -117,10 +142,11 @@ generateReportBasedWidgetStories( {
 		dashboardUniqueVisitorsSparkArgs,
 	],
 	component: DashboardUniqueVisitorsWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Page Dashboard/Unique Visitors Widget',
 	data: [
@@ -132,14 +158,16 @@ generateReportBasedWidgetStories( {
 		pageDashboardUniqueVisitorsSparkArgs,
 	],
 	component: DashboardUniqueVisitorsWidget,
+	setup,
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'analytics',
+	moduleSlugs: [ 'analytics' ],
 	datastore: STORE_NAME,
 	group: 'Analytics Module/Components/Dashboard/Popular Pages Widget',
 	data: dashboardPopularPagesData,
 	options: dashboardPopularPagesArgs,
 	component: DashboardPopularPagesWidget,
 	wrapWidget: false,
+	setup,
 } );

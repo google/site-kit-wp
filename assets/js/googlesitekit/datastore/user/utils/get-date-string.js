@@ -30,7 +30,7 @@ import { isValidDateInstance } from './is-valid-date-instance';
 /**
  * Parses the given Date instance and returns a date string (YYYY-MM-DD).
  *
- * @since n.e.x.t
+ * @since 1.18.0
  *
  * @param {string|number|Date} date Date to parse into a string. Must be valid date value to be passed into Date constructor.
  * @return {string}                 The parsed date string (YYYY-MM-DD).
