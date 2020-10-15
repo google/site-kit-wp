@@ -6,7 +6,7 @@
 		"sortOrder": "DESCENDING"
 	},
 	"limit": 10,
-	"url": "https://www.example.com/plans-pricing/",
+	"url": "https://www.example.com/example-page/",
 	"metrics": [
 		{
 			"expression": "ga:sessions",
