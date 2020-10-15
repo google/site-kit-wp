@@ -20,26 +20,11 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { WIDGET_WIDTHS } from './constants';
-import { sortByProperty } from '../../../util/sort-by-property';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-
-const { commonActions, createRegistrySelector } = Data;
-
-/**
- * Store our widget components by registry, then by widget `slug`. We do this because
- * we can't store React components in our data store.
- *
- * @since 1.9.0
- * @private
- */
-export const WidgetComponents = {};
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';
@@ -78,15 +63,15 @@ export const actions = {
 	 * @since 1.9.0
 	 * @since 1.12.0 Added wrapWidget setting.
 	 *
-	 * @param {string}      slug                Widget's slug.
-	 * @param {Object}      settings            Widget's settings.
-	 * @param {WPComponent} settings.component  React component used to display the contents of this widget.
-	 * @param {number}      settings.priority   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
-	 * @param {string}      settings.width      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
-	 * @param {boolean}     settings.wrapWidget Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
+	 * @param {string}      slug                  Widget's slug.
+	 * @param {Object}      settings              Widget's settings.
+	 * @param {WPComponent} settings.component    React component used to display the contents of this widget.
+	 * @param {number}      [settings.priority]   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string}      [settings.width]      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @param {boolean}     [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
 	 * @return {Object} Redux-style action.
 	 */
-	*registerWidget( slug, {
+	registerWidget( slug, {
 		component,
 		priority = 10,
 		width = WIDGET_WIDTHS.QUARTER,
@@ -95,30 +80,18 @@ export const actions = {
 		invariant( component, 'component is required to register a widget.' );
 		invariant( Object.values( WIDGET_WIDTHS ).includes( width ), `Widget width should be one of: ${ WidgetWidthKeys }, but "${ width }" was provided.` );
 
-		const registry = yield commonActions.getRegistry();
-		let registryKey = yield registry.select( CORE_SITE ).getRegistryKey();
-
-		if ( registryKey === undefined ) {
-			registryKey = uuidv4();
-			yield registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
-		}
-
-		// We do this assignment in the action rather than the reducer because we can't send a
-		// payload that includes a React component to the reducer; we'll get an error about
-		// payloads needing to be plain objects.
-		if ( WidgetComponents[ registryKey ] === undefined ) {
-			WidgetComponents[ registryKey ] = {};
-		}
-		if ( WidgetComponents[ registryKey ][ slug ] === undefined ) {
-			WidgetComponents[ registryKey ][ slug ] = component;
-		}
-
-		yield {
-			payload: { slug, settings: { priority, width, wrapWidget } },
+		return {
+			payload: {
+				slug,
+				settings: {
+					component,
+					priority,
+					width,
+					wrapWidget,
+				},
+			},
 			type: REGISTER_WIDGET,
 		};
-
-		return {};
 	},
 };
 
@@ -159,7 +132,10 @@ export const reducer = ( state, { type, payload } ) => {
 				...state,
 				widgets: {
 					...state.widgets,
-					[ slug ]: { ...settings, slug },
+					[ slug ]: {
+						...settings,
+						slug,
+					},
 				},
 			};
 		}
@@ -205,28 +181,16 @@ export const selectors = {
 	 * @param {string} widgetAreaSlug Widget context to get areas for.
 	 * @return {Array} An ordered array of widgets for this area.
 	 */
-	getWidgets: createRegistrySelector( ( select ) => ( state, widgetAreaSlug ) => {
+	getWidgets( state, widgetAreaSlug ) {
 		invariant( widgetAreaSlug, 'widgetAreaSlug is required.' );
 
 		const { areaAssignments, widgets } = state;
 
-		const registryKey = select( CORE_SITE ).getRegistryKey();
-
-		const sorted = sortByProperty(
-			Object.values( widgets ).filter( ( widget ) => {
-				return areaAssignments[ widgetAreaSlug ] && areaAssignments[ widgetAreaSlug ].includes( widget.slug );
-			} ).map( ( widget ) => {
-				const widgetWithComponent = { ...widget };
-				if ( WidgetComponents[ registryKey ] ) {
-					widgetWithComponent.component = WidgetComponents[ registryKey ][ widget.slug ];
-				}
-
-				return widgetWithComponent;
-			} ),
-			'priority'
-		);
-		return sorted;
-	} ),
+		return Object.values( widgets )
+			.filter( ( widget ) => areaAssignments[ widgetAreaSlug ]?.includes( widget.slug ) )
+			.sort( ( a, b ) => a.priority - b.priority )
+		;
+	},
 
 	/**
 	 * Returns a single widget, by slug.
@@ -237,20 +201,11 @@ export const selectors = {
 	 * @param {string} slug  Widget slug.
 	 * @return {Object|null} A widget object, if one exists.
 	 */
-	getWidget: createRegistrySelector( ( select ) => ( state, slug ) => {
+	getWidget( state, slug ) {
 		invariant( slug, 'slug is required to get a widget.' );
 
-		const { widgets } = state;
-
-		const registryKey = select( CORE_SITE ).getRegistryKey();
-
-		const widget = widgets[ slug ];
-		if ( widget && WidgetComponents[ registryKey ] ) {
-			widget.component = WidgetComponents[ registryKey ][ widget.slug ];
-		}
-
-		return widget || null;
-	} ),
+		return state.widgets[ slug ] || null;
+	},
 };
 
 export default {
