@@ -100,7 +100,7 @@ class ScreensTest extends TestCase {
 	}
 
 
-	public function menu_order() {
+	public function menu_order_provider() {
 		return array(
 			// Typical plugin scenario
 			array(
@@ -159,7 +159,7 @@ class ScreensTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider menu_order
+	 * @dataProvider menu_order_provider
 	 */
 	public function test_menu_order( $given_menu_order, $expected_order ) {
 		$this->screens->register();
