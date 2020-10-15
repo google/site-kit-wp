@@ -1,5 +1,5 @@
 /**
- * dataAPI request functions tests.
+ * Legacy dataAPI tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
