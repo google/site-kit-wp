@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -182,50 +187,33 @@ const {
 		isDoingSubmitChanges,
 	} = strictSelect( STORE_NAME );
 
-	if ( isDoingSubmitChanges() ) {
-		return false;
-	}
+	const accountID = getAccountID();
+	const propertyID = getPropertyID();
+	const profileID = getProfileID();
+
+	// Note: these error messages are referenced in test assertions.
+	invariant( ! isDoingSubmitChanges(), 'cannot submit changes while submitting changes' );
+	invariant( haveSettingsChanged(), 'cannot submit changes if settings have not changed' );
+	invariant( isValidAccountID( accountID ), 'a valid accountID is required to submit changes' );
+	invariant( isValidPropertySelection( propertyID ), 'a valid propertyID is required to submit changes' );
+	invariant( isValidProfileSelection( profileID ), 'a valid profileID is required to submit changes' );
 
 	const gtmIsActive = strictSelect( CORE_MODULES ).isModuleActive( 'tagmanager' );
 	if ( gtmIsActive ) {
 		const gtmAnalyticsPropertyID = strictSelect( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
-		if ( isValidPropertyID( gtmAnalyticsPropertyID ) && hasTagPermission( gtmAnalyticsPropertyID ) === false ) {
-			return false;
-		}
+		invariant( ! isValidPropertyID( gtmAnalyticsPropertyID ) || hasTagPermission( gtmAnalyticsPropertyID ), 'cannot submit changes without having permissions for GTM property ID' );
 	}
 
-	if ( ! haveSettingsChanged() ) {
-		return false;
-	}
-
-	if ( ! isValidAccountID( getAccountID() ) ) {
-		return false;
-	}
-
-	if ( ! isValidPropertySelection( getPropertyID() ) ) {
-		return false;
-	}
-
-	if ( ! isValidProfileSelection( getProfileID() ) ) {
-		return false;
-	}
-
-	const { getValue } = strictSelect( CORE_FORMS );
-	if ( getProfileID() === PROFILE_CREATE && ! isValidProfileName( getValue( FORM_SETUP, 'profileName' ) ) ) {
-		return false;
+	if ( profileID === PROFILE_CREATE ) {
+		const profileName = select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' );
+		invariant( isValidProfileName( profileName ), 'a valid profile name is required to submit changes' );
 	}
 
 	// If the property ID is valid (non-create) the internal ID must be valid as well.
-	if ( isValidPropertyID( getPropertyID() ) && ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) ) {
-		return false;
-	}
+	invariant( ! isValidPropertyID( propertyID ) || isValidInternalWebPropertyID( getInternalWebPropertyID() ), 'cannot submit changes with incorrect internal webPropertyID' );
 
 	// Do existing tag check last.
-	if ( hasExistingTagPermission() === false ) {
-		return false;
-	}
-
-	return true;
+	invariant( hasExistingTagPermission() !== false, 'cannot submit without proper permissions' );
 } );
 
 export default {
@@ -240,4 +228,3 @@ export default {
 		__dangerousCanSubmitChanges,
 	},
 };
-
