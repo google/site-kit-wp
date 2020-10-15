@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: report.
+ * `modules/analytics` data store: report.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -34,6 +34,7 @@ import { isValidDateRange, isValidOrders } from '../../../util/report-validation
 import { isValidDimensions, isValidMetrics } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
 import { normalizeReportOptions } from '../util/report-normalization';
+import { isRestrictedMetricsError } from '../util/error';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -97,9 +98,16 @@ const baseResolvers = {
 
 		const { error } = yield fetchGetReportStore.actions.fetchGetReport( options );
 
+		// If the report was requested with AdSense metrics, set `adsenseLinked` accordingly.
 		if ( normalizeReportOptions( options ).metrics.some( ( { expression } ) => /^ga:adsense/.test( expression ) ) ) {
-			const isRestrictedMetricError = error?.code === 400 && error.message && error.message.startsWith( 'Restricted metric' ) && /ga:adsense/.test( error.message );
-			yield adsenseActions.setAdsenseLinked( ! isRestrictedMetricError );
+			if ( isRestrictedMetricsError( error, 'ga:adsense' ) ) {
+				// If the error is a restricted metrics error for AdSense metrics, the services are not linked.
+				yield adsenseActions.setAdsenseLinked( false );
+			} else {
+				// If there is no restricted metrics error OR the restricted metrics error
+				// does not cite any AdSense metrics, then the services are linked.
+				yield adsenseActions.setAdsenseLinked( true );
+			}
 		}
 	},
 };

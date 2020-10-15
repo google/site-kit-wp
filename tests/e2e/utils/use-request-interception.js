@@ -1,11 +1,13 @@
 /**
- * Add a request handler for intercepting requests.
+ * Adds a request handler for intercepting requests.
  *
  * Used intercept HTTP requests during tests with a custom handler function.
  * Returns a function that, when called, stops further request
  * handling/interception.
  *
- * @param  {Function} callback Function to handle requests.
+ * @since 1.0.0
+ *
+ * @param {Function} callback Function to handle requests.
  * @return {Function} Function that can be called to remove the added handler function from the page.
  */
 export function useRequestInterception( callback ) {

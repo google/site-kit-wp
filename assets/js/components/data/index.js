@@ -48,8 +48,10 @@ export { TYPE_CORE, TYPE_MODULES };
  * Gets a copy of the given data request object with the data.dateRange populated via filter, if not set.
  * Respects the current dateRange value, if set.
  *
+ * @since 1.0.0
+ *
  * @param {Object} originalRequest Data request object.
- * @param {string} dateRange Default date range slug to use if not specified in the request.
+ * @param {string} dateRange       Default date range slug to use if not specified in the request.
  * @return {Object} New data request object.
  */
 const requestWithDateRange = ( originalRequest, dateRange ) => {
@@ -83,8 +85,9 @@ const dataAPI = {
 	 * Solves issue for publisher wins to retrieve data without performing additional requests.
 	 * Likely this will be removed after refactoring.
 	 *
-	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
+	 * @since 1.0.0
 	 *
+	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
 	 * @return {Promise} A promise for the cache lookup.
 	 */
 	combinedGetFromCache( combinedRequest ) {
@@ -111,14 +114,19 @@ const dataAPI = {
 		} );
 	},
 
+	// Disabled because the typing of the `combinedRequest` param causes the JSDoc rules
+	// to format things quite strangely.
+	/* eslint-disable jsdoc/check-line-alignment */
 	/**
 	 * Gets data for multiple requests from the REST API using a single batch process.
 	 *
-	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
-	 * @param {boolean} secondaryRequest Is this the second (or more) request?
+	 * @since 1.0.0
 	 *
+	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest  An array of data requests to resolve.
+	 * @param {boolean}    secondaryRequest Set to `true` if this is this is after the first request.
 	 * @return {Promise} A promise for multiple fetch requests.
 	 */
+	/* eslint-enable jsdoc/check-line-alignment */
 	combinedGet( combinedRequest, secondaryRequest = false ) {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
 		let dataRequest = [];
@@ -270,6 +278,8 @@ const dataAPI = {
 	/**
 	 * Resolves a request.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param {Object} request Request object to resolve.
 	 * @param {any}    result  Result to resolve this request with.
 	 */
@@ -285,8 +295,9 @@ const dataAPI = {
 	/**
 	 * Collects the initial module data request.
 	 *
-	 * @param {string} context The context to retrieve the module data for. One of 'Dashboard', 'Settings',
-	 *                         or 'Post'.
+	 * @since 1.0.0
+	 *
+	 * @param {string} context    The context to retrieve the module data for. One of 'Dashboard', 'Settings', or 'Post'.
 	 * @param {Object} moduleArgs Arguments passed from the module.
 	 *
 	 */
@@ -296,7 +307,9 @@ const dataAPI = {
 		 *
 		 * Modules use this filter to attach the datapoints they need to resolve after page load.
 		 *
-		 * @param array datapoints The datapoints to retrieve.
+		 * @since 1.0.0
+		 *
+		 * @param {Array} datapoints The datapoints to retrieve.
 		 */
 		const requestedModuleData = applyFilters( 'googlesitekit.module' + context + 'DataRequest', [], moduleArgs );
 
@@ -308,12 +321,13 @@ const dataAPI = {
 	/**
 	 * Gets data using the REST API.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param {string}  type       The data to access. One of 'core' or 'modules'.
 	 * @param {string}  identifier The data identifier, for example a module slug.
 	 * @param {string}  datapoint  The datapoint.
 	 * @param {Object}  data       Optional arguments to pass along.
 	 * @param {boolean} nocache    Set to true to bypass cache, default: true.
-	 *
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	get( type, identifier, datapoint, data = {}, nocache = true ) {
@@ -348,11 +362,12 @@ const dataAPI = {
 	/**
 	 * Sets data using the REST API.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param {string} type       The data to access. One of 'core' or 'modules'.
 	 * @param {string} identifier The data identifier, for example a module slug.
 	 * @param {string} datapoint  The datapoint.
 	 * @param {Object} data       The data to set.
-	 *
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	set( type, identifier, datapoint, data ) {
@@ -374,9 +389,10 @@ const dataAPI = {
 	/**
 	 * Sets a module to activated or deactivated using the REST API.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param {string}  slug   The module slug.
 	 * @param {boolean} active Whether the module should be active or not.
-	 *
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	setModuleActive( slug, active ) {
