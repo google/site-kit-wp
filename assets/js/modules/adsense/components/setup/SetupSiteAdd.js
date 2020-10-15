@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/button';
 import { STORE_NAME } from '../../datastore/constants';
-import { ErrorNotice } from '../common';
+import { ErrorNotices } from '../common';
 const { useSelect } = Data;
 
 export default function SetupSiteAdd() {
@@ -50,7 +50,7 @@ export default function SetupSiteAdd() {
 				{ __( 'Add site to your AdSense account', 'google-site-kit' ) }
 			</h3>
 
-			<ErrorNotice />
+			<ErrorNotices />
 
 			<p>
 				{ __( 'We’ve detected that you haven’t added this site to your AdSense account yet.', 'google-site-kit' ) }

@@ -61,7 +61,7 @@ import SetupSiteAdd from './SetupSiteAdd';
 import SetupSiteAdded from './SetupSiteAdded';
 import {
 	AdBlockerWarning,
-	ErrorNotice,
+	ErrorNotices,
 } from '../common';
 const { useSelect, useDispatch } = Data;
 
@@ -306,7 +306,7 @@ export default function SetupMain( { finishSetup } ) {
 				break;
 			default:
 				if ( hasErrors ) {
-					viewComponent = <ErrorNotice />;
+					viewComponent = <ErrorNotices />;
 				} else {
 					viewComponent = <ErrorText message={ sprintf(
 						/* translators: %s: invalid account status identifier */
@@ -329,7 +329,7 @@ export default function SetupMain( { finishSetup } ) {
 				break;
 			default:
 				if ( hasErrors ) {
-					viewComponent = <ErrorNotice />;
+					viewComponent = <ErrorNotices />;
 				} else {
 					viewComponent = <ErrorText message={ sprintf(
 						/* translators: %s: invalid site status identifier */
