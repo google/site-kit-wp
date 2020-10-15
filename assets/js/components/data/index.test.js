@@ -25,7 +25,7 @@ import * as DateRange from '../../util/date-range.js';
 import { getCacheKey } from './cache';
 import { enableTracking } from '../../util/tracking';
 
-describe( 'googlesitekit.dataAPI', () => {
+describe( 'dataAPI', () => {
 	let dataLayerPushSpy;
 	const backupBaseData = global._googlesitekitBaseData;
 	const restoreGlobal = () => global._googlesitekitBaseData = backupBaseData;
