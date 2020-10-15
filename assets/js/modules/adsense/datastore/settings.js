@@ -366,30 +366,16 @@ const {
 		isDoingSubmitChanges,
 	} = strictSelect( STORE_NAME );
 
-	if ( isDoingSubmitChanges() ) {
-		return false;
-	}
-	if ( ! haveSettingsChanged() ) {
-		return false;
-	}
-	// Require an account status to be present.
-	if ( ! getAccountStatus() ) {
-		return false;
-	}
-	// Require account ID to be either empty (if impossible to determine)
-	// or valid.
-	const accountID = getAccountID();
-	if ( '' !== accountID && ! isValidAccountID( accountID ) ) {
-		return false;
-	}
-	// Require client ID to be either empty (if impossible to determine)
-	// or valid.
-	const clientID = getClientID();
-	if ( '' !== clientID && ! isValidClientID( clientID ) ) {
-		return false;
-	}
+	// Note: these error messages are referenced in test assertions.
+	invariant( ! isDoingSubmitChanges(), 'cannot submit changes while submitting changes' );
+	invariant( haveSettingsChanged(), 'cannot submit changes if settings have not changed' );
+	invariant( getAccountStatus(), 'require an account status to be present' );
 
-	return true;
+	const accountID = getAccountID();
+	invariant( '' === accountID || isValidAccountID( accountID ), 'require account ID to be either empty (if impossible to determine) or valid' );
+
+	const clientID = getClientID();
+	invariant( '' === clientID || isValidClientID( clientID ), 'require client ID to be either empty (if impossible to determine) or valid' );
 } );
 
 const store = Data.combineStores(
