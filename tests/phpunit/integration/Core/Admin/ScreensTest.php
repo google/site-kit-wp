@@ -100,7 +100,7 @@ class ScreensTest extends TestCase {
 	}
 
 
-	public function menu_order_provider() {
+	public function data_menu_order() {
 		return array(
 			'typical plugin scenario'             => array(
 				array(
@@ -113,6 +113,22 @@ class ScreensTest extends TestCase {
 				array(
 					'index.php',
 					'googlesitekit-dashboard',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+				),
+			),
+			'different plugin slug'               => array(
+				array(
+					'index.php',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+					'googlesitekit-dashboard-splash',
+				),
+				array(
+					'index.php',
+					'googlesitekit-dashboard-splash',
 					'third-party-plugin',
 					'edit.php',
 					'options-general.php',
@@ -156,7 +172,7 @@ class ScreensTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider menu_order_provider
+	 * @dataProvider data_menu_order
 	 */
 	public function test_menu_order( $given_menu_order, $expected_order ) {
 		$this->screens->register();
