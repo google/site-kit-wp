@@ -22,14 +22,16 @@ use Exception;
  */
 class Google_Proxy {
 
-	const BASE_URL          = 'https://sitekit.withgoogle.com';
-	const OAUTH2_SITE_URI   = '/o/oauth2/site/';
-	const OAUTH2_REVOKE_URI = '/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI  = '/o/oauth2/token/';
-	const OAUTH2_AUTH_URI   = '/o/oauth2/auth/';
-	const SETUP_URI         = '/site-management/setup/';
-	const PERMISSIONS_URI   = '/site-management/permissions/';
-	const ACTION_SETUP      = 'googlesitekit_proxy_setup';
+	const BASE_URL                = 'https://sitekit.withgoogle.com';
+	const OAUTH2_SITE_URI         = '/o/oauth2/site/';
+	const OAUTH2_REVOKE_URI       = '/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI        = '/o/oauth2/token/';
+	const OAUTH2_AUTH_URI         = '/o/oauth2/auth/';
+	const SETUP_URI               = '/site-management/setup/';
+	const PERMISSIONS_URI         = '/site-management/permissions/';
+	const USER_INPUT_SETTINGS_URI = '/settings/';
+	const ACTION_SETUP            = 'googlesitekit_proxy_setup';
+	const ACTION_PERMISSIONS      = 'googlesitekit_proxy_permissions';
 
 	/**
 	 * Plugin context.
@@ -84,7 +86,7 @@ class Google_Proxy {
 	public function get_site_fields() {
 		return array(
 			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ) ),
-			'url'                    => home_url(),
+			'url'                    => $this->context->get_canonical_home_url(),
 			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 			'action_uri'             => admin_url( 'index.php' ),
 			'return_uri'             => $this->context->admin_url( 'splash' ),

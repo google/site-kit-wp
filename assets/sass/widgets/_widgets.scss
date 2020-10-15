@@ -20,19 +20,60 @@
 
 	@include shadow;
 	background: $c-base;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 0;
 
-	// Use grid style only to get correct margin and padding, not actual grid.
-	@extend .mdc-layout-grid;
+	&__body {
+		flex: 1;
+	}
 
-	&.googlesitekit-widget--no-padding {
+	&__header {
+		border-bottom: 1px solid $c-border-light;
+	}
+
+	&__footer {
+		border-top: 1px solid $c-border-light;
+	}
+
+	&__header,
+	&__body,
+	&__footer {
+
+		@each $size in map-keys($mdc-layout-grid-columns) {
+
+			@include mdc-layout-grid-media-query_($size) {
+				$margin: map-get($mdc-layout-grid-default-margin, $size);
+
+				padding: $margin;
+				padding: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+			}
+		}
+	}
+
+	.googlesitekit-widget-area--composite & {
+		// Background, shadow, and padding are applied to entire widget area instead.
+		background: transparent;
+		box-shadow: none;
+
+		&__header,
+		&__body,
+		&__footer {
+			padding-left: 0;
+			padding-right: 0;
+
+			&:first-child {
+				padding-top: 0;
+			}
+
+			&:last-child {
+				padding-bottom: 0;
+			}
+		}
+	}
+
+	&.googlesitekit-widget--no-padding .googlesitekit-widget__body {
 		padding: 0;
 	}
-}
-
-.googlesitekit-widget-area--composite .googlesitekit-widget {
-
-	// Background, shadow, and padding are applied to entire widget area instead.
-	background: transparent;
-	box-shadow: none;
-	padding: 0;
 }

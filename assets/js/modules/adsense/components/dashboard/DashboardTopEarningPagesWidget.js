@@ -26,21 +26,23 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME as ANALYTICS_STORE } from '../../../analytics/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/preview-table';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import Layout from '../../../../components/layout/layout';
+import SourceLink from '../../../../components/source-link';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
-
 const { useSelect } = Data;
+const { Widget } = Widgets.components;
 
 function DashboardTopEarningPagesWidget() {
 	const {
 		isAdSenseLinked,
+		analyticsMainURL,
 		data,
 		error,
 		loading,
@@ -63,6 +65,7 @@ function DashboardTopEarningPagesWidget() {
 
 		return {
 			isAdSenseLinked: store.getAdsenseLinked(),
+			analyticsMainURL: store.getServiceURL(),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: store.isResolving( 'getReport', [ args ] ),
@@ -75,12 +78,14 @@ function DashboardTopEarningPagesWidget() {
 		);
 	}
 
-	if ( error ) {
-		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
-	}
-
+	// A restricted metrics error will cause this value to change in the resolver
+	// so this check should happen before an error, which is only relevant if they are linked.
 	if ( ! isAdSenseLinked ) {
 		return <AdSenseLinkCTA />;
+	}
+
+	if ( error ) {
+		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
 	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
@@ -118,17 +123,22 @@ function DashboardTopEarningPagesWidget() {
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 	return (
-		<Layout
-			className="googlesitekit-top-earnings-pages"
-			footer
-			footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			footerCtaLink="http://analytics.google.com"
-			fill
+		<Widget
+			slug="adsenseTopEarningPages"
+			noPadding
+			footer={ () => (
+				<SourceLink
+					className="googlesitekit-data-block__source"
+					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					href={ analyticsMainURL }
+					external
+				/>
+			) }
 		>
 			<TableOverflowContainer>
 				{ dataTable }
 			</TableOverflowContainer>
-		</Layout>
+		</Widget>
 	);
 }
 

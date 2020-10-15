@@ -35,14 +35,21 @@ import Layout from '../../../../components/layout/layout';
 import {
 	isDataZeroSearchConsole,
 } from '../../util';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics', query: { resource_id: domain, num_of_days: 28 } } ) );
-	const searchConsolePropertyMainURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: domain } } ) );
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: '/performance/search-analytics',
+			query: {
+				resource_id: domain,
+				num_of_days: getCurrentDateRangeDayCount(),
+			},
+		} ) );
 
 	if ( ! data || ! data.length ) {
 		return null;
@@ -93,7 +100,7 @@ const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 				className="googlesitekit-popular-content"
 				footer
 				footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-				footerCtaLink={ searchConsolePropertyMainURL }
+				footerCtaLink={ baseServiceURL }
 				fill
 			>
 				<TableOverflowContainer>
@@ -120,7 +127,11 @@ export default withData(
 			context: [ 'Dashboard' ],
 		},
 	],
-	<PreviewTable padding />,
+	<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet">
+		<Layout className="googlesitekit-popular-content" fill>
+			<PreviewTable padding />
+		</Layout>
+	</div>,
 	{
 		inGrid: true,
 		createGrid: true,

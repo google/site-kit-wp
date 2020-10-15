@@ -20,11 +20,12 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
@@ -37,123 +38,141 @@ import PreviewBlock from '../../../../components/preview-block';
 import {
 	getTimeInSeconds,
 	extractForSparkline,
-	getSiteKitAdminURL,
 	trackEvent,
 } from '../../../../util';
 import CTA from '../../../../components/notifications/cta';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME } from '../../datastore/constants';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 
-class LegacySearchConsoleDashboardWidgetTopLevel extends Component {
-	render() {
-		const { data } = this.props;
+const { useSelect } = Data;
 
-		const { error } = data;
-		if ( error ) {
-			trackEvent( 'plugin_setup', 'search_console_error', error.message );
+function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
+	const { error } = data;
 
-			return (
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-4-phone
-					mdc-layout-grid__cell--span-4-tablet
-					mdc-layout-grid__cell--span-6-desktop
-				">
-					<CTA
-						title={ __( 'Something went wrong', 'google-site-kit' ) }
-						description={ error.message }
-						error
-					/>
-				</div>
-			);
-		}
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-		// Waiting for withData resolution.
-		if ( ! data ) {
-			return null;
-		}
+	const serviceBaseURLArgs = {
+		resource_id: propertyID,
+		num_of_days: getCurrentDateRangeDayCount( dateRange ),
+	};
+	if ( url ) {
+		serviceBaseURLArgs.page = `!${ url }`;
+	}
 
-		// Handle empty data.
-		if ( ! data.length ) {
-			return (
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-4-phone
-					mdc-layout-grid__cell--span-4-tablet
-					mdc-layout-grid__cell--span-6-desktop
-				">
-					{ getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) ) }
-				</div>
-			);
-		}
+	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: '/performance/search-analytics',
+			query: serviceBaseURLArgs,
+		} )
+	);
 
-		const href = getSiteKitAdminURL(
-			'googlesitekit-module-search-console',
-			{}
-		);
-
-		const {
-			totalClicks,
-			totalImpressions,
-			totalClicksChange,
-			totalImpressionsChange,
-			dataMap,
-		} = extractSearchConsoleDashboardData( data );
+	if ( error ) {
+		trackEvent( 'plugin_setup', 'search_console_error', error.message );
 
 		return (
-			<Fragment>
-				<div className="
+			<div className="
 					mdc-layout-grid__cell
-					mdc-layout-grid__cell--align-bottom
-					mdc-layout-grid__cell--span-2-phone
-					mdc-layout-grid__cell--span-2-tablet
-					mdc-layout-grid__cell--span-3-desktop
+					mdc-layout-grid__cell--span-4-phone
+					mdc-layout-grid__cell--span-4-tablet
+					mdc-layout-grid__cell--span-6-desktop
 				">
-					<DataBlock
-						className="overview-total-impressions"
-						title={ __( 'Impressions', 'google-site-kit' ) }
-						datapoint={ totalImpressions }
-						change={ totalImpressionsChange }
-						changeDataUnit="%"
-						source={ {
-							name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
-							link: href,
-						} }
-						sparkline={
-							<Sparkline
-								data={ extractForSparkline( dataMap, 2 ) }
-								change={ totalImpressionsChange }
-							/>
-						}
-					/>
-				</div>
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--align-bottom
-					mdc-layout-grid__cell--span-2-phone
-					mdc-layout-grid__cell--span-2-tablet
-					mdc-layout-grid__cell--span-3-desktop
-				">
-					<DataBlock
-						className="overview-total-clicks"
-						title={ __( 'Clicks', 'google-site-kit' ) }
-						datapoint={ totalClicks }
-						change={ totalClicksChange }
-						changeDataUnit="%"
-						source={ {
-							name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
-							link: href,
-						} }
-						sparkline={
-							<Sparkline
-								data={ extractForSparkline( dataMap, 1 ) }
-								change={ totalClicksChange }
-							/>
-						}
-					/>
-				</div>
-			</Fragment>
+				<CTA
+					title={ __( 'Something went wrong', 'google-site-kit' ) }
+					description={ error.message }
+					error
+				/>
+			</div>
 		);
 	}
+
+	// Waiting for withData resolution.
+	if ( ! data ) {
+		return null;
+	}
+
+	// Handle empty data.
+	if ( ! data.length ) {
+		return (
+			<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-4-phone
+					mdc-layout-grid__cell--span-4-tablet
+					mdc-layout-grid__cell--span-6-desktop
+				">
+				{ getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) ) }
+			</div>
+		);
+	}
+
+	const {
+		totalClicks,
+		totalImpressions,
+		totalClicksChange,
+		totalImpressionsChange,
+		dataMap,
+	} = extractSearchConsoleDashboardData( data );
+
+	return (
+		<Fragment>
+			<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--align-bottom
+					mdc-layout-grid__cell--span-2-phone
+					mdc-layout-grid__cell--span-2-tablet
+					mdc-layout-grid__cell--span-3-desktop
+				">
+				<DataBlock
+					className="overview-total-impressions"
+					title={ __( 'Impressions', 'google-site-kit' ) }
+					datapoint={ totalImpressions }
+					change={ totalImpressionsChange }
+					changeDataUnit="%"
+					source={ {
+						name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
+						link: serviceURL,
+						external: true,
+					} }
+					sparkline={
+						<Sparkline
+							data={ extractForSparkline( dataMap, 2 ) }
+							change={ totalImpressionsChange }
+						/>
+					}
+				/>
+			</div>
+			<div className="
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--align-bottom
+				mdc-layout-grid__cell--span-2-phone
+				mdc-layout-grid__cell--span-2-tablet
+				mdc-layout-grid__cell--span-3-desktop
+			">
+				<DataBlock
+					className="overview-total-clicks"
+					title={ __( 'Clicks', 'google-site-kit' ) }
+					datapoint={ totalClicks }
+					change={ totalClicksChange }
+					changeDataUnit="%"
+					source={ {
+						name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
+						link: serviceURL,
+						external: true,
+					} }
+					sparkline={
+						<Sparkline
+							data={ extractForSparkline( dataMap, 1 ) }
+							change={ totalClicksChange }
+						/>
+					}
+				/>
+			</div>
+		</Fragment>
+	);
 }
 
 export default withData(

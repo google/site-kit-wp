@@ -44,6 +44,7 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/reset',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/disconnect',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/authentication',
+			'/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings',
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/info',
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/activation',

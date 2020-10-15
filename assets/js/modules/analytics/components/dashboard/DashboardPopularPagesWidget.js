@@ -25,17 +25,18 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/preview-table';
-import Layout from '../../../../components/layout/layout';
+import SourceLink from '../../../../components/source-link';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import { numberFormat } from '../../../../util';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
-
 const { useSelect } = Data;
+const { Widget } = Widgets.components;
 
 function DashboardPopularPagesWidget() {
 	const {
@@ -62,12 +63,15 @@ function DashboardPopularPagesWidget() {
 			],
 			limit: 10,
 		};
+		const accountID = select( STORE_NAME ).getAccountID();
+		const profileID = select( STORE_NAME ).getProfileID();
+		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
 
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: store.isResolving( 'getReport', [ args ] ),
-			analyticsMainURL: store.getServiceURL(),
+			analyticsMainURL: store.getServiceURL( { path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }` } ),
 		};
 	} );
 
@@ -115,17 +119,22 @@ function DashboardPopularPagesWidget() {
 	const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 	return (
-		<Layout
-			className="googlesitekit-popular-content"
-			footer
-			footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-			footerCtaLink={ analyticsMainURL }
-			fill
+		<Widget
+			slug="analyticsPopularPages"
+			noPadding
+			footer={ () => (
+				<SourceLink
+					className="googlesitekit-data-block__source"
+					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					href={ analyticsMainURL }
+					external
+				/>
+			) }
 		>
 			<TableOverflowContainer>
 				{ dataTable }
 			</TableOverflowContainer>
-		</Layout>
+		</Widget>
 	);
 }
 

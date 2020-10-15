@@ -19,13 +19,15 @@
 /**
  * Data layer global used for internal/private Site Kit data.
  *
+ * @since 1.8.0
  * @private
  */
 export const DATA_LAYER = '_googlesitekitDataLayer';
 
 /**
- * gtag script identifier.
+ * The `gtag` `<script>` identifier.
  *
+ * @since 1.8.0
  * @private
  */
 export const SCRIPT_IDENTIFIER = 'data-googlesitekit-gtag';

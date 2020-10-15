@@ -22,10 +22,11 @@
 import { CATEGORY_FAST, CATEGORY_AVERAGE, CATEGORY_SLOW } from './constants';
 
 /**
- * Retrieve the score category slug based on the given score.
+ * Retrieves the score category slug based on the given score.
+ *
+ * @since 1.0.0
  *
  * @param {number} score Score between 1.0 and 0.0.
- *
  * @return {string} Either 'fast', 'average', or 'slow'.
  */
 export function getScoreCategory( score ) {

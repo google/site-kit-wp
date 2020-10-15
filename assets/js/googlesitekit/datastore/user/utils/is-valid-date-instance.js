@@ -1,5 +1,5 @@
 /**
- * Gulp svgmin task.
+ * `core/user` isValidDateInstance utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,28 +17,14 @@
  */
 
 /**
- * External dependencies
+ * Asserts whether a given date instance is valid or invalid.
+ *
+ * @since 1.18.0
+ *
+ * @param {Date} date Date instance to be asserted against.
+ * @return {boolean}  True if the given date instance is valid.
  */
-const { src, dest } = require( 'gulp' );
-const svgmin = require( 'gulp-svgmin' );
-const pump = require( 'pump' );
-
-const config = {
-	input: './assets/svg/**/*.svg',
-	output: './dist/assets/svg',
-};
-
-module.exports = function( cb ) {
-	pump(
-		[
-			src( config.input ),
-			svgmin( {
-				plugins: [ {
-					removeViewBox: false,
-				} ],
-			} ),
-			dest( config.output ),
-		],
-		cb
-	);
+export const isValidDateInstance = ( date ) => {
+	// type coercion provided by isNaN is preferred here over Number.isNaN
+	return date instanceof Date && ! isNaN( date );
 };

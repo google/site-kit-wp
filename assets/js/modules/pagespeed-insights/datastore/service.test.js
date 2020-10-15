@@ -1,5 +1,5 @@
 /**
- * modules/pagespeed-insights data store: service tests.
+ * `modules/pagespeed-insights` data store: service tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

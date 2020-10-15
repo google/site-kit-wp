@@ -33,6 +33,7 @@ module.exports = {
 		const reported = [];
 		const acronyms = [
 			'AMP',
+			'GTM',
 			'HTML',
 			'ID',
 			'JSON',
@@ -42,14 +43,20 @@ module.exports = {
 		/**
 		 * Reports an AST node as a rule violation.
 		 *
+		 * @since 1.18.0
+		 * @private
+		 *
 		 * @param {Object} node The node to report.
 		 * @return {void}
-		 * @private
 		 */
 		function report( node ) {
 			if ( ! reported.includes( node ) ) {
 				reported.push( node );
-				context.report( { node, message: `\`${ node.name }\` violates naming rules.`, data: { name: node.name } } );
+				context.report( {
+					data: { name: node.name },
+					message: `\`${ node.name }\` violates naming rules.`,
+					node,
+				} );
 			}
 		}
 

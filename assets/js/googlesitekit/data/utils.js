@@ -20,6 +20,8 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import mapValues from 'lodash/mapValues';
+import memize from 'memize';
 
 /**
  * WordPress dependencies
@@ -127,8 +129,9 @@ export const collectSelectors = collect;
 /**
  * Collects all state values.
  *
- * @param {...Object} args A list of objects, each containing their own state values.
+ * @since 1.5.0
  *
+ * @param {...Object} args A list of objects, each containing their own state values.
  * @return {Object} The combined object.
  */
 export const collectState = collect;
@@ -153,7 +156,7 @@ export const collectName = ( ...args ) => {
 };
 
 /**
- * An empty reducer.
+ * Passes through state unmodified; eg. an empty reducer.
  *
  * @since 1.8.0
  * @private
@@ -168,7 +171,7 @@ const passthroughReducer = ( state ) => state;
  *
  * @since 1.8.0
  *
- * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: initialState, actions, controls, reducer, resolvers, selectors
+ * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: initialState, actions, controls, reducer, resolvers, selectors.
  * @return {Object} The combined store.
  */
 export const combineStores = ( ...stores ) => {
@@ -202,7 +205,7 @@ export const combineStores = ( ...stores ) => {
  *
  * @since 1.7.0
  *
- * @return {Object} key/value list of common actions most stores will want.
+ * @return {Object} Key/value list of common actions most stores will want.
  */
 export const commonActions = {
 	/**
@@ -228,7 +231,7 @@ export const commonActions = {
  *
  * @since 1.7.0
  *
- * @return {Object} key/value list of common controls most stores will want.
+ * @return {Object} Key/value list of common controls most stores will want.
  */
 export const commonControls = {
 	/**
@@ -280,3 +283,40 @@ export const commonStore = {
 	controls: commonControls,
 	reducer: passthroughReducer,
 };
+
+/**
+ * Creates a strict version of registry.select for ensuring that a selector is resolved at the time of calling.
+ *
+ * Not intended to be used directly. This is useful in the context of validation functions
+ * to save checking for undefined on every result.
+ *
+ * Given the registry.select function instance, a new function is returned
+ * with the same API as `select()` but will throw an error if the result
+ * of the selector function is `undefined`.
+ *
+ * Ideally this would use something like `hasFinishedResolution` instead,
+ * but there is no way to traverse the selectors used internally to identify
+ * dependent selectors that have resolvers as many selectors are composed of
+ * higher-level selectors internally which is where a resolver is normally implemented.
+ *
+ * @since 1.18.0
+ * @private
+ *
+ * @param {Function} select The registry.select function.
+ * @return {Function} The strict version of registry.select.
+ */
+export const createStrictSelect = ( select ) => ( storeName ) => {
+	return getStrictSelectors( select( storeName ) );
+};
+
+// Based on {@link https://github.com/WordPress/gutenberg/blob/b1c8026087dfb026eff0a023a5f7febe28c876de/packages/data/src/registry.js#L91}
+const getStrictSelectors = memize(
+	( selectors ) => mapValues(
+		selectors,
+		( selector, selectorName ) => ( ...args ) => {
+			const returnValue = selector( ...args );
+			invariant( returnValue !== undefined, `${ selectorName }(...) is not resolved` );
+			return returnValue;
+		}
+	)
+);

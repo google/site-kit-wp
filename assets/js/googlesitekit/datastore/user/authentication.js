@@ -1,5 +1,5 @@
 /**
- * core/user Data store: Authentication info.
+ * `core/user` data store: Authentication info.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -48,8 +48,66 @@ const fetchGetAuthenticationStore = createFetchStore( {
 	},
 } );
 
+// Actions
+const SET_AUTH_ERROR = 'SET_AUTH_ERROR';
+const CLEAR_AUTH_ERROR = 'CLEAR_AUTH_ERROR';
+
 const baseInitialState = {
 	authentication: undefined,
+	authError: null,
+};
+
+const baseActions = {
+	/**
+	 * Sets the authentication error.
+	 *
+	 * @since 1.18.0
+	 *
+	 * @param {Object} error Authentication error object.
+	 * @return {Object} Redux-style action.
+	 */
+	setAuthError( error ) {
+		return {
+			payload: { error },
+			type: SET_AUTH_ERROR,
+		};
+	},
+
+	/**
+	 * Clears the authentication error, if one was previously set.
+	 *
+	 * @since 1.18.0
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	clearAuthError() {
+		return {
+			payload: {},
+			type: CLEAR_AUTH_ERROR,
+		};
+	},
+};
+
+export const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_AUTH_ERROR: {
+			return {
+				...state,
+				authError: payload.error,
+			};
+		}
+
+		case CLEAR_AUTH_ERROR: {
+			return {
+				...state,
+				authError: null,
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
 };
 
 const baseResolvers = {
@@ -77,8 +135,8 @@ const baseSelectors = {
 	 * }
 	 * ```
 	 *
-	 * @private
 	 * @since 1.9.0
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User authentication info.
@@ -132,7 +190,7 @@ const baseSelectors = {
 	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Array of granted scopes
+	 * @return {(Array|undefined)} Array of granted scopes.
 	 */
 	getGrantedScopes: createGetAuthenticationSelector( 'grantedScopes' ),
 
@@ -145,7 +203,7 @@ const baseSelectors = {
 	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Array of required scopes
+	 * @return {(Array|undefined)} Array of required scopes.
 	 */
 	getRequiredScopes: createGetAuthenticationSelector( 'requiredScopes' ),
 
@@ -158,7 +216,7 @@ const baseSelectors = {
 	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Array of scopes
+	 * @return {(Array|undefined)} Array of scopes.
 	 */
 	getUnsatisfiedScopes: createGetAuthenticationSelector( 'unsatisfiedScopes' ),
 
@@ -184,12 +242,27 @@ const baseSelectors = {
 	 * @return {(string|undefined)} The current disconnected reason.
 	 */
 	getDisconnectedReason: createGetAuthenticationSelector( 'disconnectedReason' ),
+
+	/**
+	 * Gets the authentication error.
+	 *
+	 * @since 1.18.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|null)} Authentication error object if available, otherwise null.
+	 */
+	getAuthError( state ) {
+		const { authError } = state;
+		return authError;
+	},
 };
 
 const store = Data.combineStores(
 	fetchGetAuthenticationStore,
 	{
 		initialState: baseInitialState,
+		actions: baseActions,
+		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

@@ -1,5 +1,5 @@
 /**
- * core/user Data store: Authentication info tests.
+ * `core/user` data store: Authentication info tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -38,8 +38,21 @@ describe( 'core/user authentication', () => {
 		needsReauthentication: true,
 		disconnectedReason: 'test-reason',
 	};
+
+	const authError = {
+		code: 'missing_delegation_consent',
+		message: 'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard.',
+		data: {
+			reason: '',
+			status: 401,
+			reconnectURL: 'http://example.com/',
+		},
+	};
+
 	const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
+
 	let registry;
+	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -47,6 +60,7 @@ describe( 'core/user authentication', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ STORE_NAME ].store;
 	} );
 
 	afterAll( () => {
@@ -58,20 +72,29 @@ describe( 'core/user authentication', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'fetchGetAuthentication', () => {
-			it( 'does not require any params', () => {
-				muteFetch( coreUserDataEndpointRegExp );
-				expect( () => {
-					registry.dispatch( STORE_NAME ).fetchGetAuthentication();
-				} ).not.toThrow();
-			} );
+		test( 'fetchGetAuthentication not to require any params', () => {
+			muteFetch( coreUserDataEndpointRegExp );
+			expect( () => {
+				registry.dispatch( STORE_NAME ).fetchGetAuthentication();
+			} ).not.toThrow();
 		} );
-		describe( 'receiveGetAuthentication', () => {
-			it( 'requires the response param', () => {
-				expect( () => {
-					registry.dispatch( STORE_NAME ).receiveGetAuthentication();
-				} ).toThrow( 'response is required.' );
-			} );
+
+		test( 'receiveGetAuthentication to require the response param', () => {
+			expect( () => {
+				registry.dispatch( STORE_NAME ).receiveGetAuthentication();
+			} ).toThrow( 'response is required.' );
+		} );
+
+		test( 'setAuthError to add error to the state as authError property', () => {
+			registry.dispatch( STORE_NAME ).setAuthError( authError );
+			expect( store.getState() ).toMatchObject( { authError } );
+		} );
+
+		test( 'clearAuthError to reset authError to NULL', () => {
+			registry.dispatch( STORE_NAME ).setAuthError( authError );
+			expect( store.getState() ).toMatchObject( { authError } );
+			registry.dispatch( STORE_NAME ).clearAuthError();
+			expect( store.getState().authError ).toBeNull();
 		} );
 	} );
 
@@ -228,6 +251,19 @@ describe( 'core/user authentication', () => {
 			it( 'returns undefined if authentication info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				expect( registry.select( STORE_NAME )[ selector ]() ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getAuthError', () => {
+			it( 'should return NULL if authError is not set yet', () => {
+				const error = registry.select( STORE_NAME ).getAuthError();
+				expect( error ).toBeNull();
+			} );
+
+			it( 'should return actual error when it has been set', () => {
+				registry.dispatch( STORE_NAME ).setAuthError( authError );
+				const error = registry.select( STORE_NAME ).getAuthError();
+				expect( error ).toEqual( authError );
 			} );
 		} );
 	} );

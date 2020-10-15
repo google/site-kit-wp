@@ -31,7 +31,8 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import SvgIcon from '../../util/svg-icon';
+import ExclamationIcon from '../../../svg/exclamation.svg';
+import CheckIcon from '../../../svg/check.svg';
 
 class WizardProgressStep extends Component {
 	render() {
@@ -56,13 +57,13 @@ class WizardProgressStep extends Component {
 		let statusIcon = false;
 		switch ( statusClass ) {
 			case 'warning':
-				statusIcon = <SvgIcon id="exclamation" height="12" width="2" />;
+				statusIcon = <ExclamationIcon height="12" width="2" />;
 				break;
 			case 'error':
-				statusIcon = <SvgIcon id="exclamation" height="12" width="2" />;
+				statusIcon = <ExclamationIcon height="12" width="2" />;
 				break;
 			case 'completed':
-				statusIcon = <SvgIcon id="check" height="12" width="16" />;
+				statusIcon = <CheckIcon height="12" width="16" />;
 				break;
 		}
 

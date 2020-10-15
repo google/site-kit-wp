@@ -26,8 +26,10 @@ import { pageWait } from '../utils';
  *
  * Currently only identifiable by the option values.
  *
+ * @since 1.0.0
+ *
  * @param {string} fromRange The currently selected date range.
- * @param {string} toRange The new date range to select.
+ * @param {string} toRange   The new date range to select.
  */
 export async function switchDateRange( fromRange, toRange ) {
 	await pageWait();
