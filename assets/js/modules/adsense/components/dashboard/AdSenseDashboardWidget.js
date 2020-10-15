@@ -61,6 +61,7 @@ class AdSenseDashboardWidget extends Component {
 			receivingData: true,
 			error: false,
 			zeroData: false,
+			loading: true,
 		};
 		this.handleDataError = this.handleDataError.bind( this );
 		this.handleDataSuccess = this.handleDataSuccess.bind( this );
@@ -87,6 +88,7 @@ class AdSenseDashboardWidget extends Component {
 			receivingData: false,
 			error,
 			errorObj,
+			loading: false,
 		} );
 	}
 
@@ -96,6 +98,7 @@ class AdSenseDashboardWidget extends Component {
 	handleDataSuccess() {
 		this.setState( {
 			receivingData: true,
+			loading: false,
 		} );
 	}
 
@@ -105,6 +108,7 @@ class AdSenseDashboardWidget extends Component {
 	handleZeroData() {
 		this.setState( {
 			zeroData: true,
+			loading: false,
 		} );
 	}
 
@@ -209,11 +213,14 @@ class AdSenseDashboardWidget extends Component {
 								>
 									<AdSensePerformanceWidget
 										handleDataError={ ( err ) => {
-											// If there is no error, it is a zero data condition.
+											// If there is no error, it is a zero data condition, otherwise call the error handler.
 											if ( ! err ) {
 												this.handleZeroData();
+											} else {
+												this.handleDataError();
 											}
 										} }
+										handleDataSuccess={ this.handleDataSuccess }
 									/>
 								</Layout>
 							</div>
