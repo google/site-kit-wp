@@ -102,8 +102,7 @@ class ScreensTest extends TestCase {
 
 	public function menu_order_provider() {
 		return array(
-			// Typical plugin scenario
-			array(
+			'typical plugin scenario'             => array(
 				array(
 					'index.php',
 					'third-party-plugin',
@@ -119,8 +118,7 @@ class ScreensTest extends TestCase {
 					'options-general.php',
 				),
 			),
-			// Hosting provider has a custom menu item prior to the Dashboard menu item
-			array(
+			'custom menu item before Dashboard'   => array(
 				array(
 					'third-party-host',
 					'index.php',
@@ -138,8 +136,7 @@ class ScreensTest extends TestCase {
 					'options-general.php',
 				),
 			),
-			// For some reason our plugin is above the Dashboard
-			array(
+			'edge case: dashboard after Site Kit' => array(
 				array(
 					'googlesitekit-dashboard',
 					'third-party-plugin',
