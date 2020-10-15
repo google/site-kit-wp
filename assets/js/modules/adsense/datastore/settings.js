@@ -68,6 +68,13 @@ const fetchSaveUseSnippetStore = createFetchStore( {
 	},
 } );
 
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
+export const INVARIANT_DONT_HAVE_SETTINGS_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_DONT_HAVE_ACCOUNT_STATUS = 'require an account status to be present';
+export const INVARIANT_INVALID_ACCOUNT_ID = 'require account ID to be either empty (if impossible to determine) or valid';
+export const INVARIANT_INVALID_CLIENT_ID = 'require client ID to be either empty (if impossible to determine) or valid';
+
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
 const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
@@ -367,15 +374,15 @@ const {
 	} = strictSelect( STORE_NAME );
 
 	// Note: these error messages are referenced in test assertions.
-	invariant( ! isDoingSubmitChanges(), 'cannot submit changes while submitting changes' );
-	invariant( haveSettingsChanged(), 'cannot submit changes if settings have not changed' );
-	invariant( getAccountStatus(), 'require an account status to be present' );
+	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
+	invariant( haveSettingsChanged(), INVARIANT_DONT_HAVE_SETTINGS_CHANGED );
+	invariant( getAccountStatus(), INVARIANT_DONT_HAVE_ACCOUNT_STATUS );
 
 	const accountID = getAccountID();
-	invariant( '' === accountID || isValidAccountID( accountID ), 'require account ID to be either empty (if impossible to determine) or valid' );
+	invariant( '' === accountID || isValidAccountID( accountID ), INVARIANT_INVALID_ACCOUNT_ID );
 
 	const clientID = getClientID();
-	invariant( '' === clientID || isValidClientID( clientID ), 'require client ID to be either empty (if impossible to determine) or valid' );
+	invariant( '' === clientID || isValidClientID( clientID ), INVARIANT_INVALID_CLIENT_ID );
 } );
 
 const store = Data.combineStores(
