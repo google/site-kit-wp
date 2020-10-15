@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 import { isUndefined } from 'lodash';
 
@@ -94,14 +94,15 @@ class AdSensePerformanceWidget extends Component {
 			{
 				className: 'googlesitekit-data-block--impression',
 				title: __( 'Impressions', 'google-site-kit' ),
-				datapoint: readableLargeNumber( currentRangeData.totals[ 2 ], currentRangeData.headers[ 2 ]?.currency ),
+				datapoint: readableLargeNumber( currentRangeData.totals[ 2 ] ),
 				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 2 ], currentRangeData.totals[ 2 ] ) : 0,
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--impression',
 				title: __( 'Page CTR', 'google-site-kit' ),
-				datapoint: readableLargeNumber( currentRangeData.totals[ 3 ], currentRangeData.headers[ 3 ]?.currency ),
+				/* translators: %s: percentage value. */
+				datapoint: sprintf( _x( ' %1$s%%', 'google-site-kit', 'google-site-kit' ), currentRangeData.totals[ 3 ] * 100 ),
 				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 3 ], currentRangeData.totals[ 3 ] ) : 0,
 				changeDataUnit: '%',
 			},
