@@ -29,7 +29,7 @@ import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastor
 const { useSelect, useDispatch } = Data;
 const nullComponent = () => null;
 
-export default function SettingsMain( { slug, isOpen, isEditing } ) {
+export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 	const storeName = `modules/${ slug }`;
 	const isDoingSubmitChanges = useSelect( ( select ) => select( storeName ).isDoingSubmitChanges() );
 	const haveSettingsChanged = useSelect( ( select ) => select( storeName ).haveSettingsChanged() );
