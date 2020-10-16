@@ -36,6 +36,7 @@ import {
 	isValidContainerSelection,
 	isValidContainerName,
 	isUniqueContainerName,
+	getNormalizedContainerName,
 } from '../util';
 import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP, FORM_SETUP } from './constants';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -240,16 +241,18 @@ export const validateCanSubmitChanges = ( select ) => {
 		const containerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
 		invariant( isValidContainerName( containerName ), `a container name is invalid` );
 
-		const webContainers = getContainers( accountID );
-		invariant( isUniqueContainerName( containerName, webContainers ), `a container with "${ containerName }" name already exists` );
+		const containers = getContainers( accountID );
+		const normalizedContainerName = getNormalizedContainerName( containerName );
+		invariant( isUniqueContainerName( containerName, containers ), `a container with "${ normalizedContainerName }" name already exists` );
 	}
 
 	if ( ampContainerID === CONTAINER_CREATE ) {
 		const ampContainerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
 		invariant( isValidContainerName( ampContainerName ), `a container name is invalid` );
 
-		const ampContainers = getContainers( accountID );
-		invariant( isUniqueContainerName( ampContainerName, ampContainers ), `an AMP container with "${ ampContainerName }" name already exists` );
+		const containers = getContainers( accountID );
+		const normalizedContainerName = getNormalizedContainerName( ampContainerName );
+		invariant( isUniqueContainerName( ampContainerName, containers ), `an AMP container with "${ normalizedContainerName }" name already exists` );
 	}
 
 	if ( isAMP() ) {
