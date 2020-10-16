@@ -810,16 +810,12 @@ final class AdSense extends Module
 					gmdate( $last_year . '-m-01' ),
 					gmdate( $last_year . '-m-' . $last_date_of_month ),
 				);
+			// Intentional fallthrough.
 			case 'prev-7-days':
-				return array(
-					gmdate( 'Y-m-d', strtotime( '14 days ago' ) ),
-					gmdate( 'Y-m-d', strtotime( '8 days ago' ) ),
-				);
+			case 'prev-14-days':
 			case 'prev-28-days':
-				return array(
-					gmdate( 'Y-m-d', strtotime( '56 days ago' ) ),
-					gmdate( 'Y-m-d', strtotime( '29 days ago' ) ),
-				);
+			case 'prev-90-days':
+				return $this->parse_date_range( $date_range, 1, 1, true );
 			// Intentional fallthrough.
 			case 'last-7-days':
 			case 'last-14-days':

@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME, FORM_SETUP, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
-import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
