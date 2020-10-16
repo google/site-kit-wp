@@ -18,7 +18,7 @@ describe( 'PageSpeed Insights Activation', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
+			if ( request.url().match( '/wp-json/google-site-kit/v1/modules/' ) ) {
 				request.respond( {
 					status: 200,
 				} );
