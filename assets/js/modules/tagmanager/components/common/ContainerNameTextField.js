@@ -31,19 +31,23 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { TextField, HelperText, Input } from '../../../../material-components';
-import { FORM_SETUP } from '../../datastore/constants';
 import { isUniqueContainerName } from '../../util';
 const { useSelect, useDispatch } = Data;
 
-export default function ContainerNameTextField( { label, containers, formFieldID } ) {
-	const containerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, formFieldID ) );
+export default function ContainerNameTextField( { label, name } ) {
+	const containers = useSelect( ( select ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		return select( STORE_NAME ).getContainers( accountID );
+	} );
+	const containerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, name ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( ( { currentTarget } ) => {
-		setValues( FORM_SETUP, { [ formFieldID ]: currentTarget.value } );
-	}, [ formFieldID ] );
+		setValues( FORM_SETUP, { [ name ]: currentTarget.value } );
+	}, [ name ] );
 
 	const helperText = containerName && ! isUniqueContainerName( containerName, containers )
 		? <HelperText persistent>{ __( 'A container with this name already exists.', 'google-site-kit' ) }</HelperText>
@@ -55,7 +59,12 @@ export default function ContainerNameTextField( { label, containers, formFieldID
 
 	return (
 		<div className="googlesitekit-tagmanager-containername">
-			<TextField label={ label } outlined helperText={ helperText } trailingIcon={ trailingIcon }>
+			<TextField
+				label={ label }
+				outlined
+				helperText={ helperText }
+				trailingIcon={ trailingIcon }
+			>
 				<Input value={ containerName } onChange={ onChange } />
 			</TextField>
 		</div>
@@ -64,6 +73,5 @@ export default function ContainerNameTextField( { label, containers, formFieldID
 
 ContainerNameTextField.propTypes = {
 	label: PropTypes.string.isRequired,
-	formFieldID: PropTypes.string.isRequired,
-	containers: PropTypes.arrayOf( PropTypes.object ),
+	name: PropTypes.string.isRequired,
 };

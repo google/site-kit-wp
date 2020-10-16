@@ -26,33 +26,45 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
+import { STORE_NAME, FORM_SETUP, CONTAINER_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms';
+import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
 const { useSelect, useDispatch } = Data;
 
 export default function AMPContainerNameTextField() {
-	const containers = useSelect( ( select ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		return select( STORE_NAME ).getAMPContainers( accountID );
-	} );
-
+	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
-	const initialAMPContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ), [] );
+	const initialAMPContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ) );
+	const referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+
+	let ampContainerName = siteName;
+
+	if ( ! ampContainerName ) {
+		try {
+			const url = new URL( referenceSiteURL );
+			ampContainerName = url.hostname;
+		} catch {
+		}
+	}
+
+	ampContainerName += ' AMP';
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
-		if ( ! ampContainerName ) {
-			setValues( FORM_SETUP, { ampContainerName: `${ siteName || global.location.hostname } AMP` } );
+		if ( ! initialAMPContainerName ) {
+			setValues( FORM_SETUP, { ampContainerName } );
 		}
-	}, [] );
+	}, [ ampContainerName ] );
+
+	if ( ampContainerID !== CONTAINER_CREATE ) {
+		return null;
+	}
 
 	return (
 		<ContainerNameTextField
-			formFieldID="ampContainerName"
+			name="ampContainerName"
 			label={ __( 'AMP Container Name', 'google-site-kit' ) }
-			containers={ containers }
 		/>
 	);
 }

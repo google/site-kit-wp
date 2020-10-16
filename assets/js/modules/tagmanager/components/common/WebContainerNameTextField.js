@@ -26,28 +26,38 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
+import { STORE_NAME, FORM_SETUP, CONTAINER_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms';
+import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
 const { useSelect, useDispatch } = Data;
 
 export default function WebContainerNameTextField() {
-	const containers = useSelect( ( select ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		return select( STORE_NAME ).getWebContainers( accountID );
-	} );
-
+	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
-	const containerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' ) );
+	const initialContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' ) );
+	const referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+
+	let containerName = siteName;
+	if ( ! containerName ) {
+		try {
+			const url = new URL( referenceSiteURL );
+			containerName = url.hostname;
+		} catch {
+		}
+	}
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
-		if ( ! containerName ) {
-			setValues( FORM_SETUP, { containerName: siteName || global.location.hostname } );
+		if ( ! initialContainerName ) {
+			setValues( FORM_SETUP, { containerName } );
 		}
-	}, [] );
+	}, [ containerName ] );
+
+	if ( containerID !== CONTAINER_CREATE ) {
+		return null;
+	}
 
 	const label = isSecondaryAMP
 		? __( 'Web Container Name', 'google-site-kit' )
@@ -55,9 +65,8 @@ export default function WebContainerNameTextField() {
 
 	return (
 		<ContainerNameTextField
-			formFieldID="containerName"
+			name="containerName"
 			label={ label }
-			containers={ containers }
 		/>
 	);
 }
