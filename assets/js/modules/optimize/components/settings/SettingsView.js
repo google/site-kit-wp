@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/display-setting';
 import { STORE_NAME } from '../../datastore/constants';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -35,7 +35,7 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--optimize">
-			<StoreErrorNotice moduleSlug="optimize" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="optimize" storeName={ STORE_NAME } />
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
