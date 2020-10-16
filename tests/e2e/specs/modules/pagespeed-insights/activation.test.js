@@ -61,6 +61,5 @@ describe( 'PageSpeed Insights Activation', () => {
 		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for PageSpeed Insights!/i } );
 
-		expect( console ).toHaveErrored();
 	} );
 } );
