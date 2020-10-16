@@ -31,7 +31,7 @@ const CLEAR_ERRORS = 'CLEAR_ERRORS';
  */
 import { stringifyObject } from '../../util';
 
-function generateErrorKey( baseName, args ) {
+export function generateErrorKey( baseName, args ) {
 	if ( args && Array.isArray( args ) ) {
 		const stringifiedArgs = args.map( ( item ) => {
 			return 'object' === typeof item ? stringifyObject( item ) : item;
@@ -119,7 +119,7 @@ export function createErrorStore() {
 				const newState = { ...state };
 				if ( baseName ) {
 					newState.errors = { ...( state.errors || {} ) };
-					for ( const key in Object.keys( newState.errors ) ) {
+					for ( const key in newState.errors ) {
 						if ( key === baseName || key.startsWith( `${ baseName }::` ) ) {
 							delete newState.errors[ key ];
 						}
@@ -224,6 +224,25 @@ export function createErrorStore() {
 		},
 
 		/**
+		 * Gets a list of all unique errors.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {Object[]} Unique set of errors.
+		 */
+		getErrors( state ) {
+			const errorsSet = new Set( Object.values( state.errors ) );
+
+			// @TODO: remove it once all instances of the legacy usage have been removed.
+			if ( undefined !== state.error ) {
+				errorsSet.add( state.error );
+			}
+
+			return Array.from( errorsSet );
+		},
+
+		/**
 		 * Determines whether the datastore has errors or not.
 		 *
 		 * @since 1.15.0
@@ -232,8 +251,7 @@ export function createErrorStore() {
 		 * @return {boolean} TRUE if the datastore has errors, otherwise FALSE.
 		 */
 		hasErrors( state ) {
-			const { errors } = state;
-			return Object.keys( errors ).some( ( key ) => !! errors[ key ] );
+			return selectors.getErrors( state ).length > 0;
 		},
 	};
 

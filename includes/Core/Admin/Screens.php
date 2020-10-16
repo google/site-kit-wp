@@ -152,14 +152,24 @@ final class Screens {
 		add_filter(
 			'menu_order',
 			function( array $menu_order ) {
-				$new_order = array();
-				foreach ( $menu_order as $index => $item ) {
-					if ( 'index.php' === $item || 0 === strpos( $item, self::PREFIX ) ) {
-						$new_order[] = $item;
-						unset( $menu_order[ $index ] );
+				// Move the Site Kit dashboard menu item to be one after the index.php item if it exists.
+				$dashboard_index = array_search( 'index.php', $menu_order, true );
+
+				$sitekit_index = false;
+				foreach ( $menu_order as $key => $value ) {
+					if ( strpos( $value, self::PREFIX ) === 0 ) {
+						$sitekit_index = $key;
+						$sitekit_value = $value;
+						break;
 					}
 				}
-				return array_values( array_merge( $new_order, $menu_order ) );
+
+				if ( false === $dashboard_index || false === $sitekit_index ) {
+					return $menu_order;
+				}
+				unset( $menu_order[ $sitekit_index ] );
+				array_splice( $menu_order, $dashboard_index + 1, 0, $sitekit_value );
+				return $menu_order;
 			}
 		);
 	}
