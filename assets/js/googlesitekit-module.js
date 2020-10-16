@@ -52,6 +52,7 @@ class GoogleSitekitModule extends Component {
 			showModuleSetupWizard,
 		} = this.state;
 
+		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
 		const { currentAdminPage } = global._googlesitekitLegacyData.admin;
 
 		/**
@@ -96,7 +97,7 @@ class GoogleSitekitModule extends Component {
 						</div>
 					</div>
 				}>
-					<Setup />
+					<Setup moduleSlug={ moduleToSetup } />
 				</Suspense>
 			);
 		}
@@ -120,4 +121,3 @@ domReady( () => {
 		);
 	}
 } );
-

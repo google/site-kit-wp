@@ -30,12 +30,12 @@ import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { WithTestRegistry, createTestRegistry } from '../tests/js/utils';
+import { WithTestRegistry, createTestRegistry, provideModules } from '../tests/js/utils';
 
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper />
+			<SetupWrapper moduleSlug="adsense" />
 		</WithTestRegistry>
 	);
 }
@@ -64,13 +64,11 @@ storiesOf( 'AdSense Module/Setup', module )
 	.addDecorator( ( storyFn ) => {
 		global._googlesitekitLegacyData.setup.moduleToSetup = 'adsense';
 		const registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: 'adsense',
-				active: true,
-				connected: true,
-			},
-		] );
+		provideModules( registry, [ {
+			slug: 'adsense',
+			active: true,
+			connected: true,
+		} ] );
 		registry.dispatch( CORE_MODULES ).registerModule( 'adsense', {
 			setupComponent: AdSenseSetup,
 		} );

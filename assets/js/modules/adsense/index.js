@@ -83,6 +83,12 @@ addFilter(
 );
 
 domReady( () => {
+	Modules.registerModule(
+		'adsense',
+		{
+			setupComponent: SetupMain,
+		},
+	);
 	Widgets.registerWidget(
 		'adsenseSummary',
 		{
@@ -107,11 +113,5 @@ domReady( () => {
 		[
 			AREA_DASHBOARD_EARNINGS,
 		],
-	);
-	Modules.registerModule(
-		'adsense',
-		{
-			setupComponent: SetupMain,
-		},
 	);
 } );

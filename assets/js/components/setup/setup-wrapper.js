@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { delay } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -39,10 +40,9 @@ import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/cons
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-export default function SetupWrapper() {
+export default function SetupWrapper( { moduleSlug } ) {
 	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
-	const { moduleToSetup } = global._googlesitekitLegacyData.setup;
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleToSetup ) );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
@@ -58,8 +58,8 @@ export default function SetupWrapper() {
 				notification: 'authentication_success',
 			};
 
-			if ( global._googlesitekitLegacyData?.setup?.moduleToSetup ) {
-				args.slug = global._googlesitekitLegacyData.setup.moduleToSetup;
+			if ( moduleSlug ) {
+				args.slug = moduleSlug;
 			}
 
 			redirectURL = getSiteKitAdminURL( 'googlesitekit-dashboard', args );
@@ -68,7 +68,7 @@ export default function SetupWrapper() {
 		delay( function() {
 			global.location.replace( redirectURL );
 		}, 500, 'later' );
-	}, [] );
+	}, [ moduleSlug ] );
 
 	if ( ! module ) {
 		return null;
@@ -140,3 +140,7 @@ export default function SetupWrapper() {
 		</Fragment>
 	);
 }
+
+SetupWrapper.propTypes = {
+	moduleSlug: PropTypes.string.isRequired,
+};

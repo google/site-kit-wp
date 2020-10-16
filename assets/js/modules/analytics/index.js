@@ -56,6 +56,13 @@ addFilter(
 );
 
 domReady( () => {
+	Modules.registerModule(
+		'analytics',
+		{
+			setupComponent: AnalyticsSetup,
+		},
+	);
+
 	Widgets.registerWidget(
 		'analyticsAllTraffic',
 		{
@@ -121,12 +128,5 @@ domReady( () => {
 		[
 			AREA_DASHBOARD_POPULARITY,
 		],
-	);
-
-	Modules.registerModule(
-		'analytics',
-		{
-			setupComponent: AnalyticsSetup,
-		},
 	);
 } );

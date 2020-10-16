@@ -30,15 +30,12 @@ import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/d
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
-import { WithTestRegistry, createTestRegistry } from '../tests/js/utils';
-import fixtures from '../assets/js/googlesitekit/modules/datastore/fixtures.json';
-
-const analyticsFixture = fixtures.filter( ( fixture ) => fixture.slug === 'analytics' );
+import { WithTestRegistry, createTestRegistry, provideModules } from '../tests/js/utils';
 
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper />
+			<SetupWrapper moduleSlug="optimize" />
 		</WithTestRegistry>
 	);
 }
@@ -47,7 +44,12 @@ storiesOf( 'Optimize Module/Setup', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
 		global._googlesitekitLegacyData.setup.moduleToSetup = 'optimize';
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
 			{
 				slug: 'optimize',
 				active: true,
@@ -61,7 +63,6 @@ storiesOf( 'Optimize Module/Setup', module )
 		return storyFn( registry );
 	} )
 	.add( 'Start', ( registry ) => {
-		registry.dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
@@ -69,7 +70,6 @@ storiesOf( 'Optimize Module/Setup', module )
 	} )
 	.add( 'Start with AMP Experiment JSON Field', ( registry ) => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
-		registry.dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
@@ -77,7 +77,6 @@ storiesOf( 'Optimize Module/Setup', module )
 	} )
 	.add( 'Start with invalid values', ( registry ) => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
-		registry.dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {
 			optimizeID: '1234567',

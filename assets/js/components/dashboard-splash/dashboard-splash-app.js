@@ -94,6 +94,8 @@ class DashboardSplashApp extends Component {
 	}
 
 	render() {
+		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
+
 		// Set webpackPublicPath on-the-fly.
 		if ( global._googlesitekitLegacyData && global._googlesitekitLegacyData.publicPath ) {
 			// eslint-disable-next-line no-undef, camelcase
@@ -179,7 +181,7 @@ class DashboardSplashApp extends Component {
 					</div>
 				</Fragment>
 			}>
-				<Setup />
+				<Setup moduleSlug={ moduleToSetup } />
 			</Suspense>
 		);
 	}

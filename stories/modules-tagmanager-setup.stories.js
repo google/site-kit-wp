@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { WithTestRegistry, createTestRegistry, freezeFetch } from '../tests/js/utils';
+import { WithTestRegistry, createTestRegistry, freezeFetch, provideModules } from '../tests/js/utils';
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
 import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user';
@@ -39,7 +39,7 @@ import { parseLiveContainerVersionIDs } from '../assets/js/modules/tagmanager/da
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper />
+			<SetupWrapper moduleSlug="tagmanager" />
 		</WithTestRegistry>
 	);
 }
@@ -48,13 +48,11 @@ storiesOf( 'Tag Manager Module/Setup', module )
 	.addDecorator( ( storyFn ) => {
 		global._googlesitekitLegacyData.setup.moduleToSetup = 'tagmanager';
 		const registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: 'tagmanager',
-				active: true,
-				connected: true,
-			},
-		] );
+		provideModules( registry, [ {
+			slug: 'tagmanager',
+			active: true,
+			connected: true,
+		} ] );
 		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
 			setupComponent: TagManagerSetup,
 		} );
@@ -161,6 +159,14 @@ storiesOf( 'Tag Manager Module/Setup', module )
 storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
+		provideModules( registry, [ {
+			slug: 'tagmanager',
+			active: true,
+			connected: true,
+		} ] );
+		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
+			setupComponent: TagManagerSetup,
+		} );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
@@ -244,6 +250,14 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
+		provideModules( registry, [ {
+			slug: 'tagmanager',
+			active: true,
+			connected: true,
+		} ] );
+		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
+			setupComponent: TagManagerSetup,
+		} );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );

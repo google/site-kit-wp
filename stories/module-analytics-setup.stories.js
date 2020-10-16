@@ -32,13 +32,13 @@ import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { WithTestRegistry, createTestRegistry } from '../tests/js/utils';
+import { WithTestRegistry, createTestRegistry, provideModules } from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper />
+			<SetupWrapper moduleSlug="analytics" />
 		</WithTestRegistry>
 	);
 }
@@ -60,13 +60,11 @@ storiesOf( 'Analytics Module/Setup', module )
 	.addDecorator( ( storyFn ) => {
 		global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
 		const registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-		] );
+		provideModules( registry, [ {
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		} ] );
 		registry.dispatch( CORE_MODULES ).registerModule( 'analytics', {
 			setupComponent: AnalyticsSetup,
 		} );

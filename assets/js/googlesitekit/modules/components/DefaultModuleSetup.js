@@ -29,15 +29,24 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Button from '../../../components/button';
+import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+const { useSelect } = Data;
 
-export default function DefaultModuleSetup( { finishSetup, module = {} } ) {
+export default function DefaultModuleSetup( { finishSetup, moduleSlug } ) {
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
+
+	if ( ! module ) {
+		return null;
+	}
+
 	return (
 		<div className={ `googlesitekit-setup-module googlesitekit-setup-module--${ module.slug }` }>
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 				{ module.name }
 			</h2>
-			<form className="googlesitekit-{moduleSlug}-setup__form" onSubmit={ finishSetup }>
+			<form className={ `googlesitekit-${ module.slug }-setup__form` } onSubmit={ finishSetup }>
 				<div className="googlesitekit-setup-module__action">
 					<Button>
 						{ __( 'Confirm & Continue', 'google-site-kit' ) }
@@ -50,8 +59,5 @@ export default function DefaultModuleSetup( { finishSetup, module = {} } ) {
 
 DefaultModuleSetup.propTypes = {
 	finishSetup: PropTypes.func.isRequired,
-	module: PropTypes.shape( {
-		name: PropTypes.string,
-		slug: PropTypes.string,
-	} ),
+	moduleSlug: PropTypes.string.isRequired,
 };
