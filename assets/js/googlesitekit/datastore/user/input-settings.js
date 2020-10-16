@@ -26,9 +26,9 @@ import isPlainObject from 'lodash/isPlainObject';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-settings';
+import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { createFetchStore } from '../../settings/create-fetch-store';
+import { createFetchStore } from '../../data/create-fetch-store';
 const { commonActions, createRegistrySelector } = Data;
 
 function fetchStoreReducerCallback( state, inputSettings ) {
@@ -36,7 +36,7 @@ function fetchStoreReducerCallback( state, inputSettings ) {
 		...state,
 		inputSettings: Object
 			.keys( inputSettings )
-			.reduce( ( accum, key ) => accum[ key ] = inputSettings[ key ].values, {} ),
+			.reduce( ( accum, key ) => ( { ...accum, [ key ]: inputSettings[ key ].values } ), {} ),
 	};
 }
 
@@ -47,10 +47,10 @@ const fetchGetUserInputSettingsStore = createFetchStore( {
 } );
 
 const fetchSaveUserInputSettingsStore = createFetchStore( {
-	baseName: 'saveUserInputSettings',
-	controlCallback: ( { settings } ) => API.set( 'core', 'user', 'user-input-settings', { settings } ),
+	baseName: 'setUserInputSettings',
+	controlCallback: ( settings ) => API.set( 'core', 'user', 'user-input-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
-	argsToParams: createRegistrySelector( ( select ) => () => select( STORE_NAME ).getUserInputSettings() ),
+	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
 		invariant( isPlainObject( settings ), 'a valid settings are required.' );
 	},
@@ -97,6 +97,21 @@ const baseActions = {
 				values,
 			},
 		};
+	},
+
+	/**
+	 * Saves user input settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} settings User input settings.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*saveUserInputSettings( settings ) {
+		invariant( isPlainObject( settings ), 'a valid settings are required.' );
+
+		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSetUserInputSettings( settings );
+		return { response, error };
 	},
 };
 
