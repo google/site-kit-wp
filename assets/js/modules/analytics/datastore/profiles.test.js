@@ -23,7 +23,7 @@ import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
-	subscribeUntil,
+	muteFetch,
 	unsubscribeFromAll,
 	untilResolved,
 } from 'tests/js/utils';
@@ -62,7 +62,7 @@ describe( 'modules/analytics profiles', () => {
 					{ body: fixtures.createProfile, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
+				await registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -72,12 +72,6 @@ describe( 'modules/analytics profiles', () => {
 							data: { accountID, propertyID, profileName },
 						},
 					}
-				);
-
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getProfiles( accountID, propertyID )
-					),
 				);
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
@@ -117,24 +111,16 @@ describe( 'modules/analytics profiles', () => {
 					{ body: response, status: 500 }
 				);
 
-				registry.dispatch( STORE_NAME ).createProfile( ...args );
-
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingCreateProfile( ...args ) === false
-				);
+				await registry.dispatch( STORE_NAME ).createProfile( ...args );
 
 				expect( registry.select( STORE_NAME ).getErrorForAction( 'createProfile', args ) ).toMatchObject( response );
 
-				// Ignore the request fired by the `getProperties` selector.
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-					{ body: {}, status: 200 }
-				);
+				// Ignore the request fired by the `getProfiles` selector.
+				muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, [] );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
-				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-
-				// No properties should have been added yet, as the property creation failed.
-				expect( properties ).toEqual( undefined );
+				// No profiles should have been added yet, as the profile creation failed.
+				expect( profiles ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -165,11 +151,7 @@ describe( 'modules/analytics profiles', () => {
 				);
 
 				expect( initialProfiles ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID ) !== undefined
-					),
-				);
+				await untilResolved( registry, STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
@@ -212,9 +194,7 @@ describe( 'modules/analytics profiles', () => {
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
 
 				registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingGetProfiles( testAccountID, testPropertyID ) === false
-				);
+				await untilResolved( registry, STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 

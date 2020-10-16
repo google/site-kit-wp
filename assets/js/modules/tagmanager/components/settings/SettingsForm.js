@@ -27,13 +27,13 @@ import {
 	UseSnippetSwitch,
 	WebContainerSelect,
 } from '../common';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { STORE_NAME } from '../../datastore/constants';
 
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-tagmanager-settings-fields">
-			<StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
 			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">

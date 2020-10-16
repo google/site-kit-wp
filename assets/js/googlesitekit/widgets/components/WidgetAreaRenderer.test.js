@@ -274,4 +274,18 @@ describe( 'WidgetAreaRenderer', () => {
 			expect( container.firstChild.querySelectorAll( '.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner' ) ).toHaveLength( 1 );
 		} );
 	} );
+
+	it( 'should not render widget area with no active widgets', async () => {
+		createWidgets( registry, areaName, [
+			{ component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
+		] );
+
+		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
+		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
+
+		await waitFor( () => {
+			expect( widgets ).toHaveLength( 1 );
+			expect( container.querySelectorAll( '.googlesitekit-widget-area' ) ).toHaveLength( 0 );
+		} );
+	} );
 } );
