@@ -70,12 +70,17 @@
     console.warn('unable to connect to top frame for connecting dev tools');
   }</script><style>.googlesitekit-plugin-preview {
 	  padding: 50px;
-  }</style><script>WebFontConfig = {
-		google: { families: ['Google+Sans:300,300i,400,400i,500,500i,700,700i','Roboto:300,300i,400,400i,500,500i,700,700i'] },
-		active: function() {
-			console.log( 'backstopjs_ready' );
+  }</style><script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script><script>WebFontConfig = {
+		google: {
+			families: [
+				'Google+Sans:300,300i,400,400i,500,500i,700,700i',
+				'Roboto:300,300i,400,400i,500,500i,700,700i'
+			]
 		},
 	};
+	const webFontsLoaded = new Promise( ( resolve ) => {
+		WebFontConfig.active = resolve;
+	} );
 
 	( function() {
 		let wf = document.createElement( 'script' );
@@ -84,7 +89,22 @@
 		wf.async = 'false';
 		let s = document.getElementsByTagName( 'script' )[0];
 		s.parentNode.insertBefore( wf, s );
-	} )();</script><link href="main.css" rel="stylesheet"><style>#root[hidden],
+	} )();
+
+	const allImagesLoaded = new Promise( ( resolve ) => {
+		// Wait for the document to completely finish loading before checking for images.
+		window.addEventListener( 'load', () => {
+			imagesLoaded( '.googlesitekit-plugin-preview', { background: true }, resolve );
+		} );
+	} );
+
+	Promise.all( [
+		webFontsLoaded,
+		allImagesLoaded,
+	] ).then( () => {
+		// Signal Backstop that the environment is ready to go.
+		console.log( 'backstopjs_ready' );
+	} );</script><link href="main.css" rel="stylesheet"><style>#root[hidden],
       #docs-root[hidden] {
         display: none !important;
-      }</style></head><body><div class="sb-nopreview sb-wrapper"><div class="sb-nopreview_main"><h1 class="sb-nopreview_heading sb-heading">No Preview</h1><p>Sorry, but you either have no stories or none are selected somehow.</p><ul><li>Please check the Storybook config.</li><li>Try reloading the page.</li></ul><p>If the problem persists, check the browser console, or the terminal you've run Storybook from.</p></div></div><div class="sb-errordisplay sb-wrapper"><pre id="error-message" class="sb-heading"></pre><pre class="sb-errordisplay_code"><code id="error-stack"></code></pre></div><div id="root"></div><div id="docs-root"></div><script src="runtime~main.e82b913ede0b5615a731.bundle.js"></script><script src="vendors~main.e82b913ede0b5615a731.bundle.js"></script><script src="main.e82b913ede0b5615a731.bundle.js"></script></body></html>
+      }</style></head><body><div class="sb-nopreview sb-wrapper"><div class="sb-nopreview_main"><h1 class="sb-nopreview_heading sb-heading">No Preview</h1><p>Sorry, but you either have no stories or none are selected somehow.</p><ul><li>Please check the Storybook config.</li><li>Try reloading the page.</li></ul><p>If the problem persists, check the browser console, or the terminal you've run Storybook from.</p></div></div><div class="sb-errordisplay sb-wrapper"><pre id="error-message" class="sb-heading"></pre><pre class="sb-errordisplay_code"><code id="error-stack"></code></pre></div><div id="root"></div><div id="docs-root"></div><script src="runtime~main.263ce1b1b3a4a887657c.bundle.js"></script><script src="vendors~main.263ce1b1b3a4a887657c.bundle.js"></script><script src="main.263ce1b1b3a4a887657c.bundle.js"></script></body></html>
