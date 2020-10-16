@@ -208,12 +208,11 @@ export const validateCanSubmitChanges = ( select ) => {
 	const {
 		getAccountID,
 		getContainerID,
-		getAMPContainers,
+		getContainers,
 		getAMPContainerID,
 		getInternalContainerID,
 		getInternalAMPContainerID,
 		getSingleAnalyticsPropertyID,
-		getWebContainers,
 		hasAnyAnalyticsPropertyID,
 		hasExistingTag,
 		hasExistingTagPermission,
@@ -238,18 +237,18 @@ export const validateCanSubmitChanges = ( select ) => {
 
 	const containerID = getContainerID();
 	if ( containerID === CONTAINER_CREATE ) {
-		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
+		const containerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
 		invariant( isValidContainerName( containerName ), `a container name is invalid` );
 
-		const webContainers = getWebContainers( accountID );
+		const webContainers = getContainers( accountID );
 		invariant( isUniqueContainerName( containerName, webContainers ), `a container with "${ containerName }" name already exists` );
 	}
 
 	if ( ampContainerID === CONTAINER_CREATE ) {
-		const ampContainerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
+		const ampContainerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
 		invariant( isValidContainerName( ampContainerName ), `a container name is invalid` );
 
-		const ampContainers = getAMPContainers( accountID );
+		const ampContainers = getContainers( accountID );
 		invariant( isUniqueContainerName( ampContainerName, ampContainers ), `an AMP container with "${ ampContainerName }" name already exists` );
 	}
 
