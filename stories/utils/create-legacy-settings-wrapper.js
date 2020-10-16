@@ -66,7 +66,6 @@ export default function createLegacySettingsWrapper( moduleSlug ) {
 						learnmore={ module.learnMore }
 						active={ module.active }
 						setupComplete={ module.setupComplete }
-						hasSettings={ !! module.settings && 'search-console' !== moduleSlug }
 						autoActivate={ module.autoActivate }
 						updateModulesList={ updateModulesList }
 						handleEdit={ handleButtonAction }
