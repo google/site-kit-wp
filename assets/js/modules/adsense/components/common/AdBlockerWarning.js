@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import ErrorIcon from '../../../../../svg/error.svg';
 
-import { STORE_NAME } from '../../datastore';
+import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function AdBlockerWarning( { context } ) {

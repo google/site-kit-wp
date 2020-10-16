@@ -24,8 +24,6 @@ import modules from './modules';
 import { STORE_NAME } from './constants';
 import { createErrorStore } from '../../data/create-error-store';
 
-export { STORE_NAME };
-
 const store = Data.combineStores(
 	Data.commonStore,
 	modules,
