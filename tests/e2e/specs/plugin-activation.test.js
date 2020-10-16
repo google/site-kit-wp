@@ -20,8 +20,19 @@
  * WordPress dependencies
  */
 import { deactivatePlugin, activatePlugin } from '@wordpress/e2e-test-utils';
+import { useRequestInterception } from '../utils';
 
 describe( 'Plugin Activation Notice', () => {
+	beforeAll( async () => {
+		await page.setRequestInterception( true );
+		useRequestInterception( ( request ) => {
+			if ( request.url().match( '/google-site-kit/v1/data/' ) ) {
+				request.respond( { status: 200 } );
+			} else {
+				request.continue();
+			}
+		} );
+	} );
 	describe( 'When Javascript is enabled', () => {
 		// Ensure Site Kit is disabled before running each test as it's enabled by default.
 		beforeEach( async () => {
