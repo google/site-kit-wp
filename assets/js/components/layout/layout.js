@@ -62,15 +62,15 @@ class Layout extends Component {
 				{ header &&
 					<LayoutHeader
 						title={ title }
-						CTALabel={ headerCTALabel }
-						CTALink={ headerCTALink }
+						ctaLabel={ headerCTALabel }
+						ctaLink={ headerCTALink }
 					/>
 				}
 				{ children }
 				{ footer &&
 					<LayoutFooter
-						CTALabel={ footerCTALabel }
-						CTALink={ footerCTALink }
+						ctaLabel={ footerCTALabel }
+						ctaLink={ footerCTALink }
 						footerContent={ footerContent }
 					/>
 				}
