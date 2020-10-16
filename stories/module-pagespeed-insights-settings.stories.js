@@ -24,15 +24,19 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { SettingsMain as PageSpeedInsightsSettings } from '../assets/js/modules/pagespeed-insights/components/settings';
+import { SettingsView } from '../assets/js/modules/pagespeed-insights/components/settings';
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { createTestRegistry } from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
-const Settings = createLegacySettingsWrapper( 'pagespeed-insights', PageSpeedInsightsSettings );
+const Settings = createLegacySettingsWrapper( 'pagespeed-insights' );
 
 storiesOf( 'PageSpeed Insights Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
+		registry.dispatch( CORE_MODULES ).registerModule( 'pagespeed-insights', {
+			settingsViewComponent: SettingsView,
+		} );
 		return storyFn( registry );
 	} )
 	.add( 'View, closed', ( registry ) => {
