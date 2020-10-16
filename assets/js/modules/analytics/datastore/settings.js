@@ -46,14 +46,14 @@ const { createRegistryControl } = Data;
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
-export const INVARIANT_DONT_HAVE_SETTINGS_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
 export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
 export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is required to submit changes';
 export const INVARIANT_INVALID_PROFILE_SELECTION = 'a valid profileID is required to submit changes';
-export const INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS = 'cannot submit changes without having permissions for GTM property ID';
+export const INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS = 'cannot submit changes without having permissions for GTM property ID';
 export const INVARIANT_INVALID_PROFILE_NAME = 'a valid profile name is required to submit changes';
 export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID = 'cannot submit changes with incorrect internal webPropertyID';
-export const INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSIONS = 'cannot submit without proper permissions';
+export const INVARIANT_INSUFFICIENT_TAG_PERMISSIONS = 'cannot submit without proper permissions';
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -204,7 +204,10 @@ const {
 	const gtmIsActive = strictSelect( CORE_MODULES ).isModuleActive( 'tagmanager' );
 	if ( gtmIsActive ) {
 		const gtmAnalyticsPropertyID = strictSelect( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
-		invariant( ! isValidPropertyID( gtmAnalyticsPropertyID ) || hasTagPermission( gtmAnalyticsPropertyID ) !== false, INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS );
+		invariant(
+			! isValidPropertyID( gtmAnalyticsPropertyID ) || hasTagPermission( gtmAnalyticsPropertyID ) !== false,
+			INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS
+		);
 	}
 
 	invariant( haveSettingsChanged(), INVARIANT_DONT_HAVE_SETTINGS_CHANGED );
@@ -218,7 +221,10 @@ const {
 	}
 
 	// If the property ID is valid (non-create) the internal ID must be valid as well.
-	invariant( ! isValidPropertyID( getPropertyID() ) || isValidInternalWebPropertyID( getInternalWebPropertyID() ), INVARIANT_INVALID_INTERNAL_PROPERTY_ID );
+	invariant(
+		! isValidPropertyID( getPropertyID() ) || isValidInternalWebPropertyID( getInternalWebPropertyID() ),
+		INVARIANT_INVALID_INTERNAL_PROPERTY_ID
+	);
 
 	// Do existing tag check last.
 	invariant( hasExistingTagPermission() !== false, INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSIONS );

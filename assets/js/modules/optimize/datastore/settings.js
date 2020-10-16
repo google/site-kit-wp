@@ -39,9 +39,9 @@ const { createRegistryControl } = Data;
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
-export const INVARIANT_DONT_HAVE_SETTINGS_CHANGED = 'cannot submit changes if settings have not changed';
-export const INVARIANT_INVALID_AMP_EXPIREMENT_JSON = 'require an ampExperimentJSON to be valid JSON if set';
-export const INVARIANT_INVALID_OPTIMIZE_ID = 'require optimize ID to be either empty (if impossible to determine) or valid';
+export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_INVALID_AMP_EXPERIMENT_JSON = 'ampExperimentJSON must be valid JSON if set';
+export const INVARIANT_INVALID_OPTIMIZE_ID = 'a valid optimizeID is required';
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';

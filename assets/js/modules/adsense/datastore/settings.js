@@ -70,8 +70,8 @@ const fetchSaveUseSnippetStore = createFetchStore( {
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
-export const INVARIANT_DONT_HAVE_SETTINGS_CHANGED = 'cannot submit changes if settings have not changed';
-export const INVARIANT_DONT_HAVE_ACCOUNT_STATUS = 'require an account status to be present';
+export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_MISSING_ACCOUNT_STATUS = 'require an account status to be present';
 export const INVARIANT_INVALID_ACCOUNT_ID = 'require account ID to be either empty (if impossible to determine) or valid';
 export const INVARIANT_INVALID_CLIENT_ID = 'require client ID to be either empty (if impossible to determine) or valid';
 
