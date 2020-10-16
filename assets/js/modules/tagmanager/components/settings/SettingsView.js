@@ -27,8 +27,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/display-setting';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site';
-import { STORE_NAME } from '../../datastore';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME } from '../../datastore/constants';
 import {
 	ExistingTagError,
 	ExistingTagNotice,
