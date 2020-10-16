@@ -24,7 +24,6 @@ import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import report from './report';
 import service from './service';
-export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	storeName: STORE_NAME,
