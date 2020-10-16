@@ -19,24 +19,29 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as MODULES_ADSENSE } from '../../../adsense/datastore/constants';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import Layout from '../../../../components/layout/layout';
+import { getCurrentDateRange } from '../../../../util/date-range';
 const { useSelect } = Data;
 
 const AnalyticsAdSenseDashboardWidgetLayout = ( { children } ) => {
 	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteURL() );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const currentDateRange = getCurrentDateRange( dateRange );
 
 	return (
 		<Layout
 			header
-			title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
-			headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
+			/* translators: %s: date range */
+			title={ sprintf( __( 'Performance by page over the last %s', 'google-site-kit' ), currentDateRange ) }
+			headerCtaLabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
 			headerCtaLink={ accountSiteURL }>
 			{ children }
 		</Layout>
