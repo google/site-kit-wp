@@ -44,15 +44,15 @@ const { createRegistryControl } = Data;
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
-export const INVARIANT_DONT_HAVE_SETTINGS_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
 export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
 export const INVARIANT_INVALID_AMP_CONTAINER_SELECTION = 'a valid ampContainerID selection is required to submit changes';
 export const INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID = 'a valid internalAMPContainerID is required to submit changes';
 export const INVARIANT_INVALID_CONTAINER_SELECTION = 'a valid containerID selection is required to submit changes';
 export const INVARIANT_INVALID_INTERNAL_CONTAINER_ID = 'a valid internalContainerID is required to submit changes';
-export const INVARIANT_HAVE_MULTIPLE_ANALYTICS_PROPERTY_IDS = 'containers with Analytics tags must reference a single property ID to submit changes';
-export const INVARIANT_GTM_AND_ANALYTICS_PROPERTY_IDS_DONT_MATCH = 'single GTM Analytics property ID must match Analytics property ID';
-export const INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSION = 'existing tag permission is required to submit changes';
+export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS = 'containers with Analytics tags must reference a single property ID to submit changes';
+export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH = 'single GTM Analytics property ID must match Analytics property ID';
+export const INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION = 'existing tag permission is required to submit changes';
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
