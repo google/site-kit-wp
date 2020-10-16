@@ -18,7 +18,7 @@ describe( 'PageSpeed Insights Activation', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( '/wp-json/google-site-kit/v1/modules/' ) ) {
+			if ( request.url().match( '/wp-json/google-site-kit/v1/' ) ) {
 				request.respond( {
 					status: 200,
 				} );
@@ -45,8 +45,6 @@ describe( 'PageSpeed Insights Activation', () => {
 
 		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for PageSpeed Insights!/i } );
-
-		expect( console ).toHaveErrored();
 	} );
 
 	it( 'leads you to the Site Kit dashboard after activation via the settings page', async () => {
