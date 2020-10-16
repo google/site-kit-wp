@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from '../../../../components/link';
-import { sanitizeHTML } from '../../../../util/sanitize';
 import { ErrorNotices } from '../common';
 
 export default function SetupAccountNoClient() {
@@ -46,14 +45,13 @@ export default function SetupAccountNoClient() {
 				<Link
 					href="https://support.google.com/adsense/answer/6023158"
 					external
-					dangerouslySetInnerHTML={ sanitizeHTML(
-						__( 'Learn more<span class="screen-reader-text"> about updating your AdSense account</span>', 'google-site-kit' ),
-						{
-							ALLOWED_TAGS: [ 'span' ],
-							ALLOWED_ATTR: [ 'class' ],
-						}
-					) }
-				/>
+				>
+					{ __( 'Learn more', 'google-site-kit' ) }
+					{ ' ' }
+					<span className="screen-reader-text">
+						{ __( 'about updating your AdSense account', 'google-site-kit' ) }
+					</span>
+				</Link>
 			</div>
 		</Fragment>
 	);

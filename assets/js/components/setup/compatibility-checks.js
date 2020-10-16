@@ -122,27 +122,31 @@ export default class CompatibilityChecks extends Component {
 
 		if ( ! installed && installURL ) {
 			return {
-				labelHTML: __( 'Install<span class="screen-reader-text"> the helper plugin</span>', 'google-site-kit' ),
+				labelHTML: __( 'Install', 'google-site-kit' ),
+				a11yLabel: __( 'the helper plugin', 'google-site-kit' ),
 				href: installURL,
 				external: false,
 			};
 		}
 		if ( installed && ! active && activateURL ) {
 			return {
-				labelHTML: __( 'Activate<span class="screen-reader-text"> the helper plugin</span>', 'google-site-kit' ),
+				labelHTML: __( 'Activate', 'google-site-kit' ),
+				a11yLabel: __( 'the helper plugin', 'google-site-kit' ),
 				href: activateURL,
 				external: false,
 			};
 		}
 		if ( installed && active && configureURL ) {
 			return {
-				labelHTML: __( 'Configure<span class="screen-reader-text"> the helper plugin</span>', 'google-site-kit' ),
+				labelHTML: __( 'Configure', 'google-site-kit' ),
+				a11yLabel: __( 'the helper plugin', 'google-site-kit' ),
 				href: configureURL,
 				external: false,
 			};
 		}
 		return {
-			labelHTML: __( 'Learn how<span class="screen-reader-text"> to install and use the helper plugin</span>', 'google-site-kit' ),
+			labelHTML: __( 'Learn how', 'google-site-kit' ),
+			a11yLabel: __( 'to install and use the helper plugin', 'google-site-kit' ),
 			href: 'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
 			external: true,
 		};
@@ -150,7 +154,7 @@ export default class CompatibilityChecks extends Component {
 
 	renderError( error ) {
 		const { installed } = this.state.developerPlugin;
-		const { labelHTML, href, external } = this.helperCTA();
+		const { labelHTML, a11yLabel, href, external } = this.helperCTA();
 
 		switch ( error ) {
 			case ERROR_INVALID_HOSTNAME:
@@ -164,7 +168,13 @@ export default class CompatibilityChecks extends Component {
 						dangerouslySetInnerHTML={ { __html: labelHTML } }
 						external={ external }
 						inherit
-					/>
+					>
+						{ labelHTML }
+						{ ' ' }
+						<span className="screen-reader-text">
+							{ a11yLabel }
+						</span>
+					</Link>
 				</p>;
 			case ERROR_TOKEN_MISMATCH:
 				return <p>

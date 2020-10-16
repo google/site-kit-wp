@@ -25,7 +25,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from '../../../../components/link';
-import { sanitizeHTML } from '../../../../util';
 
 export default function MetricsLearnMoreLink() {
 	return (
@@ -33,13 +32,12 @@ export default function MetricsLearnMoreLink() {
 			href="https://web.dev/user-centric-performance-metrics/#how-metrics-are-measured"
 			external
 			inherit
-			dangerouslySetInnerHTML={ sanitizeHTML(
-				__( 'Learn more<span class="screen-reader-text"> how metrics are measured.</span>', 'google-site-kit' ),
-				{
-					ALLOWED_TAGS: [ 'span' ],
-					ALLOWED_ATTR: [ 'class' ],
-				}
-			) }
-		/>
+		>
+			{ __( 'Learn more', 'google-site-kit' ) }
+			{ ' ' }
+			<span className="screen-reader-text">
+				{ __( 'how metrics are measured.', 'google-site-kit' ) }
+			</span>
+		</Link>
 	);
 }
