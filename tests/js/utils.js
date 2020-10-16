@@ -13,17 +13,28 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import coreSiteStore, { STORE_NAME as coreSiteStoreName } from '../../assets/js/googlesitekit/datastore/site';
-import coreUserStore, { STORE_NAME as coreUserStoreName } from '../../assets/js/googlesitekit/datastore/user';
-import coreFormsStore, { STORE_NAME as coreFormsStoreName } from '../../assets/js/googlesitekit/datastore/forms';
-import coreModulesStore, { STORE_NAME as coreModulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
-import coreWidgetsStore, { STORE_NAME as coreWidgetsStoreName } from '../../assets/js/googlesitekit/widgets/datastore';
-import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../../assets/js/modules/adsense/datastore';
-import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
-import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
-import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
-import modulesTagManagerStore, { STORE_NAME as modulesTagManagerStoreName } from '../../assets/js/modules/tagmanager/datastore';
-import modulesOptimizeStore, { STORE_NAME as modulesOptimizeStoreName } from '../../assets/js/modules/optimize/datastore';
+import coreSiteStore from '../../assets/js/googlesitekit/datastore/site';
+import { STORE_NAME as coreSiteStoreName } from '../../assets/js/googlesitekit/datastore/site/constants';
+import coreUserStore from '../../assets/js/googlesitekit/datastore/user';
+import { STORE_NAME as coreUserStoreName } from '../../assets/js/googlesitekit/datastore/user/constants';
+import coreFormsStore from '../../assets/js/googlesitekit/datastore/forms';
+import { STORE_NAME as coreFormsStoreName } from '../../assets/js/googlesitekit/datastore/forms/constants'
+import coreModulesStore from '../../assets/js/googlesitekit/modules/datastore';
+import { STORE_NAME as coreModulesStoreName } from '../../assets/js/googlesitekit/modules/datastore/constants';
+import coreWidgetsStore from '../../assets/js/googlesitekit/widgets/datastore';
+import { STORE_NAME as coreWidgetsStoreName } from '../../assets/js/googlesitekit/widgets/datastore/constants';
+import modulesAdSenseStore from '../../assets/js/modules/adsense/datastore';
+import { STORE_NAME as modulesAdSenseStoreName } from '../../assets/js/modules/adsense/datastore/constants';
+import modulesAnalyticsStore from '../../assets/js/modules/analytics/datastore';
+import { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore/constants';
+import modulesPageSpeedInsightsStore from '../../assets/js/modules/pagespeed-insights/datastore';
+import { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore/constants';
+import modulesSearchConsoleStore from '../../assets/js/modules/search-console/datastore';
+import { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore/constants';
+import modulesTagManagerStore from '../../assets/js/modules/tagmanager/datastore';
+import { STORE_NAME as modulesTagManagerStoreName } from '../../assets/js/modules/tagmanager/datastore/constants';
+import modulesOptimizeStore from '../../assets/js/modules/optimize/datastore';
+import { STORE_NAME as modulesOptimizeStoreName } from '../../assets/js/modules/optimize/datastore/constants';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
 
 /**
