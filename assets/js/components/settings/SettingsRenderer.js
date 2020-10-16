@@ -27,14 +27,14 @@ import { useEffect } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
-const nullComponent = () => null;
+const NullComponent = () => null;
 
 export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 	const storeName = `modules/${ slug }`;
 	const isDoingSubmitChanges = useSelect( ( select ) => select( storeName )?.isDoingSubmitChanges?.() );
 	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() );
-	const SettingsEdit = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug )?.settingsEditComponent ) || nullComponent;
-	const SettingsView = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug )?.settingsViewComponent ) || nullComponent;
+	const SettingsEdit = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug )?.settingsEditComponent ) || NullComponent;
+	const SettingsView = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug )?.settingsViewComponent ) || NullComponent;
 
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
 	const { rollbackSettings } = useDispatch( storeName ) || {};
