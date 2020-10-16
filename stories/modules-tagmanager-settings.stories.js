@@ -69,7 +69,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 			useSnippet: true,
 		} );
 
-		return <Settings isOpen={ true } registry={ registry } />;
+		return <Settings isOpen registry={ registry } />;
 	} )
 	.add( 'View, open with all settings, with existing tag (with access)', ( registry ) => {
 		const accountID = '123456789';
@@ -83,7 +83,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-G000GL3' } );
 
-		return <Settings isOpen={ true } registry={ registry } />;
+		return <Settings isOpen registry={ registry } />;
 	} )
 	.add( 'View, open with all settings, with existing tag (no access)', ( registry ) => {
 		const accountID = '123456789';
@@ -97,13 +97,13 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: false }, { containerID: 'GTM-G000GL3' } );
 
-		return <Settings isOpen={ true } registry={ registry } />;
+		return <Settings isOpen registry={ registry } />;
 	} )
 	.add( 'Edit, Loading', ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings isOpen isEditing registry={ registry } />;
 	} )
 	.add( 'Edit, with all settings', ( registry ) => {
 		// eslint-disable-next-line sitekit/camelcase-acronyms
@@ -118,20 +118,20 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings isOpen isEditing registry={ registry } />;
 	} )
 	.add( 'Edit, with no accounts', ( registry ) => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings isOpen isEditing registry={ registry } />;
 	} )
 	.add( 'Edit, with "Set up a new account"', ( registry ) => {
 		registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings isOpen isEditing registry={ registry } />;
 	} )
 	.add( 'Edit, with "Set up a new container"', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -140,7 +140,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings isOpen isEditing registry={ registry } />;
 	} )
 	.add( 'Edit, with all settings, with existing tag (with access)', ( registry ) => {
 		// eslint-disable-next-line sitekit/camelcase-acronyms
@@ -157,7 +157,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-G000GL3' } );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings isOpen isEditing registry={ registry } />;
 	} )
 	.add( 'Edit, with all settings, with existing tag (no access)', ( registry ) => {
 		// eslint-disable-next-line sitekit/camelcase-acronyms
@@ -174,7 +174,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-GXXXGL3' );
 		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: false }, { containerID: 'GTM-GXXXGL3' } );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings isOpen isEditing registry={ registry } />;
 	} )
 ;
 
@@ -200,7 +200,7 @@ storiesOf( 'Tag Manager Module/Settings/Primary AMP', module )
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings isOpen isEditing registry={ registry } />;
 	} )
 ;
 
@@ -231,7 +231,7 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		// eslint-disable-next-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings isOpen isEditing registry={ registry } />;
 	} )
 	.add( 'Edit, with "Set up a new container"', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
@@ -240,6 +240,6 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
 
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
+		return <Settings isOpen isEditing registry={ registry } />;
 	} )
 ;
