@@ -77,7 +77,7 @@ class Link extends Component {
 
 				{ external && (
 					<span className="screen-reader-text">
-						{ _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' ) }
+						{ ' ' }{ _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' ) }
 					</span>
 				) }
 			</SemanticLink>
