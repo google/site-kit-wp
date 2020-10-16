@@ -26,7 +26,7 @@ import invariant from 'invariant';
 /**
  * WordPress dependencies
  */
-import { WPElement } from '@wordpress/element';
+import { WPComponent } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,7 +37,6 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-import DefaultModuleSettings from '../components/DefaultModuleSettings';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -58,7 +57,8 @@ const moduleDefaults = {
 	dependants: [],
 	order: 10,
 	icon: null,
-	settingsComponent: DefaultModuleSettings,
+	settingsEditComponent: null,
+	settingsViewComponent: null,
 };
 
 const normalizeModules = memize(
@@ -212,15 +212,17 @@ const baseActions = {
 	 * Registers a module.
 	 *
 	 * @since 1.13.0
+	 * @since n.e.x.t Replaced `settingsComponent` with `settingsEditComponent` and `settingsViewComponent`.
 	 *
-	 * @param {string}    slug                         Module slug.
-	 * @param {Object}    [settings]                   Optional. Module settings.
-	 * @param {string}    [settings.name]              Optional. Module name. Default is the slug.
-	 * @param {string}    [settings.description]       Optional. Module description. Default empty string.
-	 * @param {string}    [settings.icon]              Optional. Module icon. Default empty string.
-	 * @param {number}    [settings.order]             Optional. Numeric indicator for module order. Default 10.
-	 * @param {string}    [settings.homepage]          Optional. Module homepage URL. Default empty string.
-	 * @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
+	 * @param {string}      slug                             Module slug.
+	 * @param {Object}      [settings]                       Optional. Module settings.
+	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
+	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
+	 * @param {string}      [settings.icon]                  Optional. Module icon. Default empty string.
+	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
+	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
+	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel.
+	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel.
 	 * @return {Object} Redux-style action.
 	 */
 	registerModule( slug, {
@@ -229,7 +231,8 @@ const baseActions = {
 		icon,
 		order,
 		homepage,
-		settingsComponent = DefaultModuleSettings,
+		settingsEditComponent,
+		settingsViewComponent,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
@@ -239,7 +242,8 @@ const baseActions = {
 			icon,
 			order,
 			homepage,
-			settingsComponent,
+			settingsEditComponent,
+			settingsViewComponent,
 		};
 
 		return {
