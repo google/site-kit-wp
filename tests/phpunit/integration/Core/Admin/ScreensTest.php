@@ -99,29 +99,88 @@ class ScreensTest extends TestCase {
 		$this->assertNotEmpty( ob_get_clean() );
 	}
 
-	public function test_menu_order() {
-		$menu_order = array(
-			'index.php',
-			'third-party-plugin',
-			'edit.php',
-			'options-general.php',
-			'googlesitekit-dashboard',
-		);
 
+	public function data_menu_order() {
+		return array(
+			'typical plugin scenario'             => array(
+				array(
+					'index.php',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+					'googlesitekit-dashboard',
+				),
+				array(
+					'index.php',
+					'googlesitekit-dashboard',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+				),
+			),
+			'different plugin slug'               => array(
+				array(
+					'index.php',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+					'googlesitekit-dashboard-splash',
+				),
+				array(
+					'index.php',
+					'googlesitekit-dashboard-splash',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+				),
+			),
+			'custom menu item before Dashboard'   => array(
+				array(
+					'third-party-host',
+					'index.php',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+					'googlesitekit-dashboard',
+				),
+				array(
+					'third-party-host',
+					'index.php',
+					'googlesitekit-dashboard',
+					'third-party-plugin',
+					'edit.php',
+					'options-general.php',
+				),
+			),
+			'edge case: dashboard after Site Kit' => array(
+				array(
+					'googlesitekit-dashboard',
+					'third-party-plugin',
+					'index.php',
+					'edit.php',
+					'options-general.php',
+				),
+				array(
+					'third-party-plugin',
+					'index.php',
+					'googlesitekit-dashboard',
+					'edit.php',
+					'options-general.php',
+				),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_menu_order
+	 */
+	public function test_menu_order( $given_menu_order, $expected_order ) {
 		$this->screens->register();
 
 		// Imitate WordPress core running these filters.
 		if ( apply_filters( 'custom_menu_order', false ) ) {
-			$menu_order = apply_filters( 'menu_order', $menu_order );
+			$menu_order = apply_filters( 'menu_order', $given_menu_order );
 		}
-
-		$expected_order = array(
-			'index.php',
-			'googlesitekit-dashboard',
-			'third-party-plugin',
-			'edit.php',
-			'options-general.php',
-		);
 
 		$this->assertEquals( $expected_order, $menu_order );
 	}

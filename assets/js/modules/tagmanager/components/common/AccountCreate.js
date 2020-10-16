@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/link';
 import Button from '../../../../components/button';
 import ProgressBar from '../../../../components/progress-bar';
@@ -56,7 +56,7 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			<StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
 
 			<p>
 				{ __( 'To create a new account, click the button below which will open the Google Tag Manager account creation screen in a new window.', 'google-site-kit' ) }
