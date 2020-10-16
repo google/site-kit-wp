@@ -206,11 +206,11 @@ const {
 		const gtmAnalyticsPropertyID = strictSelect( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 		invariant(
 			! isValidPropertyID( gtmAnalyticsPropertyID ) || hasTagPermission( gtmAnalyticsPropertyID ) !== false,
-			INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS
+			INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS
 		);
 	}
 
-	invariant( haveSettingsChanged(), INVARIANT_DONT_HAVE_SETTINGS_CHANGED );
+	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 	invariant( isValidAccountID( getAccountID() ), INVARIANT_INVALID_ACCOUNT_ID );
 	invariant( isValidPropertySelection( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
 	invariant( isValidProfileSelection( getProfileID() ), INVARIANT_INVALID_PROFILE_SELECTION );
@@ -227,7 +227,7 @@ const {
 	);
 
 	// Do existing tag check last.
-	invariant( hasExistingTagPermission() !== false, INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSIONS );
+	invariant( hasExistingTagPermission() !== false, INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
 } );
 
 export default {

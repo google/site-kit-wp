@@ -37,9 +37,9 @@ import { createCacheKey } from '../../../googlesitekit/api';
 import fetchMock from 'fetch-mock';
 import { parseLiveContainerVersionIDs, createBuildAndReceivers } from './__factories__/utils';
 import {
-	INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSION,
-	INVARIANT_GTM_AND_ANALYTICS_PROPERTY_IDS_DONT_MATCH,
-	INVARIANT_HAVE_MULTIPLE_ANALYTICS_PROPERTY_IDS,
+	INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION,
+	INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH,
+	INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS,
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_AMP_CONTAINER_SELECTION,
 	INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID,
@@ -392,7 +392,7 @@ describe( 'modules/tagmanager settings', () => {
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-						.toThrow( INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSION );
+						.toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'supports creating a web container', () => {
@@ -427,7 +427,7 @@ describe( 'modules/tagmanager settings', () => {
 					// Non-matching property IDs
 					registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-99999-9' );
 					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-						.toThrow( INVARIANT_GTM_AND_ANALYTICS_PROPERTY_IDS_DONT_MATCH );
+						.toThrow( INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 				} );
 			} );
@@ -497,7 +497,7 @@ describe( 'modules/tagmanager settings', () => {
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-						.toThrow( INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSION );
+						.toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'does not support creating an account', () => {
@@ -528,7 +528,7 @@ describe( 'modules/tagmanager settings', () => {
 					// Non-matching property IDs
 					registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-99999-9' );
 					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-						.toThrow( INVARIANT_GTM_AND_ANALYTICS_PROPERTY_IDS_DONT_MATCH );
+						.toThrow( INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 				} );
 			} );
@@ -638,7 +638,7 @@ describe( 'modules/tagmanager settings', () => {
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-						.toThrow( INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSION );
+						.toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'does not support creating an account', () => {
@@ -661,7 +661,7 @@ describe( 'modules/tagmanager settings', () => {
 					// Non-matching property IDs
 					buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-99' } );
 					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-						.toThrow( INVARIANT_HAVE_MULTIPLE_ANALYTICS_PROPERTY_IDS );
+						.toThrow( INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS );
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 				} );
 
@@ -687,7 +687,7 @@ describe( 'modules/tagmanager settings', () => {
 					// Non-matching property IDs
 					registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-99999-9' );
 					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-						.toThrow( INVARIANT_GTM_AND_ANALYTICS_PROPERTY_IDS_DONT_MATCH );
+						.toThrow( INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 				} );
 			} );

@@ -375,8 +375,8 @@ const {
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
-	invariant( haveSettingsChanged(), INVARIANT_DONT_HAVE_SETTINGS_CHANGED );
-	invariant( getAccountStatus(), INVARIANT_DONT_HAVE_ACCOUNT_STATUS );
+	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	invariant( getAccountStatus(), INVARIANT_MISSING_ACCOUNT_STATUS );
 
 	const accountID = getAccountID();
 	invariant( '' === accountID || isValidAccountID( accountID ), INVARIANT_INVALID_ACCOUNT_ID );

@@ -35,8 +35,8 @@ import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
 import {
-	INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSIONS,
-	INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS,
+	INVARIANT_INSUFFICIENT_TAG_PERMISSIONS,
+	INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS,
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_PROFILE_NAME,
 	INVARIANT_INVALID_PROFILE_SELECTION,
@@ -417,7 +417,7 @@ describe( 'modules/analytics settings', () => {
 				buildAndReceiveWebAndAMP( data );
 
 				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-					.toThrow( INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS );
+					.toThrow( INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS );
 
 				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID: data.accountID,
@@ -433,7 +433,7 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setPropertyID( PROPERTY_CREATE );
 
 				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-					.not.toThrow( INVARIANT_DONT_HAVE_GTM_TAG_PERMISSIONS );
+					.not.toThrow( INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS );
 				expect( console ).toHaveWarned();
 			} );
 
@@ -461,7 +461,7 @@ describe( 'modules/analytics settings', () => {
 				expect( registry.select( STORE_NAME ).hasTagPermission( existingTag.propertyID ) ).toBe( false );
 
 				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-					.toThrow( INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSIONS );
+					.toThrow( INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
 			} );
 
 			it( 'supports creating a property', () => {

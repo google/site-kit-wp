@@ -28,7 +28,8 @@ import {
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import {
-	INVARIANT_INVALID_AMP_EXPIREMENT_JSON, INVARIANT_INVALID_OPTIMIZE_ID,
+	INVARIANT_INVALID_AMP_EXPERIMENT_JSON,
+	INVARIANT_INVALID_OPTIMIZE_ID,
 } from './settings';
 
 describe( 'modules/optimize settings', () => {
@@ -142,7 +143,7 @@ describe( 'modules/optimize settings', () => {
 
 				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 10 );
 				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-					.toThrow( INVARIANT_INVALID_AMP_EXPIREMENT_JSON );
+					.toThrow( INVARIANT_INVALID_AMP_EXPERIMENT_JSON );
 
 				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( null );
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );

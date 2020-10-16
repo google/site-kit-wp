@@ -156,10 +156,10 @@ const {
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
-	invariant( haveSettingsChanged(), INVARIANT_DONT_HAVE_SETTINGS_CHANGED );
+	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 
 	const ampExperimentJSON = getAMPExperimentJSON();
-	invariant( isValidAMPExperimentJSON( ampExperimentJSON ), INVARIANT_INVALID_AMP_EXPIREMENT_JSON );
+	invariant( isValidAMPExperimentJSON( ampExperimentJSON ), INVARIANT_INVALID_AMP_EXPERIMENT_JSON );
 
 	const optimizeID = getOptimizeID();
 	invariant( '' === optimizeID || isValidOptimizeID( optimizeID ), INVARIANT_INVALID_OPTIMIZE_ID );

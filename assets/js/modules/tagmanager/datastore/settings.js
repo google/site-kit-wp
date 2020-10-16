@@ -212,7 +212,7 @@ const {
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
-	invariant( haveSettingsChanged(), INVARIANT_DONT_HAVE_SETTINGS_CHANGED );
+	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 	invariant( isValidAccountID( getAccountID() ), INVARIANT_INVALID_ACCOUNT_ID );
 
 	if ( isAMP() ) {
@@ -233,15 +233,15 @@ const {
 		}
 	}
 
-	invariant( ! hasMultipleAnalyticsPropertyIDs(), INVARIANT_HAVE_MULTIPLE_ANALYTICS_PROPERTY_IDS );
+	invariant( ! hasMultipleAnalyticsPropertyIDs(), INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS );
 
 	if ( isModuleActive( 'analytics' ) && getPropertyID() && hasAnyAnalyticsPropertyID() ) {
-		invariant( getSingleAnalyticsPropertyID() === getPropertyID(), INVARIANT_GTM_AND_ANALYTICS_PROPERTY_IDS_DONT_MATCH );
+		invariant( getSingleAnalyticsPropertyID() === getPropertyID(), INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
 	}
 
 	// Do existing tag check last.
 	if ( hasExistingTag() ) {
-		invariant( hasExistingTagPermission(), INVARIANT_DONT_HAVE_EXISTING_TAG_PERMISSION );
+		invariant( hasExistingTagPermission(), INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 	}
 } );
 
