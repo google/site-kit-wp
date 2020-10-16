@@ -30,6 +30,7 @@ import {
 	resetSiteKit,
 	setSearchConsoleProperty,
 	setupSiteKit,
+	useRequestInterception,
 } from '../utils';
 
 async function toggleOptIn() {
@@ -128,6 +129,16 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 } );
 
 describe( 'initialization on load for Site Kit screens', () => {
+	beforeAll( async () => {
+		await page.setRequestInterception( true );
+		useRequestInterception( ( request ) => {
+			if ( request.url().match( '/google-site-kit/v1/data/' ) ) {
+				request.respond( { status: 200 } );
+			} else {
+				request.continue();
+			}
+		} );
+	} );
 	describe( 'splash page', () => {
 		afterEach( async () => await resetSiteKit() );
 
@@ -177,7 +188,6 @@ describe( 'initialization on load for Site Kit screens', () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 			await expect( page ).not.toHaveTracking();
-			expect( console ).toHaveWarned();
 		} );
 
 		it( 'loads tracking when opted-in', async () => {
@@ -186,7 +196,6 @@ describe( 'initialization on load for Site Kit screens', () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 			await expect( page ).toHaveTracking();
-			expect( console ).toHaveWarned();
 		} );
 	} );
 
@@ -202,7 +211,6 @@ describe( 'initialization on load for Site Kit screens', () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
 
 			await expect( page ).not.toHaveTracking();
-			expect( console ).toHaveWarned();
 		} );
 
 		it( 'loads tracking when opted-in', async () => {
@@ -211,7 +219,6 @@ describe( 'initialization on load for Site Kit screens', () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
 
 			await expect( page ).toHaveTracking();
-			expect( console ).toHaveWarned();
 		} );
 	} );
 } );
