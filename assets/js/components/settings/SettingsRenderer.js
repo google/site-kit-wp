@@ -31,15 +31,15 @@ const nullComponent = () => null;
 
 export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 	const storeName = `modules/${ slug }`;
-	const isDoingSubmitChanges = useSelect( ( select ) => select( storeName ).isDoingSubmitChanges() );
-	const haveSettingsChanged = useSelect( ( select ) => select( storeName ).haveSettingsChanged() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( storeName )?.isDoingSubmitChanges?.() );
+	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() );
 	const SettingsEdit = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug )?.settingsEditComponent ) || nullComponent;
 	const SettingsView = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug )?.settingsViewComponent ) || nullComponent;
 
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
-	const { rollbackSettings } = useDispatch( storeName );
+	const { rollbackSettings } = useDispatch( storeName ) || {};
 	useEffect( () => {
-		if ( haveSettingsChanged && ! isDoingSubmitChanges && ! isEditing ) {
+		if ( rollbackSettings && haveSettingsChanged && ! isDoingSubmitChanges && ! isEditing ) {
 			rollbackSettings();
 		}
 	}, [ haveSettingsChanged, isDoingSubmitChanges, isEditing ] );
