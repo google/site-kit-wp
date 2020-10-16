@@ -17,18 +17,17 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
 
 /**
  * Internal dependencies
  */
+import './datastore';
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import './datastore';
-import { fillFilterWithComponent } from '../../util';
-import { SettingsMain as SearchConsolesSettings } from './components/settings';
+import { SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
@@ -38,32 +37,16 @@ import {
 	AREA_PAGE_DASHBOARD_POPULARITY,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
-
-/**
- * WordPress dependencies
- */
-import { addFilter } from '@wordpress/hooks';
-
-function ConnectedSearchConsoleSettings( props ) {
-	return (
-		<Data.RegistryProvider value={ Data }>
-			<SearchConsolesSettings { ...props } />
-		</Data.RegistryProvider>
-	);
-}
-
-/**
- * Add components to the settings page.
- */
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-search-console',
-	'googlesitekit.SearchConsoleModuleSettingsDetails',
-	fillFilterWithComponent( ConnectedSearchConsoleSettings, {
-		onSettingsPage: true,
-	} )
-);
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 domReady( () => {
+	Data.dispatch( CORE_MODULES ).registerModule(
+		'search-console',
+		{
+			settingsViewComponent: SettingsView,
+		}
+	);
+
 	Widgets.registerWidget(
 		'searchConsoleImpressions',
 		{
