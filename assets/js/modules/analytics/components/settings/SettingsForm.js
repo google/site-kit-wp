@@ -31,7 +31,7 @@ import {
 	ProfileNameTextField,
 	ExistingGTMPropertyNotice,
 } from '../common';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
@@ -40,8 +40,7 @@ export default function SettingsForm() {
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
-			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
-
+			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 

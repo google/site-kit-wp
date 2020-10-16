@@ -33,7 +33,7 @@ import {
 	ExistingTagError,
 	ExistingTagNotice,
 } from '../common';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -50,7 +50,7 @@ export default function SettingsView() {
 		<Fragment>
 
 			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } /> }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 

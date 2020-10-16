@@ -37,6 +37,11 @@ export function getInsufficientPermissionsErrorDescription( error, module ) {
 		owner = null,
 	} = module || {};
 
+	// If no module data provided, it is impossible to provide a more clear message.
+	if ( ! slug || ! name ) {
+		return error;
+	}
+
 	let message = '';
 	let userInfo = '';
 
