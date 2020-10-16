@@ -176,8 +176,8 @@ storiesOf( 'AdSense Module', module )
 				<Layout
 					header
 					title={ __( 'Performance over the last 28 days', 'google-site-kit' ) }
-					headerCtaLabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
-					headerCtaLink="#"
+					headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
+					headerCTALink="#"
 				>
 					<AdSensePerformanceWidget />
 				</Layout>

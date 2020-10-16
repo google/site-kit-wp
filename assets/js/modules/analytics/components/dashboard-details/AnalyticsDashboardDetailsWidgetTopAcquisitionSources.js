@@ -62,8 +62,8 @@ export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
 				<Layout
 					className="googlesitekit-analytics-acquisition-sources"
 					footer
-					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCtaLink={ serviceURL }
+					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					footerCTALink={ serviceURL }
 				>
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
