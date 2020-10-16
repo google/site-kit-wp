@@ -26,13 +26,16 @@ import domReady from '@wordpress/dom-ready';
  * Internal dependencies
  */
 import './datastore';
+import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain } from './components/setup';
 import {
-	SettingsMain,
+	SettingsEdit,
 	SettingsSetupIncomplete,
+	SettingsView,
 } from './components/settings';
 import { AdBlockerWarning } from './components/common';
 import {
@@ -45,12 +48,6 @@ addFilter(
 	'googlesitekit.ModuleSetup-adsense',
 	'googlesitekit.AdSenseModuleSetup',
 	fillFilterWithComponent( SetupMain )
-);
-
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-adsense',
-	'googlesitekit.AdSenseModuleSettings',
-	fillFilterWithComponent( SettingsMain )
 );
 
 addFilter(
@@ -88,6 +85,14 @@ addFilter(
 );
 
 domReady( () => {
+	Data.dispatch( CORE_MODULES ).registerModule(
+		'adsense',
+		{
+			settingsEditComponent: SettingsEdit,
+			settingsViewComponent: SettingsView,
+		}
+	);
+
 	Widgets.registerWidget(
 		'adsenseSummary',
 		{
