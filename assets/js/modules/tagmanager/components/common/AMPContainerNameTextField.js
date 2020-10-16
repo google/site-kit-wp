@@ -39,7 +39,7 @@ export default function AMPContainerNameTextField() {
 	} );
 
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
-	const ampContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ) );
+	const initialAMPContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ), [] );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
