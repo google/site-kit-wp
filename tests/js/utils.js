@@ -18,7 +18,7 @@ import { STORE_NAME as coreSiteStoreName } from '../../assets/js/googlesitekit/d
 import coreUserStore from '../../assets/js/googlesitekit/datastore/user';
 import { STORE_NAME as coreUserStoreName } from '../../assets/js/googlesitekit/datastore/user/constants';
 import coreFormsStore from '../../assets/js/googlesitekit/datastore/forms';
-import { STORE_NAME as coreFormsStoreName } from '../../assets/js/googlesitekit/datastore/forms/constants'
+import { STORE_NAME as coreFormsStoreName } from '../../assets/js/googlesitekit/datastore/forms/constants';
 import coreModulesStore from '../../assets/js/googlesitekit/modules/datastore';
 import { STORE_NAME as coreModulesStoreName } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import coreWidgetsStore from '../../assets/js/googlesitekit/widgets/datastore';
