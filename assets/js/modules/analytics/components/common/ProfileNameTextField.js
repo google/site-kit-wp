@@ -26,7 +26,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms';
+import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { TextField, HelperText, Input } from '../../../../material-components';
 import { STORE_NAME, PROFILE_CREATE, FORM_SETUP } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;

@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore';
+import { STORE_NAME } from '../datastore/constants';
 import Widget from './Widget';
 
 const { useSelect } = Data;
