@@ -24,69 +24,61 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Component, createRef } from '@wordpress/element';
+import { useRef, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
 import { MDCRipple } from '../material-components';
 
-class Button extends Component {
-	constructor( props ) {
-		super( props );
-		this.buttonRef = createRef();
-	}
+const Button = ( {
+	children,
+	href,
+	text,
+	className,
+	danger,
+	disabled,
+	target,
+	icon,
+	trailingIcon,
+	ariaHaspopup,
+	ariaExpanded,
+	ariaControls,
+	...extraProps
+} ) => {
+	const buttonRef = useRef( null );
+	useEffect( () => {
+		new MDCRipple( buttonRef.current );
+	} );
 
-	componentDidMount() {
-		new MDCRipple( this.buttonRef.current );
-	}
+	// Use a button if disabled, even if a href is provided to ensure expected behavior.
+	const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
 
-	render() {
-		const {
-			children,
-			href,
-			text,
-			className,
-			danger,
-			disabled,
-			target,
-			icon,
-			trailingIcon,
-			ariaHaspopup,
-			ariaExpanded,
-			ariaControls,
-			...extraProps
-		} = this.props;
-
-		// Use a button if disabled, even if a href is provided to ensure expected behavior.
-		const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
-
-		return (
-			<SemanticButton
-				className={ classnames(
-					'mdc-button',
-					className,
-					{
-						'mdc-button--raised': ! text,
-						'mdc-button--danger': danger,
-					}
-				) }
-				href={ disabled ? undefined : href }
-				ref={ this.buttonRef }
-				disabled={ !! disabled }
-				target={ target || '_self' }
-				aria-haspopup={ ariaHaspopup }
-				aria-expanded={ ariaExpanded }
-				aria-controls={ ariaControls }
-				role={ 'a' === SemanticButton ? 'button' : undefined }
-				{ ...extraProps }
-			>
-				{ icon }
-				<span className="mdc-button__label">{ children }</span>
-				{ trailingIcon }
-			</SemanticButton>
-		);
-	}
-}
+	return (
+		<SemanticButton
+			className={ classnames(
+				'mdc-button',
+				className,
+				{
+					'mdc-button--raised': ! text,
+					'mdc-button--danger': danger,
+				}
+			) }
+			href={ disabled ? undefined : href }
+			ref={ buttonRef }
+			disabled={ !! disabled }
+			target={ target || '_self' }
+			aria-haspopup={ ariaHaspopup }
+			aria-expanded={ ariaExpanded }
+			aria-controls={ ariaControls }
+			role={ 'a' === SemanticButton ? 'button' : undefined }
+			{ ...extraProps }
+		>
+			{ icon }
+			<span className="mdc-button__label">{ children }</span>
+			{ trailingIcon }
+		</SemanticButton>
+	);
+};
 
 Button.propTypes = {
 	onClick: PropTypes.func,

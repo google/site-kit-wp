@@ -26,81 +26,73 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { withInstanceId } from '@wordpress/compose';
-import { Component, Fragment, createRef } from '@wordpress/element';
+import { Fragment, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { MDCSwitch } from '../material-components';
 
-class Switch extends Component {
-	constructor( props ) {
-		super( props );
-		this.switchRef = createRef();
-	}
+const Switch = ( {
+	// eslint-disable-next-line sitekit/camelcase-acronyms
+	id = `googlesitekit-switch-${ this.props.instanceId }`,
+	onClick,
+	label,
+	checked,
+	disabled,
+	hideLabel,
+} ) => {
+	const switchRef = useRef( null );
+	useEffect( () => {
+		new MDCSwitch( switchRef.current );
+	} );
 
-	componentDidMount() {
-		new MDCSwitch( this.switchRef.current );
-	}
+	const onKeyPress = ( event ) => {
+		if ( typeof onClick === 'function' && event.code === 'Enter' ) {
+			onClick( event );
+		}
+	};
 
-	render() {
-		const {
-			// eslint-disable-next-line sitekit/camelcase-acronyms
-			id = `googlesitekit-switch-${ this.props.instanceId }`,
-			onClick,
-			label,
-			checked,
-			disabled,
-			hideLabel,
-		} = this.props;
-
-		const onKeyPress = ( event ) => {
-			if ( typeof onClick === 'function' && event.code === 'Enter' ) {
-				onClick( event );
-			}
-		};
-
-		return (
-			<Fragment>
-				<div
-					aria-checked={ checked ? 'true' : 'false' }
-					className={ classnames(
-						'mdc-switch',
-						{
-							'mdc-switch--checked': checked,
-							'mdc-switch--disabled': disabled,
-						}
-					) }
-					onClick={ onClick }
-					onKeyPress={ onKeyPress }
-					role="switch"
-					ref={ this.switchRef }
-					tabIndex={ 0 }
-				>
-					<div className="mdc-switch__track">&nbsp;</div>
-					<div className="mdc-switch__thumb-underlay">
-						<div className="mdc-switch__thumb">
-							<input
-								type="checkbox"
-								id={ id }
-								className="mdc-switch__native-control"
-								role="switch"
-								checked={ checked }
-								disabled={ disabled }
-								onChange={ () => {} }
-							/>
-						</div>
+	return (
+		<Fragment>
+			<div
+				aria-checked={ checked ? 'true' : 'false' }
+				className={ classnames(
+					'mdc-switch',
+					{
+						'mdc-switch--checked': checked,
+						'mdc-switch--disabled': disabled,
+					}
+				) }
+				onClick={ onClick }
+				onKeyPress={ onKeyPress }
+				role="switch"
+				ref={ switchRef }
+				tabIndex={ 0 }
+			>
+				<div className="mdc-switch__track">&nbsp;</div>
+				<div className="mdc-switch__thumb-underlay">
+					<div className="mdc-switch__thumb">
+						<input
+							type="checkbox"
+							id={ id }
+							className="mdc-switch__native-control"
+							role="switch"
+							checked={ checked }
+							disabled={ disabled }
+							onChange={ () => {} }
+						/>
 					</div>
 				</div>
-				<label
-					className={ classnames( { 'screen-reader-only': hideLabel } ) }
-					htmlFor={ id }>
-					{ label }
-				</label>
-			</Fragment>
-		);
-	}
-}
+			</div>
+			<label
+				className={ classnames( { 'screen-reader-only': hideLabel } ) }
+				htmlFor={ id }>
+				{ label }
+			</label>
+		</Fragment>
+	);
+};
 
 Switch.propTypes = {
 	id: PropTypes.string,
