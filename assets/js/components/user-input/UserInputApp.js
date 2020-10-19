@@ -22,7 +22,7 @@
 import { __ } from '@wordpress/i18n';
 
 export default function UserInputApp() {
-	if ( ! featureFlags.widgets.userInput.enabled ) {
+	if ( ! featureFlags.userInput.enabled ) {
 		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;
 	}
 
