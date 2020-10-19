@@ -282,6 +282,7 @@ describe( 'googlesitekit.api', () => {
 				3600
 			);
 		} );
+
 		it( 'should add tracking info to the data layer when an error is returned on get', async () => {
 			let pushArgs;
 			const dataLayer = {
