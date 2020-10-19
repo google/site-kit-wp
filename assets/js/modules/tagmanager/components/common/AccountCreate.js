@@ -31,7 +31,7 @@ import Link from '../../../../components/link';
 import Button from '../../../../components/button';
 import ProgressBar from '../../../../components/progress-bar';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreate() {

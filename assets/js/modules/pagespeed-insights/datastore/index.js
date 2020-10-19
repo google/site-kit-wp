@@ -25,8 +25,6 @@ import report from './report';
 import service from './service';
 import { STORE_NAME } from './constants';
 
-export { STORE_NAME };
-
 const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
 	storeName: STORE_NAME,
 	requiresSetup: false,

@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import Switch from '../../../../components/switch';
 import SettingsNotice from '../../../../components/settings-notice';
 import { trackEvent } from '../../../../util';
-import { STORE_NAME } from '../../datastore';
+import { STORE_NAME } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch( props ) {
