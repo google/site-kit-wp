@@ -19,28 +19,19 @@
 /**
  * WordPress dependencies
  */
-import { Component, createPortal } from '@wordpress/element';
 
-export default class Modal extends Component {
-	constructor( props ) {
-		super( props );
-		this.el = document.createElement( 'div' );
-		// This class is the outermost wrapper which is present on all Site Kit pages.
-		this.root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
-	}
+import { createPortal, useEffect } from '@wordpress/element';
 
-	componentDidMount() {
-		this.root.appendChild( this.el );
-	}
+export default function Modal( props ) {
+	const el = document.createElement( 'div' );
+	const root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
 
-	componentWillUnmount() {
-		this.root.removeChild( this.el );
-	}
+	useEffect( () => {
+		root.appendChild( el );
+		return () => {
+			root.removeChild( el );
+		};
+	}, [] );
 
-	render() {
-		return createPortal(
-			this.props.children,
-			this.el,
-		);
-	}
+	return createPortal( props.children, this.el );
 }
