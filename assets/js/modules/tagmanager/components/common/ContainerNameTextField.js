@@ -54,7 +54,7 @@ export default function ContainerNameTextField( { label, name } ) {
 		: undefined;
 
 	const trailingIcon = helperText
-		? <span className="googlesitekit-text-field-icon--warning" />
+		? <span className="googlesitekit-text-field-icon--error" />
 		: undefined;
 
 	return (
