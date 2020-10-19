@@ -27,7 +27,8 @@ import { storiesOf } from '@storybook/react';
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { SettingsMain as TagManagerSettings } from '../assets/js/modules/tagmanager/components/settings';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
-import { STORE_NAME, ACCOUNT_CREATE } from '../assets/js/modules/tagmanager/datastore/constants';
+import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, FORM_SETUP } from '../assets/js/modules/tagmanager/datastore/constants';
+import { STORE_NAME as CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, provideModules, freezeFetch } from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
@@ -138,7 +139,23 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.web, { accountID } );
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
+		registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+
+		return <Settings isOpen isEditing registry={ registry } />;
+	} )
+	.add( 'Edit, with non-unique new container', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.web, { accountID } );
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
+		registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { containerName: fixtures.getContainers.web[ 0 ].name } );
 
 		return <Settings isOpen isEditing registry={ registry } />;
 	} )
@@ -238,7 +255,30 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
+		registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+		registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
+		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+
+		return <Settings isOpen isEditing registry={ registry } />;
+	} )
+	.add( 'Edit, with non-unique new containers', ( registry ) => {
+		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
+		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+
+		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
+		registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+		registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
+		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+			containerName: fixtures.getContainers.web[ 0 ].name,
+			ampContainerName: fixtures.getContainers.amp[ 0 ].name,
+		} );
 
 		return <Settings isOpen isEditing registry={ registry } />;
 	} )

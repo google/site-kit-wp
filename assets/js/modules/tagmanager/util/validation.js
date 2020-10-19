@@ -99,7 +99,9 @@ export function isValidContainerName( containerName ) {
  */
 export function isUniqueContainerName( containerName, containers ) {
 	const normalizedContainerName = getNormalizedContainerName( containerName );
-	return ! Array.isArray( containers ) || ! containers.some( ( { name } ) => name === normalizedContainerName );
+	return ! Array.isArray( containers ) || ! containers.some(
+		( { name } ) => getNormalizedContainerName( name ) === normalizedContainerName,
+	);
 }
 
 /**

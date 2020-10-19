@@ -704,6 +704,7 @@ describe( 'modules/tagmanager settings', () => {
 				it( 'supports creating an AMP container and a web container', () => {
 					const { account, containers } = buildAccountWithContainers( {
 						container: { usageContext: [ CONTEXT_WEB, CONTEXT_AMP ] },
+						count: 2,
 					} );
 					const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 
@@ -714,6 +715,24 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
 					registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+
+					// Creating a web container requires a unique container name.
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						containerName: containers[ 0 ].name,
+						ampContainerName: 'Sitekit AMP',
+					} );
+
+					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+
+					// Creating an AMP container requires a unique container name.
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+						containerName: 'Sitekit',
+						ampContainerName: containers[ 1 ].name,
+					} );
+
+					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+
+					// Creating containers with unique names.
 					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
 						containerName: 'Sitekit',
 						ampContainerName: 'Sitekit AMP',
