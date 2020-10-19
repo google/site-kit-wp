@@ -25,12 +25,11 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import DashboardPageSpeedWidget from '../assets/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget';
-import { STORE_NAME } from '../assets/js/modules/pagespeed-insights/datastore/constants';
+import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../assets/js/googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';
-import { STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
 import { WithTestRegistry, freezeFetch } from '../tests/js/utils';
 
 storiesOf( 'PageSpeed Insights Module/Components', module )
