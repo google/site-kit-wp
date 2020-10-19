@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { ACCOUNT_CREATE, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from '../datastore/constants';
+import { getNormalizedContainerName } from './container';
 
 /**
  * Checks the given value to see if it is a positive integer.
@@ -73,31 +74,6 @@ export function isValidAccountSelection( value ) {
  */
 export function isValidContainerID( containerID ) {
 	return typeof containerID === 'string' && /^GTM-[A-Z0-9]+$/.test( containerID );
-}
-
-/**
- * Gets normalized container name.
- *
- * @since n.e.x.t
- *
- * @param {string} containerName Container name to normalize.
- * @return {string} Normalized container name.
- */
-export function getNormalizedContainerName( containerName ) {
-	let sanitizedContainerName = containerName;
-
-	// Remove any leading or trailing whitespace.
-	sanitizedContainerName = sanitizedContainerName.trim();
-	// Must not start with an underscore.
-	sanitizedContainerName = sanitizedContainerName.replace( /^_+/, '' );
-	// Convert accents to basic characters to prevent them from being stripped.
-	sanitizedContainerName = sanitizedContainerName.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' );
-	// Strip all non-simple characters.
-	sanitizedContainerName = sanitizedContainerName.replace( /[^a-zA-Z0-9_., -]/g, '' );
-	// Collapse multiple whitespaces.
-	sanitizedContainerName = sanitizedContainerName.replace( /\s+/g, ' ' );
-
-	return sanitizedContainerName;
 }
 
 /**

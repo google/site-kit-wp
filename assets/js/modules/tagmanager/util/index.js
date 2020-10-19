@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export * from './container';
 export * from './validation';
 export { default as getContainers } from './get-containers';
 export { default as tagMatchers } from './tag-matchers';
