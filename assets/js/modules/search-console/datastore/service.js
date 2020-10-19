@@ -25,6 +25,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 const { createRegistrySelector } = Data;
 
@@ -52,6 +53,12 @@ export const selectors = {
 			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryArgs );
 		}
 		return addQueryArgs( baseURI, queryArgs );
+	} ),
+
+	isDomainProperty: createRegistrySelector( ( select ) => () => {
+		const domain = select( STORE_NAME ).getPropertyID();
+
+		return domain && domain.startsWith( 'sc-domain:' );
 	} ),
 };
 

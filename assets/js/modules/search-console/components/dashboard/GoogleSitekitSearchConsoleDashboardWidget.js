@@ -47,6 +47,7 @@ import { getCurrentDateRange, getCurrentDateRangeDayCount } from '../../../../ut
 import HelpLink from '../../../../components/help-link';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const { useSelect } = Data;
 
@@ -58,13 +59,23 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	const [ loading, setLoading ] = useState( true );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	let referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	if ( referenceSiteURL.endsWith( '/' ) ) {
+		// remove the trailing slash
+		referenceSiteURL = referenceSiteURL.slice( 0, -1 );
+	}
+	const searchConsoleDeepArgs = {
+		resource_id: propertyID,
+		num_of_days: getCurrentDateRangeDayCount(),
+	};
+	if ( isDomainProperty ) {
+		searchConsoleDeepArgs.page = `*${ referenceSiteURL }`;
+	}
 	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{
 			path: '/performance/search-analytics',
-			query: {
-				resource_id: propertyID,
-				num_of_days: getCurrentDateRangeDayCount(),
-			},
+			query: searchConsoleDeepArgs,
 		} ) );
 
 	/**

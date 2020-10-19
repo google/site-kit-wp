@@ -38,12 +38,20 @@ const { useSelect } = Data;
 const DashboardDetailsWidgetKeywordsTable = () => {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	let referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	if ( referenceSiteURL.endsWith( '/' ) ) {
+		// remove the trailing slash
+		referenceSiteURL = referenceSiteURL.slice( 0, -1 );
+	}
 	const footerCTALinkArgs = {
 		resource_id: propertyID,
 		num_of_days: getCurrentDateRangeDayCount(),
 	};
 	if ( url ) {
 		footerCTALinkArgs.page = `!${ url }`;
+	} else if ( isDomainProperty ) {
+		footerCTALinkArgs.page = `*${ referenceSiteURL }`;
 	}
 	const footerCTALink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
 		path: '/performance/search-analytics',
