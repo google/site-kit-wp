@@ -27,9 +27,8 @@ import {
 	TrackingExclusionSwitches,
 } from '../assets/js/modules/analytics/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
-
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
-import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
+import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 
 function SetupWrap( { children } ) {
 	return (

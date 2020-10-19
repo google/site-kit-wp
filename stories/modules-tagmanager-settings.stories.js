@@ -146,7 +146,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 
 		return <Settings isOpen isEditing registry={ registry } />;
 	} )
-	.add( 'Edit, with non-unique new container', ( registry ) => {
+	.add( 'Edit, with a non-unique new container', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 
@@ -264,7 +264,7 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 
 		return <Settings isOpen isEditing registry={ registry } />;
 	} )
-	.add( 'Edit, with non-unique new containers', ( registry ) => {
+	.add( 'Edit, with a non-unique new containers', ( registry ) => {
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 

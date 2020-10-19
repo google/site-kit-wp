@@ -22,8 +22,8 @@
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
-import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
-import { STORE_NAME as ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore';
+import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
+import { STORE_NAME as ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore/constants';
 import {
 	dashboardSummaryWidgetTodayData,
 	dashboardSummaryWidgetPeriodData,
