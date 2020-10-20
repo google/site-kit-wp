@@ -21,7 +21,8 @@ const viewports = require( './viewports' );
 
 // If run from the host, detect the proper target host and set the hostname arg.
 // This will be passed through with the `backstop` command run with docker.
-if ( process.argv.includes( '--docker' ) ) {
+const hasStorybookHostArg = process.argv.some( ( arg ) => arg.startsWith( '--storybook-host' ) );
+if ( process.argv.includes( '--docker' ) && ! hasStorybookHostArg ) {
 	const hostname = require( './detect-storybook-host' );
 	process.argv.push( `--storybook-host=http://${ hostname }:9001/` );
 }
@@ -33,8 +34,9 @@ module.exports = {
 	debug: false,
 	debugWindow: false,
 	// Use a custom command template to make sure it works correctly in the GitHub actions environment.
-	// The only difference between the original dockerCommandTemplate and this one is that there is no -t flag in the current template.
-	dockerCommandTemplate: `docker run --rm -i${ process.stdout.isTTY ? 't' : '' } --mount type=bind,source="{cwd}",target=/src backstopjs/backstopjs:{version} {backstopCommand} {args}`,
+	// The only difference between the original dockerCommandTemplate and this one is that we use --tty flag
+	// in the current template only if it is supported by the current STDOUT stream.
+	dockerCommandTemplate: `docker run --rm -i${ process.stdout.isTTY ? ' --tty' : '' } --mount type=bind,source="{cwd}",target=/src backstopjs/backstopjs:{version} {backstopCommand} {args}`,
 	engine: 'puppeteer',
 	engineOptions: {
 		args: [ '--no-sandbox' ],
