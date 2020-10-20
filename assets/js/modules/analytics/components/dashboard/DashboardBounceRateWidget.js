@@ -33,7 +33,8 @@ import PreviewBlock from '../../../../components/preview-block';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/sparkline';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
-import { getSiteKitAdminURL, changeToPercent } from '../../../../util';
+import { changeToPercent } from '../../../../util';
+import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
@@ -45,8 +46,14 @@ function DashboardBounceRateWidget() {
 		data,
 		error,
 		loading,
+		serviceURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
+
+		const accountID = store.getAccountID();
+		const profileID = store.getProfileID();
+		const internalWebPropertyID = store.getInternalWebPropertyID();
+
 		const args = {
 			dateRange: select( CORE_USER ).getDateRange(),
 			multiDateRange: 1,
@@ -63,11 +70,15 @@ function DashboardBounceRateWidget() {
 		if ( url ) {
 			args.url = url;
 		}
-
 		return {
-			loading: store.isResolving( 'getReport', [ args ] ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			data: store.getReport( args ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			loading: store.isResolving( 'getReport', [ args ] ),
+			serviceURL: store.getServiceURL(
+				{
+					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
+				}
+			),
 		};
 	} );
 
@@ -119,7 +130,8 @@ function DashboardBounceRateWidget() {
 			invertChangeColor
 			source={ {
 				name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
-				link: getSiteKitAdminURL( 'googlesitekit-module-analytics', {} ),
+				link: serviceURL,
+				external: true,
 			} }
 			sparkline={
 				sparkLineData &&

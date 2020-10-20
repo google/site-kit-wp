@@ -1,5 +1,5 @@
 /**
- * StoreErrorNotice component.
+ * StoreErrorNotices component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -25,37 +25,37 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ErrorNotice from './ErrorNotice';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { isPermissionScopeError, isInsufficientPermissionsError } from '../util/errors';
+import { isInsufficientPermissionsError } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
-import ErrorText from '../components/error-text';
 const { useSelect } = Data;
 
-function StoreErrorNotice( { moduleSlug, storeName, shouldDisplayError } ) {
-	const error = useSelect( ( select ) => select( storeName ).getError() );
+export default function StoreErrorNotices( { moduleSlug, storeName, shouldDisplayError } ) {
+	const errors = useSelect( ( select ) => select( storeName ).getErrors() );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
-	// Do not display if no error, or if the error is for missing scopes.
-	if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
-		return null;
-	}
-
-	let message = error.message;
-	if ( isInsufficientPermissionsError( error ) ) {
-		message = getInsufficientPermissionsErrorDescription( message, module );
-	}
-
-	return <ErrorText message={ message } reconnectURL={ error.data?.reconnectURL } />;
+	return errors
+		.map( ( error ) => {
+			if ( isInsufficientPermissionsError( error ) ) {
+				error = {
+					...error,
+					message: getInsufficientPermissionsErrorDescription( error.message, module ),
+				};
+			}
+			return error;
+		} )
+		.map( ( error, key ) => (
+			<ErrorNotice
+				key={ key }
+				error={ error }
+				shouldDisplayError={ shouldDisplayError }
+			/>
+		) );
 }
 
-StoreErrorNotice.propTypes = {
-	moduleSlug: PropTypes.string.isRequired,
+StoreErrorNotices.propTypes = {
 	storeName: PropTypes.string.isRequired,
 	shouldDisplayError: PropTypes.func,
+	moduleSlug: PropTypes.string,
 };
-
-StoreErrorNotice.defaultProps = {
-	shouldDisplayError: () => true,
-};
-
-export default StoreErrorNotice;

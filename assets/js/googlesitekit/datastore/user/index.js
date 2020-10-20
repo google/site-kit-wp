@@ -29,8 +29,6 @@ import permissions from './permissions';
 import userInfo from './user-info';
 import { STORE_NAME } from './constants';
 
-export { STORE_NAME };
-
 const store = Data.combineStores(
 	Data.commonStore,
 	authentication,

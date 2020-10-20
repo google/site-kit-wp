@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Link from '../../../../components/link';
 import { sanitizeHTML } from '../../../../util/sanitize';
-import { ErrorNotice } from '../common';
+import { ErrorNotices } from '../common';
 
 export default function SetupAccountNoClient() {
 	return (
@@ -36,7 +36,7 @@ export default function SetupAccountNoClient() {
 				{ __( 'Looks like you have an AdMob account', 'google-site-kit' ) }
 			</h3>
 
-			<ErrorNotice />
+			<ErrorNotices />
 
 			<p>
 				{ __( 'To start using AdSense, you need to update your account so that you can connect your site to AdSense.', 'google-site-kit' ) }
