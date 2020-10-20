@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -21,6 +22,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\User_Input_Settings;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -62,6 +64,24 @@ final class Authentication {
 	 * @var User_Options
 	 */
 	private $user_options = null;
+
+	/**
+	 * User_Input_State object.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var User_Input_State
+	 */
+	private $user_input_state = null;
+
+	/**
+	 * User_Input_Settings
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var User_Input_Settings
+	 */
+	private $user_input_settings = null;
 
 	/**
 	 * Transients object.
@@ -188,6 +208,8 @@ final class Authentication {
 		$this->options              = $options ?: new Options( $this->context );
 		$this->user_options         = $user_options ?: new User_Options( $this->context );
 		$this->transients           = $transients ?: new Transients( $this->context );
+		$this->user_input_state     = new User_Input_State( $this->user_options );
+		$this->user_input_settings  = new User_Input_Settings( $context );
 		$this->google_proxy         = new Google_Proxy( $this->context );
 		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
 		$this->verification         = new Verification( $this->user_options );
@@ -214,6 +236,7 @@ final class Authentication {
 		$this->owner_id->register();
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
+		$this->user_input_state->register();
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
