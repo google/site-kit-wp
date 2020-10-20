@@ -209,7 +209,7 @@ final class Authentication {
 		$this->user_options         = $user_options ?: new User_Options( $this->context );
 		$this->transients           = $transients ?: new Transients( $this->context );
 		$this->user_input_state     = new User_Input_State( $this->user_options );
-		$this->user_input_settings  = new User_Input_Settings( $context );
+		$this->user_input_settings  = new User_Input_Settings( $context, $this, $transients );
 		$this->google_proxy         = new Google_Proxy( $this->context );
 		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
 		$this->verification         = new Verification( $this->user_options );
