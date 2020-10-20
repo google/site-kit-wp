@@ -34,15 +34,41 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function ProfileSelect() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
-	const hasResolvedProperties = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ accountID ] ) );
-	const { profiles, hasResolvedProfiles } = useSelect( ( select ) => ( {
-		profiles: select( STORE_NAME ).getProfiles( accountID, propertyID ),
-		hasResolvedProfiles: select( STORE_NAME ).hasFinishedResolution( 'getProfiles', [ accountID, propertyID ] ),
-	} ) );
+
+	const {
+		accountID,
+		propertyID,
+		profiles,
+		hasStartedFetchingProperties,
+		hasResolvedProperties,
+		hasStartedFetchingProfiles,
+		hasResolvedProfiles,
+	} = useSelect( ( select ) => {
+		const data = {
+			accountID: select( STORE_NAME ).getAccountID(),
+			propertyID: select( STORE_NAME ).getPropertyID(),
+			profiles: [],
+			hasStartedFetchingProperties: false,
+			hasResolvedProperties: false,
+			hasStartedFetchingProfiles: false,
+			hasResolvedProfiles: false,
+		};
+
+		if ( data.accountID ) {
+			data.hasStartedFetchingProperties = select( STORE_NAME ).hasStartedResolution( 'getProperties', [ data.accountID ] );
+			data.hasResolvedProperties = select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ data.accountID ] );
+
+			if ( data.propertyID ) {
+				data.profiles = select( STORE_NAME ).getProfiles( data.accountID, data.propertyID );
+				data.hasStartedFetchingProfiles = select( STORE_NAME ).hasStartedResolution( 'getProfiles', [ data.accountID, data.propertyID ] );
+				data.hasResolvedProfiles = select( STORE_NAME ).hasFinishedResolution( 'getProfiles', [ data.accountID, data.propertyID ] );
+			}
+		}
+
+		return data;
+	} );
 
 	const { setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -53,7 +79,7 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID ] );
 
-	if ( ! hasResolvedAccounts || ! hasResolvedProperties || ! hasResolvedProfiles ) {
+	if ( ! hasResolvedAccounts || ( hasStartedFetchingProperties && ! hasResolvedProperties ) || ( hasStartedFetchingProfiles && ! hasResolvedProfiles ) ) {
 		return <ProgressBar small />;
 	}
 
