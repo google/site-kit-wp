@@ -25,8 +25,6 @@ import { STORE_NAME } from './constants';
 import settings from './settings';
 import service from './service';
 
-export { STORE_NAME };
-
 let baseModuleStore = Modules.createModuleStore( 'optimize', {
 	storeName: STORE_NAME,
 	settingSlugs: [
