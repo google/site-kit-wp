@@ -25,7 +25,7 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { WithTestRegistry } from '../tests/js/utils';
-import { STORE_NAME } from '../assets/js/modules/tagmanager/datastore';
+import { STORE_NAME } from '../assets/js/modules/tagmanager/datastore/constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 import AccountSelect from '../assets/js/modules/tagmanager/components/common/AccountSelect';
