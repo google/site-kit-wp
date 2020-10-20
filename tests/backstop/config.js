@@ -23,7 +23,7 @@ const viewports = require( './viewports' );
 // This will be passed through with the `backstop` command run with docker.
 if ( process.argv.includes( '--docker' ) ) {
 	const hostname = require( './detect-storybook-host' );
-	process.argv.push( `--storybook-host=${ hostname }` );
+	process.argv.push( `--storybook-host=http://${ hostname }:9001/` );
 }
 
 module.exports = {
@@ -34,7 +34,7 @@ module.exports = {
 	debugWindow: false,
 	// Use a custom command template to make sure it works correctly in the GitHub actions environment.
 	// The only difference between the original dockerCommandTemplate and this one is that there is no -t flag in the current template.
-	dockerCommandTemplate: 'docker run --rm -i --mount type=bind,source="{cwd}",target=/src backstopjs/backstopjs:{version} {backstopCommand} {args}',
+	dockerCommandTemplate: `docker run --rm -i${ process.stdout.isTTY ? 't' : '' } --mount type=bind,source="{cwd}",target=/src backstopjs/backstopjs:{version} {backstopCommand} {args}`,
 	engine: 'puppeteer',
 	engineOptions: {
 		args: [ '--no-sandbox' ],
@@ -51,6 +51,6 @@ module.exports = {
 	scenarios,
 	viewports,
 	readyEvent: 'backstopjs_ready',
-	misMatchThreshold: 0.05, // @todo change to 0, resolve SVG issue.
+	misMatchThreshold: 0,
 	delay: 1000, // Default delay to ensure components render complete.
 };
