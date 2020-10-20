@@ -37,15 +37,13 @@ function URLSearchWidget() {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
 
-	const detailsURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-			permaLink: match?.permalink,
-		} );
-	} );
+	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: match?.permalink } ) );
 
 	const onClick = useCallback( () => {
-		global.location.assign( detailsURL );
-	}, [ detailsURL ] );
+		if ( match?.permalink ) {
+			global.location.assign( detailsURL );
+		}
+	}, [ detailsURL, match ] );
 
 	return (
 		<div className="mdc-layout-grid__cell">

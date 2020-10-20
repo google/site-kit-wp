@@ -26,7 +26,7 @@ import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-a
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Dashboard', module )
 	.add( 'Module Header', () => (
@@ -100,15 +100,7 @@ storiesOf( 'Dashboard', module )
 		);
 	} )
 	.add( 'URL Search Widget', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				usingProxy: true,
-				referenceSiteURL: 'http://example.com',
-				adminURL: 'http://example.com/wp-admin',
-				timezone: 'America/Detroit',
-				siteName: 'My Site Name',
-			} );
-		};
+		const setupRegistry = ( registry ) => provideSiteInfo( registry );
 
 		return (
 			<WithTestRegistry callback={ setupRegistry } >
