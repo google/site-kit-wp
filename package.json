@@ -19,7 +19,7 @@
     "watch": "npm run build:dev -- --watch",
     "release-zip": "npm run build && npm run zip",
     "test": "npm run build:production -- --display=none && bundlesize",
-    "pretest:visualtest": "npm run build:storybook --silent -- --loglevel warn",
+    "pretest:visualtest": "npm run build:storybook --silent -- --quiet --loglevel warn",
     "test:visualtest": "npm run backstopjs -- --storybook-host=./dist/",
     "test:visualapprove": "backstop approve --config=tests/backstop/config.js",
     "test:analyze": "npm run build:production -- --env.analyze=true --json --progress --profile > /tmp/stats.json && cp ./dist/assets/js/*.js /tmp && webpack-bundle-analyzer /tmp/stats.json",
