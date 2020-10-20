@@ -105,7 +105,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			data: {
 				reason: 'noAdSenseAccount',
 			},
-		}, 'getAccounts' );
+		}, 'getAccounts', [] );
 
 		return <Setup registry={ registry } />;
 	} )
@@ -120,7 +120,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			data: {
 				reason: 'noAdSenseAccount',
 			},
-		}, 'getAccounts' );
+		}, 'getAccounts', [] );
 
 		return <Setup registry={ registry } />;
 	} )
@@ -158,7 +158,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			data: {
 				reason: 'disapprovedAccount',
 			},
-		}, 'getAccounts' );
+		}, 'getAccounts', [] );
 
 		return <Setup registry={ registry } />;
 	} )
