@@ -25,76 +25,71 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { withInstanceId } from '@wordpress/compose';
-import { Component } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import GoogleChart from './google-chart';
 
-class Sparkline extends Component {
-	render() {
-		const {
-			data,
-			change,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
-			instanceId,
-			invertChangeColor,
-			loadSmall,
-			loadCompressed,
-			loadHeight,
-			loadText,
-		} = this.props;
-
-		if ( ! data ) {
-			return 'loading...';
-		}
-
-		const positiveColor = ! invertChangeColor ? 'green' : 'red';
-		const negativeColor = ! invertChangeColor ? 'red' : 'green';
-
-		const chartOptions = {
-			title: '',
-			backgroundColor: 'transparent',
-			curveType: 'line',
-			width: '100%',
-			height: '50',
-			enableInteractivity: false,
-			chartArea: {
-				height: '100%',
-				width: '100%',
-			},
-			legend: { position: 'none' },
-			axisFontSize: 0,
-			hAxis: {
-				baselineColor: 'none',
-				ticks: [],
-			},
-			vAxis: {
-				baselineColor: 'none',
-				ticks: [],
-			},
-			axes: [],
-			colors: [
-				0 <= ( parseFloat( change ) || 0 ) ? positiveColor : negativeColor,
-			],
-		};
-
-		return (
-			<div className="googlesitekit-analytics-sparkline-chart-wrap">
-				<GoogleChart
-					data={ data }
-					options={ chartOptions }
-					// eslint-disable-next-line sitekit/camelcase-acronyms
-					id={ `googlesitekit-sparkline-${ instanceId }` }
-					loadSmall={ loadSmall }
-					loadCompressed={ loadCompressed }
-					loadHeight={ loadHeight }
-					loadText={ loadText }
-				/>
-			</div>
-		);
+function Sparkline( {
+	data,
+	change,
+	// eslint-disable-next-line sitekit/camelcase-acronyms
+	instanceId,
+	invertChangeColor,
+	loadSmall,
+	loadCompressed,
+	loadHeight,
+	loadText,
+} ) {
+	if ( ! data ) {
+		return 'loading...';
 	}
+
+	const positiveColor = ! invertChangeColor ? 'green' : 'red';
+	const negativeColor = ! invertChangeColor ? 'red' : 'green';
+
+	const chartOptions = {
+		title: '',
+		backgroundColor: 'transparent',
+		curveType: 'line',
+		width: '100%',
+		height: '50',
+		enableInteractivity: false,
+		chartArea: {
+			height: '100%',
+			width: '100%',
+		},
+		legend: { position: 'none' },
+		axisFontSize: 0,
+		hAxis: {
+			baselineColor: 'none',
+			ticks: [],
+		},
+		vAxis: {
+			baselineColor: 'none',
+			ticks: [],
+		},
+		axes: [],
+		colors: [
+			0 <= ( parseFloat( change ) || 0 ) ? positiveColor : negativeColor,
+		],
+	};
+
+	return (
+		<div className="googlesitekit-analytics-sparkline-chart-wrap">
+			<GoogleChart
+				data={ data }
+				options={ chartOptions }
+				// eslint-disable-next-line sitekit/camelcase-acronyms
+				id={ `googlesitekit-sparkline-${ instanceId }` }
+				loadSmall={ loadSmall }
+				loadCompressed={ loadCompressed }
+				loadHeight={ loadHeight }
+				loadText={ loadText }
+			/>
+		</div>
+	);
 }
 
 Sparkline.propTypes = {

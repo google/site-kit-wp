@@ -22,41 +22,26 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-class PreviewBlock extends Component {
-	render() {
-		const {
-			width,
-			height,
-			shape,
-			padding,
-		} = this.props;
-
-		return (
-			<div
-				className={ classnames(
-					'googlesitekit-preview-block',
-					{ 'googlesitekit-preview-block--padding': padding }
-				) }
-				style={ {
-					width,
-					height,
-				} }
-			>
-				<div className={ classnames(
-					'googlesitekit-preview-block__wrapper',
-					{ 'googlesitekit-preview-block__wrapper--circle': shape === 'circular' }
-				) }>
-				</div>
+function PreviewBlock( { width, height, shape, padding } ) {
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-preview-block',
+				{ 'googlesitekit-preview-block--padding': padding }
+			) }
+			style={ {
+				width,
+				height,
+			} }
+		>
+			<div className={ classnames(
+				'googlesitekit-preview-block__wrapper',
+				{ 'googlesitekit-preview-block__wrapper--circle': shape === 'circular' }
+			) }>
 			</div>
-		);
-	}
+		</div>
+	);
 }
-
 PreviewBlock.propTypes = {
 	width: PropTypes.string,
 	height: PropTypes.string,

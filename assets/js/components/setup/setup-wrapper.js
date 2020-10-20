@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Header from '../header';
-import Link from '../link';
+import Link from '../Link';
 import HelpLink from '../help-link';
 import { getSiteKitAdminURL } from '../../util';
 

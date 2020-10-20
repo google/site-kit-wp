@@ -41,7 +41,7 @@ import {
 	userReportDataDefaults,
 	parseTotalUsersData,
 } from '../../util';
-import PreviewBlock from '../../../../components/preview-block';
+import PreviewBlock from '../../../../components/PreviewBlock';
 
 class AnalyticsAdminbarWidgetOverview extends Component {
 	constructor( props ) {
