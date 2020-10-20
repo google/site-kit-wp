@@ -182,20 +182,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'adsense-module--estimate-earnings',
-		kind: 'AdSense Module',
-		name: 'Estimate Earnings',
-		story: 'Estimate Earnings',
-		parameters: {
-			fileName: './stories/module-adsense.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-data-block',
-			},
-		},
-	},
-	{
 		id: 'adsense-module--performance',
 		kind: 'AdSense Module',
 		name: 'Performance',

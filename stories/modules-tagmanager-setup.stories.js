@@ -33,7 +33,7 @@ import { WithTestRegistry, createTestRegistry, freezeFetch } from '../tests/js/u
 import { fillFilterWithComponent } from '../assets/js/util';
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
 import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user';
+import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { SetupMain as TagManagerSetup } from '../assets/js/modules/tagmanager/components/setup';
 import { STORE_NAME, ACCOUNT_CREATE } from '../assets/js/modules/tagmanager/datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';

@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/link';
-import { STORE_NAME } from '../../datastore';
+import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function SiteSteps() {

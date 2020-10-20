@@ -37,6 +37,7 @@ import PreviewTable from '../../../../components/preview-table';
 import SourceLink from '../../../../components/source-link';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -46,7 +47,6 @@ function DashboardPopularKeywordsWidget() {
 		error,
 		loading,
 		baseServiceURL,
-		searchConsolePropertyMainURL,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const domain = store.getPropertyID();
@@ -58,7 +58,7 @@ function DashboardPopularKeywordsWidget() {
 
 		const baseServiceURLArgs = {
 			resource_id: domain,
-			num_of_days: 28,
+			num_of_days: getCurrentDateRangeDayCount(),
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
@@ -74,11 +74,6 @@ function DashboardPopularKeywordsWidget() {
 			baseServiceURL: store.getServiceURL( {
 				path: '/performance/search-analytics',
 				query: baseServiceURLArgs,
-			} ),
-			searchConsolePropertyMainURL: store.getServiceURL( {
-				query: {
-					resource_id: domain,
-				},
 			} ),
 		};
 	} );
@@ -137,7 +132,7 @@ function DashboardPopularKeywordsWidget() {
 				<SourceLink
 					className="googlesitekit-data-block__source"
 					name={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-					href={ searchConsolePropertyMainURL }
+					href={ baseServiceURL }
 					external
 				/>
 			) }

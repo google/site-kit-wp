@@ -35,7 +35,7 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
-import StoreErrorNotice from '../../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -134,7 +134,7 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
 
 			<h3 className="googlesitekit-heading-4">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }

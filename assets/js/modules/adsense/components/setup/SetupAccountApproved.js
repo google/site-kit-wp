@@ -31,7 +31,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
 import { ACCOUNT_STATUS_APPROVED } from '../../util/status';
 import {
-	ErrorNotice,
+	ErrorNotices,
 	UserProfile,
 	UseSnippetSwitch,
 } from '../common';
@@ -103,7 +103,7 @@ export default function SetupAccountApproved() {
 				}
 			</h3>
 
-			<ErrorNotice />
+			<ErrorNotices />
 
 			<p>
 				{ isApprovedFromVeryBeginning &&

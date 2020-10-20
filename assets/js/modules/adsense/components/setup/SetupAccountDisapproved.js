@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/link';
 import { STORE_NAME } from '../../datastore/constants';
-import { ErrorNotice } from '../common';
+import { ErrorNotices } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountDisapproved() {
@@ -44,7 +44,7 @@ export default function SetupAccountDisapproved() {
 				{ __( 'Your site isn’t ready to show ads yet', 'google-site-kit' ) }
 			</h3>
 
-			<ErrorNotice />
+			<ErrorNotices />
 
 			<p>
 				{ __( 'You need to fix some things before we can connect Site Kit to your AdSense account.', 'google-site-kit' ) }

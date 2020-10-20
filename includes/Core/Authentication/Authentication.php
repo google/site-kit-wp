@@ -392,6 +392,17 @@ final class Authentication {
 	}
 
 	/**
+	 * Gets the Google Proxy instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Proxy An instance of Google Proxy.
+	 */
+	public function get_google_proxy() {
+		return $this->google_proxy;
+	}
+
+	/**
 	 * Revokes authentication along with user options settings.
 	 *
 	 * @since 1.0.0

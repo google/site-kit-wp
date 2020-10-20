@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/progress-bar';
-import { STORE_NAME } from '../../datastore';
+import { STORE_NAME } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
