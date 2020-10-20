@@ -34,7 +34,7 @@ import { SetupMain as AdSenseSetup } from '../assets/js/modules/adsense/componen
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 
-import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
+import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 function filterAdSenseSetup() {
@@ -119,7 +119,7 @@ storiesOf( 'AdSense Module/Setup', module )
 				data: {
 					reason: 'noAdSenseAccount',
 				},
-			}, 'getAccounts' );
+			}, 'getAccounts', [] );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -138,7 +138,7 @@ storiesOf( 'AdSense Module/Setup', module )
 				data: {
 					reason: 'noAdSenseAccount',
 				},
-			}, 'getAccounts' );
+			}, 'getAccounts', [] );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -184,7 +184,7 @@ storiesOf( 'AdSense Module/Setup', module )
 				data: {
 					reason: 'disapprovedAccount',
 				},
-			}, 'getAccounts' );
+			}, 'getAccounts', [] );
 		};
 
 		return <Setup callback={ setupRegistry } />;
