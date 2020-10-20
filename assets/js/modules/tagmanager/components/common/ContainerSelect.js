@@ -43,16 +43,12 @@ export default function ContainerSelect( {
 	value,
 	...props
 } ) {
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( STORE_NAME ).getAccounts(),
-		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
-	} ) );
-
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const hasResolvedContainers = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] ) );
 
-	if ( accounts === undefined || ! hasResolvedAccounts || containers === undefined || ! hasResolvedContainers ) {
+	if ( ! hasResolvedAccounts || ! hasResolvedContainers ) {
 		return <ProgressBar small />;
 	}
 

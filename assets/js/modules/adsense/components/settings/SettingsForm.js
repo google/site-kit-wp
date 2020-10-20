@@ -36,8 +36,10 @@ const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const clientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const hasResolvedGetExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' ) );
+	const { existingTag, hasResolvedGetExistingTag } = useSelect( ( select ) => ( {
+		existingTag: select( STORE_NAME ).getExistingTag(),
+		hasResolvedGetExistingTag: select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' ),
+	} ) );
 
 	if ( ! hasResolvedGetExistingTag ) {
 		return <ProgressBar />;

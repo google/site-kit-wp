@@ -50,10 +50,10 @@ export default function PropertySelect() {
 		return data;
 	} );
 
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasGTMPropertyID = useSelect( ( select ) => !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
