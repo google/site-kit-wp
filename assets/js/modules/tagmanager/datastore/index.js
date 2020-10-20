@@ -30,8 +30,6 @@ import settings from './settings';
 import versions from './versions';
 import service from './service';
 
-export { STORE_NAME };
-
 let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 	storeName: STORE_NAME,
 	settingSlugs: [
