@@ -21,6 +21,7 @@
  */
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -35,27 +36,19 @@ const { useSelect, useDispatch } = Data;
 export default function AMPContainerNameTextField() {
 	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
-	const initialAMPContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ) );
 	const referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 
 	let ampContainerName = siteName;
-
-	if ( ! ampContainerName ) {
-		try {
-			const url = new URL( referenceSiteURL );
-			ampContainerName = url.hostname;
-		} catch {
-		}
+	if ( ! ampContainerName && isURL( referenceSiteURL ) ) {
+		ampContainerName = new URL( referenceSiteURL ).hostname;
 	}
 
 	ampContainerName += ' AMP';
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
-		if ( ! initialAMPContainerName ) {
-			setValues( FORM_SETUP, { ampContainerName } );
-		}
-	}, [ ampContainerName ] );
+		setValues( FORM_SETUP, { ampContainerName } );
+	}, [] );
 
 	if ( ampContainerID !== CONTAINER_CREATE ) {
 		return null;

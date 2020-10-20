@@ -44,6 +44,7 @@ import { createCacheKey } from '../../../googlesitekit/api';
 import fetchMock from 'fetch-mock';
 import { validateCanSubmitChanges } from './settings';
 import { parseLiveContainerVersionIDs, createBuildAndReceivers } from './__factories__/utils';
+import { getNormalizedContainerName } from '../util';
 
 describe( 'modules/tagmanager settings', () => {
 	let registry;
@@ -440,19 +441,25 @@ describe( 'modules/tagmanager settings', () => {
 						.toThrow( 'existing tag permission is required to submit changes' );
 				} );
 
-				it( 'supports creating a web container', () => {
-					const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
-					const { accountID } = buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-1' } );
+				it( 'should require a unique container name when creating a new web container', () => {
+					const { account, containers } = buildAccountWithContainers( {
+						container: { usageContext: [ CONTEXT_WEB ] },
+						count: 2,
+					} );
+					const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 
 					registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
 					registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
-					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
-						containerName: 'Sitekit',
-					} );
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { containerName: containers[ 0 ].name } );
 
+					const normalizedContainerName = getNormalizedContainerName( containers[ 0 ].name );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( `a container with "${ normalizedContainerName }" name already exists` );
+
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { containerName: 'SiteKit' } );
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 				} );
 
@@ -539,15 +546,24 @@ describe( 'modules/tagmanager settings', () => {
 					const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
 					const { accountID } = buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-1' } );
 
+					const { containers } = buildAccountWithContainers( {
+						account: { accountId: accountID }, // eslint-disable-line sitekit/camelcase-acronyms
+						container: { usageContext: [ CONTEXT_AMP ] },
+						count: 2,
+					} );
+
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 
 					registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
-					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
-						ampContainerName: 'Sitekit AMP',
-					} );
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { ampContainerName: containers[ 0 ].name } );
 
+					const normalizedContainerName = getNormalizedContainerName( containers[ 0 ].name );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( `an AMP container with "${ normalizedContainerName }" name already exists` );
+
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { ampContainerName: 'Sitekit AMP' } );
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 				} );
 
@@ -724,6 +740,10 @@ describe( 'modules/tagmanager settings', () => {
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 
+					const normalizedContainerName = getNormalizedContainerName( containers[ 0 ].name );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( `a container with "${ normalizedContainerName }" name already exists` );
+
 					// Creating an AMP container requires a unique container name.
 					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
 						containerName: 'Sitekit',
@@ -731,6 +751,10 @@ describe( 'modules/tagmanager settings', () => {
 					} );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+
+					const normalizedAMPContainerName = getNormalizedContainerName( containers[ 1 ].name );
+					expect( () => validateCanSubmitChanges( registry.select ) )
+						.toThrow( `an AMP container with "${ normalizedAMPContainerName }" name already exists` );
 
 					// Creating containers with unique names.
 					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {

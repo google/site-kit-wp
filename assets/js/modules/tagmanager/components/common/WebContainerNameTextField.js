@@ -21,6 +21,7 @@
  */
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -36,24 +37,17 @@ export default function WebContainerNameTextField() {
 	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
-	const initialContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' ) );
 	const referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 
 	let containerName = siteName;
-	if ( ! containerName ) {
-		try {
-			const url = new URL( referenceSiteURL );
-			containerName = url.hostname;
-		} catch {
-		}
+	if ( ! containerName && isURL( referenceSiteURL ) ) {
+		containerName = new URL( referenceSiteURL ).hostname;
 	}
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
-		if ( ! initialContainerName ) {
-			setValues( FORM_SETUP, { containerName } );
-		}
-	}, [ containerName ] );
+		setValues( FORM_SETUP, { containerName } );
+	}, [] );
 
 	if ( containerID !== CONTAINER_CREATE ) {
 		return null;

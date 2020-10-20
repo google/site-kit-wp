@@ -34,7 +34,7 @@ export default function ContainerNames() {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module__inputs">
+		<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
 			{ containerID === CONTAINER_CREATE && <WebContainerNameTextField /> }
 			{ ampContainerID === CONTAINER_CREATE && <AMPContainerNameTextField /> }
 		</div>
