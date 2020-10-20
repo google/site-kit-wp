@@ -77,7 +77,6 @@ function SetupUsingProxy() {
 
 	let title;
 	let description;
-	const startSetupText = __( 'Sign in with Google', 'google-site-kit' );
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
@@ -175,7 +174,7 @@ function SetupUsingProxy() {
 																		onClick={ onButtonClick }
 																		disabled={ ! complete }
 																	>
-																		{ startSetupText }
+																		{ __( 'Sign in with Google', 'google-site-kit' ) }
 																	</Button>
 																	{ inProgressFeedback }
 																	{ ! isSecondAdmin && isResettable && <ResetButton /> }
