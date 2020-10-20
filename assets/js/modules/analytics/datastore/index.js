@@ -33,8 +33,6 @@ import tags from './tags';
 import service from './service';
 import { STORE_NAME } from './constants';
 
-export { STORE_NAME };
-
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	storeName: STORE_NAME,
 	settingSlugs: [

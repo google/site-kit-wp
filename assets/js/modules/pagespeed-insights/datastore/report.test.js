@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
