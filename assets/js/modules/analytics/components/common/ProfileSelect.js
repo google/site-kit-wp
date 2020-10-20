@@ -53,7 +53,7 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID ] );
 
-	if ( ! hasResolvedAccounts || ( accountID && ! hasResolvedProperties ) || ! hasResolvedProfiles ) {
+	if ( ! hasResolvedAccounts || ! hasResolvedProperties || ! hasResolvedProfiles ) {
 		return <ProgressBar small />;
 	}
 

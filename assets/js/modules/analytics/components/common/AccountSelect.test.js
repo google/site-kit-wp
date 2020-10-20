@@ -27,10 +27,11 @@ import * as fixtures from '../../datastore/__fixtures__';
 
 const setupRegistry = ( registry ) => {
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+
+	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 };
 
 const setupLoadingRegistry = ( registry ) => {
@@ -40,12 +41,12 @@ const setupLoadingRegistry = ( registry ) => {
 };
 
 const setupEmptyRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-	registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+
+	registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
+	registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 };
 
 describe( 'AccountSelect', () => {
