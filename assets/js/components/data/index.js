@@ -58,6 +58,17 @@ const requestWithDateRange = ( originalRequest, dateRange ) => {
 	// Make copies for reference safety, ensuring data exists.
 	const request = { data: {}, ...originalRequest };
 	// Use the dateRange in request.data if passed, fallback to provided default value.
+
+	// Provide the prev-dateRange-days to allow withData to handle the queries for <AdSensePerformanceWidget /> - see #317.
+	if ( request.data.dateRange === 'prev-date-range-placeholder' ) {
+		const prevDateRange = dateRange.replace( 'last', 'prev' );
+		request.data = {
+			...request.data,
+			dateRange: prevDateRange,
+		};
+		return request;
+	}
+
 	request.data = { dateRange, ...request.data };
 
 	return request;

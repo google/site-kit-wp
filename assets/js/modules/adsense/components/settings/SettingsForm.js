@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
 import {
-	ErrorNotice,
+	ErrorNotices,
 	UseSnippetSwitch,
 } from '../common';
 const { useSelect } = Data;
@@ -57,7 +57,7 @@ export default function SettingsForm() {
 
 	return (
 		<div className="googlesitekit-adsense-settings-fields">
-			<ErrorNotice />
+			<ErrorNotices />
 
 			<UseSnippetSwitch
 				checkedMessage={ checkedMessage }
