@@ -23,9 +23,10 @@
  */
 import Data from 'googlesitekit-data';
 import { createModuleStore } from './create-module-store';
+import { STORE_NAME } from './datastore/constants';
 // This import has a side-effect: it automatically registers the "core/modules"
 // store on `googlesitekit.data`.
-import { STORE_NAME } from './datastore';
+import './datastore';
 
 const Modules = {
 	createModuleStore,

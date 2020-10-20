@@ -25,8 +25,6 @@ import { STORE_NAME } from './constants';
 import widgets from './widgets';
 import { createErrorStore } from '../../data/create-error-store';
 
-export { STORE_NAME };
-
 const store = Data.combineStores(
 	Data.commonStore,
 	areas,

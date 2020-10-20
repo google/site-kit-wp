@@ -50,6 +50,24 @@ export function getCurrentDateRange( dateRange = getCurrentDateRangeSlug() ) {
 }
 
 /**
+ * Gets the current dateRange day count.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} [dateRange] Optional. The date range slug.
+ * @return {number} The number of days in the range.
+ */
+export function getCurrentDateRangeDayCount( dateRange = getCurrentDateRangeSlug() ) {
+	const daysMatch = dateRange.match( /last-(\d+)-days/ );
+
+	if ( daysMatch && daysMatch[ 1 ] ) {
+		return parseInt( daysMatch[ 1 ], 10 );
+	}
+
+	throw new Error( 'Unrecognized date range slug.' );
+}
+
+/**
  * Gets the current dateRange slug.
  *
  * @since 1.8.0

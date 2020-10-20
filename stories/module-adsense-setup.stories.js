@@ -27,8 +27,7 @@ import { storiesOf } from '@storybook/react';
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
 import { SetupMain as AdSenseSetup } from '../assets/js/modules/adsense/components/setup/index';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
-
-import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
+import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { WithTestRegistry, createTestRegistry, provideModules } from '../tests/js/utils';
 

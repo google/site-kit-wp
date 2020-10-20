@@ -13,11 +13,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Layout from '../assets/js/components/layout/layout';
-import AdSenseEstimateEarningsWidget
-	from '../assets/js/modules/adsense/components/dashboard/AdSenseEstimateEarningsWidget';
 import AdSensePerformanceWidget from '../assets/js/modules/adsense/components/dashboard/AdSensePerformanceWidget';
 import DashboardZeroData from '../assets/js/modules/adsense/components/dashboard/DashboardZeroData';
-import { googlesitekit as adSenseData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-adsense-googlesitekit';
+import { googlesitekit as adSensePerformanceModuleData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-adsense-googlesitekitPerformanceModule';
 import {
 	AccountSelect,
 	UseSnippetSwitch,
@@ -27,7 +25,7 @@ import {
 } from '../assets/js/modules/adsense/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
-import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
+import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 
 function SetupWrap( { children } ) {
 	return (
@@ -162,37 +160,8 @@ storiesOf( 'AdSense Module', module )
 			</WithTestRegistry>
 		);
 	} )
-	.add( 'Estimate Earnings', () => {
-		global._googlesitekitLegacyData = adSenseData;
-
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Single'
-			);
-		}, 250 );
-
-		return (
-			<Layout
-				header
-				title={ __( 'Estimated earnings', 'google-site-kit' ) }
-				headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
-				headerCtaLink="#"
-			>
-				<AdSenseEstimateEarningsWidget
-					handleDataError={ () => {} }
-					handleDataSuccess={ () => {} }
-				/>
-			</Layout>
-		);
-	}, {
-		options: {
-			readySelector: '.googlesitekit-data-block',
-		},
-	} )
 	.add( 'Performance', () => {
-		global._googlesitekitLegacyData = adSenseData;
+		global._googlesitekitLegacyData = adSensePerformanceModuleData;
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -203,14 +172,16 @@ storiesOf( 'AdSense Module', module )
 		}, 250 );
 
 		return (
-			<Layout
-				header
-				title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
-				headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
-				headerCtaLink="#"
-			>
-				<AdSensePerformanceWidget />
-			</Layout>
+			<WithTestRegistry>
+				<Layout
+					header
+					title={ __( 'Performance over the last 28 days', 'google-site-kit' ) }
+					headerCtaLabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
+					headerCtaLink="#"
+				>
+					<AdSensePerformanceWidget />
+				</Layout>
+			</WithTestRegistry>
 		);
 	} )
 ;
