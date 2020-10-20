@@ -52,7 +52,7 @@ const fetchSaveUserInputSettingsStore = createFetchStore( {
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
-		invariant( isPlainObject( settings ), 'a valid settings are required.' );
+		invariant( isPlainObject( settings ), 'valid settings are required.' );
 	},
 } );
 
@@ -104,13 +104,18 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} settings User input settings.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*saveUserInputSettings( settings ) {
-		invariant( isPlainObject( settings ), 'a valid settings are required.' );
+	*saveUserInputSettings() {
+		const registry = yield Data.commonActions.getRegistry();
+		const settings = registry.select( STORE_NAME ).getUserInputSettings();
 
 		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( settings );
+		if ( error ) {
+			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
+			registry.dispatch( STORE_NAME ).receiveError( error, 'saveUserInputSettings' );
+		}
+
 		return { response, error };
 	},
 };
