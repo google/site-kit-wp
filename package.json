@@ -193,7 +193,6 @@
     "rimraf": "^3.0.2",
     "sanitize-filename": "^1.6.3",
     "sass-loader": "^9.0.2",
-    "start-server-and-test": "^1.11.2",
     "storybook-chrome-screenshot": "^1.4.0",
     "stylelint": "^13.6.1",
     "stylelint-config-wordpress": "^17.0.0",
