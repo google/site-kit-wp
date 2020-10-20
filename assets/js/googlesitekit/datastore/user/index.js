@@ -23,7 +23,7 @@ import Data from 'googlesitekit-data';
 import authentication from './authentication';
 import dateRange from './date-range';
 import disconnect from './disconnect';
-import inputSettings from './input-settings';
+import userInputSettings from './user-input-settings';
 import { createErrorStore } from '../../data/create-error-store';
 import notifications from './notifications';
 import permissions from './permissions';
@@ -39,7 +39,7 @@ const store = Data.combineStores(
 	notifications,
 	permissions,
 	userInfo,
-	inputSettings,
+	userInputSettings,
 );
 
 export const {

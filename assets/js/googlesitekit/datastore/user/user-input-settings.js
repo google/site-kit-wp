@@ -47,7 +47,7 @@ const fetchGetUserInputSettingsStore = createFetchStore( {
 } );
 
 const fetchSaveUserInputSettingsStore = createFetchStore( {
-	baseName: 'setUserInputSettings',
+	baseName: 'saveUserInputSettings',
 	controlCallback: ( settings ) => API.set( 'core', 'user', 'user-input-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
@@ -110,7 +110,7 @@ const baseActions = {
 	*saveUserInputSettings( settings ) {
 		invariant( isPlainObject( settings ), 'a valid settings are required.' );
 
-		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSetUserInputSettings( settings );
+		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( settings );
 		return { response, error };
 	},
 };
