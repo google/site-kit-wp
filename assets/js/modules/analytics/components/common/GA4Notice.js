@@ -24,20 +24,20 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SettingsNotice from '../../../../components/settings-notice';
+import SettingsNotice, { TYPE_INFO } from '../../../../components/settings-notice';
 import Link from '../../../../components/link';
 
 export default function GA4Notice() {
 	return (
-		<SettingsNotice>
-			{ __( 'Dummy info about new Analytics.', 'google-site-kit' ) }
+		<SettingsNotice type={ TYPE_INFO }>
+			{ __( 'Got a Google Analytics 4 (GA4) property and want to find out how to use it with Site Kit?', 'google-site-kit' ) }
 			{ ' ' }
 			<Link
-				href="https://sitekit.withgoogle.com/documentation/dummy-new-analytics/"
+				href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
 				external
 				inherit
 			>
-				{ __( 'Learn more about the new Analytics', 'google-site-kit' ) }
+				{ __( 'Learn more here.', 'google-site-kit' ) }
 			</Link>
 		</SettingsNotice>
 	);
