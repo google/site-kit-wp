@@ -94,7 +94,7 @@ async function makeRelease() {
 	const root = dirname( __dirname );
 	const releaseDir = resolve( root, 'release' );
 	const pluginDir = resolve( releaseDir, 'google-site-kit' );
-	const filename = generateFilename();
+	const filename = resolve( root, generateFilename() );
 
 	process.stdout.write( `Creating ${ filename }${ EOL }` );
 
