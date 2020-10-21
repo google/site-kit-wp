@@ -22,12 +22,16 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-export default function SettingsNotice( { children, isSuggestion } ) {
+export const TYPE_WARNING = 'warning';
+export const TYPE_INFO = 'info';
+export const TYPE_SUGGESTION = 'suggestion';
+
+export default function SettingsNotice( { children, type } ) {
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-settings-notice',
-				{ 'googlesitekit-settings-notice--suggestion': isSuggestion }
+				`googlesitekit-settings-notice--${ type }`
 			) }
 		>
 			<div className="googlesitekit-settings-notice__text">
@@ -39,5 +43,9 @@ export default function SettingsNotice( { children, isSuggestion } ) {
 
 SettingsNotice.propTypes = {
 	children: PropTypes.node.isRequired,
-	isSuggestion: PropTypes.bool,
+	type: PropTypes.string,
+};
+
+SettingsNotice.defaultProps = {
+	type: TYPE_WARNING,
 };
