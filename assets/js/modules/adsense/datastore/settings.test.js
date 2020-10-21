@@ -32,6 +32,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
+import { INVARIANT_INVALID_ACCOUNT_ID, INVARIANT_INVALID_CLIENT_ID } from './settings';
 
 describe( 'modules/adsense settings', () => {
 	let registry;
@@ -252,10 +253,12 @@ describe( 'modules/adsense settings', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 				registry.dispatch( STORE_NAME ).setAccountID( '0' );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 
 				registry.dispatch( STORE_NAME ).setAccountID( null );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 
 				// An empty string is accepted (for when no account can be determined).
 				registry.dispatch( STORE_NAME ).setAccountID( '' );
@@ -267,10 +270,12 @@ describe( 'modules/adsense settings', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 				registry.dispatch( STORE_NAME ).setClientID( '0' );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_CLIENT_ID );
 
 				registry.dispatch( STORE_NAME ).setClientID( null );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_CLIENT_ID );
 
 				// An empty string is accepted (for when no client can be determined).
 				registry.dispatch( STORE_NAME ).setClientID( '' );
