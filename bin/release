@@ -21,6 +21,7 @@
 /**
  * Node dependencies
  */
+const { EOL } = require( 'os' );
 const { resolve, dirname } = require( 'path' );
 
 /**
@@ -95,18 +96,27 @@ async function makeRelease() {
 	const pluginDir = resolve( releaseDir, 'google-site-kit' );
 	const filename = generateFilename();
 
-	const cp = ( what ) => fse.copy( resolve( root, what ), resolve( pluginDir, what ) );
+	process.stdout.write( `Creating ${ filename }${ EOL }` );
 
-	// Remove and re-create release directory.
-	await fse.remove( releaseDir );
+	const cp = ( path ) => fse.copy( resolve( root, path ), resolve( pluginDir, path ) );
+
+	// Remove release directory and release archive if it exists.
+	await Promise.all( [
+		fse.remove( releaseDir ),
+		fse.remove( filename ),
+	] );
+
+	// Create directory for release.
 	await fse.ensureDir( pluginDir );
 
 	// Copy files to the release directory.
-	await cp( 'readme.txt' );
-	await cp( 'google-site-kit.php' );
-	await cp( 'dist/assets' );
-	await cp( 'includes' );
-	await cp( 'third-party' );
+	await Promise.all( [
+		cp( 'readme.txt' ),
+		cp( 'google-site-kit.php' ),
+		cp( 'dist/assets' ),
+		cp( 'includes' ),
+		cp( 'third-party' ),
+	] );
 
 	// Archvie the release directory.
 	const archive = archiver( 'zip', { zlib: { level: 9 } } );
@@ -119,6 +129,6 @@ async function makeRelease() {
 }
 
 makeRelease().catch( ( error ) => {
-	process.stderr.write( `${ error }\n` );
+	process.stderr.write( `${ error }${ EOL }` );
 	process.exit( 1 );
 } );

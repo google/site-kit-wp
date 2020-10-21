@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { numberFormat, getTimeInSeconds, getModulesData } from '../../util';
 import { calculateOverviewData } from '../../modules/analytics/util';
-import sunSmall from '../../../images/sun-small.png';
+import sunSmallImage from '../../../images/sun-small.png';
 
 const pageviewIncrease = ( reports, id ) => {
 	const modulesData = getModulesData();
@@ -57,7 +57,7 @@ const pageviewIncrease = ( reports, id ) => {
 		description: __( 'Over the past 4 weeks', 'google-site-kit' ),
 		format: 'large',
 		logo: false,
-		winImage: global._googlesitekitLegacyData.admin.assetsRoot + sunSmall,
+		winImage: global._googlesitekitLegacyData.admin.assetsRoot + sunSmallImage,
 		blockData: [
 			{
 				title: __( 'Total Page Views', 'google-site-kit' ),

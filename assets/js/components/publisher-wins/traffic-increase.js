@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { getTimeInSeconds, readableLargeNumber, getModulesData, changeToPercent } from '../../util';
 import { parseTotalUsersData } from '../../../js/modules/analytics/util';
-import sun from '../../../images/sun.png';
+import sunImage from '../../../images/sun.png';
 
 const trafficIncrease = ( reports, id ) => {
 	const modulesData = getModulesData();
@@ -54,7 +54,7 @@ const trafficIncrease = ( reports, id ) => {
 		description: __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ),
 		dismiss: __( 'OK, Got it!', 'google-site-kit' ),
 		format: 'large',
-		winImage: global._googlesitekitLegacyData.admin.assetsRoot + sun,
+		winImage: global._googlesitekitLegacyData.admin.assetsRoot + sunImage,
 		blockData:
 			[
 				{
