@@ -23,6 +23,7 @@ const { default: iterateJsdoc } = require( 'eslint-plugin-jsdoc/dist/iterateJsdo
 
 module.exports = iterateJsdoc( ( {
 	context,
+	jsdoc,
 	jsdocNode,
 	utils,
 } ) => {
@@ -47,6 +48,18 @@ module.exports = iterateJsdoc( ( {
 	const checkTagOrder = ( { previousTag, tag, tagOrder } ) => {
 		const previousPositionInTagOrder = tagOrder.indexOf( previousTag );
 		const currentPositionInTagOrder = tagOrder.indexOf( tag );
+
+		if (
+			! jsdoc.source.match(
+				new RegExp( `@${ previousTag }.*\\n\\n@${ tag }`, 'gm' )
+			)
+		) {
+			context.report( {
+				data: { name: jsdocNode.name },
+				message: `The @${ previousTag } tag should not have a newline between it and the following @${ tag } tag.`,
+				node: jsdocNode,
+			} );
+		}
 
 		if ( previousPositionInTagOrder > currentPositionInTagOrder ) {
 			context.report( {
