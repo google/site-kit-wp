@@ -104,5 +104,6 @@ class Script extends Asset {
 	 */
 	public function enqueue() {
 		wp_enqueue_script( $this->handle );
+		wp_set_script_translations( $this->handle, 'google-site-kit' );
 	}
 }
