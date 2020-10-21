@@ -45,7 +45,7 @@ module.exports = iterateJsdoc( ( {
 
 	jsdoc.tags.forEach( ( tag ) => {
 		// Only check these tags for capitalization.
-		if ( ! [ 'param', 'return', 'returns' ].includes( tag.tag ) ) {
+		if ( ! [ 'param', 'return', 'returns', 'deprecated' ].includes( tag.tag ) ) {
 			return;
 		}
 
