@@ -42,9 +42,18 @@ import {
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import fetchMock from 'fetch-mock';
-import { validateCanSubmitChanges } from './settings';
 import { parseLiveContainerVersionIDs, createBuildAndReceivers } from './__factories__/utils';
 import { getNormalizedContainerName } from '../util';
+import {
+	INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION,
+	INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH,
+	INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS,
+	INVARIANT_INVALID_ACCOUNT_ID,
+	INVARIANT_INVALID_AMP_CONTAINER_SELECTION,
+	INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID,
+	INVARIANT_INVALID_CONTAINER_SELECTION,
+	INVARIANT_INVALID_INTERNAL_CONTAINER_ID,
+} from './settings';
 
 describe( 'modules/tagmanager settings', () => {
 	let registry;
@@ -404,8 +413,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid accountID is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 				} );
 
 				it( 'requires a valid containerID', () => {
@@ -414,8 +423,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid containerID selection is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_CONTAINER_SELECTION );
 				} );
 
 				it( 'requires a valid internal container ID', () => {
@@ -424,8 +433,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setInternalContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid internalContainerID is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_INTERNAL_CONTAINER_ID );
 				} );
 
 				it( 'requires permissions for an existing tag when present', () => {
@@ -437,8 +446,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).receiveGetTagPermission( { permission: false }, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'existing tag permission is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'should require a unique container name when creating a new web container', () => {
@@ -456,7 +465,7 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { containerName: containers[ 0 ].name } );
 
 					const normalizedContainerName = getNormalizedContainerName( containers[ 0 ].name );
-					expect( () => validateCanSubmitChanges( registry.select ) )
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 						.toThrow( `a container with "${ normalizedContainerName }" name already exists` );
 
 					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { containerName: 'SiteKit' } );
@@ -480,16 +489,16 @@ describe( 'modules/tagmanager settings', () => {
 					} );
 
 					// No property ID set in Analytics
-					validateCanSubmitChanges( registry.select );
+					registry.select( STORE_NAME ).__dangerousCanSubmitChanges();
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 					// Matching property ID in Analytics and GTM
 					registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-12345-1' );
-					validateCanSubmitChanges( registry.select );
+					registry.select( STORE_NAME ).__dangerousCanSubmitChanges();
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 					// Non-matching property IDs
 					registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-99999-9' );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'single GTM Analytics property ID must match Analytics property ID' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 				} );
 			} );
@@ -510,8 +519,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid accountID is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 				} );
 
 				it( 'requires a valid AMP containerID', () => {
@@ -524,8 +533,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setAMPContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid ampContainerID selection is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_AMP_CONTAINER_SELECTION );
 				} );
 
 				it( 'requires a valid internal AMP container ID', () => {
@@ -538,8 +547,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid internalAMPContainerID is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID );
 				} );
 
 				it( 'supports creating an AMP container', () => {
@@ -560,7 +569,7 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { ampContainerName: containers[ 0 ].name } );
 
 					const normalizedContainerName = getNormalizedContainerName( containers[ 0 ].name );
-					expect( () => validateCanSubmitChanges( registry.select ) )
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 						.toThrow( `an AMP container with "${ normalizedContainerName }" name already exists` );
 
 					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { ampContainerName: 'Sitekit AMP' } );
@@ -576,16 +585,16 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).receiveGetTagPermission( { permission: false }, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'existing tag permission is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'does not support creating an account', () => {
 					registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid accountID is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 				} );
 
 				it( 'requires Analytics propertyID setting to match the propertyID in the AMP container', () => {
@@ -599,16 +608,16 @@ describe( 'modules/tagmanager settings', () => {
 					} );
 
 					// No property ID set in Analytics
-					validateCanSubmitChanges( registry.select );
+					registry.select( STORE_NAME ).__dangerousCanSubmitChanges();
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 					// Matching property ID in Analytics and GTM
 					registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-12345-1' );
-					validateCanSubmitChanges( registry.select );
+					registry.select( STORE_NAME ).__dangerousCanSubmitChanges();
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 					// Non-matching property IDs
 					registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-99999-9' );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'single GTM Analytics property ID must match Analytics property ID' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 				} );
 			} );
@@ -641,8 +650,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid accountID is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 				} );
 
 				it( 'requires valid containerID', () => {
@@ -651,8 +660,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid containerID selection is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_CONTAINER_SELECTION );
 				} );
 
 				it( 'requires a valid AMP containerID', () => {
@@ -661,8 +670,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setAMPContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid ampContainerID selection is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_AMP_CONTAINER_SELECTION );
 				} );
 
 				it( 'requires a valid internal container ID', () => {
@@ -671,8 +680,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setInternalContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid internalContainerID is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_INTERNAL_CONTAINER_ID );
 				} );
 
 				it( 'requires a valid internal AMP container ID', () => {
@@ -681,8 +690,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '0' );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid internalAMPContainerID is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID );
 				} );
 
 				it( 'supports creating a web container', () => {
@@ -741,7 +750,7 @@ describe( 'modules/tagmanager settings', () => {
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 
 					const normalizedContainerName = getNormalizedContainerName( containers[ 0 ].name );
-					expect( () => validateCanSubmitChanges( registry.select ) )
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 						.toThrow( `a container with "${ normalizedContainerName }" name already exists` );
 
 					// Creating an AMP container requires a unique container name.
@@ -753,7 +762,7 @@ describe( 'modules/tagmanager settings', () => {
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 
 					const normalizedAMPContainerName = getNormalizedContainerName( containers[ 1 ].name );
-					expect( () => validateCanSubmitChanges( registry.select ) )
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 						.toThrow( `an AMP container with "${ normalizedAMPContainerName }" name already exists` );
 
 					// Creating containers with unique names.
@@ -774,16 +783,16 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( STORE_NAME ).receiveGetTagPermission( { permission: false }, { containerID: validSettings.containerID } );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'existing tag permission is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'does not support creating an account', () => {
 					registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
 
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'a valid accountID is required to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 				} );
 
 				it( 'requires both containers to reference the same propertyID when an Analytics tag is present', () => {
@@ -792,13 +801,13 @@ describe( 'modules/tagmanager settings', () => {
 
 					// Matching property IDs
 					buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-1' } );
-					validateCanSubmitChanges( registry.select );
+					registry.select( STORE_NAME ).__dangerousCanSubmitChanges();
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 					// Non-matching property IDs
 					buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-99' } );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'containers with Analytics tags must reference a single property ID to submit changes' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS );
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 				} );
 
@@ -815,16 +824,16 @@ describe( 'modules/tagmanager settings', () => {
 					// and results in a different validation error (see above).
 
 					// No property ID set in Analytics
-					validateCanSubmitChanges( registry.select );
+					registry.select( STORE_NAME ).__dangerousCanSubmitChanges();
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 					// Matching property ID in Analytics and GTM
 					registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-12345-1' );
-					validateCanSubmitChanges( registry.select );
+					registry.select( STORE_NAME ).__dangerousCanSubmitChanges();
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 					// Non-matching property IDs
 					registry.dispatch( MODULES_ANALYTICS ).setPropertyID( 'UA-99999-9' );
-					expect( () => validateCanSubmitChanges( registry.select ) )
-						.toThrow( 'single GTM Analytics property ID must match Analytics property ID' );
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 				} );
 			} );
