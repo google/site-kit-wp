@@ -32,8 +32,6 @@ import adblocker from './adblocker';
 import service from './service';
 import { STORE_NAME } from './constants';
 
-export { STORE_NAME };
-
 const baseModuleStore = Modules.createModuleStore( 'adsense', {
 	storeName: STORE_NAME,
 	settingSlugs: [

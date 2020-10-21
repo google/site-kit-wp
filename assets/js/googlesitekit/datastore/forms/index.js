@@ -25,8 +25,6 @@ import { createSnapshotStore } from '../../data/create-snapshot-store';
 import forms from './forms';
 import { STORE_NAME } from './constants';
 
-export { STORE_NAME };
-
 const store = Data.combineStores(
 	Data.commonStore,
 	forms,

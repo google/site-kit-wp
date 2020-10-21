@@ -1,5 +1,5 @@
 /**
- * WidgetContext component.
+ * ErrorNotice component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -24,26 +24,26 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import WidgetAreaRenderer from './WidgetAreaRenderer';
-import { STORE_NAME } from '../datastore/constants';
+import { isPermissionScopeError } from '../util/errors';
+import ErrorText from '../components/error-text';
 
-const { useSelect } = Data;
-
-const WidgetContextRenderer = ( { slug } ) => {
-	const widgetAreas = useSelect( ( select ) => select( STORE_NAME ).getWidgetAreas( slug ) );
+export default function ErrorNotice( { error, shouldDisplayError = () => true } ) {
+	// Do not display if no error, or if the error is for missing scopes.
+	if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
+		return null;
+	}
 
 	return (
-		<div className="googlesitekit-widget-context">
-			{ widgetAreas.map( ( area ) => {
-				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } />;
-			} ) }
-		</div>
+		<ErrorText
+			message={ error.message }
+			reconnectURL={ error.data?.reconnectURL }
+		/>
 	);
-};
+}
 
-WidgetContextRenderer.propTypes = {
-	slug: PropTypes.string.isRequired,
+ErrorNotice.propTypes = {
+	error: PropTypes.shape( {
+		message: PropTypes.string,
+	} ),
+	shouldDisplayError: PropTypes.func,
 };
-
-export default WidgetContextRenderer;

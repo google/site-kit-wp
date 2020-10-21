@@ -107,6 +107,7 @@ const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
 								key="link"
 								href={ sourceURI }
 								inherit
+								external
 							/>,
 						}
 					) }
