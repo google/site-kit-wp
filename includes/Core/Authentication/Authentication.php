@@ -246,6 +246,19 @@ final class Authentication {
 
 		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
+		add_action( 'admin_init', $this->verify_user_input_settings() );
+		add_action(
+			'admin_init',
+			function() {
+				if (
+					'googlesitekit-dashboard' === filter_input( INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS )
+					&& 'missing' === $this->user_input_state->get()
+					) {
+						wp_safe_redirect( $this->context->admin_url( 'user-input' ) );
+						exit;
+				}
+			}
+		);
 		// Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
 		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
 		// Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
@@ -301,6 +314,14 @@ final class Authentication {
 
 				$user['verified'] = $this->verification->has();
 
+				return $user;
+			}
+		);
+
+		add_filter(
+			'googlesitekit_user_data',
+			function( $user ) {
+				$user['userInputState'] = $this->user_input_state->get();
 				return $user;
 			}
 		);
@@ -1173,5 +1194,31 @@ final class Authentication {
 			),
 			admin_url( 'index.php' )
 		);
+	}
+
+
+	/**
+	 * Verifies the user input settings
+	 *
+	 * @since n.e.x.t
+	 */
+	private function verify_user_input_settings() {
+		if (
+			User_Input_State::VALUE_COMPLETED === $this->user_input_state->get()
+			|| ! $this->is_authenticated()
+			|| ! $this->credentials()->has()
+			|| ! $this->credentials->using_proxy()
+		) {
+			return;
+		}
+		$settings = $this->user_input_settings->get_settings();
+
+		$empty_settings = array_filter(
+			$settings,
+			function( $setting ) {
+				return empty( $setting['values'] );
+			}
+		);
+		$this->user_input_state->set( 0 === count( $empty_settings ) ? User_Input_State::VALUE_COMPLETED : User_Input_State::VALUE_MISSING );
 	}
 }
