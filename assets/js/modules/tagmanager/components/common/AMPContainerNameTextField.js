@@ -37,6 +37,7 @@ export default function AMPContainerNameTextField() {
 	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	const referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const initialAMPContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ), [] );
 
 	let ampContainerName = siteName;
 	if ( ! ampContainerName && isURL( referenceSiteURL ) ) {
@@ -47,7 +48,9 @@ export default function AMPContainerNameTextField() {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
-		setValues( FORM_SETUP, { ampContainerName } );
+		if ( ! initialAMPContainerName ) {
+			setValues( FORM_SETUP, { ampContainerName } );
+		}
 	}, [] );
 
 	if ( ampContainerID !== CONTAINER_CREATE ) {

@@ -38,6 +38,7 @@ export default function WebContainerNameTextField() {
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 	const referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const initialContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' ), [] );
 
 	let containerName = siteName;
 	if ( ! containerName && isURL( referenceSiteURL ) ) {
@@ -46,7 +47,9 @@ export default function WebContainerNameTextField() {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
-		setValues( FORM_SETUP, { containerName } );
+		if ( ! initialContainerName ) {
+			setValues( FORM_SETUP, { containerName } );
+		}
 	}, [] );
 
 	if ( containerID !== CONTAINER_CREATE ) {
