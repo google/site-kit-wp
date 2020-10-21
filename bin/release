@@ -21,7 +21,6 @@
 /**
  * Node dependencies
  */
-const { EOL } = require( 'os' );
 const { resolve, dirname } = require( 'path' );
 
 /**
@@ -96,7 +95,7 @@ async function makeRelease() {
 	const pluginDir = resolve( releaseDir, 'google-site-kit' );
 	const filename = resolve( root, generateFilename() );
 
-	process.stdout.write( `Creating ${ filename }${ EOL }` );
+	console.log( `Creating ${ filename }` ); // eslint-disable-line no-console
 
 	const cp = ( path ) => fse.copy( resolve( root, path ), resolve( pluginDir, path ) );
 
@@ -129,6 +128,6 @@ async function makeRelease() {
 }
 
 makeRelease().catch( ( error ) => {
-	process.stderr.write( `${ error }${ EOL }` );
+	console.error( error ); // eslint-disable-line no-console
 	process.exit( 1 );
 } );
