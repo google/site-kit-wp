@@ -394,7 +394,7 @@ final class Authentication {
 	/**
 	 * Gets the Google Proxy instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @return Google_Proxy An instance of Google Proxy.
 	 */
