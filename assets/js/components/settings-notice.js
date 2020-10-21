@@ -22,11 +22,7 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-export default function SettingsNotice( { message, isSuggestion } ) {
-	if ( ! message ) {
-		return null;
-	}
-
+export default function SettingsNotice( { children, isSuggestion } ) {
 	return (
 		<div
 			className={ classnames(
@@ -35,13 +31,13 @@ export default function SettingsNotice( { message, isSuggestion } ) {
 			) }
 		>
 			<div className="googlesitekit-settings-notice__text">
-				{ message }
+				{ children }
 			</div>
 		</div>
 	);
 }
 
 SettingsNotice.propTypes = {
-	message: PropTypes.string.isRequired,
+	children: PropTypes.node.isRequired,
 	isSuggestion: PropTypes.bool,
 };
