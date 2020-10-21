@@ -27,6 +27,10 @@ import {
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
+import {
+	INVARIANT_INVALID_AMP_EXPERIMENT_JSON,
+	INVARIANT_INVALID_OPTIMIZE_ID,
+} from './settings';
 
 describe( 'modules/optimize settings', () => {
 	let registry;
@@ -138,7 +142,8 @@ describe( 'modules/optimize settings', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 10 );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_AMP_EXPERIMENT_JSON );
 
 				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( null );
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
@@ -153,10 +158,12 @@ describe( 'modules/optimize settings', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 				registry.dispatch( STORE_NAME ).setOptimizeID( '0' );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_OPTIMIZE_ID );
 
 				registry.dispatch( STORE_NAME ).setOptimizeID( null );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					.toThrow( INVARIANT_INVALID_OPTIMIZE_ID );
 
 				// An empty string is accepted (for when no optimize ID can be determined).
 				registry.dispatch( STORE_NAME ).setOptimizeID( '' );

@@ -141,7 +141,7 @@ describe( 'core/user user-input-settings', () => {
 				);
 
 				await registry.dispatch( STORE_NAME ).saveUserInputSettings( ...args );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'setUserInputSettings', args ) ).toMatchObject( response );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'saveUserInputSettings', args ) ).toMatchObject( response );
 				expect( console ).toHaveErrored();
 			} );
 		} );
