@@ -94,8 +94,4 @@ if ( modulesData.adsense.active ) {
 			} );
 			return modules;
 		} );
-
-	addFilter( `googlesitekit.showDateRangeSelector-${ slug }`,
-		'googlesitekit.analyticsShowDateRangeSelector',
-		() => true );
 }
