@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { selectors as changesSelectors, actions as changesActions } from './changes';
 import modules from './modules';
 import { STORE_NAME } from './constants';
 import { createErrorStore } from '../../data/create-error-store';
@@ -29,6 +30,9 @@ const store = Data.combineStores(
 	modules,
 	createErrorStore(),
 );
+
+store.actions = { ...store.actions, ...changesActions };
+store.selectors = { ...store.selectors, ...changesSelectors };
 
 export const initialState = store.initialState;
 export const actions = store.actions;
