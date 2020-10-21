@@ -39,10 +39,12 @@ export async function trackAPIError( { method, type, identifier, datapoint, erro
 		return;
 	}
 
+	const labelMeta = `code: ${ error.code }${ error.data?.reason ? ', reason: ' + error.data.reason : '' }`;
+
 	await trackEvent(
 		'api_error',
 		`${ method }:${ type }/${ identifier }/data/${ datapoint }`,
-		`${ error.message } (code: ${ error.code }${ error.data?.reason ? ', reason: ' + error.data.reason : '' })`,
+		`${ error.message } (${ labelMeta })`,
 		error.data?.status || error.code
 	);
 }
