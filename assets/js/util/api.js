@@ -35,7 +35,7 @@ const excludedErrorCodes = [
 export async function trackAPIError( { method, type, identifier, datapoint, error } ) {
 	// Exclude certain errors from tracking based on error code.
 
-	if ( excludedErrorCodes.includes( error?.code ) ) {
+	if ( ( ! error ) || excludedErrorCodes.includes( error?.code ) ) {
 		return;
 	}
 
