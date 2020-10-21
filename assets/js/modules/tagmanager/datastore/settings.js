@@ -38,9 +38,21 @@ import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from './consta
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
-import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { createStrictSelect, createValidationSelector } from '../../../googlesitekit/data/utils';
 
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createRegistryControl } = Data;
+
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
+export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
+export const INVARIANT_INVALID_AMP_CONTAINER_SELECTION = 'a valid ampContainerID selection is required to submit changes';
+export const INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID = 'a valid internalAMPContainerID is required to submit changes';
+export const INVARIANT_INVALID_CONTAINER_SELECTION = 'a valid containerID selection is required to submit changes';
+export const INVARIANT_INVALID_INTERNAL_CONTAINER_ID = 'a valid internalContainerID is required to submit changes';
+export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS = 'containers with Analytics tags must reference a single property ID to submit changes';
+export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH = 'single GTM Analytics property ID must match Analytics property ID';
+export const INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION = 'existing tag permission is required to submit changes';
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -157,22 +169,6 @@ export const resolvers = {};
 
 export const selectors = {
 	/**
-	 * Checks if changes can be submitted.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @return {boolean} `true` if can submit changes, otherwise false.
-	 */
-	canSubmitChanges: createRegistrySelector( ( select ) => () => {
-		try {
-			validateCanSubmitChanges( select );
-			return true;
-		} catch {
-			return false;
-		}
-	} ),
-
-	/**
 	 * Checks whether changes are currently being submitted.
 	 *
 	 * @since 1.11.0
@@ -185,17 +181,10 @@ export const selectors = {
 	},
 };
 
-/**
- * Validates whether changes can be submitted or not.
- *
- * If changes cannot be submitted, an appropriate error is thrown.
- *
- * @since 1.18.0
- * @private
- *
- * @param {Function} select The current registry.select instance.
- */
-export const validateCanSubmitChanges = ( select ) => {
+const {
+	safeSelector: canSubmitChanges,
+	dangerousSelector: __dangerousCanSubmitChanges,
+} = createValidationSelector( ( select ) => {
 	const strictSelect = createStrictSelect( select );
 	// Strict select will cause all selector functions to throw an error
 	// if `undefined` is returned, otherwise it behaves the same as `select`.
@@ -222,39 +211,39 @@ export const validateCanSubmitChanges = ( select ) => {
 	const { getPropertyID } = strictSelect( MODULES_ANALYTICS );
 
 	// Note: these error messages are referenced in test assertions.
-	invariant( ! isDoingSubmitChanges(), 'cannot submit changes while submitting changes' );
-	invariant( haveSettingsChanged(), 'cannot submit changes if settings have not changed' );
-	invariant( isValidAccountID( getAccountID() ), 'a valid accountID is required to submit changes' );
+	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
+	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	invariant( isValidAccountID( getAccountID() ), INVARIANT_INVALID_ACCOUNT_ID );
 
 	if ( isAMP() ) {
 		// If AMP is active, the AMP container ID must be valid, regardless of mode.
-		invariant( isValidContainerSelection( getAMPContainerID() ), 'a valid ampContainerID selection is required to submit changes' );
+		invariant( isValidContainerSelection( getAMPContainerID() ), INVARIANT_INVALID_AMP_CONTAINER_SELECTION );
 		// If AMP is active, and a valid AMP container ID is selected, the internal ID must also be valid.
 		if ( isValidContainerID( getAMPContainerID() ) ) {
-			invariant( isValidInternalContainerID( getInternalAMPContainerID() ), 'a valid internalAMPContainerID is required to submit changes' );
+			invariant( isValidInternalContainerID( getInternalAMPContainerID() ), INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID );
 		}
 	}
 
 	if ( ! isAMP() || isSecondaryAMP() ) {
 		// If AMP is not active, or in a secondary mode, validate the web container IDs.
-		invariant( isValidContainerSelection( getContainerID() ), 'a valid containerID selection is required to submit changes' );
+		invariant( isValidContainerSelection( getContainerID() ), INVARIANT_INVALID_CONTAINER_SELECTION );
 		// If a valid container ID is selected, the internal ID must also be valid.
 		if ( isValidContainerID( getContainerID() ) ) {
-			invariant( isValidInternalContainerID( getInternalContainerID() ), 'a valid internalContainerID is required to submit changes' );
+			invariant( isValidInternalContainerID( getInternalContainerID() ), INVARIANT_INVALID_INTERNAL_CONTAINER_ID );
 		}
 	}
 
-	invariant( ! hasMultipleAnalyticsPropertyIDs(), 'containers with Analytics tags must reference a single property ID to submit changes' );
+	invariant( ! hasMultipleAnalyticsPropertyIDs(), INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS );
 
 	if ( isModuleActive( 'analytics' ) && getPropertyID() && hasAnyAnalyticsPropertyID() ) {
-		invariant( getSingleAnalyticsPropertyID() === getPropertyID(), 'single GTM Analytics property ID must match Analytics property ID' );
+		invariant( getSingleAnalyticsPropertyID() === getPropertyID(), INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
 	}
 
 	// Do existing tag check last.
 	if ( hasExistingTag() ) {
-		invariant( hasExistingTagPermission(), 'existing tag permission is required to submit changes' );
+		invariant( hasExistingTagPermission(), INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 	}
-};
+} );
 
 export default {
 	initialState,
@@ -262,6 +251,9 @@ export default {
 	controls,
 	reducer,
 	resolvers,
-	selectors,
+	selectors: {
+		...selectors,
+		canSubmitChanges,
+		__dangerousCanSubmitChanges,
+	},
 };
-

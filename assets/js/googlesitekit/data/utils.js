@@ -26,7 +26,7 @@ import memize from 'memize';
 /**
  * WordPress dependencies
  */
-import { createRegistryControl } from '@wordpress/data';
+import { createRegistryControl, createRegistrySelector } from '@wordpress/data';
 
 const GET_REGISTRY = 'GET_REGISTRY';
 
@@ -320,3 +320,31 @@ const getStrictSelectors = memize(
 		}
 	)
 );
+
+/**
+ * Creates two registry selectors that call the incoming function to validate the current state.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} validate Validation function callback.
+ * @return {Object} Safe and dangerous selectors.
+ */
+export function createValidationSelector( validate ) {
+	const safeSelector = createRegistrySelector( ( select ) => ( state, ...args ) => {
+		try {
+			validate( select, state, ...args );
+			return true;
+		} catch {
+			return false;
+		}
+	} );
+
+	const dangerousSelector = createRegistrySelector( ( select ) => ( state, ...args ) => {
+		validate( select, state, ...args );
+	} );
+
+	return {
+		safeSelector,
+		dangerousSelector,
+	};
+}
