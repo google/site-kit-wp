@@ -94,6 +94,7 @@ Link.propTypes = {
 	children: PropTypes.oneOfType( [
 		PropTypes.string.isRequired,
 		PropTypes.array.isRequired,
+		PropTypes.element.isRequired,
 	] ),
 	className: PropTypes.string,
 	arrow: PropTypes.bool,

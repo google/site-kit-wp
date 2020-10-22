@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -46,11 +46,14 @@ export default function SetupAccountNoClient() {
 					href="https://support.google.com/adsense/answer/6023158"
 					external
 				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-					{ ' ' }
-					<span className="screen-reader-text">
-						{ __( 'about updating your AdSense account', 'google-site-kit' ) }
-					</span>
+					{
+						createInterpolateElement(
+							__( 'Learn more<span> about updating your AdSense account</span>', 'google-site-kit' ),
+							{
+								span: <span className="screen-reader-text" />,
+							}
+						)
+					}
 				</Link>
 			</div>
 		</Fragment>

@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,11 +34,14 @@ export default function MetricsLearnMoreLink() {
 			external
 			inherit
 		>
-			{ __( 'Learn more', 'google-site-kit' ) }
-			{ ' ' }
-			<span className="screen-reader-text">
-				{ __( 'how metrics are measured.', 'google-site-kit' ) }
-			</span>
+			{
+				createInterpolateElement(
+					__( 'Learn more<span> how metrics are measured.</span>', 'google-site-kit' ),
+					{
+						span: <span className="screen-reader-text" />,
+					}
+				)
+			}
 		</Link>
 	);
 }

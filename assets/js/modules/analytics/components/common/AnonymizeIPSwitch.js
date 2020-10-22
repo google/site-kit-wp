@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -66,11 +66,14 @@ export default function AnonymizeIPSwitch() {
 					external
 					inherit
 				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-					{ ' ' }
-					<span className="screen-reader-text">
-						{ __( 'about IP anonymization.', 'google-site-kit' ) }
-					</span>
+					{
+						createInterpolateElement(
+							__( 'Learn more<span> about IP anonymization.</span>', 'google-site-kit' ),
+							{
+								span: <span className="screen-reader-text" />,
+							}
+						)
+					}
 				</Link>
 			</p>
 		</div>

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component, createInterpolateElement, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -122,31 +122,47 @@ export default class CompatibilityChecks extends Component {
 
 		if ( ! installed && installURL ) {
 			return {
-				labelHTML: __( 'Install', 'google-site-kit' ),
-				a11yLabel: __( 'the helper plugin', 'google-site-kit' ),
+				labelHTML: createInterpolateElement(
+					__( 'Install<span> the helper plugin</span>', 'google-site-kit' ),
+					{
+						span: <span className="screen-reader-text" />,
+					}
+				),
 				href: installURL,
 				external: false,
 			};
 		}
 		if ( installed && ! active && activateURL ) {
 			return {
-				labelHTML: __( 'Activate', 'google-site-kit' ),
-				a11yLabel: __( 'the helper plugin', 'google-site-kit' ),
+				labelHTML: createInterpolateElement(
+					__( 'Activate<span> the helper plugin</span>', 'google-site-kit' ),
+					{
+						span: <span className="screen-reader-text" />,
+					}
+				),
 				href: activateURL,
 				external: false,
 			};
 		}
 		if ( installed && active && configureURL ) {
 			return {
-				labelHTML: __( 'Configure', 'google-site-kit' ),
-				a11yLabel: __( 'the helper plugin', 'google-site-kit' ),
+				labelHTML: createInterpolateElement(
+					__( 'Configure<span> the helper plugin</span>', 'google-site-kit' ),
+					{
+						span: <span className="screen-reader-text" />,
+					}
+				),
 				href: configureURL,
 				external: false,
 			};
 		}
 		return {
-			labelHTML: __( 'Learn how', 'google-site-kit' ),
-			a11yLabel: __( 'to install and use the helper plugin', 'google-site-kit' ),
+			labelHTML: createInterpolateElement(
+				__( 'Learn how<span> to install and use the helper plugin</span>', 'google-site-kit' ),
+				{
+					span: <span className="screen-reader-text" />,
+				}
+			),
 			href: 'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
 			external: true,
 		};
@@ -154,7 +170,7 @@ export default class CompatibilityChecks extends Component {
 
 	renderError( error ) {
 		const { installed } = this.state.developerPlugin;
-		const { labelHTML, a11yLabel, href, external } = this.helperCTA();
+		const { labelHTML, href, external } = this.helperCTA();
 
 		switch ( error ) {
 			case ERROR_INVALID_HOSTNAME:
@@ -165,15 +181,10 @@ export default class CompatibilityChecks extends Component {
 					{ ' ' }
 					<Link
 						href={ href }
-						dangerouslySetInnerHTML={ { __html: labelHTML } }
 						external={ external }
 						inherit
 					>
 						{ labelHTML }
-						{ ' ' }
-						<span className="screen-reader-text">
-							{ a11yLabel }
-						</span>
 					</Link>
 				</p>;
 			case ERROR_TOKEN_MISMATCH:

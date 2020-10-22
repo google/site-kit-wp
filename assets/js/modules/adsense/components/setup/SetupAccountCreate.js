@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { createInterpolateElement, Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -97,11 +97,14 @@ export default function SetupAccountCreate() {
 					inherit
 					external
 				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-					{ ' ' }
-					<span className="screen-reader-text">
-						{ __( 'about adding a user to an existing AdSense account', 'google-site-kit' ) }
-					</span>
+					{
+						createInterpolateElement(
+							__( 'Learn more<span> about adding a user to an existing AdSense account</span>', 'google-site-kit' ),
+							{
+								span: <span className="screen-reader-text" />,
+							}
+						)
+					}
 				</Link>
 			</p>
 		</Fragment>
