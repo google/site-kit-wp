@@ -98,7 +98,9 @@ class AdSenseDashboardWidget extends Component {
 	handleDataSuccess() {
 		this.setState( {
 			receivingData: true,
+			error: false,
 			loading: false,
+			zeroData: false,
 		} );
 	}
 
