@@ -99,8 +99,8 @@ const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 			<Layout
 				className="googlesitekit-popular-content"
 				footer
-				footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-				footerCtaLink={ baseServiceURL }
+				footerCTALabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+				footerCTALink={ baseServiceURL }
 				fill
 			>
 				<TableOverflowContainer>
