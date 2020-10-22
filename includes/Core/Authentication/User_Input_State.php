@@ -51,7 +51,7 @@ final class User_Input_State extends User_Setting {
 	 * @return bool True on success, false on failure or if value is not a valid string.
 	 */
 	public function set( $value ) {
-		if ( ! in_array( $value, array( self::VALUE_COMPLETED, self::VALUE_MISSING, self::VALUE_REQUIRED ), true ) ) {
+		if ( ! in_array( $value, array( self::VALUE_COMPLETED, self::VALUE_MISSING, self::VALUE_REQUIRED, '' ), true ) ) {
 			return false;
 		}
 		return parent::set( $value );
