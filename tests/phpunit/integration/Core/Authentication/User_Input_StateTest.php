@@ -75,6 +75,7 @@ class User_Input_StateTest extends TestCase {
 			array( 'completed', true, 'completed' ),
 			array( 'required', true, 'required' ),
 			array( 'missing', true, 'missing' ),
+			array( '', true, '' ),
 			array( 'invalid-value', false, '' ),
 		);
 	}
