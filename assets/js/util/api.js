@@ -22,7 +22,7 @@
 import { trackEvent } from './';
 
 // Error codes in excludedErrorCodes will not be tracked by trackAPIError.
-const excludedErrorCodes = [
+export const excludedErrorCodes = [
 	'fetch_error', // Client failed to fetch from WordPress.
 ];
 
