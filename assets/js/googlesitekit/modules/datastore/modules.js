@@ -20,6 +20,7 @@
  * External dependencies
  */
 import memize from 'memize';
+import defaults from 'lodash/defaults';
 import merge from 'lodash/merge';
 import invariant from 'invariant';
 
@@ -64,12 +65,11 @@ const moduleDefaults = {
 const normalizeModules = memize(
 	( modules ) => Object.keys( modules )
 		.map( ( slug ) => {
-			return {
-				...moduleDefaults,
-				name: slug, // Ensure `name` is not empty.
-				...modules[ slug ],
-				slug,
-			};
+			const module = { ...modules[ slug ], slug };
+			// Fill any `undefined` values with defaults.
+			defaults( module, { name: slug }, moduleDefaults );
+
+			return module;
 		} )
 		.sort( ( a, b ) => a.order - b.order )
 		.reduce( ( acc, module ) => {
