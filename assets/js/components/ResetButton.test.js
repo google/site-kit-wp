@@ -24,8 +24,6 @@ import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constan
 import ResetButton from './ResetButton';
 import { subscribeUntil } from '../../../tests/js/utils';
 
-//http://example.com/admin.php?page=googlesitekit-splash&notification=reset_success
-
 describe( 'ResetButton', () => {
 	let registry;
 	const adminURL = 'http://example.com/';
@@ -84,6 +82,19 @@ describe( 'ResetButton', () => {
 				href: '',
 			};
 
+			const localStorageMock = ( function() {
+				let store = { randomKey: 'randomValue' };
+				return {
+					getItem( key ) {
+						return store[ key ];
+					},
+					clear() {
+						store = {};
+					},
+				};
+			}() );
+			Object.defineProperty( global, 'localStorage', { value: localStorageMock } );
+
 			await act( async () => {
 				fireEvent.click( document.querySelector( '.mdc-dialog--open .mdc-button--danger' ) );
 				await subscribeUntil( registry, () => registry.select( CORE_SITE ).isDoingReset() === false );
@@ -91,6 +102,7 @@ describe( 'ResetButton', () => {
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeNull();
+			expect( global.localStorage.getItem( 'randomKey' ) ).toBeUndefined();
 			expect( global.location.href ).toBe( 'http://example.com/admin.php?page=googlesitekit-splash&notification=reset_success' );
 		} );
 	} );
