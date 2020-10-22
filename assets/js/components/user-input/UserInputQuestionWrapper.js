@@ -1,5 +1,5 @@
 /**
- * User Input Question.
+ * User Input Question Wrapper.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -34,46 +35,56 @@ import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/cons
 import Button from '../button';
 const { useSelect } = Data;
 
-export default function UserInputQuestion( { slug, isActive, next, back } ) {
+export default function UserInputQuestionWrapper( { children, slug, isActive, next, back, max } ) {
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 
 	return (
-		<div className="mdc-layout-grid__inner">
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12-desktop
-				mdc-layout-grid__cell--span-8-tablet
-				mdc-layout-grid__cell--span-4-phone
-			">
-				{ JSON.stringify( [ slug, values ] ) }
-				{
-					isActive &&
-					<div>
-						{
-							back &&
-							<Button onClick={ back }>
-								{ __( 'Back', 'google-site-kit' ) }
-							</Button>
-						}
-						{
-							next &&
-							<Button
-								onClick={ next }
-								disabled={ ! values.length }
-							>
-								{ __( 'Next', 'google-site-kit' ) }
-							</Button>
-						}
+		<div className={ classnames( 'googlesitekit-user-input__question', { 'googlesitekit-user-input__next-question': ! isActive } ) }>
+			<div className="mdc-layout-grid">
+				<div className="mdc-layout-grid__inner">
+					<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-12-desktop
+						mdc-layout-grid__cell--span-8-tablet
+						mdc-layout-grid__cell--span-4-phone
+					">
+						<div className="mdc-layout-grid__inner">
+							{ children }
+						</div>
+
+						{ isActive && (
+							<div>
+								{ back && (
+									<Button onClick={ back }>
+										{ __( 'Back', 'google-site-kit' ) }
+									</Button>
+								) }
+								{ next && (
+									<Button
+										onClick={ next }
+										disabled={ values.filter( ( value ) => value.trim().length > 0 ).length !== max }
+									>
+										{ __( 'Next', 'google-site-kit' ) }
+									</Button>
+								) }
+							</div>
+						) }
 					</div>
-				}
+				</div>
 			</div>
 		</div>
 	);
 }
 
-UserInputQuestion.propTypes = {
+UserInputQuestionWrapper.propTypes = {
 	slug: PropTypes.string.isRequired,
+	children: PropTypes.node,
 	isActive: PropTypes.bool,
+	max: PropTypes.number,
 	next: PropTypes.func,
 	back: PropTypes.func,
+};
+
+UserInputQuestionWrapper.defaultProps = {
+	max: 1,
 };

@@ -176,7 +176,7 @@ const baseSelectors = {
 	 */
 	getUserInputSetting: createRegistrySelector( ( select ) => ( state, settingID ) => {
 		const settings = select( STORE_NAME ).getUserInputSettings() || {};
-		return settings[ settingID ];
+		return settings[ settingID ] || [];
 	} ),
 };
 

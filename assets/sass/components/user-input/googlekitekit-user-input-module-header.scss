@@ -1,7 +1,7 @@
 /**
  * User Input module header styles.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 .googlesitekit-user-input {
 
-	.googlesitekit-user-input__heading {
+	&__heading {
 		font-size: 36px;
 		line-height: 44px;
 
@@ -28,7 +28,7 @@
 		}
 	}
 
-	.googlesitekit-user-input__subtitle {
+	&__subtitle {
 		color: $c-secondary;
 		font-size: 22px;
 		line-height: 28px;
@@ -37,5 +37,29 @@
 			font-size: 16px;
 			line-height: 24px;
 		}
+	}
+
+	&__question {
+		background-color: $c-white;
+		position: relative;
+
+		@include googlesitekit-inner-padding;
+
+		@media ( min-width: $bp-tablet ) {
+			margin-left: -10px;
+			margin-right: -10px;
+		}
+	}
+
+	&__next-question::before {
+		background-color: $c-white;
+		content: "";
+		height: 100%;
+		left: 0;
+		opacity: 0.75;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		z-index: 10;
 	}
 }

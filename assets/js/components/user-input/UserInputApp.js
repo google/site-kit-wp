@@ -37,8 +37,8 @@ export default function UserInputApp() {
 	return (
 		<Fragment>
 			<Header />
-			<div className="googlesitekit-module-page">
-				<div className="googlesitekit-user-input">
+			<div className="googlesitekit-user-input">
+				<div className="googlesitekit-module-page">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
 							<div className="
@@ -63,9 +63,10 @@ export default function UserInputApp() {
 									{ __( 'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site', 'google-site-kit' ) }
 								</span>
 							</div>
-							<UserInputQuestionnaire />
 						</div>
 					</div>
+
+					<UserInputQuestionnaire />
 				</div>
 			</div>
 		</Fragment>

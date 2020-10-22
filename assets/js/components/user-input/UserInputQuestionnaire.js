@@ -24,7 +24,12 @@ import { useState, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import UserInputQuestion from './UserInputQuestion';
+import ProgressBar from '../progress-bar';
+import UserInputRoleQuestion from './UserInputRoleQuestion';
+import UserInputPostFrequencyQuestion from './UserInputPostFrequencyQuestion';
+import UserInputGoalsQuestion from './UserInputGoalsQuestion';
+import UserInputHelpNeededQuestion from './UserInputHelpNeededQuestion';
+import UserInputSearchTermsQuestion from './UserInputSearchTermsQuestion';
 
 export default function UserInputQuestionnaire() {
 	const [ activeSlug, setActiveSlug ] = useState( 'role' );
@@ -38,72 +43,8 @@ export default function UserInputQuestionnaire() {
 
 	const back = useCallback( () => {
 		setActiveSlug( questions[ activeSlugIndex - 1 ] );
+		global.scrollTo( 0, 0 );
 	}, [ activeSlugIndex ] );
-
-	const list = [];
-
-	const roleIndex = questions.indexOf( 'role' );
-	if ( activeSlugIndex <= roleIndex ) {
-		list.push(
-			<UserInputQuestion
-				key="role"
-				slug="role"
-				isActive={ activeSlugIndex === roleIndex }
-				next={ next }
-			/>
-		);
-	}
-
-	const postFrequencyIndex = questions.indexOf( 'postFrequency' );
-	if ( activeSlugIndex <= postFrequencyIndex ) {
-		list.push(
-			<UserInputQuestion
-				key="postFrequency"
-				slug="postFrequency"
-				isActive={ activeSlugIndex === postFrequencyIndex }
-				next={ next }
-				back={ back }
-			/>
-		);
-	}
-
-	const goalsIndex = questions.indexOf( 'goals' );
-	if ( activeSlugIndex <= goalsIndex ) {
-		list.push(
-			<UserInputQuestion
-				key="goals"
-				slug="goals"
-				isActive={ activeSlugIndex === goalsIndex }
-				next={ next }
-				back={ back }
-			/>
-		);
-	}
-
-	const helpNeededIndex = questions.indexOf( 'helpNeeded' );
-	if ( activeSlugIndex <= helpNeededIndex ) {
-		list.push(
-			<UserInputQuestion
-				key="helpNeeded"
-				slug="helpNeeded"
-				isActive={ activeSlugIndex === helpNeededIndex }
-				next={ next }
-				back={ back }
-			/>
-		);
-	}
-
-	const searchTermsIndex = questions.indexOf( 'searchTerms' );
-	if ( activeSlugIndex <= searchTermsIndex ) {
-		list.push(
-			<UserInputQuestion
-				key="searchTerms"
-				slug="searchTerms"
-				isActive={ activeSlugIndex === searchTermsIndex }
-				back={ back }
-			/>
-		);
-	}
 
 	return (
 		<div className="
@@ -112,8 +53,31 @@ export default function UserInputQuestionnaire() {
 			mdc-layout-grid__cell--span-8-tablet
 			mdc-layout-grid__cell--span-4-phone
 		">
-			<div>progress bar</div>
-			{ list }
+			<ProgressBar
+				height={ 0 }
+				indeterminate={ false }
+				progress={ ( activeSlugIndex + 1 ) / questions.length }
+			/>
+
+			{ activeSlugIndex <= questions.indexOf( 'role' ) && (
+				<UserInputRoleQuestion isActive={ activeSlug === 'role' } next={ next } />
+			) }
+
+			{ activeSlugIndex <= questions.indexOf( 'postFrequency' ) && (
+				<UserInputPostFrequencyQuestion isActive={ activeSlug === 'postFrequency' } next={ next } back={ back } />
+			) }
+
+			{ activeSlugIndex <= questions.indexOf( 'goals' ) && (
+				<UserInputGoalsQuestion isActive={ activeSlug === 'goals' } next={ next } back={ back } />
+			) }
+
+			{ activeSlugIndex <= questions.indexOf( 'helpNeeded' ) && (
+				<UserInputHelpNeededQuestion isActive={ activeSlug === 'helpNeeded' } next={ next } back={ back } />
+			) }
+
+			{ activeSlugIndex <= questions.indexOf( 'searchTerms' ) && (
+				<UserInputSearchTermsQuestion isActive={ activeSlug === 'searchTerms' } next={ next } back={ back } />
+			) }
 		</div>
 	);
 }
