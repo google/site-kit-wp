@@ -15,8 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Internal dependencies
+ */
 import { trackEvent } from './';
 
+// Error codes in excludedErrorCodes will not be tracked by trackAPIError.
 const excludedErrorCodes = [
 	'fetch_error', // Client failed to fetch from WordPress.
 ];
@@ -42,7 +47,7 @@ export async function trackAPIError( { method, type, identifier, datapoint, erro
 
 	let labelMeta = `code: ${ error.code }`;
 	if ( error.data?.reason ) {
-		labelMeta += `, reason: ${ error.data.reason }`
+		labelMeta += `, reason: ${ error.data.reason }`;
 	}
 
 	await trackEvent(
