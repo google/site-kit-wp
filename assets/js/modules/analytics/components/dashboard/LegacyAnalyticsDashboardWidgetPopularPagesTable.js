@@ -54,8 +54,8 @@ const RenderLayout = ( { children } ) => {
 			<Layout
 				className="googlesitekit-popular-content"
 				footer
-				footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-				footerCtaLink={ serviceURL }
+				footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				footerCTALink={ serviceURL }
 				fill
 			>
 				{ children }

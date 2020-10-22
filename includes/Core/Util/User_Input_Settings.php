@@ -20,7 +20,7 @@ use WP_Error;
 /**
  * Class managing requests to user input settings endpoint.
  *
- * @since n.e.x.t
+ * @since 1.19.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class User_Input_Settings {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 * @var Authentication
 	 */
 	private $authentication;
@@ -39,7 +39,7 @@ class User_Input_Settings {
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 * @var Transients
 	 */
 	private $transients;
@@ -47,7 +47,7 @@ class User_Input_Settings {
 	/**
 	 * User_Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 * @var User_Transients
 	 */
 	private $user_transients;
@@ -55,7 +55,7 @@ class User_Input_Settings {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param Context         $context         Plugin context.
 	 * @param Authentication  $authentication  Optional. Authentication instance. Default a new instance.
@@ -76,7 +76,7 @@ class User_Input_Settings {
 	/**
 	 * Determines whether the site is connected to proxy or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @return boolean TRUE if connected, otherwise FALSE.
 	 */
@@ -89,7 +89,7 @@ class User_Input_Settings {
 	/**
 	 * Sends POST request to the proxy's settings endpoint to sync user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param array $settings User settings.
 	 * @return array|WP_Error User input settings.
@@ -134,7 +134,7 @@ class User_Input_Settings {
 	/**
 	 * Caches user input settings received from the proxy server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param array $settings Array with user input settings.
 	 */
@@ -162,7 +162,7 @@ class User_Input_Settings {
 	/**
 	 * Gets user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @return array|WP_Error User input settings.
 	 */
@@ -201,7 +201,7 @@ class User_Input_Settings {
 	/**
 	 * Sets user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param array $settings User settings.
 	 * @return array|WP_Error User input settings.
