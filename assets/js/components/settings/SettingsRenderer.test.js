@@ -32,10 +32,8 @@ describe( 'SettingsRenderer', () => {
 	const storeName = `modules/${ slug }`;
 	const settingSlugs = [ 'testSetting' ];
 
-	// eslint-disable-next-line jsx-a11y/aria-role
-	const SettingsEdit = () => <div role="edit-component">edit</div>;
-	// eslint-disable-next-line jsx-a11y/aria-role
-	const SettingsView = () => <div role="view-component">view</div>;
+	const SettingsEdit = () => <div data-testid="edit-component">edit</div>;
+	const SettingsView = () => <div data-testid="view-component">view</div>;
 
 	beforeEach( () => {
 		const storeDefinition = Modules.createModuleStore( slug, { storeName, settingSlugs } );
@@ -76,17 +74,17 @@ describe( 'SettingsRenderer', () => {
 		} );
 
 		it( 'renders the view component when open, and not editing', () => {
-			const { queryByRole } = render( <SettingsRenderer slug={ slug } isOpen isEditing={ false } />, { registry } );
+			const { queryByTestID } = render( <SettingsRenderer slug={ slug } isOpen isEditing={ false } />, { registry } );
 
-			expect( queryByRole( 'view-component' ) ).toBeInTheDocument();
-			expect( queryByRole( 'edit-component' ) ).not.toBeInTheDocument();
+			expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
+			expect( queryByTestID( 'edit-component' ) ).not.toBeInTheDocument();
 		} );
 
 		it( 'renders nothing when open, and editing', () => {
-			const { queryByRole } = render( <SettingsRenderer slug={ slug } isOpen isEditing />, { registry } );
+			const { queryByTestID } = render( <SettingsRenderer slug={ slug } isOpen isEditing />, { registry } );
 
-			expect( queryByRole( 'view-component' ) ).not.toBeInTheDocument();
-			expect( queryByRole( 'edit-component' ) ).not.toBeInTheDocument();
+			expect( queryByTestID( 'view-component' ) ).not.toBeInTheDocument();
+			expect( queryByTestID( 'edit-component' ) ).not.toBeInTheDocument();
 		} );
 	} );
 
@@ -99,17 +97,17 @@ describe( 'SettingsRenderer', () => {
 		} );
 
 		it( 'renders the view component when open, and not editing', () => {
-			const { queryByRole } = render( <SettingsRenderer slug={ slug } isOpen isEditing={ false } />, { registry } );
+			const { queryByTestID } = render( <SettingsRenderer slug={ slug } isOpen isEditing={ false } />, { registry } );
 
-			expect( queryByRole( 'view-component' ) ).toBeInTheDocument();
-			expect( queryByRole( 'edit-component' ) ).not.toBeInTheDocument();
+			expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
+			expect( queryByTestID( 'edit-component' ) ).not.toBeInTheDocument();
 		} );
 
 		it( 'renders the edit component when open, and editing', () => {
-			const { queryByRole } = render( <SettingsRenderer slug={ slug } isOpen isEditing />, { registry } );
+			const { queryByTestID } = render( <SettingsRenderer slug={ slug } isOpen isEditing />, { registry } );
 
-			expect( queryByRole( 'view-component' ) ).not.toBeInTheDocument();
-			expect( queryByRole( 'edit-component' ) ).toBeInTheDocument();
+			expect( queryByTestID( 'view-component' ) ).not.toBeInTheDocument();
+			expect( queryByTestID( 'edit-component' ) ).toBeInTheDocument();
 		} );
 	} );
 } );
