@@ -44,17 +44,21 @@ export default function UserInputPreview( { back } ) {
 	}, [] );
 
 	return (
-		<div className="mdc-layout-grid__inner">
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12-desktop
-				mdc-layout-grid__cell--span-8-tablet
-				mdc-layout-grid__cell--span-4-phone
-			">
-				{ JSON.stringify( settings ) }
-				<div>
-					<Button onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
-					<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
+		<div className="googlesitekit-user-input__question">
+			<div className="mdc-layout-grid">
+				<div className="mdc-layout-grid__inner">
+					<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-12-desktop
+						mdc-layout-grid__cell--span-8-tablet
+						mdc-layout-grid__cell--span-4-phone
+					">
+						{ JSON.stringify( settings ) }
+						<div className="googlesitekit-user-input__buttons">
+							<Button onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
+							<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

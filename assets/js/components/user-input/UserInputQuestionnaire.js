@@ -22,14 +22,25 @@
 import { useState, useCallback } from '@wordpress/element';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import ProgressBar from '../progress-bar';
-import UserInputRoleQuestion from './UserInputRoleQuestion';
-import UserInputPostFrequencyQuestion from './UserInputPostFrequencyQuestion';
-import UserInputGoalsQuestion from './UserInputGoalsQuestion';
-import UserInputHelpNeededQuestion from './UserInputHelpNeededQuestion';
-import UserInputSearchTermsQuestion from './UserInputSearchTermsQuestion';
+import UserInputQuestionWrapper from './UserInputQuestionWrapper';
+import UserInputQuestionInfo from './UserInputQuestionInfo';
+import UserInputSelectOptions from './UserInputSelectOptions';
+import UserInputKeywords from './UserInputKeywords';
+import UserInputPreview from './UserInputPreview';
+import {
+	USER_INPUT_ANSWERS_GOALS,
+	USER_INPUT_ANSWERS_HELP_NEEDED,
+	USER_INPUT_ANSWERS_POST_FREQUENCY,
+	USER_INPUT_ANSWERS_ROLE,
+} from './util/constants';
 
 export default function UserInputQuestionnaire() {
 	const [ activeSlug, setActiveSlug ] = useState( 'role' );
@@ -60,47 +71,106 @@ export default function UserInputQuestionnaire() {
 			/>
 
 			{ activeSlugIndex <= questions.indexOf( 'role' ) && (
-				<UserInputRoleQuestion
+				<UserInputQuestionWrapper
+					slug="role"
 					isActive={ activeSlug === 'role' }
 					questionNumber={ 1 }
 					next={ next }
-				/>
+				>
+					<UserInputQuestionInfo>
+						{ __( 'Which best describes your team/role in relation to this site?', 'google-site-kit' ) }
+					</UserInputQuestionInfo>
+
+					<UserInputSelectOptions
+						slug="role"
+						options={ USER_INPUT_ANSWERS_ROLE }
+					/>
+				</UserInputQuestionWrapper>
 			) }
 
 			{ activeSlugIndex <= questions.indexOf( 'postFrequency' ) && (
-				<UserInputPostFrequencyQuestion
+				<UserInputQuestionWrapper
+					slug="postFrequency"
 					isActive={ activeSlug === 'postFrequency' }
 					questionNumber={ 2 }
 					next={ next }
 					back={ back }
-				/>
+				>
+					<UserInputQuestionInfo>
+						{ __( 'How often do you create new post for this site?', 'google-site-kit' ) }
+					</UserInputQuestionInfo>
+
+					<UserInputSelectOptions
+						slug="postFrequency"
+						options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
+					/>
+				</UserInputQuestionWrapper>
 			) }
 
 			{ activeSlugIndex <= questions.indexOf( 'goals' ) && (
-				<UserInputGoalsQuestion
+				<UserInputQuestionWrapper
+					slug="goals"
 					isActive={ activeSlug === 'goals' }
 					questionNumber={ 3 }
+					max={ 2 }
 					next={ next }
 					back={ back }
-				/>
+				>
+					<UserInputQuestionInfo>
+						{ __( 'What are the goals of this site?', 'google-site-kit' ) }
+					</UserInputQuestionInfo>
+
+					<UserInputSelectOptions
+						slug="goals"
+						max={ 2 }
+						options={ USER_INPUT_ANSWERS_GOALS }
+					/>
+				</UserInputQuestionWrapper>
 			) }
 
 			{ activeSlugIndex <= questions.indexOf( 'helpNeeded' ) && (
-				<UserInputHelpNeededQuestion
+				<UserInputQuestionWrapper
+					slug="helpNeeded"
 					isActive={ activeSlug === 'helpNeeded' }
 					questionNumber={ 4 }
+					max={ 3 }
 					next={ next }
 					back={ back }
-				/>
+				>
+					<UserInputQuestionInfo>
+						{ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
+					</UserInputQuestionInfo>
+
+					<UserInputSelectOptions
+						slug="helpNeeded"
+						max={ 3 }
+						options={ USER_INPUT_ANSWERS_HELP_NEEDED }
+					/>
+				</UserInputQuestionWrapper>
 			) }
 
 			{ activeSlugIndex <= questions.indexOf( 'searchTerms' ) && (
-				<UserInputSearchTermsQuestion
+				<UserInputQuestionWrapper
+					slug="searchTerms"
 					isActive={ activeSlug === 'searchTerms' }
 					questionNumber={ 5 }
+					max={ 3 }
 					next={ next }
 					back={ back }
-				/>
+				>
+					<UserInputQuestionInfo>
+						{ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for', 'google-site-kit' ) }
+					</UserInputQuestionInfo>
+
+					<UserInputKeywords
+						slug="searchTerms"
+						max={ 3 }
+					/>
+				</UserInputQuestionWrapper>
+			) }
+
+			{ activeSlug === 'preview' && (
+				<UserInputPreview back={ back } />
 			) }
 		</div>
 	);

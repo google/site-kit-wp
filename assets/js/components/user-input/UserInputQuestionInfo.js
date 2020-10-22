@@ -31,7 +31,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import { sanitizeHTML } from '../../util';
 
-export default function UserInputQuestionInfo( { title } ) {
+export default function UserInputQuestionInfo( { children } ) {
 	const notice = sprintf(
 		/* translators: %s: Settings page URL */
 		__( 'You can always edit your answers after your submission in <a href="%s">Setting</a>.', 'google-site-kit' ),
@@ -52,7 +52,7 @@ export default function UserInputQuestionInfo( { title } ) {
 		">
 
 			<h1 className="googlesitekit-user-input__question-title">
-				{ title }
+				{ children }
 			</h1>
 
 			<p className="googlesitekit-user-input__question-instructions">
@@ -68,5 +68,5 @@ export default function UserInputQuestionInfo( { title } ) {
 }
 
 UserInputQuestionInfo.propTypes = {
-	title: PropTypes.string.isRequired,
+	children: PropTypes.string.isRequired,
 };
