@@ -324,7 +324,7 @@ const getStrictSelectors = memize(
 /**
  * Creates two registry selectors that call the incoming function to validate the current state.
  *
- * @since n.e.x.t
+ * @since 1.19.0
  *
  * @param {Function} validate Validation function callback.
  * @return {Object} Safe and dangerous selectors.
