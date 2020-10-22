@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Menu from '../assets/js/components/menu';
+import Menu from '../assets/js/components/Menu';
 
 storiesOf( 'Global', module )
 	.add( 'Menu', () => {

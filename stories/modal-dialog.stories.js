@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Dialog from '../assets/js/components/dialog';
+import Dialog from '../assets/js/components/Dialog';
 
 storiesOf( 'Global', module )
 	.add( 'Modal Dialog', () => {

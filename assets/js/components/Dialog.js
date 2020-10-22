@@ -51,9 +51,10 @@ const Dialog = ( {
 	danger,
 } ) => {
 	const dialogRef = useRef( null );
+
 	useEffect( () => {
 		new MDCDialog( dialogRef.current );
-	} );
+	}, [ dialogRef.current ] );
 
 	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const labelledByID = `googlesitekit-dialog-label-${ instanceId }`;
