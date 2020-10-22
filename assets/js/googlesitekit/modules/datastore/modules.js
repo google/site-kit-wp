@@ -38,7 +38,6 @@ import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import DefaultModuleSettings from '../components/DefaultModuleSettings';
-import DefaultModuleSetup from '../components/DefaultModuleSetup';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -60,7 +59,7 @@ const moduleDefaults = {
 	order: 10,
 	icon: null,
 	settingsComponent: DefaultModuleSettings,
-	setupComponent: DefaultModuleSetup,
+	setupComponent: null,
 };
 
 const normalizeModules = memize(
@@ -223,7 +222,7 @@ const baseActions = {
 	 * @param {number}    [settings.order]             Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}    [settings.homepage]          Optional. Module homepage URL. Default empty string.
 	 * @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
-	 * @param {WPElement} [settings.setupComponent]    React component to render the setup panel. Default is the DefaultModuleSetup component.
+	 * @param {WPElement} [settings.setupComponent]    React component to render the setup panel. Default none.
 	 * @return {Object} Redux-style action.
 	 */
 	registerModule( slug, {
@@ -233,7 +232,7 @@ const baseActions = {
 		order,
 		homepage,
 		settingsComponent = DefaultModuleSettings,
-		setupComponent = DefaultModuleSetup,
+		setupComponent = null,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 

@@ -70,7 +70,7 @@ export default function SetupWrapper( { moduleSlug } ) {
 		}, 500, 'later' );
 	}, [ moduleSlug ] );
 
-	if ( ! module ) {
+	if ( ! module?.setupComponent ) {
 		return null;
 	}
 
