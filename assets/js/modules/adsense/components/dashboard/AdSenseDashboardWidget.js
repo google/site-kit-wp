@@ -98,7 +98,9 @@ class AdSenseDashboardWidget extends Component {
 	handleDataSuccess() {
 		this.setState( {
 			receivingData: true,
+			error: false,
 			loading: false,
+			zeroData: false,
 		} );
 	}
 
@@ -208,8 +210,8 @@ class AdSenseDashboardWidget extends Component {
 									header
 									/* translators: %s: date range */
 									title={ sprintf( __( 'Performance over the last %s', 'google-site-kit' ), currentDateRange ) }
-									headerCtaLabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
-									headerCtaLink={ homepage }
+									headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
+									headerCTALink={ homepage }
 								>
 									<AdSensePerformanceWidget
 										handleDataError={ ( err ) => {
