@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
  * @group Authentication
- * @group Ryan
  */
 class User_Input_StateTest extends TestCase {
 
