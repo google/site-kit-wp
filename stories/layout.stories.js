@@ -19,10 +19,10 @@ storiesOf( 'Global/Layout', module )
 			header
 			footer
 			title={ __( 'Title', 'google-site-kit' ) }
-			headerCtaLabel={ __( 'Header CTA Label', 'google-site-kit' ) }
-			headerCtaLink="#"
-			footerCtaLabel={ __( 'Footer CTA Label', 'google-site-kit' ) }
-			footerCtaLink="#"
+			headerCTALabel={ __( 'Header CTA Label', 'google-site-kit' ) }
+			headerCTALink="#"
+			footerCTALabel={ __( 'Footer CTA Label', 'google-site-kit' ) }
+			footerCTALink="#"
 		>
 			{ __( 'Child Content', 'google-site-kit' ) }
 		</Layout>
