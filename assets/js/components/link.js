@@ -29,6 +29,20 @@ import { _x } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 
 class Link extends Component {
+	getArialLabel() {
+		const {
+			children,
+			external,
+		} = this.props;
+
+		let label;
+		if ( external && typeof children === 'string' ) {
+			label = `${ children } ${ _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' ) }`;
+		}
+
+		return label;
+	}
+
 	render() {
 		const {
 			href,
@@ -71,15 +85,10 @@ class Link extends Component {
 				target={ isAnchor && external ? '_blank' : undefined }
 				rel={ external ? 'noopener noreferrer' : undefined }
 				disabled={ disabled }
+				aria-label={ this.getArialLabel() }
 				{ ...extraProps }
 			>
 				{ children }
-
-				{ external && (
-					<span className="screen-reader-text">
-						{ ' ' }{ _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' ) }
-					</span>
-				) }
 			</SemanticLink>
 		);
 	}
