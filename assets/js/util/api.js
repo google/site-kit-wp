@@ -31,7 +31,7 @@ export const excludedErrorCodes = [
  *
  * @since n.e.x.t
  *
- * @param {Object} args            The requst arguments.
+ * @param {Object} args            The request arguments.
  * @param {Object} args.method     The request method.
  * @param {Object} args.type       The request type.
  * @param {Object} args.identifier The request identifier.
