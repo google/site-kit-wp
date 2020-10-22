@@ -60,23 +60,47 @@ export default function UserInputQuestionnaire() {
 			/>
 
 			{ activeSlugIndex <= questions.indexOf( 'role' ) && (
-				<UserInputRoleQuestion isActive={ activeSlug === 'role' } next={ next } />
+				<UserInputRoleQuestion
+					isActive={ activeSlug === 'role' }
+					questionNumber={ 1 }
+					next={ next }
+				/>
 			) }
 
 			{ activeSlugIndex <= questions.indexOf( 'postFrequency' ) && (
-				<UserInputPostFrequencyQuestion isActive={ activeSlug === 'postFrequency' } next={ next } back={ back } />
+				<UserInputPostFrequencyQuestion
+					isActive={ activeSlug === 'postFrequency' }
+					questionNumber={ 2 }
+					next={ next }
+					back={ back }
+				/>
 			) }
 
 			{ activeSlugIndex <= questions.indexOf( 'goals' ) && (
-				<UserInputGoalsQuestion isActive={ activeSlug === 'goals' } next={ next } back={ back } />
+				<UserInputGoalsQuestion
+					isActive={ activeSlug === 'goals' }
+					questionNumber={ 3 }
+					next={ next }
+					back={ back }
+				/>
 			) }
 
 			{ activeSlugIndex <= questions.indexOf( 'helpNeeded' ) && (
-				<UserInputHelpNeededQuestion isActive={ activeSlug === 'helpNeeded' } next={ next } back={ back } />
+				<UserInputHelpNeededQuestion
+					isActive={ activeSlug === 'helpNeeded' }
+					questionNumber={ 4 }
+					next={ next }
+					back={ back }
+				/>
 			) }
 
 			{ activeSlugIndex <= questions.indexOf( 'searchTerms' ) && (
-				<UserInputSearchTermsQuestion isActive={ activeSlug === 'searchTerms' } next={ next } back={ back } />
+				<UserInputSearchTermsQuestion
+					isActive={ activeSlug === 'searchTerms' }
+					questionNumber={ 5 }
+					next={ next }
+					back={ back }
+				/>
 			) }
 		</div>
 	);

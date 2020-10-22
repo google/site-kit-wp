@@ -38,21 +38,15 @@ export default function UserInputSearchTermsQuestion( props ) {
 
 	return (
 		<UserInputQuestionWrapper slug="searchTerms" max={ maxAnswers } { ...props }>
-			<UserInputQuestionInfo
-				title={ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for', 'google-site-kit' ) }
-				questionNumber={ 5 }
-			/>
-
-			<UserInputKeywords
-				slug="searchTerms"
-				max={ maxAnswers }
-			/>
+			<UserInputQuestionInfo title={ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for', 'google-site-kit' ) } />
+			<UserInputKeywords slug="searchTerms" max={ maxAnswers } />
 		</UserInputQuestionWrapper>
 	);
 }
 
 UserInputSearchTermsQuestion.propTypes = {
 	isActive: PropTypes.bool,
+	questionNumber: PropTypes.number,
 	next: PropTypes.func,
 	back: PropTypes.func,
 };

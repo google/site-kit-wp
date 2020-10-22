@@ -99,7 +99,8 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 	return (
 		<div className="
 			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-7-desktop
+			mdc-layout-grid__cell--start-6-desktop
+			mdc-layout-grid__cell--span-6-desktop
 			mdc-layout-grid__cell--span-8-tablet
 			mdc-layout-grid__cell--span-4-phone
 		">

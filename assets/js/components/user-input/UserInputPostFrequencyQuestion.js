@@ -37,21 +37,15 @@ import { USER_INPUT_ANSWERS_POST_FREQUENCY } from './util/constants';
 export default function UserInputPostFrequencyQuestion( props ) {
 	return (
 		<UserInputQuestionWrapper slug="postFrequency" { ...props }>
-			<UserInputQuestionInfo
-				title={ __( 'How often do you create new post for this site?', 'google-site-kit' ) }
-				questionNumber={ 2 }
-			/>
-
-			<UserInputSelectOptions
-				slug="postFrequency"
-				options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
-			/>
+			<UserInputQuestionInfo title={ __( 'How often do you create new post for this site?', 'google-site-kit' ) } />
+			<UserInputSelectOptions slug="postFrequency" options={ USER_INPUT_ANSWERS_POST_FREQUENCY } />
 		</UserInputQuestionWrapper>
 	);
 }
 
 UserInputPostFrequencyQuestion.propTypes = {
 	isActive: PropTypes.bool,
+	questionNumber: PropTypes.number,
 	next: PropTypes.func,
 	back: PropTypes.func,
 };

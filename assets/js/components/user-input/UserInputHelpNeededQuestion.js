@@ -39,22 +39,15 @@ export default function UserInputHelpNeededQuestion( props ) {
 
 	return (
 		<UserInputQuestionWrapper slug="helpNeeded" max={ maxAnswers } { ...props }>
-			<UserInputQuestionInfo
-				title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
-				questionNumber={ 4 }
-			/>
-
-			<UserInputSelectOptions
-				slug="helpNeeded"
-				max={ maxAnswers }
-				options={ USER_INPUT_ANSWERS_HELP_NEEDED }
-			/>
+			<UserInputQuestionInfo title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) } />
+			<UserInputSelectOptions slug="helpNeeded" max={ maxAnswers } options={ USER_INPUT_ANSWERS_HELP_NEEDED } />
 		</UserInputQuestionWrapper>
 	);
 }
 
 UserInputHelpNeededQuestion.propTypes = {
 	isActive: PropTypes.bool,
+	questionNumber: PropTypes.number,
 	next: PropTypes.func,
 	back: PropTypes.func,
 };

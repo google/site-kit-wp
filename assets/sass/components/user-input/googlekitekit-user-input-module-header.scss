@@ -134,5 +134,42 @@
 				}
 			}
 		}
+
+		&__text-options {
+			border: 2px solid $c-jumbo;
+			border-radius: 5px;
+			display: flex;
+			margin-top: 13px;
+			padding: 8px;
+
+			& .mdc-text-field {
+				background-color: transparent;
+				height: 40px;
+
+				& input {
+					border: none;
+					padding: 0;
+				}
+			}
+		}
+
+		&__text-option {
+			align-items: center;
+			background-color: $c-solitude;
+			border-radius: 100px;
+			color: $c-denim;
+			display: flex;
+			font-weight: 500;
+			margin-right: 12px;
+			padding: 3px 3px 3px 12px;
+			white-space: nowrap;
+
+			& button {
+				border-radius: 100px;
+				margin: 0;
+				min-width: 0;
+				padding: 0 12px;
+			}
+		}
 	}
 }

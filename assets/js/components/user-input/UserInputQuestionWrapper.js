@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -35,7 +35,7 @@ import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/cons
 import Button from '../button';
 const { useSelect } = Data;
 
-export default function UserInputQuestionWrapper( { children, slug, isActive, next, back, max } ) {
+export default function UserInputQuestionWrapper( { children, slug, isActive, questionNumber, next, back, max } ) {
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 
 	return (
@@ -54,6 +54,13 @@ export default function UserInputQuestionWrapper( { children, slug, isActive, ne
 						mdc-layout-grid__cell--span-8-tablet
 						mdc-layout-grid__cell--span-4-phone
 					">
+						<p className="googlesitekit-user-input__question-number">
+							{
+								/* translators: %s: the number of the question */
+								sprintf( __( '%s out of 5', 'google-site-kit' ), questionNumber )
+							}
+						</p>
+
 						<div className="mdc-layout-grid__inner">
 							{ children }
 						</div>
@@ -84,6 +91,7 @@ export default function UserInputQuestionWrapper( { children, slug, isActive, ne
 
 UserInputQuestionWrapper.propTypes = {
 	slug: PropTypes.string.isRequired,
+	questionNumber: PropTypes.number.isRequired,
 	children: PropTypes.node,
 	isActive: PropTypes.bool,
 	max: PropTypes.number,

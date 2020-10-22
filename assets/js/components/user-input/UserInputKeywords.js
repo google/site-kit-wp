@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback, useState } from '@wordpress/element';
-// import { __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -65,7 +65,8 @@ export default function UserInputKeywords( { slug, max } ) {
 	return (
 		<div className="
 			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-7-desktop
+			mdc-layout-grid__cell--start-6-desktop
+			mdc-layout-grid__cell--span-6-desktop
 			mdc-layout-grid__cell--span-8-tablet
 			mdc-layout-grid__cell--span-4-phone
 		">
@@ -83,6 +84,7 @@ export default function UserInputKeywords( { slug, max } ) {
 					</TextField>
 				) }
 			</div>
+			<small>{ __( 'Separate with commas or the Enter key', 'google-site-kit' ) }</small>
 		</div>
 	);
 }

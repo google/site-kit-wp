@@ -37,15 +37,8 @@ import { USER_INPUT_ANSWERS_ROLE } from './util/constants';
 export default function UserInputRoleQuestion( props ) {
 	return (
 		<UserInputQuestionWrapper slug="role" { ...props }>
-			<UserInputQuestionInfo
-				title={ __( 'Which best describes your team/role in relation to this site?', 'google-site-kit' ) }
-				questionNumber={ 1 }
-			/>
-
-			<UserInputSelectOptions
-				slug="role"
-				options={ USER_INPUT_ANSWERS_ROLE }
-			/>
+			<UserInputQuestionInfo title={ __( 'Which best describes your team/role in relation to this site?', 'google-site-kit' ) } />
+			<UserInputSelectOptions slug="role" options={ USER_INPUT_ANSWERS_ROLE } />
 		</UserInputQuestionWrapper>
 	);
 }
@@ -53,4 +46,5 @@ export default function UserInputRoleQuestion( props ) {
 UserInputRoleQuestion.propTypes = {
 	isActive: PropTypes.bool,
 	next: PropTypes.func,
+	questionNumber: PropTypes.number,
 };

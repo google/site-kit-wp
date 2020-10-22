@@ -39,22 +39,15 @@ export default function UserInputGoalsQuestion( props ) {
 
 	return (
 		<UserInputQuestionWrapper slug="goals" max={ maxAnswers } { ...props }>
-			<UserInputQuestionInfo
-				title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
-				questionNumber={ 3 }
-			/>
-
-			<UserInputSelectOptions
-				slug="goals"
-				max={ maxAnswers }
-				options={ USER_INPUT_ANSWERS_GOALS }
-			/>
+			<UserInputQuestionInfo title={ __( 'What are the goals of this site?', 'google-site-kit' ) } />
+			<UserInputSelectOptions slug="goals" max={ maxAnswers } options={ USER_INPUT_ANSWERS_GOALS } />
 		</UserInputQuestionWrapper>
 	);
 }
 
 UserInputGoalsQuestion.propTypes = {
 	isActive: PropTypes.bool,
+	questionNumber: PropTypes.number,
 	next: PropTypes.func,
 	back: PropTypes.func,
 };
