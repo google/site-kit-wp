@@ -246,7 +246,12 @@ final class Authentication {
 
 		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
-		add_action( 'admin_init', $this->verify_user_input_settings() );
+		add_action(
+			'admin_init',
+			function() {
+				$this->verify_user_input_settings();
+			}
+		);
 		add_action(
 			'admin_init',
 			function() {
