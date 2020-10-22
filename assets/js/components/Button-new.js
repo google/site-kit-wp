@@ -48,7 +48,7 @@ const Button = ( {
 	const buttonRef = useRef( null );
 	useEffect( () => {
 		new MDCRipple( buttonRef.current );
-	} );
+	}, [ buttonRef.current ] );
 
 	// Use a button if disabled, even if a href is provided to ensure expected behavior.
 	const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
