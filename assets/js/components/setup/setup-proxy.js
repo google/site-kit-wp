@@ -126,13 +126,13 @@ function SetupUsingProxy() {
 											<div className={ classnames(
 												'mdc-layout-grid__inner',
 												{
-													'googlesitekit-wizard-progress__content': featureFlags.widgets.userInput.enabled,
+													'googlesitekit-setup__content': featureFlags.widgets.userInput.enabled,
 												}
 											) }>
 												{ featureFlags.widgets.userInput.enabled && (
 													<div
 														className="
-															googlesitekit-wizard-progress__icon
+															googlesitekit-setup__icon
 															mdc-layout-grid__cell
 															mdc-layout-grid__cell--span-12-tablet
 															mdc-layout-grid__cell--span-6-desktop

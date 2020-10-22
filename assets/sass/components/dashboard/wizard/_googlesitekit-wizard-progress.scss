@@ -37,28 +37,4 @@
 			padding: $grid-gap-desktop 0 0 0;
 		}
 	}
-
-	.googlesitekit-wizard-progress__content {
-		margin: 0 auto;
-		max-width: 465px;
-		padding: 32px 0;
-
-		@media (min-width: $bp-desktop) {
-			max-width: none;
-			padding: 0;
-		}
-	}
-
-	.googlesitekit-wizard-progress__icon {
-		text-align: center;
-
-		svg {
-			height: auto;
-			max-width: 100%;
-		}
-
-		@media (min-width: $bp-desktop) {
-			order: 2;
-		}
-	}
 }
