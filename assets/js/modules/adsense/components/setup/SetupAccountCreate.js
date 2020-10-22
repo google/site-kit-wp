@@ -26,7 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/button';
+import Button from '../../../../components/Button';
 import Link from '../../../../components/link';
 import { trackEvent } from '../../../../util';
 import { sanitizeHTML } from '../../../../util/sanitize';

@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
-import Button from '../button';
+import Button from '../Button';
 
 class DashboardSplashOutro extends Component {
 	render() {

@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Button from '../assets/js/components/button';
+import Button from '../assets/js/components/Button';
 
 storiesOf( 'Global', module )
 	.add( 'Buttons', () => {

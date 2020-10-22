@@ -34,7 +34,7 @@ import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import { sanitizeHTML } from '../../util/sanitize';
 import { setCache, getCache, deleteCache } from '../data/cache';
 import DataBlock from '../data-block';
-import Button from '../button';
+import Button from '../Button';
 import Warning from '../notifications/warning';
 import Error from '../notifications/error';
 import Link from '../link';

@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from './button';
+import Button from './Button';
 import Layout from './layout/layout';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';

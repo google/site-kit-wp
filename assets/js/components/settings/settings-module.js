@@ -44,7 +44,7 @@ import {
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../../components/link';
-import Button from '../../components/button';
+import Button from '../../components/Button';
 import data, { TYPE_MODULES } from '../../components/data';
 import Spinner from '../../components/spinner';
 import SettingsOverlay from '../../components/settings/settings-overlay';

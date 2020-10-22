@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { getSiteKitAdminURL, clearWebStorage } from '../util';
 import Dialog from './dialog';
-import Button from './button';
+import Button from './Button';
 import Menu from './menu';
 import Modal from './modal';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
