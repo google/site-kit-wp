@@ -46,23 +46,29 @@ export default function UserInputQuestionInfo( { title, questionNumber } ) {
 	return (
 		<div className="
 			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-6-desktop
+			mdc-layout-grid__cell--span-5-desktop
 			mdc-layout-grid__cell--span-8-tablet
 			mdc-layout-grid__cell--span-4-phone
 		">
-			<p>
+			<p className="googlesitekit-user-input__question-number">
 				{
 					/* translators: %s: the number of the question */
 					sprintf( __( '%s out of 5', 'google-site-kit' ), questionNumber )
 				}
 			</p>
-			<h1>
+
+			<h1 className="googlesitekit-user-input__question-title">
 				{ title }
 			</h1>
-			<h3>
+
+			<p className="googlesitekit-user-input__question-instructions">
 				{ __( 'Place a text here that gives more context and information to the user to answer the question correctly.', 'google-site-kit' ) }
-			</h3>
-			<p dangerouslySetInnerHTML={ sanitizeHTML( notice, sanitizeArgs ) } />
+			</p>
+
+			<p
+				className="googlesitekit-user-input__question-instructions googlesitekit-user-input__question-instructions--notice"
+				dangerouslySetInnerHTML={ sanitizeHTML( notice, sanitizeArgs ) }
+			/>
 		</div>
 	);
 }

@@ -39,7 +39,13 @@ export default function UserInputQuestionWrapper( { children, slug, isActive, ne
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 
 	return (
-		<div className={ classnames( 'googlesitekit-user-input__question', { 'googlesitekit-user-input__next-question': ! isActive } ) }>
+		<div className={ classnames(
+			'googlesitekit-user-input__question',
+			{
+				'googlesitekit-user-input__active-question': isActive,
+				'googlesitekit-user-input__next-question': ! isActive,
+			}
+		) }>
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
 					<div className="
@@ -53,9 +59,9 @@ export default function UserInputQuestionWrapper( { children, slug, isActive, ne
 						</div>
 
 						{ isActive && (
-							<div>
+							<div className="googlesitekit-user-input__buttons">
 								{ back && (
-									<Button onClick={ back }>
+									<Button text onClick={ back }>
 										{ __( 'Back', 'google-site-kit' ) }
 									</Button>
 								) }

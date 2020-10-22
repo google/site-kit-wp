@@ -86,7 +86,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 		}
 
 		return (
-			<div key={ optionSlug }>
+			<div key={ optionSlug } className="googlesitekit-user-input__select-option">
 				<ListComponent { ...props }>
 					{ options[ optionSlug ] }
 				</ListComponent>
@@ -97,13 +97,13 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 	return (
 		<div className="
 			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-6-desktop
+			mdc-layout-grid__cell--span-7-desktop
 			mdc-layout-grid__cell--span-8-tablet
 			mdc-layout-grid__cell--span-4-phone
 		">
 			{ items }
 
-			<div>
+			<div className="googlesitekit-user-input__select-option">
 				<ListComponent
 					id={ `${ slug }-other` }
 					name={ max === 1 ? slug : `${ slug }-other` }
@@ -120,11 +120,11 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 				</TextField>
 			</div>
 
-			<p>
+			<small>
 				{ max === 1 && __( 'Choose only one (1) answer', 'google-site-kit' ) }
 				{ max === 2 && __( 'Choose only two (2) answers', 'google-site-kit' ) }
 				{ max === 3 && __( 'Choose only three (3) answers', 'google-site-kit' ) }
-			</p>
+			</small>
 		</div>
 	);
 }
