@@ -68,7 +68,7 @@ const baseActions = {
 	/**
 	 * Sets user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param {Object} values User input settings.
 	 * @return {Object} Redux-style action.
@@ -83,7 +83,7 @@ const baseActions = {
 	/**
 	 * Sets user input setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param {string}         settingID Setting key.
 	 * @param {Array.<string>} values    User input settings.
@@ -102,7 +102,7 @@ const baseActions = {
 	/**
 	 * Saves user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -156,7 +156,7 @@ const baseSelectors = {
 	/**
 	 * Gets input settings info for this user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User input settings.
@@ -169,7 +169,7 @@ const baseSelectors = {
 	/**
 	 * Gets a particular input setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User input settings.
