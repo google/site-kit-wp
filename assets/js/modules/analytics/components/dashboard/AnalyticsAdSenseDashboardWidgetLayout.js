@@ -41,8 +41,8 @@ const AnalyticsAdSenseDashboardWidgetLayout = ( { children } ) => {
 			header
 			/* translators: %s: date range */
 			title={ sprintf( __( 'Performance by page over the last %s', 'google-site-kit' ), currentDateRange ) }
-			headerCtaLabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
-			headerCtaLink={ accountSiteURL }>
+			headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
+			headerCTALink={ accountSiteURL }>
 			{ children }
 		</Layout>
 	);

@@ -188,12 +188,12 @@ export default function AnalyticsDashboardWidget() {
 								header
 								/* translators: %s: date range */
 								title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), currentDateRange ) }
-								headerCtaLabel={ sprintf(
+								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
 									_x( 'Analytics', 'Service name', 'google-site-kit' )
 								) }
-								headerCtaLink={ visitorsOverview }
+								headerCTALink={ visitorsOverview }
 							>
 								<AnalyticsDashboardWidgetOverview
 									selectedStats={ selectedStats }
@@ -219,14 +219,14 @@ export default function AnalyticsDashboardWidget() {
 								footer
 								/* translators: %s: date range */
 								title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentDateRange ) }
-								headerCtaLink={ topContentServiceURL }
-								headerCtaLabel={ sprintf(
+								headerCTALink={ topContentServiceURL }
+								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
 									_x( 'Analytics', 'Service name', 'google-site-kit' )
 								) }
-								footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-								footerCtaLink={ topContentServiceURL }
+								footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+								footerCTALink={ topContentServiceURL }
 							>
 								<AnalyticsDashboardWidgetTopPagesTable />
 							</Layout>
@@ -241,14 +241,14 @@ export default function AnalyticsDashboardWidget() {
 								footer
 								/* translators: %s: date range */
 								title={ sprintf( __( 'Top acquisition channels over the last %s', 'google-site-kit' ), currentDateRange ) }
-								headerCtaLink={ topAcquisitionServiceURL }
-								headerCtaLabel={ sprintf(
+								headerCTALink={ topAcquisitionServiceURL }
+								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
 									_x( 'Analytics', 'Service name', 'google-site-kit' )
 								) }
-								footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-								footerCtaLink={ topAcquisitionServiceURL }
+								footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+								footerCTALink={ topAcquisitionServiceURL }
 							>
 								<div className="mdc-layout-grid">
 									<div className="mdc-layout-grid__inner">
