@@ -55,6 +55,48 @@ describe( 'trackAPIError', () => {
 		expect( eventData.event_value ).toEqual( 'test-error-code' );
 	} );
 
+	it( 'tracks API error message & code with no reason', () => {
+		trackAPIError( {
+			method: 'test-method',
+			type: 'test-type',
+			identifier: 'test-identifier',
+			datapoint: 'test-datapoint',
+			error: {
+				data: {
+				},
+				message: 'test-error-message',
+				code: 'test-error-code',
+			},
+		} );
+		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
+		const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
+		expect( event ).toEqual( 'event' );
+		expect( eventName ).toEqual( 'test-method:test-type/test-identifier/data/test-datapoint' );
+		expect( eventData.event_category ).toEqual( 'api_error' );
+		expect( eventData.event_label ).toEqual( 'test-error-message (code: test-error-code)' );
+		expect( eventData.event_value ).toEqual( 'test-error-code' );
+	} );
+
+	it( 'tracks API error message & code with no data', () => {
+		trackAPIError( {
+			method: 'test-method',
+			type: 'test-type',
+			identifier: 'test-identifier',
+			datapoint: 'test-datapoint',
+			error: {
+				message: 'test-error-message',
+				code: 'test-error-code',
+			},
+		} );
+		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
+		const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
+		expect( event ).toEqual( 'event' );
+		expect( eventName ).toEqual( 'test-method:test-type/test-identifier/data/test-datapoint' );
+		expect( eventData.event_category ).toEqual( 'api_error' );
+		expect( eventData.event_label ).toEqual( 'test-error-message (code: test-error-code)' );
+		expect( eventData.event_value ).toEqual( 'test-error-code' );
+	} );
+
 	it( "doesn't track excluded error codes", () => {
 		excludedErrorCodes.forEach( ( excludedCode ) => {
 			trackAPIError( {
