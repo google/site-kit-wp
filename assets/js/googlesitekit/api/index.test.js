@@ -477,18 +477,18 @@ describe( 'googlesitekit.api', () => {
 			};
 
 			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
+				/^\/google-site-kit\/v1\/test-type\/test-identifier\/data\/test-datapoint/,
 				{ body: errorResponse, status: 500 }
 			);
 
 			try {
-				await set( 'core', 'search-console', 'settings', 'data' );
+				await set( 'test-type', 'test-identifier', 'test-datapoint', 'data' );
 			} catch ( err ) {
 				expect( console ).toHaveErrored();
 				expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
 				const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 				expect( event ).toEqual( 'event' );
-				expect( eventName ).toEqual( 'POST:core/search-console/data/settings' );
+				expect( eventName ).toEqual( 'POST:test-type/test-identifier/data/test-datapoint' );
 				expect( eventData.event_category ).toEqual( 'api_error' );
 				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
 				expect( eventData.event_value ).toEqual( 500 );
