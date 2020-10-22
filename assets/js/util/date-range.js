@@ -52,7 +52,7 @@ export function getCurrentDateRange( dateRange = getCurrentDateRangeSlug() ) {
 /**
  * Gets the current dateRange day count.
  *
- * @since n.e.x.t
+ * @since 1.19.0
  *
  * @param {string} [dateRange] Optional. The date range slug.
  * @return {number} The number of days in the range.

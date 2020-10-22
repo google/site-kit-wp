@@ -25,6 +25,7 @@ import {
 	AnonymizeIPSwitch,
 	UseSnippetSwitch,
 	TrackingExclusionSwitches,
+	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 
@@ -184,6 +185,13 @@ storiesOf( 'Analytics Module', module )
 					<TrackingExclusionSwitches />
 				</SetupWrap>
 			</WithTestRegistry>
+		);
+	} )
+	.add( 'GA4 notice', () => {
+		return (
+			<SetupWrap>
+				<GA4Notice />
+			</SetupWrap>
 		);
 	} )
 	.add( 'Audience Overview Chart', () => {
