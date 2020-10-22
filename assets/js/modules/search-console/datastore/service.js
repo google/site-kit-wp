@@ -27,6 +27,7 @@ import { addQueryArgs } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+
 const { createRegistrySelector } = Data;
 
 export const selectors = {
@@ -55,6 +56,13 @@ export const selectors = {
 		return addQueryArgs( baseURI, queryArgs );
 	} ),
 
+	/**
+	 * Checks whether the property is a Search Console Domain Property.
+	 *
+	 * @since 1.18.0
+	 *
+	 * @return {boolean} True if the propertyID is a search console domain property, otherwise false.
+	 */
 	isDomainProperty: createRegistrySelector( ( select ) => () => {
 		const domain = select( STORE_NAME ).getPropertyID();
 

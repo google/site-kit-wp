@@ -80,7 +80,7 @@ describe( 'module/search-console service store', () => {
 			} );
 		} );
 		describe( 'isDomainProperty', () => {
-			it( 'identify if property is search console domain property', async () => {
+			it( 'should identify if property is search console domain property', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( {
 					propertyID: 'http://sitekit.google.com',
 				} );
