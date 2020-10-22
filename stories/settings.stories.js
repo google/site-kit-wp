@@ -35,6 +35,7 @@ import SettingsModules from '../assets/js/components/settings/settings-modules';
 import Layout from '../assets/js/components/layout/layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
+import { WithTestRegistry } from '../tests/js/utils';
 
 /**
  * Add components to the settings page.
@@ -74,9 +75,11 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
 
 		return (
-			<div className="mdc-layout-grid__inner">
-				<SettingsModules activeTab={ 0 } />
-			</div>
+			<WithTestRegistry>
+				<div className="mdc-layout-grid__inner">
+					<SettingsModules activeTab={ 0 } />
+				</div>
+			</WithTestRegistry>
 		);
 	}, {
 		options: {
@@ -87,8 +90,11 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData = settingsData;
 		global._googlesitekitLegacyData.canAdsRun = true;
 		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
+		global._googlesitekitLegacyData.modules.adsense.active = false;
 		return (
-			<SettingsModules activeTab={ 1 } />
+			<WithTestRegistry>
+				<SettingsModules activeTab={ 1 } />
+			</WithTestRegistry>
 		);
 	} )
 	.add( 'Admin Settings', () => {
