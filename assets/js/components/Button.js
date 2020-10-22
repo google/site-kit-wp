@@ -46,6 +46,7 @@ const Button = ( {
 	...extraProps
 } ) => {
 	const buttonRef = useRef( null );
+
 	useEffect( () => {
 		new MDCRipple( buttonRef.current );
 	}, [ buttonRef.current ] );

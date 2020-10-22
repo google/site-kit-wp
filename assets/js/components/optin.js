@@ -32,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getMetaKeyForUserOption, sanitizeHTML } from '../util';
-import Checkbox from './checkbox';
+import Checkbox from './Checkbox';
 import {
 	isTrackingEnabled,
 	toggleTracking,

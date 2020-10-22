@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import Switch from '../../../../components/switch';
+import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {

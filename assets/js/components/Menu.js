@@ -38,11 +38,12 @@ const Menu = ( {
 	id,
 } ) => {
 	const menuRef = useRef( null );
+
 	useEffect( () => {
 		const menu = new MDCMenu( menuRef.current );
 		menu.open = menuOpen;
 		menu.setDefaultFocusState( 1 );
-	} );
+	}, [ menuRef.current ] );
 
 	return (
 		<div className="mdc-menu mdc-menu-surface" ref={ menuRef }>

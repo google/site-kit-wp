@@ -33,19 +33,22 @@ import { Fragment, useEffect, useRef } from '@wordpress/element';
  */
 import { MDCSwitch } from '../material-components';
 
-const Switch = ( {
-	// eslint-disable-next-line sitekit/camelcase-acronyms
-	id = `googlesitekit-switch-${ this.props.instanceId }`,
-	onClick,
-	label,
-	checked,
-	disabled,
-	hideLabel,
-} ) => {
+const Switch = ( props ) => {
+	const {
+		// eslint-disable-next-line sitekit/camelcase-acronyms
+		id = `googlesitekit-switch-${ props.instanceId }`,
+		onClick,
+		label,
+		checked,
+		disabled,
+		hideLabel,
+	} = props;
+
 	const switchRef = useRef( null );
+
 	useEffect( () => {
 		new MDCSwitch( switchRef.current );
-	} );
+	}, [ switchRef.current ] );
 
 	const onKeyPress = ( event ) => {
 		if ( typeof onClick === 'function' && event.code === 'Enter' ) {

@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Checkbox from '../assets/js/components/checkbox';
+import Checkbox from '../assets/js/components/Checkbox';
 
 storiesOf( 'Global', module )
 	.add( 'Checkboxes', () => {
