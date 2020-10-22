@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 import UserInputSelectOptions from './UserInputSelectOptions';
+import { USER_INPUT_ANSWERS_HELP_NEEDED } from './util/constants';
 
 export default function UserInputHelpNeededQuestion( props ) {
 	const maxAnswers = 3;
@@ -46,17 +47,7 @@ export default function UserInputHelpNeededQuestion( props ) {
 			<UserInputSelectOptions
 				slug="helpNeeded"
 				max={ maxAnswers }
-				options={ {
-					retaining_visitors: __( 'Retaining visitors, turning them into loyal readers or customers', 'google-site-kit' ),
-					improving_performance: __( 'Improving speed and performance', 'google-site-kit' ),
-					finding_new_topics: __( 'Finding new topics to write about that connect with my audience', 'google-site-kit' ),
-					growing_audience: __( 'Growing my audience', 'google-site-kit' ),
-					expanding_business: __( 'Expanding my business into new cities, states or markets', 'google-site-kit' ),
-					generating_revenue: __( 'Generating more revenue', 'google-site-kit' ),
-					help_better_rank: __( 'Help my content rank in a better position in Google search results', 'google-site-kit' ),
-					understanding_content_performance: __( 'Understanding which content is performing best', 'google-site-kit' ),
-					encourage_to_post: __( 'Encouragement to post more frequently', 'google-site-kit' ),
-				} }
+				options={ USER_INPUT_ANSWERS_HELP_NEEDED }
 			/>
 		</UserInputQuestionWrapper>
 	);

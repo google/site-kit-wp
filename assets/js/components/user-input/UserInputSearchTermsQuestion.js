@@ -31,15 +31,22 @@ import { __ } from '@wordpress/i18n';
  */
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
+import UserInputKeywords from './UserInputKeywords';
 
 export default function UserInputSearchTermsQuestion( props ) {
+	const maxAnswers = 3;
+
 	return (
-		<UserInputQuestionWrapper slug="searchTerms" { ...props }>
+		<UserInputQuestionWrapper slug="searchTerms" max={ maxAnswers } { ...props }>
 			<UserInputQuestionInfo
 				title={ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for', 'google-site-kit' ) }
 				questionNumber={ 5 }
 			/>
 
+			<UserInputKeywords
+				slug="searchTerms"
+				max={ maxAnswers }
+			/>
 		</UserInputQuestionWrapper>
 	);
 }

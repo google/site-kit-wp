@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 import UserInputSelectOptions from './UserInputSelectOptions';
+import { USER_INPUT_ANSWERS_POST_FREQUENCY } from './util/constants';
 
 export default function UserInputPostFrequencyQuestion( props ) {
 	return (
@@ -43,12 +44,7 @@ export default function UserInputPostFrequencyQuestion( props ) {
 
 			<UserInputSelectOptions
 				slug="postFrequency"
-				options={ {
-					never: __( 'Never', 'google-site-kit' ),
-					daily: __( 'Every day', 'google-site-kit' ),
-					weekly: __( 'Once a week or less', 'google-site-kit' ),
-					monthly: __( 'Once a month or less', 'google-site-kit' ),
-				} }
+				options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 			/>
 		</UserInputQuestionWrapper>
 	);

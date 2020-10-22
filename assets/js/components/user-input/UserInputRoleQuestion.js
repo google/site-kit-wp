@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 import UserInputSelectOptions from './UserInputSelectOptions';
+import { USER_INPUT_ANSWERS_ROLE } from './util/constants';
 
 export default function UserInputRoleQuestion( props ) {
 	return (
@@ -43,12 +44,7 @@ export default function UserInputRoleQuestion( props ) {
 
 			<UserInputSelectOptions
 				slug="role"
-				options={ {
-					owner: __( 'I am the owner and sole creator and admin', 'google-site-kit' ),
-					owner_with_team: __( 'I am the owner of the site and have a team who works on this site', 'google-site-kit' ),
-					in_house_team: __( 'I am part of the in-house team in a content creation, growth, SEO or technical role', 'google-site-kit' ),
-					part_type_freelancer: __( 'I am a part-time or freelance consultant who is helping with this site', 'google-site-kit' ),
-				} }
+				options={ USER_INPUT_ANSWERS_ROLE }
 			/>
 		</UserInputQuestionWrapper>
 	);

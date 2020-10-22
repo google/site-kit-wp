@@ -40,8 +40,10 @@ const { useSelect, useDispatch } = Data;
 export default function UserInputSelectOptions( { slug, options, max } ) {
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
 	const [ other, setOther ] = useState( values.filter( ( value ) => ! options[ value ] )[ 0 ] || '' );
-
 	const { setUserInputSetting } = useDispatch( CORE_USER );
+
+	// Need to make sure that dependencies list always has the same number of elements.
+	const dependencies = values.concat( Array( max ) ).slice( 0, max );
 
 	const onClick = useCallback( ( event ) => {
 		const { target } = event;
@@ -53,7 +55,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 		}
 
 		setUserInputSetting( slug, Array.from( newValues ).slice( 0, max ) );
-	}, values.concat( Array( max ) ).slice( 0, max ) );
+	}, dependencies );
 
 	const onOtherChange = useCallback( ( { target } ) => {
 		const newValues = [
@@ -63,7 +65,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 
 		setOther( target.value );
 		setUserInputSetting( slug, newValues.slice( 0, max ) );
-	}, values.concat( Array( max ) ).slice( 0, max ) );
+	}, dependencies );
 
 	const onClickProps = {
 		[ max > 1 ? 'onChange' : 'onClick' ]: onClick,

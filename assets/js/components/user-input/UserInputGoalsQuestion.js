@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 import UserInputSelectOptions from './UserInputSelectOptions';
+import { USER_INPUT_ANSWERS_GOALS } from './util/constants';
 
 export default function UserInputGoalsQuestion( props ) {
 	const maxAnswers = 2;
@@ -46,13 +47,7 @@ export default function UserInputGoalsQuestion( props ) {
 			<UserInputSelectOptions
 				slug="goals"
 				max={ maxAnswers }
-				options={ {
-					sell_products_or_service: __( 'Sell products or services', 'google-site-kit' ),
-					monetize_content: __( 'Monetize content (with ads or affiliate links)', 'google-site-kit' ),
-					publish_blog: __( 'Publish a blog', 'google-site-kit' ),
-					publish_news: __( 'Publish news content', 'google-site-kit' ),
-					share_portfolio: __( 'Share a business card or portfolio to represent me or my company online', 'google-site-kit' ),
-				} }
+				options={ USER_INPUT_ANSWERS_GOALS }
 			/>
 		</UserInputQuestionWrapper>
 	);
