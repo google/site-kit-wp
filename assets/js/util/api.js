@@ -1,5 +1,5 @@
 /**
- * Track API errors.
+ * API utility functions.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
