@@ -20,6 +20,7 @@ import { trackEvent } from './';
 const excludedErrorCodes = [
 	'fetch_error', // Client failed to fetch from WordPress.
 ];
+
 /**
  * Tracks API errors.
  *
