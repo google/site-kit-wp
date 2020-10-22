@@ -46,7 +46,7 @@ final class User_Input_State extends User_Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param mixed $value Setting value. Must be serializable if non-scalar.
+	 * @param string $value Setting value. One of 'required', 'missing', 'completed' or ''.
 	 *
 	 * @return bool True on success, false on failure or if value is not a valid string.
 	 */
