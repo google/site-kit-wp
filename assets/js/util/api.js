@@ -40,7 +40,10 @@ export async function trackAPIError( { method, type, identifier, datapoint, erro
 		return;
 	}
 
-	const labelMeta = `code: ${ error.code }${ error.data?.reason ? ', reason: ' + error.data.reason : '' }`;
+	let labelMeta = `code: ${ error.code }`;
+	if ( error.data?.reason ) {
+		labelMeta += `, reason: ${ error.data.reason }`
+	}
 
 	await trackEvent(
 		'api_error',
