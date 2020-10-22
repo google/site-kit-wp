@@ -25,9 +25,9 @@ import domReady from '@wordpress/dom-ready';
 /**
  * Internal dependencies
  */
-import './datastore';
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
+import './datastore';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';

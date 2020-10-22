@@ -25,8 +25,8 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import './datastore';
 import Data from 'googlesitekit-data';
+import './datastore';
 import { SetupMain as OptimizeSetup } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { fillFilterWithComponent } from '../../util';

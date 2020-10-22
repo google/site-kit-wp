@@ -26,9 +26,9 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import './datastore';
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
+import './datastore';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,

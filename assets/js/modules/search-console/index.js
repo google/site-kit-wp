@@ -24,9 +24,9 @@ import domReady from '@wordpress/dom-ready';
 /**
  * Internal dependencies
  */
-import './datastore';
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
+import './datastore';
 import { SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
 import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget';
