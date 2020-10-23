@@ -24,13 +24,18 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { sanitizeHTML } from '../../util';
+const { useSelect } = Data;
 
 export default function UserInputQuestionNotice() {
+	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
+
 	const notice = sprintf(
 		/* translators: %s: Settings page URL */
 		__( 'You can always edit your answers after your submission in <a href="%s">Setting</a>.', 'google-site-kit' ),
-		'#'
+		settingsURL,
 	);
 
 	const sanitizeArgs = {
