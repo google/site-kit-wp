@@ -113,7 +113,11 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 				</ListComponent>
 
 				<TextField>
-					<Input value={ other } onChange={ onOtherChange } />
+					<Input
+						id={ `${ slug }-select-options` }
+						value={ other }
+						onChange={ onOtherChange }
+					/>
 				</TextField>
 			</div>
 

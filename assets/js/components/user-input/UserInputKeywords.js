@@ -45,18 +45,20 @@ export default function UserInputKeywords( { slug, max } ) {
 	const dependencies = values.concat( Array( max ) ).slice( 0, max );
 
 	const onKeywordChange = useCallback( ( { target } ) => {
-		const lastChar = target.value[ target.value.length - 1 ];
-		if ( lastChar === ',' ) {
-			const textValue = target.value.substring( 0, target.value.length - 1 ).trim();
-			if ( textValue ) {
-				setUserInputSetting( slug, [ ...values, textValue ] );
-			}
-
-			setKeyword( '' );
-		} else {
+		if ( target.value[ target.value.length - 1 ] !== ',' ) {
 			setKeyword( target.value );
 		}
 	}, dependencies );
+
+	const onKeyDown = useCallback( ( { keyCode } ) => {
+		if ( keyCode === 13 || keyCode === 188 ) {
+			const value = keyword.trim();
+			if ( value ) {
+				setUserInputSetting( slug, [ ...values, value ] );
+				setKeyword( '' );
+			}
+		}
+	}, [ keyword, ...dependencies ] );
 
 	const onKeywordDelete = useCallback( ( keywordToDelete ) => {
 		setUserInputSetting( slug, values.filter( ( value ) => value !== keywordToDelete ) );
@@ -74,7 +76,12 @@ export default function UserInputKeywords( { slug, max } ) {
 
 				{ values.length !== max && (
 					<TextField>
-						<Input value={ keyword } onChange={ onKeywordChange } />
+						<Input
+							id={ `${ slug }-keywords` }
+							value={ keyword }
+							onChange={ onKeywordChange }
+							onKeyDown={ onKeyDown }
+						/>
 					</TextField>
 				) }
 			</div>
