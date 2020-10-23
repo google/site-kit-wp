@@ -149,7 +149,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 			}
 		}
 
-		global.console.error( 'Google Site Kit API Error', error );
+		global.console.error( 'Google Site Kit API Error', JSON.stringify( error ) );
 
 		throw error;
 	}
