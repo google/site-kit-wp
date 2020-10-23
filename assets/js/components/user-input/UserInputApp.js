@@ -25,12 +25,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { Grid, Row, Cell } from '../../material-components';
 import Header from '../header';
 import PageHeader from '../page-header';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
-import { Grid, Row, Cell } from '../../material-components';
+import UserInputCongrats from './UserInputCongrats';
+const { useSelect } = Data;
 
 export default function UserInputApp() {
+	const hasFinishedSavingInputSettings = useSelect( ( select ) => select( CORE_USER ).hasFinishedSavingInputSettings() );
+
 	if ( ! featureFlags.userInput.enabled ) {
 		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;
 	}
@@ -40,30 +46,37 @@ export default function UserInputApp() {
 			<Header />
 			<div className="googlesitekit-user-input">
 				<div className="googlesitekit-module-page">
-					<Grid>
-						<Row>
-							<Cell lg={ 6 }>
-								<PageHeader
-									className="googlesitekit-heading-2 googlesitekit-user-input__heading"
-									title={ __( 'Customize Site Kit to match your goals', 'google-site-kit' ) }
-									fullWidth
-								/>
-							</Cell>
-							<Cell lg={ 6 }>
-								<span className="googlesitekit-user-input__subtitle">
-									{ __( 'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site', 'google-site-kit' ) }
-								</span>
-							</Cell>
-						</Row>
-					</Grid>
+					{ hasFinishedSavingInputSettings && (
+						<UserInputCongrats />
+					) }
+					{ ! hasFinishedSavingInputSettings && (
+						<Fragment>
+							<Grid>
+								<Row>
+									<Cell lg={ 6 }>
+										<PageHeader
+											className="googlesitekit-heading-2 googlesitekit-user-input__heading"
+											title={ __( 'Customize Site Kit to match your goals', 'google-site-kit' ) }
+											fullWidth
+										/>
+									</Cell>
+									<Cell lg={ 6 }>
+										<span className="googlesitekit-user-input__subtitle">
+											{ __( 'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site', 'google-site-kit' ) }
+										</span>
+									</Cell>
+								</Row>
+							</Grid>
 
-					<Grid className="googlesitekit-user-input__content">
-						<Row>
-							<Cell>
-								<UserInputQuestionnaire />
-							</Cell>
-						</Row>
-					</Grid>
+							<Grid className="googlesitekit-user-input__content">
+								<Row>
+									<Cell>
+										<UserInputQuestionnaire />
+									</Cell>
+								</Row>
+							</Grid>
+						</Fragment>
+					) }
 				</div>
 			</div>
 		</Fragment>

@@ -59,9 +59,13 @@ const fetchSaveUserInputSettingsStore = createFetchStore( {
 // Actions
 const SET_USER_INPUT_SETTINGS = 'SET_USER_INPUT_SETTINGS';
 const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
+const START_SAVING_USER_SETTINGS = 'START_SAVING_USER_SETTINGS';
+const FINISH_SAVING_USER_SETTINGS = 'FINISH_SAVING_USER_SETTINGS';
 
 const baseInitialState = {
 	inputSettings: undefined,
+	hasStartedSavingInputSettings: false,
+	hasFinishedSavingInputSettings: false,
 };
 
 const baseActions = {
@@ -110,11 +114,21 @@ const baseActions = {
 		const registry = yield Data.commonActions.getRegistry();
 		const settings = registry.select( STORE_NAME ).getUserInputSettings();
 
+		yield {
+			payload: {},
+			type: START_SAVING_USER_SETTINGS,
+		};
+
 		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( settings );
 		if ( error ) {
 			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
 			registry.dispatch( STORE_NAME ).receiveError( error, 'saveUserInputSettings' );
 		}
+
+		yield {
+			payload: {},
+			type: FINISH_SAVING_USER_SETTINGS,
+		};
 
 		return { response, error };
 	},
@@ -135,6 +149,18 @@ export const baseReducer = ( state, { type, payload } ) => {
 					...state.inputSettings,
 					[ payload.settingID ]: payload.values,
 				},
+			};
+		}
+		case START_SAVING_USER_SETTINGS: {
+			return {
+				...state,
+				hasStartedSavingInputSettings: true,
+			};
+		}
+		case FINISH_SAVING_USER_SETTINGS: {
+			return {
+				...state,
+				hasFinishedSavingInputSettings: true,
 			};
 		}
 		default: {
@@ -178,6 +204,30 @@ const baseSelectors = {
 		const settings = select( STORE_NAME ).getUserInputSettings() || {};
 		return settings[ settingID ] || [];
 	} ),
+
+	/**
+	 * Determines whether or not user input settings have been started saving.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if saving has started, otherwise FALSE.
+	 */
+	hasStartedSavingInputSettings( state ) {
+		return !! state.hasStartedSavingInputSettings;
+	},
+
+	/**
+	 * Determines whether or not user input settings have been saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if saving has finished, otherwise FALSE.
+	 */
+	hasFinishedSavingInputSettings( state ) {
+		return !! state.hasFinishedSavingInputSettings;
+	},
 };
 
 const store = Data.combineStores(
