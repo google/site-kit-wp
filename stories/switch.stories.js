@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Switch from '../assets/js/components/switch';
+import Switch from '../assets/js/components/Switch';
 
 storiesOf( 'Global', module )
 	.add( 'Switches', () => (

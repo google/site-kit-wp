@@ -31,7 +31,7 @@ import {
 	sanitizeHTML,
 } from '../util';
 import data, { TYPE_CORE } from './data';
-import Dialog from './dialog';
+import Dialog from './Dialog';
 import Link from './link';
 import Modal from './modal';
 

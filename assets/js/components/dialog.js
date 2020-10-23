@@ -27,121 +27,104 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { withInstanceId } from '@wordpress/compose';
-import { Component, createRef } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Button from './button';
+import Button from './Button';
 import Link from './link';
 import { MDCDialog } from '../material-components';
 
-class Dialog extends Component {
-	constructor() {
-		super();
+const Dialog = ( {
+	dialogActive,
+	handleDialog,
+	title,
+	provides,
+	handleConfirm,
+	subtitle,
+	confirmButton,
+	dependentModules,
+	// eslint-disable-next-line sitekit/camelcase-acronyms
+	instanceId,
+	danger,
+} ) => {
+	const dialogRef = useRef( null );
 
-		this.state = { /* TODO: Update state with real data based on module */
-			attributes: [
-				__( 'Audience overview', 'google-site-kit' ),
-				__( 'Top pages', 'google-site-kit' ),
-				__( 'Top acquisition channels', 'google-site-kit' ),
-				__( 'AdSense & Analytics metrics for top pages', 'google-site-kit' ),
-			],
-		};
+	useEffect( () => {
+		new MDCDialog( dialogRef.current );
+	}, [ dialogRef.current ] );
 
-		this.dialogRef = createRef();
-	}
+	// eslint-disable-next-line sitekit/camelcase-acronyms
+	const labelledByID = `googlesitekit-dialog-label-${ instanceId }`;
+	// eslint-disable-next-line sitekit/camelcase-acronyms
+	const describedByID = `googlesitekit-dialog-description-${ instanceId }`;
+	const hasProvides = !! ( provides && provides.length );
 
-	componentDidMount() {
-		new MDCDialog( this.dialogRef.current );
-	}
-
-	render() {
-		const {
-			dialogActive,
-			handleDialog,
-			title,
-			provides,
-			handleConfirm,
-			subtitle,
-			confirmButton,
-			dependentModules,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
-			instanceId,
-			danger,
-		} = this.props;
-
-		// eslint-disable-next-line sitekit/camelcase-acronyms
-		const labelledByID = `googlesitekit-dialog-label-${ instanceId }`;
-		// eslint-disable-next-line sitekit/camelcase-acronyms
-		const describedByID = `googlesitekit-dialog-description-${ instanceId }`;
-		const hasProvides = !! ( provides && provides.length );
-
-		return (
-			<div
-				ref={ this.dialogRef }
-				className={ classnames(
-					'mdc-dialog',
-					{ 'mdc-dialog--open': dialogActive }
-				) }
-				role="alertdialog"
-				aria-modal="true"
-				aria-labelledby={ title ? labelledByID : undefined }
-				aria-describedby={ hasProvides ? describedByID : undefined }
-				aria-hidden={ dialogActive ? 'false' : 'true' }
-				tabIndex="-1"
-			>
-				<div className="mdc-dialog__scrim">&nbsp;</div>
-				<FocusTrap active={ dialogActive } >
-					<div>
-						<div className="mdc-dialog__container">
-							<div className="mdc-dialog__surface">
-								{ title &&
-									<h2 id={ labelledByID } className="mdc-dialog__title">
-										{ title }
-									</h2>
-								}
-								{ subtitle &&
-									<p className="mdc-dialog__lead">
-										{ subtitle }
-									</p>
-								}
-								{ hasProvides &&
-									<section id={ describedByID } className="mdc-dialog__content">
-										<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
-											{ provides.map( ( attribute ) => (
-												<li className="mdc-list-item" key={ attribute }>
-													<span className="mdc-list-item__text">{ attribute }</span>
-												</li>
-											) ) }
-										</ul>
-									</section>
-								}
-								{ dependentModules &&
-									<p className="mdc-dialog__dependecies">
-										<strong>{ __( 'Note: ', 'google-site-kit' ) }</strong>{ dependentModules }
-									</p>
-								}
-								<footer className="mdc-dialog__actions">
-									<Button
-										onClick={ handleConfirm }
-										danger={ danger }
-									>
-										{ confirmButton ? confirmButton : __( 'Disconnect', 'google-site-kit' ) }
-									</Button>
-									<Link className="mdc-dialog__cancel-button" onClick={ () => handleDialog() } inherit>
-										{ __( 'Cancel', 'google-site-kit' ) }
-									</Link>
-								</footer>
-							</div>
+	return (
+		<div
+			ref={ dialogRef }
+			className={ classnames(
+				'mdc-dialog',
+				{ 'mdc-dialog--open': dialogActive }
+			) }
+			role="alertdialog"
+			aria-modal="true"
+			aria-labelledby={ title ? labelledByID : undefined }
+			aria-describedby={ hasProvides ? describedByID : undefined }
+			aria-hidden={ dialogActive ? 'false' : 'true' }
+			tabIndex="-1"
+		>
+			<div className="mdc-dialog__scrim">&nbsp;</div>
+			<FocusTrap active={ dialogActive } >
+				<div>
+					<div className="mdc-dialog__container">
+						<div className="mdc-dialog__surface">
+							{ title &&
+								<h2 id={ labelledByID } className="mdc-dialog__title">
+									{ title }
+								</h2>
+							}
+							{ subtitle &&
+								<p className="mdc-dialog__lead">
+									{ subtitle }
+								</p>
+							}
+							{ hasProvides &&
+								<section id={ describedByID } className="mdc-dialog__content">
+									<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
+										{ provides.map( ( attribute ) => (
+											<li className="mdc-list-item" key={ attribute }>
+												<span className="mdc-list-item__text">{ attribute }</span>
+											</li>
+										) ) }
+									</ul>
+								</section>
+							}
+							{ dependentModules &&
+								<p className="mdc-dialog__dependecies">
+									<strong>{ __( 'Note: ', 'google-site-kit' ) }</strong>{ dependentModules }
+								</p>
+							}
+							<footer className="mdc-dialog__actions">
+								<Button
+									onClick={ handleConfirm }
+									danger={ danger }
+								>
+									{ confirmButton ? confirmButton : __( 'Disconnect', 'google-site-kit' ) }
+								</Button>
+								<Link className="mdc-dialog__cancel-button" onClick={ () => handleDialog() } inherit>
+									{ __( 'Cancel', 'google-site-kit' ) }
+								</Link>
+							</footer>
 						</div>
 					</div>
-				</FocusTrap>
-			</div>
-		);
-	}
-}
+				</div>
+			</FocusTrap>
+		</div>
+	);
+};
 
 Dialog.propTypes = {
 	dialogActive: PropTypes.bool,

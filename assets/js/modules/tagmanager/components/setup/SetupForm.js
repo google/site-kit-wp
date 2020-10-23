@@ -42,7 +42,7 @@ import {
 	AMPContainerSelect,
 	WebContainerSelect,
 } from '../common';
-import Button from '../../../../components/button';
+import Button from '../../../../components/Button';
 import Link from '../../../../components/link';
 import SetupErrorNotice from './SetupErrorNotice';
 import FormInstructions from '../common/FormInstructions';

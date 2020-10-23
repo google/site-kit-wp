@@ -34,7 +34,7 @@ import { getQueryArg } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { trackEvent } from '../../util';
 import Header from '../header';
-import Button from '../button';
+import Button from '../Button';
 import ResetButton from '../reset-button';
 import Layout from '../layout/layout';
 import Notification from '../notifications/notification';

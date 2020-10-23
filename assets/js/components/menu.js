@@ -24,63 +24,45 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Component, createRef } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { MDCMenu } from '../material-components';
 
-class Menu extends Component {
-	constructor( props ) {
-		super( props );
+const Menu = ( {
+	menuOpen,
+	menuItems,
+	onSelected,
+	id,
+} ) => {
+	const menuRef = useRef( null );
 
-		this.menuRef = createRef();
-	}
+	useEffect( () => {
+		const menu = new MDCMenu( menuRef.current );
+		menu.open = menuOpen;
+		menu.setDefaultFocusState( 1 );
+	}, [ menuRef.current ] );
 
-	componentDidMount() {
-		const { menuOpen } = this.props;
-
-		this.menu = new MDCMenu( this.menuRef.current );
-		this.menu.open = menuOpen;
-		this.menu.setDefaultFocusState( 1 );
-	}
-
-	componentDidUpdate( prevProps ) {
-		const { menuOpen } = this.props;
-
-		if ( menuOpen !== prevProps.menuOpen ) {
-			this.menu.open = menuOpen;
-		}
-	}
-
-	render() {
-		const {
-			menuOpen,
-			menuItems,
-			onSelected,
-			id,
-		} = this.props;
-
-		return (
-			<div className="mdc-menu mdc-menu-surface" ref={ this.menuRef }>
-				<ul id={ id } className="mdc-list" role="menu" aria-hidden={ ! menuOpen } aria-orientation="vertical" tabIndex="-1">
-					{ menuItems.map( ( item, index ) => (
-						<li
-							key={ index }
-							className="mdc-list-item"
-							role="menuitem"
-							onClick={ onSelected.bind( null, index ) }
-							onKeyDown={ onSelected.bind( null, index ) }
-						>
-							<span className="mdc-list-item__text">{ item }</span>
-						</li>
-					) ) }
-				</ul>
-			</div>
-		);
-	}
-}
+	return (
+		<div className="mdc-menu mdc-menu-surface" ref={ menuRef }>
+			<ul id={ id } className="mdc-list" role="menu" aria-hidden={ ! menuOpen } aria-orientation="vertical" tabIndex="-1">
+				{ menuItems.map( ( item, index ) => (
+					<li
+						key={ index }
+						className="mdc-list-item"
+						role="menuitem"
+						onClick={ onSelected.bind( null, index ) }
+						onKeyDown={ onSelected.bind( null, index ) }
+					>
+						<span className="mdc-list-item__text">{ item }</span>
+					</li>
+				) ) }
+			</ul>
+		</div>
+	);
+};
 
 Menu.propTypes = {
 	menuOpen: PropTypes.bool.isRequired,

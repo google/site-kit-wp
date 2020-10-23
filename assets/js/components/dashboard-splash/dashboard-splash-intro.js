@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Button from '../button';
+import Button from '../Button';
 import Logo from '../logo';
 
 class DashboardSplashIntro extends Component {

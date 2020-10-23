@@ -25,67 +25,60 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Component, createRef } from '@wordpress/element';
+import { useRef, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { MDCFormField, MDCCheckbox } from '../material-components';
 
-class Checkbox extends Component {
-	constructor( props ) {
-		super( props );
-		this.formFieldRef = createRef();
-		this.checkboxRef = createRef();
-	}
+const Checkbox = ( {
+	onChange,
+	id,
+	name,
+	value,
+	checked,
+	disabled,
+	children,
+} ) => {
+	const formFieldRef = useRef( null );
+	const checkboxRef = useRef( null );
 
-	componentDidMount() {
-		const formField = new MDCFormField( this.formFieldRef.current );
-		formField.input = new MDCCheckbox( this.checkboxRef.current );
-	}
+	useEffect( () => {
+		const formField = new MDCFormField( formFieldRef.current );
+		formField.input = new MDCCheckbox( checkboxRef.current );
+	}, [ formFieldRef.current, checkboxRef.current ] );
 
-	render() {
-		const {
-			onChange,
-			id,
-			name,
-			value,
-			checked,
-			disabled,
-			children,
-		} = this.props;
-
-		return (
-			<div className="mdc-form-field" ref={ this.formFieldRef }>
-				<div
-					className={ classnames(
-						'mdc-checkbox',
-						{ 'mdc-checkbox--disabled': disabled }
-					) }
-					ref={ this.checkboxRef }
-				>
-					<input
-						className="mdc-checkbox__native-control"
-						type="checkbox"
-						id={ id }
-						name={ name }
-						value={ value }
-						checked={ checked }
-						disabled={ disabled }
-						onChange={ onChange }
-					/>
-					<div className="mdc-checkbox__background">
-						<svg className="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-							<path className="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
-						</svg>
-						<div className="mdc-checkbox__mixedmark"></div>
-					</div>
+	return (
+		<div className="mdc-form-field" ref={ formFieldRef }>
+			<div
+				className={ classnames(
+					'mdc-checkbox',
+					{ 'mdc-checkbox--disabled': disabled }
+				) }
+				ref={ checkboxRef }
+			>
+				<input
+					className="mdc-checkbox__native-control"
+					type="checkbox"
+					id={ id }
+					name={ name }
+					value={ value }
+					checked={ checked }
+					disabled={ disabled }
+					onChange={ onChange }
+				/>
+				<div className="mdc-checkbox__background">
+					<svg className="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+						<path className="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
+					</svg>
+					<div className="mdc-checkbox__mixedmark"></div>
 				</div>
-				<label htmlFor={ id }>{ children }</label>
 			</div>
-		);
-	}
-}
+			<label htmlFor={ id }>{ children }</label>
+		</div>
+	);
+};
 
 Checkbox.propTypes = {
 	onChange: PropTypes.func.isRequired,

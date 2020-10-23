@@ -34,7 +34,7 @@ import { Icon, check, stack } from '@wordpress/icons';
  */
 import Notification from '../notifications/notification';
 import Link from '../link';
-import Button from '../button';
+import Button from '../Button';
 
 class ErrorHandler extends Component {
 	constructor( props ) {

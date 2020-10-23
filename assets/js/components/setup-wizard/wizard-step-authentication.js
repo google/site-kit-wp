@@ -31,7 +31,7 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import { trackEvent } from '../../util';
-import Button from '../button';
+import Button from '../Button';
 import Link from '../link';
 import OptIn from '../optin';
 import HelpLink from '../help-link';

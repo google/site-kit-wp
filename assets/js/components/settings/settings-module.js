@@ -44,13 +44,13 @@ import {
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../../components/link';
-import Button from '../../components/button';
+import Button from '../../components/Button';
 import data, { TYPE_MODULES } from '../../components/data';
 import Spinner from '../../components/spinner';
 import SettingsOverlay from '../../components/settings/settings-overlay';
 import GenericError from '../../components/notifications/generic-error';
 import SetupModule from '../../components/setup-module';
-import Dialog from '../../components/dialog';
+import Dialog from '../../components/Dialog';
 import ModuleIcon from '../../components/module-icon';
 import ModuleSettingsDetails from '../../components/settings/module-settings-details';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';

@@ -31,7 +31,7 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import { trackEvent } from '../../util';
-import Button from '../button';
+import Button from '../Button';
 
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {

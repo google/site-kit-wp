@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Radio from '../assets/js/components/radio';
+import Radio from '../assets/js/components/Radio';
 
 storiesOf( 'Global', module )
 	.add( 'Radios', () => (
