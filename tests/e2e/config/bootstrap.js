@@ -168,7 +168,8 @@ function observeConsoleLogging() {
 			text.startsWith( 'OTS parsing error:' ) ||
 			text.includes( 'Download the React DevTools for a better development experience' ) ||
 			text.includes( 'Can\'t perform a React state update on an unmounted component' ) ||
-			text.includes( 'https://fb.me/react-unsafe-component-lifecycles' )
+			text.includes( 'https://fb.me/react-unsafe-component-lifecycles' ) ||
+			text.includes( 'https://fb.me/react-strict-mode-' )
 		) {
 			return;
 		}
