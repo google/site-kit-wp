@@ -227,7 +227,7 @@ describe( 'setting up the AdSense module', () => {
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status or to complete setting up/i } );
 
 		await expect( '/' ).toHaveAdSenseTag();
-		expect( console ).toHaveErrored();
+		expect( console ).toHaveErrored(); // 403 Response.
 	} );
 
 	it( 'displays “Your site isn’t ready to show ads yet” when the users account is disapproved', async () => {
@@ -253,7 +253,7 @@ describe( 'setting up the AdSense module', () => {
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to AdSense to find out how to fix the issue/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
-		expect( console ).toHaveErrored();
+		expect( console ).toHaveErrored(); // 403 Response.
 	} );
 
 	it( 'displays “Create your AdSense account” when the user does not have an AdSense account', async () => {
@@ -279,7 +279,7 @@ describe( 'setting up the AdSense module', () => {
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__action', { text: /Create AdSense Account/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
-		expect( console ).toHaveErrored();
+		expect( console ).toHaveErrored(); // 403 Response.
 	} );
 
 	describe( 'AMP is setup', () => {
