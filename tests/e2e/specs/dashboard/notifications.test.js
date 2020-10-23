@@ -10,6 +10,7 @@ import {
 	setSiteVerification,
 	setSearchConsoleProperty,
 	testSiteNotification,
+	useRequestInterception,
 	wpApiFetch,
 } from '../../utils';
 
@@ -18,6 +19,17 @@ const goToSiteKitDashboard = async () => {
 };
 
 describe( 'core site notifications', () => {
+	beforeAll( async () => {
+		await page.setRequestInterception( true );
+		useRequestInterception( ( request ) => {
+			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+				request.respond( { status: 200 } );
+			} else {
+				request.continue();
+			}
+		} );
+	} );
+
 	// The proxy test cannot currently be done and needs to be skipped TODO tests need to to be fixed to handle proxy tests.
 	describe( 'when using proxy', () => {
 		beforeAll( async () => {
@@ -75,7 +87,6 @@ describe( 'core site notifications', () => {
 					.find( ( text ) => text.match( /test notification title/i ) ) || false;
 			} );
 			expect( hasTestNotification ).toStrictEqual( false );
-			expect( console ).toHaveWarned();
 		} );
 	} );
 	describe( 'when not using proxy', () => {
@@ -112,7 +123,6 @@ describe( 'core site notifications', () => {
 			expect(
 				notificationDescription.filter( ( { textContent } ) => textContent.match( /test notification content/i ) )
 			).toHaveLength( 0 );
-			expect( console ).toHaveWarned();
 		} );
 	} );
 } );
