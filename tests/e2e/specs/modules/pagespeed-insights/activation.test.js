@@ -18,15 +18,16 @@ describe( 'PageSpeed Insights Activation', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( '/wp-json/google-site-kit/v1/' ) ) {
-				request.respond( {
-					status: 200,
-				} );
+			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+				request.respond( { status: 200 } );
+			} else if ( request.url().match( 'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed' ) ) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
 			}
 		} );
 	} );
+
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSiteVerification();
@@ -58,6 +59,5 @@ describe( 'PageSpeed Insights Activation', () => {
 
 		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for PageSpeed Insights!/i } );
-
 	} );
 } );
