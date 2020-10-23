@@ -33,6 +33,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Button from '../button';
+import { Row, Cell } from '../../material-components';
 const { useSelect } = Data;
 
 export default function UserInputQuestionWrapper( { children, slug, isActive, questionNumber, next, back, max } ) {
@@ -46,13 +47,8 @@ export default function UserInputQuestionWrapper( { children, slug, isActive, qu
 				'googlesitekit-user-input__next-question': ! isActive,
 			}
 		) }>
-			<div className="mdc-layout-grid__inner">
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12-desktop
-					mdc-layout-grid__cell--span-8-tablet
-					mdc-layout-grid__cell--span-4-phone
-				">
+			<Row>
+				<Cell>
 					<p className="googlesitekit-user-input__question-number">
 						{
 							/* translators: %s: the number of the question */
@@ -60,9 +56,9 @@ export default function UserInputQuestionWrapper( { children, slug, isActive, qu
 						}
 					</p>
 
-					<div className="mdc-layout-grid__inner">
+					<Row>
 						{ children }
-					</div>
+					</Row>
 
 					{ isActive && (
 						<div className="googlesitekit-user-input__buttons">
@@ -81,8 +77,8 @@ export default function UserInputQuestionWrapper( { children, slug, isActive, qu
 							) }
 						</div>
 					) }
-				</div>
-			</div>
+				</Cell>
+			</Row>
 		</div>
 	);
 }

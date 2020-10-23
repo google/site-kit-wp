@@ -32,6 +32,7 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { Cell, Row } from '../../material-components';
 import Button from '../button';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
@@ -53,20 +54,10 @@ export default function UserInputPreview( { back } ) {
 
 	return (
 		<div className="googlesitekit-user-input__preview">
-			<div className="mdc-layout-grid__inner">
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12-desktop
-					mdc-layout-grid__cell--span-8-tablet
-					mdc-layout-grid__cell--span-4-phone
-				">
-					<div className="mdc-layout-grid__inner">
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-6-desktop
-							mdc-layout-grid__cell--span-8-tablet
-							mdc-layout-grid__cell--span-4-phone
-						">
+			<Row>
+				<Cell>
+					<Row>
+						<Cell lg={ 6 }>
 							<UserInputPreviewGroup
 								title={ __( '1 — Which best describes your team/role relation to this site?', 'google-site-kit' ) }
 								edit={ back.bind( null, 5 ) }
@@ -87,13 +78,8 @@ export default function UserInputPreview( { back } ) {
 								values={ settings.goals || [] }
 								options={ USER_INPUT_ANSWERS_GOALS }
 							/>
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-6-desktop
-							mdc-layout-grid__cell--span-8-tablet
-							mdc-layout-grid__cell--span-4-phone
-						">
+						</Cell>
+						<Cell lg={ 6 }>
 							<UserInputPreviewGroup
 								title={ __( '4 — What do you need help most with for this site?', 'google-site-kit' ) }
 								edit={ back.bind( null, 2 ) }
@@ -106,8 +92,8 @@ export default function UserInputPreview( { back } ) {
 								edit={ back.bind( null, 1 ) }
 								values={ settings.searchTerms || [] }
 							/>
-						</div>
-					</div>
+						</Cell>
+					</Row>
 
 					<div className="googlesitekit-user-input__buttons">
 						<UserInputQuestionNotice />
@@ -117,8 +103,8 @@ export default function UserInputPreview( { back } ) {
 							<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
 						</div>
 					</div>
-				</div>
-			</div>
+				</Cell>
+			</Row>
 		</div>
 	);
 }

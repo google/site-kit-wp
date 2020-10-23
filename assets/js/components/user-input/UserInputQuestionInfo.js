@@ -30,15 +30,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import UserInputQuestionNotice from './UserInputQuestionNotice';
+import { Cell } from '../../material-components';
 
 export default function UserInputQuestionInfo( { children } ) {
 	return (
-		<div className="
-			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-5-desktop
-			mdc-layout-grid__cell--span-8-tablet
-			mdc-layout-grid__cell--span-4-phone
-		">
+		<Cell lg={ 5 }>
 
 			<h1 className="googlesitekit-user-input__question-title">
 				{ children }
@@ -49,7 +45,7 @@ export default function UserInputQuestionInfo( { children } ) {
 			</p>
 
 			<UserInputQuestionNotice />
-		</div>
+		</Cell>
 	);
 }
 

@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Input, TextField } from '../../material-components';
+import { Cell, Input, TextField } from '../../material-components';
 import Button from '../button';
 const { useSelect, useDispatch } = Data;
 
@@ -63,13 +63,7 @@ export default function UserInputKeywords( { slug, max } ) {
 	}, dependencies );
 
 	return (
-		<div className="
-			mdc-layout-grid__cell
-			mdc-layout-grid__cell--start-6-desktop
-			mdc-layout-grid__cell--span-6-desktop
-			mdc-layout-grid__cell--span-8-tablet
-			mdc-layout-grid__cell--span-4-phone
-		">
+		<Cell className="mdc-layout-grid__cell--start-6-desktop" lg={ 6 }>
 			<div className="googlesitekit-user-input__text-options">
 				{ values.map( ( value ) => (
 					<div key={ value } className="googlesitekit-user-input__text-option">
@@ -85,7 +79,7 @@ export default function UserInputKeywords( { slug, max } ) {
 				) }
 			</div>
 			<small>{ __( 'Separate with commas or the Enter key', 'google-site-kit' ) }</small>
-		</div>
+		</Cell>
 	);
 }
 

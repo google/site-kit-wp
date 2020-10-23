@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Header from '../header';
 import PageHeader from '../page-header';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
+import { Grid, Row, Cell } from '../../material-components';
 
 export default function UserInputApp() {
 	if ( ! featureFlags.userInput.enabled ) {
@@ -39,45 +40,30 @@ export default function UserInputApp() {
 			<Header />
 			<div className="googlesitekit-user-input">
 				<div className="googlesitekit-module-page">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-6-desktop
-								mdc-layout-grid__cell--span-8-tablet
-								mdc-layout-grid__cell--span-4-phone
-							">
+					<Grid>
+						<Row>
+							<Cell lg={ 6 }>
 								<PageHeader
 									className="googlesitekit-heading-2 googlesitekit-user-input__heading"
 									title={ __( 'Customize Site Kit to match your goals', 'google-site-kit' ) }
 									fullWidth
 								/>
-							</div>
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-6-desktop
-								mdc-layout-grid__cell--span-8-tablet
-								mdc-layout-grid__cell--span-4-phone
-							">
+							</Cell>
+							<Cell lg={ 6 }>
 								<span className="googlesitekit-user-input__subtitle">
 									{ __( 'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site', 'google-site-kit' ) }
 								</span>
-							</div>
-						</div>
-					</div>
+							</Cell>
+						</Row>
+					</Grid>
 
-					<div className="mdc-layout-grid googlesitekit-user-input__content">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12-desktop
-								mdc-layout-grid__cell--span-8-tablet
-								mdc-layout-grid__cell--span-4-phone
-							">
+					<Grid className="googlesitekit-user-input__content">
+						<Row>
+							<Cell>
 								<UserInputQuestionnaire />
-							</div>
-						</div>
-					</div>
+							</Cell>
+						</Row>
+					</Grid>
 				</div>
 			</div>
 		</Fragment>
