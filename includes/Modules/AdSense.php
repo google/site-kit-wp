@@ -132,9 +132,6 @@ final class AdSense extends Module
 					add_filter( // For AMP Reader, and AMP Native and Transitional (as fallback).
 						'the_content',
 						function( $content ) use ( $client_id ) {
-							if ( ! in_the_loop() ) {
-								return;
-							}
 							return $this->amp_content_add_auto_ads( $content, $client_id );
 						}
 					);
