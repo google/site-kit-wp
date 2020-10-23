@@ -301,7 +301,7 @@ beforeAll( async () => {
 	observeConsoleLogging();
 	// Log uncaught exceptions on the client.
 	// eslint-disable-next-line no-console
-	page.on( 'pageerror', console.debug );
+	page.on( 'pageerror', console.error );
 
 	if ( '1' === process.env.DEBUG_NAV ) {
 		page.on( 'request', observeNavigationRequest );
