@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { extractSearchConsoleDashboardData } from '../../modules/search-console/util';
 import { getTimeInSeconds, getDaysBetweenDates } from '../../util';
+import gwinImage from '../../../images/g-win.png';
 
 const totalStats = ( data, id ) => {
 	// Only display if site has more than 5 posts.
@@ -97,7 +98,7 @@ const totalStats = ( data, id ) => {
 		title: __( 'Welcome Back!', 'google-site-kit' ),
 		description,
 		format: 'large',
-		winImage: `${ global._googlesitekitLegacyData.admin.assetsRoot }images/g-win.png`,
+		winImage: global._googlesitekitLegacyData.admin.assetsRoot + gwinImage,
 		blockData: dataBlocks,
 		type: 'win-stats',
 		dismissExpires: getTimeInSeconds( 'day' ) * days,
