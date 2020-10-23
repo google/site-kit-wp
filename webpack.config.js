@@ -137,7 +137,12 @@ const resolve = {
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
-const webpackConfig = ( mode ) => {
+const webpackConfig = ( env, argv ) => {
+	const {
+		mode,
+		flagMode = mode,
+	} = argv;
+
 	return [
 		// Build the settings js..
 		{
@@ -208,7 +213,7 @@ const webpackConfig = ( mode ) => {
 					flagsConfig,
 					{
 						modes: [ 'development', 'production' ],
-						mode,
+						flagMode, // Default: mode; override with --flagMode={mode}
 					},
 				),
 				new ManifestPlugin( {
@@ -366,9 +371,9 @@ module.exports = {
 	svgRule,
 };
 
-module.exports.default = ( ...args ) => {
-	const { includeTests, mode } = args[ 1 ];
-	const config = webpackConfig( mode );
+module.exports.default = ( env, argv ) => {
+	const config = webpackConfig( env, argv );
+	const { includeTests, mode } = argv;
 
 	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.
