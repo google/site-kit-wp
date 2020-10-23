@@ -66,7 +66,18 @@ export default function UserInputApp() {
 						</div>
 					</div>
 
-					<UserInputQuestionnaire />
+					<div className="mdc-layout-grid googlesitekit-user-input__content">
+						<div className="mdc-layout-grid__inner">
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-12-desktop
+								mdc-layout-grid__cell--span-8-tablet
+								mdc-layout-grid__cell--span-4-phone
+							">
+								<UserInputQuestionnaire />
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</Fragment>

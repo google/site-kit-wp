@@ -24,25 +24,14 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { sprintf, __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { sanitizeHTML } from '../../util';
+import UserInputQuestionNotice from './UserInputQuestionNotice';
 
 export default function UserInputQuestionInfo( { children } ) {
-	const notice = sprintf(
-		/* translators: %s: Settings page URL */
-		__( 'You can always edit your answers after your submission in <a href="%s">Setting</a>.', 'google-site-kit' ),
-		'#'
-	);
-
-	const sanitizeArgs = {
-		ALLOWED_TAGS: [ 'a' ],
-		ALLOWED_ATTR: [ 'href' ],
-	};
-
 	return (
 		<div className="
 			mdc-layout-grid__cell
@@ -59,10 +48,7 @@ export default function UserInputQuestionInfo( { children } ) {
 				{ __( 'Place a text here that gives more context and information to the user to answer the question correctly.', 'google-site-kit' ) }
 			</p>
 
-			<p
-				className="googlesitekit-user-input__question-instructions googlesitekit-user-input__question-instructions--notice"
-				dangerouslySetInnerHTML={ sanitizeHTML( notice, sanitizeArgs ) }
-			/>
+			<UserInputQuestionNotice />
 		</div>
 	);
 }

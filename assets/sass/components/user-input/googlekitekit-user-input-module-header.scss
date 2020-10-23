@@ -41,9 +41,49 @@
 			}
 		}
 
+		&__content {
+			padding: 0;
+		}
+
+		&__buttons {
+			display: flex;
+			justify-content: flex-end;
+
+			& button {
+				border: 2px solid $c-mercury;
+				margin-left: 1rem;
+				padding: 0 1.5rem;
+
+				&.mdc-button--raised {
+					border: none;
+				}
+			}
+		}
+
+		&__preview {
+
+			& .mdc-layout-grid__inner .mdc-layout-grid__inner .mdc-layout-grid__cell {
+				padding: 0 12px;
+
+				&:first-child {
+					padding-left: 0;
+				}
+
+				&:last-child {
+					padding-right: 0;
+				}
+			}
+
+			& .googlesitekit-user-input__buttons {
+				align-items: center;
+				justify-content: space-between;
+			}
+		}
+
+		&__preview,
 		&__question {
 			background-color: $c-white;
-			padding: 10px;
+			padding: 34px;
 			position: relative;
 
 			@media (min-width: $bp-tablet) {
@@ -120,21 +160,6 @@
 			}
 		}
 
-		&__buttons {
-			display: flex;
-			justify-content: flex-end;
-
-			& button {
-				border: 2px solid $c-mercury;
-				margin-left: 1rem;
-				padding: 0 1.5rem;
-
-				&.mdc-button--raised {
-					border: none;
-				}
-			}
-		}
-
 		&__text-options {
 			border: 2px solid $c-jumbo;
 			border-radius: 5px;
@@ -153,7 +178,8 @@
 			}
 		}
 
-		&__text-option {
+		&__text-option,
+		&__preview-answer {
 			align-items: center;
 			background-color: $c-solitude;
 			border-radius: 100px;
@@ -163,12 +189,44 @@
 			margin-right: 12px;
 			padding: 3px 3px 3px 12px;
 			white-space: nowrap;
+		}
+
+		&__text-option button {
+			border-radius: 100px;
+			margin: 0;
+			min-width: 0;
+			padding: 0 12px;
+		}
+
+		&__preview-answers {
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		&__preview-answer {
+			margin-bottom: 12px;
+			padding-right: 12px;
+		}
+
+		&__preview-group {
+			border-bottom: 1px solid $c-mercury;
+			margin-bottom: 12px;
+			padding-bottom: 12px;
+		}
+
+		&__preview-group-title {
+			align-items: flex-start;
+			display: flex;
+			justify-content: space-between;
+
+			& p {
+				margin-top: 0;
+			}
 
 			& button {
-				border-radius: 100px;
-				margin: 0;
-				min-width: 0;
-				padding: 0 12px;
+				font-weight: 400;
+				margin-top: -0.5em;
+				text-transform: none;
 			}
 		}
 	}

@@ -33,6 +33,14 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Button from '../button';
+import UserInputPreviewGroup from './UserInputPreviewGroup';
+import UserInputQuestionNotice from './UserInputQuestionNotice';
+import {
+	USER_INPUT_ANSWERS_GOALS,
+	USER_INPUT_ANSWERS_HELP_NEEDED,
+	USER_INPUT_ANSWERS_POST_FREQUENCY,
+	USER_INPUT_ANSWERS_ROLE,
+} from './util/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputPreview( { back } ) {
@@ -44,18 +52,68 @@ export default function UserInputPreview( { back } ) {
 	}, [] );
 
 	return (
-		<div className="googlesitekit-user-input__question">
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					<div className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-12-desktop
-						mdc-layout-grid__cell--span-8-tablet
-						mdc-layout-grid__cell--span-4-phone
-					">
-						{ JSON.stringify( settings ) }
-						<div className="googlesitekit-user-input__buttons">
-							<Button onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
+		<div className="googlesitekit-user-input__preview">
+			<div className="mdc-layout-grid__inner">
+				<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-12-desktop
+					mdc-layout-grid__cell--span-8-tablet
+					mdc-layout-grid__cell--span-4-phone
+				">
+					<div className="mdc-layout-grid__inner">
+						<div className="
+							mdc-layout-grid__cell
+							mdc-layout-grid__cell--span-6-desktop
+							mdc-layout-grid__cell--span-8-tablet
+							mdc-layout-grid__cell--span-4-phone
+						">
+							<UserInputPreviewGroup
+								title={ __( '1 — Which best describes your team/role relation to this site?', 'google-site-kit' ) }
+								edit={ back.bind( null, 5 ) }
+								values={ settings.role || [] }
+								options={ USER_INPUT_ANSWERS_ROLE }
+							/>
+
+							<UserInputPreviewGroup
+								title={ __( '2 — How often do you create new posts for this site?', 'google-site-kit' ) }
+								edit={ back.bind( null, 4 ) }
+								values={ settings.postFrequency || [] }
+								options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
+							/>
+
+							<UserInputPreviewGroup
+								title={ __( '3 — What are the goals of this site?', 'google-site-kit' ) }
+								edit={ back.bind( null, 3 ) }
+								values={ settings.goals || [] }
+								options={ USER_INPUT_ANSWERS_GOALS }
+							/>
+						</div>
+						<div className="
+							mdc-layout-grid__cell
+							mdc-layout-grid__cell--span-6-desktop
+							mdc-layout-grid__cell--span-8-tablet
+							mdc-layout-grid__cell--span-4-phone
+						">
+							<UserInputPreviewGroup
+								title={ __( '4 — What do you need help most with for this site?', 'google-site-kit' ) }
+								edit={ back.bind( null, 2 ) }
+								values={ settings.helpNeeded || [] }
+								options={ USER_INPUT_ANSWERS_HELP_NEEDED }
+							/>
+
+							<UserInputPreviewGroup
+								title={ __( '5 — To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for:', 'google-site-kit' ) }
+								edit={ back.bind( null, 1 ) }
+								values={ settings.searchTerms || [] }
+							/>
+						</div>
+					</div>
+
+					<div className="googlesitekit-user-input__buttons">
+						<UserInputQuestionNotice />
+
+						<div>
+							<Button text onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
 							<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
 						</div>
 					</div>

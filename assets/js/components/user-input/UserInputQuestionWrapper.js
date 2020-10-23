@@ -46,43 +46,41 @@ export default function UserInputQuestionWrapper( { children, slug, isActive, qu
 				'googlesitekit-user-input__next-question': ! isActive,
 			}
 		) }>
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					<div className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-12-desktop
-						mdc-layout-grid__cell--span-8-tablet
-						mdc-layout-grid__cell--span-4-phone
-					">
-						<p className="googlesitekit-user-input__question-number">
-							{
-								/* translators: %s: the number of the question */
-								sprintf( __( '%s out of 5', 'google-site-kit' ), questionNumber )
-							}
-						</p>
+			<div className="mdc-layout-grid__inner">
+				<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-12-desktop
+					mdc-layout-grid__cell--span-8-tablet
+					mdc-layout-grid__cell--span-4-phone
+				">
+					<p className="googlesitekit-user-input__question-number">
+						{
+							/* translators: %s: the number of the question */
+							sprintf( __( '%s out of 5', 'google-site-kit' ), questionNumber )
+						}
+					</p>
 
-						<div className="mdc-layout-grid__inner">
-							{ children }
-						</div>
-
-						{ isActive && (
-							<div className="googlesitekit-user-input__buttons">
-								{ back && (
-									<Button text onClick={ back }>
-										{ __( 'Back', 'google-site-kit' ) }
-									</Button>
-								) }
-								{ next && (
-									<Button
-										onClick={ next }
-										disabled={ values.filter( ( value ) => value.trim().length > 0 ).length !== max }
-									>
-										{ __( 'Next', 'google-site-kit' ) }
-									</Button>
-								) }
-							</div>
-						) }
+					<div className="mdc-layout-grid__inner">
+						{ children }
 					</div>
+
+					{ isActive && (
+						<div className="googlesitekit-user-input__buttons">
+							{ back && (
+								<Button text onClick={ back }>
+									{ __( 'Back', 'google-site-kit' ) }
+								</Button>
+							) }
+							{ next && (
+								<Button
+									onClick={ next }
+									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length !== max }
+								>
+									{ __( 'Next', 'google-site-kit' ) }
+								</Button>
+							) }
+						</div>
+					) }
 				</div>
 			</div>
 		</div>

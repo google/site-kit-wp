@@ -19,11 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
-
-/**
- * WordPress dependencies
- */
+import { useState, useCallback, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -52,18 +48,13 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( questions[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex ] );
 
-	const back = useCallback( () => {
-		setActiveSlug( questions[ activeSlugIndex - 1 ] );
+	const back = useCallback( ( steps = 1 ) => {
+		setActiveSlug( questions[ activeSlugIndex - steps ] );
 		global.scrollTo( 0, 0 );
 	}, [ activeSlugIndex ] );
 
 	return (
-		<div className="
-			mdc-layout-grid__cell
-			mdc-layout-grid__cell--span-12-desktop
-			mdc-layout-grid__cell--span-8-tablet
-			mdc-layout-grid__cell--span-4-phone
-		">
+		<Fragment>
 			<ProgressBar
 				height={ 0 }
 				indeterminate={ false }
@@ -97,7 +88,7 @@ export default function UserInputQuestionnaire() {
 					back={ back }
 				>
 					<UserInputQuestionInfo>
-						{ __( 'How often do you create new post for this site?', 'google-site-kit' ) }
+						{ __( 'How often do you create new posts for this site?', 'google-site-kit' ) }
 					</UserInputQuestionInfo>
 
 					<UserInputSelectOptions
@@ -172,6 +163,6 @@ export default function UserInputQuestionnaire() {
 			{ activeSlug === 'preview' && (
 				<UserInputPreview back={ back } />
 			) }
-		</div>
+		</Fragment>
 	);
 }
