@@ -178,7 +178,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new property/i } );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button', { text: /configure analytics/i } );
+		await expect( page ).toClick( '.mdc-button:not(:disabled)', { text: /configure analytics/i } );
 		await page.waitForSelector( '.mdc-dialog--open' );
 
 		// Click on proceed button and wait for oauth request.
@@ -227,7 +227,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new view/i } );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button', { text: /configure analytics/i } );
+		await expect( page ).toClick( '.mdc-button:not(:disabled)', { text: /configure analytics/i } );
 		await page.waitForSelector( '.mdc-dialog--open' );
 
 		// Click on proceed button and wait for oauth request.
