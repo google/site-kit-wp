@@ -30,12 +30,25 @@ import LegacySearchConsoleDashboardWidgetKeywordTable from '../dashboard/LegacyS
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
 
 const DashboardDetailsWidgetKeywordsTable = () => {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const footerCtaLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: propertyID } } ) );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const footerCTALinkArgs = {
+		resource_id: propertyID,
+		num_of_days: getCurrentDateRangeDayCount(),
+	};
+	if ( url ) {
+		footerCTALinkArgs.page = `!${ url }`;
+	}
+	const footerCTALink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
+		path: '/performance/search-analytics',
+		query: footerCTALinkArgs,
+	} ) );
 
 	return (
 		<Fragment>
@@ -54,8 +67,8 @@ const DashboardDetailsWidgetKeywordsTable = () => {
 				">
 				<Layout
 					footer
-					footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-					footerCtaLink={ footerCtaLink }
+					footerCTALabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+					footerCTALink={ footerCTALink }
 				>
 					<LegacySearchConsoleDashboardWidgetKeywordTable />
 				</Layout>

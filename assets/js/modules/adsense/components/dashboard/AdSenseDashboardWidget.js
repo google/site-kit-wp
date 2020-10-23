@@ -31,8 +31,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import AdSenseIcon from '../../../../../svg/adsense.svg';
-import AdSenseEstimateEarningsWidget from './AdSenseEstimateEarningsWidget';
 import AdSensePerformanceWidget from './AdSensePerformanceWidget';
 import Alert from '../../../../components/alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
@@ -46,6 +46,10 @@ import Header from '../../../../components/header';
 import PageHeader from '../../../../components/page-header';
 import PageHeaderDateRange from '../../../../components/page-header-date-range';
 import Layout from '../../../../components/layout/layout';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { getCurrentDateRange } from '../../../../util/date-range';
+
+const { withSelect } = Data;
 
 // Empty component to allow filtering in refactored version.
 const AdSenseDashboardZeroData = withFilters( 'googlesitekit.AdSenseDashboardZeroData' )( () => null );
@@ -56,8 +60,8 @@ class AdSenseDashboardWidget extends Component {
 		this.state = {
 			receivingData: true,
 			error: false,
-			loading: true,
 			zeroData: false,
+			loading: true,
 		};
 		this.handleDataError = this.handleDataError.bind( this );
 		this.handleDataSuccess = this.handleDataSuccess.bind( this );
@@ -94,7 +98,9 @@ class AdSenseDashboardWidget extends Component {
 	handleDataSuccess() {
 		this.setState( {
 			receivingData: true,
+			error: false,
 			loading: false,
+			zeroData: false,
 		} );
 	}
 
@@ -118,10 +124,13 @@ class AdSenseDashboardWidget extends Component {
 			loading,
 			zeroData,
 		} = this.state;
+
+		const { dateRange } = this.props;
 		const { homepage } = modulesData.adsense;
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
+		const currentDateRange = getCurrentDateRange( dateRange );
 
 		let moduleStatus;
 		let moduleStatusText;
@@ -191,17 +200,6 @@ class AdSenseDashboardWidget extends Component {
 								wrapperClass
 							) }>
 								<ModuleSettingsWarning slug="adsense" context="module-dashboard" />
-								<Layout
-									header
-									title={ __( 'Estimated earnings', 'google-site-kit' ) }
-									headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
-									headerCtaLink={ homepage }
-								>
-									<AdSenseEstimateEarningsWidget
-										handleDataError={ this.handleDataError }
-										handleDataSuccess={ this.handleDataSuccess }
-									/>
-								</Layout>
 							</div>
 							<div className={ classnames(
 								'mdc-layout-grid__cell',
@@ -210,17 +208,21 @@ class AdSenseDashboardWidget extends Component {
 							) }>
 								<Layout
 									header
-									title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
-									headerCtaLabel={ __( 'Advanced Settings', 'google-site-kit' ) }
-									headerCtaLink={ homepage }
+									/* translators: %s: date range */
+									title={ sprintf( __( 'Performance over the last %s', 'google-site-kit' ), currentDateRange ) }
+									headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
+									headerCTALink={ homepage }
 								>
 									<AdSensePerformanceWidget
 										handleDataError={ ( err ) => {
-											// If there is no error, it is a zero data condition.
+											// If there is no error, it is a zero data condition, otherwise call the error handler.
 											if ( ! err ) {
 												this.handleZeroData();
+											} else {
+												this.handleDataError();
 											}
 										} }
+										handleDataSuccess={ this.handleDataSuccess }
 									/>
 								</Layout>
 							</div>
@@ -246,4 +248,8 @@ class AdSenseDashboardWidget extends Component {
 	}
 }
 
-export default AdSenseDashboardWidget;
+export default withSelect( ( select ) => (
+	{
+		dateRange: select( CORE_USER ).getDateRange(),
+	} )
+)( AdSenseDashboardWidget );

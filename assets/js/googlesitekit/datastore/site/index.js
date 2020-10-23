@@ -29,8 +29,6 @@ import notifications from './notifications';
 import registryKey from './registry-key';
 import { createErrorStore } from '../../data/create-error-store';
 
-export { STORE_NAME };
-
 const store = Data.combineStores(
 	Data.commonStore,
 	connection,

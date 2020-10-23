@@ -35,14 +35,21 @@ import Layout from '../../../../components/layout/layout';
 import {
 	isDataZeroSearchConsole,
 } from '../../util';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics', query: { resource_id: domain, num_of_days: 28 } } ) );
-	const searchConsolePropertyMainURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { resource_id: domain } } ) );
+	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: '/performance/search-analytics',
+			query: {
+				resource_id: domain,
+				num_of_days: getCurrentDateRangeDayCount(),
+			},
+		} ) );
 
 	if ( ! data || ! data.length ) {
 		return null;
@@ -92,8 +99,8 @@ const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 			<Layout
 				className="googlesitekit-popular-content"
 				footer
-				footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-				footerCtaLink={ searchConsolePropertyMainURL }
+				footerCTALabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+				footerCTALink={ baseServiceURL }
 				fill
 			>
 				<TableOverflowContainer>

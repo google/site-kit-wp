@@ -19,71 +19,74 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import Layout from '../../../../components/layout/layout';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import LegacyDashboardAcquisitionPieChart from '../dashboard/LegacyDashboardAcquisitionPieChart';
+import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
-class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
-	render() {
-		return (
-			<Fragment>
-				<div className="
+const { useSelect } = Data;
+
+export default function AnalyticsDashboardDetailsWidgetTopAcquisitionSources() {
+	const serviceURL = useSelect( ( select ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const profileID = select( STORE_NAME ).getProfileID();
+		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		return select( STORE_NAME ).getServiceURL( { path: applyEntityToReportPath( url, `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ) } );
+	} );
+	return (
+		<Fragment>
+			<div className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
 				">
-					<DashboardModuleHeader
-						title={ __( 'All Traffic', 'google-site-kit' ) }
-						description={ __( 'How people found your page.', 'google-site-kit' ) }
-					/>
-				</div>
-				<div className="
+				<DashboardModuleHeader
+					title={ __( 'All Traffic', 'google-site-kit' ) }
+					description={ __( 'How people found your page.', 'google-site-kit' ) }
+				/>
+			</div>
+			<div className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
 				">
-					<Layout
-						className="googlesitekit-analytics-acquisition-sources"
-						footer
-						headerCtaLink="https://analytics.google.com"
-						headerCtaLabel={ sprintf(
-							/* translators: %s: module name. */
-							__( 'See full stats in %s', 'google-site-kit' ),
-							_x( 'Analytics', 'Service name', 'google-site-kit' )
-						) }
-						footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-						footerCtaLink="https://analytics.google.com"
-					>
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								<div className="
+				<Layout
+					className="googlesitekit-analytics-acquisition-sources"
+					footer
+					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					footerCTALink={ serviceURL }
+				>
+					<div className="mdc-layout-grid">
+						<div className="mdc-layout-grid__inner">
+							<div className="
 									mdc-layout-grid__cell
 									mdc-layout-grid__cell--span-4-desktop
 									mdc-layout-grid__cell--span-8-tablet
 									mdc-layout-grid__cell--span-4-phone
 								">
-									<LegacyDashboardAcquisitionPieChart />
-								</div>
-								<div className="
+								<LegacyDashboardAcquisitionPieChart />
+							</div>
+							<div className="
 									mdc-layout-grid__cell
 									mdc-layout-grid__cell--span-8-desktop
 									mdc-layout-grid__cell--span-8-tablet
 									mdc-layout-grid__cell--span-4-phone
 								">
-									<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
-								</div>
+								<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
 							</div>
 						</div>
-					</Layout>
-				</div>
-			</Fragment>
-		);
-	}
+					</div>
+				</Layout>
+			</div>
+		</Fragment>
+	);
 }
-
-export default AnalyticsDashboardDetailsWidgetTopAcquisitionSources;

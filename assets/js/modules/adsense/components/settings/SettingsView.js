@@ -35,7 +35,7 @@ import {
 	ACCOUNT_STATUS_NO_CLIENT,
 	ACCOUNT_STATUS_APPROVED,
 } from '../../util/status';
-import { ErrorNotice } from '../common';
+import { ErrorNotices } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -74,7 +74,7 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
-			<ErrorNotice />
+			<ErrorNotices />
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
