@@ -35,7 +35,7 @@ import { clearWebStorage, getModulesData } from '../../util';
 import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import SettingsModule from './settings-module';
-import SettingsOverlay from './settings-overlay';
+import SettingsOverlay from './SettingsOverlay';
 import { isPermissionScopeError } from '../../util/errors';
 import thumbsUpImage from '../../../images/thumbs-up.png';
 

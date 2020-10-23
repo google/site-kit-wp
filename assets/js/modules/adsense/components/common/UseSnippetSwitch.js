@@ -73,14 +73,14 @@ export default function UseSnippetSwitch( props ) {
 				/> <span className="googlesitekit-recommended">{ __( 'Recommended', 'google-site-kit' ) }</span>
 			</div>
 			{ useSnippet && checkedMessage &&
-				<SettingsNotice
-					message={ checkedMessage }
-				/>
+				<SettingsNotice>
+					{ checkedMessage }
+				</SettingsNotice>
 			}
 			{ ! useSnippet && uncheckedMessage &&
-				<SettingsNotice
-					message={ uncheckedMessage }
-				/>
+				<SettingsNotice>
+					{ uncheckedMessage }
+				</SettingsNotice>
 			}
 		</Fragment>
 	);

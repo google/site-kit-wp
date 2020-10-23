@@ -38,16 +38,16 @@ const { useSelect } = Data;
 const DashboardDetailsWidgetKeywordsTable = () => {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const footerCtaLinkArgs = {
+	const footerCTALinkArgs = {
 		resource_id: propertyID,
 		num_of_days: getCurrentDateRangeDayCount(),
 	};
 	if ( url ) {
-		footerCtaLinkArgs.page = `!${ url }`;
+		footerCTALinkArgs.page = `!${ url }`;
 	}
-	const footerCtaLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
+	const footerCTALink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
 		path: '/performance/search-analytics',
-		query: footerCtaLinkArgs,
+		query: footerCTALinkArgs,
 	} ) );
 
 	return (
@@ -67,8 +67,8 @@ const DashboardDetailsWidgetKeywordsTable = () => {
 				">
 				<Layout
 					footer
-					footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-					footerCtaLink={ footerCtaLink }
+					footerCTALabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+					footerCTALink={ footerCTALink }
 				>
 					<LegacySearchConsoleDashboardWidgetKeywordTable />
 				</Layout>
