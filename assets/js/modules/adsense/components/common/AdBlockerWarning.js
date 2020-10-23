@@ -31,8 +31,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { SvgIcon } from '../../../../util';
-import { STORE_NAME } from '../../datastore';
+import ErrorIcon from '../../../../../svg/error.svg';
+
+import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function AdBlockerWarning( { context } ) {
@@ -59,7 +60,7 @@ export default function AdBlockerWarning( { context } ) {
 				{ [ `googlesitekit-settings-module-warning--${ context }` ]: context }
 			) }
 		>
-			<SvgIcon id="error" height="20" width="23" /> { message }
+			<ErrorIcon height="20" width="23" /> { message }
 		</div>
 	);
 }

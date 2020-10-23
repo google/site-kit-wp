@@ -1,4 +1,22 @@
 /**
+ * E2E tests: config bootstrapping.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
 import { setDefaultOptions } from 'expect-puppeteer';
@@ -24,7 +42,7 @@ import {
 import * as customMatchers from '../matchers';
 
 /**
- * Environment variables
+ * Environment variables.
  */
 const { PUPPETEER_TIMEOUT, EXPECT_PUPPETEER_TIMEOUT } = process.env;
 
@@ -33,6 +51,8 @@ const { PUPPETEER_TIMEOUT, EXPECT_PUPPETEER_TIMEOUT } = process.env;
  * handled (i.e. not catastrophic) errors or warnings. Each key corresponds
  * to the Puppeteer ConsoleMessage type, its value the corresponding function
  * on the console global object.
+ *
+ * @since 1.0.0
  *
  * @type {Object<string,string>}
  */
@@ -45,6 +65,8 @@ const OBSERVED_CONSOLE_MESSAGE_TYPES = {
 
 /**
  * Array of page event tuples of [ eventName, handler ].
+ *
+ * @since 1.0.0
  *
  * @type {Array}
  */
@@ -61,6 +83,8 @@ expect.extend( customMatchers );
 /**
  * Adds an event listener to the page to handle additions of page event
  * handlers, to assure that they are removed at test teardown.
+ *
+ * @since 1.0.0
  */
 function capturePageEventsForTearDown() {
 	page.on( 'newListener', ( eventName, listener ) => {
@@ -69,12 +93,13 @@ function capturePageEventsForTearDown() {
 }
 
 /**
- * Opt out of all Analytics tracking on page load.
+ * Opts out of all Analytics tracking on page load.
  *
  * This function emulates the behavior of the opt-out browser extension,
  * which is the only way to opt-out in an AMP-friendly way
  * since AMP does not allow for arbitrary JS from the origin.
  *
+ * @since 1.13.0
  * @see {@link https://tools.google.com/dlpage/gaoptout}
  */
 function optOutOfEventTracking() {
@@ -89,6 +114,8 @@ function optOutOfEventTracking() {
 
 /**
  * Removes all bound page event handlers.
+ *
+ * @since 1.0.0
  */
 function removePageEvents() {
 	while ( pageEvents.length ) {
@@ -100,6 +127,8 @@ function removePageEvents() {
 /**
  * Adds a page event handler to emit uncaught exception to process if one of
  * the observed console logging types is encountered.
+ *
+ * @since 1.0.0
  */
 function observeConsoleLogging() {
 	page.on( 'console', ( message ) => {
@@ -169,7 +198,9 @@ function observeConsoleLogging() {
 }
 
 /**
- * Observe the given navigation request.
+ * Observes the given navigation request.
+ *
+ * @since 1.0.0
  *
  * @param {Object} req HTTP request object.
  */
@@ -185,7 +216,9 @@ function observeNavigationRequest( req ) {
 }
 
 /**
- * Observe the given navigation response.
+ * Observes the given navigation response.
+ *
+ * @since 1.0.0
  *
  * @param {Object} res HTTP response object.
  */
@@ -202,7 +235,9 @@ function observeNavigationResponse( res ) {
 }
 
 /**
- * Observe the given REST request.
+ * Observes the given REST request.
+ *
+ * @since 1.0.0
  *
  * @param {Object} req HTTP request object from the REST API request.
  */
@@ -218,7 +253,9 @@ function observeRestRequest( req ) {
 }
 
 /**
- * Observe the given REST response.
+ * Observes the given REST response.
+ *
+ * @since 1.0.0
  *
  * @param {Object} res HTTP response object from the REST API request.
  */

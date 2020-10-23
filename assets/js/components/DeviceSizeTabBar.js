@@ -32,8 +32,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DeviceSizeMobileIcon from './icons/DeviceSizeMobileIcon';
-import DeviceSizeDesktopIcon from './icons/DeviceSizeDesktopIcon';
+import DeviceSizeMobileIcon from '../../svg/device-size-mobile-icon.svg';
+import DeviceSizeDesktopIcon from '../../svg/device-size-desktop-icon.svg';
 
 const DeviceSizeTabBar = ( {
 	activeTab,
@@ -42,12 +42,12 @@ const DeviceSizeTabBar = ( {
 		{
 			slug: 'mobile',
 			label: __( 'Mobile', 'google-site-kit' ),
-			icon: <DeviceSizeMobileIcon />,
+			icon: <DeviceSizeMobileIcon width="15" height="22" />,
 		},
 		{
 			slug: 'desktop',
 			label: __( 'Desktop', 'google-site-kit' ),
-			icon: <DeviceSizeDesktopIcon />,
+			icon: <DeviceSizeDesktopIcon width="23" height="17" />,
 		},
 	],
 } ) => {

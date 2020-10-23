@@ -1,5 +1,5 @@
 /**
- * modules/optimize data store
+ * `modules/optimize` data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -24,8 +24,6 @@ import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import settings from './settings';
 import service from './service';
-
-export { STORE_NAME };
 
 let baseModuleStore = Modules.createModuleStore( 'optimize', {
 	storeName: STORE_NAME,

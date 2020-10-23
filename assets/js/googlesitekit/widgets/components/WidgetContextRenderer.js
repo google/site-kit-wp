@@ -19,14 +19,14 @@
 /**
  * External dependencies
  */
-import { string } from 'prop-types';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
-import { STORE_NAME } from '../datastore';
+import { STORE_NAME } from '../datastore/constants';
 
 const { useSelect } = Data;
 
@@ -43,7 +43,7 @@ const WidgetContextRenderer = ( { slug } ) => {
 };
 
 WidgetContextRenderer.propTypes = {
-	slug: string.isRequired,
+	slug: PropTypes.string.isRequired,
 };
 
 export default WidgetContextRenderer;

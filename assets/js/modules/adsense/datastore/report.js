@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: report.
+ * `modules/adsense` data store: report.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -102,9 +102,12 @@ const baseSelectors = {
 	 * Gets a Google AdSense report for the given options.
 	 *
 	 * The report generated will include the following metrics:
+	 *
 	 * * 'EARNINGS'
 	 * * 'PAGE_VIEWS_RPM'
 	 * * 'IMPRESSIONS'
+	 *
+	 * An AdSense report will be returned; `undefined` if the report is not yet loaded.
 	 *
 	 * @since 1.9.0
 	 *

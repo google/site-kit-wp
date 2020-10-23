@@ -1,5 +1,5 @@
 /**
- * core/site data store
+ * `core/site` data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -28,8 +28,6 @@ import { STORE_NAME } from './constants';
 import notifications from './notifications';
 import registryKey from './registry-key';
 import { createErrorStore } from '../../data/create-error-store';
-
-export { STORE_NAME };
 
 const store = Data.combineStores(
 	Data.commonStore,

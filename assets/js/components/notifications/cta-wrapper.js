@@ -1,5 +1,5 @@
 /**
- * ctaWrapper function.
+ * `ctaWrapper` function.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -28,9 +28,12 @@ import Layout from '../layout/layout';
 
 /**
  * Get CTA html wrapper.
+ *
  * Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
  *
- * @param {Object}  cta        CTA component to render
+ * @since 1.0.0
+ *
+ * @param {Object}  cta        CTA component to render.
  * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.
  * @param {boolean} fullWidth  Creates layout with 'cell--span-12' to be full width. Default: false.
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.

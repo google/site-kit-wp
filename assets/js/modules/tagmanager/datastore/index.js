@@ -1,5 +1,5 @@
 /**
- * modules/tagmanager data store
+ * `modules/tagmanager` data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -29,8 +29,6 @@ import tags from './tags';
 import settings from './settings';
 import versions from './versions';
 import service from './service';
-
-export { STORE_NAME };
 
 let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 	storeName: STORE_NAME,

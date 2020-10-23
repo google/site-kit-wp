@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store: settings.
+ * `modules/adsense` data store: settings.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -34,8 +34,9 @@ import {
 } from '../util';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createStrictSelect, createValidationSelector } from '../../../googlesitekit/data/utils';
 
-const { commonActions, createRegistrySelector, createRegistryControl } = Data;
+const { commonActions, createRegistryControl } = Data;
 
 const fetchSaveUseSnippetStore = createFetchStore( {
 	baseName: 'saveUseSnippet',
@@ -66,6 +67,13 @@ const fetchSaveUseSnippetStore = createFetchStore( {
 		invariant( useSnippet !== undefined, 'useSnippet is required.' );
 	},
 } );
+
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
+export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_MISSING_ACCOUNT_STATUS = 'require an account status to be present';
+export const INVARIANT_INVALID_ACCOUNT_ID = 'require account ID to be either empty (if impossible to determine) or valid';
+export const INVARIANT_INVALID_CLIENT_ID = 'require client ID to be either empty (if impossible to determine) or valid';
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -310,48 +318,6 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Checks if changes can be submitted.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @return {boolean} True if changes can be submitted, false otherwise.
-	 */
-	canSubmitChanges: createRegistrySelector( ( select ) => () => {
-		const {
-			getAccountID,
-			getClientID,
-			getAccountStatus,
-			haveSettingsChanged,
-			isDoingSubmitChanges,
-		} = select( STORE_NAME );
-
-		if ( isDoingSubmitChanges() ) {
-			return false;
-		}
-		if ( ! haveSettingsChanged() ) {
-			return false;
-		}
-		// Require an account status to be present.
-		if ( ! getAccountStatus() ) {
-			return false;
-		}
-		// Require account ID to be either empty (if impossible to determine)
-		// or valid.
-		const accountID = getAccountID();
-		if ( '' !== accountID && ! isValidAccountID( accountID ) ) {
-			return false;
-		}
-		// Require client ID to be either empty (if impossible to determine)
-		// or valid.
-		const clientID = getClientID();
-		if ( '' !== clientID && ! isValidClientID( clientID ) ) {
-			return false;
-		}
-
-		return true;
-	} ),
-
-	/**
 	 * Checks whether changes are currently being submitted.
 	 *
 	 * @since 1.9.0
@@ -394,6 +360,31 @@ const baseSelectors = {
 	},
 };
 
+const {
+	safeSelector: canSubmitChanges,
+	dangerousSelector: __dangerousCanSubmitChanges,
+} = createValidationSelector( ( select ) => {
+	const strictSelect = createStrictSelect( select );
+	const {
+		getAccountID,
+		getClientID,
+		getAccountStatus,
+		haveSettingsChanged,
+		isDoingSubmitChanges,
+	} = strictSelect( STORE_NAME );
+
+	// Note: these error messages are referenced in test assertions.
+	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
+	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	invariant( getAccountStatus(), INVARIANT_MISSING_ACCOUNT_STATUS );
+
+	const accountID = getAccountID();
+	invariant( '' === accountID || isValidAccountID( accountID ), INVARIANT_INVALID_ACCOUNT_ID );
+
+	const clientID = getClientID();
+	invariant( '' === clientID || isValidClientID( clientID ), INVARIANT_INVALID_CLIENT_ID );
+} );
+
 const store = Data.combineStores(
 	fetchSaveUseSnippetStore,
 	{
@@ -402,7 +393,11 @@ const store = Data.combineStores(
 		controls: baseControls,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
-		selectors: baseSelectors,
+		selectors: {
+			...baseSelectors,
+			canSubmitChanges,
+			__dangerousCanSubmitChanges,
+		},
 	}
 );
 

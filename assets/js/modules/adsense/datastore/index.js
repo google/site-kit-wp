@@ -1,5 +1,5 @@
 /**
- * modules/adsense data store
+ * `modules/adsense` data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -31,8 +31,6 @@ import settings from './settings';
 import adblocker from './adblocker';
 import service from './service';
 import { STORE_NAME } from './constants';
-
-export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'adsense', {
 	storeName: STORE_NAME,

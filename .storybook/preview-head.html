@@ -3,14 +3,19 @@
 	  padding: 50px;
   }
 </style>
+<script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script>
-
 	WebFontConfig = {
-		google: { families: ['Google+Sans:300,300i,400,400i,500,500i,700,700i','Roboto:300,300i,400,400i,500,500i,700,700i'] },
-		active: function() {
-			console.log( 'backstopjs_ready' );
+		google: {
+			families: [
+				'Google+Sans:300,300i,400,400i,500,500i,700,700i',
+				'Roboto:300,300i,400,400i,500,500i,700,700i'
+			]
 		},
 	};
+	const webFontsLoaded = new Promise( ( resolve ) => {
+		WebFontConfig.active = resolve;
+	} );
 
 	( function() {
 		let wf = document.createElement( 'script' );
@@ -20,4 +25,19 @@
 		let s = document.getElementsByTagName( 'script' )[0];
 		s.parentNode.insertBefore( wf, s );
 	} )();
+
+	const allImagesLoaded = new Promise( ( resolve ) => {
+		// Wait for the document to completely finish loading before checking for images.
+		window.addEventListener( 'load', () => {
+			imagesLoaded( '.googlesitekit-plugin-preview', { background: true }, resolve );
+		} );
+	} );
+
+	Promise.all( [
+		webFontsLoaded,
+		allImagesLoaded,
+	] ).then( () => {
+		// Signal Backstop that the environment is ready to go.
+		console.log( 'backstopjs_ready' );
+	} );
 </script>

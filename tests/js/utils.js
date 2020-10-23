@@ -13,21 +13,32 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import coreSiteStore, { STORE_NAME as coreSiteStoreName } from '../../assets/js/googlesitekit/datastore/site';
-import coreUserStore, { STORE_NAME as coreUserStoreName } from '../../assets/js/googlesitekit/datastore/user';
-import coreFormsStore, { STORE_NAME as coreFormsStoreName } from '../../assets/js/googlesitekit/datastore/forms';
-import coreModulesStore, { STORE_NAME as coreModulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
-import coreWidgetsStore, { STORE_NAME as coreWidgetsStoreName } from '../../assets/js/googlesitekit/widgets/datastore';
-import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../../assets/js/modules/adsense/datastore';
-import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
-import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
-import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
-import modulesTagManagerStore, { STORE_NAME as modulesTagManagerStoreName } from '../../assets/js/modules/tagmanager/datastore';
-import modulesOptimizeStore, { STORE_NAME as modulesOptimizeStoreName } from '../../assets/js/modules/optimize/datastore';
+import coreSiteStore from '../../assets/js/googlesitekit/datastore/site';
+import { STORE_NAME as CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
+import coreUserStore from '../../assets/js/googlesitekit/datastore/user';
+import { STORE_NAME as CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
+import coreFormsStore from '../../assets/js/googlesitekit/datastore/forms';
+import { STORE_NAME as CORE_FORMS } from '../../assets/js/googlesitekit/datastore/forms/constants';
+import coreModulesStore from '../../assets/js/googlesitekit/modules/datastore';
+import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
+import coreWidgetsStore from '../../assets/js/googlesitekit/widgets/datastore';
+import { STORE_NAME as CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
+import modulesAdSenseStore from '../../assets/js/modules/adsense/datastore';
+import { STORE_NAME as MODULES_ADSENSE } from '../../assets/js/modules/adsense/datastore/constants';
+import modulesAnalyticsStore from '../../assets/js/modules/analytics/datastore';
+import { STORE_NAME as MODULES_ANALYTICS } from '../../assets/js/modules/analytics/datastore/constants';
+import modulesPageSpeedInsightsStore from '../../assets/js/modules/pagespeed-insights/datastore';
+import { STORE_NAME as MODULES_PAGESPEED_INSIGHTS } from '../../assets/js/modules/pagespeed-insights/datastore/constants';
+import modulesSearchConsoleStore from '../../assets/js/modules/search-console/datastore';
+import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
+import modulesTagManagerStore from '../../assets/js/modules/tagmanager/datastore';
+import { STORE_NAME as MODULES_TAGMANAGER } from '../../assets/js/modules/tagmanager/datastore/constants';
+import modulesOptimizeStore from '../../assets/js/modules/optimize/datastore';
+import { STORE_NAME as MODULES_OPTIMIZE } from '../../assets/js/modules/optimize/datastore/constants';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
 
 /**
- * Create a registry with all available stores.
+ * Creates a registry with all available stores.
  *
  * @since 1.5.0
  * @private
@@ -91,7 +102,7 @@ export const provideSiteConnection = ( registry, extraData = {} ) => {
 		ownerID: defaultConnected ? 1 : 0,
 	};
 
-	registry.dispatch( coreSiteStoreName ).receiveGetConnection( {
+	registry.dispatch( CORE_SITE ).receiveGetConnection( {
 		...defaults,
 		...extraData,
 	} );
@@ -118,10 +129,10 @@ export const provideUserAuthentication = ( registry, extraData = {} ) => {
 	};
 
 	const mergedData = { ...defaults, ...extraData };
-	registry.dispatch( coreUserStoreName ).receiveGetAuthentication( mergedData );
+	registry.dispatch( CORE_USER ).receiveGetAuthentication( mergedData );
 
 	// Also set verification info here based on authentication.
-	registry.dispatch( coreUserStoreName ).receiveUserIsVerified( mergedData.authenticated );
+	registry.dispatch( CORE_USER ).receiveUserIsVerified( mergedData.authenticated );
 };
 
 /**
@@ -150,7 +161,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		usingProxy: true,
 	};
 
-	registry.dispatch( coreSiteStoreName ).receiveSiteInfo( {
+	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 		...defaults,
 		...extraData,
 	} );
@@ -173,7 +184,7 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 		picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
 	};
 
-	registry.dispatch( coreUserStoreName ).receiveUserInfo( {
+	registry.dispatch( CORE_USER ).receiveUserInfo( {
 		...defaults,
 		...extraData,
 	} );
@@ -200,7 +211,7 @@ export const provideModules = ( registry, extraData = [] ) => {
 		return { ...module };
 	} );
 
-	registry.dispatch( coreModulesStoreName ).receiveGetModules( modules );
+	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
 };
 
 /**
@@ -214,9 +225,9 @@ export const provideModules = ( registry, extraData = [] ) => {
  * @since 1.10.0
  * @private
  *
- * @param {(string|RegExp|Function|URL|Object)} matcher   Criteria for deciding which requests to mock.
+ * @param {(string|RegExp|Function|URL|Object)} matcher    Criteria for deciding which requests to mock.
  *                                                        (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
- * @param {*}                                  [response] Optional. Response to return.
+ * @param {*}                                   [response] Optional. Response to return.
  */
 export const muteFetch = ( matcher, response = {} ) => {
 	fetchMock.once( matcher, { body: response, status: 200 } );
@@ -238,7 +249,7 @@ export const freezeFetch = ( matcher ) => {
 };
 
 /**
- * Register all Site Kit stores on a registry.
+ * Registers all Site Kit stores on a registry.
  *
  * Use this to register every available Site Kit store on a registry.
  * Useful for testing, when you want to ensure that every registry is
@@ -250,17 +261,17 @@ export const freezeFetch = ( matcher ) => {
  * @param {wp.data.registry} registry Registry to register each store on.
  */
 export const registerAllStoresOn = ( registry ) => {
-	registry.registerStore( coreSiteStoreName, coreSiteStore );
-	registry.registerStore( coreUserStoreName, coreUserStore );
-	registry.registerStore( coreFormsStoreName, coreFormsStore );
-	registry.registerStore( coreModulesStoreName, coreModulesStore );
-	registry.registerStore( coreWidgetsStoreName, coreWidgetsStore );
-	registry.registerStore( modulesAdSenseStoreName, modulesAdSenseStore );
-	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
-	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
-	registry.registerStore( modulesSearchConsoleStoreName, modulesSearchConsoleStore );
-	registry.registerStore( modulesTagManagerStoreName, modulesTagManagerStore );
-	registry.registerStore( modulesOptimizeStoreName, modulesOptimizeStore );
+	registry.registerStore( CORE_SITE, coreSiteStore );
+	registry.registerStore( CORE_USER, coreUserStore );
+	registry.registerStore( CORE_FORMS, coreFormsStore );
+	registry.registerStore( CORE_MODULES, coreModulesStore );
+	registry.registerStore( CORE_WIDGETS, coreWidgetsStore );
+	registry.registerStore( MODULES_ADSENSE, modulesAdSenseStore );
+	registry.registerStore( MODULES_ANALYTICS, modulesAnalyticsStore );
+	registry.registerStore( MODULES_PAGESPEED_INSIGHTS, modulesPageSpeedInsightsStore );
+	registry.registerStore( MODULES_SEARCH_CONSOLE, modulesSearchConsoleStore );
+	registry.registerStore( MODULES_TAGMANAGER, modulesTagManagerStore );
+	registry.registerStore( MODULES_OPTIMIZE, modulesOptimizeStore );
 };
 
 const unsubscribes = [];
@@ -316,7 +327,7 @@ export const unsubscribeFromAll = () => {
 };
 
 /**
- * Return a rejection.
+ * Returns a rejection.
  *
  * Used to ensure that a test will fail if it reaches this point.
  * Useful for asynchronous code that has multiple code paths, eg:

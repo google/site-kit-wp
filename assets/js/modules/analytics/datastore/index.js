@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store
+ * `modules/analytics` data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -32,8 +32,6 @@ import settings from './settings';
 import tags from './tags';
 import service from './service';
 import { STORE_NAME } from './constants';
-
-export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	storeName: STORE_NAME,

@@ -35,7 +35,7 @@ import Button from '../../../../components/button';
 import { trackEvent } from '../../../../util';
 import { STORE_NAME } from '../../datastore/constants';
 import SiteSteps from '../common/SiteSteps';
-import { ErrorNotice } from '../common';
+import { ErrorNotices } from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupSiteAdded( { finishSetup } ) {
@@ -60,7 +60,7 @@ export default function SetupSiteAdded( { finishSetup } ) {
 				{ __( 'Let’s get your site ready for ads', 'google-site-kit' ) }
 			</h3>
 
-			<ErrorNotice />
+			<ErrorNotices />
 
 			<p>
 				{ __( 'In order for your site to display ads, make sure you’ve completed these steps in AdSense.', 'google-site-kit' ) }

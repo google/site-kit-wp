@@ -1,5 +1,5 @@
 /**
- * core/forms data store
+ * `core/forms` data store.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -24,8 +24,6 @@ import { createErrorStore } from '../../data/create-error-store';
 import { createSnapshotStore } from '../../data/create-snapshot-store';
 import forms from './forms';
 import { STORE_NAME } from './constants';
-
-export { STORE_NAME };
 
 const store = Data.combineStores(
 	Data.commonStore,

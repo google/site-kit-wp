@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -569,6 +570,74 @@ class AuthenticationTest extends TestCase {
 
 			$this->assertEquals( $fake_proxy_credentials['client_id'], $query_args['site_id'] );
 			$this->assertEquals( 'test-code', $query_args['code'] );
+		}
+	}
+
+	/**
+	 * Test handle_proxy_permissions()
+	 */
+	public function test_handle_proxy_permissions() {
+		$action = 'admin_action_' . Google_Proxy::ACTION_PERMISSIONS;
+		remove_all_actions( $action );
+
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		wp_set_current_user( $editor_id );
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context );
+
+		$authentication = new Authentication( $context, $options, $user_options );
+		$authentication->get_oauth_client()->set_access_token( 'test-access-token', 3600 );
+		$authentication->register();
+
+		// Requires 'googlesitekit_proxy_permissions' nonce.
+		try {
+			do_action( $action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+		}
+
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
+		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ) );
+
+		// Requires Site Kit Authenticate permissions
+		try {
+			do_action( $action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertContains( 'insufficient permissions to manage Site Kit permissions', $e->getMessage() );
+		}
+
+		wp_set_current_user( $admin_id );
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
+		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ) );
+
+		// Requires Proxy Authentication
+		$this->fake_site_connection();
+
+		try {
+			do_action( $action );
+			$this->fail( 'Expected WPDieException to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertContains( 'Site Kit is not configured to use the authentication proxy', $e->getMessage() );
+		}
+
+		$fake_proxy_credentials = $this->fake_proxy_site_connection();
+
+		try {
+			do_action( $action );
+		} catch ( RedirectException $redirect ) {
+			$location = $redirect->get_location();
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/permissions/', $location );
+
+			$parsed = wp_parse_url( $location );
+			parse_str( $parsed['query'], $query_args );
+
+			$this->assertEquals( $fake_proxy_credentials['client_id'], $query_args['site_id'] );
 		}
 	}
 

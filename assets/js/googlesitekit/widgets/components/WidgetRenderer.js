@@ -19,50 +19,26 @@
 /**
  * External dependencies
  */
-import { string, object, func } from 'prop-types';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore';
+import { STORE_NAME } from '../datastore/constants';
 import Widget from './Widget';
 
 const { useSelect } = Data;
 
-const WidgetRenderer = ( { slug, gridClassName, activeWidgets, setActiveWidgets } ) => {
+const WidgetRenderer = ( { slug, gridClassName } ) => {
 	const widget = useSelect( ( select ) => select( STORE_NAME ).getWidget( slug ) );
 
 	if ( ! widget ) {
-		if ( activeWidgets[ slug ] ) {
-			setActiveWidgets( {
-				...activeWidgets,
-				[ slug ]: false,
-			} );
-		}
 		return null;
 	}
 
 	// Capitalize the "component" variable, as it is required by JSX.
 	const { component: Component, wrapWidget } = widget;
-
-	// Check if widget component will render `null` by calling it directly.
-	if ( typeof Component === 'function' && ! Component( {} ) ) {
-		if ( activeWidgets[ slug ] ) {
-			setActiveWidgets( {
-				...activeWidgets,
-				[ slug ]: false,
-			} );
-		}
-		return null;
-	}
-
-	if ( ! activeWidgets[ slug ] ) {
-		setActiveWidgets( {
-			...activeWidgets,
-			[ slug ]: true,
-		} );
-	}
 
 	let widgetComponent = <Component />;
 
@@ -82,15 +58,8 @@ const WidgetRenderer = ( { slug, gridClassName, activeWidgets, setActiveWidgets 
 };
 
 WidgetRenderer.propTypes = {
-	slug: string.isRequired,
-	gridClassName: string,
-	activeWidgets: object,
-	setActiveWidgets: func,
-};
-
-WidgetRenderer.defaultProps = {
-	activeWidgets: {},
-	setActiveWidgets: () => {},
+	slug: PropTypes.string.isRequired,
+	gridClassName: PropTypes.string,
 };
 
 export default WidgetRenderer;

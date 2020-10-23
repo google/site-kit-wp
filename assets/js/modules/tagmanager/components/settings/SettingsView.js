@@ -27,13 +27,13 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/display-setting';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site';
-import { STORE_NAME } from '../../datastore';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME } from '../../datastore/constants';
 import {
 	ExistingTagError,
 	ExistingTagNotice,
 } from '../common';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -50,7 +50,7 @@ export default function SettingsView() {
 		<Fragment>
 
 			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotice moduleSlug="tagmanager" storeName={ STORE_NAME } /> }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 

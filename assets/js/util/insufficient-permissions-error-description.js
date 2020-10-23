@@ -1,5 +1,5 @@
 /**
- * getInsufficientPermissionsErrorDescription function.
+ * `getInsufficientPermissionsErrorDescription` function.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -26,7 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  *
  * @since 1.16.0
  *
- * @param {string} error Original error message.
+ * @param {string} error  Original error message.
  * @param {Object} module Module data.
  * @return {string} Error description.
  */
@@ -36,6 +36,11 @@ export function getInsufficientPermissionsErrorDescription( error, module ) {
 		name = '',
 		owner = null,
 	} = module || {};
+
+	// If no module data provided, it is impossible to provide a more clear message.
+	if ( ! slug || ! name ) {
+		return error;
+	}
 
 	let message = '';
 	let userInfo = '';

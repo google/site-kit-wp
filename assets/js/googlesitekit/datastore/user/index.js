@@ -1,5 +1,5 @@
 /**
- * core/user data store
+ * `core/user` data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -23,13 +23,12 @@ import Data from 'googlesitekit-data';
 import authentication from './authentication';
 import dateRange from './date-range';
 import disconnect from './disconnect';
+import userInputSettings from './user-input-settings';
 import { createErrorStore } from '../../data/create-error-store';
 import notifications from './notifications';
 import permissions from './permissions';
 import userInfo from './user-info';
 import { STORE_NAME } from './constants';
-
-export { STORE_NAME };
 
 const store = Data.combineStores(
 	Data.commonStore,
@@ -40,6 +39,7 @@ const store = Data.combineStores(
 	notifications,
 	permissions,
 	userInfo,
+	userInputSettings,
 );
 
 export const {

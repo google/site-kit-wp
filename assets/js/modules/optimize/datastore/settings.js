@@ -1,5 +1,5 @@
 /**
- * modules/optimize data store: settings.
+ * `modules/optimize` data store: settings.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,19 +17,31 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
+import { createStrictSelect, createValidationSelector } from '../../../googlesitekit/data/utils';
 import {
 	isValidOptimizeID,
 	isValidAMPExperimentJSON,
 } from '../util';
 import { STORE_NAME } from './constants';
 
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createRegistryControl } = Data;
+
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
+export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
+export const INVARIANT_INVALID_AMP_EXPERIMENT_JSON = 'ampExperimentJSON must be valid JSON if set';
+export const INVARIANT_INVALID_OPTIMIZE_ID = 'a valid optimizeID is required';
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -118,38 +130,6 @@ export const resolvers = {};
 
 export const selectors = {
 	/**
-	 * Checks if changes can be submitted.
-	 */
-	canSubmitChanges: createRegistrySelector( ( select ) => () => {
-		const {
-			getOptimizeID,
-			getAMPExperimentJSON,
-			haveSettingsChanged,
-			isDoingSubmitChanges,
-		} = select( STORE_NAME );
-
-		if ( isDoingSubmitChanges() ) {
-			return false;
-		}
-		if ( ! haveSettingsChanged() ) {
-			return false;
-		}
-		// Require an ampExperimentJSON to be valid JSON if set.
-		const ampExperimentJSON = getAMPExperimentJSON();
-		if ( ! isValidAMPExperimentJSON( ampExperimentJSON ) ) {
-			return false;
-		}
-		// Require optimize ID to be either empty (if impossible to determine)
-		// or valid.
-		const optimizeID = getOptimizeID();
-		if ( '' !== optimizeID && ! isValidOptimizeID( optimizeID ) ) {
-			return false;
-		}
-
-		return true;
-	} ),
-
-	/**
 	 * Checks whether changes are currently being submitted.
 	 *
 	 * @since 1.10.0
@@ -162,11 +142,38 @@ export const selectors = {
 	},
 };
 
+const {
+	safeSelector: canSubmitChanges,
+	dangerousSelector: __dangerousCanSubmitChanges,
+} = createValidationSelector( ( select ) => {
+	const strictSelect = createStrictSelect( select );
+	const {
+		getOptimizeID,
+		getAMPExperimentJSON,
+		haveSettingsChanged,
+		isDoingSubmitChanges,
+	} = strictSelect( STORE_NAME );
+
+	// Note: these error messages are referenced in test assertions.
+	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
+	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+
+	const ampExperimentJSON = getAMPExperimentJSON();
+	invariant( isValidAMPExperimentJSON( ampExperimentJSON ), INVARIANT_INVALID_AMP_EXPERIMENT_JSON );
+
+	const optimizeID = getOptimizeID();
+	invariant( '' === optimizeID || isValidOptimizeID( optimizeID ), INVARIANT_INVALID_OPTIMIZE_ID );
+} );
+
 export default {
 	initialState,
 	actions,
 	controls,
 	reducer,
 	resolvers,
-	selectors,
+	selectors: {
+		...selectors,
+		canSubmitChanges,
+		__dangerousCanSubmitChanges,
+	},
 };

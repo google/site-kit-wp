@@ -1,5 +1,5 @@
 /**
- * core/widgets data store: widget tests.
+ * `core/widgets` data store: widget tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -25,25 +25,14 @@ import {
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_SITE_STORE_NAME } from '../../../googlesitekit/datastore/site';
-import { WidgetComponents } from './widgets';
 
 describe( 'core/widgets Widgets', () => {
-	const resetWidgetComponents = () => {
-		Object.keys( WidgetComponents ).forEach( ( registryKey ) => {
-			delete WidgetComponents[ registryKey ];
-		} );
-	};
 	let registry;
 	let store;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
-
-		// Reset the WidgetComponents variable for each test; otherwise a new registry will
-		// be created for each test.
-		resetWidgetComponents();
 	} );
 
 	afterEach( () => {
@@ -136,50 +125,37 @@ describe( 'core/widgets Widgets', () => {
 		} );
 
 		describe( 'registerWidget', () => {
-			it( 'places the widget component in a variable external to the store, with a key from the store', () => {
-				expect( Object.keys( WidgetComponents ) ).toHaveLength( 0 );
+			const slug = 'widget-spinner';
+			const component = ( props ) => {
+				return ( <div>Hello { props.children }!</div> );
+			};
 
-				const slug = 'WidgetSpinner';
-				const WidgetSpinner = ( props ) => {
-					return ( <div>Hello { props.children }!</div> );
-				};
-				registry.dispatch( STORE_NAME ).registerWidget( slug, {
-					component: WidgetSpinner,
-				} );
-				const registryKey = registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
+			it( 'requires a component to be provided', () => {
+				expect(
+					() => registry.dispatch( STORE_NAME ).registerWidget( slug )
+				).toThrow( 'component is required to register a widget.' );
+			} );
 
-				// A registry key should have been created.
-				expect( Object.keys( WidgetComponents ) ).toHaveLength( 1 );
-				expect( WidgetComponents[ registryKey ][ slug ] ).toBeDefined();
-				expect( WidgetComponents[ registryKey ][ slug ] ).toEqual( WidgetSpinner );
+			it( 'requires a valid width to be provided', () => {
+				expect(
+					() => registry.dispatch( STORE_NAME ).registerWidget( slug, { component, width: 'HUUGE' } )
+				).toThrow( 'Widget width should be one of' );
+			} );
+
+			it( 'registers the component with the given settings and component', () => {
+				registry.dispatch( STORE_NAME ).registerWidget( slug, { component, priority: 11 } );
+
+				expect( store.getState().widgets[ slug ].component ).toEqual( component );
+				expect( store.getState().widgets[ slug ].priority ).toEqual( 11 );
 
 				// Ensure we can render a component with the widget's component, verifying it's still a
 				// usable React component.
-				const Component = WidgetComponents[ registryKey ][ slug ];
+				const Component = store.getState().widgets[ slug ].component;
 				const { container } = render( <Component>world</Component> );
 				expect( container.firstChild ).toMatchSnapshot();
 			} );
 
-			it( 'uses the same WidgetsComponent section when multiple widgets are registered', () => {
-				registry.dispatch( STORE_NAME ).registerWidget( 'widget-1', {
-					component: () => {
-						return ( <div>Hello world!</div> );
-					},
-				} );
-				registry.dispatch( STORE_NAME ).registerWidget( 'widget-2', {
-					component: () => {
-						return ( <span>Hello again!</span> );
-					},
-				} );
-				const registryKey = registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
-
-				expect( Object.keys( WidgetComponents[ registryKey ] ) ).toHaveLength( 2 );
-				// Another registry key should not have been created.
-				expect( Object.keys( WidgetComponents ) ).toHaveLength( 1 );
-			} );
-
 			it( 'does not overwrite an existing widget', () => {
-				const slug = 'widget-1';
 				const WidgetOne = () => {
 					return ( <div>Hello world!</div> );
 				};
@@ -195,11 +171,8 @@ describe( 'core/widgets Widgets', () => {
 				} );
 				expect( console ).toHaveWarnedWith( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
 
-				const registryKey = registry.select( CORE_SITE_STORE_NAME ).getRegistryKey();
-
 				// Ensure original widget's component is registered.
-				expect( Object.keys( WidgetComponents[ registryKey ] ) ).toHaveLength( 1 );
-				expect( WidgetComponents[ registryKey ][ slug ] ).toEqual( WidgetOne );
+				expect( store.getState().widgets[ slug ].component ).toEqual( WidgetOne );
 			} );
 		} );
 	} );

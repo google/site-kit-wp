@@ -1,5 +1,5 @@
 /**
- * modules/pagespeed-insights data store
+ * `modules/pagespeed-insights` data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -24,8 +24,6 @@ import Modules from 'googlesitekit-modules';
 import report from './report';
 import service from './service';
 import { STORE_NAME } from './constants';
-
-export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
 	storeName: STORE_NAME,

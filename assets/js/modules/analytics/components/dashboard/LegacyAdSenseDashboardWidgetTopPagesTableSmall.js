@@ -48,8 +48,8 @@ class LegacyAdSenseDashboardWidgetTopPagesTableSmall extends Component {
 				<Layout
 					className="googlesitekit-top-earnings-pages"
 					footer
-					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCtaLink="http://analytics.google.com"
+					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					footerCTALink="http://analytics.google.com"
 					fill
 				>
 					{ component }
@@ -110,10 +110,11 @@ class LegacyAdSenseDashboardWidgetTopPagesTableSmall extends Component {
 }
 
 /**
- * Check error data response.
+ * Checks error data response.
+ *
+ * @since 1.0.0
  *
  * @param {Object} data Response error data.
- *
  * @return {(HTMLElement|null)} Returns HTML element markup with error message if it exists.
  */
 const getDataError = ( data ) => {

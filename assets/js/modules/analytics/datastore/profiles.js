@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: profiles.
+ * `modules/analytics` data store: profiles.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -103,9 +103,9 @@ const baseActions = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param {string} accountID Google Analytics account ID.
-	 * @param {string} propertyID Google Analytics property ID.
-	 * @param {Object} args Profile arguments.
+	 * @param {string} accountID        Google Analytics account ID.
+	 * @param {string} propertyID       Google Analytics property ID.
+	 * @param {Object} args             Profile arguments.
 	 * @param {string} args.profileName The name for a new profile.
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -148,13 +148,14 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Get all Google Analytics profiles this user account+property has available.
+	 * Gets all Google Analytics profiles this user account+property has available.
 	 *
 	 * Returns an array of all profiles.
 	 *
 	 * Returns `undefined` if accounts have not yet loaded.
 	 *
 	 * @since 1.8.0
+	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} accountID  The Analytics Account ID to fetch profiles for.
 	 * @param {string} propertyID The Analytics Property ID to fetch profiles for.
@@ -166,7 +167,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Check if a profile is being created for an account and property.
+	 * Checks if a profile is being created for an account and property.
 	 *
 	 * @since 1.8.0
 	 *

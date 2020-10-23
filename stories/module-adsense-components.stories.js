@@ -22,8 +22,8 @@
 import { generateReportBasedWidgetStories } from './utils/generate-widget-stories';
 import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
-import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
-import { STORE_NAME as ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore';
+import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
+import { STORE_NAME as ANALYTICS_STORE } from '../assets/js/modules/analytics/datastore/constants';
 import {
 	dashboardSummaryWidgetTodayData,
 	dashboardSummaryWidgetPeriodData,
@@ -36,7 +36,7 @@ import {
 } from '../assets/js/modules/adsense/datastore/__fixtures__';
 
 generateReportBasedWidgetStories( {
-	moduleSlug: 'adsense',
+	moduleSlugs: [ 'adsense' ],
 	datastore: STORE_NAME,
 	group: 'AdSense Module/Components/Dashboard/Summary Widget',
 	data: [
@@ -54,7 +54,7 @@ generateReportBasedWidgetStories( {
 } );
 
 generateReportBasedWidgetStories( {
-	moduleSlug: [ 'adsense', 'analytics' ],
+	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: ANALYTICS_STORE,
 	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
 	data: dashboardTopEarningPageWidgetData,

@@ -1,5 +1,5 @@
 /**
- * core/modules data store
+ * `core/modules` data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -23,8 +23,6 @@ import Data from 'googlesitekit-data';
 import modules from './modules';
 import { STORE_NAME } from './constants';
 import { createErrorStore } from '../../data/create-error-store';
-
-export { STORE_NAME };
 
 const store = Data.combineStores(
 	Data.commonStore,

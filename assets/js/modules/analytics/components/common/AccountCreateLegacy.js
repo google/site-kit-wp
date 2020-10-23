@@ -31,7 +31,8 @@ import Link from '../../../../components/link';
 import ProgressBar from '../../../../components/progress-bar';
 import { trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import GA4Notice from './GA4Notice';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
@@ -58,7 +59,8 @@ export default function AccountCreateLegacy() {
 
 	return (
 		<div>
-			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
+			<GA4Notice />
+			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
 
 			{ ( ! isCreateAccount && ( accounts && accounts.length === 0 ) ) && (
 				<p>

@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
 	AnonymizeIPSwitch,
@@ -28,15 +29,22 @@ import {
 	TrackingExclusionSwitches,
 	UseSnippetSwitch,
 	ProfileNameTextField,
+	ExistingGTMPropertyNotice,
 } from '../common';
-import StoreErrorNotice from '../../../../components/StoreErrorNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import GA4Notice from '../common/GA4Notice';
 import { STORE_NAME } from '../../datastore/constants';
+const { useSelect } = Data;
 
 export default function SettingsForm() {
+	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
-			<StoreErrorNotice moduleSlug="analytics" storeName={ STORE_NAME } />
+			<GA4Notice />
+			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
+			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />

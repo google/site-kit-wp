@@ -5,7 +5,7 @@
 import { switchUserToAdmin, visitAdminPage, switchUserToTest, isCurrentURL } from '@wordpress/e2e-test-utils';
 
 /**
- * Deactivate Site Kit utility plugins.
+ * Deactivates all Site Kit utility plugins.
  */
 export async function deactivateUtilityPlugins() {
 	await switchUserToAdmin();

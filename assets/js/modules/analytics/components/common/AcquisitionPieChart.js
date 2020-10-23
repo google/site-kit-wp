@@ -30,10 +30,15 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import GoogleChart from '../../../../components/google-chart';
 import Link from '../../../../components/link';
-import { getSiteKitAdminURL } from '../../../../util';
 import { extractAnalyticsDataForTrafficChart } from '../../util';
+import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import applyEntityToReportPath from '../../util/applyEntityToReportPath';
+
+const { useSelect } = Data;
 
 const GOOGLE_CHART_PIE_SETTINGS = {
 	chartArea: {
@@ -62,6 +67,15 @@ const GOOGLE_CHART_PIE_SETTINGS = {
 };
 
 function AcquisitionPieChart( { data, args, source } ) {
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
+		{
+			path: applyEntityToReportPath( url, `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
+		} ) );
+
 	if ( ! data ) {
 		return null;
 	}
@@ -87,8 +101,9 @@ function AcquisitionPieChart( { data, args, source } ) {
 						{
 							a: <Link
 								key="link"
-								href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
+								href={ sourceURI }
 								inherit
+								external
 							/>,
 						}
 					) }

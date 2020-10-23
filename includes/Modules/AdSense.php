@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Modules;
 
-use Exception;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -24,6 +23,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Blockable_Tags_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
@@ -44,8 +44,14 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
+final class AdSense extends Module
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
+	use Module_With_Assets_Trait;
+	use Module_With_Blockable_Tags_Trait;
+	use Module_With_Owner_Trait;
+	use Module_With_Scopes_Trait;
+	use Module_With_Screen_Trait;
+	use Module_With_Settings_Trait;
 
 	/**
 	 * Internal flag for whether the AdSense tag has been printed.
@@ -89,6 +95,10 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			function() {
 				// Bail early if we are checking for the tag presence from the back end.
 				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+					return;
+				}
+
+				if ( $this->is_tag_blocked() ) {
 					return;
 				}
 
@@ -262,16 +272,20 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 
 		// If we haven't completed the account connection yet, we still insert the AdSense tag
 		// because it is required for account verification.
-		?>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({
-google_ad_client: "<?php echo esc_attr( $client_id ); ?>",
-enable_page_level_ads: true,
-tag_partner: "site_kit"
-});
-</script>
-		<?php
+		printf(
+			'<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"%s></script>', // // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$this->get_tag_block_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		);
+		printf(
+			'<script>(adsbygoogle = window.adsbygoogle || []).push(%s);</script>',
+			wp_json_encode(
+				array(
+					'google_ad_client'      => $client_id,
+					'enable_page_level_ads' => true,
+					'tag_partner'           => 'site_kit',
+				)
+			)
+		);
 	}
 
 	/**
@@ -288,9 +302,11 @@ tag_partner: "site_kit"
 
 		$this->adsense_tag_printed = true;
 
-		?>
-		<amp-auto-ads type="adsense" data-ad-client="<?php echo esc_attr( $client_id ); ?>"></amp-auto-ads>
-		<?php
+		printf(
+			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads>',
+			esc_attr( $client_id ),
+			$this->get_tag_amp_block_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		);
 	}
 
 	/**
@@ -357,7 +373,13 @@ tag_partner: "site_kit"
 		}
 
 		$this->adsense_tag_printed = true;
-		return '<amp-auto-ads type="adsense" data-ad-client="' . esc_attr( $client_id ) . '"></amp-auto-ads> ' . $content;
+
+		return sprintf(
+			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads> %s',
+			esc_attr( $client_id ),
+			$this->get_tag_amp_block_on_consent_attribute(),
+			$content
+		);
 	}
 
 	/**
@@ -792,16 +814,12 @@ tag_partner: "site_kit"
 					gmdate( $last_year . '-m-01' ),
 					gmdate( $last_year . '-m-' . $last_date_of_month ),
 				);
+			// Intentional fallthrough.
 			case 'prev-7-days':
-				return array(
-					gmdate( 'Y-m-d', strtotime( '14 days ago' ) ),
-					gmdate( 'Y-m-d', strtotime( '8 days ago' ) ),
-				);
+			case 'prev-14-days':
 			case 'prev-28-days':
-				return array(
-					gmdate( 'Y-m-d', strtotime( '56 days ago' ) ),
-					gmdate( 'Y-m-d', strtotime( '29 days ago' ) ),
-				);
+			case 'prev-90-days':
+				return $this->parse_date_range( $date_range, 1, 1, true );
 			// Intentional fallthrough.
 			case 'last-7-days':
 			case 'last-14-days':
