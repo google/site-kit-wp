@@ -15,7 +15,7 @@ import {
 	setSiteVerification,
 } from '../../utils';
 
-function stubGoogleSignIn( request ) {
+function handleRequest( request ) {
 	if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 		request.respond( {
 			status: 302,
@@ -23,6 +23,8 @@ function stubGoogleSignIn( request ) {
 				location: createURL( '/wp-admin/index.php', 'oauth2callback=1&code=valid-test-code&e2e-site-verification=1' ),
 			},
 		} );
+	} else if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+		request.respond( { status: 200 } );
 	} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/matched-sites' ) ) {
 		request.respond( {
 			status: 200,
@@ -67,13 +69,12 @@ describe( 'Site Kit set up flow for the first time', () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		// Sign in with Google
 		await page.setRequestInterception( true );
-		useRequestInterception( stubGoogleSignIn );
+		useRequestInterception( handleRequest );
 		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Site Kit!/i } );
-		expect( console ).toHaveWarned();
 	} );
 
 	it( 'disconnects user from Site Kit', async () => {
@@ -88,7 +89,6 @@ describe( 'Site Kit set up flow for the first time', () => {
 			'.googlesitekit-wizard-progress-step__number-text--inprogress',
 			{ text: '1' }
 		);
-		expect( console ).toHaveWarned();
 	} );
 } );
 
