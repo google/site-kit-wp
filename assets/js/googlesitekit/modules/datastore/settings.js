@@ -1,5 +1,5 @@
 /**
- * `core/modules` data store changes
+ * `core/modules` data store settings
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -29,9 +29,7 @@ import invariant from 'invariant';
 
 export const actions = {
 	*submitChanges( slug ) {
-		if ( slug === undefined || slug === '' ) {
-			return { error: `missing slug to call submitChanges() action.` };
-		}
+		invariant( slug, 'slug is required.' );
 		const registry = yield Data.commonActions.getRegistry();
 		if ( !! registry.dispatch( `modules/${ slug }` ) && !! registry.dispatch( `modules/${ slug }` ).submitChanges ) {
 			return registry.dispatch( `modules/${ slug }` ).submitChanges();

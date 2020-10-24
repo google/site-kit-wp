@@ -44,10 +44,5 @@ export const selectors = store.selectors;
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
-/*
-global.d = Data;
-// eslint-disable-next-line no-console
-console.log( STORE_NAME );
- */
 
 export default store;

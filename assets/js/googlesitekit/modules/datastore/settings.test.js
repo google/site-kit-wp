@@ -1,5 +1,5 @@
 /**
- * `googlesitekit/modules` datastore: changes tests.
+ * `googlesitekit/modules` datastore: settings tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -37,7 +37,12 @@ describe( 'core/modules store changes', () => {
 
 	beforeEach( () => {
 		const storeDefinition = Modules.createModuleStore( moduleStoreName );
-		const submitChanges = jest.fn();
+		const submitChanges = () => {
+			return {
+				payload: {},
+				type: 'DUMMY_ACTION',
+			};
+		};
 		const canSubmitChanges = () => moduleCanSubmitChanges;
 		const isDoingSubmitChanges = () => {
 			return submittingChanges;
@@ -69,7 +74,6 @@ describe( 'core/modules store changes', () => {
 			it( 'is submitting changes', async () => {
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
 
-				// @TODO  select( `modules/${ slug }` ) returns false when called via the test
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( false );
 				submittingChanges = true;
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( true );
@@ -79,13 +83,14 @@ describe( 'core/modules store changes', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( false );
 				moduleCanSubmitChanges = true;
 				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( true );
+
 				expect( registry.select( STORE_NAME ).canSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
 			} );
 
 			it( 'does submit changes', async () => {
 				const expectedError = { error: `'modules/${ nonExistentModuleSlug }' does not have a submitChanges() action.` };
-
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
+
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBeTruthy();
 			} );
 		} );
