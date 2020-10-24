@@ -29,6 +29,7 @@ describe( 'core/modules store changes', () => {
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
 	const moduleStoreName = `modules/${ slug }`;
+	let moduleCanSubmitChanges = false;
 	let submittingChanges = false;
 
 	beforeAll( () => {
@@ -37,7 +38,7 @@ describe( 'core/modules store changes', () => {
 	beforeEach( () => {
 		const storeDefinition = Modules.createModuleStore( moduleStoreName );
 		const submitChanges = jest.fn();
-		const canSubmitChanges = jest.fn();
+		const canSubmitChanges = () => moduleCanSubmitChanges;
 		const isDoingSubmitChanges = () => {
 			return submittingChanges;
 		};
@@ -47,10 +48,10 @@ describe( 'core/modules store changes', () => {
 			storeDefinition,
 			{
 				actions: {
-					canSubmitChanges,
+					submitChanges,
 				},
 				selectors: {
-					submitChanges,
+					canSubmitChanges,
 					isDoingSubmitChanges,
 				},
 			}
@@ -77,10 +78,10 @@ describe( 'core/modules store changes', () => {
 
 		describe( 'submits changes', () => {
 			it( 'can submit changes', () => {
+				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( false );
+				moduleCanSubmitChanges = true;
+				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( true );
 				expect( registry.select( STORE_NAME ).canSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
-
-				// @TODO  select( `modules/${ slug }` ) returns false when called via the test
-				expect( registry.select( STORE_NAME ).canSubmitChanges( moduleStoreName ) ).toBe( true );
 			} );
 
 			it( 'does submit changes', async () => {
