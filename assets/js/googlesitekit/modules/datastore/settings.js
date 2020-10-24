@@ -28,6 +28,14 @@ const { createRegistrySelector } = Data;
 import invariant from 'invariant';
 
 export const actions = {
+	/**
+	 * Submits all changes for a module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Slug for module store.
+	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
+	 */
 	*submitChanges( slug ) {
 		invariant( slug, 'slug is required.' );
 		const registry = yield Data.commonActions.getRegistry();
@@ -39,10 +47,27 @@ export const actions = {
 };
 
 export const selectors = {
+	/**
+	 * Checks whether changes are currently being submitted for a module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Slug for module store.
+	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
+	 */
 	isDoingSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
 		return !! select( `modules/${ slug }` ) && !! select( `modules/${ slug }` ).isDoingSubmitChanges && select( `modules/${ slug }` ).isDoingSubmitChanges();
 	} ),
+
+	/**
+	 * Checks whether we can submit changes for a module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Slug for module store.
+	 * @return {boolean} Whether the module supports submitting changes.
+	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
 		return !! select( `modules/${ slug }` ) && !! select( `modules/${ slug }` ).canSubmitChanges && select( `modules/${ slug }` ).canSubmitChanges();
