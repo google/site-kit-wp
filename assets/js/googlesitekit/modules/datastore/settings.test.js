@@ -65,18 +65,16 @@ describe( 'core/modules store changes', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'isDoingSubmitChanges', () => {
+		describe( 'submitting changes', () => {
 			it( 'is submitting changes', async () => {
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
 
 				// @TODO  select( `modules/${ slug }` ) returns false when called via the test
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( moduleStoreName ) ).toBe( false );
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( false );
 				submittingChanges = true;
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( moduleStoreName ) ).toBe( true );
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( true );
 			} );
-		} );
 
-		describe( 'submits changes', () => {
 			it( 'can submit changes', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( false );
 				moduleCanSubmitChanges = true;
