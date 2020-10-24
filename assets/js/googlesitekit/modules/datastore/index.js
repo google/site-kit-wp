@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { selectors as changesSelectors, actions as changesActions } from './changes';
+import { selectors as settingsSelectors, actions as settingsActions } from './settings';
 import modules from './modules';
 import { STORE_NAME } from './constants';
 import { createErrorStore } from '../../data/create-error-store';
@@ -29,10 +29,11 @@ const store = Data.combineStores(
 	Data.commonStore,
 	modules,
 	createErrorStore(),
+	{
+		actions: settingsActions,
+		selectors: settingsSelectors,
+	}
 );
-
-store.actions = { ...store.actions, ...changesActions };
-store.selectors = { ...store.selectors, ...changesSelectors };
 
 export const initialState = store.initialState;
 export const actions = store.actions;
@@ -43,5 +44,10 @@ export const selectors = store.selectors;
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
+/*
+global.d = Data;
+// eslint-disable-next-line no-console
+console.log( STORE_NAME );
+ */
 
 export default store;
