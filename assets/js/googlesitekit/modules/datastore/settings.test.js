@@ -22,77 +22,92 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
+import settings from './settings';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 
-describe( 'core/modules store changes', () => {
-	let registry;
+describe( 'core/modules module settings panel', () => {
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
 	const moduleStoreName = `modules/${ slug }`;
-	let moduleCanSubmitChanges = false;
-	let submittingChanges = false;
-
-	beforeAll( () => {
-	} );
+	let registry;
+	let store;
 
 	beforeEach( () => {
 		const storeDefinition = Modules.createModuleStore( moduleStoreName );
-		const submitChanges = () => {
-			return {
-				payload: {},
-				type: 'DUMMY_ACTION',
-			};
-		};
-		const canSubmitChanges = () => moduleCanSubmitChanges;
-		const isDoingSubmitChanges = () => {
-			return submittingChanges;
+		const isModuleActive = ( state, moduleSlug ) => {
+			return slug === moduleSlug ? true : null;
 		};
 
 		registry = createTestRegistry();
+		store = registry.stores[ STORE_NAME ].store;
+		registry.registerStore( STORE_NAME, Data.combineStores(
+			store,
+			{
+				selectors: {
+					isModuleActive,
+				},
+			},
+			settings,
+		) );
+
 		registry.registerStore( moduleStoreName, Data.combineStores(
 			storeDefinition,
-			{
-				actions: {
-					submitChanges,
-				},
-				selectors: {
-					canSubmitChanges,
-					isDoingSubmitChanges,
-				},
-			}
 		) );
 	} );
 
-	afterAll( () => {
+	it( 'initial panel state', () => {
+		expect( true ).toBeTruthy();
+		const initialState = {};
+		const initialStoreState = store.getState();
+
+		// Ensure we have default state correct
+		expect( Object.keys( initialStoreState ) ).toContain( 'panelState' );
+		expect( initialStoreState.panelState ).toEqual( initialState );
 	} );
 
-	afterEach( () => {
+	it( 'gets module settings panel state', () => {
+		// Default state for valid module is closed
+		expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'closed' );
+		// Default state for invalid module is closed
+		expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( nonExistentModuleSlug ) ).toBe( null );
+
+		registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
+		expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'view' );
+
+		registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'closed' );
+		expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'closed' );
+
+		registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'edit' );
+		expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'edit' );
+
+		// If the value is edit, all other module settings panels which currently have a status of view or edit should automatically be set to locked.
+		registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( nonExistentModuleSlug, 'edit' );
+		expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( nonExistentModuleSlug ) ).toBe( 'edit' );
+		expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'locked' );
+
+		// If the value is closed or view and previously the value was edit, all other module settings panels which currently have a status of locked should automatically be set to view.
+		registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( nonExistentModuleSlug, 'closed' );
+		expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( nonExistentModuleSlug ) ).toBe( 'closed' );
+		expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'view' );
 	} );
 
-	describe( 'selectors', () => {
-		describe( 'submitting changes', () => {
-			it( 'is submitting changes', async () => {
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
+	it( 'sets module settings panel state', () => {
+		registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'closed' );
+		let expectedPanelState = { ...store.getState().panelState, [ slug ]: 'closed' };
+		expect( store.getState().panelState ).toEqual( expectedPanelState );
 
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( false );
-				submittingChanges = true;
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( true );
-			} );
+		registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
+		expectedPanelState = { ...store.getState().panelState, [ slug ]: 'view' };
+		expect( store.getState().panelState ).toEqual( expectedPanelState );
 
-			it( 'can submit changes', () => {
-				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( false );
-				moduleCanSubmitChanges = true;
-				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( true );
+		registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'edit' );
+		expectedPanelState = { ...store.getState().panelState, [ slug ]: 'edit' };
+		expect( store.getState().panelState ).toEqual( expectedPanelState );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
-			} );
-
-			it( 'does submit changes', async () => {
-				const expectedError = { error: `'modules/${ nonExistentModuleSlug }' does not have a submitChanges() action.` };
-				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
-
-				expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBeTruthy();
-			} );
-		} );
+		expect( () => {
+			registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'invalid' );
+		} ).toThrow();
+		// State shouldn't have changed with an invalid setting value.
+		expect( store.getState().panelState ).toEqual( expectedPanelState );
 	} );
 } );
