@@ -25,7 +25,7 @@ import DashboardPopularPagesWidget from '../assets/js/modules/analytics/componen
 import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
 import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardUniqueVisitorsWidget';
-import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
+import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 import {
 	accountsPropertiesProfiles,
 	goals,
@@ -54,7 +54,7 @@ import {
 /**
  * Defines some additional setup for all stories.
  *
- * @since n.e.x.t
+ * @since 1.19.0
  *
  * @param {wp.data.registry} registry Registry with all available stores registered.
  */

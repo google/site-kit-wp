@@ -1,7 +1,7 @@
 /**
- * `firstPostWin` function.
+ * Analytics GA4 Notice component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,24 +24,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import thumbsUpImage from '../../../images/thumbs-up.png';
+import SettingsNotice, { TYPE_INFO } from '../../../../components/settings-notice';
+import Link from '../../../../components/link';
 
-const firstPostWin = ( id ) => {
-	const showNotification = 1 === parseInt( global._googlesitekitLegacyData.admin.newSitePosts, 10 );
-
-	if ( ! showNotification ) {
-		return false;
-	}
-
-	return {
-		id,
-		title: __( 'Congrats on your first post!', 'google-site-kit' ),
-		format: 'small',
-		smallImage: global._googlesitekitLegacyData.admin.assetsRoot + thumbsUpImage,
-		type: 'win-success',
-		showOnce: true,
-	};
-};
-
-export default firstPostWin;
-
+export default function GA4Notice() {
+	return (
+		<SettingsNotice type={ TYPE_INFO }>
+			{ __( 'Got a Google Analytics 4 (GA4) property and want to find out how to use it with Site Kit?', 'google-site-kit' ) }
+			{ ' ' }
+			<Link
+				href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+				external
+				inherit
+			>
+				{ __( 'Learn more here.', 'google-site-kit' ) }
+			</Link>
+		</SettingsNotice>
+	);
+}

@@ -25,7 +25,7 @@ import {
 } from '../assets/js/modules/adsense/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
-import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
+import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 
 function SetupWrap( { children } ) {
 	return (
@@ -176,8 +176,8 @@ storiesOf( 'AdSense Module', module )
 				<Layout
 					header
 					title={ __( 'Performance over the last 28 days', 'google-site-kit' ) }
-					headerCtaLabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
-					headerCtaLink="#"
+					headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
+					headerCTALink="#"
 				>
 					<AdSensePerformanceWidget />
 				</Layout>
