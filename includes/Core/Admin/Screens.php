@@ -398,6 +398,7 @@ final class Screens {
 			array(
 				'title'            => __( 'User Input', 'google-site-kit' ),
 				'capability'       => Permissions::MANAGE_OPTIONS,
+				'parent_slug'      => defined( 'SHOW_USER_INPUT_SETTINGS_PAGE' ) ? Screen::MENU_SLUG : null,
 				'enqueue_callback' => function( Assets $assets ) {
 					$assets->enqueue_asset( 'googlesitekit-user-input' );
 				},
