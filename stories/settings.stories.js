@@ -36,6 +36,7 @@ import Layout from '../assets/js/components/layout/layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
 import { WithTestRegistry } from '../tests/js/utils';
+import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 
 /**
  * Add components to the settings page.
@@ -103,11 +104,19 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.admin.clientID = '123456789-xxx1234ffghrrro6hofusq2b8.apps..com';
 		global._googlesitekitLegacyData.admin.clientSecret = '••••••••••••••••••••••••••••';
 
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				adminURL: '#',
+			} );
+		};
+
 		return (
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					<SettingsAdmin />
+			<WithTestRegistry callback={ setupRegistry } >
+				<div className="mdc-layout-grid">
+					<div className="mdc-layout-grid__inner">
+						<SettingsAdmin />
+					</div>
 				</div>
-			</div>
+			</WithTestRegistry>
 		);
 	} );
