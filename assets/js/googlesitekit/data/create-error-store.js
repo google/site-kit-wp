@@ -226,7 +226,7 @@ export function createErrorStore() {
 		/**
 		 * Gets a list of all unique errors.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.19.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {Object[]} Unique set of errors.

@@ -19,7 +19,7 @@
 /**
  * Parses an entity URL and appends to the given path.
  *
- * @since n.e.x.t
+ * @since 1.19.0
  *
  * @param {string} currentEntityURL The entity URL to append to the path.
  * @param {string} reportPath       The report path.

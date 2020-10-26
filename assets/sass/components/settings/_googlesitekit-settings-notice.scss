@@ -19,6 +19,7 @@
 .googlesitekit-settings-notice {
 	background-color: $c-background-notice;
 	border-radius: 4px;
+	color: $c-text-notice;
 	margin: 1.5em 0;
 	padding: $grid-gap-phone;
 
@@ -26,33 +27,63 @@
 		padding: $grid-gap-desktop;
 	}
 
+	&--warning,
+	&--info,
 	&--suggestion {
-		background-color: $c-background-suggestion;
-	}
 
-	.googlesitekit-settings-notice__text {
-		color: rgba($c-black, 0.7);
-		padding-left: 30px;
-		position: relative;
+		.googlesitekit-settings-notice__text {
+			padding-left: 30px;
+			position: relative;
 
-		&::before {
-			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%222%22%20height%3D%2212%22%20viewBox%3D%220%200%202%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23f8a708%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%200h2v7H0zM0%2010h2v2H0z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-			background-position: center center;
-			background-repeat: no-repeat;
-			background-size: 2px 12px;
-			border: 2px solid $c-border-notice;
-			border-radius: 50%;
-			content: "";
-			display: block;
-			height: 22px;
-			left: 0;
-			position: absolute;
-			width: 22px;
+			&::before {
+				background-position: center center;
+				background-repeat: no-repeat;
+				background-size: 2px 12px;
+				border-radius: 50%;
+				border-style: solid;
+				border-width: 2px;
+				content: "";
+				display: block;
+				height: 22px;
+				left: 0;
+				position: absolute;
+				width: 22px;
+			}
 		}
 	}
 
-	&--suggestion .googlesitekit-settings-notice__text::before {
-		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%222%22%20height%3D%2211%22%20viewBox%3D%220%200%202%2011%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%231872e6%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%204h2v7H0zM0%200h2v2H0z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-		border-color: $c-border-suggestion;
+	&--warning {
+		background-color: $c-background-notice-warning;
+		color: $c-text-notice-warning;
+
+		.googlesitekit-settings-notice__text::before {
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%222%22%20height%3D%2212%22%20viewBox%3D%220%200%202%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23f8a708%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%200h2v7H0zM0%2010h2v2H0z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+			border-color: $c-icon-notice-warning;
+		}
+	}
+
+	&--info {
+		background-color: $c-background-notice-info;
+		color: $c-text-notice-info;
+
+		.googlesitekit-settings-notice__text::before {
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2220%22%20height%3D%2219%22%20viewBox%3D%220%200%2020%2019%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10%2015.27L16.18%2019L14.54%2011.97L20%207.24L12.81%206.63L10%200L7.19%206.63L0%207.24L5.46%2011.97L3.82%2019L10%2015.27Z%22%20fill%3D%22%231967d2%22%2F%3E%3C%2Fsvg%3E");
+			background-size: 20px 19px;
+			border-color: $c-icon-notice-info;
+			border-radius: 0;
+			border-width: 0;
+			height: 19px;
+			width: 20px;
+		}
+	}
+
+	&--suggestion {
+		background-color: $c-background-notice-suggestion;
+		color: $c-text-notice-suggestion;
+
+		.googlesitekit-settings-notice__text::before {
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%222%22%20height%3D%2211%22%20viewBox%3D%220%200%202%2011%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%231967d2%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%204h2v7H0zM0%200h2v2H0z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+			border-color: $c-icon-notice-suggestion;
+		}
 	}
 }
