@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,23 +33,46 @@ import { __ } from '@wordpress/i18n';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { Cell } from '../../material-components';
 
-export default function UserInputQuestionInfo( { children } ) {
+export default function UserInputQuestionInfo( { title, scope, author } ) {
 	return (
-		<Cell lg={ 5 }>
-
-			<h1 className="googlesitekit-user-input__question-title">
-				{ children }
+		<Cell className="googlesitekit-user-input__question-instructions" lg={ 5 }>
+			<h1>
+				{ title }
 			</h1>
 
-			<p className="googlesitekit-user-input__question-instructions">
+			<p>
 				{ __( 'Place a text here that gives more context and information to the user to answer the question correctly.', 'google-site-kit' ) }
 			</p>
 
 			<UserInputQuestionNotice />
+
+			{ scope === 'site' && (
+				<p>
+					{ __( 'This question applies to the entire site and may have an effect for other users.', 'google-site-kit' ) }
+				</p>
+			) }
+
+			{ author && author.photo && author.name && (
+				<Fragment>
+					<p>
+						{ __( 'This question has last been answered by:', 'google-site-kit' ) }
+					</p>
+
+					<div className="googlesitekit-user-input__question-instructions--author">
+						<img alt={ author.name } src={ author.photo } />
+						{ author.name }
+					</div>
+				</Fragment>
+			) }
 		</Cell>
 	);
 }
 
 UserInputQuestionInfo.propTypes = {
-	children: PropTypes.string.isRequired,
+	title: PropTypes.string.isRequired,
+	scope: PropTypes.string,
+	author: PropTypes.shape( {
+		photo: PropTypes.string,
+		name: PropTypes.string,
+	} ),
 };

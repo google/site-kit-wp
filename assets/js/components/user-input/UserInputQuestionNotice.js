@@ -45,7 +45,7 @@ export default function UserInputQuestionNotice() {
 
 	return (
 		<p
-			className="googlesitekit-user-input__question-instructions googlesitekit-user-input__question-instructions--notice"
+			className="googlesitekit-user-input__question-instructions--notice"
 			dangerouslySetInnerHTML={ sanitizeHTML( notice, sanitizeArgs ) }
 		/>
 	);

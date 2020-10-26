@@ -30,11 +30,17 @@ import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/cons
 import { Grid, Row, Cell } from '../../material-components';
 import Header from '../header';
 import PageHeader from '../page-header';
+import ProgressBar from '../progress-bar';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
 import UserInputCongrats from './UserInputCongrats';
 const { useSelect } = Data;
 
 export default function UserInputApp() {
+	const { hasFinishedGettingInputSettings } = useSelect( ( select ) => ( {
+		userInputSettings: select( CORE_USER ).getUserInputSettings(), // This will be used in the children components.
+		hasFinishedGettingInputSettings: select( CORE_USER ).hasFinishedResolution( 'getUserInputSettings' ),
+	} ) );
+
 	const hasFinishedSavingInputSettings = useSelect( ( select ) => select( CORE_USER ).hasFinishedSavingInputSettings() );
 
 	if ( ! featureFlags.userInput.enabled ) {
@@ -46,10 +52,19 @@ export default function UserInputApp() {
 			<Header />
 			<div className="googlesitekit-user-input">
 				<div className="googlesitekit-module-page">
+					{ ! hasFinishedGettingInputSettings && (
+						<Grid>
+							<Row>
+								<Cell>
+									<ProgressBar />
+								</Cell>
+							</Row>
+						</Grid>
+					) }
 					{ hasFinishedSavingInputSettings && (
 						<UserInputCongrats />
 					) }
-					{ ! hasFinishedSavingInputSettings && (
+					{ hasFinishedGettingInputSettings && ! hasFinishedSavingInputSettings && (
 						<Fragment>
 							<Grid>
 								<Row>

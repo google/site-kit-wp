@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import ProgressBar from '../progress-bar';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
-import UserInputQuestionInfo from './UserInputQuestionInfo';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputKeywords from './UserInputKeywords';
 import UserInputPreview from './UserInputPreview';
@@ -49,7 +48,6 @@ export default function UserInputQuestionnaire() {
 	}, [ activeSlugIndex ] );
 
 	const goTo = useCallback( ( steps = 1 ) => {
-		global.console.log( steps );
 		setActiveSlug( questions[ activeSlugIndex - steps ] );
 		global.scrollTo( 0, 0 );
 	}, [ activeSlugIndex ] );
@@ -69,12 +67,9 @@ export default function UserInputQuestionnaire() {
 					slug="role"
 					isActive={ activeSlug === 'role' }
 					questionNumber={ 1 }
+					title={ __( 'Which best describes your team/role in relation to this site?', 'google-site-kit' ) }
 					next={ next }
 				>
-					<UserInputQuestionInfo>
-						{ __( 'Which best describes your team/role in relation to this site?', 'google-site-kit' ) }
-					</UserInputQuestionInfo>
-
 					<UserInputSelectOptions
 						slug="role"
 						options={ USER_INPUT_ANSWERS_ROLE }
@@ -87,13 +82,10 @@ export default function UserInputQuestionnaire() {
 					slug="postFrequency"
 					isActive={ activeSlug === 'postFrequency' }
 					questionNumber={ 2 }
+					title={ __( 'How often do you create new posts for this site?', 'google-site-kit' ) }
 					next={ next }
 					back={ back }
 				>
-					<UserInputQuestionInfo>
-						{ __( 'How often do you create new posts for this site?', 'google-site-kit' ) }
-					</UserInputQuestionInfo>
-
 					<UserInputSelectOptions
 						slug="postFrequency"
 						options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
@@ -106,14 +98,11 @@ export default function UserInputQuestionnaire() {
 					slug="goals"
 					isActive={ activeSlug === 'goals' }
 					questionNumber={ 3 }
+					title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
 					max={ 2 }
 					next={ next }
 					back={ back }
 				>
-					<UserInputQuestionInfo>
-						{ __( 'What are the goals of this site?', 'google-site-kit' ) }
-					</UserInputQuestionInfo>
-
 					<UserInputSelectOptions
 						slug="goals"
 						max={ 2 }
@@ -127,14 +116,11 @@ export default function UserInputQuestionnaire() {
 					slug="helpNeeded"
 					isActive={ activeSlug === 'helpNeeded' }
 					questionNumber={ 4 }
+					title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
 					max={ 3 }
 					next={ next }
 					back={ back }
 				>
-					<UserInputQuestionInfo>
-						{ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
-					</UserInputQuestionInfo>
-
 					<UserInputSelectOptions
 						slug="helpNeeded"
 						max={ 3 }
@@ -148,14 +134,11 @@ export default function UserInputQuestionnaire() {
 					slug="searchTerms"
 					isActive={ activeSlug === 'searchTerms' }
 					questionNumber={ 5 }
+					title={ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for', 'google-site-kit' ) }
 					max={ 3 }
 					next={ next }
 					back={ back }
 				>
-					<UserInputQuestionInfo>
-						{ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for', 'google-site-kit' ) }
-					</UserInputQuestionInfo>
-
 					<UserInputKeywords
 						slug="searchTerms"
 						max={ 3 }

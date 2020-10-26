@@ -74,21 +74,21 @@ export default function UserInputPreview( { goTo } ) {
 									<UserInputPreviewGroup
 										title={ __( '1 — Which best describes your team/role relation to this site?', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 5 ) }
-										values={ settings.role || [] }
+										values={ settings?.role?.values || [] }
 										options={ USER_INPUT_ANSWERS_ROLE }
 									/>
 
 									<UserInputPreviewGroup
 										title={ __( '2 — How often do you create new posts for this site?', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 4 ) }
-										values={ settings.postFrequency || [] }
+										values={ settings?.postFrequency?.values || [] }
 										options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 									/>
 
 									<UserInputPreviewGroup
 										title={ __( '3 — What are the goals of this site?', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 3 ) }
-										values={ settings.goals || [] }
+										values={ settings?.goals?.values || [] }
 										options={ USER_INPUT_ANSWERS_GOALS }
 									/>
 								</Cell>
@@ -96,14 +96,14 @@ export default function UserInputPreview( { goTo } ) {
 									<UserInputPreviewGroup
 										title={ __( '4 — What do you need help most with for this site?', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 2 ) }
-										values={ settings.helpNeeded || [] }
+										values={ settings?.helpNeeded?.values || [] }
 										options={ USER_INPUT_ANSWERS_HELP_NEEDED }
 									/>
 
 									<UserInputPreviewGroup
 										title={ __( '5 — To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for:', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 1 ) }
-										values={ settings.searchTerms || [] }
+										values={ settings?.searchTerms?.values || [] }
 									/>
 								</Cell>
 							</Row>

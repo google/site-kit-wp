@@ -34,10 +34,24 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Button from '../button';
 import { Row, Cell } from '../../material-components';
+import UserInputQuestionInfo from './UserInputQuestionInfo';
 const { useSelect } = Data;
 
-export default function UserInputQuestionWrapper( { children, slug, isActive, questionNumber, next, back, max } ) {
+export default function UserInputQuestionWrapper( props ) {
+	const {
+		children,
+		slug,
+		isActive,
+		questionNumber,
+		title,
+		next,
+		back,
+		max,
+	} = props;
+
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
+	const scope = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingScope( slug ) );
+	const author = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingAuthor( slug ) );
 
 	return (
 		<div className={ classnames(
@@ -57,6 +71,14 @@ export default function UserInputQuestionWrapper( { children, slug, isActive, qu
 					</p>
 
 					<Row>
+						{ title && (
+							<UserInputQuestionInfo
+								title={ title }
+								scope={ scope }
+								author={ author }
+							/>
+						) }
+
 						{ children }
 					</Row>
 
@@ -88,6 +110,7 @@ UserInputQuestionWrapper.propTypes = {
 	questionNumber: PropTypes.number.isRequired,
 	children: PropTypes.node,
 	isActive: PropTypes.bool,
+	title: PropTypes.string,
 	max: PropTypes.number,
 	next: PropTypes.func,
 	back: PropTypes.func,
