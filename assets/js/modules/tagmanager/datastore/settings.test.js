@@ -53,6 +53,7 @@ import {
 	INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID,
 	INVARIANT_INVALID_CONTAINER_SELECTION,
 	INVARIANT_INVALID_INTERNAL_CONTAINER_ID,
+	INVARIANT_INVALID_CONTAINER_NAME,
 } from './settings';
 
 describe( 'modules/tagmanager settings', () => {
@@ -450,6 +451,24 @@ describe( 'modules/tagmanager settings', () => {
 						.toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
+				it( 'should throw if a new container name is invalid', () => {
+					const { account, containers } = buildAccountWithContainers( {
+						container: { usageContext: [ CONTEXT_WEB ] },
+						count: 2,
+					} );
+					const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+
+					registry.dispatch( STORE_NAME ).setAccountID( accountID );
+					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
+					registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
+					registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { containerName: '     ' } );
+
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_CONTAINER_NAME );
+				} );
+
 				it( 'should require a unique container name when creating a new web container', () => {
 					const { account, containers } = buildAccountWithContainers( {
 						container: { usageContext: [ CONTEXT_WEB ] },
@@ -549,6 +568,27 @@ describe( 'modules/tagmanager settings', () => {
 					expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 						.toThrow( INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID );
+				} );
+
+				it( 'should throw if a new container name is invalid', () => {
+					const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+					const { accountID } = buildAndReceiveWebAndAMP( { webPropertyID: 'UA-12345-1', ampPropertyID: 'UA-12345-1' } );
+
+					const { containers } = buildAccountWithContainers( {
+						account: { accountId: accountID }, // eslint-disable-line sitekit/camelcase-acronyms
+						container: { usageContext: [ CONTEXT_AMP ] },
+						count: 2,
+					} );
+
+					registry.dispatch( STORE_NAME ).setAccountID( accountID );
+					registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+
+					registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
+					registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+					registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { ampContainerName: '___' } );
+
+					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+						.toThrow( INVARIANT_INVALID_CONTAINER_NAME );
 				} );
 
 				it( 'supports creating an AMP container', () => {
