@@ -61,7 +61,7 @@ export default function ContainerNameTextField( { label, name } ) {
 		: undefined;
 
 	return (
-		<div className="googlesitekit-tagmanager-containername">
+		<div className={ classnames( 'googlesitekit-tagmanager-containername', `googlesitekit-tagmanager-${ name }` ) }>
 			<TextField
 				className={ classnames( { 'mdc-text-field--error': ! containerName || ! isUniqueName } ) }
 				label={ label }
@@ -69,7 +69,12 @@ export default function ContainerNameTextField( { label, name } ) {
 				helperText={ helperText }
 				trailingIcon={ trailingIcon }
 			>
-				<Input value={ containerName } onChange={ onChange } />
+				<Input
+					id={ name }
+					name={ name }
+					value={ containerName }
+					onChange={ onChange }
+				/>
 			</TextField>
 		</div>
 	);

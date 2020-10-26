@@ -54,6 +54,7 @@ export const INVARIANT_INVALID_AMP_CONTAINER_SELECTION = 'a valid ampContainerID
 export const INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID = 'a valid internalAMPContainerID is required to submit changes';
 export const INVARIANT_INVALID_CONTAINER_SELECTION = 'a valid containerID selection is required to submit changes';
 export const INVARIANT_INVALID_INTERNAL_CONTAINER_ID = 'a valid internalContainerID is required to submit changes';
+export const INVARIANT_INVALID_CONTAINER_NAME = 'a valid container name is required to submit changes';
 export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS = 'containers with Analytics tags must reference a single property ID to submit changes';
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH = 'single GTM Analytics property ID must match Analytics property ID';
 export const INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION = 'existing tag permission is required to submit changes';
@@ -228,7 +229,7 @@ const {
 	const containerID = getContainerID();
 	if ( containerID === CONTAINER_CREATE ) {
 		const containerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
-		invariant( isValidContainerName( containerName ), `a valid container name is required to submit changes` );
+		invariant( isValidContainerName( containerName ), INVARIANT_INVALID_CONTAINER_NAME );
 
 		const containers = getContainers( accountID );
 		const normalizedContainerName = getNormalizedContainerName( containerName );
@@ -237,7 +238,7 @@ const {
 
 	if ( ampContainerID === CONTAINER_CREATE ) {
 		const ampContainerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
-		invariant( isValidContainerName( ampContainerName ), `a valid container name is required to submit changes` );
+		invariant( isValidContainerName( ampContainerName ), INVARIANT_INVALID_CONTAINER_NAME );
 
 		const containers = getContainers( accountID );
 		const normalizedContainerName = getNormalizedContainerName( ampContainerName );
