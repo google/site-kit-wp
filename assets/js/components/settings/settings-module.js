@@ -47,7 +47,7 @@ import Link from '../../components/link';
 import Button from '../../components/button';
 import data, { TYPE_MODULES } from '../../components/data';
 import Spinner from '../../components/spinner';
-import SettingsOverlay from '../../components/settings/settings-overlay';
+import SettingsOverlay from '../../components/settings/SettingsOverlay';
 import GenericError from '../../components/notifications/generic-error';
 import SetupModule from '../../components/setup-module';
 import Dialog from '../../components/dialog';

@@ -32,6 +32,7 @@ import {
 	ExistingGTMPropertyNotice,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import GA4Notice from '../common/GA4Notice';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
@@ -40,6 +41,7 @@ export default function SettingsForm() {
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
+			<GA4Notice />
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
 			<ExistingTagNotice />
 			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }

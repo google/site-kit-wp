@@ -56,8 +56,8 @@ storiesOf( 'Search Console Module', module )
 			<Layout
 				header
 				title={ __( 'Overview for the last 28 days', 'google-site-kit' ) }
-				headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
-				headerCtaLink="https://search.google.com/search-console"
+				headerCTALabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
+				headerCTALink="https://search.google.com/search-console"
 			>
 				<SearchConsoleDashboardWidgetOverview
 					selectedStats={ selectedStats }
