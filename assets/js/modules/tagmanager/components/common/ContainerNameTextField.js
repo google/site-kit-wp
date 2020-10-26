@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -49,7 +50,9 @@ export default function ContainerNameTextField( { label, name } ) {
 		setValues( FORM_SETUP, { [ name ]: currentTarget.value } );
 	}, [ name ] );
 
-	const helperText = containerName && ! isUniqueContainerName( containerName, containers )
+	const isUniqueName = isUniqueContainerName( containerName, containers );
+
+	const helperText = containerName && ! isUniqueName
 		? <HelperText persistent>{ __( 'A container with this name already exists.', 'google-site-kit' ) }</HelperText>
 		: undefined;
 
@@ -60,6 +63,7 @@ export default function ContainerNameTextField( { label, name } ) {
 	return (
 		<div className="googlesitekit-tagmanager-containername">
 			<TextField
+				className={ classnames( { 'mdc-text-field--error': ! containerName || ! isUniqueName } ) }
 				label={ label }
 				outlined
 				helperText={ helperText }
