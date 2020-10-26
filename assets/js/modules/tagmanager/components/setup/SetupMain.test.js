@@ -1,5 +1,5 @@
 /**
- * Tag Manager Settings Edit component tests.
+ * Tag Manager Setup Main component tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
