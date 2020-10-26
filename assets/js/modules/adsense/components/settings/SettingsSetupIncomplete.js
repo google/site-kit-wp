@@ -26,7 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 import { STORE_NAME } from '../../datastore/constants';
 import { isPendingAccountStatus } from '../../util/status';
 import { AdBlockerWarning } from '../common';

@@ -42,7 +42,7 @@ import PageHeader from '../../../../components/page-header';
 import PageHeaderDateRange from '../../../../components/page-header-date-range';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
 import Alert from '../../../../components/alert';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import { getCurrentDateRange } from '../../../../util/date-range';

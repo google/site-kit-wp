@@ -30,7 +30,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Link from '../link';
+import Link from '../Link';
 
 class DashboardSplashService extends Component {
 	render() {

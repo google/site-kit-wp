@@ -36,7 +36,7 @@ import {
 	loadTranslations,
 	trackEvent,
 } from './util';
-import Link from './components/link';
+import Link from './components/Link';
 import AdminbarModules from './components/adminbar/adminbar-modules';
 import Root from './components/root';
 import { STORE_NAME as CORE_SITE } from './googlesitekit/datastore/site/constants';
