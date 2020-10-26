@@ -21,6 +21,11 @@
  */
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import thumbsUpImage from '../../../images/thumbs-up.png';
+
 const firstPostWin = ( id ) => {
 	const showNotification = 1 === parseInt( global._googlesitekitLegacyData.admin.newSitePosts, 10 );
 
@@ -32,7 +37,7 @@ const firstPostWin = ( id ) => {
 		id,
 		title: __( 'Congrats on your first post!', 'google-site-kit' ),
 		format: 'small',
-		smallImage: `${ global._googlesitekitLegacyData.admin.assetsRoot }images/thumbs-up.png`,
+		smallImage: global._googlesitekitLegacyData.admin.assetsRoot + thumbsUpImage,
 		type: 'win-success',
 		showOnce: true,
 	};
