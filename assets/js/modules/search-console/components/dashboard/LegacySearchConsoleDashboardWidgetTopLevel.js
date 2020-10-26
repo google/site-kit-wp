@@ -33,8 +33,8 @@ import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
 } from '../../util';
-import Sparkline from '../../../../components/sparkline';
-import PreviewBlock from '../../../../components/preview-block';
+import Sparkline from '../../../../components/Sparkline';
+import PreviewBlock from '../../../../components/PreviewBlock';
 import {
 	getTimeInSeconds,
 	extractForSparkline,

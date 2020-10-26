@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ProgressBar from '../progress-bar';
+import ProgressBar from '../ProgressBar';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputKeywords from './UserInputKeywords';

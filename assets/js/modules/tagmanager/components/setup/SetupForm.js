@@ -43,7 +43,7 @@ import {
 	WebContainerSelect,
 } from '../common';
 import Button from '../../../../components/button';
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
 import FormInstructions from '../common/FormInstructions';
 const { useSelect, useDispatch } = Data;

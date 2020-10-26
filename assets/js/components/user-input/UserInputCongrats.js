@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Row } from '../../material-components';
-import Link from '../link';
+import Link from '../Link';
 import highFiveImage from '../../../images/highfive.png';
 const { useSelect } = Data;
 

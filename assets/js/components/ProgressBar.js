@@ -22,16 +22,14 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-export default function ProgressBar( props ) {
-	const {
-		className,
-		small,
-		compress,
-		indeterminate,
-		height,
-		progress,
-	} = props;
-
+export default function ProgressBar( {
+	className,
+	small,
+	compress,
+	indeterminate,
+	height,
+	progress,
+} ) {
 	const margin = typeof height !== 'undefined' ? Math.round( height / 2 ) : undefined;
 	const transform = progress ? `scaleX(${ progress })` : undefined;
 

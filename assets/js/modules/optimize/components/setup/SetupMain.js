@@ -33,7 +33,7 @@ import { _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import OptimizeIcon from '../../../../../svg/optimize.svg';
 import SetupForm from './SetupForm';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 

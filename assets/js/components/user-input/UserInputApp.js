@@ -30,7 +30,7 @@ import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/cons
 import { Grid, Row, Cell } from '../../material-components';
 import Header from '../header';
 import PageHeader from '../page-header';
-import ProgressBar from '../progress-bar';
+import ProgressBar from '../ProgressBar';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
 import UserInputCongrats from './UserInputCongrats';
 const { useSelect } = Data;
