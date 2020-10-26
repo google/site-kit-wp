@@ -62,6 +62,6 @@ describe( 'Plugin Reset', () => {
 		] );
 
 		// Ensure we're on the setup page
-		await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Start setup' } );
+		await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Sign in with Google' } );
 	} );
 } );
