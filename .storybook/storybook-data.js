@@ -395,18 +395,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global--reset-button',
-		kind: 'Global',
-		name: 'Reset Button',
-		story: 'Reset Button',
-		parameters: {
-			fileName: './stories/reset-button.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-			},
-		},
-	},
-	{
 		id: 'global--selects',
 		kind: 'Global',
 		name: 'Selects',
