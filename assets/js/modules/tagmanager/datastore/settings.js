@@ -228,7 +228,7 @@ const {
 	const containerID = getContainerID();
 	if ( containerID === CONTAINER_CREATE ) {
 		const containerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
-		invariant( isValidContainerName( containerName ), `a container name is invalid` );
+		invariant( isValidContainerName( containerName ), `a valid container name is required to submit changes` );
 
 		const containers = getContainers( accountID );
 		const normalizedContainerName = getNormalizedContainerName( containerName );
@@ -237,7 +237,7 @@ const {
 
 	if ( ampContainerID === CONTAINER_CREATE ) {
 		const ampContainerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
-		invariant( isValidContainerName( ampContainerName ), `a container name is invalid` );
+		invariant( isValidContainerName( ampContainerName ), `a valid container name is required to submit changes` );
 
 		const containers = getContainers( accountID );
 		const normalizedContainerName = getNormalizedContainerName( ampContainerName );
