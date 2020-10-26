@@ -89,7 +89,7 @@ export function isValidContainerName( containerName ) {
 }
 
 /**
- * Checks if the given cotnainer name is unique accross account containers.
+ * Checks if the given container name is unique across account containers.
  *
  * @since n.e.x.t
  *
