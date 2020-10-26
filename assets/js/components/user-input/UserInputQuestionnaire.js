@@ -48,10 +48,13 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( questions[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex ] );
 
-	const back = useCallback( ( steps = 1 ) => {
+	const goTo = useCallback( ( steps = 1 ) => {
+		global.console.log( steps );
 		setActiveSlug( questions[ activeSlugIndex - steps ] );
 		global.scrollTo( 0, 0 );
 	}, [ activeSlugIndex ] );
+
+	const back = goTo.bind( null, 1 );
 
 	return (
 		<Fragment>
@@ -161,7 +164,7 @@ export default function UserInputQuestionnaire() {
 			) }
 
 			{ activeSlug === 'preview' && (
-				<UserInputPreview back={ back } />
+				<UserInputPreview goTo={ goTo } />
 			) }
 		</Fragment>
 	);

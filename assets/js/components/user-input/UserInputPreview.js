@@ -45,7 +45,7 @@ import {
 } from './util/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputPreview( { back } ) {
+export default function UserInputPreview( { goTo } ) {
 	const settings = useSelect( ( select ) => select( CORE_USER ).getUserInputSettings() );
 	const {
 		hasStartedSavingInputSettings,
@@ -73,21 +73,21 @@ export default function UserInputPreview( { back } ) {
 								<Cell lg={ 6 }>
 									<UserInputPreviewGroup
 										title={ __( '1 — Which best describes your team/role relation to this site?', 'google-site-kit' ) }
-										edit={ back.bind( null, 5 ) }
+										edit={ goTo.bind( null, 5 ) }
 										values={ settings.role || [] }
 										options={ USER_INPUT_ANSWERS_ROLE }
 									/>
 
 									<UserInputPreviewGroup
 										title={ __( '2 — How often do you create new posts for this site?', 'google-site-kit' ) }
-										edit={ back.bind( null, 4 ) }
+										edit={ goTo.bind( null, 4 ) }
 										values={ settings.postFrequency || [] }
 										options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 									/>
 
 									<UserInputPreviewGroup
 										title={ __( '3 — What are the goals of this site?', 'google-site-kit' ) }
-										edit={ back.bind( null, 3 ) }
+										edit={ goTo.bind( null, 3 ) }
 										values={ settings.goals || [] }
 										options={ USER_INPUT_ANSWERS_GOALS }
 									/>
@@ -95,14 +95,14 @@ export default function UserInputPreview( { back } ) {
 								<Cell lg={ 6 }>
 									<UserInputPreviewGroup
 										title={ __( '4 — What do you need help most with for this site?', 'google-site-kit' ) }
-										edit={ back.bind( null, 2 ) }
+										edit={ goTo.bind( null, 2 ) }
 										values={ settings.helpNeeded || [] }
 										options={ USER_INPUT_ANSWERS_HELP_NEEDED }
 									/>
 
 									<UserInputPreviewGroup
 										title={ __( '5 — To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for:', 'google-site-kit' ) }
-										edit={ back.bind( null, 1 ) }
+										edit={ goTo.bind( null, 1 ) }
 										values={ settings.searchTerms || [] }
 									/>
 								</Cell>
@@ -111,7 +111,7 @@ export default function UserInputPreview( { back } ) {
 							<div className="googlesitekit-user-input__buttons">
 								<UserInputQuestionNotice />
 								<div>
-									<Button text onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
+									<Button text onClick={ goTo.bind( null, 1 ) }>{ __( 'Back', 'google-site-kit' ) }</Button>
 									<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
 								</div>
 							</div>
@@ -124,5 +124,5 @@ export default function UserInputPreview( { back } ) {
 }
 
 UserInputPreview.propTypes = {
-	back: PropTypes.func.isRequired,
+	goTo: PropTypes.func.isRequired,
 };
