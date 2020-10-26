@@ -37,7 +37,7 @@ import {
 } from '../../util';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
