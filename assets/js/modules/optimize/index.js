@@ -27,7 +27,7 @@ import { addFilter } from '@wordpress/hooks';
  */
 import Modules from 'googlesitekit-modules';
 import './datastore';
-import { SetupMain as OptimizeSetup } from './components/setup';
+import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { fillFilterWithComponent } from '../../util';
 
@@ -37,7 +37,7 @@ import { fillFilterWithComponent } from '../../util';
 addFilter(
 	'googlesitekit.ModuleSetup-optimize',
 	'googlesitekit.OptimizeModuleSetupWizard',
-	fillFilterWithComponent( OptimizeSetup )
+	fillFilterWithComponent( SetupMain )
 );
 
 domReady( () => {
