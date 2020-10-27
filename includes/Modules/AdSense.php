@@ -134,7 +134,7 @@ final class AdSense extends Module
 						function( $content ) use ( $client_id ) {
 							// Only run for the primary application the `the_content` filter.
 							if ( ! in_the_loop() ) {
-								return;
+								return $content;
 							}
 							return $this->amp_content_add_auto_ads( $content, $client_id );
 						}
