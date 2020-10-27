@@ -240,7 +240,7 @@ const webpackConfig = ( env, argv ) => {
 					flagsConfig,
 					{
 						modes: [ 'development', 'production' ],
-						flagMode, // Default: mode; override with --flagMode={mode}
+						flagMode, // Default: mode; override with --flag-mode={mode}
 					},
 				),
 				new ManifestPlugin( {
