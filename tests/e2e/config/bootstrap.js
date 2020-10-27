@@ -312,14 +312,6 @@ beforeAll( async () => {
 		page.on( 'response', observeRestResponse );
 	}
 
-	page.on( 'response', ( res ) => {
-		if ( res.status() > 399 ) {
-			const req = res.request();
-			// eslint-disable-next-line no-console
-			console.debug( res.status(), req.method(), req.url() );
-		}
-	} );
-
 	// There's no good way to otherwise conditionally enable this logging
 	// since the code needs to be built into the e2e-utilities.js.
 	if ( '1' === process.env.DEBUG_REDUX ) {
