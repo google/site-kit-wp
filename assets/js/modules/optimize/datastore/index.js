@@ -22,7 +22,7 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
-import settings from './settings';
+import { validateCanSubmitChanges } from './settings';
 import service from './service';
 
 let baseModuleStore = Modules.createModuleStore( 'optimize', {
@@ -32,6 +32,7 @@ let baseModuleStore = Modules.createModuleStore( 'optimize', {
 		'optimizeID',
 		'ownerID',
 	],
+	validateCanSubmitChanges,
 } );
 
 // Rename generated pieces to adhere to our convention.
@@ -58,8 +59,7 @@ baseModuleStore = ( ( { actions, selectors, ...store } ) => {
 
 const store = Data.combineStores(
 	baseModuleStore,
-	settings,
-	service
+	service,
 );
 
 // Register this store on the global registry.
