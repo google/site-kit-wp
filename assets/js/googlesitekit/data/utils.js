@@ -348,3 +348,30 @@ export function createValidationSelector( validate ) {
 		dangerousSelector,
 	};
 }
+
+/**
+ * Creates a selector that returns a property value from the datastore state.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} property Property name.
+ * @return {*} Property value.
+ */
+export function createStateSelector( property ) {
+	return ( state ) => state[ property ];
+}
+
+/**
+ * Creates selectors that return property values from the datastore state.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<string>} properties Array of property names.
+ * @return {Object} An object with created selectors.
+ */
+export function createStateSelectors( properties ) {
+	return properties.reduce( ( accum, property ) => ( {
+		...accum,
+		[ property ]: createStateSelector( property ),
+	} ), {} );
+}
