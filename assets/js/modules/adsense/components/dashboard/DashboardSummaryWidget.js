@@ -31,9 +31,9 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { reduceAdSenseData } from '../../util';
 import { readableLargeNumber, extractForSparkline, getSiteKitAdminURL } from '../../../../util';
 import whenActive from '../../../../util/when-active';
-import PreviewBlock from '../../../../components/preview-block';
+import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
-import Sparkline from '../../../../components/sparkline';
+import Sparkline from '../../../../components/Sparkline';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 const { useSelect } = Data;

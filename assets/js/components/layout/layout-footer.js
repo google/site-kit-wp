@@ -29,7 +29,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import SourceLink from '../source-link';
+import SourceLink from '../SourceLink';
 
 class LayoutFooter extends Component {
 	render() {

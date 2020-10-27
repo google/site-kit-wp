@@ -29,7 +29,7 @@ import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import PreviewTable from '../../../../components/preview-table';
+import PreviewTable from '../../../../components/PreviewTable';
 import ctaWrapper from '../../../../components/notifications/cta-wrapper';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../util';
