@@ -37,9 +37,12 @@ describe( 'ContainerSelect', () => {
 
 	it( 'should be disabled if there is an existing tag', async () => {
 		const account = factories.accountBuilder();
+		const { accountId: accountID } = account; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( STORE_NAME ).setAccountID( account.accountId ); // eslint-disable-line sitekit/camelcase-acronyms
-		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID: account.accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container } = render( <ContainerSelect containers={ [] } />, { registry } );
 		const select = container.querySelector( '.mdc-select' );
@@ -53,9 +56,13 @@ describe( 'ContainerSelect', () => {
 
 	it( 'should be disabled if the selected account is not a valid account', async () => {
 		const account = factories.accountBuilder();
+		const { accountId: accountID } = account; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( STORE_NAME ).setAccountID( account.accountId ); // eslint-disable-line sitekit/camelcase-acronyms
-		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID: account.accountId } ); // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ ACCOUNT_CREATE ] );
 
 		const { container } = render( <ContainerSelect containers={ [] } />, { registry } );
 		const select = container.querySelector( '.mdc-select' );
