@@ -114,7 +114,7 @@ else
 fi
 
 status_message 'Installing the Yoast plugin...'
-if [[! -z "$YOAST_VERSION"]]; then
+if [[ ! -z "$YOAST_VERSION" ]]; then
 	wp plugin install wordpress-seo --force --quiet --version="$YOAST_VERSION"
 else
 	# Install latest version of the plugin
