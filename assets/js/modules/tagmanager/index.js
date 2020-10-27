@@ -25,11 +25,10 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
 import './datastore';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { fillFilterWithComponent } from '../../util';
 
 addFilter(
@@ -39,7 +38,7 @@ addFilter(
 );
 
 domReady( () => {
-	Data.dispatch( CORE_MODULES ).registerModule(
+	Modules.registerModule(
 		'tagmanager',
 		{
 			settingsEditComponent: SettingsEdit,

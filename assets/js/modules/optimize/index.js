@@ -25,12 +25,11 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
 import './datastore';
 import { SetupMain as OptimizeSetup } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { fillFilterWithComponent } from '../../util';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 /**
  * Add component to the setup wizard.
@@ -42,7 +41,7 @@ addFilter(
 );
 
 domReady( () => {
-	Data.dispatch( CORE_MODULES ).registerModule(
+	Modules.registerModule(
 		'optimize',
 		{
 			settingsEditComponent: SettingsEdit,

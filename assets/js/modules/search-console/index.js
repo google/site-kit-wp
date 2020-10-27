@@ -24,7 +24,7 @@ import domReady from '@wordpress/dom-ready';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
 import './datastore';
 import { SettingsView } from './components/settings';
@@ -37,10 +37,9 @@ import {
 	AREA_PAGE_DASHBOARD_POPULARITY,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 domReady( () => {
-	Data.dispatch( CORE_MODULES ).registerModule(
+	Modules.registerModule(
 		'search-console',
 		{
 			settingsViewComponent: SettingsView,

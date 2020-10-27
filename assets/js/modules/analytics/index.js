@@ -26,7 +26,7 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
 import './datastore';
 import {
@@ -44,7 +44,6 @@ import DashboardPopularPagesWidget from './components/dashboard/DashboardPopular
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 addFilter(
 	'googlesitekit.ModuleSetup-analytics',
@@ -53,7 +52,7 @@ addFilter(
 );
 
 domReady( () => {
-	Data.dispatch( CORE_MODULES ).registerModule(
+	Modules.registerModule(
 		'analytics',
 		{
 			settingsEditComponent: SettingsEdit,
