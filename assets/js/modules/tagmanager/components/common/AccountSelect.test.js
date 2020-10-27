@@ -44,6 +44,7 @@ describe( 'AccountSelect', () => {
 
 	it( 'should render an option for each analytics account', () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
 		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
@@ -58,6 +59,7 @@ describe( 'AccountSelect', () => {
 
 	it( 'should have a "Set up a new account" item at the end of the list', async () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
 		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
@@ -77,6 +79,7 @@ describe( 'AccountSelect', () => {
 
 	it( 'should render a select box with only the set up option when no accounts exist', async () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
 		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
@@ -87,6 +90,7 @@ describe( 'AccountSelect', () => {
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
 		const { getByText, container } = render( <AccountSelect />, { registry } );
 		const originalAccountID = registry.select( STORE_NAME ).getAccountID();
