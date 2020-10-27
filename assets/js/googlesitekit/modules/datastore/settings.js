@@ -17,15 +17,15 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 const { createRegistrySelector } = Data;
+
+/**
+ * External dependencies
+ */
+import invariant from 'invariant';
 
 export const actions = {
 	/**
@@ -37,9 +37,9 @@ export const actions = {
 	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
 	 */
 	*submitChanges( slug ) {
-		invariant( slug, 'slug is required.' );
+		slug = slug ? slug : '';
 		const registry = yield Data.commonActions.getRegistry();
-		if ( !! registry.dispatch( `modules/${ slug }` ) && !! registry.dispatch( `modules/${ slug }` ).submitChanges ) {
+		if ( !! registry.dispatch( `modules/${ slug }` )?.submitChanges ) {
 			return registry.dispatch( `modules/${ slug }` ).submitChanges();
 		}
 		return { error: `'modules/${ slug }' does not have a submitChanges() action.` };
@@ -57,7 +57,7 @@ export const selectors = {
 	 */
 	isDoingSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		return !! select( `modules/${ slug }` ) && !! select( `modules/${ slug }` ).isDoingSubmitChanges && select( `modules/${ slug }` ).isDoingSubmitChanges();
+		return !! select( `modules/${ slug }` )?.isDoingSubmitChanges?.();
 	} ),
 
 	/**
@@ -70,7 +70,7 @@ export const selectors = {
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		return !! select( `modules/${ slug }` ) && !! select( `modules/${ slug }` ).canSubmitChanges && select( `modules/${ slug }` ).canSubmitChanges();
+		return !! select( `modules/${ slug }` )?.canSubmitChanges?.();
 	} ),
 
 };
