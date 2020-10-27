@@ -128,3 +128,31 @@
 		margin-top: 8px;
 	}
 }
+
+.googlesitekit-setup__content {
+	margin: 0 auto;
+	max-width: $max-width-setup-content;
+	padding: 2rem 0;
+
+	@media (min-width: $bp-desktop) {
+		max-width: none;
+		padding: 0;
+	}
+
+	.googlesitekit-opt-in {
+		margin: 2rem 0;
+	}
+}
+
+.googlesitekit-setup__icon {
+	text-align: center;
+
+	svg {
+		height: auto;
+		max-width: 100%;
+	}
+
+	@media (min-width: $bp-desktop) {
+		order: 2;
+	}
+}

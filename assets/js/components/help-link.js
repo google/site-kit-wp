@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from './link';
+import Link from './Link';
 
 const HelpLink = () => {
 	const label = __( 'Need help?', 'google-site-kit' );

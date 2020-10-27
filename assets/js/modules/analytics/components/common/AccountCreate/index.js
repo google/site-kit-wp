@@ -26,8 +26,8 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Button from '../../../../../components/button';
-import Link from '../../../../../components/link';
-import ProgressBar from '../../../../../components/progress-bar';
+import Link from '../../../../../components/Link';
+import ProgressBar from '../../../../../components/ProgressBar';
 import { trackEvent } from '../../../../../util';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import TimezoneSelect from './TimezoneSelect';
@@ -36,6 +36,7 @@ import PropertyField from './PropertyField';
 import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
+import GA4Notice from '../GA4Notice';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -131,6 +132,7 @@ export default function AccountCreate() {
 
 	return (
 		<div>
+			<GA4Notice />
 			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
 
 			<h3 className="googlesitekit-heading-4">

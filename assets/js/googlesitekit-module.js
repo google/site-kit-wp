@@ -32,7 +32,7 @@ import { Component, render, Suspense, lazy } from '@wordpress/element';
  * Internal dependencies
  */
 import { loadTranslations } from './util';
-import ProgressBar from './components/progress-bar';
+import ProgressBar from './components/ProgressBar';
 import './components/data';
 import './components/notifications';
 import Root from './components/root';

@@ -93,6 +93,10 @@
 		flex-wrap: wrap;
 		margin: 0;
 
+		&--collapsed {
+			align-items: flex-start;
+		}
+
 		&--multiline {
 			display: block;
 		}
@@ -103,6 +107,10 @@
 			@media (min-width: $bp-desktop) {
 				margin: $grid-gap-desktop $grid-gap-desktop $grid-gap-desktop 0;
 			}
+		}
+
+		&--collapsed > div {
+			margin-top: 0;
 		}
 
 		&--multiline > div {

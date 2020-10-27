@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Header from '../header';
-import Link from '../link';
+import Link from '../Link';
 import HelpLink from '../help-link';
 import { getSiteKitAdminURL } from '../../util';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';

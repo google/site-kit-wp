@@ -38,7 +38,7 @@ import Alert from '../../../../components/alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
 import HelpLink from '../../../../components/help-link';
@@ -98,7 +98,9 @@ class AdSenseDashboardWidget extends Component {
 	handleDataSuccess() {
 		this.setState( {
 			receivingData: true,
+			error: false,
 			loading: false,
+			zeroData: false,
 		} );
 	}
 
@@ -208,8 +210,8 @@ class AdSenseDashboardWidget extends Component {
 									header
 									/* translators: %s: date range */
 									title={ sprintf( __( 'Performance over the last %s', 'google-site-kit' ), currentDateRange ) }
-									headerCtaLabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
-									headerCtaLink={ homepage }
+									headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
+									headerCTALink={ homepage }
 								>
 									<AdSensePerformanceWidget
 										handleDataError={ ( err ) => {
