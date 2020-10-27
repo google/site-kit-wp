@@ -32,8 +32,8 @@ import {
 	sanitizeHTML,
 } from '../util';
 import Dialog from './dialog';
-import Link from './link';
 import Modal from './Modal';
+import Link from './Link';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
