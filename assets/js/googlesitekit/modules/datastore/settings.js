@@ -17,15 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 const { createRegistrySelector } = Data;
-
-/**
- * External dependencies
- */
-import invariant from 'invariant';
 
 export const actions = {
 	/**
