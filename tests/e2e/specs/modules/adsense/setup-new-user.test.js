@@ -31,6 +31,7 @@ import {
  */
 import {
 	activateAMPWithMode,
+	setAMPMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAuthToken,
@@ -343,6 +344,105 @@ describe( 'setting up the AdSense module', () => {
 
 			await proceedToAdsenseSetup();
 			await expect( '/' ).toHaveValidAMPForVisitor();
+		} );
+	} );
+
+	describe( 'With Yoast enabled', () => {
+		beforeEach( async () => {
+			await activatePlugin( 'wordpress-seo' );
+			await activatePlugin( 'amp' );
+		} );
+
+		afterEach( async () => {
+			await deactivatePlugin( 'wordpress-seo' );
+			await deactivatePlugin( 'amp' );
+		} );
+		it( 'outputs tag when AMP mode is primary', async () => {
+			await setAMPMode( 'primary' );
+			datapointHandlers.accounts = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						ADSENSE_ACCOUNT,
+					] ),
+				} );
+			};
+
+			datapointHandlers.clients = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						{
+							arcOptIn: false,
+							id: `ca-${ ADSENSE_ACCOUNT.id }`,
+							kind: 'adsense#adClient',
+							productCode: 'AFC',
+							supportsReporting: true,
+						},
+					] ),
+				} );
+			};
+
+			await proceedToAdsenseSetup();
+			await expect( '/hello-world' ).toHaveAdSenseTag();
+		} );
+		it( 'outputs tag when AMP mode is secondary', async () => {
+			await setAMPMode( 'secondary' );
+			datapointHandlers.accounts = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						ADSENSE_ACCOUNT,
+					] ),
+				} );
+			};
+
+			datapointHandlers.clients = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						{
+							arcOptIn: false,
+							id: `ca-${ ADSENSE_ACCOUNT.id }`,
+							kind: 'adsense#adClient',
+							productCode: 'AFC',
+							supportsReporting: true,
+						},
+					] ),
+				} );
+			};
+
+			await proceedToAdsenseSetup();
+			await expect( '/hello-world?amp' ).toHaveAdSenseTag();
+		} );
+		it( 'outputs tag when AMP mode is reader', async () => {
+			await setAMPMode( 'reader' );
+			datapointHandlers.accounts = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						ADSENSE_ACCOUNT,
+					] ),
+				} );
+			};
+
+			datapointHandlers.clients = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						{
+							arcOptIn: false,
+							id: `ca-${ ADSENSE_ACCOUNT.id }`,
+							kind: 'adsense#adClient',
+							productCode: 'AFC',
+							supportsReporting: true,
+						},
+					] ),
+				} );
+			};
+
+			await proceedToAdsenseSetup();
+			await expect( '/hello-world?amp' ).toHaveAdSenseTag();
 		} );
 	} );
 } );
