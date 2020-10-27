@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Link from '../../../../components/link';
-import ProgressBar from '../../../../components/progress-bar';
+import Link from '../../../../components/Link';
+import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 

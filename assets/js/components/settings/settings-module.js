@@ -43,11 +43,11 @@ import {
 	getModulesData,
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
-import Link from '../../components/link';
+import Link from '../Link';
 import Button from '../../components/button';
 import data, { TYPE_MODULES } from '../../components/data';
-import Spinner from '../../components/spinner';
 import SettingsOverlay from '../../components/settings/SettingsOverlay';
+import Spinner from '../Spinner';
 import GenericError from '../../components/notifications/generic-error';
 import SetupModule from '../../components/setup-module';
 import Dialog from '../../components/dialog';
