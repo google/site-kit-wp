@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { sanitizeHTML } from './sanitize';
+import { sanitizeHTML, unTrailingSlashIt } from './sanitize';
 
 describe( 'sanitizeHTML', () => {
 	it( 'does not change links', () => {
@@ -27,5 +27,21 @@ describe( 'sanitizeHTML', () => {
 		} ) ).toEqual( {
 			__html: '<a target="_blank" href="http://example.org">link</a>',
 		} );
+	} );
+} );
+
+describe( 'unTrailingSlashIt', () => {
+	it( 'should not change a URL without trailing slash', () => {
+		const url = 'http://example.org';
+		expect( unTrailingSlashIt( url ) ).toEqual( 'http://example.org' );
+	} );
+
+	it( 'should change a URL with trailing slash', () => {
+		const url = 'http://example.org/';
+		expect( unTrailingSlashIt( url ) ).toEqual( 'http://example.org' );
+	} );
+
+	it( 'should return null if the parameter is not a string', () => {
+		expect( unTrailingSlashIt( 1 ) ).toBeNull();
 	} );
 } );

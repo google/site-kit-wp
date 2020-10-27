@@ -26,7 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat } from '../../../../util';
+import { getTimeInSeconds, numberFormat, unTrailingSlashIt } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
@@ -44,16 +44,12 @@ const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
-	let referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	if ( referenceSiteURL.endsWith( '/' ) ) {
-		// remove the trailing slash
-		referenceSiteURL = referenceSiteURL.slice( 0, -1 );
-	}
+	const referenceSiteURL = useSelect( ( select ) => unTrailingSlashIt( select( CORE_SITE ).getReferenceSiteURL() ) );
 	const baseServiceArgs = {
 		resource_id: domain,
 		num_of_days: getCurrentDateRangeDayCount(),
 	};
-	if ( isDomainProperty ) {
+	if ( isDomainProperty && referenceSiteURL ) {
 		baseServiceArgs.page = `*${ referenceSiteURL }`;
 	}
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
