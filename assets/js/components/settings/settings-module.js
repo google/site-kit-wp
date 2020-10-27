@@ -504,7 +504,9 @@ SettingsModule.defaultProps = {
 };
 
 export default withSelect( ( select, { slug } ) => {
+	const module = select( CORE_MODULES ).getModule( slug );
+
 	return {
-		hasSettings: !! select( CORE_MODULES ).getModule( slug )?.settingsEditComponent,
+		hasSettings: !! module?.settingsEditComponent,
 	};
 } )( SettingsModule );
