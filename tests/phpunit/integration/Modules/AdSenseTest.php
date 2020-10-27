@@ -187,6 +187,7 @@ class AdSenseTest extends TestCase {
 
 	/**
 	 * @dataProvider block_on_consent_provider
+	 * @group ryan
 	 * @param bool $enabled
 	 */
 	public function test_block_on_consent_amp_content( $enabled ) {
@@ -203,6 +204,10 @@ class AdSenseTest extends TestCase {
 		if ( $enabled ) {
 			add_filter( 'googlesitekit_adsense_tag_amp_block_on_consent', '__return_true' );
 		}
+
+		// We need to fake the global to allow the hook to add the tag.
+		global $wp_query;
+		$wp_query->in_the_loop = true;
 
 		$output = apply_filters( 'the_content', 'test content' );
 		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
