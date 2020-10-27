@@ -39,7 +39,7 @@ import {
 	userReportDataDefaults,
 	parseTotalUsersData,
 } from '../../util';
-import PreviewBlocks from '../../../../components/preview-blocks';
+import PreviewBlocks from '../../../../components/PreviewBlocks';
 import DataBlock from '../../../../components/data-block';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import withData from '../../../../components/higherorder/withdata';

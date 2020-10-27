@@ -22,60 +22,52 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
+function Link( {
+	href,
+	children,
+	className,
+	arrow,
+	external,
+	inverse,
+	back,
+	small,
+	inherit,
+	caps,
+	danger,
+	disabled,
+	...extraProps
+} ) {
+	// Note: the disabled attribute does not alter behavior of anchor tags,
+	// so if disabled we force it to be a button.
+	const isAnchor = href && ! disabled;
+	const SemanticLink = isAnchor ? 'a' : 'button';
 
-class Link extends Component {
-	render() {
-		const {
-			href,
-			children,
-			className,
-			arrow,
-			external,
-			inverse,
-			back,
-			small,
-			inherit,
-			caps,
-			danger,
-			disabled,
-			...extraProps
-		} = this.props;
-		// Note: the disabled attribute does not alter behavior of anchor tags,
-		// so if disabled we force it to be a button.
-		const isAnchor = href && ! disabled;
-		const SemanticLink = isAnchor ? 'a' : 'button';
-
-		return (
-			<SemanticLink
-				className={ classnames(
-					'googlesitekit-cta-link',
-					className,
-					{
-						'googlesitekit-cta-link--arrow': arrow,
-						'googlesitekit-cta-link--external': external,
-						'googlesitekit-cta-link--inverse': inverse,
-						'googlesitekit-cta-link--back': back,
-						'googlesitekit-cta-link--small': small,
-						'googlesitekit-cta-link--inherit': inherit,
-						'googlesitekit-cta-link--caps': caps,
-						'googlesitekit-cta-link--danger': danger,
-						'googlesitekit-cta-link--disabled': disabled,
-					}
-				) }
-				href={ isAnchor ? href : undefined }
-				target={ isAnchor && external ? '_blank' : undefined }
-				rel={ external ? 'noopener noreferrer' : undefined }
-				disabled={ disabled }
-				{ ...extraProps }
-			>
-				{ children }
-			</SemanticLink>
-		);
-	}
+	return (
+		<SemanticLink
+			className={ classnames(
+				'googlesitekit-cta-link',
+				className,
+				{
+					'googlesitekit-cta-link--arrow': arrow,
+					'googlesitekit-cta-link--external': external,
+					'googlesitekit-cta-link--inverse': inverse,
+					'googlesitekit-cta-link--back': back,
+					'googlesitekit-cta-link--small': small,
+					'googlesitekit-cta-link--inherit': inherit,
+					'googlesitekit-cta-link--caps': caps,
+					'googlesitekit-cta-link--danger': danger,
+					'googlesitekit-cta-link--disabled': disabled,
+				},
+			) }
+			href={ isAnchor ? href : undefined }
+			target={ isAnchor && external ? '_blank' : undefined }
+			rel={ external ? 'noopener noreferrer' : undefined }
+			disabled={ disabled }
+			{ ...extraProps }
+		>
+			{ children }
+		</SemanticLink>
+	);
 }
 
 Link.propTypes = {

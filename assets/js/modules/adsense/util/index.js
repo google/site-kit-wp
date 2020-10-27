@@ -64,9 +64,7 @@ export function reduceAdSenseData( rows ) {
 export const isDataZeroAdSense = ( adSenseData, datapoint, dataRequest ) => {
 	// We only check the last 28 days of earnings because it is the most reliable data point to identify new setups:
 	// only new accounts or accounts not showing ads would have zero earnings in the last 28 days.
-
-	// The 'prev-date-range-placeholder' is dynamically replaced with the previous date range based on the current date range so we need allow it here.
-	if ( ! dataRequest.data || ! dataRequest.data.dateRange || ( 'last-28-days' !== dataRequest.data.dateRange && 'prev-date-range-placeholder' !== dataRequest.data.dateRange ) ) {
+	if ( ! dataRequest.data || ! dataRequest.data.dateRange || 'last-28-days' !== dataRequest.data.dateRange ) {
 		return false;
 	}
 

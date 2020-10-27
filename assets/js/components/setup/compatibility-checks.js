@@ -33,9 +33,9 @@ import PropTypes from 'prop-types';
 import API from 'googlesitekit-api';
 import { sanitizeHTML } from '../../util/sanitize';
 import { getExistingTag } from '../../util/tag';
-import Link from '../link';
+import Link from '../Link';
 import Warning from '../notifications/warning';
-import ProgressBar from '../../components/progress-bar';
+import ProgressBar from '../ProgressBar';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'check_fetch_failed';

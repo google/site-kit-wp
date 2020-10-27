@@ -27,7 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
-import { isValidAccountID, isValidContainerID, isValidUsageContext } from '../util/validation';
+import { isValidAccountID, isValidContainerID, isValidContainerName, isValidUsageContext } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -62,15 +62,16 @@ const fetchGetContainersStore = createFetchStore( {
 
 const fetchCreateContainerStore = createFetchStore( {
 	baseName: 'createContainer',
-	argsToParams( accountID, usageContext ) {
-		return { accountID, usageContext };
+	argsToParams( accountID, usageContext, { containerName } ) {
+		return { accountID, usageContext, containerName };
 	},
-	validateParams: ( { accountID, usageContext } = {} ) => {
+	validateParams: ( { accountID, usageContext, containerName } = {} ) => {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
 		invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );
+		invariant( isValidContainerName( containerName ), 'A valid containerName is required to create a container.' );
 	},
-	controlCallback: ( { accountID, usageContext } ) => {
-		return API.set( 'modules', 'tagmanager', 'create-container', { accountID, usageContext } );
+	controlCallback: ( { accountID, usageContext, containerName: name } ) => {
+		return API.set( 'modules', 'tagmanager', 'create-container', { accountID, usageContext, name } );
 	},
 	reducerCallback( state, container, { accountID } ) {
 		return {
@@ -96,15 +97,18 @@ const baseActions = {
 	 *
 	 * @since 1.11.0
 	 *
-	 * @param {string} accountID    Google Tag Manager account ID.
-	 * @param {string} usageContext Container usage context. (Either 'web', or 'amp').
+	 * @param {string} accountID          Google Tag Manager account ID.
+	 * @param {string} usageContext       Container usage context. (Either 'web', or 'amp').
+	 * @param {Object} args               Container arguments.
+	 * @param {string} args.containerName The name for a new container.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createContainer( accountID, usageContext ) {
+	*createContainer( accountID, usageContext, { containerName } ) {
 		invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
 		invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );
+		invariant( isValidContainerName( containerName ), 'A valid containerName is required to create a container.' );
 
-		const { response, error } = yield fetchCreateContainerStore.actions.fetchCreateContainer( accountID, usageContext );
+		const { response, error } = yield fetchCreateContainerStore.actions.fetchCreateContainer( accountID, usageContext, { containerName } );
 
 		return { response, error };
 	},

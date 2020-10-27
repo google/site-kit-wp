@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
 import { isValidPropertyID, isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';

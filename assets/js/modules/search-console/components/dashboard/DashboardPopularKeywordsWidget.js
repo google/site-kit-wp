@@ -33,8 +33,8 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { numberFormat } from '../../../../util';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import whenActive from '../../../../util/when-active';
-import PreviewTable from '../../../../components/preview-table';
-import SourceLink from '../../../../components/source-link';
+import PreviewTable from '../../../../components/PreviewTable';
+import SourceLink from '../../../../components/SourceLink';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';

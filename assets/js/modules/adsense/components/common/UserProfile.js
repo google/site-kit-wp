@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME as userStoreName } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 

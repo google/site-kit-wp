@@ -25,41 +25,37 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Component, createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Link from '../components/link';
+import Link from './Link';
 
-class SourceLink extends Component {
-	render() {
-		const { name, href, className, external } = this.props;
-
-		return (
-			<div className={ classnames(
-				'googlesitekit-source-link',
-				className
-			) }>
-				{ createInterpolateElement(
-					sprintf(
-						/* translators: %s: source link */
-						__( 'Source: %s', 'google-site-kit' ),
-						`<a>${ name }</a>`
-					),
-					{
-						a: <Link
-							key="link"
-							href={ href }
-							external={ external }
-							inherit
-						/>,
-					}
-				) }
-			</div>
-		);
-	}
+function SourceLink( { name, href, className, external } ) {
+	return (
+		<div className={ classnames(
+			'googlesitekit-source-link',
+			className
+		) }>
+			{ createInterpolateElement(
+				sprintf(
+					/* translators: %s: source link */
+					__( 'Source: %s', 'google-site-kit' ),
+					`<a>${ name }</a>`
+				),
+				{
+					a: <Link
+						key="link"
+						href={ href }
+						external={ external }
+						inherit
+					/>,
+				}
+			) }
+		</div>
+	);
 }
 
 SourceLink.propTypes = {

@@ -29,7 +29,7 @@ import { getTimeInSeconds } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import PreviewBlock from '../../../../components/preview-block';
+import PreviewBlock from '../../../../components/PreviewBlock';
 import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,

@@ -30,7 +30,7 @@ import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../../uti
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import PreviewTable from '../../../../components/preview-table';
+import PreviewTable from '../../../../components/PreviewTable';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME } from '../../datastore/constants';
 
