@@ -69,29 +69,37 @@ describe( 'core/modules store changes', () => {
 	afterEach( () => {
 	} );
 
+	describe( 'actions', () => {
+		it( 'it proxies the selector call to the module with the given slug', async () => {
+			const expectedError = { error: `'modules/${ nonExistentModuleSlug }' does not have a submitChanges() action.` };
+			expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
+
+			expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
+
+			const expectedErrorNoSlug = { error: "'modules/' does not have a submitChanges() action." };
+			expect( await registry.dispatch( STORE_NAME ).submitChanges() ).toEqual( expectedErrorNoSlug );
+
+			expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBeTruthy();
+		} );
+	} );
+
 	describe( 'selectors', () => {
-		describe( 'submitting changes', () => {
-			it( 'is submitting changes', async () => {
+		describe( 'isDoingSubmitChanges', () => {
+			it( 'it proxies the selector call to the module with the given slug', async () => {
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
 
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( false );
 				submittingChanges = true;
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( true );
 			} );
-
-			it( 'can submit changes', () => {
+		} );
+		describe( 'canSubmitChanges', () => {
+			it( 'it proxies the selector call to the module with the given slug', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( false );
 				moduleCanSubmitChanges = true;
 				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( true );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
-			} );
-
-			it( 'does submit changes', async () => {
-				const expectedError = { error: `'modules/${ nonExistentModuleSlug }' does not have a submitChanges() action.` };
-				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
-
-				expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBeTruthy();
 			} );
 		} );
 	} );
