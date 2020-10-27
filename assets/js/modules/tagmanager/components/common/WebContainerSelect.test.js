@@ -22,8 +22,8 @@
 import WebContainerSelect from './WebContainerSelect';
 import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY, AMP_MODE_PRIMARY } from '../../../../googlesitekit/datastore/site/constants';
-import { createTestRegistry, freezeFetch, untilResolved } from '../../../../../../tests/js/utils';
+import { AMP_MODE_SECONDARY, AMP_MODE_PRIMARY } from '../../../../googlesitekit/datastore/site/constants';
+import { createTestRegistry, freezeFetch, provideSiteInfo, untilResolved } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'WebContainerSelect', () => {
@@ -35,7 +35,7 @@ describe( 'WebContainerSelect', () => {
 		// Set set no existing tag.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		// Set site info to prevent error in resolver.
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+		provideSiteInfo( registry );
 	} );
 
 	it( 'should render an option for each web container of the currently selected account.', () => {
@@ -49,7 +49,9 @@ describe( 'WebContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [ ...webContainers, ...ampContainers ], { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <WebContainerSelect />, { registry } );
 
@@ -69,7 +71,9 @@ describe( 'WebContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <WebContainerSelect />, { registry } );
 
@@ -84,7 +88,9 @@ describe( 'WebContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container, getByText } = render( <WebContainerSelect />, { registry } );
 
@@ -102,7 +108,9 @@ describe( 'WebContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container, getByText } = render( <WebContainerSelect />, { registry } );
 
@@ -122,6 +130,10 @@ describe( 'WebContainerSelect', () => {
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
+		const account = factories.accountBuilder();
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
 		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { registry } );
 
@@ -135,6 +147,7 @@ describe( 'WebContainerSelect', () => {
 		const account = factories.accountBuilder();
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
 		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { registry } );
@@ -149,7 +162,9 @@ describe( 'WebContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container } = render( <WebContainerSelect />, { registry } );
 
@@ -161,8 +176,10 @@ describe( 'WebContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
+		provideSiteInfo( registry, { ampMode: AMP_MODE_SECONDARY } );
 
 		const { container } = render( <WebContainerSelect />, { registry } );
 
@@ -172,7 +189,7 @@ describe( 'WebContainerSelect', () => {
 	it( 'should render nothing in a primary AMP context', () => {
 		const account = factories.accountBuilder();
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
+		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
 
 		const { queryByRole, container } = render( <WebContainerSelect />, { registry } );
 
