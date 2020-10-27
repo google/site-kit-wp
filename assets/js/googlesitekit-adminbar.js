@@ -19,10 +19,12 @@
 /**
  * External dependencies
  */
+import once from 'lodash/once';
 
 /**
  * WordPress dependencies
  */
+import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
 
 /**
@@ -30,6 +32,7 @@ import { render } from '@wordpress/element';
  */
 import {
 	loadTranslations,
+	trackEvent,
 } from './util';
 import Root from './components/root';
 import AdminBarApp from './components/adminbar/AdminBarApp';
@@ -40,12 +43,27 @@ export const GoogleSitekitAdminbar = () => {
 };
 
 // Initialize the whole adminbar app.
-export function init() {
+const init = once( () => {
+	const adminBar = document.getElementById( 'js-googlesitekit-adminbar' );
 	const renderTarget = document.getElementById( 'js-googlesitekit-adminbar-modules' );
 
 	if ( renderTarget ) {
 		loadTranslations();
 
 		render( <Root dataAPIContext="Adminbar"><GoogleSitekitAdminbar /></Root>, renderTarget );
+
+		// Remove the loading class on the render target's parent to allow the app to be visible.
+		adminBar.classList.remove( 'googlesitekit-adminbar--loading' );
+		trackEvent( 'admin_bar', 'page_stats_view' );
 	}
-}
+} );
+
+domReady( () => {
+	const siteKitMenuItemEl = document.getElementById( 'wp-admin-bar-google-site-kit' );
+
+	if ( ! siteKitMenuItemEl ) {
+		return;
+	}
+
+	siteKitMenuItemEl.addEventListener( 'mouseover', init );
+} );
