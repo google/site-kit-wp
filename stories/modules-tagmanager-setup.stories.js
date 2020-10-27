@@ -24,18 +24,16 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { WithTestRegistry, createTestRegistry, freezeFetch, provideUserAuthentication } from '../tests/js/utils';
+import { WithTestRegistry, createTestRegistry, freezeFetch, provideUserAuthentication, provideModules, provideSiteInfo } from '../tests/js/utils';
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
-import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { SetupMain as TagManagerSetup } from '../assets/js/modules/tagmanager/components/setup';
 import { STORE_NAME as CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
 import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, FORM_SETUP } from '../assets/js/modules/tagmanager/datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
-import * as modulesFixtures from '../assets/js/googlesitekit/m
-odules/datastore/__fixtures__';
+import * as modulesFixtures from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { parseLiveContainerVersionIDs } from '../assets/js/modules/tagmanager/datastore/__factories__/utils';
 
 function Setup( props ) {
