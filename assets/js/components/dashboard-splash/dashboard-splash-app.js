@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment, Suspense, lazy } from '@wordpress/element';
+import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,9 +27,11 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardSplashMain from './dashboard-splash-main';
 import DashboardSplashNotifications from './dashboard-splash-notifications';
-import ProgressBar from '../ProgressBar';
 import { trackEvent } from '../../util';
 import '../publisher-wins';
+import SetupUsingProxy from '../setup/setup-proxy';
+import SetupUsingGCP from '../setup';
+import SetupWrapper from '../setup/setup-wrapper';
 
 const AUTHENTICATION = 1;
 const SETUP = 2;
@@ -94,12 +96,6 @@ class DashboardSplashApp extends Component {
 	}
 
 	render() {
-		// Set webpackPublicPath on-the-fly.
-		if ( global._googlesitekitLegacyData && global._googlesitekitLegacyData.publicPath ) {
-			// eslint-disable-next-line no-undef, camelcase
-			__webpack_public_path__ = global._googlesitekitLegacyData.publicPath;
-		}
-
 		const { usingProxy } = global._googlesitekitBaseData;
 
 		// If `usingProxy` is true it means the proxy is in use. We should never
@@ -140,48 +136,13 @@ class DashboardSplashApp extends Component {
 			);
 		}
 
-		let Setup = null;
-
 		// `usingProxy` is only set if the proxy is in use.
 		if ( usingProxy ) {
-			Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wizard-proxy" */'../setup/setup-proxy' ) );
+			return <SetupUsingProxy />;
 		} else if ( this.state.showAuthenticationSetupWizard ) {
-			Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wizard" */'../setup' ) );
-		} else {
-			Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'../setup/setup-wrapper' ) );
+			return <SetupUsingGCP />;
 		}
-
-		return (
-			<Suspense fallback={
-				<Fragment>
-					<div className="googlesitekit-setup">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-12
-								">
-									<div className="googlesitekit-setup__wrapper">
-										<div className="mdc-layout-grid">
-											<div className="mdc-layout-grid__inner">
-												<div className="
-													mdc-layout-grid__cell
-													mdc-layout-grid__cell--span-12
-												">
-													<ProgressBar />
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</Fragment>
-			}>
-				<Setup />
-			</Suspense>
-		);
+		return <SetupWrapper />;
 	}
 }
 
