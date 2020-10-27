@@ -212,7 +212,6 @@ const baseActions = {
 	 * Registers a module.
 	 *
 	 * @since 1.13.0
-	 * @since n.e.x.t Replaced `settingsComponent` with `settingsEditComponent` and `settingsViewComponent`.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
