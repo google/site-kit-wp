@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import { STORE_NAME, CONTAINER_CREATE } from '../../datastore/constants';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 

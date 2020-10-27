@@ -27,8 +27,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/button';
-import Link from '../../../../components/link';
-import ProgressBar from '../../../../components/progress-bar';
+import Link from '../../../../components/Link';
+import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';

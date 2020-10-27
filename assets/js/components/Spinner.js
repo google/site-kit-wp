@@ -17,28 +17,21 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-/**
  * A single module. Keeps track of its own active state and settings.
  */
-class Spinner extends Component {
-	render() {
-		const { isSaving } = this.props;
-		return (
-			<span
-				className="spinner"
-				style={ {
-					display: ( isSaving ? 'inline-block' : 'none' ),
-					float: 'none',
-					marginTop: '0',
-					visibility: 'visible',
-				} }
-			/>
-		);
-	}
+
+function Spinner( { isSaving } ) {
+	return (
+		<span
+			className="spinner"
+			style={ {
+				display: ( isSaving ? 'inline-block' : 'none' ),
+				float: 'none',
+				marginTop: '0',
+				visibility: 'visible',
+			} }
+		/>
+	);
 }
 
 export default Spinner;

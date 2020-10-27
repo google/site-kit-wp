@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import ProgressBar from '../assets/js/components/progress-bar';
+import ProgressBar from '../assets/js/components/ProgressBar';
 
 storiesOf( 'Global', module )
 	.add( 'Progress Bars', () => (
