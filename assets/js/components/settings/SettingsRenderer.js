@@ -43,7 +43,7 @@ export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 		if ( rollbackSettings && haveSettingsChanged && ! isDoingSubmitChanges && ! isEditing ) {
 			rollbackSettings();
 		}
-	}, [ haveSettingsChanged, isDoingSubmitChanges, isEditing ] );
+	}, [ rollbackSettings, haveSettingsChanged, isDoingSubmitChanges, isEditing ] );
 
 	if ( ! isOpen ) {
 		return null;
