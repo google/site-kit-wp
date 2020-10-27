@@ -82,7 +82,7 @@ export const createModuleStore = ( slug, {
 	} );
 
 	let combinedStore = {};
-	if ( !! settingSlugs ) {
+	if ( 'undefined' !== typeof settingSlugs ) {
 		const settingsStore = createSettingsStore( 'modules', slug, 'settings', {
 			storeName,
 			settingSlugs,
