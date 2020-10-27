@@ -31,7 +31,7 @@ import {
 	ErrorNotices,
 	UseSnippetSwitch,
 } from '../common';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
