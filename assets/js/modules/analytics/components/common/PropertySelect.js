@@ -38,20 +38,17 @@ export default function PropertySelect() {
 	const {
 		accountID,
 		properties,
-		hasStartedFetchingProperties,
-		hasResolvedProperties,
+		isResolvingProperties,
 	} = useSelect( ( select ) => {
 		const data = {
 			accountID: select( STORE_NAME ).getAccountID(),
 			properties: [],
-			hasStartedFetchingProperties: false,
-			hasResolvedProperties: false,
+			isResolvingProperties: false,
 		};
 
 		if ( data.accountID ) {
 			data.properties = select( STORE_NAME ).getProperties( data.accountID );
-			data.hasStartedFetchingProperties = select( STORE_NAME ).hasStartedResolution( 'getProperties', [ data.accountID ] );
-			data.hasResolvedProperties = select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ data.accountID ] );
+			data.isResolvingProperties = select( STORE_NAME ).isResolving( 'getProperties', [ data.accountID ] );
 		}
 
 		return data;
@@ -71,7 +68,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID ] );
 
-	if ( ! hasResolvedAccounts || ( hasStartedFetchingProperties && ! hasResolvedProperties ) ) {
+	if ( ! hasResolvedAccounts || isResolvingProperties ) {
 		return <ProgressBar small />;
 	}
 

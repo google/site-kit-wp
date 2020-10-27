@@ -41,29 +41,22 @@ export default function ProfileSelect() {
 		accountID,
 		propertyID,
 		profiles,
-		hasStartedFetchingProperties,
-		hasResolvedProperties,
-		hasStartedFetchingProfiles,
-		hasResolvedProfiles,
+		isResolvingProperties,
+		isResolvingProfiles,
 	} = useSelect( ( select ) => {
 		const data = {
 			accountID: select( STORE_NAME ).getAccountID(),
 			propertyID: select( STORE_NAME ).getPropertyID(),
 			profiles: [],
-			hasStartedFetchingProperties: false,
-			hasResolvedProperties: false,
-			hasStartedFetchingProfiles: false,
-			hasResolvedProfiles: false,
+			isResolvingProperties: false,
+			isResolvingProfiles: false,
 		};
 
 		if ( data.accountID ) {
-			data.hasStartedFetchingProperties = select( STORE_NAME ).hasStartedResolution( 'getProperties', [ data.accountID ] );
-			data.hasResolvedProperties = select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ data.accountID ] );
-
+			data.isResolvingProperties = select( STORE_NAME ).isResolving( 'getProperties', [ data.accountID ] );
 			if ( data.propertyID ) {
 				data.profiles = select( STORE_NAME ).getProfiles( data.accountID, data.propertyID );
-				data.hasStartedFetchingProfiles = select( STORE_NAME ).hasStartedResolution( 'getProfiles', [ data.accountID, data.propertyID ] );
-				data.hasResolvedProfiles = select( STORE_NAME ).hasFinishedResolution( 'getProfiles', [ data.accountID, data.propertyID ] );
+				data.isResolvingProfiles = select( STORE_NAME ).isResolving( 'getProfiles', [ data.accountID, data.propertyID ] );
 			}
 		}
 
@@ -79,7 +72,7 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID ] );
 
-	if ( ! hasResolvedAccounts || ( hasStartedFetchingProperties && ! hasResolvedProperties ) || ( hasStartedFetchingProfiles && ! hasResolvedProfiles ) ) {
+	if ( ! hasResolvedAccounts || isResolvingProperties || isResolvingProfiles ) {
 		return <ProgressBar small />;
 	}
 
