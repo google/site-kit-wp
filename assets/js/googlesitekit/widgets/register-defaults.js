@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import URLSearchWidget from '../../googlesitekit/widgets/components/URLSearchWidget';
 import { CONTEXT_DASHBOARD, CONTEXT_PAGE_DASHBOARD } from './default-contexts';
+import { WIDGET_URL_SEARCH } from './default-widgets';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
@@ -110,11 +111,10 @@ export function registerDefaults( widgetsAPI ) {
 		priority: 4,
 	}, CONTEXT_PAGE_DASHBOARD );
 
-	widgetsAPI.registerWidget( AREA_PAGE_DASHBOARD_POPULARITY, {
-		title: __( 'Search for individual page or post information', 'google-site-kit' ),
-		style: WIDGET_AREA_STYLES.BOXES,
+	widgetsAPI.registerWidget( WIDGET_URL_SEARCH, {
 		priority: 100,
 		width: WIDGET_WIDTHS.HALF,
 		component: URLSearchWidget,
-	}, CONTEXT_PAGE_DASHBOARD );
+		wrapWidget: false,
+	}, [ AREA_DASHBOARD_POPULARITY, AREA_PAGE_DASHBOARD_POPULARITY ] );
 }
