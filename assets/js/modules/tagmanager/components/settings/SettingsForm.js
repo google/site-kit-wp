@@ -22,6 +22,7 @@
 import {
 	AccountSelect,
 	AMPContainerSelect,
+	ContainerNames,
 	FormInstructions,
 	UseSnippetSwitch,
 	WebContainerSelect,
@@ -42,6 +43,8 @@ export default function SettingsForm() {
 
 				<AMPContainerSelect />
 			</div>
+
+			<ContainerNames />
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				<UseSnippetSwitch />

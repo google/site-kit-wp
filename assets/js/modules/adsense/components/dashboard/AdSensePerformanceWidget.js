@@ -34,7 +34,7 @@ import {
 } from '../../../../util';
 import { TYPE_MODULES } from '../../../../components/data';
 import DataBlock from '../../../../components/data-block.js';
-import PreviewBlock from '../../../../components/preview-block';
+import PreviewBlock from '../../../../components/PreviewBlock';
 import { isDataZeroAdSense } from '../../util';
 import withData from '../../../../components/higherorder/withdata';
 

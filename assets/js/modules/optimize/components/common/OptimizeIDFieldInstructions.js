@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 
 export default function OptimizeIDFieldInstructions() {
 	return (

@@ -34,8 +34,8 @@ import { Component, createRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import SourceLink from './source-link';
-import Link from './link';
+import SourceLink from './SourceLink';
+import Link from './Link';
 import { getSiteKitAdminURL } from '../util';
 
 // Construct a table component from a data object.

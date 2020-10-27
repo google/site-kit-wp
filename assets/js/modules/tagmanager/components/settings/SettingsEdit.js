@@ -26,7 +26,7 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { useExistingTagEffect } from '../../hooks';
 import {
