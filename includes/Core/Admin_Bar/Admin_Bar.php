@@ -104,7 +104,7 @@ final class Admin_Bar {
 			}
 
 			// Enqueue scripts.
-			$this->assets->enqueue_asset( 'googlesitekit-adminbar-loader' );
+			$this->assets->enqueue_asset( 'googlesitekit-adminbar' );
 			$this->modules->enqueue_assets();
 		};
 		add_action( 'admin_enqueue_scripts', $admin_bar_callback, 40 );
