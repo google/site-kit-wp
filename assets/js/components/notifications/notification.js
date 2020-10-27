@@ -37,7 +37,7 @@ import DataBlock from '../data-block';
 import Button from '../button';
 import Warning from '../notifications/warning';
 import Error from '../notifications/error';
-import Link from '../link';
+import Link from '../Link';
 import ModuleIcon from '../module-icon';
 
 class Notification extends Component {

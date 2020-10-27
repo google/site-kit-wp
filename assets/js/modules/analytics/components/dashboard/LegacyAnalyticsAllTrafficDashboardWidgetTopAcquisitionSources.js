@@ -29,8 +29,8 @@ import { getTimeInSeconds } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import MiniChart from '../../../../components/mini-chart';
-import PreviewTable from '../../../../components/preview-table';
+import MiniChart from '../../../../components/MiniChart';
+import PreviewTable from '../../../../components/PreviewTable';
 import { trafficSourcesReportDataDefaults } from '../../util';
 
 class LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component {
