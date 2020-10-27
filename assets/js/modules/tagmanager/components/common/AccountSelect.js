@@ -32,10 +32,13 @@ import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
+	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
+		accounts: select( STORE_NAME ).getAccounts(),
+		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+	} ) );
+
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 
 	const { selectAccount } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -45,7 +48,7 @@ export default function AccountSelect() {
 		}
 	}, [ accountID ] );
 
-	if ( accounts === undefined || isDoingGetAccounts ) {
+	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar small />;
 	}
 
