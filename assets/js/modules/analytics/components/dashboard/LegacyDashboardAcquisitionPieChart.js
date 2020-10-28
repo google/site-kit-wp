@@ -37,8 +37,8 @@ import { getTimeInSeconds } from '../../../../util';
 import GoogleChart from '../../../../components/google-chart';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import Link from '../../../../components/link';
-import PreviewBlock from '../../../../components/preview-block';
+import Link from '../../../../components/Link';
+import PreviewBlock from '../../../../components/PreviewBlock';
 import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 

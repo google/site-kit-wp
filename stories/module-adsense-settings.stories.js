@@ -30,12 +30,13 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import {
-	SettingsMain as AdSenseSettings,
+	SettingsEdit,
+	SettingsView,
 	SettingsSetupIncomplete,
 } from '../assets/js/modules/adsense/components/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
-
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 import {
 	ACCOUNT_STATUS_PENDING,
@@ -91,11 +92,15 @@ const completeSettings = {
 	siteSetupComplete: true,
 };
 
-const Settings = createLegacySettingsWrapper( 'adsense', AdSenseSettings );
+const Settings = createLegacySettingsWrapper( 'adsense' );
 
 storiesOf( 'AdSense Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
+		registry.dispatch( CORE_MODULES ).registerModule( 'adsense', {
+			settingsEditComponent: SettingsEdit,
+			settingsViewComponent: SettingsView,
+		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );

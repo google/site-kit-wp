@@ -32,7 +32,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import GoogleChart from '../../../../components/google-chart';
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 import { extractAnalyticsDataForTrafficChart } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';

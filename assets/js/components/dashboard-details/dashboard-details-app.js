@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Header from '../header';
-import Link from '../link';
+import Link from '../Link';
 import PageHeader from '../page-header';
 import HelpLink from '../help-link';
 import DashboardDetailsEntityView from './DashboardDetailsEntityView';

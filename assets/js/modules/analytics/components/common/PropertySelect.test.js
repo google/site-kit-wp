@@ -30,37 +30,47 @@ const setupRegistry = ( { dispatch } ) => {
 	const propertyID = properties[ 0 ].id;
 	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 	dispatch( STORE_NAME ).setAccountID( accountID );
-	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
-	dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( null );
+
+	dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+
+	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+
+	dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
+	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
-	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.getTagPermissionsAccess.propertyID );
 	// Existing tag IDs are set in the resolver so we have to fill those here.
 	dispatch( STORE_NAME ).setAccountID( fixtures.getTagPermissionsAccess.accountID );
 	dispatch( STORE_NAME ).setPropertyID( fixtures.getTagPermissionsAccess.propertyID );
+
+	dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+
+	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
 	const { properties } = fixtures.accountsPropertiesProfiles;
 	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/camelcase-acronyms
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 	dispatch( STORE_NAME ).setSettings( {} );
 	dispatch( STORE_NAME ).setAccountID( accountID );
-	dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
 	dispatch( STORE_NAME ).receiveGetExistingTag( null );
+
+	dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+
+	dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 };
 
 describe( 'PropertySelect', () => {
@@ -86,7 +96,12 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should be disabled when in the absence of an valid account ID.', async () => {
-		const { container, registry } = render( <PropertySelect />, { setupRegistry } );
+		const { container, registry } = render( <PropertySelect />, {
+			setupRegistry( { dispatch } ) {
+				setupRegistry( { dispatch } );
+				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
+			},
+		} );
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
 		const selectWrapper = container.querySelector( '.googlesitekit-analytics__select-property' );

@@ -1,5 +1,5 @@
 /**
- * ModuleSettingsDetails component.
+ * Spinner component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -17,17 +17,21 @@
  */
 
 /**
- * WordPress dependencies
+ * A single module. Keeps track of its own active state and settings.
  */
-import { Component } from '@wordpress/element';
 
-/**
- * A filterable component that modules use to display their settings in non-edit mode.
- */
-class ModuleSettingsDetails extends Component {
-	render() {
-		return null;
-	}
+function Spinner( { isSaving } ) {
+	return (
+		<span
+			className="spinner"
+			style={ {
+				display: ( isSaving ? 'inline-block' : 'none' ),
+				float: 'none',
+				marginTop: '0',
+				visibility: 'visible',
+			} }
+		/>
+	);
 }
 
-export default ModuleSettingsDetails;
+export default Spinner;

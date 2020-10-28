@@ -26,7 +26,6 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { applyFilters } from '@wordpress/hooks';
@@ -34,6 +33,7 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import PencilIcon from '../../../svg/pencil.svg';
 import TrashIcon from '../../../svg/trash.svg';
 import {
@@ -43,17 +43,19 @@ import {
 	getModulesData,
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
-import Link from '../../components/link';
+import Link from '../Link';
 import Button from '../../components/button';
 import data, { TYPE_MODULES } from '../../components/data';
-import Spinner from '../../components/spinner';
 import SettingsOverlay from '../../components/settings/SettingsOverlay';
+import Spinner from '../Spinner';
 import GenericError from '../../components/notifications/generic-error';
 import SetupModule from '../../components/setup-module';
 import Dialog from '../../components/dialog';
 import ModuleIcon from '../../components/module-icon';
-import ModuleSettingsDetails from '../../components/settings/module-settings-details';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import SettingsRenderer from '../settings/SettingsRenderer';
+const { withSelect } = Data;
 
 /**
  * A single module. Keeps track of its own active state and settings.
@@ -198,10 +200,6 @@ class SettingsModule extends Component {
 		const subtitle = sprintf( __( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ), name );
 
 		const isSavingModule = isSaving === `${ slug }-module`;
-		// Disabled because this rule doesn't acknowledge our use of the variable
-		// as a component in JSX.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const FilteredModuleSettingsDetails = withFilters( `googlesitekit.ModuleSettingsDetails-${ slug }` )( ModuleSettingsDetails );
 
 		// Disable other modules during editing
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
@@ -330,16 +328,20 @@ class SettingsModule extends Component {
 						>
 							<div className="mdc-layout-grid">
 								<div className="mdc-layout-grid__inner">
-									{ setupComplete &&
-									<Fragment>
-										<div className="
-													mdc-layout-grid__cell
-													mdc-layout-grid__cell--span-12
-												">
-											<FilteredModuleSettingsDetails module={ moduleKey } isEditing={ isEditing[ moduleKey ] } isOpen={ isOpen } />
-										</div>
-									</Fragment>
-									}
+									{ setupComplete && (
+										<Fragment>
+											<div className="
+												mdc-layout-grid__cell
+												mdc-layout-grid__cell--span-12
+											">
+												<SettingsRenderer
+													slug={ slug }
+													isEditing={ isEditing[ moduleKey ] }
+													isOpen={ isOpen }
+												/>
+											</div>
+										</Fragment>
+									) }
 									{
 										hasSettings && ! setupComplete &&
 											<ModuleSetupIncomplete
@@ -501,4 +503,10 @@ SettingsModule.defaultProps = {
 	setupComplete: false,
 };
 
-export default SettingsModule;
+export default withSelect( ( select, { slug } ) => {
+	const module = select( CORE_MODULES ).getModule( slug );
+
+	return {
+		hasSettings: !! module?.settingsEditComponent,
+	};
+} )( SettingsModule );
