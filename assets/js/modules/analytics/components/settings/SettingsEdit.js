@@ -31,7 +31,7 @@ import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/sit
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import {
 	AccountCreate,
 	AccountCreateLegacy,

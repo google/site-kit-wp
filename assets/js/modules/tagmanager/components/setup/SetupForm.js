@@ -40,10 +40,11 @@ import { isPermissionScopeError } from '../../../../util/errors';
 import {
 	AccountSelect,
 	AMPContainerSelect,
+	ContainerNames,
 	WebContainerSelect,
 } from '../common';
 import Button from '../../../../components/Button';
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
 import FormInstructions from '../common/FormInstructions';
 const { useSelect, useDispatch } = Data;
@@ -143,6 +144,8 @@ export default function SetupForm( { finishSetup } ) {
 
 				<AMPContainerSelect />
 			</div>
+
+			<ContainerNames />
 
 			<div className="googlesitekit-setup-module__action">
 				{ isSetupWithAnalytics && (

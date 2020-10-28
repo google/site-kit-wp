@@ -35,7 +35,7 @@ import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import PreviewTable from '../../../../components/preview-table';
+import PreviewTable from '../../../../components/PreviewTable';
 import { getTopPagesReportDataDefaults } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;

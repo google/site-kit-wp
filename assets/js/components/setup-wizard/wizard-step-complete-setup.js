@@ -32,6 +32,9 @@ import { Component } from '@wordpress/element';
  */
 import { trackEvent } from '../../util';
 import Button from '../Button';
+import rocketBodyImage from '../../../images/rocket-body.png';
+import rocketCloudsImage from '../../../images/rocket-clouds.png';
+import rocketDustImage from '../../../images/rocket-dust.png';
 
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {
@@ -77,9 +80,9 @@ class WizardStepCompleteSetup extends Component {
 							mdc-layout-grid__cell--span-3-desktop
 						">
 							<div className="googlesitekit-rocket">
-								<img className="googlesitekit-rocket__body" alt="" src={ global._googlesitekitLegacyData.admin.assetsRoot + 'images/rocket-body.png' } />
-								<img className="googlesitekit-rocket__clouds" alt="" src={ global._googlesitekitLegacyData.admin.assetsRoot + 'images/rocket-clouds.png' } />
-								<img className="googlesitekit-rocket__dust" alt="" src={ global._googlesitekitLegacyData.admin.assetsRoot + 'images/rocket-dust.png' } />
+								<img className="googlesitekit-rocket__body" alt="" src={ global._googlesitekitLegacyData.admin.assetsRoot + rocketBodyImage } />
+								<img className="googlesitekit-rocket__clouds" alt="" src={ global._googlesitekitLegacyData.admin.assetsRoot + rocketCloudsImage } />
+								<img className="googlesitekit-rocket__dust" alt="" src={ global._googlesitekitLegacyData.admin.assetsRoot + rocketDustImage } />
 							</div>
 						</div>
 					</div>

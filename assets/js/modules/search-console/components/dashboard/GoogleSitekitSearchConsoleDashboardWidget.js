@@ -40,7 +40,7 @@ import PageHeader from '../../../../components/page-header';
 import PageHeaderDateRange from '../../../../components/page-header-date-range';
 import Layout from '../../../../components/layout/layout';
 import Alert from '../../../../components/alert';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import { getCurrentDateRange, getCurrentDateRangeDayCount } from '../../../../util/date-range';

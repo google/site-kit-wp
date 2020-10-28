@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Switch from '../../../../components/Switch';
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 import { sanitizeHTML } from '../../../../util';
 
 const { useSelect, useDispatch } = Data;

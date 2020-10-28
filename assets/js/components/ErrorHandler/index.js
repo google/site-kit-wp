@@ -33,7 +33,7 @@ import { Icon, check, stack } from '@wordpress/icons';
  * Internal dependencies
  */
 import Notification from '../notifications/notification';
-import Link from '../link';
+import Link from '../Link';
 import Button from '../Button';
 
 class ErrorHandler extends Component {
