@@ -37,12 +37,7 @@ import Button from '../button';
 import ProgressBar from '../ProgressBar';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
-import {
-	USER_INPUT_ANSWERS_GOALS,
-	USER_INPUT_ANSWERS_HELP_NEEDED,
-	USER_INPUT_ANSWERS_POST_FREQUENCY,
-	USER_INPUT_ANSWERS_ROLE,
-} from './util/constants';
+import { getUserInputAnwsers } from './util/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputPreview( { goTo } ) {
@@ -60,6 +55,13 @@ export default function UserInputPreview( { goTo } ) {
 		saveUserInputSettings( settings );
 	}, [ settings ] );
 
+	const {
+		USER_INPUT_ANSWERS_GOALS,
+		USER_INPUT_ANSWERS_HELP_NEEDED,
+		USER_INPUT_ANSWERS_POST_FREQUENCY,
+		USER_INPUT_ANSWERS_ROLE,
+	} = getUserInputAnwsers();
+
 	return (
 		<div className="googlesitekit-user-input__preview">
 			<Row>
@@ -70,17 +72,17 @@ export default function UserInputPreview( { goTo } ) {
 					{ ! hasStartedSavingInputSettings && (
 						<Fragment>
 							<Row>
-								<Cell lg={ 6 }>
+								<Cell lgSize={ 6 }>
 									<UserInputPreviewGroup
 										title={ __( '1 — Which best describes your team/role relation to this site?', 'google-site-kit' ) }
-										edit={ goTo.bind( null, 5 ) }
+										edit={ goTo.bind( null, 1 ) }
 										values={ settings?.role?.values || [] }
 										options={ USER_INPUT_ANSWERS_ROLE }
 									/>
 
 									<UserInputPreviewGroup
 										title={ __( '2 — How often do you create new posts for this site?', 'google-site-kit' ) }
-										edit={ goTo.bind( null, 4 ) }
+										edit={ goTo.bind( null, 2 ) }
 										values={ settings?.postFrequency?.values || [] }
 										options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 									/>
@@ -92,17 +94,17 @@ export default function UserInputPreview( { goTo } ) {
 										options={ USER_INPUT_ANSWERS_GOALS }
 									/>
 								</Cell>
-								<Cell lg={ 6 }>
+								<Cell lgSize={ 6 }>
 									<UserInputPreviewGroup
 										title={ __( '4 — What do you need help most with for this site?', 'google-site-kit' ) }
-										edit={ goTo.bind( null, 2 ) }
+										edit={ goTo.bind( null, 4 ) }
 										values={ settings?.helpNeeded?.values || [] }
 										options={ USER_INPUT_ANSWERS_HELP_NEEDED }
 									/>
 
 									<UserInputPreviewGroup
 										title={ __( '5 — To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for:', 'google-site-kit' ) }
-										edit={ goTo.bind( null, 1 ) }
+										edit={ goTo.bind( null, 5 ) }
 										values={ settings?.searchTerms?.values || [] }
 									/>
 								</Cell>

@@ -65,7 +65,7 @@ export default function UserInputKeywords( { slug, max } ) {
 	}, dependencies );
 
 	return (
-		<Cell className="mdc-layout-grid__cell--start-6-desktop" lg={ 6 }>
+		<Cell className="mdc-layout-grid__cell--start-6-desktop" lgSize={ 6 }>
 			<div className="googlesitekit-user-input__text-options">
 				{ values.map( ( value ) => (
 					<div key={ value } className="googlesitekit-user-input__text-option">

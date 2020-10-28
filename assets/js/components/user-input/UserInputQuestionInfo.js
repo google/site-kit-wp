@@ -35,7 +35,7 @@ import { Cell } from '../../material-components';
 
 export default function UserInputQuestionInfo( { title, scope, author } ) {
 	return (
-		<Cell className="googlesitekit-user-input__question-instructions" lg={ 5 }>
+		<Cell className="googlesitekit-user-input__question-instructions" lgSize={ 5 }>
 			<h1>
 				{ title }
 			</h1>

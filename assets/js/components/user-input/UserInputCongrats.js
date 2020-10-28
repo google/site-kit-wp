@@ -37,19 +37,19 @@ export default function UserInputCongrats() {
 	return (
 		<div className="googlesitekit-user-input__congrats">
 			<Row>
-				<Cell lg={ 2 } md={ 2 } sm={ 1 }>
+				<Cell lgSize={ 2 } mdSize={ 2 } smSize={ 1 }>
 					<img src={ global._googlesitekitLegacyData.admin.assetsRoot + highFiveImage } alt="" />
 				</Cell>
 
-				<Cell lg={ 10 } md={ 6 } sm={ 3 }>
+				<Cell lgSize={ 10 } mdSize={ 6 } smSize={ 3 }>
 					<Row>
-						<Cell lg={ 4 }>
+						<Cell lgSize={ 4 }>
 							<h1>
 								{ __( 'Congrats! You set your site goals.', 'google-site-kit' ) }
 							</h1>
 						</Cell>
 
-						<Cell lg={ 8 }>
+						<Cell lgSize={ 8 }>
 							<p>
 								{ __( 'Based on your goals, now Site Kit will begin showing you suggestions how to add more metrics to your dashboard that are relevant specifically to you.', 'google-site-kit' ) }
 							</p>

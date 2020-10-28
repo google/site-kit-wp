@@ -68,14 +68,14 @@ export default function UserInputApp() {
 						<Fragment>
 							<Grid>
 								<Row>
-									<Cell lg={ 6 }>
+									<Cell lgSize={ 6 }>
 										<PageHeader
 											className="googlesitekit-heading-2 googlesitekit-user-input__heading"
 											title={ __( 'Customize Site Kit to match your goals', 'google-site-kit' ) }
 											fullWidth
 										/>
 									</Cell>
-									<Cell lg={ 6 }>
+									<Cell lgSize={ 6 }>
 										<span className="googlesitekit-user-input__subtitle">
 											{ __( 'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site', 'google-site-kit' ) }
 										</span>

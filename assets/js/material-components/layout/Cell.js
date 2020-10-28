@@ -22,15 +22,25 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-export default function Cell( { className, sm, md, lg, children } ) {
+export default function Cell( props ) {
+	const {
+		className,
+		smSize,
+		mdSize,
+		lgSize,
+		size,
+		children,
+	} = props;
+
 	return (
 		<div className={ classnames(
 			className,
 			'mdc-layout-grid__cell',
 			{
-				[ `mdc-layout-grid__cell--span-${ lg }-desktop` ]: lg,
-				[ `mdc-layout-grid__cell--span-${ md }-tablet` ]: md,
-				[ `mdc-layout-grid__cell--span-${ sm }-phone` ]: sm,
+				[ `mdc-layout-grid__cell--span-${ size }` ]: 12 >= size && size > 0,
+				[ `mdc-layout-grid__cell--span-${ lgSize }-desktop` ]: 12 >= lgSize && lgSize > 0,
+				[ `mdc-layout-grid__cell--span-${ mdSize }-tablet` ]: 8 >= mdSize && mdSize > 0,
+				[ `mdc-layout-grid__cell--span-${ smSize }-phone` ]: 4 >= smSize && smSize > 0,
 			},
 		) }>
 			{ children }
@@ -39,9 +49,10 @@ export default function Cell( { className, sm, md, lg, children } ) {
 }
 
 Cell.propTypes = {
-	sm: PropTypes.number,
-	md: PropTypes.number,
-	lg: PropTypes.number,
+	smSize: PropTypes.number,
+	mdSize: PropTypes.number,
+	lgSize: PropTypes.number,
+	size: PropTypes.number,
 	className: PropTypes.string,
 	children: PropTypes.oneOfType( [
 		PropTypes.node,
@@ -51,7 +62,8 @@ Cell.propTypes = {
 
 Cell.defaultProps = {
 	className: '',
-	sm: 4,
-	md: 8,
-	lg: 12,
+	size: 0,
+	smSize: 4,
+	mdSize: 8,
+	lgSize: 12,
 };

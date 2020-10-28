@@ -97,7 +97,7 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 	} );
 
 	return (
-		<Cell className="mdc-layout-grid__cell--start-6-desktop" lg={ 6 }>
+		<Cell className="mdc-layout-grid__cell--start-6-desktop" lgSize={ 6 }>
 			{ items }
 
 			<div className="googlesitekit-user-input__select-option">

@@ -46,7 +46,6 @@ export default function UserInputQuestionWrapper( props ) {
 		title,
 		next,
 		back,
-		max,
 	} = props;
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
@@ -92,7 +91,7 @@ export default function UserInputQuestionWrapper( props ) {
 							{ next && (
 								<Button
 									onClick={ next }
-									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length !== max }
+									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
 								>
 									{ __( 'Next', 'google-site-kit' ) }
 								</Button>
@@ -111,11 +110,6 @@ UserInputQuestionWrapper.propTypes = {
 	children: PropTypes.node,
 	isActive: PropTypes.bool,
 	title: PropTypes.string,
-	max: PropTypes.number,
 	next: PropTypes.func,
 	back: PropTypes.func,
-};
-
-UserInputQuestionWrapper.defaultProps = {
-	max: 1,
 };

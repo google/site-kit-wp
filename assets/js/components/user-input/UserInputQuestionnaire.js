@@ -36,10 +36,7 @@ import {
 	USER_INPUT_QUESTION_GOALS,
 	USER_INPUT_QUESTION_HELP_NEEDED,
 	USER_INPUT_QUESTION_SEARCH_TERMS,
-	USER_INPUT_ANSWERS_GOALS,
-	USER_INPUT_ANSWERS_HELP_NEEDED,
-	USER_INPUT_ANSWERS_POST_FREQUENCY,
-	USER_INPUT_ANSWERS_ROLE,
+	getUserInputAnwsers,
 } from './util/constants';
 
 export default function UserInputQuestionnaire() {
@@ -53,6 +50,13 @@ export default function UserInputQuestionnaire() {
 		USER_INPUT_QUESTION_SEARCH_TERMS,
 	];
 
+	const {
+		USER_INPUT_ANSWERS_GOALS,
+		USER_INPUT_ANSWERS_HELP_NEEDED,
+		USER_INPUT_ANSWERS_POST_FREQUENCY,
+		USER_INPUT_ANSWERS_ROLE,
+	} = getUserInputAnwsers();
+
 	const steps = [ ...questions, 'preview' ];
 	const activeSlugIndex = steps.indexOf( activeSlug );
 
@@ -61,11 +65,15 @@ export default function UserInputQuestionnaire() {
 	}, [ activeSlugIndex ] );
 
 	const goTo = useCallback( ( num = 1 ) => {
-		setActiveSlug( steps[ activeSlugIndex - num ] );
-		global.scrollTo( 0, 0 );
+		if ( steps.length >= num && num > 0 ) {
+			setActiveSlug( steps[ num - 1 ] );
+			global.scrollTo( 0, 0 );
+		}
 	}, [ activeSlugIndex ] );
 
-	const back = goTo.bind( null, 1 );
+	const back = useCallback( () => {
+		setActiveSlug( steps[ activeSlugIndex - 1 ] );
+	}, [ activeSlugIndex ] );
 
 	return (
 		<Fragment>
@@ -112,7 +120,6 @@ export default function UserInputQuestionnaire() {
 					isActive={ activeSlug === USER_INPUT_QUESTION_GOALS }
 					questionNumber={ 3 }
 					title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
-					max={ 2 }
 					next={ next }
 					back={ back }
 				>
@@ -130,7 +137,6 @@ export default function UserInputQuestionnaire() {
 					isActive={ activeSlug === USER_INPUT_QUESTION_HELP_NEEDED }
 					questionNumber={ 4 }
 					title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
-					max={ 3 }
 					next={ next }
 					back={ back }
 				>
@@ -148,7 +154,6 @@ export default function UserInputQuestionnaire() {
 					isActive={ activeSlug === USER_INPUT_QUESTION_SEARCH_TERMS }
 					questionNumber={ 5 }
 					title={ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for', 'google-site-kit' ) }
-					max={ 3 }
 					next={ next }
 					back={ back }
 				>
