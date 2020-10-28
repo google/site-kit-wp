@@ -113,13 +113,6 @@ else
 	wp plugin update amp --minor --quiet
 fi
 
-status_message 'Installing the Yoast plugin...'
-if [[ ! -z "$YOAST_VERSION" ]]; then
-	wp plugin install wordpress-seo --force --quiet --version="$YOAST_VERSION"
-else
-	# Install latest version of the plugin
-	wp plugin install wordpress-seo --force --quiet
-fi
 
 # Install a dummy favicon to avoid 404 errors.
 status_message "Installing a dummy favicon..."
