@@ -67,7 +67,7 @@ describe( 'core/modules store changes', () => {
 
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
-			it( 'it proxies the selector call to the module with the given slug', async () => {
+			it( 'proxies the action call to the module with the given slug', async () => {
 				const expectedError = { error: `'modules/${ nonExistentModuleSlug }' does not have a submitChanges() action.` };
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
 
