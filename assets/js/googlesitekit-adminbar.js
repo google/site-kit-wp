@@ -44,7 +44,6 @@ export const GoogleSitekitAdminbar = () => {
 
 // Initialize the whole adminbar app.
 const init = once( () => {
-	const adminBar = document.getElementById( 'js-googlesitekit-adminbar' );
 	const renderTarget = document.getElementById( 'js-googlesitekit-adminbar-modules' );
 
 	if ( renderTarget ) {
@@ -52,8 +51,6 @@ const init = once( () => {
 
 		render( <Root dataAPIContext="Adminbar"><GoogleSitekitAdminbar /></Root>, renderTarget );
 
-		// Remove the loading class on the render target's parent to allow the app to be visible.
-		adminBar.classList.remove( 'googlesitekit-adminbar--loading' );
 		trackEvent( 'admin_bar', 'page_stats_view' );
 	}
 } );
