@@ -29,6 +29,8 @@ describe( 'core/modules store changes', () => {
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
 	const moduleStoreName = `modules/${ slug }`;
+	const controlReturn = 'dummy_return_value';
+	const DUMMY_ACTION = 'DUMMY_ACTION';
 	let moduleCanSubmitChanges = false;
 	let submittingChanges = false;
 
@@ -37,12 +39,6 @@ describe( 'core/modules store changes', () => {
 
 	beforeEach( () => {
 		const storeDefinition = Modules.createModuleStore( moduleStoreName );
-		const submitChanges = () => {
-			return {
-				payload: {},
-				type: 'DUMMY_ACTION',
-			};
-		};
 		const canSubmitChanges = () => moduleCanSubmitChanges;
 		const isDoingSubmitChanges = () => {
 			return submittingChanges;
@@ -53,11 +49,20 @@ describe( 'core/modules store changes', () => {
 			storeDefinition,
 			{
 				actions: {
-					submitChanges,
+					*submitChanges() {
+						const result = yield {
+							payload: {},
+							type: DUMMY_ACTION,
+						};
+						return result;
+					},
 				},
 				selectors: {
 					canSubmitChanges,
 					isDoingSubmitChanges,
+				},
+				controls: {
+					[ DUMMY_ACTION ]: () => controlReturn,
 				},
 			}
 		) );
@@ -79,7 +84,7 @@ describe( 'core/modules store changes', () => {
 			const expectedErrorNoSlug = { error: "'modules/' does not have a submitChanges() action." };
 			expect( await registry.dispatch( STORE_NAME ).submitChanges() ).toEqual( expectedErrorNoSlug );
 
-			expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBeTruthy();
+			expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBe( controlReturn );
 		} );
 	} );
 
