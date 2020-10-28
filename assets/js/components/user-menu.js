@@ -77,8 +77,8 @@ class UserMenu extends Component {
 	handleMenuClose( e ) {
 		if (
 			( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
-			! this.menuButtonRef.current.buttonRef.current.contains( e.target ) &&
-			! this.menuRef.current.menuRef.current.contains( e.target )
+			! this.menuButtonRef.current.contains( e.target ) &&
+			! this.menuRef.current.contains( e.target )
 		) {
 			this.setState( { menuOpen: false } );
 		}

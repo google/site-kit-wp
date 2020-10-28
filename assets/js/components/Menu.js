@@ -24,29 +24,49 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef } from '@wordpress/element';
+import { forwardRef, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { MDCMenu } from '../material-components';
 
-const Menu = ( {
+const Menu = forwardRef( ( {
 	menuOpen,
 	menuItems,
 	onSelected,
 	id,
-} ) => {
-	const menuRef = useRef( null );
+}, ref ) => {
+	const useCombinedRefs = ( ...refs ) => {
+		const targetRef = useRef();
 
+		useEffect( () => {
+			refs.forEach( ( reference ) => {
+				if ( ! reference ) {
+					return;
+				}
+
+				if ( typeof reference === 'function' ) {
+					reference( targetRef.current );
+				} else {
+					reference.current = targetRef.current;
+				}
+			} );
+		}, [ refs ] );
+
+		return targetRef;
+	};
+
+	const menuRef = useRef( ref );
+	const combinedRefs = useCombinedRefs( ref, menuRef );
 	useEffect( () => {
-		const menu = new MDCMenu( menuRef.current );
+		const menu = new MDCMenu( combinedRefs.current );
 		menu.open = menuOpen;
 		menu.setDefaultFocusState( 1 );
-	}, [ menuRef.current ] );
+	}, [ combinedRefs.current ] );
 
 	return (
-		<div className="mdc-menu mdc-menu-surface" ref={ menuRef }>
+		<div className="mdc-menu mdc-menu-surface" ref={ combinedRefs }>
 			<ul id={ id } className="mdc-list" role="menu" aria-hidden={ ! menuOpen } aria-orientation="vertical" tabIndex="-1">
 				{ menuItems.map( ( item, index ) => (
 					<li
@@ -62,7 +82,7 @@ const Menu = ( {
 			</ul>
 		</div>
 	);
-};
+} );
 
 Menu.propTypes = {
 	menuOpen: PropTypes.bool.isRequired,

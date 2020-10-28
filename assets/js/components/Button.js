@@ -24,13 +24,13 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useRef, useEffect } from '@wordpress/element';
+import { forwardRef, useRef, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
 import { MDCRipple } from '../material-components';
 
-const Button = ( {
+const Button = forwardRef( ( {
 	children,
 	href,
 	text,
@@ -44,12 +44,32 @@ const Button = ( {
 	ariaExpanded,
 	ariaControls,
 	...extraProps
-} ) => {
-	const buttonRef = useRef( null );
+}, ref ) => {
+	const useCombinedRefs = ( ...refs ) => {
+		const targetRef = useRef();
 
+		useEffect( () => {
+			refs.forEach( ( reference ) => {
+				if ( ! reference ) {
+					return;
+				}
+
+				if ( typeof reference === 'function' ) {
+					reference( targetRef.current );
+				} else {
+					reference.current = targetRef.current;
+				}
+			} );
+		}, [ refs ] );
+
+		return targetRef;
+	};
+
+	const buttonRef = useRef( ref );
+	const combinedRefs = useCombinedRefs( ref, buttonRef );
 	useEffect( () => {
-		new MDCRipple( buttonRef.current );
-	}, [ buttonRef.current ] );
+		new MDCRipple( combinedRefs.current );
+	}, [ combinedRefs.current ] );
 
 	// Use a button if disabled, even if a href is provided to ensure expected behavior.
 	const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
@@ -65,7 +85,7 @@ const Button = ( {
 				}
 			) }
 			href={ disabled ? undefined : href }
-			ref={ buttonRef }
+			ref={ combinedRefs }
 			disabled={ !! disabled }
 			target={ target || '_self' }
 			aria-haspopup={ ariaHaspopup }
@@ -79,7 +99,7 @@ const Button = ( {
 			{ trailingIcon }
 		</SemanticButton>
 	);
-};
+} );
 
 Button.propTypes = {
 	onClick: PropTypes.func,
