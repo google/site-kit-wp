@@ -67,12 +67,14 @@ describe( 'core/modules store changes', () => {
 
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
+			it( 'checks that we can not call submitChanges without a module slug', async () => {
+				expect( async () => {
+					await registry.dispatch( STORE_NAME ).submitChanges();
+				} ).toThrow();
+			} );
 			it( 'proxies the action call to the module with the given slug', async () => {
 				const expectedError = { error: `'modules/${ nonExistentModuleSlug }' does not have a submitChanges() action.` };
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
-
-				const expectedErrorNoSlug = { error: "'modules/' does not have a submitChanges() action." };
-				expect( await registry.dispatch( STORE_NAME ).submitChanges() ).toEqual( expectedErrorNoSlug );
 
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBe( controlReturn );
 			} );

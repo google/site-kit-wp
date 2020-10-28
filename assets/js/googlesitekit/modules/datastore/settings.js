@@ -37,7 +37,7 @@ export const actions = {
 	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
 	 */
 	*submitChanges( slug ) {
-		slug = slug ? slug : '';
+		invariant( slug, 'slug is required.' );
 		const registry = yield Data.commonActions.getRegistry();
 		if ( !! registry.dispatch( `modules/${ slug }` )?.submitChanges ) {
 			return registry.dispatch( `modules/${ slug }` ).submitChanges();
