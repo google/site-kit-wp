@@ -123,7 +123,7 @@ export default class CompatibilityChecks extends Component {
 		if ( ! installed && installURL ) {
 			return {
 				ariaLabel: __( 'Install the helper plugin', 'google-site-kit' ),
-				label: __( 'Install', 'google-site-kit' ),
+				children: __( 'Install', 'google-site-kit' ),
 				href: installURL,
 				external: false,
 			};
@@ -131,7 +131,7 @@ export default class CompatibilityChecks extends Component {
 		if ( installed && ! active && activateURL ) {
 			return {
 				ariaLabel: __( 'Activate the helper plugin', 'google-site-kit' ),
-				label: __( 'Activate', 'google-site-kit' ),
+				children: __( 'Activate', 'google-site-kit' ),
 				href: activateURL,
 				external: false,
 			};
@@ -139,14 +139,14 @@ export default class CompatibilityChecks extends Component {
 		if ( installed && active && configureURL ) {
 			return {
 				ariaLabel: __( 'Configure the helper plugin', 'google-site-kit' ),
-				label: __( 'Configure', 'google-site-kit' ),
+				children: __( 'Configure', 'google-site-kit' ),
 				href: configureURL,
 				external: false,
 			};
 		}
 		return {
 			ariaLabel: __( 'Learn how to install and use the helper plugin', 'google-site-kit' ),
-			label: __( 'Learn how', 'google-site-kit' ),
+			children: __( 'Learn how', 'google-site-kit' ),
 			href: 'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
 			external: true,
 		};
@@ -154,7 +154,6 @@ export default class CompatibilityChecks extends Component {
 
 	renderError( error ) {
 		const { installed } = this.state.developerPlugin;
-		const { ariaLabel, label, href, external } = this.helperCTA();
 
 		switch ( error ) {
 			case ERROR_INVALID_HOSTNAME:
@@ -164,13 +163,9 @@ export default class CompatibilityChecks extends Component {
 					{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
 					{ ' ' }
 					<Link
-						href={ href }
-						external={ external }
+						{ ...this.helperCTA() }
 						inherit
-						ariaLabel={ ariaLabel }
-					>
-						{ label }
-					</Link>
+					/>
 				</p>;
 			case ERROR_TOKEN_MISMATCH:
 				return <p>
