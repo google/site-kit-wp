@@ -62,5 +62,6 @@ domReady( () => {
 		return;
 	}
 
-	siteKitMenuItemEl.addEventListener( 'mouseover', init );
+	siteKitMenuItemEl.addEventListener( 'mouseover', init, { once: true } );
+	siteKitMenuItemEl.addEventListener( 'focusin', init, { once: true } );
 } );
