@@ -71,8 +71,6 @@ describe( 'core/modules store changes', () => {
 				const expectedError = { error: `'modules/${ nonExistentModuleSlug }' does not have a submitChanges() action.` };
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
 
-				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
-
 				const expectedErrorNoSlug = { error: "'modules/' does not have a submitChanges() action." };
 				expect( await registry.dispatch( STORE_NAME ).submitChanges() ).toEqual( expectedErrorNoSlug );
 
