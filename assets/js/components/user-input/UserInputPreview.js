@@ -25,35 +25,44 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, Fragment } from '@wordpress/element';
+import { useCallback, useEffect, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Row } from '../../material-components';
 import Button from '../button';
 import ProgressBar from '../ProgressBar';
+import ErrorNotice from '../ErrorNotice';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { getUserInputAnwsers } from './util/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputPreview( { goTo } ) {
+export default function UserInputPreview( { back, goTo } ) {
+	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const settings = useSelect( ( select ) => select( CORE_USER ).getUserInputSettings() );
 	const {
 		hasStartedSavingInputSettings,
 		hasFinishedSavingInputSettings,
+		error,
 	} = useSelect( ( select ) => ( {
 		hasStartedSavingInputSettings: select( CORE_USER ).hasStartedSavingInputSettings(),
 		hasFinishedSavingInputSettings: select( CORE_USER ).hasFinishedSavingInputSettings(),
+		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
 	} ) );
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
-	const submitChanges = useCallback( () => {
-		saveUserInputSettings( settings );
-	}, [ settings ] );
+	const submitChanges = useCallback( saveUserInputSettings, [] );
+
+	useEffect( () => {
+		if ( hasFinishedSavingInputSettings && ! error ) {
+			global.location.assign( dashboardURL );
+		}
+	}, [ dashboardURL, hasFinishedSavingInputSettings, error ] );
 
 	const {
 		USER_INPUT_ANSWERS_GOALS,
@@ -66,10 +75,10 @@ export default function UserInputPreview( { goTo } ) {
 		<div className="googlesitekit-user-input__preview">
 			<Row>
 				<Cell>
-					{ hasStartedSavingInputSettings && ! hasFinishedSavingInputSettings && (
+					{ ( hasStartedSavingInputSettings || hasFinishedSavingInputSettings ) && ! error && (
 						<ProgressBar />
 					) }
-					{ ! hasStartedSavingInputSettings && (
+					{ ( ( ! hasStartedSavingInputSettings && ! hasFinishedSavingInputSettings ) || error ) && (
 						<Fragment>
 							<Row>
 								<Cell lgSize={ 6 }>
@@ -110,10 +119,12 @@ export default function UserInputPreview( { goTo } ) {
 								</Cell>
 							</Row>
 
+							{ error && <ErrorNotice error={ error } /> }
+
 							<div className="googlesitekit-user-input__buttons">
 								<UserInputQuestionNotice />
 								<div>
-									<Button text onClick={ goTo.bind( null, 1 ) }>{ __( 'Back', 'google-site-kit' ) }</Button>
+									<Button text onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
 									<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
 								</div>
 							</div>
@@ -126,5 +137,6 @@ export default function UserInputPreview( { goTo } ) {
 }
 
 UserInputPreview.propTypes = {
+	back: PropTypes.func.isRequired,
 	goTo: PropTypes.func.isRequired,
 };

@@ -107,6 +107,7 @@ const baseActions = {
 	 */
 	*saveUserInputSettings() {
 		const registry = yield Data.commonActions.getRegistry();
+		registry.dispatch( STORE_NAME ).clearError( 'saveUserInputSettings', [] );
 
 		const settings = registry.select( STORE_NAME ).getUserInputSettings();
 		const values = Object.keys( settings ).reduce( ( accum, key ) => ( {
@@ -122,7 +123,7 @@ const baseActions = {
 		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( values );
 		if ( error ) {
 			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
-			registry.dispatch( STORE_NAME ).receiveError( error, 'saveUserInputSettings' );
+			registry.dispatch( STORE_NAME ).receiveError( error, 'saveUserInputSettings', [] );
 		}
 
 		yield {
@@ -158,11 +159,13 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				hasStartedSavingInputSettings: true,
+				hasFinishedSavingInputSettings: false,
 			};
 		}
 		case FINISH_SAVING_USER_SETTINGS: {
 			return {
 				...state,
+				hasStartedSavingInputSettings: false,
 				hasFinishedSavingInputSettings: true,
 			};
 		}

@@ -165,7 +165,7 @@ export default function UserInputQuestionnaire() {
 			) }
 
 			{ activeSlug === 'preview' && (
-				<UserInputPreview goTo={ goTo } />
+				<UserInputPreview back={ back } goTo={ goTo } />
 			) }
 		</Fragment>
 	);

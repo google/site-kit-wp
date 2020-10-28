@@ -32,7 +32,6 @@ import Header from '../header';
 import PageHeader from '../page-header';
 import ProgressBar from '../ProgressBar';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
-import UserInputCongrats from './UserInputCongrats';
 const { useSelect } = Data;
 
 export default function UserInputApp() {
@@ -40,8 +39,6 @@ export default function UserInputApp() {
 		userInputSettings: select( CORE_USER ).getUserInputSettings(), // This will be used in the children components.
 		hasFinishedGettingInputSettings: select( CORE_USER ).hasFinishedResolution( 'getUserInputSettings' ),
 	} ) );
-
-	const hasFinishedSavingInputSettings = useSelect( ( select ) => select( CORE_USER ).hasFinishedSavingInputSettings() );
 
 	if ( ! featureFlags.userInput.enabled ) {
 		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;
@@ -61,10 +58,7 @@ export default function UserInputApp() {
 							</Row>
 						</Grid>
 					) }
-					{ hasFinishedSavingInputSettings && (
-						<UserInputCongrats />
-					) }
-					{ hasFinishedGettingInputSettings && ! hasFinishedSavingInputSettings && (
+					{ hasFinishedGettingInputSettings && (
 						<Fragment>
 							<Grid>
 								<Row>
