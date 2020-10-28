@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Button from './Button';
-import Link from './link';
+import Link from './Link';
 import { MDCDialog } from '../material-components';
 
 const Dialog = ( {
