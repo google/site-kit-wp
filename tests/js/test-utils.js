@@ -49,8 +49,24 @@ const customRender = ( ui, options = {} ) => {
 		);
 	}
 
+	const result = render( ui, { wrapper: Wrapper, ...renderOptions } );
+	const {
+		getByTestId: getByTestID, // eslint-disable-line sitekit/camelcase-acronyms
+		findByTestId: findByTestID, // eslint-disable-line sitekit/camelcase-acronyms
+		getAllByTestId: getAllByTestID, // eslint-disable-line sitekit/camelcase-acronyms
+		findAllByTestId: findAllByTestID, // eslint-disable-line sitekit/camelcase-acronyms
+		queryByTestId: queryByTestID, // eslint-disable-line sitekit/camelcase-acronyms
+		queryAllByTestId: queryAllByTestID, // eslint-disable-line sitekit/camelcase-acronyms
+	} = result;
+
 	return {
-		...render( ui, { wrapper: Wrapper, ...renderOptions } ),
+		...result,
+		findAllByTestID,
+		findByTestID,
+		getAllByTestID,
+		getByTestID,
+		queryAllByTestID,
+		queryByTestID,
 		registry,
 	};
 };

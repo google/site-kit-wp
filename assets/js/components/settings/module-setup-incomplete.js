@@ -29,7 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import {
 	getReAuthURL,
 } from '../../util';
-import Link from '../link';
+import Link from '../Link';
 import ModuleSettingsWarning from '../notifications/module-settings-warning';
 
 class ModuleSetupIncomplete extends Component {

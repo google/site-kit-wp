@@ -315,6 +315,19 @@ describe( 'core/modules modules', () => {
 				expect( store.getState().clientDefinitions[ 'test-module' ].name ).toBe( 'Original Name' );
 				expect( console ).toHaveWarned();
 			} );
+
+			it( 'accepts settings components for the module', () => {
+				const settingsViewComponent = () => 'view';
+				const settingsEditComponent = () => 'edit';
+
+				registry.dispatch( STORE_NAME ).registerModule( moduleSlug, {
+					settingsViewComponent,
+					settingsEditComponent,
+				} );
+
+				expect( store.getState().clientDefinitions[ moduleSlug ].settingsViewComponent ).toEqual( settingsViewComponent );
+				expect( store.getState().clientDefinitions[ moduleSlug ].settingsEditComponent ).toEqual( settingsEditComponent );
+			} );
 		} );
 
 		describe( 'fetchGetModules', () => {
@@ -442,6 +455,16 @@ describe( 'core/modules modules', () => {
 				const modules = registry.select( STORE_NAME ).getModules();
 
 				expect( Object.keys( modules ) ).toEqual( [ 'first-module', 'second-module', 'third-module' ] );
+			} );
+
+			it( 'defaults settings components to `null` if not provided', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
+				registry.dispatch( STORE_NAME ).registerModule( 'test-module' );
+
+				const module = registry.select( STORE_NAME ).getModule( 'test-module' );
+
+				expect( module.settingsViewComponent ).toEqual( null );
+				expect( module.settingsEditComponent ).toEqual( null );
 			} );
 		} );
 
