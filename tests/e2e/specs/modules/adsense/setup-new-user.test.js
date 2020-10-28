@@ -31,7 +31,6 @@ import {
  */
 import {
 	activateAMPWithMode,
-	setAMPMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAuthToken,
