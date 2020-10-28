@@ -20,27 +20,21 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { addFilter } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
-import './datastore';
 import Modules from 'googlesitekit-modules';
+import './datastore';
 import { SetupMain } from './components/setup';
-import { SettingsMain } from './components/settings';
-import { fillFilterWithComponent } from '../../util';
-
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-tagmanager',
-	'googlesitekit.TagManagerModuleSettings',
-	fillFilterWithComponent( SettingsMain )
-);
+import { SettingsEdit, SettingsView } from './components/settings';
 
 domReady( () => {
 	Modules.registerModule(
 		'tagmanager',
 		{
+			settingsEditComponent: SettingsEdit,
+			settingsViewComponent: SettingsView,
 			setupComponent: SetupMain,
 		}
 	);

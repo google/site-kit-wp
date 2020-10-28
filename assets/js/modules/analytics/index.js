@@ -22,17 +22,11 @@
 import domReady from '@wordpress/dom-ready';
 
 /**
- * WordPress dependencies
- */
-import { compose } from '@wordpress/compose';
-import { addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
-import './datastore';
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
+import './datastore';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
@@ -40,27 +34,22 @@ import {
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 	AREA_DASHBOARD_POPULARITY,
 } from '../../googlesitekit/widgets/default-areas';
-import { fillFilterWithComponent } from '../../util';
-import { SetupMain as AnalyticsSetup } from './components/setup';
-import { SettingsMain as AnalyticsSettings } from './components/settings';
+import { SetupMain } from './components/setup';
+import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
 import DashboardPopularPagesWidget from './components/dashboard/DashboardPopularPagesWidget';
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-analytics',
-	'googlesitekit.AnalyticsModuleSettings',
-	compose( fillFilterWithComponent )( AnalyticsSettings )
-);
-
 domReady( () => {
 	Modules.registerModule(
 		'analytics',
 		{
-			setupComponent: AnalyticsSetup,
-		},
+			settingsEditComponent: SettingsEdit,
+			settingsViewComponent: SettingsView,
+			setupComponent: SetupMain,
+		}
 	);
 
 	Widgets.registerWidget(

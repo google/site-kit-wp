@@ -281,4 +281,23 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add( 'Existing Tag w/ access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: true } ) )
 	.add( 'Existing Tag w/o access, GTM property w/ access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: true, gaPermission: false } ) )
 	.add( 'Existing Tag w/o access, GTM property w/o access', usingGenerateGTMAnalyticsPropertyStory( { useExistingTag: true, gtmPermission: false, gaPermission: false } ) )
+	.add( 'Nothing selected', () => {
+		filterAnalyticsSetup();
+
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+			// eslint-disable-next-line sitekit/camelcase-acronyms
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+				// eslint-disable-next-line sitekit/camelcase-acronyms
+				accountID: properties[ 0 ].accountId,
+				// eslint-disable-next-line sitekit/camelcase-acronyms
+				propertyID: profiles[ 0 ].webPropertyId,
+			} );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
 ;

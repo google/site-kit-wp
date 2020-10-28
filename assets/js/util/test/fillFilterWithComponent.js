@@ -17,7 +17,7 @@ describe( 'fillFilterWithComponent', () => {
 	it( 'fills filtered component', () => {
 		const filterTester = () => '::added::';
 
-		addFilter( 'googlesitekit.Test', 'googlesitekit.AdSenseModuleSettingsDetails', fillFilterWithComponent( filterTester, {} ) );
+		addFilter( 'googlesitekit.Test', 'googlesitekit.testNamespace', fillFilterWithComponent( filterTester, {} ) );
 
 		const { container } = render( applyFilters( 'googlesitekit.Test', 'test' )() );
 		expect( container.firstChild ).toMatchSnapshot();

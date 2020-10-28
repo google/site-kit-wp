@@ -20,31 +20,22 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { addFilter } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
-import './datastore';
 import Modules from 'googlesitekit-modules';
-import { SetupMain as OptimizeSetup } from './components/setup';
-import { SettingsMain as OptimizeSettings } from './components/settings';
-import { fillFilterWithComponent } from '../../util';
-
-/**
- * Add components to the settings page.
- */
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-optimize',
-	'googlesitekit.OptimizeModuleSettingsDetails',
-	fillFilterWithComponent( OptimizeSettings )
-);
+import './datastore';
+import { SetupMain } from './components/setup';
+import { SettingsEdit, SettingsView } from './components/settings';
 
 domReady( () => {
 	Modules.registerModule(
 		'optimize',
 		{
-			setupComponent: OptimizeSetup,
-		},
+			settingsEditComponent: SettingsEdit,
+			settingsViewComponent: SettingsView,
+			setupComponent: SetupMain,
+		}
 	);
 } );

@@ -25,15 +25,16 @@ import domReady from '@wordpress/dom-ready';
 /**
  * Internal dependencies
  */
-import './datastore';
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
+import './datastore';
 import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain } from './components/setup';
 import {
-	SettingsMain,
+	SettingsEdit,
 	SettingsSetupIncomplete,
+	SettingsView,
 } from './components/settings';
 import { AdBlockerWarning } from './components/common';
 import {
@@ -41,12 +42,6 @@ import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
-
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-adsense',
-	'googlesitekit.AdSenseModuleSettings',
-	fillFilterWithComponent( SettingsMain )
-);
 
 addFilter(
 	'googlesitekit.ModuleSetupIncomplete',
@@ -86,9 +81,12 @@ domReady( () => {
 	Modules.registerModule(
 		'adsense',
 		{
+			settingsEditComponent: SettingsEdit,
+			settingsViewComponent: SettingsView,
 			setupComponent: SetupMain,
-		},
+		}
 	);
+
 	Widgets.registerWidget(
 		'adsenseSummary',
 		{

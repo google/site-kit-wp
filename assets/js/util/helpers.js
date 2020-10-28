@@ -65,14 +65,14 @@ export const createAddToFilter = ( NewComponent ) => {
  * to them (wp.hooks.applyFilters).
  *
  * This helper is used to replace (or "Fill") a filtered component with a passed component.
- * To use, pass as the third argument to an addFilter call, eg:
+ * To use, pass as the third argument to an addFilter call, eg.
  *
  * ```
- * 	addFilter( `googlesitekit.ModuleSettingsDetails-${slug}`,
- * 		'googlesitekit.AdSenseModuleSettingsDetails',
- * 		fillFilterWithComponent( AdSenseSettings, {
- * 			onSettingsPage: true,
- * 		} ) );
+ * 	addFilter(
+ * 		`googlesitekit.someFilter`,
+ * 		'googlesitekit.someNamespace',
+ * 		fillFilterWithComponent( SomeComponent, extraProps )
+ * );
  * ```
  *
  * @since 1.0.0
