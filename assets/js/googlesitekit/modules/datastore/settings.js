@@ -36,13 +36,15 @@ export const actions = {
 	 * @param {string} slug Slug for module store.
 	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
 	 */
-	*submitChanges( slug ) {
+	submitChanges( slug ) {
 		invariant( slug, 'slug is required.' );
-		const registry = yield Data.commonActions.getRegistry();
-		if ( !! registry.dispatch( `modules/${ slug }` )?.submitChanges ) {
-			return registry.dispatch( `modules/${ slug }` ).submitChanges();
-		}
-		return { error: `'modules/${ slug }' does not have a submitChanges() action.` };
+		return ( function* () {
+			const registry = yield Data.commonActions.getRegistry();
+			if ( !! registry.dispatch( `modules/${ slug }` )?.submitChanges ) {
+				return registry.dispatch( `modules/${ slug }` ).submitChanges();
+			}
+			return { error: `'modules/${ slug }' does not have a submitChanges() action.` };
+		}() );
 	},
 };
 
