@@ -66,16 +66,18 @@ describe( 'core/modules store changes', () => {
 	} );
 
 	describe( 'actions', () => {
-		it( 'it proxies the selector call to the module with the given slug', async () => {
-			const expectedError = { error: `'modules/${ nonExistentModuleSlug }' does not have a submitChanges() action.` };
-			expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
+		describe( 'submitChanges', () => {
+			it( 'it proxies the selector call to the module with the given slug', async () => {
+				const expectedError = { error: `'modules/${ nonExistentModuleSlug }' does not have a submitChanges() action.` };
+				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
 
-			expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
+				expect( await registry.dispatch( STORE_NAME ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
 
-			const expectedErrorNoSlug = { error: "'modules/' does not have a submitChanges() action." };
-			expect( await registry.dispatch( STORE_NAME ).submitChanges() ).toEqual( expectedErrorNoSlug );
+				const expectedErrorNoSlug = { error: "'modules/' does not have a submitChanges() action." };
+				expect( await registry.dispatch( STORE_NAME ).submitChanges() ).toEqual( expectedErrorNoSlug );
 
-			expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBe( controlReturn );
+				expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBe( controlReturn );
+			} );
 		} );
 	} );
 
