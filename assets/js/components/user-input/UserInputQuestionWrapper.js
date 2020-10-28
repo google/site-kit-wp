@@ -57,8 +57,8 @@ export default function UserInputQuestionWrapper( props ) {
 		<div className={ classnames(
 			'googlesitekit-user-input__question',
 			{
-				'googlesitekit-user-input__active-question': isActive,
-				'googlesitekit-user-input__next-question': ! isActive,
+				'googlesitekit-user-input__question--active': isActive,
+				'googlesitekit-user-input__question--next': ! isActive,
 			}
 		) }>
 			<Row>
