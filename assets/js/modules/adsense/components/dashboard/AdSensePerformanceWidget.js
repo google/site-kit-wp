@@ -30,10 +30,11 @@ import {
 	getTimeInSeconds,
 	readableLargeNumber,
 	changeToPercent,
+	numberFormat,
 } from '../../../../util';
 import { TYPE_MODULES } from '../../../../components/data';
 import DataBlock from '../../../../components/data-block.js';
-import PreviewBlock from '../../../../components/preview-block';
+import PreviewBlock from '../../../../components/PreviewBlock';
 import { isDataZeroAdSense } from '../../util';
 import withData from '../../../../components/higherorder/withdata';
 
@@ -102,7 +103,7 @@ class AdSensePerformanceWidget extends Component {
 				className: 'googlesitekit-data-block--impression',
 				title: __( 'Page CTR', 'google-site-kit' ),
 				/* translators: %s: percentage value. */
-				datapoint: sprintf( _x( ' %1$s%%', 'AdSense performance Page CTA percentage', 'google-site-kit' ), currentRangeData.totals[ 3 ] * 100 ),
+				datapoint: sprintf( _x( ' %1$s%%', 'AdSense performance Page CTA percentage', 'google-site-kit' ), numberFormat( currentRangeData.totals[ 3 ] * 100, { maximumFractionDigits: 2 } ) ),
 				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 3 ], currentRangeData.totals[ 3 ] ) : 0,
 				changeDataUnit: '%',
 			},

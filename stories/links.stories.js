@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Link from '../assets/js/components/link';
+import Link from '../assets/js/components/Link';
 
 storiesOf( 'Global', module )
 	.add( 'Links', () => {

@@ -34,10 +34,10 @@ storiesOf( 'Global', module )
 					header
 					footer
 					title={ __( 'Top content over the last 28 days', 'google-site-kit' ) }
-					headerCtaLink="https://analytics.google.com"
-					headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCtaLink="https://analytics.google.com"
+					headerCTALink="https://analytics.google.com"
+					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					footerCTALink="https://analytics.google.com"
 				>
 					<AnalyticsDashboardWidgetTopPagesTable />
 				</Layout>

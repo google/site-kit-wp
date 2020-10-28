@@ -30,21 +30,18 @@ import Button from './button';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Component } from '@wordpress/element';
 
-class SignIn extends Component {
-	render() {
-		return (
-			<div className={ classnames(
-				'googlesitekit-signin-box',
-				this.props.className
-			) }>
-				{ this.props.children }
-				<Button href={ this.props.authentication_url }>{ __( 'Sign in with Google', 'google-site-kit' ) }</Button>
-			</div>
+function SignIn() {
+	return (
+		<div className={ classnames(
+			'googlesitekit-signin-box',
+			this.props.className
+		) }>
+			{ this.props.children }
+			<Button href={ this.props.authentication_url }>{ __( 'Sign in with Google', 'google-site-kit' ) }</Button>
+		</div>
 
-		);
-	}
+	);
 }
 
 export default SignIn;

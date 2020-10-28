@@ -26,6 +26,9 @@ import {
 	clearWebStorage,
 } from './util/standalone';
 
+// Load image for the parent menu item.
+import '../images/logo-g_white_small.png';
+
 if ( 'toplevel_page_googlesitekit-dashboard' !== global.pagenow && 'site-kit_page_googlesitekit-splash' !== global.pagenow && 'admin_page_googlesitekit-splash' !== global.pagenow && global.localStorage ) {
 	// The total notifications count should always rely on local storage
 	// directly for external availability.

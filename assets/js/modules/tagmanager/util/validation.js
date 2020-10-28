@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { ACCOUNT_CREATE, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from '../datastore/constants';
+import { getNormalizedContainerName } from './container';
 
 /**
  * Checks the given value to see if it is a positive integer.
@@ -73,6 +74,34 @@ export function isValidAccountSelection( value ) {
  */
 export function isValidContainerID( containerID ) {
 	return typeof containerID === 'string' && /^GTM-[A-Z0-9]+$/.test( containerID );
+}
+
+/**
+ * Checks if the given container name appears to be valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} containerName Container name to test.
+ * @return {boolean} True if valid, otherwise false.
+ */
+export function isValidContainerName( containerName ) {
+	return typeof containerName === 'string' && getNormalizedContainerName( containerName ).length > 0;
+}
+
+/**
+ * Checks if the given container name is unique across account containers.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string}         containerName Container name to test.
+ * @param {Array.<Object>} containers    Available containers.
+ * @return {boolean} True if unique, otherwise false.
+ */
+export function isUniqueContainerName( containerName, containers ) {
+	const normalizedContainerName = getNormalizedContainerName( containerName );
+	return ! Array.isArray( containers ) || ! containers.some(
+		( { name } ) => getNormalizedContainerName( name ) === normalizedContainerName,
+	);
 }
 
 /**
