@@ -34,7 +34,7 @@ export default function UserInputQuestionNotice() {
 
 	const notice = sprintf(
 		/* translators: %s: Settings page URL */
-		__( 'You can always edit your answers after your submission in <a href="%s">Setting</a>.', 'google-site-kit' ),
+		__( 'You can always edit your answers after your submission in <a href="%s">Settings</a>.', 'google-site-kit' ),
 		settingsURL,
 	);
 
