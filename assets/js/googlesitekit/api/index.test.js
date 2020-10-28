@@ -30,18 +30,24 @@ import {
 	siteKitRequest,
 	usingCache,
 } from './index';
+import { DATA_LAYER } from '../../util/tracking/constants';
+import { enableTracking } from '../../util/tracking';
 
 describe( 'googlesitekit.api', () => {
 	// We import the entire caching module so we can use
 	// `jest.spyOn(CacheModule, 'getItem')` to monitor caching calls.
 	const { getItem, setItem, setSelectedStorageBackend } = CacheModule;
 	let storageMechanism;
+	let dataLayerPushSpy;
 
 	let getItemSpy;
 	let setItemSpy;
 	beforeEach( () => {
 		getItemSpy = jest.spyOn( CacheModule, 'getItem' );
 		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
+		enableTracking();
+		global[ DATA_LAYER ] = [];
+		dataLayerPushSpy = jest.spyOn( global[ DATA_LAYER ], 'push' );
 	} );
 
 	beforeAll( () => {
@@ -279,6 +285,32 @@ describe( 'googlesitekit.api', () => {
 				3600
 			);
 		} );
+
+		it( 'should add tracking info to the data layer when an error is returned on get', async () => {
+			const errorResponse = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/test-type\/test-identifier\/data\/test-datapoint/,
+				{ body: errorResponse, status: 500 }
+			);
+
+			try {
+				await get( 'test-type', 'test-identifier', 'test-datapoint' );
+			} catch ( err ) {
+				expect( console ).toHaveErrored();
+				expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
+				const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
+				expect( event ).toEqual( 'event' );
+				expect( eventName ).toEqual( 'GET:test-type/test-identifier/data/test-datapoint' );
+				expect( eventData.event_category ).toEqual( 'api_error' );
+				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
+				expect( eventData.event_value ).toEqual( 500 );
+			}
+		} );
 	} );
 
 	describe( 'set', () => {
@@ -435,6 +467,32 @@ describe( 'googlesitekit.api', () => {
 				createCacheKey( 'core', 'search-console', 'will-cache', queryParams )
 			);
 			expect( cacheData.cacheHit ).toEqual( false );
+		} );
+
+		it( 'should add tracking info to the data layer when an error is returned on set', async () => {
+			const errorResponse = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/test-type\/test-identifier\/data\/test-datapoint/,
+				{ body: errorResponse, status: 500 }
+			);
+
+			try {
+				await set( 'test-type', 'test-identifier', 'test-datapoint', 'data' );
+			} catch ( err ) {
+				expect( console ).toHaveErrored();
+				expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
+				const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
+				expect( event ).toEqual( 'event' );
+				expect( eventName ).toEqual( 'POST:test-type/test-identifier/data/test-datapoint' );
+				expect( eventData.event_category ).toEqual( 'api_error' );
+				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
+				expect( eventData.event_value ).toEqual( 500 );
+			}
 		} );
 	} );
 
