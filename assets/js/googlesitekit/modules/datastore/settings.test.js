@@ -69,12 +69,11 @@ describe( 'core/modules module settings panel', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getModuleSettingsPanelState', () => {
-			it( 'gets module settings panel state', () => {
-				// Default state for valid module is closed
+			it( 'checks that default module settings panel state is closed', () => {
 				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'closed' );
-				// Default state for invalid module is closed
 				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( nonExistentModuleSlug ) ).toBe( null );
-
+			} );
+			it( 'checks we can get every module settings panel state', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
 				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'view' );
 
@@ -83,13 +82,13 @@ describe( 'core/modules module settings panel', () => {
 
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'edit' );
 				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'edit' );
-
-				// If the value is edit, all other module settings panels which currently have a status of view or edit should automatically be set to locked.
+			} );
+			it( 'if the value is edit, all other module settings panels which currently have a status of view or edit should automatically be set to locked', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( nonExistentModuleSlug, 'edit' );
 				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( nonExistentModuleSlug ) ).toBe( 'edit' );
 				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'locked' );
-
-				// If the value is closed or view and previously the value was edit, all other module settings panels which currently have a status of locked should automatically be set to view.
+			} );
+			it( 'if the value is closed or view and previously the value was edit, all other module settings panels which currently have a status of locked should automatically be set to view.', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( nonExistentModuleSlug, 'closed' );
 				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( nonExistentModuleSlug ) ).toBe( 'closed' );
 				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'view' );
