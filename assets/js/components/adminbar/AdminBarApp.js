@@ -58,7 +58,9 @@ export default function AdminBarApp() {
 						mdc-layout-grid__cell--span-3
 						mdc-layout-grid__cell--align-middle
 					">
-						<div className="googlesitekit-adminbar__subtitle">{ __( 'Stats for', 'google-site-kit' ) }</div>
+						<div className="googlesitekit-adminbar__subtitle">
+							{ __( 'Stats for', 'google-site-kit' ) }
+						</div>
 						<div className="googlesitekit-adminbar__title">
 							{ currentEntityTitle
 								? decodeHTMLEntity( currentEntityTitle )
