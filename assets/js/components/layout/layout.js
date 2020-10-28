@@ -40,10 +40,10 @@ class Layout extends Component {
 			footer,
 			children,
 			title,
-			headerCtaLabel,
-			headerCtaLink,
-			footerCtaLabel,
-			footerCtaLink,
+			headerCTALabel,
+			headerCTALink,
+			footerCTALabel,
+			footerCTALink,
 			footerContent,
 			className,
 			fill,
@@ -62,15 +62,15 @@ class Layout extends Component {
 				{ header &&
 					<LayoutHeader
 						title={ title }
-						ctaLabel={ headerCtaLabel }
-						ctaLink={ headerCtaLink }
+						ctaLabel={ headerCTALabel }
+						ctaLink={ headerCTALink }
 					/>
 				}
 				{ children }
 				{ footer &&
 					<LayoutFooter
-						ctaLabel={ footerCtaLabel }
-						ctaLink={ footerCtaLink }
+						ctaLabel={ footerCTALabel }
+						ctaLink={ footerCTALink }
 						footerContent={ footerContent }
 					/>
 				}
@@ -84,10 +84,10 @@ Layout.propTypes = {
 	footer: PropTypes.bool,
 	children: PropTypes.node.isRequired,
 	title: PropTypes.string,
-	headerCtaLabel: PropTypes.string,
-	headerCtaLink: PropTypes.string,
-	footerCtaLabel: PropTypes.string,
-	footerCtaLink: PropTypes.string,
+	headerCTALabel: PropTypes.string,
+	headerCTALink: PropTypes.string,
+	footerCTALabel: PropTypes.string,
+	footerCTALink: PropTypes.string,
 	footerContent: PropTypes.node,
 	className: PropTypes.string,
 	fill: PropTypes.bool,
@@ -98,10 +98,10 @@ Layout.defaultProps = {
 	header: false,
 	footer: false,
 	title: '',
-	headerCtaLabel: '',
-	headerCtaLink: '',
-	footerCtaLabel: '',
-	footerCtaLink: '',
+	headerCTALabel: '',
+	headerCTALink: '',
+	footerCTALabel: '',
+	footerCTALink: '',
 	footerContent: null,
 	className: '',
 	fill: false,

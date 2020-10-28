@@ -22,39 +22,25 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import PreviewBlock from './preview-block';
+import PreviewBlock from './PreviewBlock';
 
-class PreviewBlocks extends Component {
-	render() {
-		const {
-			width,
-			height,
-			shape,
-			count,
-		} = this.props;
-
-		const toReturn = [];
-		let i = 0;
-		while ( i++ < count ) {
-			toReturn.push(
-				<PreviewBlock
-					width={ width }
-					height={ height }
-					shape={ shape }
-					key={ i }
-				/>
-			);
-		}
-
-		return toReturn;
+function PreviewBlocks( { width, height, shape, count } ) {
+	const toReturn = [];
+	let i = 0;
+	while ( i++ < count ) {
+		toReturn.push(
+			<PreviewBlock
+				width={ width }
+				height={ height }
+				shape={ shape }
+				key={ i }
+			/>
+		);
 	}
+
+	return toReturn;
 }
 
 PreviewBlocks.propTypes = {

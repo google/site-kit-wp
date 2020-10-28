@@ -19,13 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 import { ErrorNotices } from '../common';
 
 export default function SetupAccountNoClient() {
@@ -45,15 +45,9 @@ export default function SetupAccountNoClient() {
 				<Link
 					href="https://support.google.com/adsense/answer/6023158"
 					external
+					ariaLabel={ __( 'Learn more about updating your AdSense account', 'google-site-kit' ) }
 				>
-					{
-						createInterpolateElement(
-							__( 'Learn more<span> about updating your AdSense account</span>', 'google-site-kit' ),
-							{
-								span: <span className="screen-reader-text" />,
-							}
-						)
-					}
+					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>
 			</div>
 		</Fragment>

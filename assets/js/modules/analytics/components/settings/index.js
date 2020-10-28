@@ -18,5 +18,4 @@
 
 export { default as SettingsEdit } from './SettingsEdit';
 export { default as SettingsForm } from './SettingsForm';
-export { default as SettingsMain } from './SettingsMain';
 export { default as SettingsView } from './SettingsView';

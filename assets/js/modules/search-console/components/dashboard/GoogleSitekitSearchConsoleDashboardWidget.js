@@ -40,7 +40,7 @@ import PageHeader from '../../../../components/page-header';
 import PageHeaderDateRange from '../../../../components/page-header-date-range';
 import Layout from '../../../../components/layout/layout';
 import Alert from '../../../../components/alert';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import { getCurrentDateRange, getCurrentDateRangeDayCount } from '../../../../util/date-range';
@@ -197,12 +197,12 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								header
 								/* translators: %s: date range */
 								title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), currentDateRange ) }
-								headerCtaLabel={ sprintf(
+								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
 									_x( 'Search Console', 'Service name', 'google-site-kit' )
 								) }
-								headerCtaLink={ searchConsoleDeepLink }
+								headerCTALink={ searchConsoleDeepLink }
 							>
 								<SearchConsoleDashboardWidgetOverview
 									selectedStats={ selectedStats }
@@ -223,14 +223,14 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 								title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), currentDateRange ) }
 								header
 								footer
-								headerCtaLabel={ sprintf(
+								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
 									_x( 'Search Console', 'Service name', 'google-site-kit' )
 								) }
-								headerCtaLink={ searchConsoleDeepLink }
-								footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-								footerCtaLink={ searchConsoleDeepLink }
+								headerCTALink={ searchConsoleDeepLink }
+								footerCTALabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+								footerCTALink={ searchConsoleDeepLink }
 							>
 								<LegacySearchConsoleDashboardWidgetKeywordTable />
 							</Layout>

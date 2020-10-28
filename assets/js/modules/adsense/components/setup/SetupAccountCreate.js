@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -27,7 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/button';
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 import { trackEvent } from '../../../../util';
 import { parseAccountID } from '../../util/parsing';
 import { STORE_NAME } from '../../datastore/constants';
@@ -96,15 +96,9 @@ export default function SetupAccountCreate() {
 					href="https://support.google.com/adsense/answer/2659101"
 					inherit
 					external
+					ariaLabel={ __( 'Learn more about adding a user to an existing AdSense account', 'google-site-kit' ) }
 				>
-					{
-						createInterpolateElement(
-							__( 'Learn more<span> about adding a user to an existing AdSense account</span>', 'google-site-kit' ),
-							{
-								span: <span className="screen-reader-text" />,
-							}
-						)
-					}
+					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>
 			</p>
 		</Fragment>

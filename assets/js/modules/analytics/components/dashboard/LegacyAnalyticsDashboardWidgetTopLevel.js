@@ -52,9 +52,9 @@ import Data from 'googlesitekit-data';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import Sparkline from '../../../../components/sparkline';
+import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/notifications/cta';
-import PreviewBlock from '../../../../components/preview-block';
+import PreviewBlock from '../../../../components/PreviewBlock';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from '../../datastore/constants';
 

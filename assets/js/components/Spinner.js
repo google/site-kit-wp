@@ -1,7 +1,7 @@
 /**
- * Gulp copy task.
+ * Spinner component.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,21 @@
  */
 
 /**
- * External dependencies
+ * A single module. Keeps track of its own active state and settings.
  */
-const gulp = require( 'gulp' );
 
-module.exports = function() {
-	const globs = [
-		'readme.txt',
-		'google-site-kit.php',
-		'dist/*.js',
-		'dist/assets/**/*',
-		'includes/**/*',
-		'third-party/**/*',
-		'!third-party/**/**/{tests,Tests,doc?(s),examples}/**/*',
-		'!third-party/**/**/{*.md,*.yml,phpunit.*}',
-		'!**/*.map',
-		'!dist/admin.js',
-		'!dist/adminbar.js',
-		'!dist/wpdashboard.js',
-	];
+function Spinner( { isSaving } ) {
+	return (
+		<span
+			className="spinner"
+			style={ {
+				display: ( isSaving ? 'inline-block' : 'none' ),
+				float: 'none',
+				marginTop: '0',
+				visibility: 'visible',
+			} }
+		/>
+	);
+}
 
-	return gulp.src( globs, { base: '.' } ).pipe( gulp.dest( 'release/google-site-kit' ) );
-};
+export default Spinner;

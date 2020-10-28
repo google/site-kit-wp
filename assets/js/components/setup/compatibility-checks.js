@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Component, createInterpolateElement, Fragment } from '@wordpress/element';
+import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -33,9 +33,9 @@ import PropTypes from 'prop-types';
 import API from 'googlesitekit-api';
 import { sanitizeHTML } from '../../util/sanitize';
 import { getExistingTag } from '../../util/tag';
-import Link from '../link';
+import Link from '../Link';
 import Warning from '../notifications/warning';
-import ProgressBar from '../../components/progress-bar';
+import ProgressBar from '../ProgressBar';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'check_fetch_failed';
@@ -122,47 +122,31 @@ export default class CompatibilityChecks extends Component {
 
 		if ( ! installed && installURL ) {
 			return {
-				labelHTML: createInterpolateElement(
-					__( 'Install<span> the helper plugin</span>', 'google-site-kit' ),
-					{
-						span: <span className="screen-reader-text" />,
-					}
-				),
+				ariaLabel: __( 'Install the helper plugin', 'google-site-kit' ),
+				label: __( 'Install', 'google-site-kit' ),
 				href: installURL,
 				external: false,
 			};
 		}
 		if ( installed && ! active && activateURL ) {
 			return {
-				labelHTML: createInterpolateElement(
-					__( 'Activate<span> the helper plugin</span>', 'google-site-kit' ),
-					{
-						span: <span className="screen-reader-text" />,
-					}
-				),
+				ariaLabel: __( 'Activate the helper plugin', 'google-site-kit' ),
+				label: __( 'Activate', 'google-site-kit' ),
 				href: activateURL,
 				external: false,
 			};
 		}
 		if ( installed && active && configureURL ) {
 			return {
-				labelHTML: createInterpolateElement(
-					__( 'Configure<span> the helper plugin</span>', 'google-site-kit' ),
-					{
-						span: <span className="screen-reader-text" />,
-					}
-				),
+				ariaLabel: __( 'Configure the helper plugin', 'google-site-kit' ),
+				label: __( 'Configure', 'google-site-kit' ),
 				href: configureURL,
 				external: false,
 			};
 		}
 		return {
-			labelHTML: createInterpolateElement(
-				__( 'Learn how<span> to install and use the helper plugin</span>', 'google-site-kit' ),
-				{
-					span: <span className="screen-reader-text" />,
-				}
-			),
+			ariaLabel: __( 'Learn how to install and use the helper plugin', 'google-site-kit' ),
+			label: __( 'Learn how', 'google-site-kit' ),
 			href: 'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
 			external: true,
 		};
@@ -170,7 +154,7 @@ export default class CompatibilityChecks extends Component {
 
 	renderError( error ) {
 		const { installed } = this.state.developerPlugin;
-		const { labelHTML, href, external } = this.helperCTA();
+		const { ariaLabel, label, href, external } = this.helperCTA();
 
 		switch ( error ) {
 			case ERROR_INVALID_HOSTNAME:
@@ -183,8 +167,9 @@ export default class CompatibilityChecks extends Component {
 						href={ href }
 						external={ external }
 						inherit
+						ariaLabel={ ariaLabel }
 					>
-						{ labelHTML }
+						{ label }
 					</Link>
 				</p>;
 			case ERROR_TOKEN_MISMATCH:

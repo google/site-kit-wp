@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import { STORE_NAME, CONTAINER_CREATE } from '../../datastore/constants';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 
@@ -43,12 +43,12 @@ export default function ContainerSelect( {
 	value,
 	...props
 } ) {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const isLoadingContainers = useSelect( ( select ) => select( STORE_NAME ).isDoingGetContainers( accountID ) );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+	const hasResolvedContainers = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] ) );
 
-	if ( accounts === undefined || containers === undefined || isLoadingContainers ) {
+	if ( ! hasResolvedAccounts || ! hasResolvedContainers ) {
 		return <ProgressBar small />;
 	}
 

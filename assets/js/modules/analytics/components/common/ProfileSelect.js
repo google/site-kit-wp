@@ -27,20 +27,41 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
 import { isValidPropertyID, isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function ProfileSelect() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const isLoadingAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
-	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
-	const isLoadingProfiles = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProfiles( accountID, propertyID ) );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+
+	const {
+		accountID,
+		propertyID,
+		profiles,
+		isResolvingProperties,
+		isResolvingProfiles,
+	} = useSelect( ( select ) => {
+		const data = {
+			accountID: select( STORE_NAME ).getAccountID(),
+			propertyID: select( STORE_NAME ).getPropertyID(),
+			profiles: [],
+			isResolvingProperties: false,
+			isResolvingProfiles: false,
+		};
+
+		if ( data.accountID ) {
+			data.isResolvingProperties = select( STORE_NAME ).isResolving( 'getProperties', [ data.accountID ] );
+			if ( data.propertyID ) {
+				data.profiles = select( STORE_NAME ).getProfiles( data.accountID, data.propertyID );
+				data.isResolvingProfiles = select( STORE_NAME ).isResolving( 'getProfiles', [ data.accountID, data.propertyID ] );
+			}
+		}
+
+		return data;
+	} );
 
 	const { setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -51,7 +72,7 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID ] );
 
-	if ( isLoadingAccounts || isLoadingProperties || isLoadingProfiles ) {
+	if ( ! hasResolvedAccounts || isResolvingProperties || isResolvingProfiles ) {
 		return <ProgressBar small />;
 	}
 

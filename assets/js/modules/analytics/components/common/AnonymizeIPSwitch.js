@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Switch from '../../../../components/switch';
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 
 const { useSelect, useDispatch } = Data;
 
@@ -65,15 +65,9 @@ export default function AnonymizeIPSwitch() {
 					href="https://support.google.com/analytics/answer/2763052"
 					external
 					inherit
+					ariaLabel={ __( 'Learn more about IP anonymization.', 'google-site-kit' ) }
 				>
-					{
-						createInterpolateElement(
-							__( 'Learn more<span> about IP anonymization.</span>', 'google-site-kit' ),
-							{
-								span: <span className="screen-reader-text" />,
-							}
-						)
-					}
+					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>
 			</p>
 		</div>

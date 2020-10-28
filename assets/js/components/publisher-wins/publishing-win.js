@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { extractSearchConsoleDashboardData } from '../../modules/search-console/util';
 import { getModulesData } from '../../util';
+import rocketImage from '../../../images/rocket.png';
 
 const publishingWin = ( data, id ) => {
 	// Only display if site is considered new (determined during activation, based on post count).
@@ -83,7 +84,7 @@ const publishingWin = ( data, id ) => {
 		title: __( 'Congrats on five published posts', 'google-site-kit' ),
 		description: message,
 		format: 'large',
-		winImage: `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png`,
+		winImage: global._googlesitekitLegacyData.admin.assetsRoot + rocketImage,
 		blockData: dataBlocks,
 		type: 'win-stats',
 		showOnce: true,

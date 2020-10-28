@@ -26,72 +26,70 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { _x } from '@wordpress/i18n';
-import { Component } from '@wordpress/element';
 
-class Link extends Component {
-	getArialLabel() {
-		const {
-			children,
-			external,
-		} = this.props;
+function Link( {
+	href,
+	children,
+	className,
+	arrow,
+	external,
+	inverse,
+	back,
+	small,
+	inherit,
+	caps,
+	danger,
+	disabled,
+	ariaLabel,
+	...extraProps
+} ) {
+	// Note: the disabled attribute does not alter behavior of anchor tags,
+	// so if disabled we force it to be a button.
+	const isAnchor = href && ! disabled;
+	const SemanticLink = isAnchor ? 'a' : 'button';
 
-		let label;
-		if ( external && typeof children === 'string' ) {
-			label = `${ children } ${ _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' ) }`;
+	const getAriaLabel = () => {
+		let label = ariaLabel;
+		const newTabLabel = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
+
+		if ( ariaLabel === '' && external && typeof children === 'string' ) {
+			label = children;
+		}
+
+		if ( external ) {
+			label += ` ${ newTabLabel }`;
 		}
 
 		return label;
-	}
+	};
 
-	render() {
-		const {
-			href,
-			children,
-			className,
-			arrow,
-			external,
-			inverse,
-			back,
-			small,
-			inherit,
-			caps,
-			danger,
-			disabled,
-			...extraProps
-		} = this.props;
-		// Note: the disabled attribute does not alter behavior of anchor tags,
-		// so if disabled we force it to be a button.
-		const isAnchor = href && ! disabled;
-		const SemanticLink = isAnchor ? 'a' : 'button';
-
-		return (
-			<SemanticLink
-				className={ classnames(
-					'googlesitekit-cta-link',
-					className,
-					{
-						'googlesitekit-cta-link--arrow': arrow,
-						'googlesitekit-cta-link--external': external,
-						'googlesitekit-cta-link--inverse': inverse,
-						'googlesitekit-cta-link--back': back,
-						'googlesitekit-cta-link--small': small,
-						'googlesitekit-cta-link--inherit': inherit,
-						'googlesitekit-cta-link--caps': caps,
-						'googlesitekit-cta-link--danger': danger,
-						'googlesitekit-cta-link--disabled': disabled,
-					}
-				) }
-				href={ isAnchor ? href : undefined }
-				target={ isAnchor && external ? '_blank' : undefined }
-				rel={ external ? 'noopener noreferrer' : undefined }
-				disabled={ disabled }
-				aria-label={ this.getArialLabel() }
-				{ ...extraProps }
-			>
-				{ children }
-			</SemanticLink>
-		);
-	}
+	return (
+		<SemanticLink
+			className={ classnames(
+				'googlesitekit-cta-link',
+				className,
+				{
+					'googlesitekit-cta-link--arrow': arrow,
+					'googlesitekit-cta-link--external': external,
+					'googlesitekit-cta-link--inverse': inverse,
+					'googlesitekit-cta-link--back': back,
+					'googlesitekit-cta-link--small': small,
+					'googlesitekit-cta-link--inherit': inherit,
+					'googlesitekit-cta-link--caps': caps,
+					'googlesitekit-cta-link--danger': danger,
+					'googlesitekit-cta-link--disabled': disabled,
+				},
+			) }
+			href={ isAnchor ? href : undefined }
+			target={ isAnchor && external ? '_blank' : undefined }
+			rel={ external ? 'noopener noreferrer' : undefined }
+			disabled={ disabled }
+			aria-label={ getAriaLabel() }
+			{ ...extraProps }
+		>
+			{ children }
+		</SemanticLink>
+	);
 }
 
 Link.propTypes = {
@@ -115,6 +113,7 @@ Link.propTypes = {
 	caps: PropTypes.bool,
 	danger: PropTypes.bool,
 	disabled: PropTypes.bool,
+	ariaLabel: PropTypes.string,
 };
 
 Link.defaultProps = {
@@ -131,6 +130,7 @@ Link.defaultProps = {
 	caps: false,
 	danger: false,
 	disabled: false,
+	ariaLabel: '',
 };
 
 export default Link;

@@ -19,13 +19,12 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 
 export default function MetricsLearnMoreLink() {
 	return (
@@ -33,15 +32,9 @@ export default function MetricsLearnMoreLink() {
 			href="https://web.dev/user-centric-performance-metrics/#how-metrics-are-measured"
 			external
 			inherit
+			ariaLabel={ __( 'Learn more how metrics are measured.', 'google-site-kit' ) }
 		>
-			{
-				createInterpolateElement(
-					__( 'Learn more<span> how metrics are measured.</span>', 'google-site-kit' ),
-					{
-						span: <span className="screen-reader-text" />,
-					}
-				)
-			}
+			{ __( 'Learn more', 'google-site-kit' ) }
 		</Link>
 	);
 }
