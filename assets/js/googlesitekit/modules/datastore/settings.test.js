@@ -34,9 +34,6 @@ describe( 'core/modules store changes', () => {
 	let moduleCanSubmitChanges = false;
 	let submittingChanges = false;
 
-	beforeAll( () => {
-	} );
-
 	beforeEach( () => {
 		const storeDefinition = Modules.createModuleStore( moduleStoreName );
 		const canSubmitChanges = () => moduleCanSubmitChanges;
@@ -66,12 +63,6 @@ describe( 'core/modules store changes', () => {
 				},
 			}
 		) );
-	} );
-
-	afterAll( () => {
-	} );
-
-	afterEach( () => {
 	} );
 
 	describe( 'actions', () => {
