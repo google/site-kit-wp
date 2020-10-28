@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import Button from './button';
+import Button from './Button';
 
 /**
  * WordPress dependencies

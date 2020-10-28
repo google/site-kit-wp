@@ -30,7 +30,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Button from '../button';
+import Button from '../Button';
 import Logo from '../logo';
 import OptIn from '../optin';
 import CompatibilityChecks from '../setup/compatibility-checks';
