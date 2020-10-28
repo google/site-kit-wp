@@ -21,6 +21,12 @@
  */
 import { __ } from '@wordpress/i18n';
 
+export const USER_INPUT_QUESTION_ROLE = 'role';
+export const USER_INPUT_QUESTION_POST_FREQUENCY = 'postFrequency';
+export const USER_INPUT_QUESTION_GOALS = 'goals';
+export const USER_INPUT_QUESTION_HELP_NEEDED = 'helpNeeded';
+export const USER_INPUT_QUESTION_SEARCH_TERMS = 'searchTerms';
+
 export const USER_INPUT_ANSWERS_ROLE = {
 	owner: __( 'I am the owner and sole creator and admin', 'google-site-kit' ),
 	owner_with_team: __( 'I am the owner of the site and have a team who works on this site', 'google-site-kit' ),

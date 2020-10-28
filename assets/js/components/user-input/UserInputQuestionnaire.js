@@ -31,6 +31,11 @@ import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputKeywords from './UserInputKeywords';
 import UserInputPreview from './UserInputPreview';
 import {
+	USER_INPUT_QUESTION_ROLE,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_QUESTION_GOALS,
+	USER_INPUT_QUESTION_HELP_NEEDED,
+	USER_INPUT_QUESTION_SEARCH_TERMS,
 	USER_INPUT_ANSWERS_GOALS,
 	USER_INPUT_ANSWERS_HELP_NEEDED,
 	USER_INPUT_ANSWERS_POST_FREQUENCY,
@@ -38,17 +43,25 @@ import {
 } from './util/constants';
 
 export default function UserInputQuestionnaire() {
-	const [ activeSlug, setActiveSlug ] = useState( 'role' );
+	const [ activeSlug, setActiveSlug ] = useState( USER_INPUT_QUESTION_ROLE );
 
-	const questions = [ 'role', 'postFrequency', 'goals', 'helpNeeded', 'searchTerms', 'preview' ];
-	const activeSlugIndex = questions.indexOf( activeSlug );
+	const questions = [
+		USER_INPUT_QUESTION_ROLE,
+		USER_INPUT_QUESTION_POST_FREQUENCY,
+		USER_INPUT_QUESTION_GOALS,
+		USER_INPUT_QUESTION_HELP_NEEDED,
+		USER_INPUT_QUESTION_SEARCH_TERMS,
+	];
+
+	const steps = [ ...questions, 'preview' ];
+	const activeSlugIndex = steps.indexOf( activeSlug );
 
 	const next = useCallback( () => {
-		setActiveSlug( questions[ activeSlugIndex + 1 ] );
+		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex ] );
 
-	const goTo = useCallback( ( steps = 1 ) => {
-		setActiveSlug( questions[ activeSlugIndex - steps ] );
+	const goTo = useCallback( ( num = 1 ) => {
+		setActiveSlug( steps[ activeSlugIndex - num ] );
 		global.scrollTo( 0, 0 );
 	}, [ activeSlugIndex ] );
 
@@ -62,41 +75,41 @@ export default function UserInputQuestionnaire() {
 				progress={ ( activeSlugIndex + 1 ) / questions.length }
 			/>
 
-			{ activeSlugIndex <= questions.indexOf( 'role' ) && (
+			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
 				<UserInputQuestionWrapper
-					slug="role"
-					isActive={ activeSlug === 'role' }
+					slug={ USER_INPUT_QUESTION_ROLE }
+					isActive={ activeSlug === USER_INPUT_QUESTION_ROLE }
 					questionNumber={ 1 }
 					title={ __( 'Which best describes your team/role in relation to this site?', 'google-site-kit' ) }
 					next={ next }
 				>
 					<UserInputSelectOptions
-						slug="role"
+						slug={ USER_INPUT_QUESTION_ROLE }
 						options={ USER_INPUT_ANSWERS_ROLE }
 					/>
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlugIndex <= questions.indexOf( 'postFrequency' ) && (
+			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_POST_FREQUENCY ) && (
 				<UserInputQuestionWrapper
-					slug="postFrequency"
-					isActive={ activeSlug === 'postFrequency' }
+					slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
+					isActive={ activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY }
 					questionNumber={ 2 }
 					title={ __( 'How often do you create new posts for this site?', 'google-site-kit' ) }
 					next={ next }
 					back={ back }
 				>
 					<UserInputSelectOptions
-						slug="postFrequency"
+						slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
 						options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 					/>
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlugIndex <= questions.indexOf( 'goals' ) && (
+			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_GOALS ) && (
 				<UserInputQuestionWrapper
-					slug="goals"
-					isActive={ activeSlug === 'goals' }
+					slug={ USER_INPUT_QUESTION_GOALS }
+					isActive={ activeSlug === USER_INPUT_QUESTION_GOALS }
 					questionNumber={ 3 }
 					title={ __( 'What are the goals of this site?', 'google-site-kit' ) }
 					max={ 2 }
@@ -104,17 +117,17 @@ export default function UserInputQuestionnaire() {
 					back={ back }
 				>
 					<UserInputSelectOptions
-						slug="goals"
+						slug={ USER_INPUT_QUESTION_GOALS }
 						max={ 2 }
 						options={ USER_INPUT_ANSWERS_GOALS }
 					/>
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlugIndex <= questions.indexOf( 'helpNeeded' ) && (
+			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_HELP_NEEDED ) && (
 				<UserInputQuestionWrapper
-					slug="helpNeeded"
-					isActive={ activeSlug === 'helpNeeded' }
+					slug={ USER_INPUT_QUESTION_HELP_NEEDED }
+					isActive={ activeSlug === USER_INPUT_QUESTION_HELP_NEEDED }
 					questionNumber={ 4 }
 					title={ __( 'What do you need help most with for this site?', 'google-site-kit' ) }
 					max={ 3 }
@@ -122,17 +135,17 @@ export default function UserInputQuestionnaire() {
 					back={ back }
 				>
 					<UserInputSelectOptions
-						slug="helpNeeded"
+						slug={ USER_INPUT_QUESTION_HELP_NEEDED }
 						max={ 3 }
 						options={ USER_INPUT_ANSWERS_HELP_NEEDED }
 					/>
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlugIndex <= questions.indexOf( 'searchTerms' ) && (
+			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_SEARCH_TERMS ) && (
 				<UserInputQuestionWrapper
-					slug="searchTerms"
-					isActive={ activeSlug === 'searchTerms' }
+					slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
+					isActive={ activeSlug === USER_INPUT_QUESTION_SEARCH_TERMS }
 					questionNumber={ 5 }
 					title={ __( 'To help us identify opportunities for your site, enter the top three search terms that you’d like to show up for', 'google-site-kit' ) }
 					max={ 3 }
@@ -140,7 +153,7 @@ export default function UserInputQuestionnaire() {
 					back={ back }
 				>
 					<UserInputKeywords
-						slug="searchTerms"
+						slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
 						max={ 3 }
 					/>
 				</UserInputQuestionWrapper>
