@@ -17,15 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 const { createRegistrySelector } = Data;
-
-/**
- * External dependencies
- */
-import invariant from 'invariant';
 
 // Actions
 const SET_MODULE_SETTINGS_PANEL_STATE = 'SET_MODULE_SETTINGS_PANEL_STATE';
