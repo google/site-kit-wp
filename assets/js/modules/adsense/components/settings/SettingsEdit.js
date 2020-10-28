@@ -68,13 +68,8 @@ export default function SettingsEdit() {
 		};
 	}, [] );
 
-	// Fetch existing tag right here, to ensure the progress bar is still being
-	// shown while this is being loaded. It is technically used only by child
-	// components.
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-
 	let viewComponent;
-	if ( undefined === existingTag || isDoingSubmitChanges ) {
+	if ( isDoingSubmitChanges ) {
 		viewComponent = <ProgressBar />;
 	} else {
 		viewComponent = <SettingsForm />;
