@@ -91,6 +91,7 @@ describe( 'core/modules store changes', () => {
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( true );
 			} );
 		} );
+
 		describe( 'canSubmitChanges', () => {
 			it( 'it proxies the selector call to the module with the given slug', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( false );
