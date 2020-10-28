@@ -44,7 +44,9 @@ const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
-	const referenceSiteURL = useSelect( ( select ) => unTrailingSlashIt( select( CORE_SITE ).getReferenceSiteURL() ) );
+	const referenceSiteURL = useSelect( ( select ) => {
+		return unTrailingSlashIt( select( CORE_SITE ).getReferenceSiteURL() );
+	} );
 	const baseServiceArgs = {
 		resource_id: domain,
 		num_of_days: getCurrentDateRangeDayCount(),

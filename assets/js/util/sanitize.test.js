@@ -31,17 +31,19 @@ describe( 'sanitizeHTML', () => {
 } );
 
 describe( 'unTrailingSlashIt', () => {
-	it( 'should not change a URL without trailing slash', () => {
-		const url = 'http://example.org';
-		expect( unTrailingSlashIt( url ) ).toEqual( 'http://example.org' );
+	it( 'should return the same string if there is no trailing slash', () => {
+		expect( unTrailingSlashIt( 'http://example.org' ) ).toEqual( 'http://example.org' );
 	} );
 
-	it( 'should change a URL with trailing slash', () => {
-		const url = 'http://example.org/';
-		expect( unTrailingSlashIt( url ) ).toEqual( 'http://example.org' );
+	it( 'should return string without trailing slash in a string with trailing slash', () => {
+		expect( unTrailingSlashIt( 'http://example.org/' ) ).toEqual( 'http://example.org' );
 	} );
 
-	it( 'should return null if the parameter is not a string', () => {
-		expect( unTrailingSlashIt( 1 ) ).toBeNull();
+	it( 'should return string without trailing slashes in a string with multiple trailing slash', () => {
+		expect( unTrailingSlashIt( 'http://example.org////' ) ).toEqual( 'http://example.org' );
+	} );
+
+	it( 'should return undefined if the parameter is not a string', () => {
+		expect( unTrailingSlashIt( 1 ) ).toBeUndefined();
 	} );
 } );

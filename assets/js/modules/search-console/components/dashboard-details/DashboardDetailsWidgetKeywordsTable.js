@@ -32,23 +32,18 @@ import Layout from '../../../../components/layout/layout';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
-import { unTrailingSlashIt } from '../../../../util';
 
 const { useSelect } = Data;
 
 const DashboardDetailsWidgetKeywordsTable = () => {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
-	const referenceSiteURL = useSelect( ( select ) => unTrailingSlashIt( select( CORE_SITE ).getReferenceSiteURL() ) );
 	const footerCTALinkArgs = {
 		resource_id: propertyID,
 		num_of_days: getCurrentDateRangeDayCount(),
 	};
 	if ( url ) {
 		footerCTALinkArgs.page = `!${ url }`;
-	} else if ( isDomainProperty && referenceSiteURL ) {
-		footerCTALinkArgs.page = `*${ referenceSiteURL }`;
 	}
 	const footerCTALink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
 		path: '/performance/search-analytics',

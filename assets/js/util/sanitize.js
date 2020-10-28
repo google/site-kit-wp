@@ -10,23 +10,12 @@ export const sanitizeHTML = ( unsafeHTML, domPurifyConfig = {} ) => {
 };
 
 /**
- * Takes a URL string, removes the trailing stash if any and returns it.
+ * Takes a string, removes the trailing stash if any and returns it.
  *
- * @since 1.18.0
+ * @since n.e.x.t
  * @private
  *
- * @param {string} url The URL with or without trailing slash.
- * @return {string|null} The URL string after removing the trailing slash.
+ * @param {string} string A string with or without trailing slash.
+ * @return {string|null} The string after removing the trailing slash.
  */
-export const unTrailingSlashIt = ( url ) => {
-	if ( typeof url !== 'string' ) {
-		return null;
-	}
-
-	if ( url.endsWith( '/' ) ) {
-		// remove the trailing slash
-		return url.slice( 0, -1 );
-	}
-
-	return url;
-};
+export const unTrailingSlashIt = ( string ) => string?.replace?.( /\/+$/, '' );
