@@ -41,6 +41,7 @@ import DashboardPermissionAlert from '../notifications/dashboard-permission-aler
 import { getCacheKey, getCache, setCache } from './cache';
 import { TYPE_CORE, TYPE_MODULES } from './constants';
 import { invalidateCacheGroup } from './invalidate-cache-group';
+import { trackAPIError } from '../../util/api';
 
 export { TYPE_CORE, TYPE_MODULES };
 
@@ -205,7 +206,15 @@ const dataAPI = {
 
 				const isError = isWPError( result );
 				if ( isError ) {
-					this.handleWPError( result );
+					const { datapoint, type, identifier } = dataRequest[ keyIndexesMap[ key ] ];
+
+					this.handleWPError( {
+						method: 'POST',
+						datapoint,
+						type,
+						identifier,
+						error: result,
+					} );
 				}
 
 				each( keyIndexesMap[ key ], ( index ) => {
@@ -231,9 +240,12 @@ const dataAPI = {
 		} );
 	},
 
-	handleWPError( error ) {
+	handleWPError( { method, datapoint, type, identifier, error } ) {
 		// eslint-disable-next-line no-console
 		console.warn( 'WP Error in data response', error );
+
+		trackAPIError( { method, datapoint, type, identifier, error } );
+
 		const { data } = error;
 
 		if ( ! data || ( ! data.reason && ! data.reconnectURL ) ) {
@@ -352,10 +364,10 @@ const dataAPI = {
 			}
 
 			return Promise.resolve( results );
-		} ).catch( ( err ) => {
-			this.handleWPError( err );
+		} ).catch( ( error ) => {
+			this.handleWPError( { method: 'GET', datapoint, type, identifier, error } );
 
-			return Promise.reject( err );
+			return Promise.reject( error );
 		} );
 	},
 
@@ -384,6 +396,10 @@ const dataAPI = {
 			return new Promise( ( resolve ) => {
 				resolve( response );
 			} );
+		} ).catch( ( error ) => {
+			this.handleWPError( { method: 'POST', datapoint, type, identifier, error } );
+
+			return Promise.reject( error );
 		} );
 	},
 	/**
