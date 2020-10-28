@@ -54,8 +54,6 @@ const fetchSaveUserInputSettingsStore = createFetchStore( {
 // Actions
 const SET_USER_INPUT_SETTINGS = 'SET_USER_INPUT_SETTINGS';
 const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
-const START_SAVING_USER_SETTINGS = 'START_SAVING_USER_SETTINGS';
-const FINISH_SAVING_USER_SETTINGS = 'FINISH_SAVING_USER_SETTINGS';
 
 const baseInitialState = {
 	inputSettings: undefined,
@@ -115,21 +113,11 @@ const baseActions = {
 			[ key ]: settings[ key ]?.values || [],
 		} ), {} );
 
-		yield {
-			payload: {},
-			type: START_SAVING_USER_SETTINGS,
-		};
-
 		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( values );
 		if ( error ) {
 			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
 			registry.dispatch( STORE_NAME ).receiveError( error, 'saveUserInputSettings', [] );
 		}
-
-		yield {
-			payload: {},
-			type: FINISH_SAVING_USER_SETTINGS,
-		};
 
 		return { response, error };
 	},
@@ -155,14 +143,14 @@ export const baseReducer = ( state, { type, payload } ) => {
 				},
 			};
 		}
-		case START_SAVING_USER_SETTINGS: {
+		case 'START_FETCH_SAVE_USER_INPUT_SETTINGS': {
 			return {
 				...state,
 				hasStartedSavingInputSettings: true,
 				hasFinishedSavingInputSettings: false,
 			};
 		}
-		case FINISH_SAVING_USER_SETTINGS: {
+		case 'FINISH_FETCH_SAVE_USER_INPUT_SETTINGS': {
 			return {
 				...state,
 				hasStartedSavingInputSettings: false,
