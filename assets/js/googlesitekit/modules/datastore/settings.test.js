@@ -57,7 +57,6 @@ describe( 'core/modules module settings panel', () => {
 
 	describe( 'reducer', () => {
 		it( 'has the appropriate initial state', () => {
-			expect( true ).toBeTruthy();
 			const initialState = {};
 			const initialStoreState = store.getState();
 
