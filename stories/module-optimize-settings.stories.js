@@ -25,7 +25,7 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
-import { SettingsMain as OptimizeSettings } from '../assets/js/modules/optimize/components/settings';
+import { SettingsEdit, SettingsView } from '../assets/js/modules/optimize/components/settings';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
@@ -41,11 +41,15 @@ const defaultSettings = {
 	ownerID: 0,
 };
 
-const Settings = createLegacySettingsWrapper( 'optimize', OptimizeSettings );
+const Settings = createLegacySettingsWrapper( 'optimize' );
 
 storiesOf( 'Optimize Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
+		registry.dispatch( CORE_MODULES ).registerModule( 'optimize', {
+			settingsEditComponent: SettingsEdit,
+			settingsViewComponent: SettingsView,
+		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		provideModules( registry, [ {
 			slug: 'optimize',
