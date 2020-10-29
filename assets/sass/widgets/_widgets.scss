@@ -31,6 +31,10 @@
 
 	&__header {
 		border-bottom: 1px solid $c-border-light;
+
+		&-title {
+			margin: 0;
+		}
 	}
 
 	&__footer {
