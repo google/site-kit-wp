@@ -35,16 +35,20 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	const { accountID, properties, hasResolvedProperties } = useSelect( ( select ) => {
+	const {
+		accountID,
+		properties,
+		isResolvingProperties,
+	} = useSelect( ( select ) => {
 		const data = {
 			accountID: select( STORE_NAME ).getAccountID(),
 			properties: [],
-			hasResolvedProperties: false,
+			isResolvingProperties: false,
 		};
 
 		if ( data.accountID ) {
 			data.properties = select( STORE_NAME ).getProperties( data.accountID );
-			data.hasResolvedProperties = select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ data.accountID ] );
+			data.isResolvingProperties = select( STORE_NAME ).isResolving( 'getProperties', [ data.accountID ] );
 		}
 
 		return data;
@@ -64,7 +68,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID ] );
 
-	if ( ! hasResolvedAccounts || ( accountID && ! hasResolvedProperties ) ) {
+	if ( ! hasResolvedAccounts || isResolvingProperties ) {
 		return <ProgressBar small />;
 	}
 

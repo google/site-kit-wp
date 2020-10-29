@@ -149,7 +149,6 @@ class SettingsModules extends Component {
 				learnmore={ module.learnMore }
 				active={ module.active }
 				setupComplete={ module.setupComplete }
-				hasSettings={ !! module.settings && 'search-console' !== module.slug }
 				autoActivate={ module.autoActivate }
 				updateModulesList={ this.updateModulesList }
 				handleEdit={ this.handleButtonAction }
