@@ -31,6 +31,7 @@ import {
  */
 import {
 	activateAMPWithMode,
+	setAMPMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAuthToken,
@@ -343,6 +344,61 @@ describe( 'setting up the AdSense module', () => {
 
 			await proceedToAdsenseSetup();
 			await expect( '/' ).toHaveValidAMPForVisitor();
+		} );
+	} );
+
+	describe( 'AMP <amp-auto-ads> tag', () => {
+		beforeAll( async () => {
+			await activatePlugin( 'amp' );
+			await activatePlugin( 'e2e-tests-apply-content-filters' );
+		} );
+
+		beforeEach( () => {
+			datapointHandlers.accounts = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						ADSENSE_ACCOUNT,
+					] ),
+				} );
+			};
+			datapointHandlers.alerts = ( request ) => {
+				request.respond( {
+					status: 403,
+					body: JSON.stringify( {
+						code: 403,
+						message: 'Users account is pending review.',
+						data: {
+							status: 403,
+							reason: 'accountPendingReview',
+						},
+					} ),
+				} );
+			};
+			datapointHandlers.clients = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						ADSENSE_CLIENT,
+					] ),
+				} );
+			};
+		} );
+
+		afterAll( async () => {
+			await deactivatePlugin( 'amp' );
+			await deactivatePlugin( 'e2e-tests-apply-content-filters' );
+		} );
+
+		it( 'it output in primary mode', async () => {
+			await setAMPMode( 'primary' );
+			await proceedToAdsenseSetup();
+			await expect( '/hello-world' ).toHaveAMPAutoAdsTag();
+		} );
+		it( 'it output in secondary mode', async () => {
+			await setAMPMode( 'secondary' );
+			await proceedToAdsenseSetup();
+			await expect( '/hello-world' ).toHaveAMPAutoAdsTag();
 		} );
 	} );
 } );
