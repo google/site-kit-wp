@@ -24,7 +24,7 @@ import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 
-describe( 'core/modules store changes', () => {
+describe( 'core/modules settings', () => {
 	let registry;
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
@@ -73,6 +73,7 @@ describe( 'core/modules store changes', () => {
 
 				expect( await registry.dispatch( STORE_NAME ).submitChanges( slug ) ).toBe( controlReturn );
 			} );
+
 			it( 'checks that we can not call submitChanges without a module slug', async () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).submitChanges();
