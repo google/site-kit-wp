@@ -28,7 +28,7 @@ import { Component } from '@wordpress/element';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import PreviewTable from '../../../../components/preview-table';
+import PreviewTable from '../../../../components/PreviewTable';
 import Layout from '../../../../components/layout/layout';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { getTimeInSeconds } from '../../../../util';
@@ -48,8 +48,8 @@ class LegacyAdSenseDashboardWidgetTopPagesTableSmall extends Component {
 				<Layout
 					className="googlesitekit-top-earnings-pages"
 					footer
-					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCtaLink="http://analytics.google.com"
+					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					footerCTALink="http://analytics.google.com"
 					fill
 				>
 					{ component }

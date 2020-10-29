@@ -42,7 +42,7 @@ import PageHeader from '../../../../components/page-header';
 import PageHeaderDateRange from '../../../../components/page-header-date-range';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
 import Alert from '../../../../components/alert';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import { getCurrentDateRange } from '../../../../util/date-range';
@@ -188,12 +188,12 @@ export default function AnalyticsDashboardWidget() {
 								header
 								/* translators: %s: date range */
 								title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), currentDateRange ) }
-								headerCtaLabel={ sprintf(
+								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
 									_x( 'Analytics', 'Service name', 'google-site-kit' )
 								) }
-								headerCtaLink={ visitorsOverview }
+								headerCTALink={ visitorsOverview }
 							>
 								<AnalyticsDashboardWidgetOverview
 									selectedStats={ selectedStats }
@@ -219,14 +219,14 @@ export default function AnalyticsDashboardWidget() {
 								footer
 								/* translators: %s: date range */
 								title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentDateRange ) }
-								headerCtaLink={ topContentServiceURL }
-								headerCtaLabel={ sprintf(
+								headerCTALink={ topContentServiceURL }
+								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
 									_x( 'Analytics', 'Service name', 'google-site-kit' )
 								) }
-								footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-								footerCtaLink={ topContentServiceURL }
+								footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+								footerCTALink={ topContentServiceURL }
 							>
 								<AnalyticsDashboardWidgetTopPagesTable />
 							</Layout>
@@ -241,14 +241,14 @@ export default function AnalyticsDashboardWidget() {
 								footer
 								/* translators: %s: date range */
 								title={ sprintf( __( 'Top acquisition channels over the last %s', 'google-site-kit' ), currentDateRange ) }
-								headerCtaLink={ topAcquisitionServiceURL }
-								headerCtaLabel={ sprintf(
+								headerCTALink={ topAcquisitionServiceURL }
+								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
 									_x( 'Analytics', 'Service name', 'google-site-kit' )
 								) }
-								footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-								footerCtaLink={ topAcquisitionServiceURL }
+								footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+								footerCTALink={ topAcquisitionServiceURL }
 							>
 								<div className="mdc-layout-grid">
 									<div className="mdc-layout-grid__inner">

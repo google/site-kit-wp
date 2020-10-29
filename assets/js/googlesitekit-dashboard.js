@@ -34,10 +34,10 @@ import NotificationCounter from './components/notifications/notification-counter
 import './components/notifications';
 
 const GoogleSitekitDashboard = () => {
-	const { showModuleSetupWizard } = global._googlesitekitLegacyData.setup;
+	const { showModuleSetupWizard, moduleToSetup } = global._googlesitekitLegacyData.setup;
 
 	if ( showModuleSetupWizard ) {
-		return <Setup />;
+		return <Setup moduleSlug={ moduleToSetup } />;
 	}
 
 	return (

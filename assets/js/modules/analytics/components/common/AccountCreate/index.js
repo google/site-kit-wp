@@ -26,8 +26,8 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Button from '../../../../../components/button';
-import Link from '../../../../../components/link';
-import ProgressBar from '../../../../../components/progress-bar';
+import Link from '../../../../../components/Link';
+import ProgressBar from '../../../../../components/ProgressBar';
 import { trackEvent } from '../../../../../util';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import TimezoneSelect from './TimezoneSelect';
@@ -47,10 +47,13 @@ import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
+	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
+		accounts: select( STORE_NAME ).getAccounts(),
+		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+	} ) );
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const canSubmitAccountCreate = useSelect( ( select ) => select( STORE_NAME ).canSubmitAccountCreate() );
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const hasProvisioningScope = useSelect( ( select ) => select( CORE_USER ).hasScope( PROVISIONING_SCOPE ) );
 	const hasAccountCreateForm = useSelect( ( select ) => select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' ) );
@@ -126,7 +129,7 @@ export default function AccountCreate() {
 	const { rollbackSettings } = useDispatch( STORE_NAME );
 	const handleBack = useCallback( () => rollbackSettings() );
 
-	if ( isDoingCreateAccount || isNavigating || accounts === undefined || hasProvisioningScope === undefined ) {
+	if ( isDoingCreateAccount || isNavigating || ! hasResolvedAccounts || hasProvisioningScope === undefined ) {
 		return <ProgressBar />;
 	}
 

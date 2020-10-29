@@ -25,7 +25,6 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,30 +32,24 @@ import { __ } from '@wordpress/i18n';
  */
 import LockIcon from '../../../svg/lock.svg';
 
-class SettingsOverlay extends Component {
-	render() {
-		const { compress } = this.props;
-
-		return (
-			<div className={ classnames(
-				'googlesitekit-overlay',
-				{ 'googlesitekit-overlay--compress': compress }
-			) }>
-				<div className="googlesitekit-overlay__wrapper">
-					<div className="googlesitekit-overlay__icon">
-						<LockIcon width="22" height="30" />
-					</div>
-					<h3 className="
-						googlesitekit-heading-2
-						googlesitekit-overlay__title
-					">
-						{ __( 'Section locked while editing', 'google-site-kit' ) }
-					</h3>
-				</div>
+const SettingsOverlay = ( { compress } ) => (
+	<div className={ classnames(
+		'googlesitekit-overlay',
+		{ 'googlesitekit-overlay--compress': compress }
+	) }>
+		<div className="googlesitekit-overlay__wrapper">
+			<div className="googlesitekit-overlay__icon">
+				<LockIcon width="22" height="30" />
 			</div>
-		);
-	}
-}
+			<h3 className="
+				googlesitekit-heading-2
+				googlesitekit-overlay__title
+			">
+				{ __( 'Section locked while editing', 'google-site-kit' ) }
+			</h3>
+		</div>
+	</div>
+);
 
 SettingsOverlay.propTypes = {
 	compress: PropTypes.bool,

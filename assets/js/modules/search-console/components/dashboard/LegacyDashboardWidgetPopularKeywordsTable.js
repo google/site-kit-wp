@@ -30,7 +30,7 @@ import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import PreviewTable from '../../../../components/preview-table';
+import PreviewTable from '../../../../components/PreviewTable';
 import Layout from '../../../../components/layout/layout';
 import {
 	isDataZeroSearchConsole,
@@ -99,8 +99,8 @@ const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 			<Layout
 				className="googlesitekit-popular-content"
 				footer
-				footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-				footerCtaLink={ baseServiceURL }
+				footerCTALabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+				footerCTALink={ baseServiceURL }
 				fill
 			>
 				<TableOverflowContainer>

@@ -17,28 +17,17 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetchMock from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import AccountSelect from './AccountSelect';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render, freezeFetch } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-
-// Mock apiFetch so we know if it's called.
-jest.mock( '@wordpress/api-fetch' );
-apiFetchMock.mockImplementation( ( ...args ) => {
-	// eslint-disable-next-line no-console
-	console.warn( 'apiFetch', ...args );
-} );
 
 const setupRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsMultiple );
+	registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 };
 
 const setupLoadingRegistry = ( registry ) => {
@@ -46,26 +35,20 @@ const setupLoadingRegistry = ( registry ) => {
 };
 
 describe( 'AccountSelect', () => {
-	afterEach( () => apiFetchMock.mockClear() );
-	afterAll( () => jest.restoreAllMocks() );
-
 	it( 'should render an option for each AdSense account', async () => {
 		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( fixtures.accountsMultiple.length );
-		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should render a loading state when accounts are undefined', async () => {
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/adsense\/data\/accounts/ );
+
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
 
 		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
-
-		// If accounts are `undefined`, we'll make a request to fetch them.
-		expect( apiFetchMock ).toHaveBeenCalled();
-		expect( console ).toHaveWarned();
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {

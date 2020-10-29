@@ -27,17 +27,16 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 import Button from '../../../../components/button';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreate() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
-	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
-	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+	const hasResolvedGetUser = useSelect( ( select ) => select( CORE_USER ).hasFinishedResolution( 'getUser' ) );
 	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: 'admin/accounts/create' } ) );
 
 	const { resetAccounts } = useDispatch( STORE_NAME );
@@ -50,7 +49,7 @@ export default function AccountCreate() {
 		global.window.open( createAccountURL, '_blank' );
 	}, [ createAccountURL ] );
 
-	if ( undefined === accounts || isDoingGetAccounts || ! userEmail ) {
+	if ( ! hasResolvedAccounts || ! hasResolvedGetUser ) {
 		return <ProgressBar />;
 	}
 

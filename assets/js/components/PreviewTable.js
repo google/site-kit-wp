@@ -23,43 +23,31 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import PreviewBlock from './preview-block';
+import PreviewBlock from './PreviewBlock';
 
-class PreviewTable extends Component {
-	render() {
-		const {
-			rows,
-			rowHeight,
-			padding,
-		} = this.props;
-		const rowData = [];
-		for ( let x = 0; rows > x; x++ ) {
-			rowData.push(
-				<div className="googlesitekit-preview-table__row" key={ 'table-row-' + x }>
-					<PreviewBlock
-						width="100%"
-						height={ rowHeight + 'px' }
-					/>
-				</div>
-			);
-		}
-
-		return (
-			<div className={ classnames(
-				'googlesitekit-preview-table',
-				{ 'googlesitekit-preview-table--padding': padding }
-			) }>
-				{ rowData }
+function PreviewTable( { rows, rowHeight, padding } ) {
+	const rowData = [];
+	for ( let x = 0; rows > x; x++ ) {
+		rowData.push(
+			<div className="googlesitekit-preview-table__row" key={ 'table-row-' + x }>
+				<PreviewBlock
+					width="100%"
+					height={ rowHeight + 'px' }
+				/>
 			</div>
 		);
 	}
+
+	return (
+		<div className={ classnames(
+			'googlesitekit-preview-table',
+			{ 'googlesitekit-preview-table--padding': padding }
+		) }>
+			{ rowData }
+		</div>
+	);
 }
 
 PreviewTable.propTypes = {

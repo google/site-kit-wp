@@ -28,7 +28,6 @@ import {
 	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
-
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
 
@@ -229,8 +228,8 @@ storiesOf( 'Analytics Module', module )
 			<Layout
 				header
 				title={ __( 'Audience overview for the last 28 days', 'google-site-kit' ) }
-				headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-				headerCtaLink="http://analytics.google.com"
+				headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+				headerCTALink="http://analytics.google.com"
 			>
 				<AnalyticsDashboardWidgetOverview
 					selectedStats={ selectedStats }
@@ -262,10 +261,10 @@ storiesOf( 'Analytics Module', module )
 					header
 					footer
 					title={ __( 'Top acquisition channels over the last 28 days', 'google-site-kit' ) }
-					headerCtaLink="https://analytics.google.com"
-					headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCtaLink="https://analytics.google.com"
+					headerCTALink="https://analytics.google.com"
+					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					footerCTALink="https://analytics.google.com"
 				>
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">

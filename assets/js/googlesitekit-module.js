@@ -32,7 +32,7 @@ import { Component, render, Suspense, lazy } from '@wordpress/element';
  * Internal dependencies
  */
 import { loadTranslations } from './util';
-import ProgressBar from './components/progress-bar';
+import ProgressBar from './components/ProgressBar';
 import './components/data';
 import './components/notifications';
 import Root from './components/root';
@@ -52,6 +52,7 @@ class GoogleSitekitModule extends Component {
 			showModuleSetupWizard,
 		} = this.state;
 
+		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
 		const { currentAdminPage } = global._googlesitekitLegacyData.admin;
 
 		/**
@@ -96,7 +97,7 @@ class GoogleSitekitModule extends Component {
 						</div>
 					</div>
 				}>
-					<Setup />
+					<Setup moduleSlug={ moduleToSetup } />
 				</Suspense>
 			);
 		}
@@ -120,4 +121,3 @@ domReady( () => {
 		);
 	}
 } );
-
