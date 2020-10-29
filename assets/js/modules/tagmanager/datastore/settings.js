@@ -24,6 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { TYPE_MODULES } from '../../../components/data/constants';
@@ -43,6 +44,7 @@ import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datas
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
+const { createRegistryControl } = Data;
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
@@ -55,54 +57,52 @@ export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS = 'containers with Analyt
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH = 'single GTM Analytics property ID must match Analytics property ID';
 export const INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION = 'existing tag permission is required to submit changes';
 
-export function submitChanges( { select, dispatch } ) {
-	return async () => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		const containerID = select( STORE_NAME ).getContainerID();
+export const submitChanges = createRegistryControl( ( { select, dispatch } ) => async () => {
+	const accountID = select( STORE_NAME ).getAccountID();
+	const containerID = select( STORE_NAME ).getContainerID();
 
-		if ( containerID === CONTAINER_CREATE ) {
-			const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
-			const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_WEB, { containerName } );
+	if ( containerID === CONTAINER_CREATE ) {
+		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
+		const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_WEB, { containerName } );
 
-			if ( error ) {
-				return { error };
-			}
-
-			await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
-			await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+		if ( error ) {
+			return { error };
 		}
 
-		const ampContainerID = select( STORE_NAME ).getAMPContainerID();
+		await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
+		await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+	}
 
-		if ( ampContainerID === CONTAINER_CREATE ) {
-			const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
-			const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_AMP, { containerName } );
+	const ampContainerID = select( STORE_NAME ).getAMPContainerID();
 
-			if ( error ) {
-				return { error };
-			}
+	if ( ampContainerID === CONTAINER_CREATE ) {
+		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
+		const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_AMP, { containerName } );
 
-			await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
-			await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+		if ( error ) {
+			return { error };
 		}
 
-		// This action shouldn't be called if settings haven't changed,
-		// but this prevents errors in tests.
-		if ( select( STORE_NAME ).haveSettingsChanged() ) {
-			const { error } = await dispatch( STORE_NAME ).saveSettings();
+		await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/camelcase-acronyms
+		await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/camelcase-acronyms
+	}
 
-			if ( error ) {
-				return { error };
-			}
+	// This action shouldn't be called if settings haven't changed,
+	// but this prevents errors in tests.
+	if ( select( STORE_NAME ).haveSettingsChanged() ) {
+		const { error } = await dispatch( STORE_NAME ).saveSettings();
+
+		if ( error ) {
+			return { error };
 		}
+	}
 
-		await API.invalidateCache( 'modules', 'tagmanager' );
-		// TODO: Remove once legacy dataAPI is no longer used.
-		invalidateCacheGroup( TYPE_MODULES, 'tagmanager' );
+	await API.invalidateCache( 'modules', 'tagmanager' );
+	// TODO: Remove once legacy dataAPI is no longer used.
+	invalidateCacheGroup( TYPE_MODULES, 'tagmanager' );
 
-		return {};
-	};
-}
+	return {};
+} );
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );

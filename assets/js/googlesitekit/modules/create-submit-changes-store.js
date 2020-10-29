@@ -124,7 +124,7 @@ export function createSubmitChangesStore( {
 	};
 
 	const controls = {
-		[ SUBMIT_CHANGES ]: createRegistryControl( submitChanges ),
+		[ SUBMIT_CHANGES ]: submitChanges,
 	};
 
 	const resolvers = {};
@@ -160,7 +160,7 @@ export function createSubmitChangesStore( {
  * @return {Function} Control function to submit changes.
  */
 export function makeDefaultSubmitChanges( slug, storeName ) {
-	return ( { select, dispatch } ) => async () => {
+	return createRegistryControl( ( { select, dispatch } ) => async () => {
 		if ( select( storeName ).haveSettingsChanged() ) {
 			const { error } = await dispatch( storeName ).saveSettings();
 			if ( error ) {
@@ -174,7 +174,7 @@ export function makeDefaultSubmitChanges( slug, storeName ) {
 		invalidateCacheGroup( TYPE_MODULES, slug );
 
 		return {};
-	};
+	} );
 }
 
 /**

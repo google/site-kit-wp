@@ -24,6 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -41,6 +42,7 @@ import {
 } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
+const { createRegistryControl } = Data;
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
@@ -51,53 +53,50 @@ export const INVARIANT_INVALID_PROFILE_NAME = 'a valid profile name is required 
 export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID = 'cannot submit changes with incorrect internal webPropertyID';
 export const INVARIANT_INSUFFICIENT_TAG_PERMISSIONS = 'cannot submit without proper permissions';
 
-export function submitChanges( { select, dispatch } ) {
-	return async () => {
-		let propertyID = select( STORE_NAME ).getPropertyID();
+export const submitChanges = createRegistryControl( ( { select, dispatch } ) => async () => {
+	let propertyID = select( STORE_NAME ).getPropertyID();
+	if ( propertyID === PROPERTY_CREATE ) {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const { response: property, error } = await dispatch( STORE_NAME ).createProperty( accountID );
 
-		if ( propertyID === PROPERTY_CREATE ) {
-			const accountID = select( STORE_NAME ).getAccountID();
-
-			const { response: property, error } = await dispatch( STORE_NAME ).createProperty( accountID );
-
-			if ( error ) {
-				return { error };
-			}
-			propertyID = property.id;
-			await dispatch( STORE_NAME ).setPropertyID( property.id );
-			await dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+		if ( error ) {
+			return { error };
 		}
 
-		const profileID = select( STORE_NAME ).getProfileID();
+		propertyID = property.id;
+		await dispatch( STORE_NAME ).setPropertyID( property.id );
+		await dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/camelcase-acronyms
+	}
 
-		if ( profileID === PROFILE_CREATE ) {
-			const profileName = select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' );
-			const accountID = select( STORE_NAME ).getAccountID();
-			const { response: profile, error } = await dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
+	const profileID = select( STORE_NAME ).getProfileID();
+	if ( profileID === PROFILE_CREATE ) {
+		const profileName = select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' );
+		const accountID = select( STORE_NAME ).getAccountID();
+		const { response: profile, error } = await dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
 
-			if ( error ) {
-				return { error };
-			}
-			await dispatch( STORE_NAME ).setProfileID( profile.id );
+		if ( error ) {
+			return { error };
 		}
 
-		// This action shouldn't be called if settings haven't changed,
-		// but this prevents errors in tests.
-		if ( select( STORE_NAME ).haveSettingsChanged() ) {
-			const { error } = await dispatch( STORE_NAME ).saveSettings();
+		await dispatch( STORE_NAME ).setProfileID( profile.id );
+	}
 
-			if ( error ) {
-				return { error };
-			}
+	// This action shouldn't be called if settings haven't changed,
+	// but this prevents errors in tests.
+	if ( select( STORE_NAME ).haveSettingsChanged() ) {
+		const { error } = await dispatch( STORE_NAME ).saveSettings();
+
+		if ( error ) {
+			return { error };
 		}
+	}
 
-		await API.invalidateCache( 'modules', 'analytics' );
-		// TODO: Remove once legacy dataAPI is no longer used.
-		invalidateCacheGroup( TYPE_MODULES, 'analytics' );
+	await API.invalidateCache( 'modules', 'analytics' );
+	// TODO: Remove once legacy dataAPI is no longer used.
+	invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
-		return {};
-	};
-}
+	return {};
+} );
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
