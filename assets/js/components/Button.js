@@ -29,6 +29,7 @@ import { forwardRef, useRef, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { MDCRipple } from '../material-components';
+import { useCombinedRefs } from '../util/helpers';
 
 const Button = forwardRef( ( {
 	children,
@@ -45,27 +46,7 @@ const Button = forwardRef( ( {
 	ariaControls,
 	...extraProps
 }, ref ) => {
-	const useCombinedRefs = ( ...refs ) => {
-		const targetRef = useRef();
-
-		useEffect( () => {
-			refs.forEach( ( reference ) => {
-				if ( ! reference ) {
-					return;
-				}
-
-				if ( typeof reference === 'function' ) {
-					reference( targetRef.current );
-				} else {
-					reference.current = targetRef.current;
-				}
-			} );
-		}, [ refs ] );
-
-		return targetRef;
-	};
-
-	const buttonRef = useRef( ref );
+	const buttonRef = useRef( null );
 	const combinedRefs = useCombinedRefs( ref, buttonRef );
 	useEffect( () => {
 		new MDCRipple( combinedRefs.current );

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createElement, Fragment } from '@wordpress/element';
+import { createElement, Fragment, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Appends the passed component to a filtered component.
@@ -89,4 +89,43 @@ export const fillFilterWithComponent = ( NewComponent, newProps ) => {
 			);
 		};
 	};
+};
+
+/**
+ * Merges forwarded refs and refs within a component so that they can be used in functional components.
+ *
+ * Ideally we should be able to write the following:
+ *
+ * ```
+ *	const Component = React.forwardRef( ( props, ref ) => {
+ *  	const innerRef = React.useRef( ref ); // set ref as an initial value
+ * } );
+ * ```
+ * but this is not the case. The ref from outside stays { current: undefined }.
+ * To fix that we need to write some manual update function for the ref
+ * and merge those refs to use the single reference value.
+ *
+ * @since @next
+ *
+ * @param {...Object} refs Object from useRef or createRef functions.
+ * @return {Object} Merged refs object.
+ */
+export const useCombinedRefs = ( ...refs ) => {
+	const targetRef = useRef();
+
+	useEffect( () => {
+		refs.forEach( ( reference ) => {
+			if ( ! reference ) {
+				return;
+			}
+
+			if ( typeof reference === 'function' ) {
+				reference( targetRef.current );
+			} else {
+				reference.current = targetRef.current;
+			}
+		} );
+	}, [ refs ] );
+
+	return targetRef;
 };

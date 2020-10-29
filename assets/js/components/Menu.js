@@ -30,6 +30,7 @@ import { forwardRef, useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { MDCMenu } from '../material-components';
+import { useCombinedRefs } from '../util/helpers';
 
 const Menu = forwardRef( ( {
 	menuOpen,
@@ -37,27 +38,7 @@ const Menu = forwardRef( ( {
 	onSelected,
 	id,
 }, ref ) => {
-	const useCombinedRefs = ( ...refs ) => {
-		const targetRef = useRef();
-
-		useEffect( () => {
-			refs.forEach( ( reference ) => {
-				if ( ! reference ) {
-					return;
-				}
-
-				if ( typeof reference === 'function' ) {
-					reference( targetRef.current );
-				} else {
-					reference.current = targetRef.current;
-				}
-			} );
-		}, [ refs ] );
-
-		return targetRef;
-	};
-
-	const menuRef = useRef( ref );
+	const menuRef = useRef( null );
 	const combinedRefs = useCombinedRefs( ref, menuRef );
 	useEffect( () => {
 		const menu = new MDCMenu( combinedRefs.current );
