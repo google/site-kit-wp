@@ -94,7 +94,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const selectors = {
 	/**
-	 * Returns the moduleSettingsPanelState.
+	 * Gets the settings panel state for a given module.
 	 *
 	 * @since n.e.x.t
 	 *

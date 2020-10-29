@@ -1,5 +1,5 @@
 /**
- * `googlesitekit/modules` datastore: settings tests.
+ * `googlesitekit/modules` datastore: settings panel tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
