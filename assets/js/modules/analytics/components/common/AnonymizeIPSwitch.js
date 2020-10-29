@@ -65,7 +65,7 @@ export default function AnonymizeIPSwitch() {
 					href="https://support.google.com/analytics/answer/2763052"
 					external
 					inherit
-					ariaLabel={ __( 'Learn more about IP anonymization.', 'google-site-kit' ) }
+					aria-label={ __( 'Learn more about IP anonymization.', 'google-site-kit' ) }
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>

@@ -40,7 +40,7 @@ function Link( {
 	caps,
 	danger,
 	disabled,
-	ariaLabel,
+	'aria-label': ariaLabel,
 	...extraProps
 } ) {
 	// Note: the disabled attribute does not alter behavior of anchor tags,
@@ -110,7 +110,6 @@ Link.propTypes = {
 	caps: PropTypes.bool,
 	danger: PropTypes.bool,
 	disabled: PropTypes.bool,
-	ariaLabel: PropTypes.string,
 };
 
 Link.defaultProps = {
@@ -127,7 +126,6 @@ Link.defaultProps = {
 	caps: false,
 	danger: false,
 	disabled: false,
-	ariaLabel: '',
 };
 
 export default Link;

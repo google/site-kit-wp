@@ -45,7 +45,7 @@ export default function SetupAccountNoClient() {
 				<Link
 					href="https://support.google.com/adsense/answer/6023158"
 					external
-					ariaLabel={ __( 'Learn more about updating your AdSense account', 'google-site-kit' ) }
+					aria-label={ __( 'Learn more about updating your AdSense account', 'google-site-kit' ) }
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>

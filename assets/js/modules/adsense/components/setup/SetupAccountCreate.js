@@ -96,7 +96,7 @@ export default function SetupAccountCreate() {
 					href="https://support.google.com/adsense/answer/2659101"
 					inherit
 					external
-					ariaLabel={ __( 'Learn more about adding a user to an existing AdSense account', 'google-site-kit' ) }
+					aria-label={ __( 'Learn more about adding a user to an existing AdSense account', 'google-site-kit' ) }
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>

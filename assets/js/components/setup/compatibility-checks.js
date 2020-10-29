@@ -122,7 +122,7 @@ export default class CompatibilityChecks extends Component {
 
 		if ( ! installed && installURL ) {
 			return {
-				ariaLabel: __( 'Install the helper plugin', 'google-site-kit' ),
+				'aria-label': __( 'Install the helper plugin', 'google-site-kit' ),
 				children: __( 'Install', 'google-site-kit' ),
 				href: installURL,
 				external: false,
@@ -130,7 +130,7 @@ export default class CompatibilityChecks extends Component {
 		}
 		if ( installed && ! active && activateURL ) {
 			return {
-				ariaLabel: __( 'Activate the helper plugin', 'google-site-kit' ),
+				'aria-label': __( 'Activate the helper plugin', 'google-site-kit' ),
 				children: __( 'Activate', 'google-site-kit' ),
 				href: activateURL,
 				external: false,
@@ -138,14 +138,14 @@ export default class CompatibilityChecks extends Component {
 		}
 		if ( installed && active && configureURL ) {
 			return {
-				ariaLabel: __( 'Configure the helper plugin', 'google-site-kit' ),
+				'aria-label': __( 'Configure the helper plugin', 'google-site-kit' ),
 				children: __( 'Configure', 'google-site-kit' ),
 				href: configureURL,
 				external: false,
 			};
 		}
 		return {
-			ariaLabel: __( 'Learn how to install and use the helper plugin', 'google-site-kit' ),
+			'aria-label': __( 'Learn how to install and use the helper plugin', 'google-site-kit' ),
 			children: __( 'Learn how', 'google-site-kit' ),
 			href: 'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
 			external: true,
