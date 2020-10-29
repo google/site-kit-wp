@@ -364,7 +364,7 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( STORE_NAME ).setAccountID( '0' );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 			} );
 
@@ -377,7 +377,7 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( STORE_NAME ).setPropertyID( '0' );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
 			} );
 
@@ -390,7 +390,7 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( STORE_NAME ).setProfileID( '0' );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_PROFILE_SELECTION );
 			} );
 
@@ -416,7 +416,7 @@ describe( 'modules/analytics settings', () => {
 				const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
 				buildAndReceiveWebAndAMP( data );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
 					.toThrow( INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS );
 
 				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
@@ -432,7 +432,7 @@ describe( 'modules/analytics settings', () => {
 
 				registry.dispatch( STORE_NAME ).setPropertyID( PROPERTY_CREATE );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
 					.not.toThrow( INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS );
 				expect( console ).toHaveWarned();
 			} );
@@ -460,7 +460,7 @@ describe( 'modules/analytics settings', () => {
 				}, { propertyID: existingTag.propertyID } );
 				expect( registry.select( STORE_NAME ).hasTagPermission( existingTag.propertyID ) ).toBe( false );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
 					.toThrow( INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
 			} );
 
@@ -487,7 +487,7 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
 				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { profileName: '' } );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_PROFILE_NAME );
 			} );
 
@@ -496,7 +496,7 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_PROFILE_NAME );
 			} );
 
@@ -504,7 +504,7 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 			} );
 		} );
