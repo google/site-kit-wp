@@ -26,15 +26,14 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { TYPE_MODULES } from '../../../components/data/constants';
-import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
+import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/modules/create-submit-changes-store';
 import {
 	isValidAccountID,
 	isValidClientID,
 } from '../util';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createStrictSelect, createValidationSelector } from '../../../googlesitekit/data/utils';
+import { createStrictSelect } from '../../../googlesitekit/data/utils';
 
 const { commonActions, createRegistryControl } = Data;
 
@@ -69,17 +68,11 @@ const fetchSaveUseSnippetStore = createFetchStore( {
 } );
 
 // Invariant error messages.
-export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
-export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
 export const INVARIANT_MISSING_ACCOUNT_STATUS = 'require an account status to be present';
 export const INVARIANT_INVALID_ACCOUNT_ID = 'require account ID to be either empty (if impossible to determine) or valid';
 export const INVARIANT_INVALID_CLIENT_ID = 'require client ID to be either empty (if impossible to determine) or valid';
 
 // Actions
-const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
-const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
-const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
-
 const COMPLETE_ACCOUNT_SETUP = 'COMPLETE_ACCOUNT_SETUP';
 const COMPLETE_SITE_SETUP = 'COMPLETE_SITE_SETUP';
 
@@ -88,7 +81,6 @@ const COMPLETE_SITE_SETUP = 'COMPLETE_SITE_SETUP';
 const RECEIVE_ORIGINAL_ACCOUNT_STATUS = 'RECEIVE_ORIGINAL_ACCOUNT_STATUS';
 
 const baseInitialState = {
-	isDoingSubmitChanges: false,
 	originalAccountStatus: undefined,
 };
 
@@ -112,38 +104,6 @@ const baseActions = {
 		}
 
 		yield fetchSaveUseSnippetStore.actions.fetchSaveUseSnippet( useSnippet );
-	},
-
-	/**
-	 * Submits all changes currently present in the client, persisting them on the server.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @return {Object} Empty object on success, object with `error` property on failure.
-	 */
-	*submitChanges() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		yield {
-			payload: {},
-			type: START_SUBMIT_CHANGES,
-		};
-
-		const result = yield {
-			payload: {},
-			type: SUBMIT_CHANGES,
-		};
-
-		if ( result.error ) {
-			yield registry.dispatch( STORE_NAME ).receiveError( result.error, 'submitChanges', [] );
-		}
-
-		yield {
-			payload: {},
-			type: FINISH_SUBMIT_CHANGES,
-		};
-
-		return result;
 	},
 
 	/**
@@ -195,23 +155,6 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => async () => {
-		// This action shouldn't be called if settings haven't changed,
-		// but this prevents errors in tests.
-		if ( registry.select( STORE_NAME ).haveSettingsChanged() ) {
-			const { error } = await registry.dispatch( STORE_NAME ).saveSettings();
-
-			if ( error ) {
-				return { error };
-			}
-		}
-
-		await API.invalidateCache( 'modules', 'adsense' );
-		// TODO: Remove once legacy dataAPI is no longer used.
-		invalidateCacheGroup( TYPE_MODULES, 'adsense' );
-
-		return {};
-	} ),
 	// This is a control to allow for asynchronous logic using external action dispatchers.
 	[ COMPLETE_ACCOUNT_SETUP ]: createRegistryControl( ( registry ) => async () => {
 		await registry.dispatch( STORE_NAME ).setAccountSetupComplete( true );
@@ -252,20 +195,6 @@ const baseControls = {
 
 const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_SUBMIT_CHANGES: {
-			return {
-				...state,
-				isDoingSubmitChanges: true,
-			};
-		}
-
-		case FINISH_SUBMIT_CHANGES: {
-			return {
-				...state,
-				isDoingSubmitChanges: false,
-			};
-		}
-
 		// This action is purely for testing, the value is typically handled
 		// as a side-effect from 'RECEIVE_SETTINGS' (see below).
 		case RECEIVE_ORIGINAL_ACCOUNT_STATUS: {
@@ -318,18 +247,6 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Checks whether changes are currently being submitted.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} `true` if submitting, `false` if not.
-	 */
-	isDoingSubmitChanges( state ) {
-		return !! state.isDoingSubmitChanges;
-	},
-
-	/**
 	 * Checks whether the useSnippet value is currently being saved.
 	 *
 	 * @since 1.9.0
@@ -360,10 +277,7 @@ const baseSelectors = {
 	},
 };
 
-const {
-	safeSelector: canSubmitChanges,
-	dangerousSelector: __dangerousCanSubmitChanges,
-} = createValidationSelector( ( select ) => {
+export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
 	const {
 		getAccountID,
@@ -383,7 +297,7 @@ const {
 
 	const clientID = getClientID();
 	invariant( '' === clientID || isValidClientID( clientID ), INVARIANT_INVALID_CLIENT_ID );
-} );
+}
 
 const store = Data.combineStores(
 	fetchSaveUseSnippetStore,
@@ -393,11 +307,7 @@ const store = Data.combineStores(
 		controls: baseControls,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
-		selectors: {
-			...baseSelectors,
-			canSubmitChanges,
-			__dangerousCanSubmitChanges,
-		},
+		selectors: baseSelectors,
 	}
 );
 

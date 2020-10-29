@@ -27,7 +27,7 @@ import clients from './clients';
 import report from './report';
 import tags from './tags';
 import urlchannels from './urlchannels';
-import settings from './settings';
+import settings, { validateCanSubmitChanges } from './settings';
 import adblocker from './adblocker';
 import service from './service';
 import { STORE_NAME } from './constants';
@@ -45,6 +45,7 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 		'ownerID',
 	],
 	adminPage: 'googlesitekit-module-adsense',
+	validateCanSubmitChanges,
 } );
 
 const store = Data.combineStores(
