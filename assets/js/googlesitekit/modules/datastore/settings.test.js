@@ -84,7 +84,7 @@ describe( 'core/modules settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
-			it( 'it proxies the selector call to the module with the given slug', async () => {
+			it( 'proxies the selector call to the module with the given slug', async () => {
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
 
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges( slug ) ).toBe( false );
@@ -94,7 +94,7 @@ describe( 'core/modules settings', () => {
 		} );
 
 		describe( 'canSubmitChanges', () => {
-			it( 'it proxies the selector call to the module with the given slug', () => {
+			it( 'proxies the selector call to the module with the given slug', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( false );
 				moduleCanSubmitChanges = true;
 				expect( registry.select( STORE_NAME ).canSubmitChanges( slug ) ).toBe( true );
