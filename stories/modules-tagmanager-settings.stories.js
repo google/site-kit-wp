@@ -25,14 +25,15 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
-import { SettingsMain as TagManagerSettings } from '../assets/js/modules/tagmanager/components/settings';
+import { SettingsEdit, SettingsView } from '../assets/js/modules/tagmanager/components/settings';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, FORM_SETUP } from '../assets/js/modules/tagmanager/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, provideModules, freezeFetch } from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
-const Settings = createLegacySettingsWrapper( 'tagmanager', TagManagerSettings );
+const Settings = createLegacySettingsWrapper( 'tagmanager' );
 
 const defaultSettings = {
 	accountID: '',
@@ -47,6 +48,10 @@ const defaultSettings = {
 storiesOf( 'Tag Manager Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
+		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
+			settingsEditComponent: SettingsEdit,
+			settingsViewComponent: SettingsView,
+		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		provideUserAuthentication( registry );
