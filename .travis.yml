@@ -44,7 +44,7 @@ before_install:
     fi
   - |
     if [[ "$PHP" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
-      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer:1 install
+      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
     fi
   - |
     if [[ "$WP_VERSION" == "latest" ]]; then
@@ -75,7 +75,7 @@ script:
   - |
     if [[ "$E2E" == "1" ]]; then
       npm run build:test || exit 1 # Build for tests.
-      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer:1 install
+      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
       npm run env:start || exit 1
       npm run test:e2e:ci || exit 1 # E2E tests.
     fi
