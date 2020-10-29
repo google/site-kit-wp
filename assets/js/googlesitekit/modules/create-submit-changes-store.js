@@ -53,7 +53,7 @@ const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
  */
 export function createSubmitChangesStore( {
 	storeName,
-	submitChanges = () => ( {} ),
+	submitChanges = () => () => ( {} ),
 	validateCanSubmitChanges = () => {},
 } = {} ) {
 	const initialState = {
@@ -160,14 +160,16 @@ export function createSubmitChangesStore( {
  * @return {Function} Control function to submit changes.
  */
 export function makeDefaultSubmitChanges( slug, storeName ) {
-	return async ( registry ) => {
-		if ( registry.select( storeName ).haveSettingsChanged() ) {
-			const { error } = await registry.dispatch( storeName ).saveSettings();
+	return ( { select, dispatch } ) => async () => {
+		if ( select( storeName ).haveSettingsChanged() ) {
+			const { error } = await dispatch( storeName ).saveSettings();
 			if ( error ) {
 				return { error };
 			}
 		}
+
 		await API.invalidateCache( 'modules', slug );
+
 		// TODO: Remove once legacy dataAPI is no longer used.
 		invalidateCacheGroup( TYPE_MODULES, slug );
 

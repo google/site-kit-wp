@@ -21,6 +21,7 @@
  */
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
+import { submitChanges, validateCanSubmitChanges } from './settings';
 
 let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 	storeName: STORE_NAME,
@@ -33,6 +34,8 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 		'useSnippet',
 		'ownerID',
 	],
+	submitChanges,
+	validateCanSubmitChanges,
 } );
 
 // Rename generated pieces to adhere to our convention.

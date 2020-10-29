@@ -25,7 +25,6 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
@@ -39,16 +38,13 @@ import {
 	getNormalizedContainerName,
 } from '../util';
 import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP, FORM_SETUP } from './constants';
+import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/modules/create-submit-changes-store';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../analytics/datastore/constants';
-import { createStrictSelect, createValidationSelector } from '../../../googlesitekit/data/utils';
-
-const { createRegistryControl } = Data;
+import { createStrictSelect } from '../../../googlesitekit/data/utils';
 
 // Invariant error messages.
-export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
-export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
 export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
 export const INVARIANT_INVALID_AMP_CONTAINER_SELECTION = 'a valid ampContainerID selection is required to submit changes';
 export const INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID = 'a valid internalAMPContainerID is required to submit changes';
@@ -59,51 +55,8 @@ export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS = 'containers with Analyt
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH = 'single GTM Analytics property ID must match Analytics property ID';
 export const INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION = 'existing tag permission is required to submit changes';
 
-// Actions
-const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
-const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
-const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
-
-export const initialState = {
-	isDoingSubmitChanges: false,
-};
-
-export const actions = {
-	/**
-	 * Submits all changes currently present in the client, persisting them on the server.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @return {Object} Empty object on success, object with `error` property on failure.
-	 */
-	*submitChanges() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		yield {
-			payload: {},
-			type: START_SUBMIT_CHANGES,
-		};
-
-		const result = yield {
-			payload: {},
-			type: SUBMIT_CHANGES,
-		};
-
-		if ( result.error ) {
-			yield registry.dispatch( STORE_NAME ).receiveError( result.error, 'submitChanges', [] );
-		}
-
-		yield {
-			payload: {},
-			type: FINISH_SUBMIT_CHANGES,
-		};
-
-		return result;
-	},
-};
-
-export const controls = {
-	[ SUBMIT_CHANGES ]: createRegistryControl( ( { select, dispatch } ) => async () => {
+export function submitChanges( { select, dispatch } ) {
+	return async () => {
 		const accountID = select( STORE_NAME ).getAccountID();
 		const containerID = select( STORE_NAME ).getContainerID();
 
@@ -148,50 +101,10 @@ export const controls = {
 		invalidateCacheGroup( TYPE_MODULES, 'tagmanager' );
 
 		return {};
-	} ),
-};
+	};
+}
 
-export const reducer = ( state, { type } ) => {
-	switch ( type ) {
-		case START_SUBMIT_CHANGES: {
-			return {
-				...state,
-				isDoingSubmitChanges: true,
-			};
-		}
-
-		case FINISH_SUBMIT_CHANGES: {
-			return {
-				...state,
-				isDoingSubmitChanges: false,
-			};
-		}
-
-		default:
-			return state;
-	}
-};
-
-export const resolvers = {};
-
-export const selectors = {
-	/**
-	 * Checks whether changes are currently being submitted.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} `true` if submitting, `false` if not.
-	 */
-	isDoingSubmitChanges( state ) {
-		return !! state.isDoingSubmitChanges;
-	},
-};
-
-const {
-	safeSelector: canSubmitChanges,
-	dangerousSelector: __dangerousCanSubmitChanges,
-} = createValidationSelector( ( select ) => {
+export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
 	// Strict select will cause all selector functions to throw an error
 	// if `undefined` is returned, otherwise it behaves the same as `select`.
@@ -273,17 +186,4 @@ const {
 	if ( hasExistingTag() ) {
 		invariant( hasExistingTagPermission(), INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 	}
-} );
-
-export default {
-	initialState,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors: {
-		...selectors,
-		canSubmitChanges,
-		__dangerousCanSubmitChanges,
-	},
-};
+}

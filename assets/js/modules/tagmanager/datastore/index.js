@@ -26,7 +26,6 @@ import baseModuleStore from './base';
 import accounts from './accounts';
 import containers from './containers';
 import tags from './tags';
-import settings from './settings';
 import versions from './versions';
 import service from './service';
 
@@ -35,7 +34,6 @@ const store = Data.combineStores(
 	accounts,
 	containers,
 	tags,
-	settings,
 	versions,
 	createSnapshotStore( STORE_NAME ),
 	service
