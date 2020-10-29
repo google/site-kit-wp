@@ -166,6 +166,7 @@
     "@wordpress/browserslist-config": "^2.7.0",
     "@wordpress/e2e-test-utils": "^4.11.0",
     "@wordpress/eslint-plugin": "^7.1.0",
+    "@wordpress/jest-console": "^3.9.0",
     "amphtml-validator": "^1.0.31",
     "archiver": "^5.0.2",
     "babel-loader": "^8.1.0",

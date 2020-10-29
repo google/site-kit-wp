@@ -37,6 +37,7 @@ import {
 	setupSiteKit,
 	useRequestInterception,
 } from '../../../utils';
+import liveContainerVersionFixture from '../../../../../assets/js/modules/tagmanager/datastore/__fixtures__/live-container-version.json';
 
 async function proceedToTagManagerSetup() {
 	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
@@ -59,8 +60,8 @@ describe( 'Tag Manager module setup', () => {
 					status: 200,
 				} );
 			} else if ( request.url().match( 'modules/tagmanager/data/live-container-version' ) ) {
-				// A 404 is returned for containers without a published version.
-				request.respond( { status: 404, body: JSON.stringify( { code: 404 } ) } );
+				// Return a live container version without GA.
+				request.respond( { status: 200, body: JSON.stringify( liveContainerVersionFixture ) } );
 			} else if ( request.url().match( /^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/ ) ) {
 				request.respond( { status: 200 } );
 			} else {
