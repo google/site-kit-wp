@@ -36,7 +36,7 @@ export const initialState = {
 
 export const actions = {
 	/**
-	 * Dispatches the module settings panel state action.
+	 * Sets the module settings panel state for a given module.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -66,7 +66,7 @@ export const reducer = ( state, { type, payload } ) => {
 		 */
 		case SET_MODULE_SETTINGS_PANEL_STATE: {
 			const { slug, value } = payload;
-			const panelState = state.panelState;
+			const panelState = { ...state.panelState };
 			const previouslyEdit = panelState[ slug ] && panelState[ slug ] === 'edit' && [ 'closed', 'view' ].includes( value );
 			Object.entries( panelState ).forEach(
 				( [ stateKey, stateValue ] ) => {
