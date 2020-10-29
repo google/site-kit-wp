@@ -27,7 +27,7 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { TYPE_MODULES } from '../../components/data/constants';
-import { invalidateCacheGroup } from '../../components/data/constants/invalidate-cache-group';
+import { invalidateCacheGroup } from '../../components/data/invalidate-cache-group';
 import { createStateSelectors, createStrictSelect, createValidationSelector } from '../data/utils';
 const { createRegistryControl } = Data;
 
