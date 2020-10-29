@@ -71,6 +71,9 @@ export function createSubmitChangesStore( {
 		 * @return {Object} Empty object on success, object with `error` property on failure.
 		 */
 		*submitChanges() {
+			const { dispatch } = yield Data.commonActions.getRegistry();
+			dispatch( storeName ).clearError( 'submitChanges', [] );
+
 			yield {
 				type: START_SUBMIT_CHANGES,
 				payload: {},
@@ -82,7 +85,6 @@ export function createSubmitChangesStore( {
 			};
 
 			if ( result.error ) {
-				const { dispatch } = yield Data.commonActions.getRegistry();
 				yield dispatch( storeName ).receiveError( result.error, 'submitChanges', [] );
 			}
 
