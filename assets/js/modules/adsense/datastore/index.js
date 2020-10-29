@@ -20,33 +20,17 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
+import baseModuleStore from './base';
 import accounts from './accounts';
 import alerts from './alerts';
 import clients from './clients';
 import report from './report';
 import tags from './tags';
 import urlchannels from './urlchannels';
-import settings, { validateCanSubmitChanges } from './settings';
+import settings from './settings';
 import adblocker from './adblocker';
 import service from './service';
 import { STORE_NAME } from './constants';
-
-const baseModuleStore = Modules.createModuleStore( 'adsense', {
-	storeName: STORE_NAME,
-	settingSlugs: [
-		'accountID',
-		'clientID',
-		'useSnippet',
-		'accountStatus',
-		'siteStatus',
-		'accountSetupComplete',
-		'siteSetupComplete',
-		'ownerID',
-	],
-	adminPage: 'googlesitekit-module-adsense',
-	validateCanSubmitChanges,
-} );
 
 const store = Data.combineStores(
 	baseModuleStore,

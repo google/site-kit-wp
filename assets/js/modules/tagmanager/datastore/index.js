@@ -20,50 +20,15 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 import { STORE_NAME } from './constants';
+import baseModuleStore from './base';
 import accounts from './accounts';
 import containers from './containers';
 import tags from './tags';
 import settings from './settings';
 import versions from './versions';
 import service from './service';
-
-let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
-	storeName: STORE_NAME,
-	settingSlugs: [
-		'accountID',
-		'ampContainerID',
-		'containerID',
-		'internalContainerID',
-		'internalAMPContainerID',
-		'useSnippet',
-		'ownerID',
-	],
-} );
-
-// Rename generated pieces to adhere to our convention.
-baseModuleStore = ( ( { actions, selectors, ...store } ) => {
-	// eslint-disable-next-line sitekit/camelcase-acronyms
-	const { setAmpContainerID, ...restActions } = actions;
-	// eslint-disable-next-line sitekit/camelcase-acronyms
-	const { getAmpContainerID, ...restSelectors } = selectors;
-
-	return {
-		...store,
-		actions: {
-			...restActions,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
-			setAMPContainerID: setAmpContainerID,
-		},
-		selectors: {
-			...restSelectors,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
-			getAMPContainerID: getAmpContainerID,
-		},
-	};
-} )( baseModuleStore );
 
 const store = Data.combineStores(
 	baseModuleStore,

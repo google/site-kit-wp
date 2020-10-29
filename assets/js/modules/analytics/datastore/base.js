@@ -1,5 +1,5 @@
 /**
- * `modules/optimize` data store
+ * `modules/analytics` base data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,17 +19,22 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
-import baseModuleStore from './base';
-import service from './service';
 
-const store = Data.combineStores(
-	baseModuleStore,
-	service,
-);
+const baseModuleStore = Modules.createModuleStore( 'analytics', {
+	storeName: STORE_NAME,
+	settingSlugs: [
+		'anonymizeIP',
+		'accountID',
+		'profileID',
+		'propertyID',
+		'internalWebPropertyID',
+		'useSnippet',
+		'trackingDisabled',
+		'ownerID',
+	],
+	adminPage: 'googlesitekit-module-analytics',
+} );
 
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
-
-export default store;
+export default baseModuleStore;

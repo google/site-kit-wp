@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
+import baseModuleStore from './base';
 import accounts from './accounts';
 import adsense from './adsense';
 import goals from './goals';
@@ -32,21 +32,6 @@ import settings from './settings';
 import tags from './tags';
 import service from './service';
 import { STORE_NAME } from './constants';
-
-const baseModuleStore = Modules.createModuleStore( 'analytics', {
-	storeName: STORE_NAME,
-	settingSlugs: [
-		'anonymizeIP',
-		'accountID',
-		'profileID',
-		'propertyID',
-		'internalWebPropertyID',
-		'useSnippet',
-		'trackingDisabled',
-		'ownerID',
-	],
-	adminPage: 'googlesitekit-module-analytics',
-} );
 
 const store = Data.combineStores(
 	baseModuleStore,
