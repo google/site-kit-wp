@@ -96,6 +96,7 @@ class DashboardSplashApp extends Component {
 	}
 
 	render() {
+		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
 		const { usingProxy } = global._googlesitekitBaseData;
 
 		// If `usingProxy` is true it means the proxy is in use. We should never
@@ -142,7 +143,7 @@ class DashboardSplashApp extends Component {
 		} else if ( this.state.showAuthenticationSetupWizard ) {
 			return <SetupUsingGCP />;
 		}
-		return <SetupWrapper />;
+		return <SetupWrapper moduleSlug={ moduleToSetup } />;
 	}
 }
 

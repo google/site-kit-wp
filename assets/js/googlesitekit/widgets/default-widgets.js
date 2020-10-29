@@ -1,5 +1,5 @@
 /**
- * Optimize module initialization.
+ * Widgets API default widgets
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,26 +16,8 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import domReady from '@wordpress/dom-ready';
+export const WIDGET_URL_SEARCH = 'urlSearch';
 
-/**
- * Internal dependencies
- */
-import Modules from 'googlesitekit-modules';
-import './datastore';
-import { SetupMain } from './components/setup';
-import { SettingsEdit, SettingsView } from './components/settings';
-
-domReady( () => {
-	Modules.registerModule(
-		'optimize',
-		{
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
-			setupComponent: SetupMain,
-		}
-	);
-} );
+export default {
+	WIDGET_URL_SEARCH,
+};

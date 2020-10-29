@@ -52,6 +52,7 @@ class GoogleSitekitModule extends Component {
 			showModuleSetupWizard,
 		} = this.state;
 
+		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
 		const { currentAdminPage } = global._googlesitekitLegacyData.admin;
 
 		/**
@@ -62,7 +63,7 @@ class GoogleSitekitModule extends Component {
 		const moduleHasSetupWizard = applyFilters( 'googlesitekit.moduleHasSetupWizard', true, currentAdminPage );
 
 		if ( showModuleSetupWizard && moduleHasSetupWizard ) {
-			return <Setup />;
+			return <Setup moduleSlug={ moduleToSetup } />;
 		}
 
 		return <ModuleApp />;
@@ -84,4 +85,3 @@ domReady( () => {
 		);
 	}
 } );
-
