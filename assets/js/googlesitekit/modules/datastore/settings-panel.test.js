@@ -22,7 +22,7 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
-import settings from './settings';
+import settingsPanel from './settings-panel';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 
 describe( 'core/modules module settings panel', () => {
@@ -47,7 +47,7 @@ describe( 'core/modules module settings panel', () => {
 					isModuleActive,
 				},
 			},
-			settings,
+			settingsPanel,
 		) );
 
 		registry.registerStore( moduleStoreName, Data.combineStores(
