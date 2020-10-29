@@ -44,12 +44,6 @@ import {
 } from './components/dashboard';
 
 addFilter(
-	'googlesitekit.ModuleSetup-adsense',
-	'googlesitekit.AdSenseModuleSetup',
-	fillFilterWithComponent( SetupMain )
-);
-
-addFilter(
 	'googlesitekit.ModuleSetupIncomplete',
 	'googlesitekit.AdSenseModuleSettingsSetupIncomplete',
 	fillFilterWithComponent( ( props ) => {
@@ -89,6 +83,7 @@ domReady( () => {
 		{
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
+			setupComponent: SetupMain,
 		}
 	);
 

@@ -165,12 +165,12 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
+				'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
 				'googlesitekit-dashboard': './assets/js/googlesitekit-dashboard.js',
 				'googlesitekit-dashboard-details': './assets/js/googlesitekit-dashboard-details.js',
 				'googlesitekit-dashboard-splash': './assets/js/googlesitekit-dashboard-splash.js',
 				'googlesitekit-wp-dashboard': './assets/js/googlesitekit-wp-dashboard.js',
-				'googlesitekit-adminbar-loader': './assets/js/googlesitekit-adminbar-loader.js',
 				'googlesitekit-base': './assets/js/googlesitekit-base.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
 				// Needed to test if a browser extension blocks this by naming convention.
