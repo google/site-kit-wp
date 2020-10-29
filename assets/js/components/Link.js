@@ -50,17 +50,14 @@ function Link( {
 
 	const getAriaLabel = () => {
 		let label = ariaLabel;
-		const newTabLabel = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
 
-		if ( ariaLabel === '' && external && typeof children === 'string' ) {
-			label = children;
+		if ( ! external ) {
+			return label;
+		} else if ( typeof children === 'string' ) {
+			label = label || children;
 		}
 
-		if ( external ) {
-			label += ` ${ newTabLabel }`;
-		}
-
-		return label;
+		return `${ label } ${ _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' ) }`;
 	};
 
 	return (
