@@ -21,6 +21,7 @@
  */
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
+import { submitChanges, validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	storeName: STORE_NAME,
@@ -35,6 +36,8 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 		'ownerID',
 	],
 	adminPage: 'googlesitekit-module-analytics',
+	submitChanges,
+	validateCanSubmitChanges,
 } );
 
 export default baseModuleStore;

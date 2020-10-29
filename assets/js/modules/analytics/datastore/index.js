@@ -28,7 +28,6 @@ import goals from './goals';
 import properties from './properties';
 import profiles from './profiles';
 import report from './report';
-import settings from './settings';
 import tags from './tags';
 import service from './service';
 import { STORE_NAME } from './constants';
@@ -41,7 +40,6 @@ const store = Data.combineStores(
 	properties,
 	profiles,
 	report,
-	settings,
 	createSnapshotStore( STORE_NAME ),
 	tags,
 	service
