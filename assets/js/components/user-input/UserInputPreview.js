@@ -74,10 +74,10 @@ export default function UserInputPreview( { back, goTo } ) {
 		<div className="googlesitekit-user-input__preview">
 			<Row>
 				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
-					{ ( isSavingSettings || isNavigating ) && ! error && (
+					{ ( isSavingSettings || isNavigating ) && (
 						<ProgressBar />
 					) }
-					{ ( ( ! isSavingSettings && ! isNavigating ) || error ) && (
+					{ ! isSavingSettings && ! isNavigating && (
 						<Fragment>
 							<Row>
 								<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
