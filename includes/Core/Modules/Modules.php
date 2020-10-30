@@ -225,6 +225,7 @@ final class Modules {
 				'Google\Site_Kit\Modules\Site_Verification',
 				'Google\Site_Kit\Modules\Search_Console',
 				'Google\Site_Kit\Modules\Analytics',
+				'Google\Site_Kit\Modules\Analytics_4',
 				'Google\Site_Kit\Modules\Optimize',
 				'Google\Site_Kit\Modules\Tag_Manager',
 				'Google\Site_Kit\Modules\AdSense',
