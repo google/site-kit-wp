@@ -12,7 +12,10 @@
  */
 
 
-// Applying the filters outside of the loop breaks the AdSense snippet with AMP enabled.
+/**
+ * Applying the filters outside of the loop causes the <amp-auto-ads> not be rendered on the single template
+ * @see https://github.com/google/site-kit-wp/issues/2114
+ */
 add_action(
 	'wp_head',
 	function() {
