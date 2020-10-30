@@ -219,7 +219,6 @@ const {
 	const { getPropertyID } = strictSelect( MODULES_ANALYTICS );
 
 	const accountID = getAccountID();
-	const ampContainerID = getAMPContainerID();
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
@@ -228,7 +227,7 @@ const {
 
 	const containerID = getContainerID();
 	if ( containerID === CONTAINER_CREATE ) {
-		const containerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
+		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
 		invariant( isValidContainerName( containerName ), INVARIANT_INVALID_CONTAINER_NAME );
 
 		const containers = getContainers( accountID );
@@ -236,21 +235,23 @@ const {
 		invariant( isUniqueContainerName( containerName, containers ), `a container with "${ normalizedContainerName }" name already exists` );
 	}
 
-	if ( ampContainerID === CONTAINER_CREATE ) {
-		const ampContainerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
-		invariant( isValidContainerName( ampContainerName ), INVARIANT_INVALID_CONTAINER_NAME );
-
-		const containers = getContainers( accountID );
-		const normalizedContainerName = getNormalizedContainerName( ampContainerName );
-		invariant( isUniqueContainerName( ampContainerName, containers ), `an AMP container with "${ normalizedContainerName }" name already exists` );
-	}
-
 	if ( isAMP() ) {
+		const ampContainerID = getAMPContainerID();
+
 		// If AMP is active, the AMP container ID must be valid, regardless of mode.
 		invariant( isValidContainerSelection( ampContainerID ), INVARIANT_INVALID_AMP_CONTAINER_SELECTION );
 		// If AMP is active, and a valid AMP container ID is selected, the internal ID must also be valid.
 		if ( isValidContainerID( ampContainerID ) ) {
 			invariant( isValidInternalContainerID( getInternalAMPContainerID() ), INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID );
+		}
+
+		if ( ampContainerID === CONTAINER_CREATE ) {
+			const ampContainerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
+			invariant( isValidContainerName( ampContainerName ), INVARIANT_INVALID_CONTAINER_NAME );
+
+			const containers = getContainers( accountID );
+			const normalizedContainerName = getNormalizedContainerName( ampContainerName );
+			invariant( isUniqueContainerName( ampContainerName, containers ), `an AMP container with "${ normalizedContainerName }" name already exists` );
 		}
 	}
 

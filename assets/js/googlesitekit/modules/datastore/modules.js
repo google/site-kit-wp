@@ -60,6 +60,7 @@ const moduleDefaults = {
 	icon: null,
 	settingsEditComponent: null,
 	settingsViewComponent: null,
+	setupComponent: null,
 };
 
 const normalizeModules = memize(
@@ -212,6 +213,7 @@ const baseActions = {
 	 * Registers a module.
 	 *
 	 * @since 1.13.0
+	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
@@ -220,8 +222,9 @@ const baseActions = {
 	 * @param {string}      [settings.icon]                  Optional. Module icon. Default empty string.
 	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
-	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel.
-	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel.
+	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel. Default none.
+	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
+	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
 	 * @return {Object} Redux-style action.
 	 */
 	registerModule( slug, {
@@ -232,6 +235,7 @@ const baseActions = {
 		homepage,
 		settingsEditComponent,
 		settingsViewComponent,
+		setupComponent,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
@@ -243,6 +247,7 @@ const baseActions = {
 			homepage,
 			settingsEditComponent,
 			settingsViewComponent,
+			setupComponent,
 		};
 
 		return {
