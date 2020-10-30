@@ -121,10 +121,13 @@ const baseActions = {
 		invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
 
 		const registry = yield Data.commonActions.getRegistry();
-		registry.dispatch( STORE_NAME ).setProfileID( '' );
-		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( '' );
-		registry.dispatch( STORE_NAME ).setPropertyID( '' );
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+
+		registry.dispatch( STORE_NAME ).setSettings( {
+			accountID,
+			internalWebPropertyID: '',
+			propertyID: '',
+			profileID: '',
+		} );
 
 		if ( ACCOUNT_CREATE === accountID ) {
 			return;

@@ -151,12 +151,12 @@ const baseActions = {
 				return;
 			}
 
-			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
-			registry.dispatch( STORE_NAME ).setProfileID( '' );
-			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
-
 			if ( PROPERTY_CREATE === propertyID ) {
-				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+				registry.dispatch( STORE_NAME ).setSettings( {
+					propertyID,
+					profileID: PROFILE_CREATE,
+				} );
+
 				return;
 			}
 
@@ -167,7 +167,11 @@ const baseActions = {
 				internalPropertyID = property.internalWebPropertyId; // eslint-disable-line sitekit/camelcase-acronyms
 			}
 
-			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
+			registry.dispatch( STORE_NAME ).setSettings( {
+				propertyID,
+				internalWebPropertyID: internalPropertyID || '',
+				profileID: '',
+			} );
 
 			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/camelcase-acronyms
