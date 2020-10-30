@@ -347,7 +347,6 @@ class Entity_FactoryTest extends TestCase {
 		// * 'term' (taxonomy 'post_format', slug 'post-format-image', title 'post-format-image')
 		// * 'term' (taxonomy 'customtaxonomy', slug 'coffee', title 'Coffee')
 		// * 'user' (slug 'johndoe', title 'John Doe')
-		// phpcs:disable WordPressVIPMinimum.Variables.VariableAnalysis.SelfInsideClosure
 		return array(
 			'front page'                   => array(
 				array(),
@@ -767,7 +766,6 @@ class Entity_FactoryTest extends TestCase {
 				},
 			),
 		);
-		// phpcs:enable WordPressVIPMinimum.Variables.VariableAnalysis.SelfInsideClosure
 	}
 
 	protected function assertEntity( Entity $expected, $actual ) {
