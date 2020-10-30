@@ -49,10 +49,9 @@ const Button = forwardRef( ( {
 	...extraProps
 }, ref ) => {
 	const buttonRef = useRef( null );
-	const mergedRefs = useMergedRef( ref, buttonRef );
 	useEffect( () => {
-		MDCRipple.attachTo( mergedRefs.current );
-	}, [ mergedRefs.current ] );
+		MDCRipple.attachTo( buttonRef.current );
+	}, [ buttonRef.current ] );
 
 	// Use a button if disabled, even if a href is provided to ensure expected behavior.
 	const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
@@ -68,7 +67,7 @@ const Button = forwardRef( ( {
 				}
 			) }
 			href={ disabled ? undefined : href }
-			ref={ mergedRefs }
+			ref={ useMergedRef( ref, buttonRef ) }
 			disabled={ !! disabled }
 			target={ target || '_self' }
 			aria-haspopup={ ariaHaspopup }

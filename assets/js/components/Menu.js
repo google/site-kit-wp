@@ -39,15 +39,15 @@ const Menu = forwardRef( ( {
 	id,
 }, ref ) => {
 	const menuRef = useRef( null );
-	const mergedRefs = useMergedRef( ref, menuRef );
+
 	useEffect( () => {
-		const menu = new MDCMenu( mergedRefs.current );
+		const menu = new MDCMenu( menuRef.current );
 		menu.open = menuOpen;
 		menu.setDefaultFocusState( 1 );
-	}, [ mergedRefs.current, menuOpen ] );
+	}, [ menuRef.current, menuOpen ] );
 
 	return (
-		<div className="mdc-menu mdc-menu-surface" ref={ mergedRefs }>
+		<div className="mdc-menu mdc-menu-surface" ref={ useMergedRef( ref, menuRef ) }>
 			<ul id={ id } className="mdc-list" role="menu" aria-hidden={ ! menuOpen } aria-orientation="vertical" tabIndex="-1">
 				{ menuItems.map( ( item, index ) => (
 					<li
