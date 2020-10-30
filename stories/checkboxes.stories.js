@@ -29,7 +29,7 @@ storiesOf( 'Global', module )
 					checked
 					name="googlesitekit__checkbox"
 					id="googlesitekit-checkbox-2"
-					onChange={ () => {
+					onChange={ ( e ) => {
 						global.console.log( e.target.value );
 					} }
 					value="value-2"
@@ -43,7 +43,7 @@ storiesOf( 'Global', module )
 					disabled
 					id="googlesitekit-checkbox-3"
 					name="googlesitekit__checkbox"
-					onChange={ () => {
+					onChange={ ( e ) => {
 						global.console.log( e.target.value );
 					} }
 					value="value-3"
