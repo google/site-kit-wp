@@ -227,7 +227,7 @@ const {
 
 	const containerID = getContainerID();
 	if ( containerID === CONTAINER_CREATE ) {
-		const containerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
+		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
 		invariant( isValidContainerName( containerName ), INVARIANT_INVALID_CONTAINER_NAME );
 
 		const containers = getContainers( accountID );
@@ -246,7 +246,7 @@ const {
 		}
 
 		if ( ampContainerID === CONTAINER_CREATE ) {
-			const ampContainerName = strictSelect( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
+			const ampContainerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
 			invariant( isValidContainerName( ampContainerName ), INVARIANT_INVALID_CONTAINER_NAME );
 
 			const containers = getContainers( accountID );
