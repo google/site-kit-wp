@@ -33,6 +33,12 @@ use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsData;
+use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty;
+use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsData_BatchRunReportsRequest;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsData_RunReportRequest;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsData_Entity;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -435,21 +441,21 @@ final class Analytics_4 extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:accounts'         => array( 'service' => 'analyticsadmin' ),
-			'GET:properties'       => array( 'service' => 'analyticsadmin' ),
-			'GET:profiles'         => array( 'service' => 'analyticsadmin' ),
-			'GET:report'           => array( 'service' => 'analyticsdata' ),
-			'POST:create-profile'  => array(
-				'service'                => 'analyticsadmin',
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
-			),
-			'POST:create-property' => array(
+			'GET:accounts'           => array( 'service' => 'analyticsadmin' ),
+			'GET:properties'         => array( 'service' => 'analyticsadmin' ),
+			'GET:datastreams'        => array( 'service' => 'analyticsadmin' ),
+			'GET:report'             => array( 'service' => 'analyticsdata' ),
+			'POST:create-property'   => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			),
-			'GET:tag-permission'   => array( 'service' => '' ),
+			'POST:create-datastream' => array(
+				'service'                => 'analyticsadmin',
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
+			),
+			'GET:tag-permission'     => array( 'service' => '' ),
 		);
 	}
 
@@ -466,35 +472,111 @@ final class Analytics_4 extends Module
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				// TODO.
-				return function() {
-					return true;
-				};
+				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
 			case 'GET:properties':
-				// TODO.
-				return function() {
-					return true;
-				};
-			case 'GET:profiles':
-				// TODO.
-				return function() {
-					return true;
-				};
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				return $this->get_service( 'analyticsadmin' )->properties->listProperties(
+					array(
+						'filter' => 'parent:accounts/' . $data['accountID'],
+					)
+				);
+			case 'GET:datastreams':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( 'properties/' . $data['propertyID'] );
 			case 'GET:report':
-				// TODO.
-				return function() {
-					return true;
-				};
-			case 'POST:create-profile':
-				// TODO.
-				return function() {
-					return true;
-				};
+				$option      = $this->get_settings()->get();
+				$property_id = $option['propertyID'];
+				if ( ! $property_id ) {
+					return new WP_Error( 'property_id_not_set', __( 'Analytics property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+				}
+				if ( empty( $data['metrics'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ),
+						array( 'status' => 400 )
+					);
+				}
+				$request = new Google_Service_AnalyticsData_RunReportRequest();
+				$entity  = new Google_Service_AnalyticsData_Entity();
+				$entity->setPropertyId( $property_id );
+				$request->setEntity( $entity );
+				$metrics = $data['metrics'];
+				if ( is_string( $metrics ) || is_array( $metrics ) ) {
+					if ( is_string( $metrics ) ) {
+						$metrics = explode( ',', $data['metrics'] );
+					} elseif ( is_array( $metrics ) && ! wp_is_numeric_array( $metrics ) ) { // If single object is passed.
+						$metrics = array( $metrics );
+					}
+
+					$metrics = array_filter(
+						array_map(
+							function ( $metric_def ) {
+								$metric = new Google_Service_AnalyticsData_Metric();
+
+								if ( is_string( $metric_def ) ) {
+									$metric->setName( $metric_def );
+									$metric->setExpression( $metric_def );
+								} elseif ( is_array( $metric_def ) && ! empty( $metric_def['expression'] ) ) {
+									$metric->setExpression( $metric_def['expression'] );
+									$metric->setName( ! empty( $metric_def['name'] ) ? $metric_def['name'] : $metric_def['expression'] );
+								} else {
+									return null;
+								}
+
+								return $metric;
+							},
+							array_filter( $metrics )
+						)
+					);
+
+					$request->setMetrics( $metrics );
+				}
+				// TODO: Handle optional dimensions, orderbys, etc.
+
+				$requests = new Google_Service_AnalyticsData_BatchRunReportsRequest();
+				$requests->setRequests( array( $request ) );
+				return $this->get_service( 'analyticsdata' )->v1alpha->batchRunReports( 'properties/' . $data['propertyID'] );
 			case 'POST:create-property':
-				// TODO.
-				return function() {
-					return true;
-				};
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
+				$property->setParent( 'accounts/' . $data['accountID'] );
+				$property->setDisplayName( get_bloginfo( 'name' ) );
+				return $this->get_service( 'analyticsadmin' )->properties->create( $property );
+			case 'POST:create-datastream':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+				$datastream = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream();
+				$datastream->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+				$datastream->setDefaultUri( $this->context->get_reference_site_url() );
+				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create( 'properties/' . $data['propertyID'], $datastream );
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
 					if ( ! isset( $data['propertyID'] ) ) {
@@ -524,20 +606,25 @@ final class Analytics_4 extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Data_Request $data Data request object.
+	 * @param Data_Request $data     Data request object.
 	 * @param mixed        $response Request response.
 	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:accounts':
+				return $response->getAccounts();
+			case 'GET:properties':
+				return $response->getProperties();
+			case 'GET:datastreams':
+				return $response->getWebDataStreams();
 			case 'GET:report':
 				// If AdSense metric successfully requested, set adsenseLinked to true.
 				if ( $this->is_adsense_request( $data ) ) {
 					$this->get_settings()->merge( array( 'adsenseLinked' => true ) );
 				}
-
-				return $response;
+				return $response->getReports();
 		}
 
 		return $response;
