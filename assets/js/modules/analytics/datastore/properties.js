@@ -151,6 +151,8 @@ const baseActions = {
 				return;
 			}
 
+			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
+			registry.dispatch( STORE_NAME ).setProfileID( '' );
 			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
 
 			if ( PROPERTY_CREATE === propertyID ) {
@@ -166,9 +168,6 @@ const baseActions = {
 			}
 
 			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
-
-			// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
-			registry.dispatch( STORE_NAME ).setProfileID( '' );
 
 			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 			if ( property.defaultProfileId && profiles?.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/camelcase-acronyms
