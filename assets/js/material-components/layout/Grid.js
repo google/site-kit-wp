@@ -1,5 +1,5 @@
 /**
- * Feature flags configuration.
+ * Material UI > Layout > Grid component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,16 +16,28 @@
  * limitations under the License.
  */
 
-exports.featureFlags = {
-	widgets: {
-		dashboard: {
-			enabled: 'development',
-		},
-		pageDashboard: {
-			enabled: 'development',
-		},
-	},
-	userInput: {
-		enabled: 'development',
-	},
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
+
+export default function Grid( { className, children } ) {
+	return (
+		<div className={ classnames( 'mdc-layout-grid', className ) }>
+			{ children }
+		</div>
+	);
+}
+
+Grid.propTypes = {
+	className: PropTypes.string,
+	children: PropTypes.oneOfType( [
+		PropTypes.element,
+		PropTypes.arrayOf( PropTypes.element ),
+	] ).isRequired,
+};
+
+Grid.defaultProps = {
+	className: '',
 };
