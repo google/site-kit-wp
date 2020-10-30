@@ -57,8 +57,6 @@ const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
 
 const baseInitialState = {
 	inputSettings: undefined,
-	hasStartedSavingInputSettings: false,
-	hasFinishedSavingInputSettings: false,
 };
 
 const baseActions = {
@@ -143,20 +141,6 @@ export const baseReducer = ( state, { type, payload } ) => {
 				},
 			};
 		}
-		case 'START_FETCH_SAVE_USER_INPUT_SETTINGS': {
-			return {
-				...state,
-				hasStartedSavingInputSettings: true,
-				hasFinishedSavingInputSettings: false,
-			};
-		}
-		case 'FINISH_FETCH_SAVE_USER_INPUT_SETTINGS': {
-			return {
-				...state,
-				hasStartedSavingInputSettings: false,
-				hasFinishedSavingInputSettings: true,
-			};
-		}
 		default: {
 			return state;
 		}
@@ -225,30 +209,6 @@ const baseSelectors = {
 		const settings = select( STORE_NAME ).getUserInputSettings() || {};
 		return settings[ settingID ]?.author;
 	} ),
-
-	/**
-	 * Determines whether or not user input settings have been started saving.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if saving has started, otherwise FALSE.
-	 */
-	hasStartedSavingInputSettings( state ) {
-		return !! state.hasStartedSavingInputSettings;
-	},
-
-	/**
-	 * Determines whether or not user input settings have been saved.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if saving has finished, otherwise FALSE.
-	 */
-	hasFinishedSavingInputSettings( state ) {
-		return !! state.hasFinishedSavingInputSettings;
-	},
 };
 
 const store = Data.combineStores(

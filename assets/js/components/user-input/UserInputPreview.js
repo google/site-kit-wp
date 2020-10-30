@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, Fragment } from '@wordpress/element';
+import { useCallback, useState, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -43,26 +43,25 @@ import { getUserInputAnwsers } from './util/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputPreview( { back, goTo } ) {
+	const [ isNavigating, setIsNavigating ] = useState( false );
+
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const settings = useSelect( ( select ) => select( CORE_USER ).getUserInputSettings() );
-	const {
-		hasStartedSavingInputSettings,
-		hasFinishedSavingInputSettings,
-		error,
-	} = useSelect( ( select ) => ( {
-		hasStartedSavingInputSettings: select( CORE_USER ).hasStartedSavingInputSettings(),
-		hasFinishedSavingInputSettings: select( CORE_USER ).hasFinishedSavingInputSettings(),
+	const { isSavingSettings, error } = useSelect( ( select ) => ( {
+		isSavingSettings: select( CORE_USER ).isFetchingSaveUserInputSettings(),
 		error: select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] ),
 	} ) );
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
-	const submitChanges = useCallback( saveUserInputSettings, [] );
-
-	useEffect( () => {
-		if ( hasFinishedSavingInputSettings && ! error ) {
+	const submitChanges = useCallback( async () => {
+		setIsNavigating( true );
+		const response = await saveUserInputSettings();
+		if ( ! response.error ) {
 			global.location.assign( dashboardURL );
+		} else {
+			setIsNavigating( false );
 		}
-	}, [ dashboardURL, hasFinishedSavingInputSettings, error ] );
+	}, [ dashboardURL ] );
 
 	const {
 		USER_INPUT_ANSWERS_GOALS,
@@ -75,10 +74,10 @@ export default function UserInputPreview( { back, goTo } ) {
 		<div className="googlesitekit-user-input__preview">
 			<Row>
 				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
-					{ ( hasStartedSavingInputSettings || hasFinishedSavingInputSettings ) && ! error && (
+					{ ( isSavingSettings || isNavigating ) && ! error && (
 						<ProgressBar />
 					) }
-					{ ( ( ! hasStartedSavingInputSettings && ! hasFinishedSavingInputSettings ) || error ) && (
+					{ ( ( ! isSavingSettings && ! isNavigating ) || error ) && (
 						<Fragment>
 							<Row>
 								<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
