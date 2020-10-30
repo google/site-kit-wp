@@ -26,8 +26,11 @@ export default function Cell( props ) {
 	const {
 		className,
 		smSize,
+		smStart,
 		mdSize,
+		mdStart,
 		lgSize,
+		lgStart,
 		size,
 		children,
 	} = props;
@@ -38,9 +41,15 @@ export default function Cell( props ) {
 			'mdc-layout-grid__cell',
 			{
 				[ `mdc-layout-grid__cell--span-${ size }` ]: 12 >= size && size > 0,
+
 				[ `mdc-layout-grid__cell--span-${ lgSize }-desktop` ]: 12 >= lgSize && lgSize > 0,
+				[ `mdc-layout-grid__cell--start-${ lgStart }-desktop` ]: 12 >= lgStart && lgStart > 0,
+
 				[ `mdc-layout-grid__cell--span-${ mdSize }-tablet` ]: 8 >= mdSize && mdSize > 0,
+				[ `mdc-layout-grid__cell--start-${ mdStart }-tablet` ]: 8 >= mdStart && mdStart > 0,
+
 				[ `mdc-layout-grid__cell--span-${ smSize }-phone` ]: 4 >= smSize && smSize > 0,
+				[ `mdc-layout-grid__cell--start-${ smStart }-phone` ]: 4 >= smStart && smStart > 0,
 			},
 		) }>
 			{ children }
@@ -50,8 +59,11 @@ export default function Cell( props ) {
 
 Cell.propTypes = {
 	smSize: PropTypes.number,
+	smStart: PropTypes.number,
 	mdSize: PropTypes.number,
+	mdStart: PropTypes.number,
 	lgSize: PropTypes.number,
+	lgStart: PropTypes.number,
 	size: PropTypes.number,
 	className: PropTypes.string,
 	children: PropTypes.oneOfType( [
@@ -63,7 +75,10 @@ Cell.propTypes = {
 Cell.defaultProps = {
 	className: '',
 	size: 0,
-	smSize: 4,
-	mdSize: 8,
-	lgSize: 12,
+	smSize: 0,
+	smStart: 0,
+	mdSize: 0,
+	mdStart: 0,
+	lgSize: 0,
+	lgStart: 0,
 };

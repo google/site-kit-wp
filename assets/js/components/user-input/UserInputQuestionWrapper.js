@@ -61,7 +61,7 @@ export default function UserInputQuestionWrapper( props ) {
 			}
 		) }>
 			<Row>
-				<Cell>
+				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
 					<p className="googlesitekit-user-input__question-number">
 						{
 							/* translators: %s: the number of the question */

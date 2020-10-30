@@ -74,14 +74,14 @@ export default function UserInputPreview( { back, goTo } ) {
 	return (
 		<div className="googlesitekit-user-input__preview">
 			<Row>
-				<Cell>
+				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
 					{ ( hasStartedSavingInputSettings || hasFinishedSavingInputSettings ) && ! error && (
 						<ProgressBar />
 					) }
 					{ ( ( ! hasStartedSavingInputSettings && ! hasFinishedSavingInputSettings ) || error ) && (
 						<Fragment>
 							<Row>
-								<Cell lgSize={ 6 }>
+								<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 									<UserInputPreviewGroup
 										title={ __( '1 — Which best describes your team/role relation to this site?', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 1 ) }
@@ -103,7 +103,7 @@ export default function UserInputPreview( { back, goTo } ) {
 										options={ USER_INPUT_ANSWERS_GOALS }
 									/>
 								</Cell>
-								<Cell lgSize={ 6 }>
+								<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 									<UserInputPreviewGroup
 										title={ __( '4 — What do you need help most with for this site?', 'google-site-kit' ) }
 										edit={ goTo.bind( null, 4 ) }
