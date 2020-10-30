@@ -21,15 +21,17 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import useMergedRef from '@react-hook/merged-ref';
+
 /**
  * WordPress dependencies
  */
 import { forwardRef, useRef, useEffect } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import { MDCRipple } from '../material-components';
-import { useCombinedRefs } from '../hooks/useCombinedRefs';
 
 const Button = forwardRef( ( {
 	children,
@@ -47,10 +49,10 @@ const Button = forwardRef( ( {
 	...extraProps
 }, ref ) => {
 	const buttonRef = useRef( null );
-	const combinedRefs = useCombinedRefs( ref, buttonRef );
+	const mergedRefs = useMergedRef( ref, buttonRef );
 	useEffect( () => {
-		MDCRipple.attachTo( combinedRefs.current );
-	}, [ combinedRefs.current ] );
+		MDCRipple.attachTo( mergedRefs.current );
+	}, [ mergedRefs.current ] );
 
 	// Use a button if disabled, even if a href is provided to ensure expected behavior.
 	const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
@@ -66,7 +68,7 @@ const Button = forwardRef( ( {
 				}
 			) }
 			href={ disabled ? undefined : href }
-			ref={ combinedRefs }
+			ref={ mergedRefs }
 			disabled={ !! disabled }
 			target={ target || '_self' }
 			aria-haspopup={ ariaHaspopup }

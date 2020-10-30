@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import useMergedRef from '@react-hook/merged-ref';
 
 /**
  * WordPress dependencies
@@ -30,7 +31,6 @@ import { forwardRef, useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { MDCMenu } from '../material-components';
-import { useCombinedRefs } from '../hooks/useCombinedRefs';
 
 const Menu = forwardRef( ( {
 	menuOpen,
@@ -39,15 +39,15 @@ const Menu = forwardRef( ( {
 	id,
 }, ref ) => {
 	const menuRef = useRef( null );
-	const combinedRefs = useCombinedRefs( ref, menuRef );
+	const mergedRefs = useMergedRef( ref, menuRef );
 	useEffect( () => {
-		const menu = new MDCMenu( combinedRefs.current );
+		const menu = new MDCMenu( mergedRefs.current );
 		menu.open = menuOpen;
 		menu.setDefaultFocusState( 1 );
-	}, [ combinedRefs.current, menuOpen ] );
+	}, [ mergedRefs.current, menuOpen ] );
 
 	return (
-		<div className="mdc-menu mdc-menu-surface" ref={ combinedRefs }>
+		<div className="mdc-menu mdc-menu-surface" ref={ mergedRefs }>
 			<ul id={ id } className="mdc-list" role="menu" aria-hidden={ ! menuOpen } aria-orientation="vertical" tabIndex="-1">
 				{ menuItems.map( ( item, index ) => (
 					<li
