@@ -113,7 +113,6 @@ else
 	wp plugin update amp --minor --quiet
 fi
 
-
 # Install a dummy favicon to avoid 404 errors.
 status_message "Installing a dummy favicon..."
 container touch /var/www/html/favicon.ico

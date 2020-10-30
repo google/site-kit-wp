@@ -187,7 +187,7 @@ class AdSenseTest extends TestCase {
 
 	/**
 	 * @dataProvider block_on_consent_provider
-	 * @group ryan
+	 *
 	 * @param bool $enabled
 	 */
 	public function test_block_on_consent_amp_content( $enabled ) {
@@ -197,7 +197,6 @@ class AdSenseTest extends TestCase {
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'the_content' );
-		$adsense->register();
 
 		do_action( 'template_redirect' );
 
