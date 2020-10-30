@@ -389,6 +389,68 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Gets module dependency names by slug.
+	 *
+	 * Returns a list of modules that depend on this module.
+	 * Returns `undefined` if state is still loading or if said module doesn't exist.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(Array|undefined)} An array of dependency module names; `undefined` if state is still loading.
+	 */
+	getModuleDependencyNames: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if module with this slug isn't loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `[]` to signify the
+		// "not found" state.
+		if ( module === null ) {
+			return [];
+		}
+
+		// Module is found, return the names of the dependencies
+		const modules = select( STORE_NAME ).getModules();
+		return module.dependencies.map( ( dependencySlug ) => modules[ dependencySlug ].name );
+	} ),
+
+	/**
+	 * Gets module dependant names by slug.
+	 *
+	 * Returns a list of modules on which this module depends.
+	 * Returns `undefined` if state is still loading or if said module doesn't exist.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(Array|undefined)} An array of dependant module names; `undefined` if state is still loading.
+	 */
+	getModuleDependantNames: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if module with this slug isn't loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `[]` to signify the
+		// "not found" state.
+		if ( module === null ) {
+			return [];
+		}
+
+		// Module is found, return the names of the dependencies
+		const modules = select( STORE_NAME ).getModules();
+		return module.dependants.map( ( dependantSlug ) => modules[ dependantSlug ].name );
+	} ),
+
+	/**
 	 * Checks a module's activation status.
 	 *
 	 * Returns `true` if the module exists and is active.
