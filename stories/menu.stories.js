@@ -9,30 +9,27 @@ import { storiesOf } from '@storybook/react';
 import Menu from '../assets/js/components/Menu';
 
 storiesOf( 'Global', module )
-	.add( 'Menu', () => {
-		return (
+	.add( 'Menu', () => (
+		<div>
 			<div>
-				<div>
-					<p>Menu</p>
-					<Menu
-
-						menuOpen
-						menuItems={ [
-							'Menu 1',
-							'Menu 2',
-							'Menu 3',
-							'Menu 4',
-							'Menu 5',
-						] }
-						onSelected={ () => {
-							console.log( 'Selected' ); // eslint-disable-line
-						} }
-						id="googlesitekit-menu"
-					/>
-				</div>
+				<p>Menu</p>
+				<Menu
+					menuOpen
+					menuItems={ [
+						'Menu 1',
+						'Menu 2',
+						'Menu 3',
+						'Menu 4',
+						'Menu 5',
+					] }
+					onSelected={ ( index ) => {
+						global.console.log( index );
+					} }
+					id="googlesitekit-menu"
+				/>
 			</div>
-		);
-	}, {
+		</div>
+	), {
 		options: {
 			onReadyScript: 'mouse.js',
 		},

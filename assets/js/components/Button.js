@@ -29,7 +29,7 @@ import { forwardRef, useRef, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { MDCRipple } from '../material-components';
-import { useCombinedRefs } from '../util/helpers';
+import { useCombinedRefs } from '../hooks/useCombinedRefs';
 
 const Button = forwardRef( ( {
 	children,
@@ -49,7 +49,7 @@ const Button = forwardRef( ( {
 	const buttonRef = useRef( null );
 	const combinedRefs = useCombinedRefs( ref, buttonRef );
 	useEffect( () => {
-		new MDCRipple( combinedRefs.current );
+		MDCRipple.attachTo( combinedRefs.current );
 	}, [ combinedRefs.current ] );
 
 	// Use a button if disabled, even if a href is provided to ensure expected behavior.
@@ -81,6 +81,8 @@ const Button = forwardRef( ( {
 		</SemanticButton>
 	);
 } );
+
+Button.displayName = 'Button';
 
 Button.propTypes = {
 	onClick: PropTypes.func,

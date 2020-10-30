@@ -53,7 +53,7 @@ const Dialog = ( {
 	const dialogRef = useRef( null );
 
 	useEffect( () => {
-		new MDCDialog( dialogRef.current );
+		MDCDialog.attachTo( dialogRef.current );
 	}, [ dialogRef.current ] );
 
 	// eslint-disable-next-line sitekit/camelcase-acronyms
@@ -125,6 +125,8 @@ const Dialog = ( {
 		</div>
 	);
 };
+
+Dialog.displayName = 'Dialog';
 
 Dialog.propTypes = {
 	dialogActive: PropTypes.bool,

@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { withInstanceId } from '@wordpress/compose';
-import { Fragment, useEffect, useRef } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -47,14 +47,14 @@ const Switch = ( props ) => {
 	const switchRef = useRef( null );
 
 	useEffect( () => {
-		new MDCSwitch( switchRef.current );
+		MDCSwitch.attachTo( switchRef.current );
 	}, [ switchRef.current ] );
 
-	const onKeyPress = ( event ) => {
-		if ( typeof onClick === 'function' && event.code === 'Enter' ) {
+	const onKeyDown = useCallback( ( event ) => {
+		if ( typeof onClick === 'function' && event.keyCode === '13' ) {
 			onClick( event );
 		}
-	};
+	}, [] );
 
 	return (
 		<Fragment>
@@ -68,7 +68,7 @@ const Switch = ( props ) => {
 					}
 				) }
 				onClick={ onClick }
-				onKeyPress={ onKeyPress }
+				onKeyDown={ onKeyDown }
 				role="switch"
 				ref={ switchRef }
 				tabIndex={ 0 }
@@ -90,7 +90,8 @@ const Switch = ( props ) => {
 			</div>
 			<label
 				className={ classnames( { 'screen-reader-only': hideLabel } ) }
-				htmlFor={ id }>
+				htmlFor={ id }
+			>
 				{ label }
 			</label>
 		</Fragment>

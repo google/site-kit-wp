@@ -30,7 +30,7 @@ import { forwardRef, useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { MDCMenu } from '../material-components';
-import { useCombinedRefs } from '../util/helpers';
+import { useCombinedRefs } from '../hooks/useCombinedRefs';
 
 const Menu = forwardRef( ( {
 	menuOpen,
@@ -44,7 +44,7 @@ const Menu = forwardRef( ( {
 		const menu = new MDCMenu( combinedRefs.current );
 		menu.open = menuOpen;
 		menu.setDefaultFocusState( 1 );
-	}, [ combinedRefs.current ] );
+	}, [ combinedRefs.current, menuOpen ] );
 
 	return (
 		<div className="mdc-menu mdc-menu-surface" ref={ combinedRefs }>
@@ -64,6 +64,8 @@ const Menu = forwardRef( ( {
 		</div>
 	);
 } );
+
+Menu.displayName = 'Menu';
 
 Menu.propTypes = {
 	menuOpen: PropTypes.bool.isRequired,
