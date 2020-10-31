@@ -23,6 +23,7 @@ import memize from 'memize';
 import defaults from 'lodash/defaults';
 import merge from 'lodash/merge';
 import invariant from 'invariant';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * WordPress dependencies
@@ -38,6 +39,7 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { getLocale } from '../../../util';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -45,6 +47,8 @@ const { createRegistrySelector, createRegistryControl } = Data;
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
 const SELECT_MODULE_REAUTH_URL = 'SELECT_MODULE_REAUTH_URL';
 const REGISTER_MODULE = 'REGISTER_MODULE';
+const RECEIVE_CHECK_REQUIREMENTS_ERROR = 'RECEIVE_CHECK_REQUIREMENTS_ERROR';
+const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 
 const moduleDefaults = {
 	slug: '',
@@ -131,6 +135,7 @@ const baseInitialState = {
 	// a module activation update, since the activation is technically complete
 	// before this data has been refreshed.
 	isAwaitingModulesRefresh: false,
+	checkRequirementsResults: {},
 };
 
 const baseActions = {
@@ -212,7 +217,6 @@ const baseActions = {
 	/**
 	 * Registers a module.
 	 *
-	 * @since 1.13.0
 	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 *
 	 * @param {string}      slug                             Module slug.
@@ -225,6 +229,7 @@ const baseActions = {
 	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel. Default none.
 	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
+	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Returns an error object or true.
 	 * @return {Object} Redux-style action.
 	 */
 	registerModule( slug, {
@@ -236,6 +241,7 @@ const baseActions = {
 		settingsEditComponent,
 		settingsViewComponent,
 		setupComponent,
+		checkRequirements = () => true,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
@@ -248,6 +254,7 @@ const baseActions = {
 			settingsEditComponent,
 			settingsViewComponent,
 			setupComponent,
+			checkRequirements,
 		};
 
 		return {
@@ -256,6 +263,38 @@ const baseActions = {
 				slug,
 			},
 			type: REGISTER_MODULE,
+		};
+	},
+
+	/**
+	 * Receives the check requirements error map for all modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} errorMap Map of errors of the format { slug: error }.
+	 * @return {Object} Action for RECEIVE_CHECK_REQUIREMENTS_ERROR.
+	 */
+	receiveCheckRequirementsError( errorMap ) {
+		return {
+			payload: errorMap,
+			type: RECEIVE_CHECK_REQUIREMENTS_ERROR,
+		};
+	},
+
+	/**
+	 * Receives the check requirements success for a module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Success for a module slug.
+	 * @return {Object} Action for RECEIVE_CHECK_REQUIREMENTS_SUCCESS.
+	 */
+	receiveCheckRequirementsSuccess( slug ) {
+		return {
+			payload: {
+				slug,
+			},
+			type: RECEIVE_CHECK_REQUIREMENTS_SUCCESS,
 		};
 	},
 };
@@ -293,6 +332,32 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case RECEIVE_CHECK_REQUIREMENTS_ERROR: {
+			const { errorMap } = payload;
+
+			const checkRequirementsResults = { ...state.checkRequirementsResults };
+
+			for ( const [ slug, error ] of Object.entries( errorMap ) ) {
+				checkRequirementsResults[ slug ] = error;
+			}
+
+			return {
+				...state,
+				checkRequirementsResults,
+			};
+		}
+
+		case RECEIVE_CHECK_REQUIREMENTS_SUCCESS: {
+			const { slug } = payload;
+			return {
+				...state,
+				checkRequirementsResults: {
+					...state.checkRequirementsResults,
+					[ slug ]: true,
+				},
+			};
+		}
+
 		default: {
 			return state;
 		}
@@ -307,6 +372,33 @@ const baseResolvers = {
 
 		if ( ! existingModules ) {
 			yield fetchGetModulesStore.actions.fetchGetModules();
+		}
+	},
+
+	*canActivateModule( slug ) {
+		const registry = yield Data.commonActions.getRegistry();
+		const module = registry.select( STORE_NAME ).getModule( slug );
+
+		const inactiveModules = [];
+		module.dependencies.forEach( ( dependencySlug ) => {
+			const dependedentModule = registry.select( STORE_NAME ).getModule( dependencySlug );
+			if ( ! dependedentModule.active ) {
+				inactiveModules.push( dependedentModule.name );
+			}
+		} );
+		const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
+		const checkResult = yield module.checkRequirements();
+		if ( inactiveModules.length ) {
+			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
+			const errorMessage = sprintf( __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' ), formatter.format( inactiveModules ), module.name );
+			console.log( errorMessage ); // eslint-disable-line no-console
+			// @TODO: What do we do with this errorMessage?
+		}
+
+		if ( checkResult === true ) {
+			yield baseActions.receiveCheckRequirementsSuccess( slug );
+		} else {
+			yield baseActions.receiveCheckRequirementsError( checkResult );
 		}
 	},
 };
@@ -481,6 +573,20 @@ const baseSelectors = {
 		// update.
 		return state.isAwaitingModulesRefresh;
 	} ),
+
+	canActivateModule( state, slug ) {
+		const moduleRequirements = state.checkRequirementsResults?.[slug];
+		if ( moduleRequirements === undefined ) {
+			return undefined;
+		}
+
+		return moduleRequirements === null;
+	},
+
+	getCheckRequirementsStatus( state, slug ) {
+		invariant( slug, 'slug is required.' );
+		return state.checkRequirementsResults[ slug ];
+	},
 };
 
 const store = Data.combineStores(
