@@ -543,99 +543,54 @@ describe( 'core/modules modules', () => {
 			} );
 		} );
 
-		describe( 'getModuleDependencyNames', () => {
+		describe.each( [
+			[ 'getModuleDependencyNames', 'dependencies' ],
+			[ 'getModuleDependantNames', 'dependants' ],
+		] )( '%s', ( selector, collectionName ) => {
 			it( 'returns undefined when no modules are loaded', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'optimize';
-				const dependencyNames = registry.select( STORE_NAME ).getModuleDependencyNames( slug );
+				const namesLoaded = registry.select( STORE_NAME )[ selector ]( slug );
 
 				// The modules will be undefined whilst loading.
-				expect( dependencyNames ).toBeUndefined();
+				expect( namesLoaded ).toBeUndefined();
 			} );
 
-			it( 'returns dependency module names when modules are loaded', async () => {
+			it( `returns ${ collectionName } module names when modules are loaded`, async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'optimize';
-				registry.select( STORE_NAME ).getModuleDependencyNames( slug );
+				registry.select( STORE_NAME )[ selector ]( slug );
 
 				// Wait for loading to complete.
 				await untilResolved( registry, STORE_NAME ).getModules();
 
-				const dependencyNamesLoaded = registry.select( STORE_NAME ).getModuleDependencyNames( slug );
+				const namesLoaded = registry.select( STORE_NAME )[ selector ]( slug );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( dependencyNamesLoaded ).toMatchObject( fixturesKeyValue[ slug ].dependencies.map( ( dependency ) => fixturesKeyValue[ dependency ].name ) );
+				expect( namesLoaded ).toMatchObject( fixturesKeyValue[ slug ][ collectionName ].map( ( key ) => fixturesKeyValue[ key ].name ) );
 			} );
 
-			it( 'returns an empty array when requesting dependencies for a non-existent module', async () => {
+			it( `returns an empty array when requesting ${ collectionName } for a non-existent module`, async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'non-existent-slug';
-				registry.select( STORE_NAME ).getModuleDependencyNames( slug );
+				registry.select( STORE_NAME )[ selector ]( slug );
 
 				// Wait for loading to complete.
 				await untilResolved( registry, STORE_NAME ).getModules();
 
-				const dependencyNamesLoaded = registry.select( STORE_NAME ).getModuleDependencyNames( slug );
+				const namesLoaded = registry.select( STORE_NAME )[ selector ]( slug );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( dependencyNamesLoaded ).toMatchObject( {} );
-			} );
-		} );
-
-		describe( 'getModuleDependantNames', () => {
-			it( 'returns undefined when no modules are loaded', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'optimize';
-				const dependantNames = registry.select( STORE_NAME ).getModuleDependantNames( slug );
-
-				// The modules will be undefined whilst loading.
-				expect( dependantNames ).toBeUndefined();
-			} );
-
-			it( 'returns dependant module names when modules are loaded', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'analytics';
-				registry.select( STORE_NAME ).getModuleDependantNames( slug );
-
-				// Wait for loading to complete.
-				await untilResolved( registry, STORE_NAME ).getModules();
-
-				const dependantNamesLoaded = registry.select( STORE_NAME ).getModuleDependantNames( slug );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( dependantNamesLoaded ).toMatchObject( fixturesKeyValue[ slug ].dependants.map( ( dependant ) => fixturesKeyValue[ dependant ].name ) );
-			} );
-
-			it( 'returns an empty array when requesting dependencies for a non-existent module', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-				const slug = 'non-existent-slug';
-				registry.select( STORE_NAME ).getModuleDependantNames( slug );
-
-				// Wait for loading to complete.
-				await untilResolved( registry, STORE_NAME ).getModules();
-
-				const dependantNamesLoaded = registry.select( STORE_NAME ).getModuleDependantNames( slug );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( dependantNamesLoaded ).toMatchObject( {} );
+				expect( namesLoaded ).toMatchObject( {} );
 			} );
 		} );
 
