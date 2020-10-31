@@ -109,8 +109,8 @@ final class Analytics_4 extends Module
 					return;
 				}
 
-				$property_id = $option['propertyID'];
-				if ( ! $property_id ) {
+				$measurement_id = $option['measurementID'];
+				if ( ! $measurement_id ) {
 					return;
 				}
 
@@ -120,8 +120,8 @@ final class Analytics_4 extends Module
 					if ( $this->use_double_tagging() ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
 						// TODO: Filter legacy Analytics amp-analytics.
 					} else {
-						$print_amp_gtag = function() use ( $property_id ) {
-							$this->print_amp_gtag( $property_id );
+						$print_amp_gtag = function() use ( $measurement_id ) {
+							$this->print_amp_gtag( $measurement_id );
 						};
 						// Which actions are run depends on the version of the AMP Plugin
 						// (https://amp-wp.org/) available. Version >=1.3 exposes a
@@ -151,17 +151,17 @@ final class Analytics_4 extends Module
 					 *
 					 * @since n.e.x.t
 					 *
-					 * @param string $property_id Analytics property ID used in the tag.
+					 * @param string $measurement_id Analytics measurement ID used in the tag.
 					 */
-					do_action( 'googlesitekit_analytics_4_init_tag_amp', $property_id );
+					do_action( 'googlesitekit_analytics_4_init_tag_amp', $measurement_id );
 				} else {
 					if ( $this->use_double_tagging() ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
 						// TODO: Filter legacy Analytics gtag.
 					} else {
 						add_action( // For non-AMP.
 							'wp_enqueue_scripts',
-							function() use ( $property_id ) {
-								$this->enqueue_gtag_js( $property_id );
+							function() use ( $measurement_id ) {
+								$this->enqueue_gtag_js( $measurement_id );
 							}
 						);
 					}
@@ -174,9 +174,9 @@ final class Analytics_4 extends Module
 					 *
 					 * @since n.e.x.t
 					 *
-					 * @param string $property_id Analytics property ID used in the tag.
+					 * @param string $measurement_id Analytics measurement ID used in the tag.
 					 */
-					do_action( 'googlesitekit_analytics_4_init_tag', $property_id );
+					do_action( 'googlesitekit_analytics_4_init_tag', $measurement_id );
 				}
 			}
 		);
@@ -225,7 +225,7 @@ final class Analytics_4 extends Module
 	 */
 	public function is_connected() {
 		$option = $this->get_settings()->get();
-		if ( ! $option['accountID'] || ! $option['propertyID'] ) {
+		if ( ! $option['accountID'] || ! $option['propertyID'] || ! $option['datastreamID'] || ! $option['measurementID'] ) {
 			return;
 		}
 		return parent::is_connected();
@@ -251,23 +251,28 @@ final class Analytics_4 extends Module
 		$settings = $this->get_settings()->get();
 
 		return array(
-			'analytics_account_id'  => array(
-				'label' => __( 'Analytics account ID', 'google-site-kit' ),
+			'analytics_4_account_id'     => array(
+				'label' => __( 'Analytics 4 account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
-			'analytics_property_id' => array(
-				'label' => __( 'Analytics property ID', 'google-site-kit' ),
+			'analytics_4_property_id'    => array(
+				'label' => __( 'Analytics 4 property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
-			'analytics_profile_id'  => array(
-				'label' => __( 'Analytics view ID', 'google-site-kit' ),
-				'value' => $settings['profileID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['profileID'] ),
+			'analytics_4_datastream_id'  => array(
+				'label' => __( 'Analytics 4 datastream ID', 'google-site-kit' ),
+				'value' => $settings['datastreamID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['datastreamID'] ),
 			),
-			'analytics_use_snippet' => array(
-				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),
+			'analytics_4_measurement_id' => array(
+				'label' => __( 'Analytics 4 measurement ID', 'google-site-kit' ),
+				'value' => $settings['measurementID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
+			),
+			'analytics_4_use_snippet'    => array(
+				'label' => __( 'Analytics 4 snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
@@ -279,11 +284,11 @@ final class Analytics_4 extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $property_id Analytics property ID to use in the snippet.
+	 * @param string $measurement_id Analytics measurement ID to use in the snippet.
 	 */
-	protected function enqueue_gtag_js( $property_id ) {
+	protected function enqueue_gtag_js( $measurement_id ) {
 		// TODO: Use correct snippet for GA4.
-		$gtag_src = "https://www.googletagmanager.com/gtag/js?id=$property_id";
+		$gtag_src = "https://www.googletagmanager.com/gtag/js?id=$measurement_id";
 
 		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			'google_gtagjs',
@@ -300,6 +305,12 @@ final class Analytics_4 extends Module
 		);
 
 		$gtag_opt = array();
+
+		if ( $this->context->get_amp_mode() ) {
+			$gtag_opt['linker'] = array(
+				'domains' => array( $this->get_home_domain() ),
+			);
+		}
 
 		$option       = $this->get_settings()->get();
 		$anonymize_ip = (bool) $option['anonymizeIP'];
@@ -343,12 +354,12 @@ final class Analytics_4 extends Module
 		if ( empty( $gtag_opt ) ) {
 			wp_add_inline_script(
 				'google_gtagjs',
-				'gtag(\'config\', \'' . esc_attr( $property_id ) . '\');'
+				'gtag(\'config\', \'' . esc_attr( $measurement_id ) . '\');'
 			);
 		} else {
 			wp_add_inline_script(
 				'google_gtagjs',
-				'gtag(\'config\', \'' . esc_attr( $property_id ) . '\', ' . wp_json_encode( $gtag_opt ) . ' );'
+				'gtag(\'config\', \'' . esc_attr( $measurement_id ) . '\', ' . wp_json_encode( $gtag_opt ) . ' );'
 			);
 		}
 
@@ -385,9 +396,9 @@ final class Analytics_4 extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $property_id Analytics property ID to use in the snippet.
+	 * @param string $measurement_id Analytics measurement ID to use in the snippet.
 	 */
-	protected function print_amp_gtag( $property_id ) {
+	protected function print_amp_gtag( $measurement_id ) {
 		// TODO: Is GA4 supported by AMP yet?
 	}
 
@@ -727,6 +738,17 @@ final class Analytics_4 extends Module
 	private function use_double_tagging() {
 		// TODO: Check if legacy Analytics module is active.
 		return true;
+	}
+
+	/**
+	 * Gets the hostname of the home URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string
+	 */
+	private function get_home_domain() {
+		return wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST );
 	}
 
 	/**

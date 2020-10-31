@@ -69,9 +69,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	public function get_owned_keys() {
 		return array(
 			'accountID',
-			'internalWebPropertyID',
-			'profileID',
 			'propertyID',
+			'datastreamID',
+			'measurementID',
 		);
 	}
 
@@ -84,15 +84,15 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'ownerID'               => 0,
-			'accountID'             => '',
-			'adsenseLinked'         => false,
-			'anonymizeIP'           => true,
-			'internalWebPropertyID' => '',
-			'profileID'             => '',
-			'propertyID'            => '',
-			'trackingDisabled'      => array( 'loggedinUsers' ),
-			'useSnippet'            => true,
+			'ownerID'          => 0,
+			'accountID'        => '',
+			'propertyID'       => '',
+			'datastreamID'     => '',
+			'measurementID'    => '',
+			'adsenseLinked'    => false,
+			'anonymizeIP'      => true,
+			'trackingDisabled' => array( 'loggedinUsers' ),
+			'useSnippet'       => true,
 		);
 	}
 
