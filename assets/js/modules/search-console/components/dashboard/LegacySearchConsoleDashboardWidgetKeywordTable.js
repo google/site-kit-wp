@@ -26,7 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat } from '../../../../util';
+import { getTimeInSeconds, numberFormat, untrailingslashit } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
@@ -40,12 +40,19 @@ const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const referenceSiteURL = useSelect( ( select ) => {
+		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
+	} );
 	const baseServiceURLArgs = {
 		resource_id: domain,
 		num_of_days: getCurrentDateRangeDayCount(),
 	};
 	if ( url ) {
 		baseServiceURLArgs.page = `!${ url }`;
+	}
+	if ( isDomainProperty && referenceSiteURL ) {
+		baseServiceURLArgs.page = `*${ referenceSiteURL }`;
 	}
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{

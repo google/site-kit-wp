@@ -57,7 +57,7 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Checks whether the property is a Search Console Domain Property.
+	 * Checks whether the Search Console property is a domain property.
 	 *
 	 * @since n.e.x.t
 	 *

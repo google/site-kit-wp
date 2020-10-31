@@ -18,4 +18,4 @@ export const sanitizeHTML = ( unsafeHTML, domPurifyConfig = {} ) => {
  * @param {string} string A string with or without trailing slash.
  * @return {string|null} The string after removing the trailing slash.
  */
-export const unTrailingSlashIt = ( string ) => string?.replace?.( /\/+$/, '' );
+export const untrailingslashit = ( string ) => string?.replace?.( /\/+$/, '' );

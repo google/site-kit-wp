@@ -29,7 +29,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { extractSearchConsoleDashboardData } from '../../util';
-import { extractForSparkline } from '../../../../util';
+import { extractForSparkline, untrailingslashit } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
 import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
@@ -47,6 +47,8 @@ function DashboardImpressionsWidget() {
 
 		const propertyID = store.getPropertyID();
 		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
+		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
 		const args = {
 			dimensions: 'date',
@@ -61,6 +63,9 @@ function DashboardImpressionsWidget() {
 		if ( url ) {
 			args.url = url;
 			serviceBaseURLArgs.page = `!${ url }`;
+		}
+		if ( isDomainProperty && referenceSiteURL ) {
+			serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
 		}
 
 		return {

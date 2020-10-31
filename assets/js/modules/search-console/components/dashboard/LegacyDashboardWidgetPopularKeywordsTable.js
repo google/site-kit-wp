@@ -26,7 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat, unTrailingSlashIt } from '../../../../util';
+import { getTimeInSeconds, numberFormat, untrailingslashit } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
@@ -45,7 +45,7 @@ const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
 	const referenceSiteURL = useSelect( ( select ) => {
-		return unTrailingSlashIt( select( CORE_SITE ).getReferenceSiteURL() );
+		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 	} );
 	const baseServiceArgs = {
 		resource_id: domain,
