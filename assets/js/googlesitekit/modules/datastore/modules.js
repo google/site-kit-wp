@@ -447,7 +447,7 @@ const baseSelectors = {
 
 		// Module is found, return the names of the dependants
 		const modules = select( STORE_NAME ).getModules();
-		return module.dependants.map( ( dependantSlug ) => modules[ dependantSlug ].name );
+		return module.dependants.map( ( dependantSlug ) => modules[ dependantSlug ].name || dependantSlug );
 	} ),
 
 	/**
