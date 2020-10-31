@@ -154,6 +154,7 @@ const baseActions = {
 			if ( PROPERTY_CREATE === propertyID ) {
 				registry.dispatch( STORE_NAME ).setSettings( {
 					propertyID,
+					internalWebPropertyID: '',
 					profileID: PROFILE_CREATE,
 				} );
 
