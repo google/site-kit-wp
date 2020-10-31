@@ -55,6 +55,7 @@ import ModuleIcon from '../ModuleIcon';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import SettingsRenderer from '../settings/SettingsRenderer';
+import VisuallyHidden from '../VisuallyHidden';
 const { withSelect } = Data;
 
 /**
@@ -304,12 +305,12 @@ class SettingsModule extends Component {
 												'googlesitekit-settings-module__status-icon',
 												connectedClassName
 											) }>
-												<span className="screen-reader-text">
+												<VisuallyHidden>
 													{ isConnected
 														? __( 'Connected', 'google-site-kit' )
 														: __( 'Not Connected', 'google-site-kit' )
 													}
-												</span>
+												</VisuallyHidden>
 											</span>
 										</p>
 									</div>
