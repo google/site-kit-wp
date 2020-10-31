@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,19 +36,23 @@ import {
 import Data from 'googlesitekit-data';
 import CTA from './notifications/cta';
 import GenericError from './notifications/generic-error';
-import { STORE_NAME as USER_STORE, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 
 const { useSelect, useDispatch } = Data;
 
-function AnalyticsInactiveCTA( { title, description, ctaLabel } ) {
+function AnalyticsInactiveCTA( {
+	title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
+	description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ),
+	ctaLabel = __( 'Set up Analytics', 'google-site-kit' ),
+} ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
 
-	const setupAnalyticsClick = async () => {
+	const onSetupAnalytics = useCallback( async () => {
 		const { error, response } = await activateModule( 'analytics' );
 
 		if ( ! error ) {
-			global.location.href = response.moduleReauthURL;
+			global.location = response.moduleReauthURL;
 		} else {
 			showErrorNotification( GenericError, {
 				id: 'analytics-setup-error',
@@ -58,19 +62,19 @@ function AnalyticsInactiveCTA( { title, description, ctaLabel } ) {
 				type: 'win-error',
 			} );
 		}
-	};
+	} );
 
-	const canManageOptions = useSelect( ( select ) => select( USER_STORE ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
+	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
 	if ( ! canManageOptions ) {
-		return <Fragment />;
+		return null;
 	}
 
 	return (
 		<CTA
 			title={ title }
 			description={ description }
-			onClick={ setupAnalyticsClick }
+			onClick={ onSetupAnalytics }
 			ctaLabel={ ctaLabel }
 		/>
 	);
@@ -80,12 +84,6 @@ AnalyticsInactiveCTA.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.string,
 	ctaLabel: PropTypes.string,
-};
-
-AnalyticsInactiveCTA.defaultProps = {
-	title: __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
-	description: __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ),
-	ctaLabel: __( 'Set up Analytics', 'google-site-kit' ),
 };
 
 export default AnalyticsInactiveCTA;
