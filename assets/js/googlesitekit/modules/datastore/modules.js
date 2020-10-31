@@ -416,7 +416,7 @@ const baseSelectors = {
 
 		// Module is found, return the names of the dependencies
 		const modules = select( STORE_NAME ).getModules();
-		return module.dependencies.map( ( dependencySlug ) => modules[ dependencySlug ].name );
+		return module.dependencies.map( ( dependencySlug ) => modules[ dependencySlug ].name || dependencySlug );
 	} ),
 
 	/**
@@ -445,7 +445,7 @@ const baseSelectors = {
 			return [];
 		}
 
-		// Module is found, return the names of the dependencies
+		// Module is found, return the names of the dependants
 		const modules = select( STORE_NAME ).getModules();
 		return module.dependants.map( ( dependantSlug ) => modules[ dependantSlug ].name );
 	} ),
