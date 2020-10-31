@@ -158,6 +158,7 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
 				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
 				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
+				'googlesitekit-modules-analytics-4': './assets/js/googlesitekit-modules-analytics-4.js',
 				'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
 				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
 				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
