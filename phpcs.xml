@@ -43,13 +43,11 @@
 	</rule>
 	<rule ref="WordPressVIPMinimum.UserExperience"/>
 	<rule ref="WordPressVIPMinimum.Security"/>
-	<rule ref="WordPressVIPMinimum.Variables">
+	<rule ref="VariableAnalysis">
 		<!-- This sniff is severely broken, flaggin e.g. $this as undefined variable -->
-		<exclude name="WordPressVIPMinimum.Variables.VariableAnalysis.UndefinedVariable"/>
+		<exclude name="VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable"/>
 		<!-- This sniff flags unused exception variables which cannot be avoided -->
-		<exclude name="WordPressVIPMinimum.Variables.VariableAnalysis.UnusedVariable"/>
-		<!-- Site Kit needs to use user meta, see above -->
-		<exclude name="WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__usermeta"/>
+		<exclude name="VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable"/>
 	</rule>
 
 	<!-- Show details about violated sniffs -->

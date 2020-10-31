@@ -1,5 +1,5 @@
 /**
- * Feature flags configuration.
+ * User Input module styles.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,16 +16,45 @@
  * limitations under the License.
  */
 
-exports.featureFlags = {
-	widgets: {
-		dashboard: {
-			enabled: 'development',
-		},
-		pageDashboard: {
-			enabled: 'development',
-		},
-	},
-	userInput: {
-		enabled: 'development',
-	},
-};
+.googlesitekit-plugin {
+
+	.googlesitekit-user-input {
+
+		&__heading {
+			font-size: 36px;
+			line-height: 44px;
+
+			@media (min-width: $bp-tablet) {
+				font-size: 28px;
+				line-height: 36px;
+			}
+		}
+
+		&__subtitle {
+			color: $c-secondary;
+			font-size: 22px;
+			line-height: 28px;
+
+			@media (min-width: $bp-tablet) {
+				font-size: 16px;
+				line-height: 24px;
+			}
+		}
+
+		&__content {
+			padding: 0;
+		}
+
+		&__congrats {
+			background-color: $c-white;
+			margin: -10px;
+			padding: 35px;
+
+			@include shadow;
+
+			& h1 {
+				margin-bottom: 0;
+			}
+		}
+	}
+}

@@ -1,0 +1,103 @@
+/**
+ * User Input questions styles.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-user-input__question {
+		background-color: $c-white;
+		padding: 34px;
+		position: relative;
+
+		@media (min-width: $bp-tablet) {
+			margin-left: -10px;
+			margin-right: -10px;
+		}
+
+		&--next::before {
+			background-color: $c-white;
+			content: "";
+			height: 100%;
+			left: 0;
+			opacity: 0.75;
+			position: absolute;
+			top: 0;
+			width: 100%;
+			z-index: 10;
+		}
+
+		&-number {
+			color: $c-silver;
+			font-size: 36px;
+			line-height: 44px;
+			margin: 0;
+
+			@media (min-width: $bp-tablet) {
+				font-size: 28px;
+				line-height: 36px;
+			}
+		}
+
+		&-instructions {
+
+			& p,
+			&--notice {
+				color: $c-black;
+				font-size: 22px;
+				line-height: 28px;
+
+				@media (min-width: $bp-tablet) {
+					font-size: 14px;
+					line-height: 20px;
+				}
+			}
+
+			& h1 {
+				color: $c-black;
+				font-size: 36px;
+				line-height: 44px;
+				margin: 13px 0;
+
+				@media (min-width: $bp-tablet) {
+					font-size: 28px;
+					line-height: 36px;
+				}
+			}
+
+			&--notice {
+				background-color: rgba($c-text-notice-info, 0.2);
+				display: inline-block;
+				margin-bottom: 24px;
+				padding: 6px 14px;
+			}
+
+			&--author {
+				align-items: center;
+				color: $c-scarpa-flow;
+				display: flex;
+				font-size: 12px;
+
+				& img {
+					border-radius: 50%;
+					height: 24px;
+					margin-right: 8px;
+					width: 24px;
+				}
+			}
+		}
+	}
+}

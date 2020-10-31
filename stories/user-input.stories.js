@@ -12,7 +12,7 @@ import { WithTestRegistry } from '../tests/js/utils';
 storiesOf( 'User Input', module )
 	.add( 'UserInputApp', () => {
 		// Set the featureFlag.
-		global.featureFlags = { widgets: { userInput: { enabled: true } } };
+		global.featureFlags = { userInput: { enabled: true } };
 		return (
 			<WithTestRegistry>
 				<UserInputApp />
