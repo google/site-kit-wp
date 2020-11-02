@@ -1,5 +1,5 @@
 /**
- * Feature flags configuration.
+ * Material UI > Layout components.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,16 +16,6 @@
  * limitations under the License.
  */
 
-exports.featureFlags = {
-	widgets: {
-		dashboard: {
-			enabled: 'development',
-		},
-		pageDashboard: {
-			enabled: 'development',
-		},
-	},
-	userInput: {
-		enabled: 'development',
-	},
-};
+export { default as Cell } from './Cell';
+export { default as Row } from './Row';
+export { default as Grid } from './Grid';
