@@ -417,7 +417,7 @@ const baseSelectors = {
 		// Module is found, return the names of the dependencies
 		// Modules are already resolved after we getModule() so they can't be undefined.
 		const modules = select( STORE_NAME ).getModules();
-		return module.dependencies.map( ( dependencySlug ) => modules[ dependencySlug ].name || dependencySlug );
+		return module.dependencies.map( ( dependencySlug ) => modules[ dependencySlug ]?.name || dependencySlug );
 	} ),
 
 	/**
@@ -449,7 +449,7 @@ const baseSelectors = {
 		// Module is found, return the names of the dependants
 		// Modules are already resolved after we getModule() so they can't be undefined.
 		const modules = select( STORE_NAME ).getModules();
-		return module.dependants.map( ( dependantSlug ) => modules[ dependantSlug ].name || dependantSlug );
+		return module.dependants.map( ( dependantSlug ) => modules[ dependantSlug ]?.name || dependantSlug );
 	} ),
 
 	/**
