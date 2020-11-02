@@ -19,9 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { compose } from '@wordpress/compose';
 import domReady from '@wordpress/dom-ready';
-import { addFilter } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -36,7 +34,6 @@ import {
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 	AREA_DASHBOARD_POPULARITY,
 } from '../../googlesitekit/widgets/default-areas';
-import { fillFilterWithComponent } from '../../util';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
@@ -45,18 +42,13 @@ import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 
-addFilter(
-	'googlesitekit.ModuleSetup-analytics',
-	'googlesitekit.AnalyticsModuleSetup',
-	compose( fillFilterWithComponent )( SetupMain )
-);
-
 domReady( () => {
 	Modules.registerModule(
 		'analytics',
 		{
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
+			setupComponent: SetupMain,
 		}
 	);
 

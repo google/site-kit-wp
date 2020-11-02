@@ -551,19 +551,11 @@ final class Assets {
 			),
 			// Admin bar assets.
 			new Script(
-				'googlesitekit-adminbar-loader',
+				'googlesitekit-adminbar',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-adminbar-loader.js',
+					'src'          => $base_url . 'js/googlesitekit-adminbar.js',
 					'dependencies' => $dependencies,
 					'execution'    => 'defer',
-					'before_print' => function( $handle ) use ( $base_url ) {
-						$inline_data = array( 'publicPath' => $base_url . 'js/' );
-						wp_add_inline_script(
-							$handle,
-							'window.googlesitekitAdminbar = ' . wp_json_encode( $inline_data ),
-							'after'
-						);
-					},
 				)
 			),
 			new Stylesheet(
