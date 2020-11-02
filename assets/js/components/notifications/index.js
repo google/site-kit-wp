@@ -31,6 +31,7 @@ import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
 import DashboardWinsAlerts from './dashboard-wins-alerts';
 import DashboardAuthScopesAlert from './DashboardAuthScopesAlert';
+import UserInputSettings from './UserInputSettings';
 
 const { setup } = global._googlesitekitLegacyData;
 const notification = getQueryParameter( 'notification' );
@@ -40,6 +41,7 @@ const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
 const addWinsNotifications = createAddToFilter( <DashboardWinsAlerts /> );
 const addAuthNotification = createAddToFilter( <DashboardAuthScopesAlert /> );
+const addUserInputSettings = createAddToFilter( <UserInputSettings /> );
 
 addFilter( 'googlesitekit.DashboardNotifications',
 	'googlesitekit.SetupNotification',
@@ -49,6 +51,12 @@ if ( setup.needReauthenticate ) {
 	addFilter( 'googlesitekit.ErrorNotification',
 		'googlesitekit.AuthNotification',
 		addAuthNotification, 1 );
+}
+
+if ( featureFlags.userInput.enabled ) {
+	addFilter( 'googlesitekit.ErrorNotification',
+		'googlesitekit.UserInputSettings',
+		addUserInputSettings, 1 );
 }
 
 if ( 'authentication_success' === notification || 'authentication_failure' === notification ) {
