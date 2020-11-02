@@ -27,6 +27,8 @@ import { cloneDeep } from 'lodash';
 import { getStorage } from '../../util/storage';
 import { stringifyObject } from '../../util/stringify';
 
+export const STORAGE_KEY_PREFIX = 'googlesitekit_legacy_';
+
 /**
  * Ensures that the local datacache object is properly set up.
  */
@@ -62,13 +64,14 @@ export const setCache = ( key, data ) => {
 
 	lazilySetupLocalCache();
 
-	global._googlesitekitLegacyData.admin.datacache[ key ] = cloneDeep( data );
+	const cacheKey = STORAGE_KEY_PREFIX + key;
+	global._googlesitekitLegacyData.admin.datacache[ cacheKey ] = cloneDeep( data );
 
 	const toStore = {
 		value: data,
 		date: Date.now() / 1000,
 	};
-	getStorage().setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
+	getStorage().setItem( cacheKey, JSON.stringify( toStore ) );
 };
 
 /**
@@ -89,19 +92,20 @@ export const getCache = ( key, maxAge ) => {
 	lazilySetupLocalCache();
 
 	// Check variable cache first.
-	if ( 'undefined' !== typeof global._googlesitekitLegacyData.admin.datacache[ key ] ) {
-		return global._googlesitekitLegacyData.admin.datacache[ key ];
+	const cacheKey = STORAGE_KEY_PREFIX + key;
+	if ( 'undefined' !== typeof global._googlesitekitLegacyData.admin.datacache[ cacheKey ] ) {
+		return global._googlesitekitLegacyData.admin.datacache[ cacheKey ];
 	}
 
 	// Check persistent cache.
-	const cache = JSON.parse( getStorage().getItem( 'googlesitekit_' + key ) );
+	const cache = JSON.parse( getStorage().getItem( cacheKey ) );
 	if ( cache && 'object' === typeof cache && cache.date ) {
 		// Only return value if no maximum age given or if cache age is less than the maximum.
 		if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
 			// Set variable cache.
-			global._googlesitekitLegacyData.admin.datacache[ key ] = cloneDeep( cache.value );
+			global._googlesitekitLegacyData.admin.datacache[ cacheKey ] = cloneDeep( cache.value );
 
-			return cloneDeep( global._googlesitekitLegacyData.admin.datacache[ key ] );
+			return cloneDeep( global._googlesitekitLegacyData.admin.datacache[ cacheKey ] );
 		}
 	}
 
@@ -118,9 +122,10 @@ export const getCache = ( key, maxAge ) => {
 export const deleteCache = ( key ) => {
 	lazilySetupLocalCache();
 
-	delete global._googlesitekitLegacyData.admin.datacache[ key ];
+	const cacheKey = STORAGE_KEY_PREFIX + key;
+	delete global._googlesitekitLegacyData.admin.datacache[ cacheKey ];
 
-	getStorage().removeItem( 'googlesitekit_' + key );
+	getStorage().removeItem( cacheKey );
 };
 
 /**

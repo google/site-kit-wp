@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { getStorage } from '../../util/storage';
-import { getCacheKey, lazilySetupLocalCache } from './cache';
+import { getCacheKey, lazilySetupLocalCache, STORAGE_KEY_PREFIX } from './cache';
 
 /**
  * Invalidates all caches associated with a specific cache group.
@@ -33,17 +33,18 @@ import { getCacheKey, lazilySetupLocalCache } from './cache';
  */
 export const invalidateCacheGroup = ( type, identifier, datapoint ) => {
 	const groupPrefix = getCacheKey( type, identifier, datapoint );
+	const groupPrefixKey = STORAGE_KEY_PREFIX + groupPrefix;
 
 	lazilySetupLocalCache();
 
 	Object.keys( global._googlesitekitLegacyData.admin.datacache ).forEach( ( key ) => {
-		if ( 0 === key.indexOf( groupPrefix + '::' ) || key === groupPrefix ) {
+		if ( 0 === key.indexOf( groupPrefixKey + '::' ) || key === groupPrefixKey ) {
 			delete global._googlesitekitLegacyData.admin.datacache[ key ];
 		}
 	} );
 
 	Object.keys( getStorage() ).forEach( ( key ) => {
-		if ( 0 === key.indexOf( `googlesitekit_${ groupPrefix }::` ) || key === `googlesitekit_${ groupPrefix }` ) {
+		if ( 0 === key.indexOf( `${ groupPrefixKey }::` ) || key === groupPrefixKey ) {
 			getStorage().removeItem( key );
 		}
 	} );
