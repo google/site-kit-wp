@@ -358,7 +358,7 @@ export function createValidationSelector( validate ) {
  * @return {*} Property value.
  */
 export function createStateSelector( property ) {
-	return ( state ) => state[ property ];
+	return ( state = {} ) => state[ property ];
 }
 
 /**

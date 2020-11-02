@@ -56,6 +56,8 @@ export function createSubmitChangesStore( {
 	submitChanges = () => () => ( {} ),
 	validateCanSubmitChanges = () => {},
 } = {} ) {
+	invariant( storeName, 'storeName is required.' );
+
 	const initialState = {
 		hasStartedSubmittingChanges: false,
 		hasFinishedSubmittingChanges: false,
