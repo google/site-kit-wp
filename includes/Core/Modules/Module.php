@@ -526,7 +526,11 @@ abstract class Module {
 
 		// If the datapoint requires specific scopes, ensure they are satisfied.
 		if ( ! $this->authentication->get_oauth_client()->has_sufficient_scopes( $datapoint['scopes'] ) ) {
-			throw new Insufficient_Scopes_Exception( $datapoint['request_scopes_message'], 0, null, $datapoint['scopes'] );
+			$request_scopes_message = ! empty( $datapoint['request_scopes_message'] )
+				? $datapoint['request_scopes_message']
+				: __( 'You’ll need to grant Site Kit permission to do this.', 'google-site-kit' );
+
+			throw new Insufficient_Scopes_Exception( $request_scopes_message, 0, null, $datapoint['scopes'] );
 		}
 	}
 
