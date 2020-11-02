@@ -169,12 +169,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 */
 		*saveSettings() {
 			const registry = yield Data.commonActions.getRegistry();
-			const values = registry.select( STORE_NAME ).getSettings();
+			registry.dispatch( STORE_NAME ).clearError( 'saveSettings', [] );
 
+			const values = registry.select( STORE_NAME ).getSettings();
 			const { response, error } = yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
 			if ( error ) {
 				// Store error manually since saveSettings signature differs from fetchSaveSettings.
-				registry.dispatch( STORE_NAME ).receiveError( error, 'saveSettings' );
+				registry.dispatch( STORE_NAME ).receiveError( error, 'saveSettings', [] );
 			}
 
 			return { response, error };

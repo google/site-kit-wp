@@ -148,8 +148,9 @@ const baseActions = {
 	 */
 	*createAccount() {
 		const registry = yield Data.commonActions.getRegistry();
-		const { getValue } = registry.select( CORE_FORMS );
+		registry.dispatch( STORE_NAME ).clearError( 'createAccount', [] );
 
+		const { getValue } = registry.select( CORE_FORMS );
 		const data = {
 			accountName: getValue( FORM_ACCOUNT_CREATE, 'accountName' ),
 			propertyName: getValue( FORM_ACCOUNT_CREATE, 'propertyName' ),
@@ -207,6 +208,8 @@ const baseReducer = ( state, { type, payload } ) => {
 const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
+		registry.dispatch( STORE_NAME ).clearError( 'getAccounts', [] );
+
 		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
 		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 		// Only fetch accounts if there are none in the store.
