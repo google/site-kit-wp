@@ -277,7 +277,7 @@ final class Search_Console extends Module
 				return $this->get_webmasters_service()->sites->listSites();
 		}
 
-		throw new Invalid_Datapoint_Exception();
+		return parent::create_data_request( $data );
 	}
 
 	/**

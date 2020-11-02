@@ -260,7 +260,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				return $this->get_siteverification_service()->webResource->listWebResource();
 		}
 
-		throw new Invalid_Datapoint_Exception();
+		return parent::create_data_request( $data );
 	}
 
 	/**

@@ -121,7 +121,7 @@ final class PageSpeed_Insights extends Module
 				);
 		}
 
-		throw new Invalid_Datapoint_Exception();
+		return parent::create_data_request( $data );
 	}
 
 	/**
