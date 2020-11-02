@@ -21,11 +21,12 @@ import LegacyDashboardSearchFunnelInner from '../assets/js/modules/search-consol
 import LegacyAnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopLevel';
 import LegacySearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/components/dashboard/LegacySearchConsoleDashboardWidgetTopLevel';
 import PostSearcher from '../assets/js/components/PostSearcher';
+import URLSearchWidget from '../assets/js/googlesitekit/widgets/components/URLSearchWidget';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME as MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Dashboard', module )
 	.add( 'Module Header', () => (
@@ -95,6 +96,15 @@ storiesOf( 'Dashboard', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry } >
 				<PostSearcher />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'URL Search Widget', () => {
+		const setupRegistry = ( registry ) => provideSiteInfo( registry );
+
+		return (
+			<WithTestRegistry callback={ setupRegistry } >
+				<URLSearchWidget />
 			</WithTestRegistry>
 		);
 	} )

@@ -178,7 +178,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new property/i } );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button', { text: /configure analytics/i } );
+		await expect( page ).toClick( '.mdc-button:not(:disabled)', { text: /configure analytics/i } );
 		await page.waitForSelector( '.mdc-dialog--open' );
 
 		// Click on proceed button and wait for oauth request.
@@ -197,6 +197,7 @@ describe( 'Analytics write scope requests', () => {
 			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
 		] );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+		expect( console ).toHaveErrored(); // Permission scope error.
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
@@ -226,7 +227,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new view/i } );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button', { text: /configure analytics/i } );
+		await expect( page ).toClick( '.mdc-button:not(:disabled)', { text: /configure analytics/i } );
 		await page.waitForSelector( '.mdc-dialog--open' );
 
 		// Click on proceed button and wait for oauth request.
@@ -244,5 +245,6 @@ describe( 'Analytics write scope requests', () => {
 			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
 		] );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+		expect( console ).toHaveErrored(); // Permission scope error.
 	} );
 } );

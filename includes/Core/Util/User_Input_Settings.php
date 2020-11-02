@@ -147,11 +147,10 @@ class User_Input_Settings {
 				continue;
 			}
 
-			$values = is_array( $setting_data['values'] ) ? $setting_data['values'] : array();
 			if ( 'site' === $setting_data['scope'] ) {
-				$site_settings[ $setting_key ] = $values;
+				$site_settings[ $setting_key ] = $setting_data;
 			} elseif ( 'user' === $setting_data['scope'] ) {
-				$user_settings[ $setting_key ] = $values;
+				$user_settings[ $setting_key ] = $setting_data;
 			}
 		}
 
@@ -184,15 +183,25 @@ class User_Input_Settings {
 			return $this->sync_with_proxy();
 		}
 
-		$settings = array();
+		$user_id  = get_current_user_id();
+		$settings = array_merge( $data['site'], $data['user'] );
 
-		foreach ( $data as $scope => $values ) {
-			foreach ( $values as $key => $value ) {
-				$settings[ $key ] = array(
-					'values' => $value,
-					'scope'  => $scope,
-				);
+		foreach ( $settings as &$setting ) {
+			if ( ! isset( $setting['answeredBy'] ) ) {
+				continue;
 			}
+
+			$answered_by = intval( $setting['answeredBy'] );
+			unset( $setting['answeredBy'] );
+
+			if ( ! $answered_by || $answered_by === $user_id ) {
+				continue;
+			}
+
+			$setting['author'] = array(
+				'photo' => get_avatar_url( $answered_by ),
+				'name'  => get_the_author_meta( 'user_email', $answered_by ),
+			);
 		}
 
 		return $settings;

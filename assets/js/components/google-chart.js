@@ -31,7 +31,7 @@ import { debounce } from 'lodash';
 /**
  * Internal dependencies
  */
-import ProgressBar from './progress-bar';
+import ProgressBar from './ProgressBar';
 
 let chartLoadPromise;
 

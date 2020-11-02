@@ -1,0 +1,93 @@
+/**
+ * User Input controls styles.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-user-input {
+
+		&__buttons {
+			display: flex;
+			justify-content: flex-end;
+
+			& button {
+				border: 2px solid $c-mercury;
+				margin-left: 1rem;
+				padding: 0 1.5rem;
+
+				&.mdc-button--raised {
+					border: none;
+				}
+			}
+		}
+
+		&__select-option {
+			align-items: center;
+			border-bottom: 1px solid $c-mercury;
+			display: flex;
+			padding: 15px;
+
+			& .mdc-text-field {
+				background-color: transparent;
+				height: 36px;
+				margin-left: 1rem;
+
+				input {
+					border: none;
+					padding: 0;
+				}
+			}
+		}
+
+		&__text-options {
+			border: 2px solid $c-jumbo;
+			border-radius: 5px;
+			display: flex;
+			margin-top: 13px;
+			padding: 8px;
+
+			& .mdc-text-field {
+				background-color: transparent;
+				height: 40px;
+
+				& input {
+					border: none;
+					padding: 0;
+				}
+			}
+		}
+
+		&__text-option {
+			align-items: center;
+			background-color: $c-solitude;
+			border-radius: 100px;
+			color: $c-denim;
+			display: flex;
+			font-weight: 500;
+			margin-right: 12px;
+			padding: 3px 3px 3px 12px;
+			white-space: nowrap;
+
+			& button {
+				border-radius: 100px;
+				margin: 0;
+				min-width: 0;
+				padding: 0 12px;
+			}
+		}
+	}
+}

@@ -48,9 +48,9 @@ export function generateGTMAnalyticsPropertyStory( {
 	setUp = () => {},
 } ) {
 	return () => {
-		setUp();
-
 		const setupRegistry = ( registry ) => {
+			setUp( registry );
+
 			const existingTagAccountID = '151753095';
 			const existingTagPropertyID = 'UA-151753095-1';
 			const existingTagWebPropertyID = '216084975';

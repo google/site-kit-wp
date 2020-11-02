@@ -139,46 +139,97 @@ final class REST_Routes {
 					return $pre;
 				}
 
+				$user_id  = get_current_user_id();
 				$defaults = array(
 					'role'          => array(
-						'values' => array(),
-						'scope'  => 'user',
+						'values'     => array(),
+						'scope'      => 'user',
+						'answeredBy' => 0,
 					),
 					'postFrequency' => array(
-						'values' => array(),
-						'scope'  => 'user',
+						'values'     => array(),
+						'scope'      => 'user',
+						'answeredBy' => 0,
 					),
 					'goals'         => array(
-						'values' => array(),
-						'scope'  => 'site',
+						'values'     => array(),
+						'scope'      => 'site',
+						'answeredBy' => 0,
 					),
 					'helpNeeded'    => array(
-						'values' => array(),
-						'scope'  => 'site',
+						'values'     => array(),
+						'scope'      => 'site',
+						'answeredBy' => 0,
 					),
 					'searchTerms'   => array(
-						'values' => array(),
-						'scope'  => 'site',
+						'values'     => array(),
+						'scope'      => 'site',
+						'answeredBy' => 0,
 					),
 				);
 
 				if ( ! empty( $args['body'] ) ) {
 					$body = json_decode( $args['body'], true );
 					if ( ! empty( $body ) ) {
-						$user_input = array();
+						$original_site_settings = get_option( 'googlesitekit_temp_userinput_sitewide', array() );
+						$user_settings          = array();
+						$site_settings          = array();
 
 						foreach ( $defaults as $key => $values ) {
-							$user_input[ $key ] = array(
-								'values' => ! empty( $body[ $key ] ) ? $body[ $key ] : array(),
-								'scope'  => $values['scope'],
-							);
+							if ( 'site' === $values['scope'] ) {
+								$new_values = ! empty( $body[ $key ] ) && is_array( $body[ $key ] )
+									? $body[ $key ]
+									: array();
+
+								$original_values = ! empty( $original_site_settings[ $key ]['values'] ) && is_array( $original_site_settings[ $key ]['values'] )
+									? $original_site_settings[ $key ]['values']
+									: array();
+
+								$answered_by = ! empty( $original_site_settings[ $key ]['answeredBy'] )
+									? $original_site_settings[ $key ]['answeredBy']
+									: null;
+
+								if ( count( $new_values ) !== count( $original_values ) ) {
+									$answered_by = $user_id;
+								} else {
+									$intersection = array_intersect( $new_values, $original_values );
+									if ( count( $intersection ) !== count( $new_values ) ) {
+										$answered_by = $user_id;
+									}
+								}
+
+								$site_settings[ $key ] = array(
+									'values'     => $new_values,
+									'scope'      => $values['scope'],
+									'answeredBy' => $answered_by,
+								);
+							} else {
+								$user_settings[ $key ] = array(
+									'values'     => ! empty( $body[ $key ] ) ? $body[ $key ] : array(),
+									'scope'      => $values['scope'],
+									'answeredBy' => $user_id,
+								);
+							}
 						}
 
-						update_option( 'googlesitekit_temp_userinput', $user_input, 'no' );
+						update_option( 'googlesitekit_temp_userinput_sitewide', $site_settings, 'no' );
+						update_option( 'googlesitekit_temp_userinput_' . $user_id, $user_settings, 'no' );
 					}
 				}
 
-				$user_input = get_option( 'googlesitekit_temp_userinput', $defaults );
+				$user_input    = array();
+				$user_settings = get_option( 'googlesitekit_temp_userinput_' . $user_id, array() );
+				$site_settings = get_option( 'googlesitekit_temp_userinput_sitewide', array() );
+
+				foreach ( $defaults as $key => $values ) {
+					if ( isset( $user_settings[ $key ] ) ) {
+						$user_input[ $key ] = $user_settings[ $key ];
+					} elseif ( isset( $site_settings[ $key ] ) ) {
+						$user_input[ $key ] = $site_settings[ $key ];
+					} else {
+						$user_input[ $key ] = $values;
+					}
+				}
 
 				return array(
 					'headers'  => array(),

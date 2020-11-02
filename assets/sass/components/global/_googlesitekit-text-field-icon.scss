@@ -18,8 +18,8 @@
 
 .googlesitekit-plugin .googlesitekit-text-field-icon {
 
-	&--warning::before {
-		background-color: $c-warning;
+	&--warning::before,
+	&--error::before {
 		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2222%22%20height%3D%2219%22%20viewBox%3D%220%200%2022%2019%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%2019h22L11%200%200%2019zm12-3h-2v-2h2v2zm0-4h-2V8h2v4z%22%20fill%3D%22%23FFF%22%20fill-rule%3D%22nonzero%22%2F%3E%3C%2Fsvg%3E");
 		background-position: center 4px;
 		background-repeat: no-repeat;
@@ -30,5 +30,13 @@
 		height: 22px;
 		vertical-align: middle;
 		width: 22px;
+	}
+
+	&--warning::before {
+		background-color: $c-warning;
+	}
+
+	&--error::before {
+		background-color: $c-error;
 	}
 }

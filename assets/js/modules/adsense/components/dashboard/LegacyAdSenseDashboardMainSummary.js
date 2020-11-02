@@ -32,7 +32,7 @@ import {
 import Layout from '../../../../components/layout/layout';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import PreviewBlock from '../../../../components/preview-block';
+import PreviewBlock from '../../../../components/PreviewBlock';
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
@@ -40,7 +40,7 @@ import {
 	getSiteKitAdminURL,
 } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
-import Sparkline from '../../../../components/sparkline';
+import Sparkline from '../../../../components/Sparkline';
 
 class LegacyAdSenseDashboardMainSummary extends Component {
 	constructor( props ) {

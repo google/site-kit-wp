@@ -19,20 +19,6 @@ jobs:
     if: false == ( ( github.event_name == 'pull_request' && github.event.action == 'closed' ) || github.event.pull_request.head.repo.fork )
     steps:
     - uses: actions/checkout@v2
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
-    - name: Composer Install
-      uses: php-actions/composer@v1
-      with:
-        args: install
     - name: Read .nvmrc
       run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
       id: nvm
@@ -41,7 +27,7 @@ jobs:
       with:
         node-version: "${{ steps.nvm.outputs.NVMRC }}"
     - name: Cache Node - npm
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}

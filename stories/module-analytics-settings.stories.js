@@ -24,10 +24,10 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytics/components/settings';
+import { SettingsEdit, SettingsView } from '../assets/js/modules/analytics/components/settings';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME, PROFILE_CREATE } from '../assets/js/modules/analytics/datastore/constants';
-
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { createTestRegistry, provideModules } from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
@@ -44,7 +44,7 @@ const defaultSettings = {
 	useSnippet: true,
 };
 
-const Settings = createLegacySettingsWrapper( 'analytics', AnalyticsSettings );
+const Settings = createLegacySettingsWrapper( 'analytics' );
 
 function usingGenerateGTMAnalyticsPropertyStory( args ) {
 	return generateGTMAnalyticsPropertyStory( {
@@ -58,6 +58,10 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 storiesOf( 'Analytics Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
+		registry.dispatch( CORE_MODULES ).registerModule( 'analytics', {
+			settingsEditComponent: SettingsEdit,
+			settingsViewComponent: SettingsView,
+		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		provideModules( registry, [ {

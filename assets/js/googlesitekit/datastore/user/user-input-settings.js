@@ -32,12 +32,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 const { commonActions, createRegistrySelector } = Data;
 
 function fetchStoreReducerCallback( state, inputSettings ) {
-	return {
-		...state,
-		inputSettings: Object
-			.keys( inputSettings )
-			.reduce( ( accum, key ) => ( { ...accum, [ key ]: inputSettings[ key ].values } ), {} ),
-	};
+	return { ...state, inputSettings };
 }
 
 const fetchGetUserInputSettingsStore = createFetchStore( {
@@ -108,12 +103,18 @@ const baseActions = {
 	 */
 	*saveUserInputSettings() {
 		const registry = yield Data.commonActions.getRegistry();
-		const settings = registry.select( STORE_NAME ).getUserInputSettings();
+		registry.dispatch( STORE_NAME ).clearError( 'saveUserInputSettings', [] );
 
-		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( settings );
+		const settings = registry.select( STORE_NAME ).getUserInputSettings();
+		const values = Object.keys( settings ).reduce( ( accum, key ) => ( {
+			...accum,
+			[ key ]: settings[ key ]?.values || [],
+		} ), {} );
+
+		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( values );
 		if ( error ) {
 			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
-			registry.dispatch( STORE_NAME ).receiveError( error, 'saveUserInputSettings' );
+			registry.dispatch( STORE_NAME ).receiveError( error, 'saveUserInputSettings', [] );
 		}
 
 		return { response, error };
@@ -133,7 +134,10 @@ export const baseReducer = ( state, { type, payload } ) => {
 				...state,
 				inputSettings: {
 					...state.inputSettings,
-					[ payload.settingID ]: payload.values,
+					[ payload.settingID ]: {
+						...( state.inputSettings[ payload.settingID ] || {} ),
+						values: payload.values,
+					},
 				},
 			};
 		}
@@ -172,11 +176,38 @@ const baseSelectors = {
 	 * @since 1.19.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} User input settings.
+	 * @return {(Array.<string>|undefined)} User input setting values.
 	 */
 	getUserInputSetting: createRegistrySelector( ( select ) => ( state, settingID ) => {
 		const settings = select( STORE_NAME ).getUserInputSettings() || {};
-		return settings[ settingID ];
+		const values = settings[ settingID ]?.values;
+		return Array.isArray( values ) ? values : [];
+	} ),
+
+	/**
+	 * Gets a scope of the input setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} User input setting scope.
+	 */
+	getUserInputSettingScope: createRegistrySelector( ( select ) => ( state, settingID ) => {
+		const settings = select( STORE_NAME ).getUserInputSettings() || {};
+		return settings[ settingID ]?.scope;
+	} ),
+
+	/**
+	 * Gets an author of the input setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} User input setting author.
+	 */
+	getUserInputSettingAuthor: createRegistrySelector( ( select ) => ( state, settingID ) => {
+		const settings = select( STORE_NAME ).getUserInputSettings() || {};
+		return settings[ settingID ]?.author;
 	} ),
 };
 
