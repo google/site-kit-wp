@@ -63,8 +63,7 @@ function DashboardClicksWidget() {
 		if ( url ) {
 			args.url = url;
 			serviceBaseURLArgs.page = `!${ url }`;
-		}
-		if ( isDomainProperty && referenceSiteURL ) {
+		} else if ( isDomainProperty && referenceSiteURL ) {
 			serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
 		}
 

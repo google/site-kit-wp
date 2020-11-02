@@ -49,8 +49,7 @@ const DashboardDetailsWidgetKeywordsTable = () => {
 	} );
 	if ( url ) {
 		footerCTALinkArgs.page = `!${ url }`;
-	}
-	if ( isDomainProperty && referenceSiteURL ) {
+	} else if ( isDomainProperty && referenceSiteURL ) {
 		footerCTALinkArgs.page = `*${ referenceSiteURL }`;
 	}
 	const footerCTALink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {

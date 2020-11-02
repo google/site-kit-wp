@@ -50,8 +50,7 @@ const LegacySearchConsoleDashboardWidgetKeywordTable = ( props ) => {
 	};
 	if ( url ) {
 		baseServiceURLArgs.page = `!${ url }`;
-	}
-	if ( isDomainProperty && referenceSiteURL ) {
+	} else if ( isDomainProperty && referenceSiteURL ) {
 		baseServiceURLArgs.page = `*${ referenceSiteURL }`;
 	}
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(

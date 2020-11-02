@@ -66,8 +66,7 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
 	};
 	if ( url ) {
 		serviceBaseURLArgs.page = `!${ url }`;
-	}
-	if ( isDomainProperty && referenceSiteURL ) {
+	} else if ( isDomainProperty && referenceSiteURL ) {
 		serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
 	}
 
