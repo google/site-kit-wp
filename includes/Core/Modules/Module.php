@@ -454,7 +454,9 @@ abstract class Module {
 	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	abstract protected function parse_data_response( Data_Request $data, $response );
+	protected function parse_data_response( Data_Request $data, $response ) {
+		return $response;
+	}
 
 	/**
 	 * Creates a request object for the given datapoint.
