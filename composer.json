@@ -18,6 +18,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "google/apiclient": "^2.0",
+    "google/apiclient-services": "~0.1",
     "guzzlehttp/guzzle": "^5.3.3"
   },
   "replace": {

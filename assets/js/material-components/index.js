@@ -29,6 +29,7 @@ import { MDCDialog } from '@material/dialog';
 import { MDCCheckbox } from '@material/checkbox';
 import { MDCMenu } from '@material/menu';
 
+export * from './layout';
 export {
 	TextField,
 	HelperText,

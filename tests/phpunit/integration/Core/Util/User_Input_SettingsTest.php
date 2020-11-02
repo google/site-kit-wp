@@ -87,9 +87,18 @@ class User_Input_SettingsTest extends TestCase {
 		set_transient(
 			'googlesitekit_user_input_settings',
 			array(
-				'goals'       => array( 'goal1', 'goal2', 'goal3' ),
-				'helpNeeded'  => array( 'no' ),
-				'searchTerms' => array( 'keyword1', 'keyword2' ),
+				'goals'       => array(
+					'values' => array( 'goal1', 'goal2', 'goal3' ),
+					'scope'  => 'site',
+				),
+				'helpNeeded'  => array(
+					'values' => array( 'no' ),
+					'scope'  => 'site',
+				),
+				'searchTerms' => array(
+					'values' => array( 'keyword1', 'keyword2' ),
+					'scope'  => 'site',
+				),
 			)
 		);
 
@@ -97,8 +106,14 @@ class User_Input_SettingsTest extends TestCase {
 		$user_options->set(
 			'googlesitekit_transient_googlesitekit_user_input_settings',
 			array(
-				'role'          => array( 'role1', 'role2' ),
-				'postFrequency' => array( 'daily' ),
+				'role'          => array(
+					'values' => array( 'role1', 'role2' ),
+					'scope'  => 'user',
+				),
+				'postFrequency' => array(
+					'values' => array( 'daily' ),
+					'scope'  => 'user',
+				),
 			)
 		);
 

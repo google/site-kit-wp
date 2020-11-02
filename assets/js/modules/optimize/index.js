@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { addFilter } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -29,16 +28,6 @@ import Modules from 'googlesitekit-modules';
 import './datastore';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
-import { fillFilterWithComponent } from '../../util';
-
-/**
- * Add component to the setup wizard.
- */
-addFilter(
-	'googlesitekit.ModuleSetup-optimize',
-	'googlesitekit.OptimizeModuleSetupWizard',
-	fillFilterWithComponent( SetupMain )
-);
 
 domReady( () => {
 	Modules.registerModule(
@@ -46,6 +35,7 @@ domReady( () => {
 		{
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
+			setupComponent: SetupMain,
 		}
 	);
 } );
