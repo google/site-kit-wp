@@ -753,7 +753,9 @@ abstract class Module {
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	abstract protected function setup_services( Google_Site_Kit_Client $client );
+	protected function setup_services( Google_Site_Kit_Client $client ) {
+		return array();
+	}
 
 	/**
 	 * Sets whether or not to return raw requests and returns a callback to reset to the previous value.
