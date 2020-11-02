@@ -24,7 +24,6 @@ class Module_Registry {
 	 * Registered modules.
 	 *
 	 * @since n.e.x.t
-	 *
 	 * @var array
 	 */
 	private $registry = array();
