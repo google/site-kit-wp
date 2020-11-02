@@ -113,7 +113,7 @@ export const selectors = {
 			}
 			const slugState = state.panelState.modules[ slug ];
 			// If another module is being currently being edited, and we think ours is being edited, it should be locked.
-			return slugState === 'edit' && state.panelState.editing !== slug ? 'locked' : slugState;
+			return slugState === 'edit' && state.panelState.editing !== slug && state.panelState.editing !== null ? 'locked' : slugState;
 		}
 
 		return isModuleActive === null ? null : 'closed';
