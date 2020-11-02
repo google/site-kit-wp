@@ -436,10 +436,13 @@ abstract class Module {
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
+	 * // phpcs:ignore Squiz.Commenting.FunctionComment.InvalidNoReturn
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 * @throws Invalid_Datapoint_Exception Override in a sub-class.
 	 */
-	abstract protected function create_data_request( Data_Request $data );
+	protected function create_data_request( Data_Request $data ) {
+		throw new Invalid_Datapoint_Exception();
+	}
 
 	/**
 	 * Parses a response for the given datapoint.
