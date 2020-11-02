@@ -251,7 +251,7 @@ final class Modules {
 	 */
 	public function get_available_modules() {
 		if ( empty( $this->modules ) ) {
-			$module_classes = $this->registry->get_all();
+			$module_classes = $this->get_registry()->get_all();
 			foreach ( $module_classes as $module_class ) {
 				$instance = new $module_class( $this->context, $this->options, $this->user_options, $this->authentication );
 
