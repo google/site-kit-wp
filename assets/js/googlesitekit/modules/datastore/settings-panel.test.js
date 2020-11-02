@@ -48,7 +48,7 @@ describe( 'core/modules settings-panel', () => {
 
 	describe( 'reducer', () => {
 		it( 'has the appropriate initial state', () => {
-			const expectedInitialState = {};
+			const expectedInitialState = { editing: null, modules: {} };
 			const initialStoreState = store.getState();
 
 			expect( Object.keys( initialStoreState ) ).toContain( 'panelState' );
@@ -60,21 +60,24 @@ describe( 'core/modules settings-panel', () => {
 		describe( 'setModuleSettingsPanelState', () => {
 			it( 'sets module settings panel state', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'closed' );
-				let expectedPanelState = { ...store.getState().panelState, [ slug ]: 'closed' };
+				const expectedPanelState = { ...store.getState().panelState };
+				expectedPanelState.modules[ slug ] = 'closed';
 				expect( store.getState().panelState ).toEqual( expectedPanelState );
 
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
-				expectedPanelState = { ...store.getState().panelState, [ slug ]: 'view' };
+				expectedPanelState.modules[ slug ] = 'view';
 				expect( store.getState().panelState ).toEqual( expectedPanelState );
 
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'edit' );
-				expectedPanelState = { ...store.getState().panelState, [ slug ]: 'edit' };
+				expectedPanelState.modules[ slug ] = 'edit';
+				expectedPanelState.editing = slug;
 				expect( store.getState().panelState ).toEqual( expectedPanelState );
 			} );
 
 			it( 'state should not change when we set an invalid panel state value', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'edit' );
-				const expectedPanelState = { ...store.getState().panelState, [ slug ]: 'edit' };
+				const expectedPanelState = { ...store.getState().panelState };
+
 				expect( () => {
 					registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'invalid' );
 				} ).toThrow();
@@ -86,11 +89,11 @@ describe( 'core/modules settings-panel', () => {
 	describe( 'selectors', () => {
 		describe( 'getModuleSettingsPanelState', () => {
 			it( 'checks that default module settings panel state is closed', () => {
-				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'closed' );
 				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( nonExistentModuleSlug ) ).toBe( null );
 			} );
 			it( 'checks we can get every module settings panel state', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
+				registry.select( STORE_NAME ).getModuleSettingsPanelState( slug );
 				expect( registry.select( STORE_NAME ).getModuleSettingsPanelState( slug ) ).toBe( 'view' );
 
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'closed' );
