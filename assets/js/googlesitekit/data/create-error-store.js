@@ -45,7 +45,9 @@ export function generateErrorKey( baseName, args ) {
 export const actions = {
 	receiveError( error, baseName, args ) {
 		invariant( error, 'error is required.' );
-		invariant( ! baseName || ( args && Array.isArray( args ) ), 'args is required (and must be an array) when baseName is specified.' );
+		if ( baseName ) {
+			invariant( args && Array.isArray( args ), 'args is required (and must be an array) when baseName is specified.' );
+		}
 
 		return {
 			type: RECEIVE_ERROR,
@@ -57,7 +59,9 @@ export const actions = {
 		};
 	},
 	clearError( baseName, args ) {
-		invariant( ! baseName || ( args && Array.isArray( args ) ), 'args is required (and must be an array) when baseName is specified.' );
+		if ( baseName ) {
+			invariant( args && Array.isArray( args ), 'args is required (and must be an array) when baseName is specified.' );
+		}
 
 		return {
 			type: CLEAR_ERROR,

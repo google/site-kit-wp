@@ -75,8 +75,8 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'receives and sets value for an error with `baseName` only', () => {
-				dispatch.receiveError( errorNotFound, baseName );
-				expect( store.getState().errors[ baseName ] ).toEqual( errorNotFound );
+				dispatch.receiveError( errorNotFound, baseName, [] );
+				expect( store.getState().errors[ generateErrorKey( baseName, [] ) ] ).toEqual( errorNotFound );
 			} );
 
 			it( 'receives and sets value for an error with `baseName` and `args`', () => {
@@ -102,7 +102,7 @@ describe( 'createErrorStore store', () => {
 			it( 'requires the same `baseName` and `args` an error was received with to clear it', () => {
 				dispatch.receiveError( errorForbidden, baseName, args );
 
-				dispatch.clearError( baseName );
+				dispatch.clearError( baseName, [] );
 
 				expect( store.getState().errors ).toHaveProperty(
 					generateErrorKey( baseName, args ),
@@ -120,7 +120,7 @@ describe( 'createErrorStore store', () => {
 		describe( 'clearErrors', () => {
 			it( 'clears all received errors when called with no arguments', () => {
 				dispatch.receiveError( errorNotFound );
-				dispatch.receiveError( errorForbidden, baseName );
+				dispatch.receiveError( errorForbidden, baseName, [] );
 				dispatch.receiveError( errorForbidden, baseName, args );
 
 				dispatch.clearErrors();
@@ -131,7 +131,7 @@ describe( 'createErrorStore store', () => {
 
 			it( 'clears all received errors for a given `baseName`', () => {
 				dispatch.receiveError( errorNotFound );
-				dispatch.receiveError( errorForbidden, baseName );
+				dispatch.receiveError( errorForbidden, baseName, [] );
 				dispatch.receiveError( errorForbidden, baseName, args );
 				dispatch.receiveError( errorNotFound, 'otherBaseName', args );
 
@@ -173,7 +173,7 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( `returns the error received for the given \`${ baseNameParam }\` and \`args\``, () => {
-				dispatch.receiveError( errorNotFound, baseName );
+				dispatch.receiveError( errorNotFound, baseName, [] );
 				dispatch.receiveError( errorForbidden, baseName, args );
 
 				expect( select[ selectorName ]( baseName, args ) ).toEqual( errorForbidden );
@@ -188,7 +188,7 @@ describe( 'createErrorStore store', () => {
 				} );
 
 				it( 'returns the error which was received without any `baseName` or `args`', () => {
-					dispatch.receiveError( errorNotFound, baseName );
+					dispatch.receiveError( errorNotFound, baseName, [] );
 
 					expect( select.getError() ).toBeUndefined();
 
@@ -209,10 +209,10 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns the error received with the same given `baseName` and `args`', () => {
-				dispatch.receiveError( errorNotFound, baseName );
+				dispatch.receiveError( errorNotFound, baseName, [] );
 				dispatch.receiveError( errorForbidden, baseName, args );
 
-				expect( select.getError( baseName ) ).toEqual( errorNotFound );
+				expect( select.getError( baseName, [] ) ).toEqual( errorNotFound );
 				expect( select.getError( baseName, args ) ).toEqual( errorForbidden );
 			} );
 		} );
@@ -233,8 +233,8 @@ describe( 'createErrorStore store', () => {
 
 			it( 'returns a list of unique errors, regardless of `baseName` or `args`', () => {
 				dispatch.receiveError( errorNotFound );
-				dispatch.receiveError( errorNotFound, baseName );
-				dispatch.receiveError( errorNotFound, 'otherBaseName' );
+				dispatch.receiveError( errorNotFound, baseName, [] );
+				dispatch.receiveError( errorNotFound, 'otherBaseName', [] );
 				dispatch.receiveError( errorNotFound, baseName, [ 'foo' ] );
 				dispatch.receiveError( errorNotFound, baseName, [ 'bar' ] );
 
