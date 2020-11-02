@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -32,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import MiniChart from '../../../../components/MiniChart';
 import { numberFormat } from '../../../../util/i18n';
-import { getCurrentDateRange } from '../../../../util/date-range';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 function AcquisitionSources( { data, args } ) {
 	if ( ! data ) {
@@ -63,7 +63,7 @@ function AcquisitionSources( { data, args } ) {
 
 	const { dateRange, url } = args;
 	if ( url ) {
-		const currentRange = getCurrentDateRange( dateRange );
+		const currentRange = getCurrentDateRangeDayCount( dateRange );
 
 		keyColumnIndex = 1;
 		options.hideHeader = false;
@@ -80,13 +80,25 @@ function AcquisitionSources( { data, args } ) {
 			},
 			{
 				title: __( 'New Users', 'google-site-kit' ),
-				/* translators: %s: date range */
-				tooltip: sprintf( __( 'Number of new users to visit your page over last %s', 'google-site-kit' ), currentRange ),
+				tooltip: sprintf(
+					/* translators: %s: date range */
+					_n(
+						'Number of new users to visit your page over last %s day',
+						'Number of new users to visit your page over last %s days',
+						currentRange, 'google-site-kit',
+					), currentRange,
+				),
 			},
 			{
 				title: __( 'Sessions', 'google-site-kit' ),
-				/* translators: %s: date range */
-				tooltip: sprintf( __( 'Number of sessions users had on your website over last %s', 'google-site-kit' ), currentRange ),
+				tooltip: sprintf(
+					/* translators: %s: date range */
+					_n(
+						'Number of sessions users had on your website over last %s day',
+						'Number of sessions users had on your website over last %s days',
+						currentRange, 'google-site-kit',
+					), currentRange,
+				),
 			},
 			{
 				title: __( 'Percentage', 'google-site-kit' ),

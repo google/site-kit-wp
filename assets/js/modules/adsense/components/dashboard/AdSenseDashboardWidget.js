@@ -26,7 +26,7 @@ import classnames from 'classnames';
  */
 import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __, _x, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -47,7 +47,7 @@ import PageHeader from '../../../../components/PageHeader';
 import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { getCurrentDateRange } from '../../../../util/date-range';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { withSelect } = Data;
 
@@ -130,7 +130,7 @@ class AdSenseDashboardWidget extends Component {
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
-		const currentDateRange = getCurrentDateRange( dateRange );
+		const currentDateRange = getCurrentDateRangeDayCount( dateRange );
 
 		let moduleStatus;
 		let moduleStatusText;
@@ -208,8 +208,14 @@ class AdSenseDashboardWidget extends Component {
 							) }>
 								<Layout
 									header
-									/* translators: %s: date range */
-									title={ sprintf( __( 'Performance over the last %s', 'google-site-kit' ), currentDateRange ) }
+									title={ sprintf(
+										/* translators: %s: date range */
+										_n(
+											'Performance over the last %s day',
+											'Performance over the last %s days',
+											currentDateRange, 'google-site-kit'
+										), currentDateRange
+									) }
 									headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
 									headerCTALink={ homepage }
 								>

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -28,19 +28,25 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as MODULES_ADSENSE } from '../../../adsense/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import Layout from '../../../../components/layout/layout';
-import { getCurrentDateRange } from '../../../../util/date-range';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 const { useSelect } = Data;
 
 const AnalyticsAdSenseDashboardWidgetLayout = ( { children } ) => {
 	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteURL() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const currentDateRange = getCurrentDateRange( dateRange );
+	const currentDateRange = getCurrentDateRangeDayCount( dateRange );
 
 	return (
 		<Layout
 			header
-			/* translators: %s: date range */
-			title={ sprintf( __( 'Performance by page over the last %s', 'google-site-kit' ), currentDateRange ) }
+			title={ sprintf(
+				/* translators: %s: date range */
+				_n(
+					'Performance by page over the last %s day',
+					'Performance by page over the last %s days',
+					currentDateRange, 'google-site-kit',
+				), currentDateRange,
+			) }
 			headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
 			headerCTALink={ accountSiteURL }>
 			{ children }
