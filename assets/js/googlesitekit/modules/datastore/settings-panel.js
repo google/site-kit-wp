@@ -31,7 +31,10 @@ const { createRegistrySelector } = Data;
 const SET_MODULE_SETTINGS_PANEL_STATE = 'SET_MODULE_SETTINGS_PANEL_STATE';
 
 export const initialState = {
-	panelState: {},
+	panelState: {
+		modules: {},
+		editing: null,
+	},
 };
 
 export const actions = {
@@ -67,18 +70,18 @@ export const reducer = ( state, { type, payload } ) => {
 		case SET_MODULE_SETTINGS_PANEL_STATE: {
 			const { slug, value } = payload;
 			const panelState = { ...state.panelState };
-			const previouslyEdit = panelState[ slug ] && panelState[ slug ] === 'edit' && [ 'closed', 'view' ].includes( value );
+			const previouslyEdit = panelState.modules[ slug ] && panelState.modules[ slug ] === 'edit' && [ 'closed', 'view' ].includes( value );
 			Object.entries( panelState ).forEach(
 				( [ stateKey, stateValue ] ) => {
 					if ( [ 'view', 'edit' ].includes( stateValue ) && payload.value === 'edit' ) {
-						panelState[ stateKey ] = 'locked';
+						panelState.modules[ stateKey ] = 'locked';
 					}
 					if ( previouslyEdit && stateValue === 'locked' ) {
-						panelState[ stateKey ] = 'view';
+						panelState.modules[ stateKey ] = 'view';
 					}
 				}
 			);
-			panelState[ slug ] = value;
+			panelState.modules[ slug ] = value;
 
 			return {
 				...state,
@@ -102,18 +105,14 @@ export const selectors = {
 	 * @return {string} Module's panelState as one of: 'view', 'edit', 'closed', 'locked' or null.
 	 */
 	getModuleSettingsPanelState: createRegistrySelector( ( select ) => ( state, slug ) => {
-		// Return the panel state if we have it.
-		if ( state.panelState[ slug ] ) {
-			return state.panelState[ slug ];
-		}
-
+		invariant( slug, 'slug is required.' );
 		// Return closed as default state for a module.
 		if ( select( 'core/modules' ).isModuleActive( slug ) !== null ) {
 			return 'closed';
 		}
 
-		// Return null if we have no state for it and the module doesn't exist.
-		return null;
+		// Return the panel state if we have it or null if we don't have state for it / module doesn't exist.
+		return state.panelState.modules?.[ slug ] || null;
 	} ),
 
 };
