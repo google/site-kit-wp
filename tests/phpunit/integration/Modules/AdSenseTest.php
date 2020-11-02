@@ -187,7 +187,6 @@ class AdSenseTest extends TestCase {
 
 	/**
 	 * @dataProvider block_on_consent_provider
-	 *
 	 * @param bool $enabled
 	 */
 	public function test_block_on_consent_amp_content( $enabled ) {
@@ -197,13 +196,14 @@ class AdSenseTest extends TestCase {
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'the_content' );
+		$adsense->register();
 
 		do_action( 'template_redirect' );
 
 		if ( $enabled ) {
 			add_filter( 'googlesitekit_adsense_tag_amp_block_on_consent', '__return_true' );
 		}
-
+		// Confirm that the tag it not added if we're not in the loop.
 		$output = apply_filters( 'the_content', 'test content' );
 		$this->assertNotContains( 'data-ad-client="ca-pub-12345678"', $output );
 
