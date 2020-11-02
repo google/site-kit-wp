@@ -1328,7 +1328,7 @@ final class Analytics extends Module
 				return $response;
 		}
 
-		return $response;
+		return parent::parse_data_response( $data, $response );
 	}
 
 	/**

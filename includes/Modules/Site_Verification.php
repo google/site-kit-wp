@@ -331,7 +331,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				return $data;
 		}
 
-		return $response;
+		return parent::parse_data_response( $data, $response );
 	}
 
 	/**

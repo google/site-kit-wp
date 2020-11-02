@@ -323,7 +323,7 @@ final class Search_Console extends Module
 				return $this->map_sites( (array) $response->getSiteEntry() );
 		}
 
-		return $response;
+		return parent::parse_data_response( $data, $response );
 	}
 
 	/**
