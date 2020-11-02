@@ -57,7 +57,11 @@ function Link( {
 			label = label || children;
 		}
 
-		return `${ label } ${ _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' ) }`;
+		const newTabText = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
+		if ( label ) {
+			return `${ label } ${ newTabText }`;
+		}
+		return newTabText;
 	};
 
 	return (
