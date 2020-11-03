@@ -17,7 +17,7 @@
  */
 
 /**
- * Returns the sum of a given fieldName is a list.
+ * Returns the sum of a given fieldName in a list.
  *
  * @since n.e.x.t
  *
