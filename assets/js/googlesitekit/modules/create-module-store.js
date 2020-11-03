@@ -26,14 +26,14 @@ import invariant from 'invariant';
  */
 import Data from 'googlesitekit-data';
 import { createNotificationsStore } from '../data/create-notifications-store';
-import { createSettingsStore } from '../data/create-settings-store';
+import {
+	createSettingsStore,
+	makeDefaultSubmitChanges,
+	makeDefaultCanSubmitChanges,
+} from '../data/create-settings-store';
 import { createErrorStore } from '../data/create-error-store';
 import { createInfoStore } from './create-info-store';
-import {
-	createSubmitChangesStore,
-	makeDefaultCanSubmitChanges,
-	makeDefaultSubmitChanges,
-} from './create-submit-changes-store';
+import { createSubmitChangesStore } from './create-submit-changes-store';
 
 /**
  * Creates a base store object for a Site Kit module.

@@ -28,13 +28,20 @@ import isEqual from 'lodash/isEqual';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { TYPE_MODULES } from '../../components/data/constants';
+import { invalidateCacheGroup } from '../../components/data/invalidate-cache-group';
+import { createStrictSelect } from './utils';
 import {
 	camelCaseToPascalCase,
 	camelCaseToConstantCase,
 } from './transform-case';
 import { createFetchStore } from './create-fetch-store';
 
-const { createRegistrySelector } = Data;
+const { createRegistrySelector, createRegistryControl } = Data;
+
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
+export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
 
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
@@ -338,3 +345,50 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		STORE_NAME,
 	};
 };
+
+/**
+ * Creates a default submitChanges control function.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug      Module slug.
+ * @param {string} storeName Datastore slug.
+ * @return {Function} Control function to submit changes.
+ */
+export function makeDefaultSubmitChanges( slug, storeName ) {
+	return createRegistryControl( ( { select, dispatch } ) => async () => {
+		if ( select( storeName ).haveSettingsChanged() ) {
+			const { error } = await dispatch( storeName ).saveSettings();
+			if ( error ) {
+				return { error };
+			}
+		}
+
+		await API.invalidateCache( 'modules', slug );
+		// TODO: Remove once legacy dataAPI is no longer used.
+		invalidateCacheGroup( TYPE_MODULES, slug );
+
+		return {};
+	} );
+}
+
+/**
+ * Creates a default canSubmitChanges function.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} storeName Datastore slug.
+ * @return {Function} A function to check if settings can be submitted.
+ */
+export function makeDefaultCanSubmitChanges( storeName ) {
+	return ( select ) => {
+		const strictSelect = createStrictSelect( select );
+		const {
+			haveSettingsChanged,
+			isDoingSubmitChanges,
+		} = strictSelect( storeName );
+
+		invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
+		invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	};
+}

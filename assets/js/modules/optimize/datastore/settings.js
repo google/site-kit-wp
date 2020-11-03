@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { STORE_NAME } from './constants';
-import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/modules/create-submit-changes-store';
+import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isValidOptimizeID, isValidAMPExperimentJSON } from '../util';
 

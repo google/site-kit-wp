@@ -25,15 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import API from 'googlesitekit-api';
-import { TYPE_MODULES } from '../../components/data/constants';
-import { invalidateCacheGroup } from '../../components/data/invalidate-cache-group';
-import { createStateSelectors, createStrictSelect, createValidationSelector } from '../data/utils';
-const { createRegistryControl } = Data;
-
-// Invariant error messages.
-export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
-export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
+import { createStateSelectors, createValidationSelector } from '../data/utils';
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -53,7 +45,7 @@ const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
  */
 export function createSubmitChangesStore( {
 	storeName,
-	submitChanges = () => () => ( {} ),
+	submitChanges = () => ( {} ),
 	validateCanSubmitChanges = () => {},
 } = {} ) {
 	invariant( storeName, 'storeName is required.' );
@@ -74,7 +66,11 @@ export function createSubmitChangesStore( {
 		 */
 		*submitChanges() {
 			const { dispatch } = yield Data.commonActions.getRegistry();
-			dispatch( storeName ).clearError( 'submitChanges', [] );
+			const { clearError, receiveError } = dispatch( storeName );
+
+			if ( clearError ) {
+				clearError( 'submitChanges', [] );
+			}
 
 			yield {
 				type: START_SUBMIT_CHANGES,
@@ -86,7 +82,7 @@ export function createSubmitChangesStore( {
 				payload: {},
 			};
 
-			if ( result.error ) {
+			if ( result.error && receiveError ) {
 				yield dispatch( storeName ).receiveError( result.error, 'submitChanges', [] );
 			}
 
@@ -149,53 +145,5 @@ export function createSubmitChangesStore( {
 		reducer,
 		resolvers,
 		selectors,
-	};
-}
-
-/**
- * Creates a default submitChanges control function.
- *
- * @since n.e.x.t
- *
- * @param {string} slug      Module slug.
- * @param {string} storeName Datastore slug.
- * @return {Function} Control function to submit changes.
- */
-export function makeDefaultSubmitChanges( slug, storeName ) {
-	return createRegistryControl( ( { select, dispatch } ) => async () => {
-		if ( select( storeName ).haveSettingsChanged() ) {
-			const { error } = await dispatch( storeName ).saveSettings();
-			if ( error ) {
-				return { error };
-			}
-		}
-
-		await API.invalidateCache( 'modules', slug );
-
-		// TODO: Remove once legacy dataAPI is no longer used.
-		invalidateCacheGroup( TYPE_MODULES, slug );
-
-		return {};
-	} );
-}
-
-/**
- * Creates a default canSubmitChanges function.
- *
- * @since n.e.x.t
- *
- * @param {string} storeName Datastore slug.
- * @return {Function} A function to check if settings can be submitted.
- */
-export function makeDefaultCanSubmitChanges( storeName ) {
-	return ( select ) => {
-		const strictSelect = createStrictSelect( select );
-		const {
-			haveSettingsChanged,
-			isDoingSubmitChanges,
-		} = strictSelect( storeName );
-
-		invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
-		invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 	};
 }
