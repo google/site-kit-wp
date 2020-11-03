@@ -24,14 +24,12 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import {
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../tests/js/utils';
-import { createErrorStore } from './create-error-store';
 import { createSettingsStore } from './create-settings-store';
 
 const STORE_ARGS = [ 'core', 'site', 'settings' ];
@@ -54,12 +52,7 @@ describe( 'createSettingsStore store', () => {
 			settingSlugs: [ 'isSkyBlue' ],
 			registry,
 		} );
-
-		registry.registerStore( storeDefinition.STORE_NAME, Data.combineStores(
-			storeDefinition,
-			createErrorStore(),
-		) );
-
+		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
 		dispatch = registry.dispatch( storeDefinition.STORE_NAME );
 		store = registry.stores[ storeDefinition.STORE_NAME ].store;
 		select = registry.select( storeDefinition.STORE_NAME );
