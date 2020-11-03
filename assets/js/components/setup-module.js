@@ -27,7 +27,6 @@ import classnames from 'classnames';
  */
 import { sprintf, __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
-import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -93,7 +92,6 @@ class SetupModule extends Component {
 			slug,
 			name,
 			description,
-			showLink,
 		} = this.props;
 
 		let blockedByParentModule = false;
@@ -140,32 +138,30 @@ class SetupModule extends Component {
 
 				<ModuleSettingsWarning slug={ slug } context="modules-list" />
 
-				{ applyFilters( 'googlesitekit.SetupModuleShowLink', showLink, slug ) &&
-					<p className="googlesitekit-settings-connect-module__cta">
-						<Link
-							onClick={ this.activateOrDeactivate }
-							href=""
-							inherit
-							disabled={ blockedByParentModule }
-							arrow
-						>
-							{
-								! blockedByParentModule
-									? sprintf(
-										/* translators: %s: module name */
-										__( 'Set up %s', 'google-site-kit' ),
-										name
-									)
-									: sprintf(
-										/* translators: 1: required module name 2: module name */
-										__( 'Set up %1$s to gain access to %2$s', 'google-site-kit' ),
-										parentModule,
-										name
-									)
-							}
-						</Link>
-					</p>
-				}
+				<p className="googlesitekit-settings-connect-module__cta">
+					<Link
+						onClick={ this.activateOrDeactivate }
+						href=""
+						inherit
+						disabled={ blockedByParentModule }
+						arrow
+					>
+						{
+							! blockedByParentModule
+								? sprintf(
+									/* translators: %s: module name */
+									__( 'Set up %s', 'google-site-kit' ),
+									name
+								)
+								: sprintf(
+									/* translators: 1: required module name 2: module name */
+									__( 'Set up %1$s to gain access to %2$s', 'google-site-kit' ),
+									parentModule,
+									name
+								)
+						}
+					</Link>
+				</p>
 			</div>
 		);
 	}
