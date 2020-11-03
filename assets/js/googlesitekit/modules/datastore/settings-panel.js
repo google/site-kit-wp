@@ -1,5 +1,5 @@
 /**
- * `core/modules` data store settings
+ * `core/modules` data store settings panel
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -65,7 +65,7 @@ export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_MODULE_SETTINGS_PANEL_STATE: {
 			const { slug, value } = payload;
-			const panelState = { ...state.panelState };
+			const { panelState } = { ...state };
 			panelState.modules[ slug ] = value;
 			if ( value === 'edit' ) {
 				panelState.editing = slug;
