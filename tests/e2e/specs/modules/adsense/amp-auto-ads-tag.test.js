@@ -20,9 +20,11 @@
  * WordPress dependencies
  */
 import {
-	deactivatePlugin,
 	activatePlugin,
+	createURL,
+	deactivatePlugin,
 } from '@wordpress/e2e-test-utils';
+import { noConflict } from 'lodash';
 
 /**
  * Internal dependencies
@@ -45,11 +47,16 @@ describe( 'AMP <amp-auto-ads> tag', () => {
 
 	it( 'is output in primary mode', async () => {
 		await setAMPMode( 'primary' );
-		await expect( '/hello-world' ).toHaveAMPAutoAdsTag();
+		await expect( createURL( '/hello-world' ) ).toHaveAMPAutoAdsTag();
 	} );
 
 	it( 'is output in secondary mode', async () => {
 		await setAMPMode( 'secondary' );
-		await expect( '/hello-world' ).toHaveAMPAutoAdsTag();
+		await expect( createURL( '/hello-world', 'amp' ) ).toHaveAMPAutoAdsTag();
+	} );
+
+	it( 'is not output in secondary mode in web context', async () => {
+		await setAMPMode( 'secondary' );
+		await expect( createURL( '/hello-world' ) ).not.toHaveAMPAutoAdsTag();
 	} );
 } );

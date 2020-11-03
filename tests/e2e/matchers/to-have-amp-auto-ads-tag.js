@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createURL } from '@wordpress/e2e-test-utils';
-
-/**
  * Asserts the URL at the given path contains an <amp-auto-ads> tag.
  *
  * @since n.e.x.t
@@ -33,7 +28,7 @@ export async function toHaveAMPAutoAdsTag( path ) {
 	const result = {};
 
 	const page = await browser.newPage();
-	await page.goto( createURL( path, 'amp' ) );
+	await page.goto( path );
 
 	try {
 		await expect( page ).toMatchElement( 'amp-auto-ads' );
