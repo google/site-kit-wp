@@ -41,5 +41,6 @@ export const selectors = store.selectors;
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
+global.d = Data;
 
 export default store;
