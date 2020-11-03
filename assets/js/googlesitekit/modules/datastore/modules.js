@@ -60,6 +60,7 @@ const moduleDefaults = {
 	icon: null,
 	settingsEditComponent: null,
 	settingsViewComponent: null,
+	setupComponent: null,
 };
 
 const normalizeModules = memize(
@@ -212,6 +213,7 @@ const baseActions = {
 	 * Registers a module.
 	 *
 	 * @since 1.13.0
+	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
@@ -220,8 +222,9 @@ const baseActions = {
 	 * @param {string}      [settings.icon]                  Optional. Module icon. Default empty string.
 	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
-	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel.
-	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel.
+	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel. Default none.
+	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
+	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
 	 * @return {Object} Redux-style action.
 	 */
 	registerModule( slug, {
@@ -232,6 +235,7 @@ const baseActions = {
 		homepage,
 		settingsEditComponent,
 		settingsViewComponent,
+		setupComponent,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
@@ -243,6 +247,7 @@ const baseActions = {
 			homepage,
 			settingsEditComponent,
 			settingsViewComponent,
+			setupComponent,
 		};
 
 		return {
@@ -381,6 +386,70 @@ const baseSelectors = {
 
 		// This module exists, so let's return it.
 		return modules[ slug ];
+	} ),
+
+	/**
+	 * Gets module dependency names by slug.
+	 *
+	 * Returns a list of modules that depend on this module.
+	 * Returns `undefined` if state is still loading or if said module doesn't exist.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(Array|undefined)} An array of dependency module names; `undefined` if state is still loading.
+	 */
+	getModuleDependencyNames: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if module with this slug isn't loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `[]` to signify the
+		// "not found" state.
+		if ( module === null ) {
+			return [];
+		}
+
+		// Module is found, return the names of the dependencies
+		// Modules are already resolved after we getModule() so they can't be undefined.
+		const modules = select( STORE_NAME ).getModules();
+		return module.dependencies.map( ( dependencySlug ) => modules[ dependencySlug ]?.name || dependencySlug );
+	} ),
+
+	/**
+	 * Gets module dependant names by slug.
+	 *
+	 * Returns a list of modules on which this module depends.
+	 * Returns `undefined` if state is still loading or if said module doesn't exist.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(Array|undefined)} An array of dependant module names; `undefined` if state is still loading.
+	 */
+	getModuleDependantNames: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if module with this slug isn't loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `[]` to signify the
+		// "not found" state.
+		if ( module === null ) {
+			return [];
+		}
+
+		// Module is found, return the names of the dependants
+		// Modules are already resolved after we getModule() so they can't be undefined.
+		const modules = select( STORE_NAME ).getModules();
+		return module.dependants.map( ( dependantSlug ) => modules[ dependantSlug ]?.name || dependantSlug );
 	} ),
 
 	/**

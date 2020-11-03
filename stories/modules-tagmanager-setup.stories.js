@@ -22,46 +22,40 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters, addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
-import { WithTestRegistry, createTestRegistry, freezeFetch, provideUserAuthentication, provideSiteInfo } from '../tests/js/utils';
-import { fillFilterWithComponent } from '../assets/js/util';
+import { WithTestRegistry, createTestRegistry, freezeFetch, provideUserAuthentication, provideModules, provideSiteInfo } from '../tests/js/utils';
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { SetupMain as TagManagerSetup } from '../assets/js/modules/tagmanager/components/setup';
 import { STORE_NAME as CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
 import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, FORM_SETUP } from '../assets/js/modules/tagmanager/datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import * as modulesFixtures from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { parseLiveContainerVersionIDs } from '../assets/js/modules/tagmanager/datastore/__factories__/utils';
 
 function Setup( props ) {
-	global._googlesitekitLegacyData.setup.moduleToSetup = 'tagmanager';
-
-	removeAllFilters( 'googlesitekit.ModuleSetup-tagmanager' );
-	addFilter(
-		'googlesitekit.ModuleSetup-tagmanager',
-		'googlesitekit.TagManagerModuleSetup',
-		fillFilterWithComponent( TagManagerSetup )
-	);
-
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper />
+			<SetupWrapper moduleSlug="tagmanager" />
 		</WithTestRegistry>
 	);
 }
 
 storiesOf( 'Tag Manager Module/Setup', module )
 	.addDecorator( ( storyFn ) => {
+		global._googlesitekitLegacyData.setup.moduleToSetup = 'tagmanager';
 		const registry = createTestRegistry();
+		provideModules( registry, [ {
+			slug: 'tagmanager',
+			active: true,
+			connected: true,
+		} ] );
+		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
+			setupComponent: TagManagerSetup,
+		} );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		provideUserAuthentication( registry );
@@ -190,6 +184,14 @@ storiesOf( 'Tag Manager Module/Setup', module )
 storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
+		provideModules( registry, [ {
+			slug: 'tagmanager',
+			active: true,
+			connected: true,
+		} ] );
+		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
+			setupComponent: TagManagerSetup,
+		} );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
@@ -273,6 +275,14 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
+		provideModules( registry, [ {
+			slug: 'tagmanager',
+			active: true,
+			connected: true,
+		} ] );
+		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
+			setupComponent: TagManagerSetup,
+		} );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		provideSiteInfo( registry, { ampMode: AMP_MODE_SECONDARY } );
