@@ -1,5 +1,5 @@
 /**
- * Tests for sumObjectValueList.
+ * Tests for sumObjectListValue.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import sumObjectValueList from '../sum-object-list-value.js';
+import sumObjectListValue from '../sum-object-list-value.js';
 
-describe( 'sumObjectValueList', () => {
+describe( 'sumObjectListValue', () => {
 	it( 'returns the sum of fieldname in a list of objects', () => {
 		const list = [
 			{ count: 1 },
@@ -30,7 +30,7 @@ describe( 'sumObjectValueList', () => {
 			{ count: 4 },
 			{ count: 5 },
 		];
-		expect( sumObjectValueList( list, 'count' ) ).toBe( 15 );
+		expect( sumObjectListValue( list, 'count' ) ).toBe( 15 );
 	} );
 
 	it( 'only sums the correct fieldName', () => {
@@ -41,7 +41,7 @@ describe( 'sumObjectValueList', () => {
 			{ number: 4 },
 			{ number: 5 },
 		];
-		expect( sumObjectValueList( list, 'count' ) ).toBe( 3 );
+		expect( sumObjectListValue( list, 'count' ) ).toBe( 3 );
 	} );
 
 	it( 'returns 0 if list is empty or fieldName is not found', () => {
@@ -52,7 +52,7 @@ describe( 'sumObjectValueList', () => {
 			{ number: 4 },
 			{ number: 5 },
 		];
-		expect( sumObjectValueList( [], 'count' ) ).toBe( 0 );
-		expect( sumObjectValueList( list, 'count' ) ).toBe( 0 );
+		expect( sumObjectListValue( [], 'count' ) ).toBe( 0 );
+		expect( sumObjectListValue( list, 'count' ) ).toBe( 0 );
 	} );
 } );
