@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import settings from './settings';
 import modules from './modules';
 import { STORE_NAME } from './constants';
 import { createErrorStore } from '../../data/create-error-store';
@@ -29,7 +28,6 @@ const store = Data.combineStores(
 	Data.commonStore,
 	modules,
 	createErrorStore(),
-	settings,
 );
 
 export const initialState = store.initialState;
