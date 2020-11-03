@@ -121,7 +121,7 @@ describe( 'createSubmitChangesStore', () => {
 
 		test.each( [
 			[ 'canSubmitChanges' ],
-			[ 'validateSubmitChanges' ],
+			[ '__dangerousCanSubmitChanges' ],
 			[ 'hasStartedSubmittingChanges' ],
 			[ 'hasFinishedSubmittingChanges' ],
 			[ 'isDoingSubmitChanges' ],
@@ -132,7 +132,7 @@ describe( 'createSubmitChangesStore', () => {
 
 		describe.each( [
 			[ 'canSubmitChanges' ],
-			[ 'validateSubmitChanges' ],
+			[ '__dangerousCanSubmitChanges' ],
 		] )( '%s', ( selector ) => {
 			it( 'should use provided validateCanSubmitChanges function', () => {
 				const validateCanSubmitChanges = jest.fn();

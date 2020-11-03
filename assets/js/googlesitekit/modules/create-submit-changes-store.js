@@ -133,12 +133,12 @@ export function createSubmitChangesStore( {
 
 	const {
 		safeSelector: canSubmitChanges,
-		dangerousSelector: validateSubmitChanges,
+		dangerousSelector: __dangerousCanSubmitChanges,
 	} = createValidationSelector( validateCanSubmitChanges );
 
 	const selectors = {
 		canSubmitChanges,
-		validateSubmitChanges,
+		__dangerousCanSubmitChanges,
 		...createStateSelectors( Object.keys( initialState ) ),
 	};
 

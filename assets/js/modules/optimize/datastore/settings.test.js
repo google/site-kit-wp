@@ -142,7 +142,7 @@ describe( 'modules/optimize settings', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 10 );
-				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_AMP_EXPERIMENT_JSON );
 
 				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( null );
@@ -158,11 +158,11 @@ describe( 'modules/optimize settings', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 				registry.dispatch( STORE_NAME ).setOptimizeID( '0' );
-				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_OPTIMIZE_ID );
 
 				registry.dispatch( STORE_NAME ).setOptimizeID( null );
-				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_OPTIMIZE_ID );
 
 				// An empty string is accepted (for when no optimize ID can be determined).

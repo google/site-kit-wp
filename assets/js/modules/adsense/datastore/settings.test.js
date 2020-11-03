@@ -253,11 +253,11 @@ describe( 'modules/adsense settings', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 				registry.dispatch( STORE_NAME ).setAccountID( '0' );
-				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 
 				registry.dispatch( STORE_NAME ).setAccountID( null );
-				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 
 				// An empty string is accepted (for when no account can be determined).
@@ -270,11 +270,11 @@ describe( 'modules/adsense settings', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 				registry.dispatch( STORE_NAME ).setClientID( '0' );
-				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_CLIENT_ID );
 
 				registry.dispatch( STORE_NAME ).setClientID( null );
-				expect( () => registry.select( STORE_NAME ).validateSubmitChanges() )
+				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_CLIENT_ID );
 
 				// An empty string is accepted (for when no client can be determined).
