@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { createStateSelectors, createValidationSelector } from '../data/utils';
+import { createValidationSelector } from '../data/utils';
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -135,7 +135,42 @@ export function createSubmitChangesStore( {
 	const selectors = {
 		canSubmitChanges,
 		__dangerousCanSubmitChanges,
-		...createStateSelectors( Object.keys( initialState ) ),
+
+		/**
+		 * Checks whether changes are currently being submitted.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {boolean} TRUE if submitting, otherwise FALSE.
+		 */
+		isDoingSubmitChanges( state ) {
+			return !! state.isDoingSubmitChanges;
+		},
+
+		/**
+		 * Checks whether changes submission has started.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {boolean} TRUE when submission has started and not finished yet, otherwise FALSE.
+		 */
+		hasStartedSubmittingChanges( state ) {
+			return !! state.hasStartedSubmittingChanges;
+		},
+
+		/**
+		 * Checks whether changes submission has finished.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {boolean} TRUE when submission has finished, otherwise FALSE.
+		 */
+		hasFinishedSubmittingChanges( state ) {
+			return !! state.hasFinishedSubmittingChanges;
+		},
 	};
 
 	return {
