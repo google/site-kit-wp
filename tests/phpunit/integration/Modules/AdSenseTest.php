@@ -203,9 +203,6 @@ class AdSenseTest extends TestCase {
 		if ( $enabled ) {
 			add_filter( 'googlesitekit_adsense_tag_amp_block_on_consent', '__return_true' );
 		}
-		// Confirm that the tag it not added if we're not in the loop.
-		$output = apply_filters( 'the_content', 'test content' );
-		$this->assertNotContains( 'data-ad-client="ca-pub-12345678"', $output );
 
 		// We need to fake the global to allow the hook to add the tag.
 		global $wp_query;
@@ -228,6 +225,45 @@ class AdSenseTest extends TestCase {
 			),
 			'enabled'            => array(
 				true,
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider amp_auto_ads_tag_in_the_loop_provider
+	 * @param Context $context
+	 */
+	public function test_amp_auto_ads_tag_in_the_loop( $context ) {
+		$adsense = new AdSense( $context );
+		$adsense->set_data( 'use-snippet', array( 'useSnippet' => true ) );
+		$adsense->set_data( 'client-id', array( 'clientID' => 'ca-pub-12345678' ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'the_content' );
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		// Confirm that the tag is not added if we're not in the loop.
+		$output = apply_filters( 'the_content', 'test content' );
+		$this->assertNotContains( 'data-ad-client="ca-pub-12345678"', $output );
+
+		// We need to fake the global to allow the hook to add the tag.
+		global $wp_query;
+		$wp_query->in_the_loop = true;
+
+		// Confirm that the tag is added if we're not in the loop.
+		$output = apply_filters( 'the_content', 'test content' );
+		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
+	}
+
+	public function amp_auto_ads_tag_in_the_loop_provider() {
+		return array(
+			'primary'   => array(
+				$this->get_amp_primary_context(),
+			),
+			'secondary' => array(
+				$this->get_amp_secondary_context(),
 			),
 		);
 	}
