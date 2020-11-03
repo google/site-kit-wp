@@ -64,14 +64,13 @@ export const setCache = ( key, data ) => {
 
 	lazilySetupLocalCache();
 
-	const cacheKey = STORAGE_KEY_PREFIX + key;
-	global._googlesitekitLegacyData.admin.datacache[ cacheKey ] = cloneDeep( data );
+	global._googlesitekitLegacyData.admin.datacache[ key ] = cloneDeep( data );
 
 	const toStore = {
 		value: data,
 		date: Date.now() / 1000,
 	};
-	getStorage().setItem( cacheKey, JSON.stringify( toStore ) );
+	getStorage().setItem( STORAGE_KEY_PREFIX + key, JSON.stringify( toStore ) );
 };
 
 /**
@@ -92,20 +91,19 @@ export const getCache = ( key, maxAge ) => {
 	lazilySetupLocalCache();
 
 	// Check variable cache first.
-	const cacheKey = STORAGE_KEY_PREFIX + key;
-	if ( 'undefined' !== typeof global._googlesitekitLegacyData.admin.datacache[ cacheKey ] ) {
-		return global._googlesitekitLegacyData.admin.datacache[ cacheKey ];
+	if ( 'undefined' !== typeof global._googlesitekitLegacyData.admin.datacache[ key ] ) {
+		return global._googlesitekitLegacyData.admin.datacache[ key ];
 	}
 
 	// Check persistent cache.
-	const cache = JSON.parse( getStorage().getItem( cacheKey ) );
+	const cache = JSON.parse( getStorage().getItem( STORAGE_KEY_PREFIX + key ) );
 	if ( cache && 'object' === typeof cache && cache.date ) {
 		// Only return value if no maximum age given or if cache age is less than the maximum.
 		if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
 			// Set variable cache.
-			global._googlesitekitLegacyData.admin.datacache[ cacheKey ] = cloneDeep( cache.value );
+			global._googlesitekitLegacyData.admin.datacache[ key ] = cloneDeep( cache.value );
 
-			return cloneDeep( global._googlesitekitLegacyData.admin.datacache[ cacheKey ] );
+			return cloneDeep( global._googlesitekitLegacyData.admin.datacache[ key ] );
 		}
 	}
 
@@ -122,10 +120,9 @@ export const getCache = ( key, maxAge ) => {
 export const deleteCache = ( key ) => {
 	lazilySetupLocalCache();
 
-	const cacheKey = STORAGE_KEY_PREFIX + key;
-	delete global._googlesitekitLegacyData.admin.datacache[ cacheKey ];
+	delete global._googlesitekitLegacyData.admin.datacache[ key ];
 
-	getStorage().removeItem( cacheKey );
+	getStorage().removeItem( STORAGE_KEY_PREFIX + key );
 };
 
 /**

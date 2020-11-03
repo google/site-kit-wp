@@ -33,18 +33,17 @@ import { getCacheKey, lazilySetupLocalCache, STORAGE_KEY_PREFIX } from './cache'
  */
 export const invalidateCacheGroup = ( type, identifier, datapoint ) => {
 	const groupPrefix = getCacheKey( type, identifier, datapoint );
-	const groupPrefixKey = STORAGE_KEY_PREFIX + groupPrefix;
 
 	lazilySetupLocalCache();
 
 	Object.keys( global._googlesitekitLegacyData.admin.datacache ).forEach( ( key ) => {
-		if ( 0 === key.indexOf( groupPrefixKey + '::' ) || key === groupPrefixKey ) {
+		if ( 0 === key.indexOf( groupPrefix + '::' ) || key === groupPrefix ) {
 			delete global._googlesitekitLegacyData.admin.datacache[ key ];
 		}
 	} );
 
 	Object.keys( getStorage() ).forEach( ( key ) => {
-		if ( 0 === key.indexOf( `${ groupPrefixKey }::` ) || key === groupPrefixKey ) {
+		if ( 0 === key.indexOf( `${ STORAGE_KEY_PREFIX }${ groupPrefix }::` ) || key === `${ STORAGE_KEY_PREFIX }${ groupPrefix }` ) {
 			getStorage().removeItem( key );
 		}
 	} );
