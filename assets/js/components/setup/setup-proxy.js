@@ -20,6 +20,7 @@
  * External dependencies
  */
 import punycode from 'punycode';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -32,6 +33,7 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import PersonWalking from '../../../svg/person-walking.svg';
 import { trackEvent } from '../../util';
 import Header from '../header';
 import Button from '../button';
@@ -75,7 +77,6 @@ function SetupUsingProxy() {
 
 	let title;
 	let description;
-	let startSetupText;
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
@@ -83,20 +84,16 @@ function SetupUsingProxy() {
 			__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
 			punycode.toUnicode( ( new URL( siteURL ) ).hostname )
 		);
-		description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Start Setup" below to generate new credentials.', 'google-site-kit' );
-		startSetupText = __( 'Sign in with Google', 'google-site-kit' );
+		description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Sign in with Google" below to generate new credentials.', 'google-site-kit' );
 	} else if ( isSecondAdmin ) {
 		title = __( 'Connect your Google account to Site Kit', 'google-site-kit' );
 		description = __( 'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.', 'google-site-kit' );
-		startSetupText = __( 'Sign in with Google', 'google-site-kit' );
 	} else if ( DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason ) {
 		title = __( 'Reconnect Site Kit', 'google-site-kit' );
 		description = __( `Looks like the URL of your site has changed. In order to continue using Site Kit, you'll need to reconnect, so that your plugin settings are updated with the new URL.`, 'google-site-kit' );
-		startSetupText = __( 'Reconnect', 'google-site-kit' );
 	} else {
-		title = __( 'Sign in with Google to set up Site Kit', 'google-site-kit' );
-		description = __( 'The Site Kit service will guide you through 3 simple setup steps.', 'google-site-kit' );
-		startSetupText = __( 'Start setup', 'google-site-kit' );
+		title = __( 'Set up Site Kit', 'google-site-kit' );
+		description = __( 'Get insights about how people find and use your site, how to improve and monetize your content, directly in your WordPress dashboard', 'google-site-kit' );
 	}
 
 	return (
@@ -126,8 +123,35 @@ function SetupUsingProxy() {
 								<section className="googlesitekit-wizard-progress">
 									<div className="googlesitekit-setup__footer">
 										<div className="mdc-layout-grid">
-											<div className="mdc-layout-grid__inner">
-												<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+											<div className={ classnames(
+												'mdc-layout-grid__inner',
+												{
+													'googlesitekit-setup__content': featureFlags.userInput.enabled,
+												}
+											) }>
+												{ featureFlags.userInput.enabled && (
+													<div
+														className="
+															googlesitekit-setup__icon
+															mdc-layout-grid__cell
+															mdc-layout-grid__cell--span-12-tablet
+															mdc-layout-grid__cell--span-6-desktop
+														"
+													>
+														<PersonWalking width="570" height="337" />
+													</div>
+												) }
+
+												<div
+													className={ classnames(
+														'mdc-layout-grid__cell',
+														'mdc-layout-grid__cell--span-12-tablet',
+														{
+															'mdc-layout-grid__cell--span-6-desktop': featureFlags.userInput.enabled,
+															'mdc-layout-grid__cell--span-12-desktop': ! featureFlags.userInput.enabled,
+														}
+													) }
+												>
 													<h1 className="googlesitekit-setup__title">
 														{ title }
 													</h1>
@@ -150,7 +174,7 @@ function SetupUsingProxy() {
 																		onClick={ onButtonClick }
 																		disabled={ ! complete }
 																	>
-																		{ startSetupText }
+																		{ __( 'Sign in with Google', 'google-site-kit' ) }
 																	</Button>
 																	{ inProgressFeedback }
 																	{ ! isSecondAdmin && isResettable && <ResetButton /> }

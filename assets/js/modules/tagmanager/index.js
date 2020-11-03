@@ -19,24 +19,23 @@
 /**
  * WordPress dependencies
  */
-import { addFilter } from '@wordpress/hooks';
+import domReady from '@wordpress/dom-ready';
 
 /**
  * Internal dependencies
  */
-import { fillFilterWithComponent } from '../../util';
+import Modules from 'googlesitekit-modules';
 import './datastore';
 import { SetupMain } from './components/setup';
-import { SettingsMain } from './components/settings';
+import { SettingsEdit, SettingsView } from './components/settings';
 
-addFilter(
-	'googlesitekit.ModuleSetup-tagmanager',
-	'googlesitekit.TagManagerModuleSetup',
-	fillFilterWithComponent( SetupMain )
-);
-
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-tagmanager',
-	'googlesitekit.TagManagerModuleSettings',
-	fillFilterWithComponent( SettingsMain )
-);
+domReady( () => {
+	Modules.registerModule(
+		'tagmanager',
+		{
+			settingsEditComponent: SettingsEdit,
+			settingsViewComponent: SettingsView,
+			setupComponent: SetupMain,
+		}
+	);
+} );

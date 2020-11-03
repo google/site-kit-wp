@@ -22,79 +22,67 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters, addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
 import { SetupMain as OptimizeSetup } from '../assets/js/modules/optimize/components/setup/index';
-import { fillFilterWithComponent } from '../assets/js/util';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
-import { WithTestRegistry } from '../tests/js/utils';
-import fixtures from '../assets/js/googlesitekit/modules/datastore/fixtures.json';
-
-const analyticsFixture = fixtures.filter( ( fixture ) => fixture.slug === 'analytics' );
-
-function filterOptimizeSetup() {
-	global._googlesitekitLegacyData.setup.moduleToSetup = 'optimize';
-
-	removeAllFilters( 'googlesitekit.ModuleSetup-optimize' );
-	addFilter(
-		'googlesitekit.ModuleSetup-optimize',
-		'googlesitekit.OptimizeModuleSetupWizard',
-		fillFilterWithComponent( OptimizeSetup )
-	);
-}
+import { WithTestRegistry, createTestRegistry, provideModules } from '../tests/js/utils';
 
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper />
+			<SetupWrapper moduleSlug="optimize" />
 		</WithTestRegistry>
 	);
 }
 
 storiesOf( 'Optimize Module/Setup', module )
-	.add( 'Start', () => {
-		filterOptimizeSetup();
+	.addDecorator( ( storyFn ) => {
+		const registry = createTestRegistry();
+		global._googlesitekitLegacyData.setup.moduleToSetup = 'optimize';
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'optimize',
+				active: true,
+				connected: true,
+			},
+		] );
+		registry.dispatch( CORE_MODULES ).registerModule( 'optimize', {
+			setupComponent: OptimizeSetup,
+		} );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-		};
-
-		return <Setup callback={ setupRegistry } />;
+		return storyFn( registry );
 	} )
-	.add( 'Start with AMP Experiment JSON Field', () => {
-		filterOptimizeSetup();
+	.add( 'Start', ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
-			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-		};
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
 	} )
-	.add( 'Start with invalid values', () => {
-		filterOptimizeSetup();
+	.add( 'Start with AMP Experiment JSON Field', ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
+		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
-			dispatch( CORE_MODULES ).receiveGetModules( analyticsFixture );
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				optimizeID: '1234567',
-				ampExperimentJSON: 'invalid AMP experiment',
-			} );
-		};
-		return <Setup callback={ setupRegistry } />;
+		return <Setup registry={ registry } />;
+	} )
+	.add( 'Start with invalid values', ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
+		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			optimizeID: '1234567',
+			ampExperimentJSON: 'invalid AMP experiment',
+		} );
+
+		return <Setup registry={ registry } />;
 	} )
 ;

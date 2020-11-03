@@ -38,7 +38,7 @@ import {
 	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
-import Link from './link';
+import Link from './Link';
 import data from '../components/data';
 import ModuleIcon from '../components/module-icon';
 import GenericError from './notifications/generic-error';

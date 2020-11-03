@@ -26,7 +26,7 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { decodeHTMLEntity } from '../../util';
-import Link from '../link';
+import Link from '../Link';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DateRangeSelector from '../date-range-selector';
 import DashboardDetailsModules from './dashboard-details-modules';

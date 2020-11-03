@@ -26,7 +26,7 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { getTimeInSeconds } from '../../../../util';
-import PreviewBlocks from '../../../../components/preview-block';
+import PreviewBlocks from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
