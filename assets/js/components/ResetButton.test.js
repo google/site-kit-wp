@@ -70,30 +70,19 @@ describe( 'ResetButton', () => {
 			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeNull();
 		} );
 
-		it( 'should close the modal on clicking Reset and ', async () => {
+		it( 'should close the modal on clicking Reset, reset the plugin and delete localstorage', async () => {
 			const response = true;
 			fetchMock.postOnce(
 				/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
 				{ body: JSON.stringify( response ), status: 200 },
 			);
 
-			delete global.location;
-			global.location = {
-				href: '',
-			};
-
-			const localStorageMock = ( function() {
-				let store = { randomKey: 'randomValue' };
-				return {
-					getItem( key ) {
-						return store[ key ];
-					},
-					clear() {
-						store = {};
-					},
-				};
-			}() );
-			Object.defineProperty( global, 'localStorage', { value: localStorageMock } );
+			Object.defineProperty( global.window, 'location', {
+				value: {
+					href: 'validurl',
+				},
+				writable: true,
+			} );
 
 			await act( async () => {
 				fireEvent.click( document.querySelector( '.mdc-dialog--open .mdc-button--danger' ) );
@@ -102,7 +91,7 @@ describe( 'ResetButton', () => {
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeNull();
-			expect( global.localStorage.getItem( 'randomKey' ) ).toBeUndefined();
+			expect( localStorage.clear ).toHaveBeenCalled();
 			expect( global.location.href ).toBe( 'http://example.com/admin.php?page=googlesitekit-splash&notification=reset_success' );
 		} );
 	} );

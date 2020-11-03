@@ -20,17 +20,14 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useState, useEffect, useCallback } from '@wordpress/element';
+import { Fragment, useState, useEffect, useCallback, createInterpolateElement } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	clearWebStorage,
-	sanitizeHTML,
-} from '../util';
+import { clearWebStorage } from '../util';
 import Dialog from './dialog';
 import Modal from './Modal';
 import Link from './Link';
@@ -43,34 +40,41 @@ function ResetButton( { children } ) {
 	const [ dialogActive, setDialogActive ] = useState( false );
 	const postResetURL = addQueryArgs( splashURL, { notification: 'reset_success' } );
 
-	const { reset: resetCoreSite } = useDispatch( CORE_SITE );
+	const { reset } = useDispatch( CORE_SITE );
 
 	const handleCloseModal = useCallback( ( event ) => {
 		if ( 27 === event.keyCode ) {
+			// Only close the modal if the "Escape" key is pressed.
 			setDialogActive( false );
 		}
-	}, [ dialogActive ] );
+	} );
 
 	useEffect( () => {
-		global.addEventListener( 'keyup', handleCloseModal, false );
-
-		return () => global.removeEventListener( 'keyup', handleCloseModal );
-	}, [ handleCloseModal ] );
+		if ( dialogActive ) {
+			// When the dialogActive changes and it is set to true(has opened), add the event listener.
+			global.addEventListener( 'keyup', handleCloseModal, false );
+		}
+		// Remove the event listener when the dialog is removed; there's no need
+		// to have it attached when it won't be used.
+		return () => {
+			if ( dialogActive ) {
+				// When the dialogActive is true(is open) and its value changes, remove the event listener.
+				global.removeEventListener( 'keyup', handleCloseModal );
+			}
+		};
+	}, [ dialogActive ] );
 
 	const handleUnlinkConfirm = async () => {
-		resetCoreSite();
+		reset();
 		clearWebStorage();
-		handleDialog();
+		setDialogActive( false );
 		global.location.href = postResetURL;
 	};
 
-	const handleDialog = () => {
-		setDialogActive( ( prevDialogActive ) => {
-			return ! prevDialogActive;
-		} );
+	const toggleDialogActive = () => {
+		setDialogActive( ! dialogActive );
 	};
 
-	const subtitle = __( `Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. <br />You and any other users who wish to use Site Kit will need to reconnect to restore access.`, 'google-site-kit' );
 	return (
 		<Fragment>
 			<Link
@@ -84,13 +88,13 @@ function ResetButton( { children } ) {
 				<Dialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
-					handleDialog={ handleDialog }
+					handleDialog={ toggleDialogActive }
 					title={ __( 'Reset Site Kit', 'google-site-kit' ) }
-					subtitle={ (
-						<span dangerouslySetInnerHTML={ sanitizeHTML( subtitle, {
-							ALLOWED_TAGS: [ 'br' ],
-						} ) } />
-					) }
+					subtitle={ createInterpolateElement(
+						__( `Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. <br />You and any other users who wish to use Site Kit will need to reconnect to restore access.`, 'google-site-kit' ),
+						{
+							br: <br />,
+						} ) }
 					confirmButton={ __( 'Reset', 'google-site-kit' ) }
 					provides={ [] }
 					danger
