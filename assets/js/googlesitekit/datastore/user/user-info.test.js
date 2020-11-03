@@ -38,7 +38,7 @@ describe( 'core/user userInfo', () => {
 			picture: 'https://path/to/image',
 		},
 		verified: true,
-		userInputState: 'complete',
+		userInputState: 'completed',
 	};
 
 	let registry;

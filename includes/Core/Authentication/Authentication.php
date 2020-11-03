@@ -1210,7 +1210,7 @@ final class Authentication {
 	 */
 	private function verify_user_input_settings() {
 		if (
-			User_Input_State::VALUE_COMPLETED === $this->user_input_state->get()
+			! empty( $this->user_input_state->get() )
 			|| ! $this->is_authenticated()
 			|| ! $this->credentials()->has()
 			|| ! $this->credentials->using_proxy()

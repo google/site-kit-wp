@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Authentication\User_Input_State
  *
  * @package   Google\Site_Kit
- * @copyright 2019 Google LLC
+ * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -47,7 +47,6 @@ final class User_Input_State extends User_Setting {
 	 * @since n.e.x.t
 	 *
 	 * @param string $value Setting value. One of 'required', 'missing', 'completed' or ''.
-	 *
 	 * @return bool True on success, false on failure or if value is not a valid string.
 	 */
 	public function set( $value ) {
