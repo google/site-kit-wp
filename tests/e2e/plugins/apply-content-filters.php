@@ -13,7 +13,7 @@
 
 
 /**
- * Applying the filters outside of the loop causes the <amp-auto-ads> not be rendered on the single template
+ * Applying the `the_content` filter outside of the loop used to cause the <amp-auto-ads> not be rendered on the single template.
  * @see https://github.com/google/site-kit-wp/issues/2114
  */
 add_action(
