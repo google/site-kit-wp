@@ -120,7 +120,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		return Array.from( propertyIDs ).filter( ( propertyID ) => !! propertyID );
+		return Array.from( propertyIDs );
 	} ),
 
 	/**
