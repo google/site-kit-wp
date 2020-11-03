@@ -22,7 +22,7 @@
 import sumObjectValueList from './sum-object-list-value.js';
 
 describe( 'sumObjectValueList', () => {
-	it( 'returns the sum of a fieldname in a list of objects', () => {
+	it( 'returns the sum of fieldname in a list of objects', () => {
 		const list = [
 			{ count: 1 },
 			{ count: 2 },
