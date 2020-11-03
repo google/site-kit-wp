@@ -22,8 +22,16 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-function ProgressBar( { className, small, compress, height } ) {
-	const margin = height ? Math.round( height / 2 ) : null;
+export default function ProgressBar( {
+	className,
+	small,
+	compress,
+	indeterminate,
+	height,
+	progress,
+} ) {
+	const margin = typeof height !== 'undefined' ? Math.round( height / 2 ) : undefined;
+	const transform = progress ? `scaleX(${ progress })` : undefined;
 
 	return (
 		<div
@@ -31,9 +39,9 @@ function ProgressBar( { className, small, compress, height } ) {
 			style={ { marginTop: margin, marginBottom: margin } }
 			className={ classnames(
 				'mdc-linear-progress',
-				'mdc-linear-progress--indeterminate',
 				className,
 				{
+					'mdc-linear-progress--indeterminate': indeterminate,
 					'mdc-linear-progress--small': small,
 					'mdc-linear-progress--compress': compress,
 				}
@@ -41,7 +49,7 @@ function ProgressBar( { className, small, compress, height } ) {
 		>
 			<div className="mdc-linear-progress__buffering-dots" />
 			<div className="mdc-linear-progress__buffer" />
-			<div className="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+			<div className="mdc-linear-progress__bar mdc-linear-progress__primary-bar" style={ { transform } }>
 				<span className="mdc-linear-progress__bar-inner" />
 			</div>
 			<div className="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
@@ -55,12 +63,15 @@ ProgressBar.propTypes = {
 	className: PropTypes.string,
 	small: PropTypes.bool,
 	compress: PropTypes.bool,
+	indeterminate: PropTypes.bool,
+	progress: PropTypes.number,
+	height: PropTypes.number,
 };
 
 ProgressBar.defaultProps = {
 	className: '',
 	small: false,
 	compress: false,
+	indeterminate: true,
+	progress: 0,
 };
-
-export default ProgressBar;
