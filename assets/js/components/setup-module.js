@@ -35,14 +35,13 @@ import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
-	getModulesData,
+	// TODO: 2130 getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
 import ModuleIcon from '../components/module-icon';
 import Spinner from './Spinner';
 import Link from './Link';
-import ModuleSettingsWarning from '../components/notifications/module-settings-warning';
 import GenericError from '../components/notifications/generic-error';
 
 /**
@@ -94,11 +93,13 @@ class SetupModule extends Component {
 			description,
 		} = this.props;
 
-		let blockedByParentModule = false;
-		let parentModule;
+		// @TODO:2130 let blockedByParentModule = false;
+		const canActivateModule = true;
+		// let parentModule;
 
-		const modules = getModulesData();
+		// const modules = getModulesData();
 
+		/*
 		// Check if required module is active.
 		if ( modules[ slug ].required.length ) {
 			const requiredModules = modules[ slug ].required;
@@ -110,13 +111,14 @@ class SetupModule extends Component {
 				}
 			} );
 		}
+		 */
 
 		return (
 			<div
 				className={ classnames(
 					'googlesitekit-settings-connect-module',
 					`googlesitekit-settings-connect-module--${ slug }`,
-					{ 'googlesitekit-settings-connect-module--disabled': blockedByParentModule }
+					{ 'googlesitekit-settings-connect-module--disabled': ! canActivateModule }
 				) }
 				key={ slug }
 			>
@@ -136,29 +138,20 @@ class SetupModule extends Component {
 					{ description }
 				</p>
 
-				<ModuleSettingsWarning slug={ slug } context="modules-list" />
-
 				<p className="googlesitekit-settings-connect-module__cta">
 					<Link
 						onClick={ this.activateOrDeactivate }
 						href=""
 						inherit
-						disabled={ blockedByParentModule }
+						disabled={ ! canActivateModule }
 						arrow
 					>
 						{
-							! blockedByParentModule
-								? sprintf(
-									/* translators: %s: module name */
-									__( 'Set up %s', 'google-site-kit' ),
-									name
-								)
-								: sprintf(
-									/* translators: 1: required module name 2: module name */
-									__( 'Set up %1$s to gain access to %2$s', 'google-site-kit' ),
-									parentModule,
-									name
-								)
+							sprintf(
+								/* translators: %s: module name */
+								__( 'Set up %s', 'google-site-kit' ),
+								name
+							)
 						}
 					</Link>
 				</p>
