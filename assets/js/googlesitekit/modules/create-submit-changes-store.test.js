@@ -122,8 +122,6 @@ describe( 'createSubmitChangesStore', () => {
 		test.each( [
 			[ 'canSubmitChanges' ],
 			[ '__dangerousCanSubmitChanges' ],
-			[ 'hasStartedSubmittingChanges' ],
-			[ 'hasFinishedSubmittingChanges' ],
 			[ 'isDoingSubmitChanges' ],
 		] )( 'should have %s selector', ( selector ) => {
 			const { selectors } = createSubmitChangesStore( { storeName } );
@@ -143,18 +141,14 @@ describe( 'createSubmitChangesStore', () => {
 			} );
 		} );
 
-		describe.each( [
-			[ 'hasStartedSubmittingChanges', true ],
-			[ 'hasFinishedSubmittingChanges', false ],
-			[ 'isDoingSubmitChanges', true ],
-		] )( '%s', ( selector, valueDuringLoading ) => {
+		describe( 'isDoingSubmitChanges', () => {
 			it( 'should be set to FALSE by default', () => {
 				const registry = createRegistry();
 				registry.registerStore( storeName, createSubmitChangesStore( { storeName } ) );
-				expect( registry.select( storeName )[ selector ]() ).toBe( false );
+				expect( registry.select( storeName ).isDoingSubmitChanges() ).toBe( false );
 			} );
 
-			it( `should be set to ${ valueDuringLoading ? 'TRUE' : 'FALSE' } after starting submiting changes`, async () => {
+			it( `should be set to TRUE after starting submiting changes`, async () => {
 				const registry = createRegistry();
 
 				registry.registerStore(
@@ -163,7 +157,7 @@ describe( 'createSubmitChangesStore', () => {
 						Data.commonStore,
 						createErrorStore(),
 						createSubmitChangesStore( { storeName, submitChanges: async () => {
-							expect( registry.select( storeName )[ selector ]() ).toBe( valueDuringLoading );
+							expect( registry.select( storeName ).isDoingSubmitChanges() ).toBe( true );
 							return {};
 						} } ),
 					),
@@ -172,7 +166,7 @@ describe( 'createSubmitChangesStore', () => {
 				await registry.dispatch( storeName ).submitChanges();
 			} );
 
-			it( `should be set to ${ ! valueDuringLoading ? 'TRUE' : 'FALSE' } after finishing submiting changes`, async () => {
+			it( `should be set to FALSE after finishing submiting changes`, async () => {
 				const registry = createRegistry();
 
 				registry.registerStore(
@@ -185,7 +179,7 @@ describe( 'createSubmitChangesStore', () => {
 				);
 
 				await registry.dispatch( storeName ).submitChanges();
-				expect( registry.select( storeName )[ selector ]() ).toBe( ! valueDuringLoading );
+				expect( registry.select( storeName ).isDoingSubmitChanges() ).toBe( false );
 			} );
 		} );
 	} );

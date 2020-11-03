@@ -51,8 +51,6 @@ export function createSubmitChangesStore( {
 	invariant( storeName, 'storeName is required.' );
 
 	const initialState = {
-		hasStartedSubmittingChanges: false,
-		hasFinishedSubmittingChanges: false,
 		isDoingSubmitChanges: false,
 	};
 
@@ -100,8 +98,6 @@ export function createSubmitChangesStore( {
 			case START_SUBMIT_CHANGES: {
 				return {
 					...state,
-					hasStartedSubmittingChanges: true,
-					hasFinishedSubmittingChanges: false,
 					isDoingSubmitChanges: true,
 				};
 			}
@@ -109,8 +105,6 @@ export function createSubmitChangesStore( {
 			case FINISH_SUBMIT_CHANGES: {
 				return {
 					...state,
-					hasStartedSubmittingChanges: false,
-					hasFinishedSubmittingChanges: true,
 					isDoingSubmitChanges: false,
 				};
 			}
@@ -146,30 +140,6 @@ export function createSubmitChangesStore( {
 		 */
 		isDoingSubmitChanges( state ) {
 			return !! state.isDoingSubmitChanges;
-		},
-
-		/**
-		 * Checks whether changes submission has started.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param {Object} state Data store's state.
-		 * @return {boolean} TRUE when submission has started and not finished yet, otherwise FALSE.
-		 */
-		hasStartedSubmittingChanges( state ) {
-			return !! state.hasStartedSubmittingChanges;
-		},
-
-		/**
-		 * Checks whether changes submission has finished.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param {Object} state Data store's state.
-		 * @return {boolean} TRUE when submission has finished, otherwise FALSE.
-		 */
-		hasFinishedSubmittingChanges( state ) {
-			return !! state.hasFinishedSubmittingChanges;
 		},
 	};
 
