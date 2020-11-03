@@ -167,8 +167,28 @@ function observeConsoleLogging() {
 			text.startsWith( 'Failed to decode downloaded font:' ) ||
 			text.startsWith( 'OTS parsing error:' ) ||
 			text.includes( 'Download the React DevTools for a better development experience' ) ||
-			text.includes( 'https://fb.me/react-unsafe-component-lifecycles' )
+			text.includes( 'Can\'t perform a React state update on an unmounted component' ) ||
+			text.includes( 'https://fb.me/react-unsafe-component-lifecycles' ) ||
+			text.includes( 'https://fb.me/react-strict-mode-' )
 		) {
+			return;
+		}
+
+		// Some error messages which don't impact test results can
+		// be safely ignored.
+		if (
+			text.startsWith( 'Powered by AMP' ) ||
+			text.startsWith( 'data_error unknown response key' ) ||
+			text.includes( 'No triggers were found in the config. No analytics data will be sent.' )
+		) {
+			return;
+		}
+
+		// As of WordPress 5.3.2 in Chrome 79, navigating to the block editor
+		// (Posts > Add New) will display a console warning about
+		// non - unique IDs.
+		// See: https://core.trac.wordpress.org/ticket/23165
+		if ( text.includes( 'elements with non-unique id #_wpnonce' ) ) {
 			return;
 		}
 
@@ -211,7 +231,7 @@ function observeNavigationRequest( req ) {
 			data.push( req.postData() );
 		}
 		// eslint-disable-next-line no-console
-		console.log( 'NAV', ...data );
+		console.debug( 'NAV', ...data );
 	}
 }
 
@@ -230,7 +250,7 @@ function observeNavigationResponse( res ) {
 			data.push( { redirect } );
 		}
 		// eslint-disable-next-line no-console
-		console.log( ...data );
+		console.debug( ...data );
 	}
 }
 
@@ -248,7 +268,7 @@ function observeRestRequest( req ) {
 			data.push( req.postData() );
 		}
 		// eslint-disable-next-line no-console
-		console.log( '>>>', ...data );
+		console.debug( '>>>', ...data );
 	}
 }
 
@@ -266,7 +286,7 @@ async function observeRestResponse( res ) {
 		// The response may fail to resolve if the test ends before it completes.
 		try {
 			data.push( await res.text() );
-			console.log( ...data ); // eslint-disable-line no-console
+			console.debug( ...data ); // eslint-disable-line no-console
 		} catch ( err ) {} // eslint-disable-line no-empty
 	}
 }
@@ -291,14 +311,6 @@ beforeAll( async () => {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
 	}
-
-	page.on( 'response', ( res ) => {
-		if ( res.status() > 399 ) {
-			const req = res.request();
-			// eslint-disable-next-line no-console
-			console.warn( res.status(), req.method(), req.url() );
-		}
-	} );
 
 	// There's no good way to otherwise conditionally enable this logging
 	// since the code needs to be built into the e2e-utilities.js.

@@ -200,7 +200,7 @@ const dataAPI = {
 		} ).then( ( results ) => {
 			each( results, ( result, key ) => {
 				if ( ! keyIndexesMap[ key ] ) {
-					console.error( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
+					console.debug( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
 					return;
 				}
 

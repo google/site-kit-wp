@@ -20,57 +20,29 @@
  * External dependencies
  */
 import { delay } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Header from '../header';
 import Link from '../Link';
 import HelpLink from '../help-link';
 import { getSiteKitAdminURL } from '../../util';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+const { useSelect } = Data;
 
-class BaseComponent extends Component {
-	render() {
-		const { children } = this.props;
-		return (
-			<Fragment>
-				{ children }
-			</Fragment>
-		);
-	}
-}
-
-class SetupWrapper extends Component {
-	constructor( props ) {
-		super( props );
-
-		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
-		this.state = {
-			currentModule: moduleToSetup,
-		};
-	}
-
-	static loadSetupModule( slug ) {
-		// Disabled because this rule doesn't acknowledge our use of the variable
-		// as a component in JSX.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const FilteredModuleSetup = withFilters( `googlesitekit.ModuleSetup-${ slug }` )( BaseComponent );
-
-		return (
-			<FilteredModuleSetup
-				finishSetup={ SetupWrapper.finishSetup }
-				onSettingsPage={ false }
-				isEditing={ true }
-			/>
-		);
-	}
+export default function SetupWrapper( { moduleSlug } ) {
+	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
@@ -80,14 +52,14 @@ class SetupWrapper extends Component {
 	 *
 	 * @param {string} [redirectURL] URL to redirect to when complete. Defaults to Site Kit dashboard.
 	 */
-	static finishSetup( redirectURL ) {
+	const finishSetup = useCallback( ( redirectURL ) => {
 		if ( ! redirectURL ) {
 			const args = {
 				notification: 'authentication_success',
 			};
 
-			if ( global._googlesitekitLegacyData?.setup?.moduleToSetup ) {
-				args.slug = global._googlesitekitLegacyData.setup.moduleToSetup;
+			if ( moduleSlug ) {
+				args.slug = moduleSlug;
 			}
 
 			redirectURL = getSiteKitAdminURL( 'googlesitekit-dashboard', args );
@@ -96,77 +68,79 @@ class SetupWrapper extends Component {
 		delay( function() {
 			global.location.replace( redirectURL );
 		}, 500, 'later' );
+	}, [ moduleSlug ] );
+
+	if ( ! module?.setupComponent ) {
+		return null;
 	}
 
-	render() {
-		const { currentModule } = this.state;
-		const setupModule = SetupWrapper.loadSetupModule( currentModule );
-		const settingsPageURL = getSiteKitAdminURL(
-			'googlesitekit-settings',
-			{}
-		);
+	const { setupComponent: SetupComponent } = module;
 
-		return (
-			<Fragment>
-				<Header />
-				<div className="googlesitekit-setup">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-							">
-								<section className="googlesitekit-setup__wrapper">
+	return (
+		<Fragment>
+			<Header />
+			<div className="googlesitekit-setup">
+				<div className="mdc-layout-grid">
+					<div className="mdc-layout-grid__inner">
+						<div className="
+							mdc-layout-grid__cell
+							mdc-layout-grid__cell--span-12
+						">
+							<section className="googlesitekit-setup__wrapper">
+								<div className="mdc-layout-grid">
+									<div className="mdc-layout-grid__inner">
+										<div className="
+											mdc-layout-grid__cell
+											mdc-layout-grid__cell--span-12
+										">
+											<p className="
+												googlesitekit-setup__intro-title
+												googlesitekit-overline
+											">
+												{ __( 'Connect Service', 'google-site-kit' ) }
+											</p>
+											<SetupComponent
+												module={ module }
+												finishSetup={ finishSetup }
+											/>
+										</div>
+									</div>
+								</div>
+								<div className="googlesitekit-setup__footer">
 									<div className="mdc-layout-grid">
 										<div className="mdc-layout-grid__inner">
 											<div className="
-												mdc-layout-grid__cell
-												mdc-layout-grid__cell--span-12
+													mdc-layout-grid__cell
+													mdc-layout-grid__cell--span-2-phone
+													mdc-layout-grid__cell--span-4-tablet
+													mdc-layout-grid__cell--span-6-desktop
+												">
+												<Link
+													id={ `setup-${ module.slug }-cancel` }
+													href={ settingsPageURL }
+												>{ __( 'Cancel', 'google-site-kit' ) }</Link>
+											</div>
+											<div className="
+													mdc-layout-grid__cell
+													mdc-layout-grid__cell--span-2-phone
+													mdc-layout-grid__cell--span-4-tablet
+													mdc-layout-grid__cell--span-6-desktop
+													mdc-layout-grid__cell--align-right
 											">
-												<p className="
-													googlesitekit-setup__intro-title
-													googlesitekit-overline
-												">
-													{ __( 'Connect Service', 'google-site-kit' ) }
-												</p>
-												{ setupModule }
+												<HelpLink />
 											</div>
 										</div>
 									</div>
-									<div className="googlesitekit-setup__footer">
-										<div className="mdc-layout-grid">
-											<div className="mdc-layout-grid__inner">
-												<div className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-2-phone
-														mdc-layout-grid__cell--span-4-tablet
-														mdc-layout-grid__cell--span-6-desktop
-													">
-													<Link
-														id={ `setup-${ currentModule }-cancel` }
-														href={ settingsPageURL }
-													>{ __( 'Cancel', 'google-site-kit' ) }</Link>
-												</div>
-												<div className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-2-phone
-														mdc-layout-grid__cell--span-4-tablet
-														mdc-layout-grid__cell--span-6-desktop
-														mdc-layout-grid__cell--align-right
-												">
-													<HelpLink />
-												</div>
-											</div>
-										</div>
-									</div>
-								</section>
-							</div>
+								</div>
+							</section>
 						</div>
 					</div>
 				</div>
-			</Fragment>
-		);
-	}
+			</div>
+		</Fragment>
+	);
 }
 
-export default SetupWrapper;
+SetupWrapper.propTypes = {
+	moduleSlug: PropTypes.string.isRequired,
+};
