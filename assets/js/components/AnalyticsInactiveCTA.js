@@ -41,18 +41,19 @@ import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/c
 
 const { useSelect, useDispatch } = Data;
 
-function AnalyticsInactiveCTA( {
-	title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
-	description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ),
-	ctaLabel = __( 'Set up Analytics', 'google-site-kit' ),
-} ) {
+function AnalyticsInactiveCTA( props ) {
+	const {
+		title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
+		description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ),
+		ctaLabel = __( 'Set up Analytics', 'google-site-kit' ),
+	} = props;
 	const { activateModule } = useDispatch( CORE_MODULES );
 
 	const onSetupAnalytics = useCallback( async () => {
 		const { error, response } = await activateModule( 'analytics' );
 
 		if ( ! error ) {
-			global.location = response.moduleReauthURL;
+			global.location.assign( response.moduleReauthURL );
 		} else {
 			showErrorNotification( GenericError, {
 				id: 'analytics-setup-error',
