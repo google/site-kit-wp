@@ -24,7 +24,6 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -42,7 +41,6 @@ import {
 } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-const { createRegistryControl } = Data;
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
@@ -53,7 +51,7 @@ export const INVARIANT_INVALID_PROFILE_NAME = 'a valid profile name is required 
 export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID = 'cannot submit changes with incorrect internal webPropertyID';
 export const INVARIANT_INSUFFICIENT_TAG_PERMISSIONS = 'cannot submit without proper permissions';
 
-export const submitChanges = createRegistryControl( ( { select, dispatch } ) => async () => {
+export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( STORE_NAME ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
 		const accountID = select( STORE_NAME ).getAccountID();
@@ -96,7 +94,7 @@ export const submitChanges = createRegistryControl( ( { select, dispatch } ) => 
 	invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
 	return {};
-} );
+}
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );

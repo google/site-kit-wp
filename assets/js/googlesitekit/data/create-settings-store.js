@@ -37,7 +37,7 @@ import {
 } from './transform-case';
 import { createFetchStore } from './create-fetch-store';
 
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createRegistrySelector } = Data;
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
@@ -356,7 +356,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
  * @return {Function} Control function to submit changes.
  */
 export function makeDefaultSubmitChanges( slug, storeName ) {
-	return createRegistryControl( ( { select, dispatch } ) => async () => {
+	return async ( { select, dispatch } ) => {
 		if ( select( storeName ).haveSettingsChanged() ) {
 			const { error } = await dispatch( storeName ).saveSettings();
 			if ( error ) {
@@ -369,7 +369,7 @@ export function makeDefaultSubmitChanges( slug, storeName ) {
 		invalidateCacheGroup( TYPE_MODULES, slug );
 
 		return {};
-	} );
+	};
 }
 
 /**

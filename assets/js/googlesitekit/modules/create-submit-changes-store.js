@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import Data from 'googlesitekit-data';
 import { createValidationSelector } from '../data/utils';
+const { createRegistryControl } = Data;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -116,7 +117,7 @@ export function createSubmitChangesStore( {
 	};
 
 	const controls = {
-		[ SUBMIT_CHANGES ]: submitChanges,
+		[ SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => ( ...args ) => submitChanges( registry, ...args ) ),
 	};
 
 	const resolvers = {};
