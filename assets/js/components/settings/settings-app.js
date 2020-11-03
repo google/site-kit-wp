@@ -32,10 +32,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Header from '../header';
-import PageHeader from '../page-header';
+import Header from '../Header';
+import PageHeader from '../PageHeader';
 import Layout from '../layout/layout';
-import HelpLink from '../help-link';
+import HelpLink from '../HelpLink';
 import SettingsModules from './settings-modules';
 import { getModulesData } from '../../util';
 

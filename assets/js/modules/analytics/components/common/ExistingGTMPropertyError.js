@@ -27,7 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import ErrorText from '../../../../components/error-text';
+import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyError() {

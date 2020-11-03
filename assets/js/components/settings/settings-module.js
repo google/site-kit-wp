@@ -51,7 +51,7 @@ import Spinner from '../Spinner';
 import GenericError from '../../components/notifications/generic-error';
 import SetupModule from '../../components/setup-module';
 import Dialog from '../../components/dialog';
-import ModuleIcon from '../../components/module-icon';
+import ModuleIcon from '../ModuleIcon';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import SettingsRenderer from '../settings/SettingsRenderer';
