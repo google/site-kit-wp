@@ -19,14 +19,15 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { sprintf, __ } from '@wordpress/i18n';
-import { Component } from '@wordpress/element';
+import { useState } from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -35,31 +36,29 @@ import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
-	// TODO: 2130 getModulesData,
+	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
 import ModuleIcon from '../components/module-icon';
 import Spinner from './Spinner';
 import Link from './Link';
+import ModuleSettingsWarning from '../components/notifications/module-settings-warning';
 import GenericError from '../components/notifications/generic-error';
-import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
 
 export default function SetupModule( {
 	slug,
 	name,
 	description,
 	active,
+	showLink,
 } ) {
-	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
-	let isSaving = false;
+	const [ isSaving, setIsSaving ] = useState( false );
 
 	const activateOrDeactivate = async () => {
 		try {
-			isSaving = true;
-
+			// this.setState( { isSaving: true } );
+			setIsSaving( true );
 			await activateOrDeactivateModule( data, slug, ! active );
 
 			await refreshAuthentication();
@@ -74,16 +73,34 @@ export default function SetupModule( {
 				format: 'small',
 				type: 'win-error',
 			} );
-			isSaving = false;
+			// this.setState( { isSaving: false } );
+			setIsSaving( false );
 		}
 	};
+
+	let blockedByParentModule = false;
+	let parentModule;
+
+	const modules = getModulesData();
+
+	// Check if required module is active.
+	if ( modules[ slug ].required.length ) {
+		const requiredModules = modules[ slug ].required;
+
+		requiredModules.forEach( ( requiredModule ) => {
+			if ( ! modules[ requiredModule ].setupComplete ) {
+				blockedByParentModule = true;
+				parentModule = modules[ requiredModule ].name;
+			}
+		} );
+	}
 
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-settings-connect-module',
 				`googlesitekit-settings-connect-module--${ slug }`,
-				{ 'googlesitekit-settings-connect-module--disabled': ! canActivateModule }
+				{ 'googlesitekit-settings-connect-module--disabled': blockedByParentModule }
 			) }
 			key={ slug }
 		>
@@ -103,160 +120,34 @@ export default function SetupModule( {
 				{ description }
 			</p>
 
-			<p className="googlesitekit-settings-connect-module__cta">
-				<Link
-					onClick={ activateOrDeactivate }
-					href=""
-					inherit
-					disabled={ ! canActivateModule }
-					arrow
-				>
-					{
-						sprintf(
-							/* translators: %s: module name */
-							__( 'Set up %s', 'google-site-kit' ),
-							name
-						)
-					}
-				</Link>
-			</p>
-		</div>
-	);
-}
+			<ModuleSettingsWarning slug={ slug } context="modules-list" />
 
-/**
- * A single module. Keeps track of its own active state and settings.
- */
-class SetupModule2 extends Component {
-	constructor( props ) {
-		debugger; // eslint-disable-line no-debugger
-		super( props );
-
-		this.state = {
-			isSaving: false,
-			active: props.active,
-		};
-
-		this.activateOrDeactivate = this.activateOrDeactivate.bind( this );
-	}
-
-	async activateOrDeactivate() {
-		try {
-			const { active } = this.state;
-			const { slug } = this.props;
-
-			this.setState( { isSaving: true } );
-			await activateOrDeactivateModule( data, slug, ! active );
-
-			await refreshAuthentication();
-
-			// Redirect to ReAuthentication URL.
-			global.location = getReAuthURL( slug, true );
-		} catch ( err ) {
-			showErrorNotification( GenericError, {
-				id: 'activate-module-error',
-				title: __( 'Internal Server Error', 'google-site-kit' ),
-				description: err.message,
-				format: 'small',
-				type: 'win-error',
-			} );
-			this.setState( { isSaving: false } );
-		}
-	}
-
-	render() {
-		const {
-			isSaving,
-		} = this.state;
-		const {
-			slug,
-			name,
-			description,
-		} = this.props;
-
-		// @TODO:2130 let blockedByParentModule = false;
-		const canActivateModule = true;
-		// let parentModule;
-
-		// const modules = getModulesData();
-
-		/*
-		// Check if required module is active.
-		if ( modules[ slug ].required.length ) {
-			const requiredModules = modules[ slug ].required;
-
-			requiredModules.forEach( ( requiredModule ) => {
-				if ( ! modules[ requiredModule ].setupComplete ) {
-					blockedByParentModule = true;
-					parentModule = modules[ requiredModule ].name;
-				}
-			} );
-		}
-		 */
-
-		return (
-			<div
-				className={ classnames(
-					'googlesitekit-settings-connect-module',
-					`googlesitekit-settings-connect-module--${ slug }`,
-					{ 'googlesitekit-settings-connect-module--disabled': ! canActivateModule }
-				) }
-				key={ slug }
-			>
-				<div className="googlesitekit-settings-connect-module__switch">
-					<Spinner isSaving={ isSaving } />
-				</div>
-				<div className="googlesitekit-settings-connect-module__logo">
-					<ModuleIcon slug={ slug } />
-				</div>
-				<h3 className="
-					googlesitekit-subheading-1
-					googlesitekit-settings-connect-module__title
-				">
-					{ name }
-				</h3>
-				<p className="googlesitekit-settings-connect-module__text">
-					{ description }
-				</p>
-
+			{ applyFilters( 'googlesitekit.SetupModuleShowLink', showLink, slug ) &&
 				<p className="googlesitekit-settings-connect-module__cta">
 					<Link
-						onClick={ this.activateOrDeactivate }
+						onClick={ activateOrDeactivate }
 						href=""
 						inherit
-						disabled={ ! canActivateModule }
+						disabled={ blockedByParentModule }
 						arrow
 					>
 						{
-							sprintf(
+							! blockedByParentModule
+								? sprintf(
 								/* translators: %s: module name */
-								__( 'Set up %s', 'google-site-kit' ),
-								name
-							)
+									__( 'Set up %s', 'google-site-kit' ),
+									name
+								)
+								: sprintf(
+								/* translators: 1: required module name 2: module name */
+									__( 'Set up %1$s to gain access to %2$s', 'google-site-kit' ),
+									parentModule,
+									name
+								)
 						}
 					</Link>
 				</p>
-			</div>
-		);
-	}
+			}
+		</div>
+	);
 }
-
-SetupModule.propTypes = {
-	slug: PropTypes.string,
-	name: PropTypes.string,
-	description: PropTypes.string,
-	homepage: PropTypes.string,
-	active: PropTypes.bool,
-	onActive: PropTypes.func,
-};
-
-SetupModule.defaultProps = {
-	slug: '',
-	name: '',
-	description: '',
-	homepage: '',
-	active: false,
-};
-console.log( SetupModule2 ); // eslint-disable-line no-console
-
-// export default SetupModule;
