@@ -38,6 +38,7 @@ describe( 'core/user userInfo', () => {
 			picture: 'https://path/to/image',
 		},
 		verified: true,
+		userInputState: 'completed',
 	};
 
 	let registry;
@@ -75,6 +76,19 @@ describe( 'core/user userInfo', () => {
 				const { verified } = userData;
 				await registry.dispatch( STORE_NAME ).receiveUserIsVerified( verified );
 				expect( registry.select( STORE_NAME ).isVerified() ).toEqual( verified );
+			} );
+		} );
+		describe( 'receiveUserInputState', () => {
+			it( 'requires userInputState param', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveUserInputState();
+				} ).toThrow( 'userInputState is required.' );
+			} );
+
+			it( 'receives and sets userInputData', async () => {
+				const { userInputState } = userData;
+				await registry.dispatch( STORE_NAME ).receiveUserInputState( userInputState );
+				expect( registry.select( STORE_NAME ).getUserInputState() ).toEqual( userInputState );
 			} );
 		} );
 	} );
@@ -220,6 +234,23 @@ describe( 'core/user userInfo', () => {
 
 				expect( result ).toEqual( undefined );
 				expect( console ).toHaveErrored();
+			} );
+		} );
+		describe( 'getUserInputState', () => {
+			it( 'uses a resolver to load user input state from a global variable', async () => {
+				// Set up the global
+				global[ userDataGlobal ] = userData;
+
+				registry.select( STORE_NAME ).getUserInputState(); // invariant error
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getUserInputState' )
+				);
+
+				const userInputState = registry.select( STORE_NAME ).getUserInputState();
+				expect( userInputState ).toBe( userData.userInputState );
+
+				// Data must not be wiped after retrieving, as it could be used by other dependents.
+				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 			} );
 		} );
 	} );
