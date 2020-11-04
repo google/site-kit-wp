@@ -24,7 +24,6 @@ import {
 	createURL,
 	deactivatePlugin,
 } from '@wordpress/e2e-test-utils';
-import { noConflict } from 'lodash';
 
 /**
  * Internal dependencies
