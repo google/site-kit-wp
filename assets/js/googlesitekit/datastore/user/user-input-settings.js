@@ -187,7 +187,7 @@ const baseSelectors = {
 	/**
 	 * Gets a scope of the input setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} User input setting scope.
@@ -200,7 +200,7 @@ const baseSelectors = {
 	/**
 	 * Gets an author of the input setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User input setting author.
