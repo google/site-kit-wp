@@ -54,7 +54,6 @@ function googlesitekit_activate_plugin( $network_wide ) {
 
 	do_action( 'googlesitekit_activation', $network_wide );
 }
-
 register_activation_hook( __FILE__, 'googlesitekit_activate_plugin' );
 
 /**
@@ -76,8 +75,22 @@ function googlesitekit_deactivate_plugin( $network_wide ) {
 
 	do_action( 'googlesitekit_deactivation', $network_wide );
 }
-
 register_deactivation_hook( __FILE__, 'googlesitekit_deactivate_plugin' );
+
+/**
+ * Handles plugin uninstallation.
+ *
+ * @since n.e.x.t
+ * @access private
+ */
+function googlesitekit_uninstall_plugin() {
+	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
+		return;
+	}
+
+	do_action( 'googlesitekit_uninstallation' );
+}
+register_uninstall_hook( __FILE__, 'googlesitekit_uninstall_plugin' );
 
 /**
  * Resets opcache if possible.
