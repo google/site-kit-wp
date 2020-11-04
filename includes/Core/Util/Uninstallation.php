@@ -20,7 +20,7 @@ use Exception;
 /**
  * Utility class for handling uninstallation of the plugin.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Uninstallation {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 * @var Context
 	 */
 	private $context;
@@ -37,7 +37,7 @@ class Uninstallation {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 * @var Options
 	 */
 	private $options;
@@ -49,7 +49,7 @@ class Uninstallation {
 	 * bootstrap lifecycle because the 'uninstall.php' script runs decoupled
 	 * from regular action hooks like 'init'.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Options $options Optional. Options instance. Default is a new instance.
@@ -65,7 +65,7 @@ class Uninstallation {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 */
 	public function register() {
 		add_action(
@@ -81,7 +81,7 @@ class Uninstallation {
 	 *
 	 * If connected to the proxy, it will issue a request to unregister the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 */
 	private function uninstall() {
 		$credentials = new Credentials( new Encrypted_Options( $this->options ) );

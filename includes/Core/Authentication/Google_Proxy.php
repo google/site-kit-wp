@@ -118,7 +118,7 @@ class Google_Proxy {
 	/**
 	 * Unregisters the site on the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @return array Response data.

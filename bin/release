@@ -34,7 +34,7 @@ const sanitizeFilename = require( 'sanitize-filename' );
 /**
  * Retrieves the plugin version from the plugin's file header.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  *
  * @return {string} Plugin version.
  */
@@ -48,7 +48,7 @@ function getPluginVersion() {
  * Retrieves and prepares information from the current git state
  * for use as components of the generated file name.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  *
  * @return {Object} Data related to the latest commit.
  */
@@ -64,7 +64,7 @@ function getGit() {
 /**
  * Generates the filename to use for the resulting release zip file.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  *
  * @return {string} Sanitized release zip file name.
  */
@@ -85,7 +85,7 @@ function generateFilename() {
 /**
  * Makes a new release.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  *
  * @return {Promise} A promise instance.
  */
