@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { changeToPercent, readableLargeNumber } from '../../../../util';
+import { changeToPercent, readableLargeNumber, untrailingslashit } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { trackEvent } from '../../../../util/tracking';
 import whenActive from '../../../../util/when-active';
@@ -37,8 +37,8 @@ import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
-import { getCurrentDateRange } from '../../../../util/date-range';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
 
@@ -48,6 +48,8 @@ function DashboardImpressionsWidget() {
 
 		const propertyID = store.getPropertyID();
 		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
+		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
 		const args = {
 			dimensions: 'date',
@@ -57,11 +59,13 @@ function DashboardImpressionsWidget() {
 
 		const serviceBaseURLArgs = {
 			resource_id: propertyID,
-			num_of_days: getCurrentDateRange( args.dateRange, true ),
+			num_of_days: getCurrentDateRangeDayCount( args.dateRange ),
 		};
 		if ( url ) {
 			args.url = url;
 			serviceBaseURLArgs.page = `!${ url }`;
+		} else if ( isDomainProperty && referenceSiteURL ) {
+			serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
 		}
 
 		return {

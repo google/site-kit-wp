@@ -29,8 +29,8 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
+import { untrailingslashit, changeToPercent, readableLargeNumber } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
-import { changeToPercent, readableLargeNumber } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
@@ -48,6 +48,8 @@ function DashboardClicksWidget() {
 
 		const propertyID = store.getPropertyID();
 		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
+		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
 		const args = {
 			dimensions: 'date',
@@ -62,6 +64,8 @@ function DashboardClicksWidget() {
 		if ( url ) {
 			args.url = url;
 			serviceBaseURLArgs.page = `!${ url }`;
+		} else if ( isDomainProperty && referenceSiteURL ) {
+			serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
 		}
 
 		return {

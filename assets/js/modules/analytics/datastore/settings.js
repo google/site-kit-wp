@@ -74,6 +74,7 @@ export const actions = {
 	 */
 	*submitChanges() {
 		const registry = yield Data.commonActions.getRegistry();
+		registry.dispatch( STORE_NAME ).clearError( 'submitChanges', [] );
 
 		yield {
 			payload: {},
