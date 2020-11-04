@@ -89,8 +89,6 @@ function DashboardImpressionsWidget() {
 		return getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) );
 	}
 
-	// const { totalImpressions, totalImpressionsChange, dataMap } = extractSearchConsoleDashboardData( data );
-
 	// Split the data in two chunks.
 	const half = Math.floor( data.length / 2 );
 	const latestData = data.slice( half );
