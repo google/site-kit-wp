@@ -97,6 +97,10 @@ return array(
 				$contents = str_replace( "'GuzzleHttp\\\\ClientInterface", "'" . $prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
 				$contents = str_replace( '"GuzzleHttp\\\\ClientInterface', '"' . $prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
 			}
+			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) ) {
+				$contents = str_replace( "'Google_", "'" . $prefix . '\Google_', $contents );
+				$contents = str_replace( '"Google_', '"' . $prefix . '\Google_', $contents );
+			}
 			if ( false !== strpos( $file_path, 'vendor/google/apiclient-services/' ) ) {
 				$contents = str_replace( "'Google_Service_", "'" . $prefix . '\Google_Service_', $contents );
 				$contents = str_replace( '"Google_Service_', '"' . $prefix . '\Google_Service_', $contents );

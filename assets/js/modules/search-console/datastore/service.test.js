@@ -79,5 +79,22 @@ describe( 'module/search-console service store', () => {
 				expect( serviceURL ).toMatchQueryParameters( query );
 			} );
 		} );
+		describe( 'isDomainProperty', () => {
+			it( 'should identify if property is search console domain property', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {
+					propertyID: 'http://sitekit.google.com',
+				} );
+
+				let isDomainProperty = registry.select( STORE_NAME ).isDomainProperty();
+				expect( isDomainProperty ).toBe( false );
+
+				registry.dispatch( STORE_NAME ).setSettings( {
+					propertyID: 'sc-domain:sitekit.google.com',
+				} );
+
+				isDomainProperty = registry.select( STORE_NAME ).isDomainProperty();
+				expect( isDomainProperty ).toBe( true );
+			} );
+		} );
 	} );
 } );
