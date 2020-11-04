@@ -37,7 +37,7 @@ import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
-import { getCurrentDateRange } from '../../../../util/date-range';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
 
@@ -58,7 +58,7 @@ function DashboardImpressionsWidget() {
 
 		const serviceBaseURLArgs = {
 			resource_id: propertyID,
-			num_of_days: getCurrentDateRange( args.dateRange, true ),
+			num_of_days: getCurrentDateRangeDayCount( args.dateRange ),
 		};
 		if ( url ) {
 			args.url = url;

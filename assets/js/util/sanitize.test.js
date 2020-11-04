@@ -30,7 +30,7 @@ describe( 'sanitizeHTML', () => {
 	} );
 } );
 
-describe( 'unTrailingSlashIt', () => {
+describe( 'untrailingslashit', () => {
 	it( 'should return the same string if there is no trailing slash', () => {
 		expect( untrailingslashit( 'http://example.org' ) ).toEqual( 'http://example.org' );
 	} );
