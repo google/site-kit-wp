@@ -81,7 +81,7 @@ export function createSubmitChangesStore( {
 				payload: {},
 			};
 
-			if ( result.error && receiveError ) {
+			if ( result?.error && receiveError ) {
 				yield dispatch( storeName ).receiveError( result.error, 'submitChanges', [] );
 			}
 

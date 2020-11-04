@@ -110,7 +110,11 @@ export const createModuleStore = ( slug, {
 			notificationsStore,
 			infoStore,
 			createErrorStore(),
-			createSubmitChangesStore( { storeName } ),
+			createSubmitChangesStore( {
+				storeName,
+				submitChanges,
+				validateCanSubmitChanges,
+			} ),
 		);
 	}
 
