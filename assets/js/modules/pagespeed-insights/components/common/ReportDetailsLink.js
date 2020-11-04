@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { sprintf, __, _x } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -27,28 +28,32 @@ import { sprintf, __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { sanitizeHTML } from '../../../../util';
+import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function ReportDetailsLink() {
 	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
 	const pagespeedInsightsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { url: referenceURL } } ) );
 
-	const footerLinkHTML = sprintf(
-		/* translators: %s: link with translated service name */
-		__( 'View details at %s', 'google-site-kit' ),
-		`<a href="${ pagespeedInsightsURL }" class="googlesitekit-cta-link googlesitekit-cta-link--external" target="_blank" rel="noopener noreferrer">${ _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ) }</a>`
-	);
-
 	return (
-		<p
-			dangerouslySetInnerHTML={ sanitizeHTML(
-				footerLinkHTML,
-				{
-					ALLOWED_TAGS: [ 'a' ],
-					ALLOWED_ATTR: [ 'href', 'class', 'target', 'rel' ],
-				}
-			) }
-		/>
+		<p>
+			{
+				createInterpolateElement(
+					sprintf(
+						/* translators: %s: link with translated service name */
+						__( 'View details at %s', 'google-site-kit' ),
+						`<a>${ _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ) }</a>`
+					),
+					{
+						a: <Link
+							key="link"
+							href={ pagespeedInsightsURL }
+							external
+						/>,
+					}
+				)
+			}
+		</p>
+
 	);
 }
