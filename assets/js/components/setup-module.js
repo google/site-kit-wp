@@ -47,9 +47,36 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-export function SetupModule2( { slug, isSaving, description } ) {
-// export default function SetupModule() {
-	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'analytics' ) ); // 2130 slug
+export default function SetupModule( {
+	slug,
+	name,
+	description,
+	active,
+} ) {
+	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+	let isSaving = false;
+
+	const activateOrDeactivate = async () => {
+		try {
+			isSaving = true;
+
+			await activateOrDeactivateModule( data, slug, ! active );
+
+			await refreshAuthentication();
+
+			// Redirect to ReAuthentication URL.
+			global.location = getReAuthURL( slug, true );
+		} catch ( err ) {
+			showErrorNotification( GenericError, {
+				id: 'activate-module-error',
+				title: __( 'Internal Server Error', 'google-site-kit' ),
+				description: err.message,
+				format: 'small',
+				type: 'win-error',
+			} );
+			isSaving = false;
+		}
+	};
 
 	return (
 		<div
@@ -78,7 +105,7 @@ export function SetupModule2( { slug, isSaving, description } ) {
 
 			<p className="googlesitekit-settings-connect-module__cta">
 				<Link
-					onClick={ this.activateOrDeactivate }
+					onClick={ activateOrDeactivate }
 					href=""
 					inherit
 					disabled={ ! canActivateModule }
@@ -100,8 +127,9 @@ export function SetupModule2( { slug, isSaving, description } ) {
 /**
  * A single module. Keeps track of its own active state and settings.
  */
-class SetupModule extends Component {
+class SetupModule2 extends Component {
 	constructor( props ) {
+		debugger; // eslint-disable-line no-debugger
 		super( props );
 
 		this.state = {
@@ -229,5 +257,6 @@ SetupModule.defaultProps = {
 	homepage: '',
 	active: false,
 };
+console.log( SetupModule2 ); // eslint-disable-line no-console
 
-export default SetupModule;
+// export default SetupModule;
