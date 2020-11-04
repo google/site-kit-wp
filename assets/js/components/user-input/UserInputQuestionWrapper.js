@@ -32,7 +32,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import Button from '../button';
+import Button from '../Button';
 import { Row, Cell } from '../../material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 const { useSelect } = Data;

@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Button from '../button';
+import Button from '../Button';
 
 export default function UserInputPreviewGroup( { title, edit, values, options } ) {
 	return (

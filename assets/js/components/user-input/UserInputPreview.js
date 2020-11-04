@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Row } from '../../material-components';
-import Button from '../button';
+import Button from '../Button';
 import ProgressBar from '../ProgressBar';
 import ErrorNotice from '../ErrorNotice';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
