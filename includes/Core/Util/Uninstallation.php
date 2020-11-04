@@ -35,24 +35,24 @@ class Uninstallation {
 	private $context;
 
 	/**
-	 * Options object.
+	 * Options instance.
 	 *
 	 * @since n.e.x.t
 	 * @var Options
 	 */
-	private $options = null;
+	private $options;
 
 	/**
 	 * Constructor.
 	 *
 	 * This class and its logic must be instantiated early in the WordPress
-	 * bootstrap lifecycle because an uninstallation hook runs decoupled from
-	 * regular action hooks like 'init'.
+	 * bootstrap lifecycle because the 'uninstall.php' script runs decoupled
+	 * from regular action hooks like 'init'.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param Context $context Plugin context.
-	 * @param Options $options Optional. Option API instance. Default is a new instance.
+	 * @param Options $options Optional. Options instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,

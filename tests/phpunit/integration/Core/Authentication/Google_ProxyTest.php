@@ -111,7 +111,7 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		$expected_success_response = array( 'success' => true );
-		$this->expect_request_response(
+		$this->mock_http_request(
 			$google_proxy->url( Google_Proxy::OAUTH2_DELETE_SITE_URI ),
 			$expected_success_response
 		);
@@ -132,7 +132,7 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( $expected_success_response, $response_data );
 
 		$expected_error_response = array( 'error' => "invalid 'site_id' or 'site_secret'" );
-		$this->expect_request_response(
+		$this->mock_http_request(
 			$google_proxy->url( Google_Proxy::OAUTH2_DELETE_SITE_URI ),
 			$expected_error_response,
 			400
@@ -141,7 +141,7 @@ class Google_ProxyTest extends TestCase {
 		// Ensure exception with correct message is thrown for error response.
 		try {
 			$google_proxy->unregister_site( $credentials );
-			$this->assertEquals( $expected_error_response['error'], null );
+			$this->fail( 'Expected an exception to be thrown when unregistering the site' );
 		} catch ( Exception $e ) {
 			$this->assertEquals( $expected_error_response['error'], $e->getMessage() );
 		}
@@ -201,7 +201,7 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		// Stub the response to the proxy oauth API.
-		$this->expect_request_response(
+		$this->mock_http_request(
 			$google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ),
 			$expected_credentials
 		);
@@ -221,7 +221,7 @@ class Google_ProxyTest extends TestCase {
 	 * @param array  $response_data Response data to return for the request. Will be JSON-encoded.
 	 * @param int    $response_code Optional. Response status code to return. Default 200.
 	 */
-	private function expect_request_response( $request_url, array $response_data, $response_code = 200 ) {
+	private function mock_http_request( $request_url, array $response_data, $response_code = 200 ) {
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $args, $url ) use ( $request_url, $response_data, $response_code ) {
