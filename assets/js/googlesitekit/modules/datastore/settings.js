@@ -31,7 +31,7 @@ export const actions = {
 	/**
 	 * Submits all changes for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param {string} slug Slug for module store.
 	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
@@ -55,7 +55,7 @@ export const selectors = {
 	/**
 	 * Checks whether changes are currently being submitted for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param {string} slug Slug for module store.
 	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
@@ -68,7 +68,7 @@ export const selectors = {
 	/**
 	 * Checks whether we can submit changes for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param {string} slug Slug for module store.
 	 * @return {boolean} Whether the module supports submitting changes.

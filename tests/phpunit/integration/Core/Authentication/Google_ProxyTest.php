@@ -17,8 +17,14 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\MethodSpy;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Exception;
 
+/**
+ * @group Authentication
+ */
 class Google_ProxyTest extends TestCase {
+	use Fake_Site_Connection_Trait;
 
 	public function test_get_site_fields() {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -82,22 +88,71 @@ class Google_ProxyTest extends TestCase {
 		);
 	}
 
+	public function test_unregister_site() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$google_proxy = new Google_Proxy( $context );
+		$credentials  = new Credentials( new Options( $context ) );
+
+		$fake_creds = $this->fake_proxy_site_connection();
+
+		$pre_args = null;
+		$pre_url  = null;
+
+		add_filter(
+			'pre_http_request',
+			function ( $false, $args, $url ) use ( &$pre_args, &$pre_url ) {
+				$pre_args = $args;
+				$pre_url  = $url;
+
+				return $false;
+			},
+			10,
+			3
+		);
+
+		$expected_success_response = array( 'success' => true );
+		$this->mock_http_request(
+			$google_proxy->url( Google_Proxy::OAUTH2_DELETE_SITE_URI ),
+			$expected_success_response
+		);
+		$response_data = $google_proxy->unregister_site( $credentials );
+
+		// Ensure the request was made with the proper URL and body parameters.
+		$this->assertEquals( $google_proxy->url( Google_Proxy::OAUTH2_DELETE_SITE_URI ), $pre_url );
+		$this->assertEquals( 'POST', $pre_args['method'] );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'site_id'     => $fake_creds['client_id'],
+				'site_secret' => $fake_creds['client_secret'],
+			),
+			$pre_args['body']
+		);
+
+		// Ensure success response data is correct.
+		$this->assertEquals( $expected_success_response, $response_data );
+
+		$expected_error_response = array( 'error' => "invalid 'site_id' or 'site_secret'" );
+		$this->mock_http_request(
+			$google_proxy->url( Google_Proxy::OAUTH2_DELETE_SITE_URI ),
+			$expected_error_response,
+			400
+		);
+
+		// Ensure exception with correct message is thrown for error response.
+		try {
+			$google_proxy->unregister_site( $credentials );
+			$this->fail( 'Expected an exception to be thrown when unregistering the site' );
+		} catch ( Exception $e ) {
+			$this->assertEquals( $expected_error_response['error'], $e->getMessage() );
+		}
+	}
+
 	public function test_sync_site_fields() {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$google_proxy = new Google_Proxy( $context );
 		$credentials  = new Credentials( new Options( $context ) );
 
-		add_filter( // Fake "using proxy"
-			'googlesitekit_oauth_secret',
-			function () {
-				return array(
-					'web' => array(
-						'client_id'     => '12345678.apps.sitekit.withgoogle.com',
-						'client_secret' => 'test-client-secret',
-					),
-				);
-			}
-		);
+		$this->fake_proxy_site_connection();
 
 		$pre_args = null;
 		$pre_url  = null;
@@ -146,21 +201,40 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		// Stub the response to the proxy oauth API.
+		$this->mock_http_request(
+			$google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ),
+			$expected_credentials
+		);
+
+		$credentials = $google_proxy->exchange_site_code( 'test-site-code', 'test-undelegated-code' );
+		$this->assertEqualSetsWithIndex(
+			$expected_credentials,
+			$credentials
+		);
+	}
+
+	/**
+	 * Adds a 'pre_http_request' filter that will ensure the request for the
+	 * given URL will yield a specific response.
+	 *
+	 * @param string $request_url   Request URL to modify response for.
+	 * @param array  $response_data Response data to return for the request. Will be JSON-encoded.
+	 * @param int    $response_code Optional. Response status code to return. Default 200.
+	 */
+	private function mock_http_request( $request_url, array $response_data, $response_code = 200 ) {
 		add_filter(
 			'pre_http_request',
-			function ( $preempt, $args, $url ) use ( $google_proxy, $expected_credentials ) {
-				if ( $google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ) !== $url ) {
+			function ( $preempt, $args, $url ) use ( $request_url, $response_data, $response_code ) {
+				if ( $request_url !== $url ) {
 					return $preempt;
 				}
 
 				return array(
 					'headers'       => array(),
-					'body'          => json_encode(
-						$expected_credentials
-					),
+					'body'          => json_encode( $response_data ),
 					'response'      => array(
-						'code'    => 200,
-						'message' => 'OK',
+						'code'    => $response_code,
+						'message' => get_status_header_desc( $response_code ),
 					),
 					'cookies'       => array(),
 					'http_response' => null,
@@ -168,12 +242,6 @@ class Google_ProxyTest extends TestCase {
 			},
 			10,
 			3
-		);
-
-		$credentials = $google_proxy->exchange_site_code( 'test-site-code', 'test-undelegated-code' );
-		$this->assertEqualSetsWithIndex(
-			$expected_credentials,
-			$credentials
 		);
 	}
 }
