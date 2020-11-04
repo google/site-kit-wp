@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -33,7 +33,6 @@ const { useSelect } = Data;
 
 export default function UserInputSettings() {
 	const ctaLink = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
-	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
 	const userInputState = useSelect( ( select ) => select( CORE_USER ).getUserInputState() );
 
 	if ( userInputState === 'completed' ) {
@@ -44,13 +43,7 @@ export default function UserInputSettings() {
 		<Notification
 			id="user-input-settings-notification"
 			title={ __( 'Customize Site Kit to match your goals', 'google-site-kit' ) }
-			description={
-				sprintf(
-					/* translators: %s: Admin Settings URL in Site Kit */
-					__( 'The questionnaire consists of 5 questions which takes approximately 5 minutes to complete. You can always edit your answers later in <a href="%s">Settings</a>', 'google-site-kit' ),
-					settingsPageURL
-				)
-			}
+			description={ __( "Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site's goals", 'google-site-kit' ) }
 			handleDismiss={ () => {} }
 			format="large"
 			isDismissable
