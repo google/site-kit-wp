@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { get } from 'lodash';
+
+/**
  * Extracts a single column of data for a sparkline from a dataset prepared for Google charts.
  *
  * @since 1.0.0
@@ -26,11 +31,11 @@
  * @param {number} [columnIndex] Optional. The index of the row.
  * @return {Array} Extracted column of dataset prepared for Google charts.
  */
-export const extractForSparkline = ( rowData, column, columnIndex = 0 ) => {
+export default function extractForSparkline( rowData, column, columnIndex = 0 ) {
 	return rowData.map( ( row, i ) => {
 		return [
-			row[ columnIndex ], // row[0] always contains the x axis value (typically date).
-			row[ column ] || ( 0 === i ? '' : 0 ), // the data for the sparkline.
+			get( row, columnIndex ), // row[0] always contains the x axis value (typically date).
+			get( row, column, ( 0 === i ? '' : 0 ) ), // the data for the sparkline.
 		];
 	} );
-};
+}

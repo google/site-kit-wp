@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { extractForSparkline } from '../extract-for-sparkline';
+import extractForSparkline from '../extract-for-sparkline';
 
 const valuesToTest = [
 	[
@@ -204,5 +204,38 @@ describe( 'extractForSparkline', () => {
 
 	it.each( columnIndexValuesToTest )( 'for start date %s and columnIndex %s it should return %s', ( data, columnIndex, expected ) => {
 		expect( extractForSparkline( data, 0, columnIndex ) ).toStrictEqual( expected );
+	} );
+	const data = [
+		{
+			dimensions: [
+				'Site Kit Test 1',
+				'/',
+			],
+			metrics: [
+				{
+					values: [
+						'1469',
+					],
+				},
+			],
+		},
+		{
+			dimensions: [
+				'Site Kit Test 2',
+				'/site-kit-tests/',
+			],
+			metrics: [
+				{
+					values: [
+						'616',
+					],
+				},
+			],
+		},
+	];
+
+	it( 'returns data from an index passed as a string', () => {
+		expect( extractForSparkline( data, 0, 'metrics.0.values.0' ) ).toStrictEqual( [ [ '1469', '' ], [ '616', 0 ] ] );
+		expect( extractForSparkline( data, 1, 'dimensions.1' ) ).toStrictEqual( [ [ '/', '' ], [ '/site-kit-tests/', 0 ] ] );
 	} );
 } );
