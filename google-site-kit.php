@@ -78,21 +78,6 @@ function googlesitekit_deactivate_plugin( $network_wide ) {
 register_deactivation_hook( __FILE__, 'googlesitekit_deactivate_plugin' );
 
 /**
- * Handles plugin uninstallation.
- *
- * @since n.e.x.t
- * @access private
- */
-function googlesitekit_uninstall_plugin() {
-	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
-		return;
-	}
-
-	do_action( 'googlesitekit_uninstallation' );
-}
-register_uninstall_hook( __FILE__, 'googlesitekit_uninstall_plugin' );
-
-/**
  * Resets opcache if possible.
  *
  * @since 1.3.0
