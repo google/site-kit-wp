@@ -27,7 +27,6 @@ import classnames from 'classnames';
  */
 import { sprintf, __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -43,17 +42,24 @@ import data from '../components/data';
 import ModuleIcon from '../components/module-icon';
 import Spinner from './Spinner';
 import Link from './Link';
-import ModuleSettingsWarning from '../components/notifications/module-settings-warning';
 import GenericError from '../components/notifications/generic-error';
+import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import Data from 'googlesitekit-data';
+import ErrorIcon from '../../svg/error.svg';
+
+const { useSelect } = Data;
 
 export default function SetupModule( {
 	slug,
 	name,
 	description,
 	active,
-	showLink,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
+
+	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug ) ) || true; // @TODO 2130
+
+	console.log( canActivateModule ); // eslint-disable-line no-console
 
 	const activateOrDeactivate = async () => {
 		try {
@@ -80,6 +86,7 @@ export default function SetupModule( {
 
 	let blockedByParentModule = false;
 	let parentModule;
+	console.log( parentModule ); // eslint-disable-line no-console
 
 	const modules = getModulesData();
 
@@ -94,6 +101,9 @@ export default function SetupModule( {
 			}
 		} );
 	}
+
+	const hasErrorMessage = true;
+	const errorMessage = __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' );
 
 	return (
 		<div
@@ -120,34 +130,30 @@ export default function SetupModule( {
 				{ description }
 			</p>
 
-			<ModuleSettingsWarning slug={ slug } context="modules-list" />
-
-			{ applyFilters( 'googlesitekit.SetupModuleShowLink', showLink, slug ) &&
-				<p className="googlesitekit-settings-connect-module__cta">
-					<Link
-						onClick={ activateOrDeactivate }
-						href=""
-						inherit
-						disabled={ blockedByParentModule }
-						arrow
-					>
-						{
-							! blockedByParentModule
-								? sprintf(
-								/* translators: %s: module name */
-									__( 'Set up %s', 'google-site-kit' ),
-									name
-								)
-								: sprintf(
-								/* translators: 1: required module name 2: module name */
-									__( 'Set up %1$s to gain access to %2$s', 'google-site-kit' ),
-									parentModule,
-									name
-								)
-						}
-					</Link>
-				</p>
+			{ hasErrorMessage &&
+				<div
+					className={ classnames( 'googlesitekit-settings-module-warning' ) } >
+					<ErrorIcon height="20" width="23" /> { errorMessage }
+				</div>
 			}
+
+			<p className="googlesitekit-settings-connect-module__cta">
+				<Link
+					onClick={ activateOrDeactivate }
+					href=""
+					inherit
+					disabled={ ! canActivateModule }
+					arrow
+				>
+					{
+						sprintf(
+							/* translators: %s: module name */
+							__( 'Set up %s', 'google-site-kit' ),
+							name
+						)
+					}
+				</Link>
+			</p>
 		</div>
 	);
 }
