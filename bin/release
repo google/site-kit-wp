@@ -112,6 +112,7 @@ async function makeRelease() {
 	await Promise.all( [
 		cp( 'readme.txt' ),
 		cp( 'google-site-kit.php' ),
+		cp( 'uninstall.php' ),
 		cp( 'dist/assets' ),
 		cp( 'includes' ),
 		cp( 'third-party' ),

@@ -54,7 +54,6 @@ function googlesitekit_activate_plugin( $network_wide ) {
 
 	do_action( 'googlesitekit_activation', $network_wide );
 }
-
 register_activation_hook( __FILE__, 'googlesitekit_activate_plugin' );
 
 /**
@@ -76,7 +75,6 @@ function googlesitekit_deactivate_plugin( $network_wide ) {
 
 	do_action( 'googlesitekit_deactivation', $network_wide );
 }
-
 register_deactivation_hook( __FILE__, 'googlesitekit_deactivate_plugin' );
 
 /**

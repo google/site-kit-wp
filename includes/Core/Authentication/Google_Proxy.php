@@ -27,6 +27,7 @@ class Google_Proxy {
 	const OAUTH2_REVOKE_URI       = '/o/oauth2/revoke/';
 	const OAUTH2_TOKEN_URI        = '/o/oauth2/token/';
 	const OAUTH2_AUTH_URI         = '/o/oauth2/auth/';
+	const OAUTH2_DELETE_SITE_URI  = '/o/oauth2/delete-site/';
 	const SETUP_URI               = '/site-management/setup/';
 	const PERMISSIONS_URI         = '/site-management/permissions/';
 	const USER_INPUT_SETTINGS_URI = '/settings/';
@@ -112,6 +113,50 @@ class Google_Proxy {
 		return array(
 			'user_roles' => implode( ',', $user_roles ),
 		);
+	}
+
+	/**
+	 * Unregisters the site on the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 * @return array Response data.
+	 *
+	 * @throws Exception Thrown when the request resulted in an error response,
+	 *                   or when credentials are not set.
+	 */
+	public function unregister_site( Credentials $credentials ) {
+		if ( ! $credentials->has() ) {
+			throw new Exception( 'oauth_credentials_not_exist' );
+		}
+
+		$creds = $credentials->get();
+
+		$response = wp_remote_post(
+			$this->url( self::OAUTH2_DELETE_SITE_URI ),
+			array(
+				'body' => array(
+					'site_id'     => $creds['oauth2_client_id'],
+					'site_secret' => $creds['oauth2_client_secret'],
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			throw new Exception( $response->get_error_code() );
+		}
+
+		$raw_body      = wp_remote_retrieve_body( $response );
+		$response_data = json_decode( $raw_body, true );
+
+		if ( ! $response_data || isset( $response_data['error'] ) ) {
+			throw new Exception(
+				isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response'
+			);
+		}
+
+		return $response_data;
 	}
 
 	/**
