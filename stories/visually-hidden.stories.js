@@ -1,5 +1,5 @@
 /**
- * DisplaySetting component.
+ * VisuallyHidden stories.
  *
  * Google Site Kit, Copyright 2020 Google LLC
  *
