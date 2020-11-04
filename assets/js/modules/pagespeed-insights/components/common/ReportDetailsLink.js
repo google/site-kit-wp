@@ -46,7 +46,6 @@ export default function ReportDetailsLink() {
 					),
 					{
 						a: <Link
-							key="link"
 							href={ pagespeedInsightsURL }
 							external
 						/>,
