@@ -23,9 +23,9 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 	 * @since 1.3.0
 	 *
 	 * @param {string} category The category of the event.
-	 * @param {string} action   The value that will appear as the event action in Google Analytics Event reports.
-	 * @param {string} [label]  The label of the event. Optional.
-	 * @param {number} [value]  A non-negative integer that will appear as the event value. Optional.
+	 * @param {string} action   The action name of the event.
+	 * @param {string} [label]  Optional. The label of the event.
+	 * @param {number} [value]  Optional. A non-negative integer that will appear as the event value.
 	 * @return {Promise} Promise that always resolves.
 	 */
 	return async function trackEvent( category, action, label, value ) {
