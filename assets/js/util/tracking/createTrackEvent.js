@@ -22,13 +22,13 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 	 *
 	 * @since 1.3.0
 	 *
-	 * @param {string} eventCategory The event category. Required.
-	 * @param {string} eventName     The event category. Required.
-	 * @param {string} eventLabel    The event category. Optional.
-	 * @param {string} eventValue    The event category. Optional.
+	 * @param {string} category The category of the event.
+	 * @param {string} action   The value that will appear as the event action in Google Analytics Event reports.
+	 * @param {string} [label]  The label of the event. Optional.
+	 * @param {number} [value]  A non-negative integer that will appear as the event value. Optional.
 	 * @return {Promise} Promise that always resolves.
 	 */
-	return async function trackEvent( eventCategory, eventName, eventLabel = '', eventValue = '' ) {
+	return async function trackEvent( category, action, label, value ) {
 		const {
 			isFirstAdmin,
 			referenceSiteURL,
@@ -48,9 +48,9 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 
 		const eventData = {
 			send_to: trackingID,
-			event_category: eventCategory,
-			event_label: eventLabel,
-			value: eventValue,
+			event_category: category,
+			event_label: label,
+			value,
 			dimension1: referenceSiteURL,
 			dimension2: isFirstAdmin ? 'true' : 'false',
 			dimension3: userIDHash,
@@ -63,11 +63,11 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 			// tracking should not result in user-facing errors. It will just
 			// trigger a console warning.
 			const failTimeout = setTimeout( () => {
-				global.console.warn( `Tracking event "${ eventName }" (category "${ eventCategory }") took too long to fire.` );
+				global.console.warn( `Tracking event "${ action }" (category "${ category }") took too long to fire.` );
 				resolve();
 			}, 1000 );
 
-			dataLayerPush( 'event', eventName, {
+			dataLayerPush( 'event', action, {
 				...eventData,
 				event_callback: () => {
 					clearTimeout( failTimeout );
