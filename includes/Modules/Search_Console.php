@@ -277,7 +277,7 @@ final class Search_Console extends Module
 				return $this->get_webmasters_service()->sites->listSites();
 		}
 
-		throw new Invalid_Datapoint_Exception();
+		return parent::create_data_request( $data );
 	}
 
 	/**
@@ -323,7 +323,7 @@ final class Search_Console extends Module
 				return $this->map_sites( (array) $response->getSiteEntry() );
 		}
 
-		return $response;
+		return parent::parse_data_response( $data, $response );
 	}
 
 	/**

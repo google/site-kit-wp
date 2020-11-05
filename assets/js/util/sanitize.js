@@ -12,7 +12,7 @@ export const sanitizeHTML = ( unsafeHTML, domPurifyConfig = {} ) => {
 /**
  * Takes a string, removes the trailing stash if any and returns it.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  * @private
  *
  * @param {string} string A string with or without trailing slash.
