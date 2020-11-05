@@ -1,5 +1,5 @@
 /**
- * `modules/optimize` data store
+ * `modules/adsense` base data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,17 +19,24 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
-import baseModuleStore from './base';
-import service from './service';
+import { validateCanSubmitChanges } from './settings';
 
-const store = Data.combineStores(
-	baseModuleStore,
-	service,
-);
+const baseModuleStore = Modules.createModuleStore( 'adsense', {
+	storeName: STORE_NAME,
+	settingSlugs: [
+		'accountID',
+		'clientID',
+		'useSnippet',
+		'accountStatus',
+		'siteStatus',
+		'accountSetupComplete',
+		'siteSetupComplete',
+		'ownerID',
+	],
+	adminPage: 'googlesitekit-module-adsense',
+	validateCanSubmitChanges,
+} );
 
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
-
-export default store;
+export default baseModuleStore;
