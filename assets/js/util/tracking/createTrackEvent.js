@@ -50,7 +50,7 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 			send_to: trackingID,
 			event_category: eventCategory,
 			event_label: eventLabel,
-			event_value: eventValue,
+			value: eventValue,
 			dimension1: referenceSiteURL,
 			dimension2: isFirstAdmin ? 'true' : 'false',
 			dimension3: userIDHash,
