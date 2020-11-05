@@ -37,6 +37,7 @@ const { createRegistrySelector } = Data;
 const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
+const RECEIVE_USER_INPUT_STATE = 'RECEIVE_USER_INPUT_STATE';
 
 const initialState = {
 	connectURL: undefined,
@@ -110,6 +111,23 @@ export const actions = {
 			type: RECEIVE_USER_IS_VERIFIED,
 		};
 	},
+
+	/**
+	 * Stores the user input state in the datastore.
+	 *
+	 * @since 1.20.0
+	 * @private
+	 *
+	 * @param {Object} userInputState User input state.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveUserInputState( userInputState ) {
+		invariant( userInputState, 'userInputState is required.' );
+		return {
+			payload: { userInputState },
+			type: RECEIVE_USER_INPUT_STATE,
+		};
+	},
 };
 
 export const controls = {};
@@ -135,6 +153,13 @@ export const reducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				verified,
+			};
+		}
+		case RECEIVE_USER_INPUT_STATE: {
+			const { userInputState } = payload;
+			return {
+				...state,
+				userInputState,
 			};
 		}
 		default: {
@@ -188,6 +213,21 @@ export const resolvers = {
 		}
 		const { verified } = global._googlesitekitUserData;
 		yield actions.receiveUserIsVerified( verified );
+	},
+
+	*getUserInputState() {
+		const { select } = yield Data.commonActions.getRegistry();
+
+		if ( select( STORE_NAME ).getUserInputState() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitUserData ) {
+			global.console.error( 'Could not load core/user info.' );
+			return;
+		}
+		const { userInputState } = global._googlesitekitUserData;
+		yield actions.receiveUserInputState( userInputState );
 	},
 };
 
@@ -318,6 +358,19 @@ export const selectors = {
 	isVerified( state ) {
 		const { verified } = state;
 		return verified;
+	},
+
+	/**
+	 * Gets the user input state.
+	 *
+	 * @since 1.20.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} The user input state.
+	 */
+	getUserInputState( state ) {
+		const { userInputState } = state;
+		return userInputState;
 	},
 
 };

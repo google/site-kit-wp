@@ -699,7 +699,7 @@ final class AdSense extends Module
 				};
 		}
 
-		throw new Invalid_Datapoint_Exception();
+		return parent::create_data_request( $data );
 	}
 
 	/**
@@ -734,7 +734,7 @@ final class AdSense extends Module
 				return $response;
 		}
 
-		return $response;
+		return parent::parse_data_response( $data, $response );
 	}
 
 	/**

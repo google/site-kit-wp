@@ -30,7 +30,7 @@ export const USER_INPUT_QUESTION_SEARCH_TERMS = 'searchTerms';
 /**
  * Gets available answers for user input settings.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  * @private
  *
  * @return {Object} Answers object.
