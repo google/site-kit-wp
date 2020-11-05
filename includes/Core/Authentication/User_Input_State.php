@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class representing user_input_state for the user.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  * @access private
  * @ignore
  */
@@ -44,7 +44,7 @@ final class User_Input_State extends User_Setting {
 	/**
 	 * Sets the value of the setting with the given value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param string $value Setting value. One of 'required', 'missing', 'completed' or ''.
 	 * @return bool True on success, false on failure or if value is not a valid string.
