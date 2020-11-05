@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useInstanceId as useInstanceID } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,6 +33,7 @@ import personSitImage from '../../../images/person-sit.png';
 const { useSelect } = Data;
 
 export default function UserInputSettings() {
+	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 	const userInputState = useSelect( ( select ) => select( CORE_USER ).getUserInputState() );
 
@@ -41,7 +43,7 @@ export default function UserInputSettings() {
 
 	return (
 		<Notification
-			id="user-input-settings-notification"
+			id={ `user-input-settings-notification-${ instanceID }` }
 			title={ __( 'Customize Site Kit to match your goals', 'google-site-kit' ) }
 			description={ __( "Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site's goals", 'google-site-kit' ) }
 			handleDismiss={ () => {} }
