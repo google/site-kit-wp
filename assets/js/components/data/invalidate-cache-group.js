@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { getStorage } from '../../util/storage';
-import { getCacheKey, lazilySetupLocalCache } from './cache';
+import { getCacheKey, lazilySetupLocalCache, STORAGE_KEY_PREFIX } from './cache';
 
 /**
  * Invalidates all caches associated with a specific cache group.
@@ -43,7 +43,7 @@ export const invalidateCacheGroup = ( type, identifier, datapoint ) => {
 	} );
 
 	Object.keys( getStorage() ).forEach( ( key ) => {
-		if ( 0 === key.indexOf( `googlesitekit_${ groupPrefix }::` ) || key === `googlesitekit_${ groupPrefix }` ) {
+		if ( 0 === key.indexOf( `${ STORAGE_KEY_PREFIX }${ groupPrefix }::` ) || key === `${ STORAGE_KEY_PREFIX }${ groupPrefix }` ) {
 			getStorage().removeItem( key );
 		}
 	} );
