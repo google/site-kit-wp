@@ -68,7 +68,7 @@ final class Authentication {
 	/**
 	 * User_Input_State object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @var User_Input_State
 	 */
@@ -77,7 +77,7 @@ final class Authentication {
 	/**
 	 * User_Input_Settings
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @var User_Input_Settings
 	 */
@@ -1206,7 +1206,7 @@ final class Authentication {
 	/**
 	 * Verifies the user input settings
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 */
 	private function verify_user_input_settings() {
 		if (
