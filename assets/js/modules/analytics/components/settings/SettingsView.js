@@ -31,6 +31,7 @@ import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/sit
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { ExistingTagError, ExistingTagNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -87,14 +88,12 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<a
-						className="googlesitekit-cta-link googlesitekit-cta-link--external"
+					<Link
 						href={ editViewSettingsURL }
-						target="_blank"
-						rel="noopener noreferrer"
+						external
 					>
 						{ __( 'You can make changes to this view (e.g. exclude URL query parameters) in Google Analytics', 'google-site-kit' ) }
-					</a>
+					</Link>
 				</div>
 			</div>
 

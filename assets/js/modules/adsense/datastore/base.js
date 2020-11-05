@@ -1,5 +1,5 @@
 /**
- * Jest custom matchers for use in E2E tests.
+ * `modules/adsense` base data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,11 +16,27 @@
  * limitations under the License.
  */
 
-// Jest will be extended with all exports from this module automatically.
-export { toBeChecked } from './to-be-checked';
-export { toHaveAdSenseTag } from './to-have-adsense-tag';
-export { toHaveAMPAutoAdsTag } from './to-have-amp-auto-ads-tag';
-export { toHaveTracking } from './to-have-tracking';
-export { toHaveValidAMPForUser } from './to-have-valid-amp-for-user';
-export { toHaveValidAMPForVisitor } from './to-have-valid-amp-for-visitor';
-export { toHaveValue } from './to-have-value';
+/**
+ * Internal dependencies
+ */
+import Modules from 'googlesitekit-modules';
+import { STORE_NAME } from './constants';
+import { validateCanSubmitChanges } from './settings';
+
+const baseModuleStore = Modules.createModuleStore( 'adsense', {
+	storeName: STORE_NAME,
+	settingSlugs: [
+		'accountID',
+		'clientID',
+		'useSnippet',
+		'accountStatus',
+		'siteStatus',
+		'accountSetupComplete',
+		'siteSetupComplete',
+		'ownerID',
+	],
+	adminPage: 'googlesitekit-module-adsense',
+	validateCanSubmitChanges,
+} );
+
+export default baseModuleStore;

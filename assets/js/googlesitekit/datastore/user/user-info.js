@@ -115,7 +115,7 @@ export const actions = {
 	/**
 	 * Stores the user input state in the datastore.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 * @private
 	 *
 	 * @param {Object} userInputState User input state.
@@ -363,7 +363,7 @@ export const selectors = {
 	/**
 	 * Gets the user input state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The user input state.

@@ -394,7 +394,7 @@ const baseSelectors = {
 	 * Returns a list of modules that depend on this module.
 	 * Returns `undefined` if state is still loading or if said module doesn't exist.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
@@ -426,7 +426,7 @@ const baseSelectors = {
 	 * Returns a list of modules on which this module depends.
 	 * Returns `undefined` if state is still loading or if said module doesn't exist.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.

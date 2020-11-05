@@ -20,46 +20,13 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
-import settings from './settings';
+import baseModuleStore from './base';
 import service from './service';
-
-let baseModuleStore = Modules.createModuleStore( 'optimize', {
-	storeName: STORE_NAME,
-	settingSlugs: [
-		'ampExperimentJSON',
-		'optimizeID',
-		'ownerID',
-	],
-} );
-
-// Rename generated pieces to adhere to our convention.
-baseModuleStore = ( ( { actions, selectors, ...store } ) => {
-	// eslint-disable-next-line sitekit/camelcase-acronyms
-	const { setAmpExperimentJSON, ...restActions } = actions;
-	// eslint-disable-next-line sitekit/camelcase-acronyms
-	const { getAmpExperimentJSON, ...restSelectors } = selectors;
-
-	return {
-		...store,
-		actions: {
-			...restActions,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
-			setAMPExperimentJSON: setAmpExperimentJSON,
-		},
-		selectors: {
-			...restSelectors,
-			// eslint-disable-next-line sitekit/camelcase-acronyms
-			getAMPExperimentJSON: getAmpExperimentJSON,
-		},
-	};
-} )( baseModuleStore );
 
 const store = Data.combineStores(
 	baseModuleStore,
-	settings,
-	service
+	service,
 );
 
 // Register this store on the global registry.
