@@ -66,10 +66,7 @@ Cell.propTypes = {
 	lgStart: PropTypes.number,
 	size: PropTypes.number,
 	className: PropTypes.string,
-	children: PropTypes.oneOfType( [
-		PropTypes.node,
-		PropTypes.arrayOf( PropTypes.node ),
-	] ).isRequired,
+	children: PropTypes.node.isRequired,
 };
 
 Cell.defaultProps = {

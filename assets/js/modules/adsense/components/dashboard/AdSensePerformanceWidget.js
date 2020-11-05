@@ -37,6 +37,8 @@ import DataBlock from '../../../../components/data-block.js';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import { isDataZeroAdSense } from '../../util';
 import withData from '../../../../components/higherorder/withdata';
+import { Cell, Grid, Row } from '../../../../material-components';
+import AdSenseDashboardWidgetOverview from './AdSenseDashboardWidgetOverview';
 
 class AdSensePerformanceWidget extends Component {
 	constructor( props ) {
@@ -110,33 +112,36 @@ class AdSensePerformanceWidget extends Component {
 		] : [];
 
 		return (
-			<section className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					{ dataBlocks.map( ( block, i ) => {
-						return (
-							<div key={ i } className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--align-top
-								mdc-layout-grid__cell--span-2-phone
-								mdc-layout-grid__cell--span-2-tablet
-								mdc-layout-grid__cell--span-3-desktop
-							">
-								<DataBlock
-									stat={ i }
-									className={ block.className }
-									title={ block.title }
-									datapoint={ block.datapoint }
-									change={ block.change }
-									changeDataUnit={ block.changeDataUnit }
-									context={ block.context }
-									selected={ block.selected }
-									handleStatSelection={ block.handleStatSelection }
-								/>
-							</div>
-						);
-					} ) }
-				</div>
-			</section>
+			<div>
+				<Grid>
+					<Row>
+						{ dataBlocks.map( ( block, i ) => {
+							return (
+								<Cell
+									key={ i }
+									className="mdc-layout-grid__cell--align-top"
+									smSize={ 2 }
+									mdSize={ 2 }
+									lgSize={ 3 }
+								>
+									<DataBlock
+										stat={ i }
+										className={ block.className }
+										title={ block.title }
+										datapoint={ block.datapoint }
+										change={ block.change }
+										changeDataUnit={ block.changeDataUnit }
+										context={ block.context }
+										selected={ block.selected }
+										handleStatSelection={ block.handleStatSelection }
+									/>
+								</Cell>
+							);
+						} ) }
+					</Row>
+				</Grid>
+				<AdSenseDashboardWidgetOverview />
+			</div>
 		);
 	}
 }

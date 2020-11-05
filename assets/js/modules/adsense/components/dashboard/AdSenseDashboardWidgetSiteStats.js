@@ -1,5 +1,5 @@
 /**
- * Material UI > Layout > Row component.
+ * AdSenseDashboardWidgetSiteStats component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,25 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-
-export default function Row( { className, children } ) {
-	return (
-		<div className={ classnames( 'mdc-layout-grid__inner', className ) }>
-			{ children }
-		</div>
-	);
+export default function AdSenseDashboardWidgetSiteStats() {
+	return 'AdSenseDashboardWidgetSiteStats';
 }
-
-Row.propTypes = {
-	className: PropTypes.string,
-	children: PropTypes.node.isRequired,
-};
-
-Row.defaultProps = {
-	className: '',
-};
