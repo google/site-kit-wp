@@ -81,23 +81,17 @@ function AcquisitionSources( { data, args } ) {
 			{
 				title: __( 'New Users', 'google-site-kit' ),
 				tooltip: sprintf(
-					/* translators: %s: date range */
-					_n(
-						'Number of new users to visit your page over last %s day',
-						'Number of new users to visit your page over last %s days',
-						currentRange, 'google-site-kit',
-					), currentRange,
+					/* translators: %s: number of days */
+					_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', currentRange, 'google-site-kit', ),
+					currentRange,
 				),
 			},
 			{
 				title: __( 'Sessions', 'google-site-kit' ),
 				tooltip: sprintf(
-					/* translators: %s: date range */
-					_n(
-						'Number of sessions users had on your website over last %s day',
-						'Number of sessions users had on your website over last %s days',
-						currentRange, 'google-site-kit',
-					), currentRange,
+					/* translators: %s: number of days */
+					_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', currentRange, 'google-site-kit', ),
+					currentRange,
 				),
 			},
 			{

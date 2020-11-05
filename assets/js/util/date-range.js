@@ -65,12 +65,9 @@ export function getCurrentDateRangeSlug() {
  */
 export function getAvailableDateRanges() {
 	const label = ( days ) => sprintf(
-		/* translators: %s: Number of days to request data. */
-		_n(
-			'Last %s day',
-			'Last %s days',
-			days, 'google-site-kit',
-		), days,
+		/* translators: %s: number of days */
+		_n( 'Last %s day', 'Last %s days', days, 'google-site-kit', ),
+		days,
 	);
 
 	return {

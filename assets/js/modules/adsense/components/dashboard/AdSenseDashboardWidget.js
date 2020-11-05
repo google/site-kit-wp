@@ -130,7 +130,7 @@ class AdSenseDashboardWidget extends Component {
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
-		const currentDateRange = getCurrentDateRangeDayCount( dateRange );
+		const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 		let moduleStatus;
 		let moduleStatusText;
@@ -209,12 +209,9 @@ class AdSenseDashboardWidget extends Component {
 								<Layout
 									header
 									title={ sprintf(
-										/* translators: %s: date range */
-										_n(
-											'Performance over the last %s day',
-											'Performance over the last %s days',
-											currentDateRange, 'google-site-kit'
-										), currentDateRange
+										/* translators: %s: number of days */
+										_n( 'Performance over the last %s day', 'Performance over the last %s days', currentDayCount, 'google-site-kit' ),
+										currentDayCount
 									) }
 									headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
 									headerCTALink={ homepage }

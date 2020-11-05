@@ -142,7 +142,7 @@ export default function AnalyticsDashboardWidget() {
 
 	// Hide Analytics data display when we don't have data.
 	const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
-	const currentDateRange = getCurrentDateRangeDayCount( dateRange );
+	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 	return (
 		<Fragment>
@@ -187,12 +187,9 @@ export default function AnalyticsDashboardWidget() {
 							<Layout
 								header
 								title={ sprintf(
-									/* translators: %s: date range */
-									_n(
-										'Audience overview for the last %s day',
-										'Audience overview for the last %s days',
-										currentDateRange, 'google-site-kit',
-									), currentDateRange,
+									/* translators: %s: number of days */
+									_n( 'Audience overview for the last %s day', 'Audience overview for the last %s days', currentDayCount, 'google-site-kit', ),
+									currentDayCount,
 								) }
 								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
@@ -224,12 +221,9 @@ export default function AnalyticsDashboardWidget() {
 								header
 								footer
 								title={ sprintf(
-									/* translators: %s: date range */
-									_n(
-										'Top content over the last %s day',
-										'Top content over the last %s days',
-										currentDateRange, 'google-site-kit',
-									), currentDateRange,
+									/* translators: %s: number of days */
+									_n( 'Top content over the last %s day', 'Top content over the last %s days', currentDayCount, 'google-site-kit', ),
+									currentDayCount,
 								) }
 								headerCTALink={ topContentServiceURL }
 								headerCTALabel={ sprintf(
@@ -252,12 +246,9 @@ export default function AnalyticsDashboardWidget() {
 								header
 								footer
 								title={ sprintf(
-									/* translators: %s: date range */
-									_n(
-										'Top acquisition channels over the last %s day',
-										'Top acquisition channels over the last %s days',
-										currentDateRange, 'google-site-kit',
-									), currentDateRange,
+									/* translators: %s: number of days */
+									_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', currentDayCount, 'google-site-kit', ),
+									currentDayCount,
 								) }
 								headerCTALink={ topAcquisitionServiceURL }
 								headerCTALabel={ sprintf(

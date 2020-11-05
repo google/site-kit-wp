@@ -161,7 +161,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 
 	// Hide AdSense data display when we don't have data.
 	const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
-	const currentDateRange = getCurrentDateRangeDayCount( dateRange );
+	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 	return (
 		<Fragment>
@@ -206,12 +206,9 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 							<Layout
 								header
 								title={ sprintf(
-									/* translators: %s: date range */
-									_n(
-										'Overview for the last %s day',
-										'Overview for the last %s days',
-										currentDateRange, 'google-site-kit',
-									), currentDateRange,
+									/* translators: %s: number of days */
+									_n( 'Overview for the last %s day', 'Overview for the last %s days', currentDayCount, 'google-site-kit', ),
+									currentDayCount,
 								) }
 								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
@@ -235,14 +232,11 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 							wrapperClass
 						) }>
 							<Layout
-								/* translators: %s: date range */
+								/* translators: %s: number of days */
 								title={ sprintf(
-									/* translators: %s: date range */
-									_n(
-										'Top search queries over the last %s day',
-										'Top search queries over last %s days',
-										currentDateRange, 'google-site-kit',
-									), currentDateRange,
+									/* translators: %s: number of days */
+									_n( 'Top search queries over the last %s day', 'Top search queries over last %s days', currentDayCount, 'google-site-kit', ),
+									currentDayCount,
 								) }
 								header
 								footer

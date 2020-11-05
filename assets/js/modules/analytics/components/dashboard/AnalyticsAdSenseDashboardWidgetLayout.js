@@ -34,18 +34,15 @@ const { useSelect } = Data;
 const AnalyticsAdSenseDashboardWidgetLayout = ( { children } ) => {
 	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteURL() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const currentDateRange = getCurrentDateRangeDayCount( dateRange );
+	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 	return (
 		<Layout
 			header
 			title={ sprintf(
-				/* translators: %s: date range */
-				_n(
-					'Performance by page over the last %s day',
-					'Performance by page over the last %s days',
-					currentDateRange, 'google-site-kit',
-				), currentDateRange,
+				/* translators: %s: number of days */
+				_n( 'Performance by page over the last %s day', 'Performance by page over the last %s days', currentDayCount, 'google-site-kit', ),
+				currentDayCount,
 			) }
 			headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
 			headerCTALink={ accountSiteURL }>
