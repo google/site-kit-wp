@@ -230,7 +230,7 @@ class AdSenseTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider amp_auto_ads_tag_in_the_loop_provider
+	 * @dataProvider data_amp_auto_ads_tag_in_the_loop
 	 * @param Context $context
 	 */
 	public function test_amp_auto_ads_tag_in_the_loop( $context ) {
@@ -252,12 +252,12 @@ class AdSenseTest extends TestCase {
 		global $wp_query;
 		$wp_query->in_the_loop = true;
 
-		// Confirm that the tag is added if we're not in the loop.
+		// Confirm that the tag is added when in the loop.
 		$output = apply_filters( 'the_content', 'test content' );
 		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
 	}
 
-	public function amp_auto_ads_tag_in_the_loop_provider() {
+	public function data_amp_auto_ads_tag_in_the_loop() {
 		return array(
 			'primary'   => array(
 				$this->get_amp_primary_context(),
