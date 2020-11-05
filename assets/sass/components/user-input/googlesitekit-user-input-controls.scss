@@ -18,76 +18,97 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-user-input {
+	.googlesitekit-user-input__buttons {
+		display: flex;
+		justify-content: flex-end;
+		margin: 42px 0 0;
 
-		&__buttons {
-			display: flex;
-			justify-content: flex-end;
+		button {
+			border: 2px solid $c-mercury;
+			height: auto;
+			letter-spacing: normal;
+			margin-left: 20px;
+			padding: 10px 33px;
+			text-transform: none;
 
-			& button {
-				border: 2px solid $c-mercury;
-				margin-left: 1rem;
-				padding: 0 1.5rem;
+			@include responsive-text("body1", "body3");
 
-				&.mdc-button--raised {
-					border: none;
-				}
+			&.mdc-button--raised {
+				border: none;
+			}
+		}
+	}
+
+	.googlesitekit-user-input__select-options {
+		margin: 0 0 20px;
+	}
+
+	.googlesitekit-user-input__select-option {
+		align-items: center;
+		border-bottom: 1px solid $c-mercury;
+		display: flex;
+		padding: 20px 0;
+
+		.mdc-text-field {
+			background-color: transparent;
+			height: 36px;
+			margin-left: 1rem;
+
+			input {
+				border: none;
+				padding: 0;
 			}
 		}
 
-		&__select-option {
-			align-items: center;
-			border-bottom: 1px solid $c-mercury;
-			display: flex;
-			padding: 15px;
+		label {
+			color: $c-user-input-options;
 
-			& .mdc-text-field {
-				background-color: transparent;
-				height: 36px;
-				margin-left: 1rem;
-
-				input {
-					border: none;
-					padding: 0;
-				}
-			}
+			@include responsive-text("body1", "body3");
 		}
 
-		&__text-options {
-			border: 2px solid $c-jumbo;
-			border-radius: 5px;
-			display: flex;
-			margin-top: 13px;
-			padding: 8px;
+		.mdc-checkbox--disabled,
+		.mdc-checkbox--disabled + label {
+			opacity: 0.25;
+		}
+	}
 
-			& .mdc-text-field {
-				background-color: transparent;
-				height: 40px;
+	.googlesitekit-user-input__text-options {
+		border: 2px solid $c-jumbo;
+		border-radius: 4px;
+		display: flex;
+		height: 56px;
+		margin-top: 13px;
+		padding: 12px;
 
-				& input {
-					border: none;
-					padding: 0;
-				}
-			}
+		.mdc-text-field {
+			height: 32px;
+			width: 100%;
 		}
 
-		&__text-option {
-			align-items: center;
-			background-color: $c-solitude;
+		.mdc-text-field__input {
+			background-color: $c-white;
+			border: none;
+			margin: 0;
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-user-input__text-option {
+		align-items: center;
+		background-color: $c-solitude;
+		border-radius: 100px;
+		color: $c-denim;
+		display: flex;
+		font-weight: 500;
+		margin-right: 12px;
+		padding: 3px 3px 3px 12px;
+		white-space: nowrap;
+
+		button {
 			border-radius: 100px;
-			color: $c-denim;
-			display: flex;
-			font-weight: 500;
-			margin-right: 12px;
-			padding: 3px 3px 3px 12px;
-			white-space: nowrap;
-
-			& button {
-				border-radius: 100px;
-				margin: 0;
-				min-width: 0;
-				padding: 0 12px;
-			}
+			margin: 0;
+			min-width: 0;
+			padding: 0 12px;
 		}
 	}
 }
