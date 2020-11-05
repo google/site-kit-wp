@@ -11,7 +11,7 @@ import { removeAllFilters } from '@wordpress/hooks';
  * Internal dependencies
  */
 import AnalyticsIcon from '../assets/svg/analytics.svg';
-import PageHeader from '../assets/js/components/page-header';
+import PageHeader from '../assets/js/components/PageHeader';
 
 storiesOf( 'Global', module )
 	.add( 'Page Headers', () => {

@@ -30,7 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Header from '../components/header';
+import Header from './Header';
 import Button from '../components/button';
 import Layout from '../components/layout/layout';
 import data, { TYPE_CORE } from '../components/data';
