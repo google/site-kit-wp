@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SettingsNotice, { TYPE_INFO } from '../../../../components/settings-notice';
+import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
 
 export default function GA4Notice() {

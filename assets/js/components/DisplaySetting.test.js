@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import DisplaySetting from './display-setting';
+import DisplaySetting from './DisplaySetting';
 import { render } from '../../../tests/js/test-utils';
 
 describe( 'DisplaySetting', () => {
