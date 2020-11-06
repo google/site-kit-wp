@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { withFilters } from '@wordpress/components';
@@ -38,7 +33,6 @@ import Alert from '../../../../components/alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import ProgressBar from '../../../../components/ProgressBar';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
 import HelpLink from '../../../../components/HelpLink';
@@ -48,6 +42,7 @@ import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { getCurrentDateRange } from '../../../../util/date-range';
+import { Cell, Grid, Row } from '../../../../material-components';
 
 const { withSelect } = Data;
 
@@ -61,7 +56,6 @@ class AdSenseDashboardWidget extends Component {
 			receivingData: true,
 			error: false,
 			zeroData: false,
-			loading: true,
 		};
 		this.handleDataError = this.handleDataError.bind( this );
 		this.handleDataSuccess = this.handleDataSuccess.bind( this );
@@ -88,7 +82,6 @@ class AdSenseDashboardWidget extends Component {
 			receivingData: false,
 			error,
 			errorObj,
-			loading: false,
 		} );
 	}
 
@@ -99,7 +92,6 @@ class AdSenseDashboardWidget extends Component {
 		this.setState( {
 			receivingData: true,
 			error: false,
-			loading: false,
 			zeroData: false,
 		} );
 	}
@@ -110,7 +102,6 @@ class AdSenseDashboardWidget extends Component {
 	handleZeroData() {
 		this.setState( {
 			zeroData: true,
-			loading: false,
 		} );
 	}
 
@@ -121,7 +112,6 @@ class AdSenseDashboardWidget extends Component {
 			receivingData,
 			error,
 			errorObj,
-			loading,
 			zeroData,
 		} = this.state;
 
@@ -129,7 +119,7 @@ class AdSenseDashboardWidget extends Component {
 		const { homepage } = modulesData.adsense;
 
 		// Hide AdSense data display when we don't have data.
-		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
+		const wrapperClass = ( ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
 		const currentDateRange = getCurrentDateRange( dateRange );
 
 		let moduleStatus;
@@ -158,12 +148,9 @@ class AdSenseDashboardWidget extends Component {
 				</div>
 
 				<div className="googlesitekit-module-page googlesitekit-module-page--adsense">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-							">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
 								<PageHeader
 									title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
 									icon={
@@ -178,34 +165,26 @@ class AdSenseDashboardWidget extends Component {
 								>
 									<PageHeaderDateRange />
 								</PageHeader>
-								{ loading && <ProgressBar /> }
-							</div>
+							</Cell>
+
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 							{ zeroData &&
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-12
-								">
+								<Cell size={ 12 }>
 									<Layout fill>
 										<AdSenseDashboardZeroData />
 									</Layout>
-								</div>
+								</Cell>
 							}
+
 							{ ! receivingData && (
 								error ? getDataErrorComponent( 'adsense', error, true, true, true, errorObj ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
-							<div className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12',
-								wrapperClass
-							) }>
+
+							<Cell className={ wrapperClass } size={ 12 }>
 								<ModuleSettingsWarning slug="adsense" context="module-dashboard" />
-							</div>
-							<div className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12',
-								wrapperClass
-							) }>
+							</Cell>
+
+							<Cell className={ wrapperClass } size={ 12 }>
 								<Layout
 									header
 									/* translators: %s: date range */
@@ -225,23 +204,17 @@ class AdSenseDashboardWidget extends Component {
 										handleDataSuccess={ this.handleDataSuccess }
 									/>
 								</Layout>
-							</div>
-							<div className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12',
-								wrapperClass
-							) }>
+							</Cell>
+
+							<Cell className={ wrapperClass } size={ 12 }>
 								<DashboardAdSenseTopPages />
-							</div>
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								mdc-layout-grid__cell--align-right
-							">
+							</Cell>
+
+							<Cell className="mdc-layout-grid__cell--align-right" size={ 12 }>
 								<HelpLink />
-							</div>
-						</div>
-					</div>
+							</Cell>
+						</Row>
+					</Grid>
 				</div>
 			</Fragment>
 		);
