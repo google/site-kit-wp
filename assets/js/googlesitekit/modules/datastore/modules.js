@@ -333,11 +333,9 @@ const baseReducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_CHECK_REQUIREMENTS_ERROR: {
-			const { errorMap } = payload;
-
 			const checkRequirementsResults = { ...state.checkRequirementsResults };
 
-			for ( const [ slug, error ] of Object.entries( errorMap ) ) {
+			for ( const [ slug, error ] of Object.entries( payload ) ) {
 				checkRequirementsResults[ slug ] = error;
 			}
 
@@ -380,25 +378,31 @@ const baseResolvers = {
 		const module = registry.select( STORE_NAME ).getModule( slug );
 
 		const inactiveModules = [];
+
 		module.dependencies.forEach( ( dependencySlug ) => {
 			const dependedentModule = registry.select( STORE_NAME ).getModule( dependencySlug );
 			if ( ! dependedentModule.active ) {
 				inactiveModules.push( dependedentModule.name );
 			}
 		} );
-		const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
-		const checkResult = yield module.checkRequirements();
+
+		// If we have inactive dependencies, there's no need to check if we can
+		// activate the module until the dependencies have been activated.
 		if ( inactiveModules.length ) {
+			const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
+
 			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
 			const errorMessage = sprintf( __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' ), formatter.format( inactiveModules ), module.name );
-			console.log( errorMessage ); // eslint-disable-line no-console
-			// @TODO: What do we do with this errorMessage?
-		}
 
-		if ( checkResult === true ) {
-			yield baseActions.receiveCheckRequirementsSuccess( slug );
+			yield baseActions.receiveCheckRequirementsError( { [ slug ]: errorMessage } );
 		} else {
-			yield baseActions.receiveCheckRequirementsError( checkResult );
+			const checkResult = yield module.checkRequirements();
+
+			if ( checkResult === true ) {
+				yield baseActions.receiveCheckRequirementsSuccess( slug );
+			} else {
+				yield baseActions.receiveCheckRequirementsError( checkResult );
+			}
 		}
 	},
 };
@@ -640,6 +644,7 @@ const baseSelectors = {
 
 	canActivateModule( state, slug ) {
 		const moduleRequirements = state.checkRequirementsResults?.[slug];
+
 		if ( moduleRequirements === undefined ) {
 			return undefined;
 		}
