@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Switch from '../../../../components/Switch';
-import SettingsNotice from '../../../../components/settings-notice';
+import SettingsNotice from '../../../../components/SettingsNotice';
 import { trackEvent } from '../../../../util';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;

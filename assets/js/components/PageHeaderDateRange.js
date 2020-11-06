@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import DateRangeSelector from './date-range-selector';
+import DateRangeSelector from './DateRangeSelector';
 
 export default function PageHeaderDateRange() {
 	return (

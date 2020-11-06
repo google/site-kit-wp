@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/display-setting';
+import DisplaySetting from '../../../../components/DisplaySetting';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from '../../datastore/constants';
 import {

@@ -35,7 +35,7 @@ import { getQueryArg } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import PersonWalking from '../../../svg/person-walking.svg';
 import { trackEvent } from '../../util';
-import Header from '../header';
+import Header from '../Header';
 import Button from '../Button';
 import ResetButton from '../reset-button';
 import Layout from '../layout/layout';

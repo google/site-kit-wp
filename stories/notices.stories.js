@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import SettingsNotice, { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from '../assets/js/components/settings-notice';
+import SettingsNotice, { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from '../assets/js/components/SettingsNotice';
 
 storiesOf( 'Global/Notices', module )
 	.add( 'Settings warning notice', () => (

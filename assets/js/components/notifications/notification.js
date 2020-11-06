@@ -38,7 +38,7 @@ import Button from '../Button';
 import Warning from '../notifications/warning';
 import Error from '../notifications/error';
 import Link from '../Link';
-import ModuleIcon from '../module-icon';
+import ModuleIcon from '../ModuleIcon';
 
 class Notification extends Component {
 	constructor( props ) {
