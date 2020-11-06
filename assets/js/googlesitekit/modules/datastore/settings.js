@@ -40,9 +40,12 @@ export const actions = {
 		invariant( slug, 'slug is required.' );
 		return ( function* () {
 			const registry = yield Data.commonActions.getRegistry();
-			if ( !! registry.dispatch( `modules/${ slug }` )?.submitChanges ) {
-				return registry.dispatch( `modules/${ slug }` ).submitChanges();
+
+			const { submitChanges } = registry.dispatch( `modules/${ slug }` ) || {};
+			if ( !! submitChanges ) {
+				return submitChanges();
 			}
+
 			return { error: `'modules/${ slug }' does not have a submitChanges() action.` };
 		}() );
 	},
