@@ -25,7 +25,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Logo from './logo';
+import Logo from './Logo';
 import UserMenu from './user-menu';
 import ErrorNotification from '../components/notifications/error-notification';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';

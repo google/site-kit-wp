@@ -59,7 +59,7 @@ export const selectors = {
 	/**
 	 * Checks whether the Search Console property is a domain property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.20.0
 	 *
 	 * @return {boolean} True if the propertyID is a search console domain property, otherwise false.
 	 */

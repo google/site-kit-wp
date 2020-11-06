@@ -29,7 +29,7 @@ export const excludedErrorCodes = [
 /**
  * Tracks API errors.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  *
  * @param {Object} args            The request arguments.
  * @param {Object} args.method     The request method.

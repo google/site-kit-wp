@@ -26,9 +26,14 @@ import invariant from 'invariant';
  */
 import Data from 'googlesitekit-data';
 import { createNotificationsStore } from '../data/create-notifications-store';
-import { createSettingsStore } from '../data/create-settings-store';
-import { createInfoStore } from './create-info-store';
+import {
+	createSettingsStore,
+	makeDefaultSubmitChanges,
+	makeDefaultCanSubmitChanges,
+} from '../data/create-settings-store';
 import { createErrorStore } from '../data/create-error-store';
+import { createInfoStore } from './create-info-store';
+import { createSubmitChangesStore } from './create-submit-changes-store';
 
 /**
  * Creates a base store object for a Site Kit module.
@@ -42,13 +47,15 @@ import { createErrorStore } from '../data/create-error-store';
  *
  * @since 1.6.0
  *
- * @param {string}  slug                  Slug of the module that the store is for.
- * @param {Object}  options               Optional. Options to consider for the store.
- * @param {number}  options.storeName     Store name to use. Default is 'modules/{slug}'.
- * @param {Array}   options.settingSlugs  If the module store should support settings, this needs to be a list of the slugs that are part of the module and handled by the module's 'modules/{slug}/data/settings' API endpoint.
- *                                        Default is undefined.
- * @param {string}  options.adminPage     Store admin page. Default is 'googlesitekit-dashboard'.
- * @param {boolean} options.requiresSetup Store flag for requires setup. Default is 'true'.
+ * @param {string}   slug                             Slug of the module that the store is for.
+ * @param {Object}   options                          Optional. Options to consider for the store.
+ * @param {number}   options.storeName                Store name to use. Default is 'modules/{slug}'.
+ * @param {Array}    options.settingSlugs             If the module store should support settings, this needs to be a list of the slugs that are part of the module and handled by the module's 'modules/{slug}/data/settings' API endpoint.
+ *                                                    Default is undefined.
+ * @param {string}   options.adminPage                Store admin page. Default is 'googlesitekit-dashboard'.
+ * @param {boolean}  options.requiresSetup            Store flag for requires setup. Default is 'true'.
+ * @param {Function} options.submitChanges            Optional. Submit settings changes handler.
+ * @param {Function} options.validateCanSubmitChanges Optional. A function to validate whether module settings can be submitted.
  * @return {Object} The base module store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
@@ -57,6 +64,8 @@ export const createModuleStore = ( slug, {
 	settingSlugs = undefined,
 	adminPage = 'googlesitekit-dashboard',
 	requiresSetup = true,
+	submitChanges = undefined,
+	validateCanSubmitChanges = undefined,
 } = {} ) => {
 	invariant( slug, 'slug is required.' );
 
@@ -79,12 +88,19 @@ export const createModuleStore = ( slug, {
 			settingSlugs,
 		} );
 
+		const submitChangesStore = createSubmitChangesStore( {
+			storeName,
+			submitChanges: submitChanges || makeDefaultSubmitChanges( slug, storeName ),
+			validateCanSubmitChanges: validateCanSubmitChanges || makeDefaultCanSubmitChanges( storeName ),
+		} );
+
 		// to prevent duplication errors during combining stores, we don't need to combine
 		// Data.commontStore here since settingsStore already uses commonActions and commonControls
 		// from the Data.commonStore.
 		combinedStore = Data.combineStores(
 			notificationsStore,
 			settingsStore,
+			submitChangesStore,
 			infoStore,
 			createErrorStore(),
 		);
@@ -94,6 +110,11 @@ export const createModuleStore = ( slug, {
 			notificationsStore,
 			infoStore,
 			createErrorStore(),
+			createSubmitChangesStore( {
+				storeName,
+				submitChanges,
+				validateCanSubmitChanges,
+			} ),
 		);
 	}
 

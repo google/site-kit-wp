@@ -52,7 +52,7 @@ describe( 'trackAPIError', () => {
 		expect( eventName ).toEqual( 'test-method:test-type/test-identifier/data/test-datapoint' );
 		expect( eventData.event_category ).toEqual( 'api_error' );
 		expect( eventData.event_label ).toEqual( 'test-error-message (code: test-error-code, reason: test-error-reason)' );
-		expect( eventData.event_value ).toEqual( 'test-error-code' );
+		expect( eventData.value ).toEqual( 'test-error-code' );
 	} );
 
 	it( 'tracks API error message & code with no reason', () => {
@@ -74,7 +74,7 @@ describe( 'trackAPIError', () => {
 		expect( eventName ).toEqual( 'test-method:test-type/test-identifier/data/test-datapoint' );
 		expect( eventData.event_category ).toEqual( 'api_error' );
 		expect( eventData.event_label ).toEqual( 'test-error-message (code: test-error-code)' );
-		expect( eventData.event_value ).toEqual( 'test-error-code' );
+		expect( eventData.value ).toEqual( 'test-error-code' );
 	} );
 
 	it( 'tracks API error message & code with no data', () => {
@@ -94,7 +94,7 @@ describe( 'trackAPIError', () => {
 		expect( eventName ).toEqual( 'test-method:test-type/test-identifier/data/test-datapoint' );
 		expect( eventData.event_category ).toEqual( 'api_error' );
 		expect( eventData.event_label ).toEqual( 'test-error-message (code: test-error-code)' );
-		expect( eventData.event_value ).toEqual( 'test-error-code' );
+		expect( eventData.value ).toEqual( 'test-error-code' );
 	} );
 
 	it( "doesn't track excluded error codes", () => {
