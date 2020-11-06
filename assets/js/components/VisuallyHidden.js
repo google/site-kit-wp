@@ -1,5 +1,5 @@
 /**
- * VisualHidden component.
+ * Visually Hidden component, mainly used for screen-reader text.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
