@@ -77,7 +77,7 @@ export default function SetupModule( {
 		}
 	};
 
-	const canActivateModule = !! useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug ) );
+	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug ) );
 	const requirementsStatus = useSelect( ( select ) => select( CORE_MODULES ).getCheckRequirementsStatus( slug ) );
 	const errorMessage = canActivateModule ? null : requirementsStatus;
 

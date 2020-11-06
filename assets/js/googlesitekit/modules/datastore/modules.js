@@ -377,6 +377,11 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 		const module = registry.select( STORE_NAME ).getModule( slug );
 
+		// Return `undefined` if module hasn't been loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
 		const inactiveModules = [];
 
 		module.dependencies.forEach( ( dependencySlug ) => {
@@ -396,7 +401,7 @@ const baseResolvers = {
 
 			yield baseActions.receiveCheckRequirementsError( { [ slug ]: errorMessage } );
 		} else {
-			const checkResult = yield module.checkRequirements();
+			const checkResult = yield Data.commonActions.await( module.checkRequirements() );
 
 			if ( checkResult === true ) {
 				yield baseActions.receiveCheckRequirementsSuccess( slug );
