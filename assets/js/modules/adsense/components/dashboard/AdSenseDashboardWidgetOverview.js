@@ -19,7 +19,8 @@
 /**
  * External dependencies
  */
-import isUndefined from 'lodash/isUndefined';
+import { isUndefined } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -36,124 +37,139 @@ import { Cell, Grid, Row } from '../../../../material-components';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/notifications/nodata';
 import { readableLargeNumber, changeToPercent, numberFormat } from '../../../../util';
-// import { isDataZeroAdSense } from '../../util';
+import { isDataZeroAdSense } from '../../util';
 const { useSelect } = Data;
 
-export default function AdSenseDashboardWidgetOverview() {
+function getAdSenseDashboardWidgetOverviewReports( select ) {
+	const {
+		startDate,
+		endDate,
+		compareStartDate,
+		compareEndDate,
+	} = select( CORE_USER ).getDateRangeDates( { compare: true } );
+
+	const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ];
+	const currentRangeArgs = { metrics, startDate, endDate };
+	const prevRangeArgs = {
+		metrics,
+		startDate: compareStartDate,
+		endDate: compareEndDate,
+	};
+
+	const error = select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
+		select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] );
+
+	const isLoading = select( STORE_NAME ).isResolving( 'getReport', [ currentRangeArgs ] ) ||
+		select( STORE_NAME ).isResolving( 'getReport', [ prevRangeArgs ] );
+
+	return {
+		currentRangeData: select( STORE_NAME ).getReport( currentRangeArgs ) || {},
+		prevRangeData: select( STORE_NAME ).getReport( prevRangeArgs ) || {},
+		error,
+		isLoading,
+	};
+}
+
+export default function AdSenseDashboardWidgetOverview( { selectedStats, handleStatSelection } ) {
 	const {
 		currentRangeData,
-		currentRangeError,
-		currentRangeLoading,
 		prevRangeData,
-		prevRangeLoading,
-		prevRangeError,
-	} = useSelect( ( select ) => {
-		const {
-			startDate,
-			endDate,
-			compareStartDate,
-			compareEndDate,
-		} = select( CORE_USER ).getDateRangeDates( { compare: true } );
+		error,
+		isLoading,
+	} = useSelect( getAdSenseDashboardWidgetOverviewReports );
 
-		const metrics = [
-			'EARNINGS',
-			'PAGE_VIEWS_RPM',
-			'IMPRESSIONS',
-			'PAGE_VIEWS_CTR',
-		];
-
-		const currentRangeArgs = {
-			metrics,
-			startDate,
-			endDate,
-		};
-
-		const prevRangeArgs = {
-			metrics,
-			startDate: compareStartDate,
-			endDate: compareEndDate,
-		};
-
-		return {
-			currentRangeData: select( STORE_NAME ).getReport( currentRangeArgs ),
-			currentRangeLoading: select( STORE_NAME ).isResolving( 'getReport', [ currentRangeArgs ] ),
-			currentRangeError: select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ),
-			prevRangeData: select( STORE_NAME ).getReport( prevRangeArgs ),
-			prevRangeLoading: select( STORE_NAME ).isResolving( 'getReport', [ prevRangeArgs ] ),
-			prevRangeError: select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] ),
-		};
-	} );
-
-	if ( currentRangeLoading || prevRangeLoading ) {
+	if ( isLoading ) {
 		return <PreviewBlock width="100%" height="250px" />;
 	}
 
-	if ( currentRangeError ) {
-		return getDataErrorComponent( 'adsense', currentRangeError.message, false, false, false, currentRangeError );
+	if ( error ) {
+		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
 	}
 
-	if ( prevRangeError ) {
-		return getDataErrorComponent( 'adsense', prevRangeError.message, false, false, false, prevRangeError );
+	// TODO: rework this to use the new isZeroReport function once https://github.com/google/site-kit-wp/issues/2242 is implemented
+	const dataRequest = { data: { dateRange: 'last-28-days' } };
+	if ( isDataZeroAdSense( currentRangeData, undefined, dataRequest ) ) {
+		return getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true );
 	}
 
-	const dataBlocks = currentRangeData.totals ? [
-		{
-			className: 'googlesitekit-data-block--page-rpm',
-			title: __( 'Earnings', 'google-site-kit' ),
-			datapoint: readableLargeNumber( currentRangeData.totals[ 0 ], currentRangeData.headers[ 0 ]?.currency ),
-			change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 0 ], currentRangeData.totals[ 0 ] ) : 0,
-			changeDataUnit: '%',
-		},
-		{
-			className: 'googlesitekit-data-block--page-rpm',
-			title: __( 'Page RPM', 'google-site-kit' ),
-			datapoint: readableLargeNumber( currentRangeData.totals[ 1 ], currentRangeData.headers[ 1 ]?.currency ),
-			change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 1 ], currentRangeData.totals[ 1 ] ) : 0,
-			changeDataUnit: '%',
-		},
-		{
-			className: 'googlesitekit-data-block--impression',
-			title: __( 'Impressions', 'google-site-kit' ),
-			datapoint: readableLargeNumber( currentRangeData.totals[ 2 ] ),
-			change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 2 ], currentRangeData.totals[ 2 ] ) : 0,
-			changeDataUnit: '%',
-		},
-		{
-			className: 'googlesitekit-data-block--impression',
-			title: __( 'Page CTR', 'google-site-kit' ),
-			/* translators: %s: percentage value. */
-			datapoint: sprintf( _x( ' %1$s%%', 'AdSense performance Page CTA percentage', 'google-site-kit' ), numberFormat( currentRangeData.totals[ 3 ] * 100, { maximumFractionDigits: 2 } ) ),
-			change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 3 ], currentRangeData.totals[ 3 ] ) : 0,
-			changeDataUnit: '%',
-		},
-	] : [];
+	const { totals, headers } = currentRangeData;
+	const { totals: prevTotals } = prevRangeData;
 
 	return (
 		<Grid>
 			<Row>
-				{ dataBlocks.map( ( block, i ) => (
-					<Cell
-						key={ i }
-						className="mdc-layout-grid__cell--align-top"
-						smSize={ 2 }
-						mdSize={ 2 }
-						lgSize={ 3 }
-					>
-						<DataBlock
-							stat={ i }
-							className={ block.className }
-							title={ block.title }
-							datapoint={ block.datapoint }
-							change={ block.change }
-							changeDataUnit={ block.changeDataUnit }
-							context={ block.context }
-							selected={ block.selected }
-							handleStatSelection={ block.handleStatSelection }
-						/>
-					</Cell>
-				) ) }
+				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+					<DataBlock
+						stat={ 0 }
+						className="googlesitekit-data-block--page-rpm"
+						title={ __( 'Earnings', 'google-site-kit' ) }
+						datapoint={ readableLargeNumber( totals[ 0 ], headers[ 0 ]?.currency ) }
+						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 0 ], totals[ 0 ] ) : 0 }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats.includes( 'EARNINGS' ) }
+						handleStatSelection={ handleStatSelection }
+					/>
+				</Cell>
+
+				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+					<DataBlock
+						stat={ 1 }
+						className="googlesitekit-data-block--page-rpm"
+						title={ __( 'Page RPM', 'google-site-kit' ) }
+						datapoint={ readableLargeNumber( totals[ 1 ], headers[ 1 ]?.currency ) }
+						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 1 ], totals[ 1 ] ) : 0 }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats.includes( 'PAGE_VIEWS_RPM' ) }
+						handleStatSelection={ handleStatSelection }
+					/>
+				</Cell>
+
+				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+					<DataBlock
+						stat={ 2 }
+						className="googlesitekit-data-block--impression"
+						title={ __( 'Impressions', 'google-site-kit' ) }
+						datapoint={ readableLargeNumber( totals[ 2 ] ) }
+						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 2 ], totals[ 2 ] ) : 0 }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats.includes( 'IMPRESSIONS' ) }
+						handleStatSelection={ handleStatSelection }
+					/>
+				</Cell>
+
+				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+					<DataBlock
+						stat={ 3 }
+						className="googlesitekit-data-block--impression"
+						title={ __( 'Page CTR', 'google-site-kit' ) }
+						datapoint={ sprintf(
+							/* translators: %s: percentage value. */
+							_x( ' %1$s%%', 'AdSense performance Page CTA percentage', 'google-site-kit' ),
+							numberFormat( totals[ 3 ] * 100, { maximumFractionDigits: 2 } )
+						) }
+						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 3 ], totals[ 3 ] ) : 0 }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats.includes( 'PAGE_VIEWS_CTR' ) }
+						handleStatSelection={ handleStatSelection }
+					/>
+				</Cell>
 			</Row>
 		</Grid>
 	);
 }
+
+AdSenseDashboardWidgetOverview.propTypes = {
+	selectedStats: PropTypes.arrayOf( PropTypes.string ),
+	handleStatSelection: PropTypes.func,
+};
+
+AdSenseDashboardWidgetOverview.defaultProps = {
+	selectedStats: [],
+	handleStatSelection() {},
+};

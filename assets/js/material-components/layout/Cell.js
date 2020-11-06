@@ -25,6 +25,7 @@ import classnames from 'classnames';
 export default function Cell( props ) {
 	const {
 		className,
+		align,
 		smSize,
 		smStart,
 		mdSize,
@@ -40,6 +41,8 @@ export default function Cell( props ) {
 			className,
 			'mdc-layout-grid__cell',
 			{
+				[ `mdc-layout-grid__cell--align-${ align }` ]: align.length > 0,
+
 				[ `mdc-layout-grid__cell--span-${ size }` ]: 12 >= size && size > 0,
 
 				[ `mdc-layout-grid__cell--span-${ lgSize }-desktop` ]: 12 >= lgSize && lgSize > 0,
@@ -65,12 +68,14 @@ Cell.propTypes = {
 	lgSize: PropTypes.number,
 	lgStart: PropTypes.number,
 	size: PropTypes.number,
+	align: PropTypes.string,
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired,
 };
 
 Cell.defaultProps = {
 	className: '',
+	align: '',
 	size: 0,
 	smSize: 0,
 	smStart: 0,
