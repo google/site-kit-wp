@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { isPermissionScopeError } from '../util/errors';
-import ErrorText from '../components/error-text';
+import ErrorText from './ErrorText';
 
 export default function ErrorNotice( { error, shouldDisplayError = () => true } ) {
 	// Do not display if no error, or if the error is for missing scopes.

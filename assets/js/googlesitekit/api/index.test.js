@@ -308,7 +308,7 @@ describe( 'googlesitekit.api', () => {
 				expect( eventName ).toEqual( 'GET:test-type/test-identifier/data/test-datapoint' );
 				expect( eventData.event_category ).toEqual( 'api_error' );
 				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
-				expect( eventData.event_value ).toEqual( 500 );
+				expect( eventData.value ).toEqual( 500 );
 			}
 		} );
 	} );
@@ -491,7 +491,7 @@ describe( 'googlesitekit.api', () => {
 				expect( eventName ).toEqual( 'POST:test-type/test-identifier/data/test-datapoint' );
 				expect( eventData.event_category ).toEqual( 'api_error' );
 				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
-				expect( eventData.event_value ).toEqual( 500 );
+				expect( eventData.value ).toEqual( 500 );
 			}
 		} );
 	} );

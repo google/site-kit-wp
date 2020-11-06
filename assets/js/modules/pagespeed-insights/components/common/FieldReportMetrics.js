@@ -33,7 +33,7 @@ import { __, _x } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import ReportDetailsLink from './ReportDetailsLink';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
-import ErrorText from '../../../../components/error-text';
+import ErrorText from '../../../../components/ErrorText';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {
