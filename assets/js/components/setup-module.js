@@ -35,7 +35,6 @@ import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
-	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
@@ -57,13 +56,8 @@ export default function SetupModule( {
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug ) ) || true; // @TODO 2130
-
-	console.log( canActivateModule ); // eslint-disable-line no-console
-
 	const activateOrDeactivate = async () => {
 		try {
-			// this.setState( { isSaving: true } );
 			setIsSaving( true );
 			await activateOrDeactivateModule( data, slug, ! active );
 
@@ -79,38 +73,20 @@ export default function SetupModule( {
 				format: 'small',
 				type: 'win-error',
 			} );
-			// this.setState( { isSaving: false } );
 			setIsSaving( false );
 		}
 	};
 
-	let blockedByParentModule = false;
-	let parentModule;
-	console.log( parentModule ); // eslint-disable-line no-console
-
-	const modules = getModulesData();
-
-	// Check if required module is active.
-	if ( modules[ slug ].required.length ) {
-		const requiredModules = modules[ slug ].required;
-
-		requiredModules.forEach( ( requiredModule ) => {
-			if ( ! modules[ requiredModule ].setupComplete ) {
-				blockedByParentModule = true;
-				parentModule = modules[ requiredModule ].name;
-			}
-		} );
-	}
-
-	const hasErrorMessage = true;
-	const errorMessage = __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' );
+	const canActivateModule = !! useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug ) );
+	const requirementsStatus = useSelect( ( select ) => select( CORE_MODULES ).getCheckRequirementsStatus( slug ) );
+	const errorMessage = canActivateModule ? null : requirementsStatus;
 
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-settings-connect-module',
 				`googlesitekit-settings-connect-module--${ slug }`,
-				{ 'googlesitekit-settings-connect-module--disabled': blockedByParentModule }
+				{ 'googlesitekit-settings-connect-module--disabled': ! canActivateModule }
 			) }
 			key={ slug }
 		>
@@ -130,7 +106,7 @@ export default function SetupModule( {
 				{ description }
 			</p>
 
-			{ hasErrorMessage &&
+			{ errorMessage &&
 				<div
 					className={ classnames( 'googlesitekit-settings-module-warning' ) } >
 					<ErrorIcon height="20" width="23" /> { errorMessage }
