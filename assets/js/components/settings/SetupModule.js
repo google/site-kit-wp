@@ -113,7 +113,7 @@ export default function SetupModule( {
 
 			{ errorMessage &&
 				<div
-					className={ classnames( 'googlesitekit-settings-module-warning' ) } >
+					className={ classnames( 'googlesitekit-settings-module-warning', 'googlesitekit-settings-module-warning--modules-list' ) } >
 					<ErrorIcon height="20" width="23" /> { errorMessage }
 				</div>
 			}
