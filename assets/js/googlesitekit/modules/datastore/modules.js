@@ -377,6 +377,11 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 		const module = registry.select( STORE_NAME ).getModule( slug );
 
+		// We use yield dataControls.resolveSelect in favour of registry.select
+		// to avoid a race condition where the module hasn't loaded yet.
+		// @TODO after #1769, we can do this.
+		// const module = yield dataControls.resolveSelect( STORE_NAME, 'getModule', slug );
+
 		// Return `undefined` if module with this slug isn't loaded yet.
 		if ( module === undefined ) {
 			return undefined;
@@ -659,7 +664,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		return moduleRequirements === null;
+		return moduleRequirements === true;
 	},
 
 	getCheckRequirementsStatus( state, slug ) {
