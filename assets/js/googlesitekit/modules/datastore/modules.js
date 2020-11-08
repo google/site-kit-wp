@@ -217,7 +217,9 @@ const baseActions = {
 	/**
 	 * Registers a module.
 	 *
-	 * @since 1.20.0 Introduced the ability to register settings and setup components.
+	 * @since 1.13.0
+	 * @since 1.20.0  Introduced the ability to register settings and setup components.
+	 * @since n.e.x.t Introduced the ability to add a checkRequirements function.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
@@ -267,7 +269,7 @@ const baseActions = {
 	},
 
 	/**
-	 * Receives the check requirements error map for all modules.
+	 * Receives the check requirements error map for specified modules modules.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -275,6 +277,8 @@ const baseActions = {
 	 * @return {Object} Action for RECEIVE_CHECK_REQUIREMENTS_ERROR.
 	 */
 	receiveCheckRequirementsError( errorMap ) {
+		invariant( errorMap, 'errorMap is required' );
+		invariant( Object.keys( errorMap ).length, 'errorMap must contain at least one error' );
 		return {
 			payload: errorMap,
 			type: RECEIVE_CHECK_REQUIREMENTS_ERROR,
@@ -290,6 +294,7 @@ const baseActions = {
 	 * @return {Object} Action for RECEIVE_CHECK_REQUIREMENTS_SUCCESS.
 	 */
 	receiveCheckRequirementsSuccess( slug ) {
+		invariant( slug, 'module slug is required' );
 		return {
 			payload: {
 				slug,
@@ -297,6 +302,7 @@ const baseActions = {
 			type: RECEIVE_CHECK_REQUIREMENTS_SUCCESS,
 		};
 	},
+
 };
 
 export const baseControls = {
