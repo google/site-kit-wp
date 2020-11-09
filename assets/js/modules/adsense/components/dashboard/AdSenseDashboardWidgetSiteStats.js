@@ -36,7 +36,7 @@ import { Cell, Grid, Row } from '../../../../material-components';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import GoogleChart from '../../../../components/google-chart';
+import GoogleChart from '../../../../components/GoogleChart';
 import { isDataZeroAdSense, getSiteStatsDataForGoogleChart } from '../../util';
 const { useSelect } = Data;
 
