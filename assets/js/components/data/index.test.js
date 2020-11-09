@@ -66,7 +66,7 @@ describe( 'dataAPI', () => {
 				expect( eventName ).toEqual( 'GET:test-type/test-identifier/data/test-datapoint' );
 				expect( eventData.event_category ).toEqual( 'api_error' );
 				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
-				expect( eventData.event_value ).toEqual( 500 );
+				expect( eventData.value ).toEqual( 500 );
 			}
 		} );
 	} );
@@ -90,7 +90,7 @@ describe( 'dataAPI', () => {
 				expect( eventName ).toEqual( 'POST:test-type/test-identifier/data/test-datapoint' );
 				expect( eventData.event_category ).toEqual( 'api_error' );
 				expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error)' );
-				expect( eventData.event_value ).toEqual( 500 );
+				expect( eventData.value ).toEqual( 500 );
 			}
 		} );
 	} );
@@ -166,7 +166,7 @@ describe( 'dataAPI', () => {
 			expect( eventName ).toEqual( 'POST:test-type/test-identifier/data/test-datapoint' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
 			expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error, reason: internal_server_error)' );
-			expect( eventData.event_value ).toEqual( 500 );
+			expect( eventData.value ).toEqual( 500 );
 		} );
 
 		it( 'should call trackEvent for each error in combinedGet with multiple errors', async () => {
@@ -207,13 +207,13 @@ describe( 'dataAPI', () => {
 			expect( eventName ).toEqual( 'POST:test-type/test-identifier/data/test-datapoint' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
 			expect( eventData.event_label ).toEqual( 'Internal server error (code: internal_server_error, reason: internal_server_error)' );
-			expect( eventData.event_value ).toEqual( 500 );
+			expect( eventData.value ).toEqual( 500 );
 			[ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 1 ][ 0 ];
 			expect( event ).toEqual( 'event' );
 			expect( eventName ).toEqual( 'POST:test-type/analytics/data/test-datapoint-3' );
 			expect( eventData.event_category ).toEqual( 'api_error' );
 			expect( eventData.event_label ).toEqual( 'Unknown error (code: unknown_error, reason: unknown_error)' );
-			expect( eventData.event_value ).toEqual( 503 );
+			expect( eventData.value ).toEqual( 503 );
 		} );
 	} );
 } );

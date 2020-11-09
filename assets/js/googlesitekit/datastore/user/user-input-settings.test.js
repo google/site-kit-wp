@@ -98,8 +98,11 @@ describe( 'core/user user-input-settings', () => {
 				registry.dispatch( STORE_NAME ).setUserInputSetting( settingID, values );
 				expect( store.getState() ).toMatchObject( {
 					inputSettings: {
-						...coreUserInputSettings,
-						[ settingID ]: values,
+						...coreUserInputSettingsExpectedResponse,
+						[ settingID ]: {
+							...coreUserInputSettingsExpectedResponse[ settingID ],
+							values,
+						},
 					},
 				} );
 			} );
@@ -123,7 +126,7 @@ describe( 'core/user user-input-settings', () => {
 				} );
 
 				const settings = registry.select( STORE_NAME ).getUserInputSettings();
-				expect( settings ).toMatchObject( coreUserInputSettings );
+				expect( settings ).toMatchObject( coreUserInputSettingsExpectedResponse );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
@@ -161,7 +164,7 @@ describe( 'core/user user-input-settings', () => {
 				await waitFor( () => getUserInputSettings() !== undefined );
 
 				const settings = getUserInputSettings();
-				expect( settings ).toEqual( coreUserInputSettings );
+				expect( settings ).toEqual( coreUserInputSettingsExpectedResponse );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( getUserInputSettings() ).toEqual( settings );
@@ -174,7 +177,7 @@ describe( 'core/user user-input-settings', () => {
 				const settings = registry.select( STORE_NAME ).getUserInputSettings();
 				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'getUserInputSettings' ) );
 
-				expect( settings ).toEqual( coreUserInputSettings );
+				expect( settings ).toEqual( coreUserInputSettingsExpectedResponse );
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
@@ -213,9 +216,23 @@ describe( 'core/user user-input-settings', () => {
 				expect( values ).toBe( coreUserInputSettings[ settingID ] );
 			} );
 
-			it( 'should return undefined if the settings does not exist', () => {
+			it( 'should return an empty array if the settings does not exist', () => {
 				const helpWanted = registry.select( STORE_NAME ).getUserInputSetting( 'helpWanted' );
-				expect( helpWanted ).toBeUndefined();
+				expect( Array.isArray( helpWanted ) ).toBe( true );
+				expect( helpWanted.length ).toBe( 0 );
+			} );
+		} );
+
+		describe( 'getUserInputScope', () => {
+			beforeEach( () => {
+				registry.dispatch( STORE_NAME ).receiveGetUserInputSettings( coreUserInputSettingsExpectedResponse );
+			} );
+
+			it.each(
+				Object.keys( coreUserInputSettings ).reduce( ( accum, key ) => [ ...accum, [ key ] ], [] ),
+			)( 'should return correct scope for the %s setting', ( settingID ) => {
+				const values = registry.select( STORE_NAME ).getUserInputSettingScope( settingID );
+				expect( values ).toBe( coreUserInputSettingsExpectedResponse[ settingID ].scope );
 			} );
 		} );
 	} );

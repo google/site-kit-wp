@@ -32,21 +32,23 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import SearchConsoleIcon from '../../../../../svg/search-console.svg';
-import Header from '../../../../components/header';
+import Header from '../../../../components/Header';
 import SearchConsoleDashboardWidgetSiteStats from './SearchConsoleDashboardWidgetSiteStats';
 import LegacySearchConsoleDashboardWidgetKeywordTable from './LegacySearchConsoleDashboardWidgetKeywordTable';
 import SearchConsoleDashboardWidgetOverview from './SearchConsoleDashboardWidgetOverview';
-import PageHeader from '../../../../components/page-header';
-import PageHeaderDateRange from '../../../../components/page-header-date-range';
+import PageHeader from '../../../../components/PageHeader';
+import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import Layout from '../../../../components/layout/layout';
 import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import { getCurrentDateRange, getCurrentDateRangeDayCount } from '../../../../util/date-range';
-import HelpLink from '../../../../components/help-link';
+import HelpLink from '../../../../components/HelpLink';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { untrailingslashit } from '../../../../util';
 
 const { useSelect } = Data;
 
@@ -58,13 +60,21 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 	const [ loading, setLoading ] = useState( true );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const referenceSiteURL = useSelect( ( select ) => {
+		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
+	} );
+	const searchConsoleDeepArgs = {
+		resource_id: propertyID,
+		num_of_days: getCurrentDateRangeDayCount(),
+	};
+	if ( isDomainProperty && referenceSiteURL ) {
+		searchConsoleDeepArgs.page = `*${ referenceSiteURL }`;
+	}
 	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{
 			path: '/performance/search-analytics',
-			query: {
-				resource_id: propertyID,
-				num_of_days: getCurrentDateRangeDayCount(),
-			},
+			query: searchConsoleDeepArgs,
 		} ) );
 
 	/**

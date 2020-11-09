@@ -32,21 +32,21 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/analytics.svg';
-import Header from '../../../../components/header';
+import Header from '../../../../components/Header';
 import AnalyticsDashboardWidgetSiteStats from './AnalyticsDashboardWidgetSiteStats';
 import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTopPagesTable';
 import AnalyticsDashboardWidgetOverview from './AnalyticsDashboardWidgetOverview';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import Layout from '../../../../components/layout/layout';
-import PageHeader from '../../../../components/page-header';
-import PageHeaderDateRange from '../../../../components/page-header-date-range';
+import PageHeader from '../../../../components/PageHeader';
+import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
 import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import { getCurrentDateRange } from '../../../../util/date-range';
-import HelpLink from '../../../../components/help-link';
+import HelpLink from '../../../../components/HelpLink';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
 

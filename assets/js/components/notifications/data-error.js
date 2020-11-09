@@ -27,7 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { showErrorNotification, getModulesData } from '../../util';
 import { isInsufficientPermissionsError } from '../../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../../util/insufficient-permissions-error-description';
-import ErrorText from '../error-text';
+import ErrorText from '../ErrorText';
 import CTA from './cta';
 import ctaWrapper from './cta-wrapper';
 import InvalidCredentialsWarning from './invalid-credentials-warning';

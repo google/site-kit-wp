@@ -121,25 +121,7 @@ final class PageSpeed_Insights extends Module
 				);
 		}
 
-		throw new Invalid_Datapoint_Exception();
-	}
-
-	/**
-	 * Parses a response for the given datapoint.
-	 *
-	 * @since 1.0.0
-	 * @since 1.10.0 GET:pagespeed returns the full response, not just the lighthouse result.
-	 *
-	 * @param Data_Request $data Data request object.
-	 * @param mixed        $response Request response.
-	 *
-	 * @return mixed Parsed response data on success, or WP_Error on failure.
-	 */
-	protected function parse_data_response( Data_Request $data, $response ) {
-		switch ( "{$data->method}:{$data->datapoint}" ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedSwitch
-		}
-
-		return $response;
+		return parent::create_data_request( $data );
 	}
 
 	/**
