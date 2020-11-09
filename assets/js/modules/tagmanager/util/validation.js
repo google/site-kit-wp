@@ -79,7 +79,7 @@ export function isValidContainerID( containerID ) {
 /**
  * Checks if the given container name appears to be valid.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  *
  * @param {string} containerName Container name to test.
  * @return {boolean} True if valid, otherwise false.
@@ -91,7 +91,7 @@ export function isValidContainerName( containerName ) {
 /**
  * Checks if the given container name is unique across account containers.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  *
  * @param {string}         containerName Container name to test.
  * @param {Array.<Object>} containers    Available containers.

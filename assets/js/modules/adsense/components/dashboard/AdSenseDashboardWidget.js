@@ -41,10 +41,10 @@ import getDataErrorComponent from '../../../../components/notifications/data-err
 import ProgressBar from '../../../../components/ProgressBar';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
-import HelpLink from '../../../../components/help-link';
-import Header from '../../../../components/header';
-import PageHeader from '../../../../components/page-header';
-import PageHeaderDateRange from '../../../../components/page-header-date-range';
+import HelpLink from '../../../../components/HelpLink';
+import Header from '../../../../components/Header';
+import PageHeader from '../../../../components/PageHeader';
+import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { getCurrentDateRange } from '../../../../util/date-range';

@@ -38,7 +38,7 @@ import { TextField, Input } from '../../material-components';
 import data, { TYPE_MODULES } from '../data';
 import Button from '../button';
 import ProgressBar from '../ProgressBar';
-import HelpLink from '../help-link';
+import HelpLink from '../HelpLink';
 
 class SiteVerification extends Component {
 	constructor( props ) {

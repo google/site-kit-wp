@@ -15,6 +15,7 @@ export { setEditPostFeature } from './set-edit-post-feature';
 export { setSiteVerification } from './set-site-verification';
 export { setSearchConsoleProperty } from './set-search-console-property';
 export { setupAnalytics } from './setup-analytics';
+export { setupAdSense } from './setup-adsense';
 export { setupSiteKit } from './setup-site-kit';
 export { switchDateRange } from './switch-date-range';
 export { testClientConfig } from './test-client-config';

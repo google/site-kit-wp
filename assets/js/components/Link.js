@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
+/**
+ * WordPress dependencies
+ */
+import { _x } from '@wordpress/i18n';
+
 function Link( {
 	href,
 	children,
@@ -35,12 +40,29 @@ function Link( {
 	caps,
 	danger,
 	disabled,
+	'aria-label': ariaLabel,
 	...extraProps
 } ) {
 	// Note: the disabled attribute does not alter behavior of anchor tags,
 	// so if disabled we force it to be a button.
 	const isAnchor = href && ! disabled;
 	const SemanticLink = isAnchor ? 'a' : 'button';
+
+	const getAriaLabel = () => {
+		let label = ariaLabel;
+
+		if ( ! external ) {
+			return label;
+		} else if ( typeof children === 'string' ) {
+			label = label || children;
+		}
+
+		const newTabText = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
+		if ( label ) {
+			return `${ label } ${ newTabText }`;
+		}
+		return newTabText;
+	};
 
 	return (
 		<SemanticLink
@@ -63,6 +85,7 @@ function Link( {
 			target={ isAnchor && external ? '_blank' : undefined }
 			rel={ external ? 'noopener noreferrer' : undefined }
 			disabled={ disabled }
+			aria-label={ getAriaLabel() }
 			{ ...extraProps }
 		>
 			{ children }
@@ -79,6 +102,7 @@ Link.propTypes = {
 	children: PropTypes.oneOfType( [
 		PropTypes.string.isRequired,
 		PropTypes.array.isRequired,
+		PropTypes.element.isRequired,
 	] ),
 	className: PropTypes.string,
 	arrow: PropTypes.bool,
