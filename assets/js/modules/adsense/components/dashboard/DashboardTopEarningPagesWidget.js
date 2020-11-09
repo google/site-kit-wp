@@ -34,7 +34,7 @@ import PreviewTable from '../../../../components/PreviewTable';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
+import ReportError from '../../../../components/ReportError';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
@@ -85,7 +85,7 @@ function DashboardTopEarningPagesWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
+		return <ReportError moduleSlug="adsense" error={ error } />;
 	}
 
 	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
