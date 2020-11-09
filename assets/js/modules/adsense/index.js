@@ -39,7 +39,6 @@ import {
 	SettingsSetupIncomplete,
 	SettingsView,
 } from './components/settings';
-import { AdBlockerWarning } from './components/common';
 import {
 	DashboardZeroData,
 	DashboardSummaryWidget,
@@ -60,18 +59,6 @@ addFilter(
 				<SettingsSetupIncomplete />
 			</div>
 		);
-	} )
-);
-
-addFilter(
-	'googlesitekit.ModuleSettingsWarning',
-	'googlesitekit.adsenseSettingsWarning',
-	fillFilterWithComponent( ( props ) => {
-		const { slug, context, OriginalComponent } = props;
-		if ( 'adsense' !== slug ) {
-			return <OriginalComponent { ...props } />;
-		}
-		return <AdBlockerWarning context={ context } />;
 	} )
 );
 
