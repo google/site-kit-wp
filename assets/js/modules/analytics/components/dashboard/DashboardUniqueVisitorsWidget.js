@@ -34,7 +34,7 @@ import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
 import { changeToPercent, readableLargeNumber } from '../../../../util';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
+import ReportError from '../../../../components/ReportError';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
@@ -104,7 +104,7 @@ function DashboardUniqueVisitorsWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
+		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( ( ! sparkData || ! sparkData.length ) && ( ! visitorsData || ! visitorsData.length ) ) {

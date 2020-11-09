@@ -33,7 +33,7 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import PreviewTable from '../../../../components/PreviewTable';
 import getNoDataComponent from '../../../../components/notifications/nodata';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
+import ReportError from '../../../../components/ReportError';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
 import { isDataZeroForReporting } from '../../util';
@@ -93,7 +93,14 @@ function DashboardAllTrafficWidget() {
 	} );
 
 	if ( ! loading && error ) {
-		return getDataErrorComponent( 'analytics', error.message, true, true, false, error );
+		return (
+			<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-12
+					">
+				<ReportError moduleSlug="analytics" error={ error } />
+			</div>
+		);
 	}
 
 	if ( ! loading && isDataZeroForReporting( report ) ) {

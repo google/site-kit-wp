@@ -35,7 +35,7 @@ import CTA from '../../../../components/notifications/cta';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
 import { readableLargeNumber, changeToPercent } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
+import ReportError from '../../../../components/ReportError';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 
 const { useSelect } = Data;
@@ -79,7 +79,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
+		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
