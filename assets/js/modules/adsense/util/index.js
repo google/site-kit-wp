@@ -22,6 +22,7 @@
 import each from 'lodash/each';
 
 export * from './parsing';
+export * from './site-stats-data';
 export * from './status';
 export * from './validation';
 export * from './url';

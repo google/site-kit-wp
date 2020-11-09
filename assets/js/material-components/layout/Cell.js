@@ -34,23 +34,20 @@ export default function Cell( props ) {
 		lgStart,
 		size,
 		children,
+		...otherProps
 	} = props;
 
 	return (
-		<div className={ classnames(
+		<div { ...otherProps } className={ classnames(
 			className,
 			'mdc-layout-grid__cell',
 			{
 				[ `mdc-layout-grid__cell--align-${ align }` ]: align.length > 0,
-
 				[ `mdc-layout-grid__cell--span-${ size }` ]: 12 >= size && size > 0,
-
 				[ `mdc-layout-grid__cell--span-${ lgSize }-desktop` ]: 12 >= lgSize && lgSize > 0,
 				[ `mdc-layout-grid__cell--start-${ lgStart }-desktop` ]: 12 >= lgStart && lgStart > 0,
-
 				[ `mdc-layout-grid__cell--span-${ mdSize }-tablet` ]: 8 >= mdSize && mdSize > 0,
 				[ `mdc-layout-grid__cell--start-${ mdStart }-tablet` ]: 8 >= mdStart && mdStart > 0,
-
 				[ `mdc-layout-grid__cell--span-${ smSize }-phone` ]: 4 >= smSize && smSize > 0,
 				[ `mdc-layout-grid__cell--start-${ smStart }-phone` ]: 4 >= smStart && smStart > 0,
 			},
@@ -68,7 +65,7 @@ Cell.propTypes = {
 	lgSize: PropTypes.number,
 	lgStart: PropTypes.number,
 	size: PropTypes.number,
-	align: PropTypes.string,
+	align: PropTypes.oneOf( [ 'top', 'middle', 'bottom', '' ] ),
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired,
 };

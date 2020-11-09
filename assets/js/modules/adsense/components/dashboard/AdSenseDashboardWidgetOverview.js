@@ -42,43 +42,39 @@ import { readableLargeNumber, changeToPercent, numberFormat } from '../../../../
 import { isDataZeroAdSense } from '../../util';
 const { useSelect } = Data;
 
-function getAdSenseDashboardWidgetOverviewReports( select ) {
-	const {
-		startDate,
-		endDate,
-		compareStartDate,
-		compareEndDate,
-	} = select( CORE_USER ).getDateRangeDates( { compare: true } );
-
-	const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ];
-	const currentRangeArgs = { metrics, startDate, endDate };
-	const prevRangeArgs = {
-		metrics,
-		startDate: compareStartDate,
-		endDate: compareEndDate,
-	};
-
-	const error = select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
-		select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] );
-
-	const isLoading = select( STORE_NAME ).isResolving( 'getReport', [ currentRangeArgs ] ) ||
-		select( STORE_NAME ).isResolving( 'getReport', [ prevRangeArgs ] );
-
-	return {
-		currentRangeData: select( STORE_NAME ).getReport( currentRangeArgs ) || {},
-		prevRangeData: select( STORE_NAME ).getReport( prevRangeArgs ) || {},
-		error,
-		isLoading,
-	};
-}
-
 export default function AdSenseDashboardWidgetOverview( { selectedStats, handleStatSelection } ) {
 	const {
 		currentRangeData,
 		prevRangeData,
 		error,
 		isLoading,
-	} = useSelect( getAdSenseDashboardWidgetOverviewReports );
+	} = useSelect( ( select ) => {
+		const {
+			startDate,
+			endDate,
+			compareStartDate,
+			compareEndDate,
+		} = select( CORE_USER ).getDateRangeDates( { compare: true } );
+
+		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ];
+		const currentRangeArgs = { metrics, startDate, endDate };
+		const prevRangeArgs = {
+			metrics,
+			startDate: compareStartDate,
+			endDate: compareEndDate,
+		};
+
+		return {
+			currentRangeData: select( STORE_NAME ).getReport( currentRangeArgs ) || {},
+			prevRangeData: select( STORE_NAME ).getReport( prevRangeArgs ) || {},
+
+			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] ),
+
+			isLoading: select( STORE_NAME ).isResolving( 'getReport', [ currentRangeArgs ] ) ||
+				select( STORE_NAME ).isResolving( 'getReport', [ prevRangeArgs ] ),
+		};
+	} );
 
 	if ( isLoading ) {
 		return <PreviewBlock width="100%" height="250px" />;
@@ -103,49 +99,49 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 0 }
-						className="googlesitekit-data-block--page-rpm"
+						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
 						title={ __( 'Earnings', 'google-site-kit' ) }
 						datapoint={ readableLargeNumber( totals[ 0 ], headers[ 0 ]?.currency ) }
 						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 0 ], totals[ 0 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
-						selected={ selectedStats.includes( 'EARNINGS' ) }
-						handleStatSelection={ handleStatSelection }
+						selected={ selectedStats === 0 }
+						handleStatSelection={ handleStatSelection.bind( null, 0 ) }
 					/>
 				</Cell>
 
 				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 1 }
-						className="googlesitekit-data-block--page-rpm"
+						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
 						title={ __( 'Page RPM', 'google-site-kit' ) }
 						datapoint={ readableLargeNumber( totals[ 1 ], headers[ 1 ]?.currency ) }
 						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 1 ], totals[ 1 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
-						selected={ selectedStats.includes( 'PAGE_VIEWS_RPM' ) }
-						handleStatSelection={ handleStatSelection }
+						selected={ selectedStats === 1 }
+						handleStatSelection={ handleStatSelection.bind( null, 1 ) }
 					/>
 				</Cell>
 
 				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 2 }
-						className="googlesitekit-data-block--impression"
+						className="googlesitekit-data-block--impression googlesitekit-data-block--button-3"
 						title={ __( 'Impressions', 'google-site-kit' ) }
 						datapoint={ readableLargeNumber( totals[ 2 ] ) }
 						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 2 ], totals[ 2 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
-						selected={ selectedStats.includes( 'IMPRESSIONS' ) }
-						handleStatSelection={ handleStatSelection }
+						selected={ selectedStats === 2 }
+						handleStatSelection={ handleStatSelection.bind( null, 2 ) }
 					/>
 				</Cell>
 
 				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 3 }
-						className="googlesitekit-data-block--impression"
+						className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
 						title={ __( 'Page CTR', 'google-site-kit' ) }
 						datapoint={ sprintf(
 							/* translators: %s: percentage value. */
@@ -155,8 +151,8 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 3 ], totals[ 3 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
-						selected={ selectedStats.includes( 'PAGE_VIEWS_CTR' ) }
-						handleStatSelection={ handleStatSelection }
+						selected={ selectedStats === 3 }
+						handleStatSelection={ handleStatSelection.bind( null, 3 ) }
 					/>
 				</Cell>
 			</Row>
@@ -165,11 +161,6 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 }
 
 AdSenseDashboardWidgetOverview.propTypes = {
-	selectedStats: PropTypes.arrayOf( PropTypes.string ),
-	handleStatSelection: PropTypes.func,
-};
-
-AdSenseDashboardWidgetOverview.defaultProps = {
-	selectedStats: [],
-	handleStatSelection() {},
+	selectedStats: PropTypes.number.isRequired,
+	handleStatSelection: PropTypes.func.isRequired,
 };

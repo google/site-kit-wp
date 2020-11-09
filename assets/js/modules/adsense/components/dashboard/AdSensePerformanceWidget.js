@@ -17,12 +17,33 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment, useState, useCallback } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import AdSenseDashboardWidgetOverview from './AdSenseDashboardWidgetOverview';
+import AdSenseDashboardWidgetSiteStats from './AdSenseDashboardWidgetSiteStats';
 
 export default function AdSensePerformanceWidget() {
+	const [ selectedStats, setSelectedStats ] = useState( 0 );
+
+	const handleStatSelection = useCallback( ( stat ) => {
+		setSelectedStats( stat );
+	}, [] );
+
 	return (
-		<AdSenseDashboardWidgetOverview />
+		<Fragment>
+			<AdSenseDashboardWidgetOverview
+				selectedStats={ selectedStats }
+				handleStatSelection={ handleStatSelection }
+			/>
+
+			<AdSenseDashboardWidgetSiteStats
+				selectedStats={ selectedStats }
+			/>
+		</Fragment>
 	);
 }
