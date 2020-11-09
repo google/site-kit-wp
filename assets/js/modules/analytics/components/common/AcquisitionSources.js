@@ -63,7 +63,7 @@ function AcquisitionSources( { data, args } ) {
 
 	const { dateRange, url } = args;
 	if ( url ) {
-		const currentRange = getCurrentDateRangeDayCount( dateRange );
+		const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 		keyColumnIndex = 1;
 		options.hideHeader = false;
@@ -82,16 +82,16 @@ function AcquisitionSources( { data, args } ) {
 				title: __( 'New Users', 'google-site-kit' ),
 				tooltip: sprintf(
 					/* translators: %s: number of days */
-					_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', currentRange, 'google-site-kit', ),
-					currentRange,
+					_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', currentDayCount, 'google-site-kit', ),
+					currentDayCount,
 				),
 			},
 			{
 				title: __( 'Sessions', 'google-site-kit' ),
 				tooltip: sprintf(
 					/* translators: %s: number of days */
-					_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', currentRange, 'google-site-kit', ),
-					currentRange,
+					_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', currentDayCount, 'google-site-kit', ),
+					currentDayCount,
 				),
 			},
 			{
