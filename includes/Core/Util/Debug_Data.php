@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Permissions\Permissions;
 
 /**
  * Class for integrating debug information with Site Health.
@@ -170,6 +171,7 @@ class Debug_Data {
 			'connected_user_count' => $this->get_connected_user_count_field(),
 			'active_modules'       => $this->get_active_modules_field(),
 			'required_scopes'      => $this->get_required_scopes_field(),
+			'capabilities'         => $this->get_capabilities_field(),
 		);
 		$none   = __( 'None', 'google-site-kit' );
 
@@ -346,5 +348,36 @@ class Debug_Data {
 		);
 
 		return array_merge( array(), ...$fields_by_module );
+	}
+
+
+	/**
+	 * Gets capabilities for the current user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	private function get_capabilities_field() {
+		$permissions = array(
+			Permissions::AUTHENTICATE,
+			Permissions::SETUP,
+			Permissions::VIEW_POST_INSIGHTS,
+			Permissions::VIEW_DASHBOARD,
+			Permissions::VIEW_MODULE_DETAILS,
+			Permissions::MANAGE_OPTIONS,
+			Permissions::PUBLISH_POSTS,
+		);
+		$value       = array();
+
+		foreach ( $permissions as $permission ) {
+			$granted              = current_user_can( $permission );
+			$value[ $permission ] = $granted ? '✅' : '⭕';
+		}
+
+		return array(
+			'label' => __( 'User Capabilities', 'google-site-kit' ),
+			'value' => $value,
+		);
 	}
 }
