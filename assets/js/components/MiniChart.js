@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import GoogleChart from './google-chart';
+import GoogleChart from './GoogleChart';
 
 function MiniChart( { index, percent } ) {
 	const colors = [
