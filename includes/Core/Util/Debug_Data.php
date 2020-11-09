@@ -359,19 +359,10 @@ class Debug_Data {
 	 * @return array
 	 */
 	private function get_capabilities_field() {
-		$permissions = array(
-			Permissions::AUTHENTICATE,
-			Permissions::SETUP,
-			Permissions::VIEW_POST_INSIGHTS,
-			Permissions::VIEW_DASHBOARD,
-			Permissions::VIEW_MODULE_DETAILS,
-			Permissions::MANAGE_OPTIONS,
-			Permissions::PUBLISH_POSTS,
-		);
-		$value       = array();
+		$user_data = apply_filters( 'googlesitekit_user_data', array() );
+		$value     = array();
 
-		foreach ( $permissions as $permission ) {
-			$granted              = current_user_can( $permission );
+		foreach ( $user_data['permissions'] as $permission => $granted ) {
 			$value[ $permission ] = $granted ? '✅' : '⭕';
 		}
 
