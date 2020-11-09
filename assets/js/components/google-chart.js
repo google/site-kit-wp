@@ -81,7 +81,7 @@ export default function GoogleChart( props ) {
 	const drawChart = useCallback( () => {
 		let dataTable = global.google?.visualization?.arrayToDataTable?.( data );
 		if ( dataTable ) {
-			if ( 0 !== selectedStats.length ) {
+			if ( selectedStats.length > 0 ) {
 				dataTable = new global.google.visualization.DataView( dataTable );
 				if ( ! singleStat ) {
 					dataTable.setColumns( [
@@ -93,7 +93,7 @@ export default function GoogleChart( props ) {
 
 			chart.draw( dataTable, options );
 		}
-	}, [ chart, data ] );
+	}, [ chart, data, singleStat, selectedStats ] );
 
 	useEffect( () => {
 		loadCharts().then( () => {
@@ -113,6 +113,7 @@ export default function GoogleChart( props ) {
 		};
 	}, [] );
 
+	// Create a new chart when the library is loaded.
 	useEffect( () => {
 		if ( ! loading && chartRef.current && global.google ) {
 			const googleChart = 'pie' === chartType
@@ -122,9 +123,17 @@ export default function GoogleChart( props ) {
 		}
 	}, [ loading, !! chartRef.current, chartType ] );
 
+	// Draw the chart whenever one of these properties has changed.
 	useEffect( () => {
-		drawChart();
-	}, [ chart, selectedStats.join( '|' ) ] ); // The `selectedStats` is used as a dependency here to trigger the chart refresh when selected series has changed.
+		if ( chart ) {
+			drawChart();
+		}
+	}, [
+		chart,
+		selectedStats,
+		options,
+		singleStat,
+	] );
 
 	return (
 		<div className="googlesitekit-graph-wrapper">
@@ -132,7 +141,10 @@ export default function GoogleChart( props ) {
 				<div className="googlesitekit-chart-loading">
 					{ loading && (
 						<div className="googlesitekit-chart-loading__wrapper">
-							{ loadText && <p>{ __( 'Loading chart…', 'google-site-kit' ) }</p> }
+							{ loadText && (
+								<p>{ __( 'Loading chart…', 'google-site-kit' ) }</p>
+							) }
+
 							<ProgressBar
 								className={ className }
 								small={ loadSmall }
