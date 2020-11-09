@@ -35,7 +35,7 @@ import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
 import { changeToPercent, readableLargeNumber } from '../../../../util';
 import ReportError from '../../../../components/ReportError';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
@@ -108,7 +108,7 @@ function DashboardUniqueVisitorsWidget() {
 	}
 
 	if ( ( ! sparkData || ! sparkData.length ) && ( ! visitorsData || ! visitorsData.length ) ) {
-		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [

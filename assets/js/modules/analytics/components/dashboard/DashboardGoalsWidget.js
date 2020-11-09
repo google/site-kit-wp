@@ -36,7 +36,7 @@ import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta'
 import { readableLargeNumber, changeToPercent } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import ReportError from '../../../../components/ReportError';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportZero from '../../../../components/ReportZero';
 
 const { useSelect } = Data;
 
@@ -94,7 +94,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( ! data || ! data.length ) {
-		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [

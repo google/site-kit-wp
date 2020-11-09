@@ -36,7 +36,7 @@ import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta'
 import { changeToPercent } from '../../../../util';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import ReportError from '../../../../components/ReportError';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 
 const { useSelect } = Data;
@@ -91,7 +91,7 @@ function DashboardBounceRateWidget() {
 	}
 
 	if ( ! data || ! data.length ) {
-		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [

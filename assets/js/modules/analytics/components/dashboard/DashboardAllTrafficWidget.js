@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { _x } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -32,7 +27,7 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import PreviewTable from '../../../../components/PreviewTable';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportZero from '../../../../components/ReportZero';
 import ReportError from '../../../../components/ReportError';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
@@ -104,7 +99,14 @@ function DashboardAllTrafficWidget() {
 	}
 
 	if ( ! loading && isDataZeroForReporting( report ) ) {
-		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, false );
+		return (
+			<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-12
+					">
+				<ReportZero moduleSlug="analytics" />;
+			</div>
+		);
 	}
 
 	return (
