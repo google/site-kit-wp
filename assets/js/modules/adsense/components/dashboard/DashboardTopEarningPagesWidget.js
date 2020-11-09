@@ -35,7 +35,7 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../../compon
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import ReportError from '../../../../components/ReportError';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportZero from '../../../../components/ReportZero';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -89,7 +89,7 @@ function DashboardTopEarningPagesWidget() {
 	}
 
 	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
-		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const headers = [

@@ -35,7 +35,8 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import ReportError from '../../../../components/ReportError';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportZero from '../../../../components/ReportZero';
+
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -84,7 +85,7 @@ function DashboardSummaryWidget() {
 	}
 
 	if ( ! today?.totals && ! period?.totals && ! daily?.totals ) {
-		return getNoDataComponent( __( 'AdSense', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="adsense" />;
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );
