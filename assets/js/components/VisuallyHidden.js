@@ -23,7 +23,14 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 function VisuallyHidden( { className, children, ...otherProps } ) {
-	return <span { ...otherProps } className={ classnames( 'screen-reader-text', className ) }>{ children }</span>;
+	return (
+		<span
+			{ ...otherProps }
+			className={ classnames( 'screen-reader-text', className ) }
+		>
+			{ children }
+		</span>
+	);
 }
 
 VisuallyHidden.propTypes = {
