@@ -20,13 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { debounce } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Component, createRef } from '@wordpress/element';
-import { debounce } from 'lodash';
+import { useEffect, useState, useRef, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -50,7 +50,7 @@ async function loadCharts() {
 			// Add the script to the DOM
 			global.document.head.appendChild( script );
 			// Set the `src` to begin transport
-			script.src = 'https://www.gstatic.com/charts/loader.js';
+			script.src = '//www.gstatic.com/charts/loader.js';
 		} );
 	} else {
 		// Charts is already available - resolve immediately.
@@ -60,140 +60,78 @@ async function loadCharts() {
 	return chartLoadPromise;
 }
 
-class GoogleChart extends Component {
-	constructor( props ) {
-		super( props );
+export default function GoogleChart( props ) {
+	const {
+		chartType,
+		className,
+		data,
+		loadCompressed,
+		loadHeight,
+		loadSmall,
+		loadText,
+		options,
+		selectedStats,
+		singleStat,
+	} = props;
 
-		this.state = {
-			loading: true,
-			chart: null,
-		};
+	const chartRef = useRef( null );
+	const [ chart, setChart ] = useState( null );
+	const [ loading, setLoading ] = useState( true );
 
-		this.onChartsLoad = this.onChartsLoad.bind( this );
-		this.waitForChart = this.waitForChart.bind( this );
-		this.getData = this.getData.bind( this );
-		this.prepareChart = this.prepareChart.bind( this );
-		this.drawChart = this.drawChart.bind( this );
-		this.updateChart = this.updateChart.bind( this );
-		this.chartRef = createRef();
-		this.resize = debounce( this.drawChart, 100 );
-	}
+	const drawChart = useCallback( () => {
+		let dataTable = global.google?.visualization?.arrayToDataTable?.( data );
+		if ( dataTable ) {
+			if ( 0 !== selectedStats.length ) {
+				dataTable = new global.google.visualization.DataView( dataTable );
+				if ( ! singleStat ) {
+					dataTable.setColumns( [
+						0,
+						...selectedStats.map( ( stat ) => stat + 1 ),
+					] );
+				}
+			}
 
-	onChartsLoad() {
-		this.getData();
-		this.prepareChart();
-		this.drawChart();
-		this.setState( { loading: false } );
-	}
+			chart.draw( dataTable, options );
+		}
+	}, [ chart, data ] );
 
-	async componentDidMount() {
-		await loadCharts();
-		global.google.charts.load( 'current', {
-			packages: [ 'corechart' ],
+	useEffect( () => {
+		loadCharts().then( () => {
+			global.google.charts.load( 'current', {
+				packages: [ 'corechart' ],
+				callback: () => {
+					setLoading( false );
+				},
+			} );
 		} );
-		global.google.charts.setOnLoadCallback( this.onChartsLoad );
-		global.addEventListener( 'resize', this.resize );
-	}
 
-	componentDidUpdate( prevProps ) {
-		const { selectedStats } = this.props;
+		const resize = debounce( drawChart, 100 );
+		global.addEventListener( 'resize', resize );
 
-		if ( 0 !== selectedStats.length && JSON.stringify( selectedStats ) !== JSON.stringify( prevProps.selectedStats ) ) {
-			this.updateChart();
+		return () => {
+			global.removeEventListener( 'resize', resize );
+		};
+	}, [] );
+
+	useEffect( () => {
+		if ( ! loading && chartRef.current && global.google ) {
+			const googleChart = 'pie' === chartType
+				? new global.google.visualization.PieChart( chartRef.current )
+				: new global.google.visualization.LineChart( chartRef.current );
+			setChart( googleChart );
 		}
-	}
+	}, [ loading, !! chartRef.current, chartType ] );
 
-	componentWillUnmount() {
-		global.removeEventListener( 'resize', this.resize );
-	}
+	useEffect( () => {
+		drawChart();
+	}, [ chart, selectedStats.join( '|' ) ] ); // The `selectedStats` is used as a dependency here to trigger the chart refresh when selected series has changed.
 
-	waitForChart( callback ) {
-		setTimeout( () => {
-			callback();
-		}, 500 );
-	}
-
-	getData() {
-		return global.google && global.google.visualization && global.google.visualization.arrayToDataTable(
-			this.props.data
-		);
-	}
-
-	prepareChart() {
-		const element = this.chartRef.current;
-
-		if ( ! global.google || ! element ) {
-			this.waitForChart( this.prepareChart );
-			return;
-		}
-
-		const { chartType } = this.props;
-		const googleChart = 'pie' === chartType ? new global.google.visualization.PieChart( element ) : new global.google.visualization.LineChart( element );
-
-		this.setState( { chart: googleChart } );
-	}
-
-	drawChart() {
-		const { chart } = this.state;
-		const { selectedStats, options } = this.props;
-		const data = this.getData();
-
-		if ( null === data || null === chart ) {
-			this.waitForChart( this.drawChart );
-			return;
-		}
-
-		chart.draw( data, options );
-
-		if ( 0 !== selectedStats.length ) {
-			this.updateChart();
-		}
-	}
-
-	updateChart() {
-		const { chart } = this.state;
-		const { selectedStats, options, singleStat } = this.props;
-		const data = this.getData();
-
-		if ( null === data || null === chart ) {
-			this.waitForChart( this.drawChart );
-			return;
-		}
-
-		const view = new global.google.visualization.DataView( data );
-
-		if ( ! singleStat ) {
-			let setStats = [ 0 ]; // Default date data, required.
-			setStats = setStats.concat(
-				selectedStats.map( ( stat ) => {
-					return stat + 1;
-				} )
-			);
-
-			view.setColumns( setStats );
-		}
-
-		chart.draw( view, options );
-	}
-
-	render() {
-		const { loading } = this.state;
-		const {
-			className,
-			loadSmall,
-			loadCompressed,
-			loadHeight,
-			loadText,
-		} = this.props;
-
-		return (
-			<div className="googlesitekit-graph-wrapper">
-				<div
-					ref={ this.chartRef }
-					className="googlesitekit-line-chart"
-				>
-					<div className="googlesitekit-chart-loading">
-						{ loading && <div className="googlesitekit-chart-loading__wrapper">
+	return (
+		<div className="googlesitekit-graph-wrapper">
+			<div ref={ chartRef } className="googlesitekit-line-chart">
+				<div className="googlesitekit-chart-loading">
+					{ loading && (
+						<div className="googlesitekit-chart-loading__wrapper">
 							{ loadText && <p>{ __( 'Loading chart…', 'google-site-kit' ) }</p> }
 							<ProgressBar
 								className={ className }
@@ -201,35 +139,35 @@ class GoogleChart extends Component {
 								compress={ loadCompressed }
 								height={ loadHeight }
 							/>
-						</div> }
-					</div>
+						</div>
+					) }
 				</div>
 			</div>
-		);
-	}
+		</div>
+	);
 }
 
 GoogleChart.propTypes = {
-	selectedStats: PropTypes.array,
-	options: PropTypes.object.isRequired,
-	id: PropTypes.string,
-	singleStat: PropTypes.bool,
+	chartType: PropTypes.string,
 	className: PropTypes.string,
-	loadSmall: PropTypes.bool,
+	data: PropTypes.arrayOf( PropTypes.array ),
 	loadCompressed: PropTypes.bool,
 	loadHeight: PropTypes.number,
+	loadSmall: PropTypes.bool,
 	loadText: PropTypes.bool,
+	options: PropTypes.object.isRequired,
+	selectedStats: PropTypes.array,
+	singleStat: PropTypes.bool,
 };
 
 GoogleChart.defaultProps = {
-	selectedStats: [],
-	id: '',
-	singleStat: true,
+	chartType: 'line',
 	className: '',
-	loadSmall: false,
+	data: [],
 	loadCompressed: false,
+	loadSmall: false,
 	loadHeight: null,
 	loadText: true,
+	selectedStats: [],
+	singleStat: true,
 };
-
-export default GoogleChart;
