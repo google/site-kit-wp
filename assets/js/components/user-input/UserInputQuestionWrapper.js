@@ -44,8 +44,11 @@ export default function UserInputQuestionWrapper( props ) {
 		isActive,
 		questionNumber,
 		title,
+		description,
 		next,
+		nextLabel,
 		back,
+		backLabel,
 	} = props;
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
@@ -73,6 +76,7 @@ export default function UserInputQuestionWrapper( props ) {
 						{ title && (
 							<UserInputQuestionInfo
 								title={ title }
+								description={ description }
 								scope={ scope }
 								author={ author }
 							/>
@@ -85,7 +89,7 @@ export default function UserInputQuestionWrapper( props ) {
 						<div className="googlesitekit-user-input__buttons">
 							{ back && (
 								<Button text onClick={ back }>
-									{ __( 'Back', 'google-site-kit' ) }
+									{ backLabel }
 								</Button>
 							) }
 							{ next && (
@@ -93,7 +97,7 @@ export default function UserInputQuestionWrapper( props ) {
 									onClick={ next }
 									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
 								>
-									{ __( 'Next', 'google-site-kit' ) }
+									{ nextLabel }
 								</Button>
 							) }
 						</div>
@@ -104,12 +108,20 @@ export default function UserInputQuestionWrapper( props ) {
 	);
 }
 
+UserInputQuestionWrapper.defaultProps = {
+	backLabel: __( 'Back', 'google-site-kit' ),
+	nextLabel: __( 'Next', 'google-site-kit' ),
+};
+
 UserInputQuestionWrapper.propTypes = {
 	slug: PropTypes.string.isRequired,
 	questionNumber: PropTypes.number.isRequired,
 	children: PropTypes.node,
 	isActive: PropTypes.bool,
 	title: PropTypes.string,
+	description: PropTypes.string,
 	next: PropTypes.func,
+	nextLabel: PropTypes.string,
 	back: PropTypes.func,
+	backLabel: PropTypes.string,
 };

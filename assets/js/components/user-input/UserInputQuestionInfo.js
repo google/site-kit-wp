@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { Cell } from '../../material-components';
 
-export default function UserInputQuestionInfo( { title, scope, author } ) {
+export default function UserInputQuestionInfo( { title, description, scope, author } ) {
 	return (
 		<Cell
 			className="googlesitekit-user-input__question-instructions"
@@ -45,9 +45,11 @@ export default function UserInputQuestionInfo( { title, scope, author } ) {
 				{ title }
 			</h1>
 
-			<p>
-				{ __( 'Place a text here that gives more context and information to the user to answer the question correctly.', 'google-site-kit' ) }
-			</p>
+			{ description && (
+				<p>
+					{ description }
+				</p>
+			) }
 
 			<UserInputQuestionNotice />
 
@@ -75,6 +77,7 @@ export default function UserInputQuestionInfo( { title, scope, author } ) {
 
 UserInputQuestionInfo.propTypes = {
 	title: PropTypes.string.isRequired,
+	description: PropTypes.string,
 	scope: PropTypes.string,
 	author: PropTypes.shape( {
 		photo: PropTypes.string,
