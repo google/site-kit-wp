@@ -50,7 +50,7 @@ async function loadCharts() {
 			// Add the script to the DOM
 			global.document.head.appendChild( script );
 			// Set the `src` to begin transport
-			script.src = '//www.gstatic.com/charts/loader.js';
+			script.src = 'https://www.gstatic.com/charts/loader.js';
 		} );
 	} else {
 		// Charts is already available - resolve immediately.
