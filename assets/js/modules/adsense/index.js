@@ -90,20 +90,9 @@ domReady( () => {
 			setupComponent: SetupMain,
 			checkRequirements: () => {
 				const isAdBlockerActive = select( STORE_NAME ).isAdBlockerActive();
+				const errorMessage = __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' );
 
-				// Return true if loading or if everything is fine.
-				if ( ! isAdBlockerActive ) {
-					return true;
-				}
-
-				const isAccountSetupComplete = select( STORE_NAME ).getAccountSetupComplete();
-				const isSiteSetupComplete = select( STORE_NAME ).getSiteSetupComplete();
-
-				const errorMessage = isAccountSetupComplete && isSiteSetupComplete
-					? __( 'Ad blocker detected, you need to disable it to get the AdSense latest data.', 'google-site-kit' )
-					: __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' );
-
-				return { adsense: errorMessage };
+				return ! isAdBlockerActive ? true : { adsense: errorMessage };
 			},
 		}
 	);
