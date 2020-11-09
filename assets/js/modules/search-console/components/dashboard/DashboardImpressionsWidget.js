@@ -36,7 +36,7 @@ import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import ReportError from '../../../../components/ReportError';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportZero from '../../../../components/ReportZero';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
@@ -85,7 +85,7 @@ function DashboardImpressionsWidget() {
 	}
 
 	if ( ! data || ! data.length ) {
-		return getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="search-console" />;
 	}
 
 	const { totalImpressions, totalImpressionsChange, dataMap } = extractSearchConsoleDashboardData( data );
