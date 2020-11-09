@@ -518,6 +518,19 @@ module.exports = [
 		},
 	},
 	{
+		id: 'global--visually-hidden',
+		kind: 'Global',
+		name: 'Visually Hidden',
+		story: 'Visually Hidden',
+		parameters: {
+			fileName: './stories/visually-hidden.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+			},
+		},
+	},
+	{
 		id: 'wordpress--wordpress-dashboard',
 		kind: 'WordPress',
 		name: 'WordPress Dashboard',

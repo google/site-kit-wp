@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { TextField, HelperText, Input } from '../../../../material-components';
 import { STORE_NAME, PROFILE_CREATE, FORM_SETUP } from '../../datastore/constants';
+import VisuallyHidden from '../../../../components/VisuallyHidden';
 const { useSelect, useDispatch } = Data;
 
 export default function ProfileNameTextField() {
@@ -67,9 +68,9 @@ export default function ProfileNameTextField() {
 
 		trailingIcon = (
 			<span className="googlesitekit-text-field-icon--warning">
-				<span className="screen-reader-text">
+				<VisuallyHidden>
 					{ __( 'Warning', 'google-site-kit' ) }
-				</span>
+				</VisuallyHidden>
 			</span>
 		);
 	}

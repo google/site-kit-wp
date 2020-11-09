@@ -1,5 +1,5 @@
 /**
- * ErrorNotice component.
+ * Visually Hidden component, mainly used for screen-reader text.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,30 +20,26 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
-/**
- * Internal dependencies
- */
-import { isPermissionScopeError } from '../util/errors';
-import ErrorText from './ErrorText';
-
-export default function ErrorNotice( { error, shouldDisplayError = () => true } ) {
-	// Do not display if no error, or if the error is for missing scopes.
-	if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
-		return null;
-	}
-
+function VisuallyHidden( { className, children, ...otherProps } ) {
 	return (
-		<ErrorText
-			message={ error.message }
-			reconnectURL={ error.data?.reconnectURL }
-		/>
+		<span
+			{ ...otherProps }
+			className={ classnames( 'screen-reader-text', className ) }
+		>
+			{ children }
+		</span>
 	);
 }
 
-ErrorNotice.propTypes = {
-	error: PropTypes.shape( {
-		message: PropTypes.string,
-	} ),
-	shouldDisplayError: PropTypes.func,
+VisuallyHidden.propTypes = {
+	className: PropTypes.string,
+	children: PropTypes.node.isRequired,
 };
+
+VisuallyHidden.defaultProps = {
+	className: '',
+};
+
+export default VisuallyHidden;

@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { isValidOptimizeID } from '../../util';
-import ErrorText from '../../../../components/error-text';
+import ErrorText from '../../../../components/ErrorText';
 import {
 	AMPExperimentJSONField,
 	OptimizeIDField,
