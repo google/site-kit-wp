@@ -35,7 +35,7 @@ import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
+import ReportError from '../../../../components/ReportError';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
@@ -81,7 +81,7 @@ function DashboardClicksWidget() {
 
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return getDataErrorComponent( 'search-console', error.message, false, false, false, error );
+		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( ! data || ! data.length ) {

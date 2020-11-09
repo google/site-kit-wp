@@ -35,7 +35,7 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../../compon
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
+import ReportError from '../../../../components/ReportError';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 const { useSelect } = Data;
@@ -86,7 +86,7 @@ function DashboardPopularKeywordsWidget() {
 		return <PreviewTable padding />;
 	}
 	if ( error ) {
-		return getDataErrorComponent( 'search-console', error.message, false, false, false, error );
+		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( ! data || ! data.length ) {
