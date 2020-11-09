@@ -19,18 +19,17 @@
 /**
  * Internal dependencies
  */
-import { render, createTestRegistry, fireEvent, act } from '../../../tests/js/test-utils';
+import { render, createTestRegistry, fireEvent, act, provideSiteInfo } from '../../../tests/js/test-utils';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import ResetButton from './ResetButton';
 import { subscribeUntil } from '../../../tests/js/utils';
 
 describe( 'ResetButton', () => {
 	let registry;
-	const adminURL = 'http://example.com/';
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { adminURL } );
+		provideSiteInfo( registry );
 	} );
 
 	it( 'should render "Reset Site Kit" as the default child', () => {
@@ -41,7 +40,7 @@ describe( 'ResetButton', () => {
 	it( 'should render passed children inside of the button', () => {
 		const { container } = render( <ResetButton>Test Value</ResetButton>, { registry } );
 		expect( container ).toHaveTextContent( 'Test Value' );
-		expect( document.querySelector( '.mdc-dialog--open' ) ).toBeNull();
+		expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 	} );
 
 	describe( 'after click', () => {
@@ -52,37 +51,42 @@ describe( 'ResetButton', () => {
 		} );
 
 		it( 'should open the dialog', async () => {
-			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeTruthy();
+			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeInTheDocument();
 		} );
 
 		it( 'should show reset and cancel buttons', async () => {
-			expect( document.querySelector( '.mdc-dialog--open .mdc-dialog__cancel-button' ) ).toBeTruthy();
-			expect( document.querySelector( '.mdc-dialog--open .mdc-button--danger' ) ).toBeTruthy();
+			expect( document.querySelector( '.mdc-dialog--open .mdc-dialog__cancel-button' ) ).toBeInTheDocument();
+			expect( document.querySelector( '.mdc-dialog--open .mdc-button--danger' ) ).toBeInTheDocument();
 		} );
 
 		it( 'should close the modal on clicking cancel', async () => {
 			fireEvent.click( document.querySelector( '.mdc-dialog--open .mdc-dialog__cancel-button' ) );
-			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeNull();
+			expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 		} );
 
 		it( 'should close the modal on pressing escape key', async () => {
 			fireEvent.keyUp( global, { keyCode: 27 } );
-			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeNull();
+			expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 		} );
 
-		it( 'should close the modal on clicking Reset, reset the plugin and delete localstorage', async () => {
+		it( 'should close the modal on clicking Reset, reset the plugin and delete local and session storage', async () => {
 			const response = true;
 			fetchMock.postOnce(
 				/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
 				{ body: JSON.stringify( response ), status: 200 },
 			);
 
-			Object.defineProperty( global.window, 'location', {
-				value: {
-					href: 'validurl',
+			const locationAssignMock = jest.fn();
+			delete global.location;
+			global.location = Object.defineProperties(
+				{},
+				{
+					assign: {
+						configurable: true,
+						value: locationAssignMock,
+					},
 				},
-				writable: true,
-			} );
+			);
 
 			await act( async () => {
 				fireEvent.click( document.querySelector( '.mdc-dialog--open .mdc-button--danger' ) );
@@ -90,9 +94,17 @@ describe( 'ResetButton', () => {
 			} );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
-			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeNull();
+			expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 			expect( localStorage.clear ).toHaveBeenCalled();
-			expect( global.location.href ).toBe( 'http://example.com/admin.php?page=googlesitekit-splash&notification=reset_success' );
+			expect( sessionStorage.clear ).toHaveBeenCalled();
+
+			expect( locationAssignMock ).toHaveBeenCalled();
+			const url = new URL( locationAssignMock.mock.calls[ 0 ][ 0 ] );
+			expect( url.pathname ).toBe( '/wp-admin/admin.php' );
+			expect( url.href ).toMatchQueryParameters( {
+				page: 'googlesitekit-splash',
+				notification: 'reset_success',
+			} );
 		} );
 	} );
 } );

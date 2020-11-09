@@ -21,7 +21,6 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Fragment, useState, useEffect, useCallback, createInterpolateElement } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -32,15 +31,14 @@ import Dialog from './dialog';
 import Modal from './Modal';
 import Link from './Link';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
+
 const { useSelect, useDispatch } = Data;
 
 function ResetButton( { children } ) {
-	const splashURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash' ) );
+	const postResetURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } ) );
 
 	const [ dialogActive, setDialogActive ] = useState( false );
-	const postResetURL = addQueryArgs( splashURL, { notification: 'reset_success' } );
-
-	const { reset } = useDispatch( CORE_SITE );
+	// const postResetURL = addQueryArgs( splashURL,  );
 
 	const handleCloseModal = useCallback( ( event ) => {
 		if ( 27 === event.keyCode ) {
@@ -64,16 +62,18 @@ function ResetButton( { children } ) {
 		};
 	}, [ dialogActive ] );
 
-	const handleUnlinkConfirm = async () => {
-		reset();
+	const { reset } = useDispatch( CORE_SITE );
+
+	const handleUnlinkConfirm = useCallback( async () => {
+		await reset();
 		clearWebStorage();
 		setDialogActive( false );
-		global.location.href = postResetURL;
-	};
+		global.location.assign( postResetURL );
+	}, [ reset, postResetURL ] );
 
-	const toggleDialogActive = () => {
+	const toggleDialogActive = useCallback( () => {
 		setDialogActive( ! dialogActive );
-	};
+	}, [ dialogActive ] );
 
 	return (
 		<Fragment>
@@ -96,7 +96,6 @@ function ResetButton( { children } ) {
 							br: <br />,
 						} ) }
 					confirmButton={ __( 'Reset', 'google-site-kit' ) }
-					provides={ [] }
 					danger
 				/>
 			</Modal>
