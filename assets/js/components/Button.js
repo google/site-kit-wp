@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
 
 /**
@@ -43,12 +43,11 @@ const Button = forwardRef( ( {
 	target,
 	icon,
 	trailingIcon,
-	ariaHaspopup,
-	ariaExpanded,
-	ariaControls,
 	...extraProps
 }, ref ) => {
 	const buttonRef = useRef( null );
+	const mergedRefs = useMergedRef( ref, buttonRef );
+
 	useEffect( () => {
 		MDCRipple.attachTo( buttonRef.current );
 	}, [ buttonRef.current ] );
@@ -67,12 +66,9 @@ const Button = forwardRef( ( {
 				}
 			) }
 			href={ disabled ? undefined : href }
-			ref={ useMergedRef( ref, buttonRef ) }
+			ref={ mergedRefs }
 			disabled={ !! disabled }
 			target={ target || '_self' }
-			aria-haspopup={ ariaHaspopup }
-			aria-expanded={ ariaExpanded }
-			aria-controls={ ariaControls }
 			role={ 'a' === SemanticButton ? 'button' : undefined }
 			{ ...extraProps }
 		>
@@ -95,9 +91,6 @@ Button.propTypes = {
 	disabled: PropTypes.bool,
 	icon: PropTypes.element,
 	trailingIcon: PropTypes.element,
-	ariaHaspopup: PropTypes.string,
-	ariaExpanded: PropTypes.bool,
-	ariaControls: PropTypes.string,
 };
 
 Button.defaultProps = {
@@ -109,9 +102,6 @@ Button.defaultProps = {
 	disabled: false,
 	icon: null,
 	trailingIcon: null,
-	ariaHaspopup: '',
-	ariaExpanded: false,
-	ariaControls: '',
 };
 
 export default Button;

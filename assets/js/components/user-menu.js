@@ -171,9 +171,9 @@ class UserMenu extends Component {
 							? <i className="mdc-button__icon" aria-hidden="true"><img className="mdc-button__icon--image" src={ userPicture } alt={ __( 'User Avatar', 'google-site-kit' ) } /></i>
 							: undefined
 						}
-						ariaHaspopup="menu"
-						ariaExpanded={ menuOpen }
-						ariaControls="user-menu"
+						aria-haspopup="menu"
+						aria-expanded={ menuOpen }
+						aria-controls="user-menu"
 					>
 						{ userEmail }
 					</Button>

@@ -26,7 +26,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { withInstanceId } from '@wordpress/compose';
+import { useInstanceId } from '@wordpress/compose';
 import { useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -46,8 +46,6 @@ const Dialog = ( {
 	subtitle,
 	confirmButton,
 	dependentModules,
-	// eslint-disable-next-line sitekit/camelcase-acronyms
-	instanceId,
 	danger,
 } ) => {
 	const dialogRef = useRef( null );
@@ -57,9 +55,11 @@ const Dialog = ( {
 	}, [ dialogRef.current ] );
 
 	// eslint-disable-next-line sitekit/camelcase-acronyms
-	const labelledByID = `googlesitekit-dialog-label-${ instanceId }`;
+	const instanceID = useInstanceId( Dialog );
 	// eslint-disable-next-line sitekit/camelcase-acronyms
-	const describedByID = `googlesitekit-dialog-description-${ instanceId }`;
+	const labelledByID = `googlesitekit-dialog-label-${ instanceID }`;
+	// eslint-disable-next-line sitekit/camelcase-acronyms
+	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
 	const hasProvides = !! ( provides && provides.length );
 
 	return (
@@ -114,7 +114,11 @@ const Dialog = ( {
 								>
 									{ confirmButton ? confirmButton : __( 'Disconnect', 'google-site-kit' ) }
 								</Button>
-								<Link className="mdc-dialog__cancel-button" onClick={ () => handleDialog() } inherit>
+								<Link
+									className="mdc-dialog__cancel-button"
+									onClick={ handleDialog }
+									inherit
+								>
 									{ __( 'Cancel', 'google-site-kit' ) }
 								</Link>
 							</footer>
@@ -147,4 +151,4 @@ Dialog.defaultProps = {
 	danger: false,
 };
 
-export default withInstanceId( Dialog );
+export default Dialog;

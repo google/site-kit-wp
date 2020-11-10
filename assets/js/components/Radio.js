@@ -67,7 +67,7 @@ const Radio = ( {
 					value={ value }
 					checked={ checked }
 					disabled={ disabled }
-					onChange={ () => {} }
+					readOnly
 				/>
 				<div className="mdc-radio__background">
 					<div className="mdc-radio__outer-circle"></div>

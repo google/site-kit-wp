@@ -25,7 +25,7 @@ import useMergedRef from '@react-hook/merged-ref';
 /**
  * WordPress dependencies
  */
-import { forwardRef, useEffect, useRef } from '@wordpress/element';
+import { forwardRef, useCallback, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,23 +39,37 @@ const Menu = forwardRef( ( {
 	id,
 }, ref ) => {
 	const menuRef = useRef( null );
+	const mergedRefs = useMergedRef( ref, menuRef );
+	const handleMenuSelected = useCallback( ( { detail: { index } } ) => {
+		onSelected( index );
+	} );
 
 	useEffect( () => {
 		const menu = new MDCMenu( menuRef.current );
 		menu.open = menuOpen;
 		menu.setDefaultFocusState( 1 );
+
+		menuRef.current.addEventListener( 'MDCMenu:selected', handleMenuSelected );
 	}, [ menuRef.current, menuOpen ] );
 
 	return (
-		<div className="mdc-menu mdc-menu-surface" ref={ useMergedRef( ref, menuRef ) }>
-			<ul id={ id } className="mdc-list" role="menu" aria-hidden={ ! menuOpen } aria-orientation="vertical" tabIndex="-1">
+		<div
+			className="mdc-menu mdc-menu-surface"
+			ref={ mergedRefs }
+		>
+			<ul
+				aria-hidden={ ! menuOpen }
+				aria-orientation="vertical"
+				className="mdc-list"
+				id={ id }
+				role="menu"
+				tabIndex="-1"
+			>
 				{ menuItems.map( ( item, index ) => (
 					<li
 						key={ index }
 						className="mdc-list-item"
 						role="menuitem"
-						onClick={ onSelected.bind( null, index ) }
-						onKeyDown={ onSelected.bind( null, index ) }
 					>
 						<span className="mdc-list-item__text">{ item }</span>
 					</li>

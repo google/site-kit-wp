@@ -1,5 +1,5 @@
 /**
- * Adsense Stories.
+ * AdSense Stories.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { withInstanceId } from '@wordpress/compose';
+import { useInstanceId } from '@wordpress/compose';
 import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
 
 /**
@@ -33,17 +33,15 @@ import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
  */
 import { MDCSwitch } from '../material-components';
 
-const Switch = ( props ) => {
-	const {
-		// eslint-disable-next-line sitekit/camelcase-acronyms
-		id = `googlesitekit-switch-${ props.instanceId }`,
-		onClick,
-		label,
-		checked,
-		disabled,
-		hideLabel,
-	} = props;
-
+const Switch = ( {
+	onClick,
+	label,
+	checked,
+	disabled,
+	hideLabel,
+} ) => {
+	// eslint-disable-next-line sitekit/camelcase-acronyms
+	const instanceID = useInstanceId( Switch );
 	const switchRef = useRef( null );
 
 	useEffect( () => {
@@ -51,10 +49,13 @@ const Switch = ( props ) => {
 	}, [ switchRef.current ] );
 
 	const onKeyDown = useCallback( ( event ) => {
+		// If the Enter key is pressed.
 		if ( typeof onClick === 'function' && event.keyCode === '13' ) {
 			onClick( event );
 		}
-	}, [] );
+	}, [ onClick ] );
+
+	const id = `googlesitekit-switch-${ instanceID }`;
 
 	return (
 		<Fragment>
@@ -83,7 +84,7 @@ const Switch = ( props ) => {
 							role="switch"
 							checked={ checked }
 							disabled={ disabled }
-							onChange={ () => {} }
+							readOnly
 						/>
 					</div>
 				</div>
@@ -105,8 +106,6 @@ Switch.propTypes = {
 	checked: PropTypes.bool,
 	disabled: PropTypes.bool,
 	hideLabel: PropTypes.bool,
-	// eslint-disable-next-line sitekit/camelcase-acronyms
-	instanceId: PropTypes.number.isRequired,
 };
 
 Switch.defaultProps = {
@@ -115,4 +114,4 @@ Switch.defaultProps = {
 	hideLabel: true,
 };
 
-export default withInstanceId( Switch );
+export default Switch;

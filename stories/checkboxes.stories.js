@@ -66,7 +66,7 @@ storiesOf( 'Global', module )
 					} }
 					value="value-3"
 				>
-					Disabled Button
+					Disabled Checkbox
 				</Checkbox>
 			</div>
 		</div>
