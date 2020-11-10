@@ -303,6 +303,7 @@ final class Assets {
 		$base_url = $this->context->url( 'dist/assets/' );
 
 		$dependencies = array(
+			'googlesitekit-i18n',
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
 			'googlesitekit-base',
@@ -315,6 +316,12 @@ final class Assets {
 
 		// Register plugin scripts.
 		$assets = array(
+			new Script(
+				'googlesitekit-i18n',
+				array(
+					'src' => $base_url . 'js/googlesitekit-i18n.js',
+				)
+			),
 			new Script(
 				'googlesitekit-vendor',
 				array(

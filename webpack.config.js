@@ -163,6 +163,7 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
 				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
 				'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
+				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
@@ -244,16 +245,20 @@ const webpackConfig = ( env, argv ) => {
 					},
 				),
 				new ManifestPlugin( {
-					fileName: '../../../includes/Core/Assets/Manifest.php',
+					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
+					filter( file ) {
+						return ( file.name || '' ).match( /\.js$/ );
+					},
 					serialize( manifest ) {
-						const files = [];
-						Object.keys( manifest ).forEach( ( key ) => {
-							if ( key.match( /.js$/ ) ) {
-								files.push( `"${ key.replace( '.js', '' ) }" => "${ manifest[ key ] }",` );
-							}
-						} );
+						const maxLen = Math.max( ...Object.keys( manifest ).map( ( key ) => key.length ) );
+						const content = manifestTemplate.replace(
+							'{{assets}}',
+							Object.keys( manifest )
+								.map( ( key ) => `"${ key.replace( '.js', '' ) }"${ ''.padEnd( maxLen - key.length, ' ' ) } => "${ manifest[ key ] }",` )
+								.join( '\n\t\t' )
+						);
 
-						return manifestTemplate.replace( '{{assets}}', files.join( '\n\t\t' ) );
+						return content;
 					},
 				} ),
 			],
