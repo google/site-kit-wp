@@ -678,7 +678,8 @@ const baseSelectors = {
 
 	getCheckRequirementsStatus( state, slug ) {
 		invariant( slug, 'slug is required.' );
-		return state.checkRequirementsResults[ slug ];
+		const requirementsStatus = state.checkRequirementsResults[ slug ];
+		return requirementsStatus === true ? null : requirementsStatus;
 	},
 };
 
