@@ -41,10 +41,10 @@ import data from '../data';
 import ModuleIcon from '../ModuleIcon';
 import Spinner from '../Spinner';
 import Link from '../Link';
-import GenericError from '../../components/notifications/generic-error';
+import GenericError from '../notifications/generic-error';
+import ModuleSettingsWarning from '../notifications/module-settings-warning';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Data from 'googlesitekit-data';
-import ErrorIcon from '../../../svg/error.svg';
 
 const { useSelect } = Data;
 
@@ -83,8 +83,6 @@ export default function SetupModule( {
 	// and remove the !! modules cache busting param.
 	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug, !! modules ) );
-	const requirementsStatus = useSelect( ( select ) => select( CORE_MODULES ).getCheckRequirementsStatus( slug, !! modules ) );
-	const errorMessage = canActivateModule ? null : requirementsStatus;
 
 	return (
 		<div
@@ -111,12 +109,7 @@ export default function SetupModule( {
 				{ description }
 			</p>
 
-			{ errorMessage &&
-				<div
-					className={ classnames( 'googlesitekit-settings-module-warning', 'googlesitekit-settings-module-warning--modules-list' ) } >
-					<ErrorIcon height="20" width="23" /> { errorMessage }
-				</div>
-			}
+			<ModuleSettingsWarning slug={ slug } context="modules-list" />
 
 			<p className="googlesitekit-settings-connect-module__cta">
 				<Link
