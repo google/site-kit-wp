@@ -23,6 +23,7 @@ export default withFilters( 'googlesitekit.ModuleSettingsWarning' )( ModuleSetti
 
 export default function ModuleSettingsWarning( {
 	slug,
+	// context,
 } ) {
 	// @TODO: Resolver only runs once per set of args, so we are working around
 	// this to rerun after modules are loaded.
