@@ -157,7 +157,7 @@ export default function UserInputQuestionnaire() {
 					slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
 					isActive={ activeSlug === USER_INPUT_QUESTION_SEARCH_TERMS }
 					questionNumber={ 5 }
-					title={ __( 'To help us identify opportunities for your site, enter the top three search terms that best describe your site\'s content.', 'google-site-kit' ) }
+					title={ __( 'To help us identify opportunities for your site, enter the top three search terms that best describe your site’s content.', 'google-site-kit' ) }
 					description={ __( 'Site Kit will keep you informed if people start finding you in Search for these terms.', 'google-site-kit' ) }
 					next={ next }
 					nextLabel={ __( 'Preview', 'google-site-kit' ) }

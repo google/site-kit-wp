@@ -89,7 +89,7 @@ export default function UserInputQuestionWrapper( props ) {
 						<div className="googlesitekit-user-input__buttons">
 							{ back && (
 								<Button text onClick={ back }>
-									{ backLabel }
+									{ backLabel || __( 'Back', 'google-site-kit' ) }
 								</Button>
 							) }
 							{ next && (
@@ -97,7 +97,7 @@ export default function UserInputQuestionWrapper( props ) {
 									onClick={ next }
 									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
 								>
-									{ nextLabel }
+									{ nextLabel || __( 'Next', 'google-site-kit' ) }
 								</Button>
 							) }
 						</div>
@@ -107,11 +107,6 @@ export default function UserInputQuestionWrapper( props ) {
 		</div>
 	);
 }
-
-UserInputQuestionWrapper.defaultProps = {
-	backLabel: __( 'Back', 'google-site-kit' ),
-	nextLabel: __( 'Next', 'google-site-kit' ),
-};
 
 UserInputQuestionWrapper.propTypes = {
 	slug: PropTypes.string.isRequired,
