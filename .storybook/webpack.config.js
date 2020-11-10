@@ -9,6 +9,12 @@ module.exports = async ( { config } ) => {
 	const siteKitPackageAliases = mapValues(
 		mainConfig.siteKitExternals,
 		( [ global, api ] ) => {
+			if ( global === 'wp' ) {
+				if ( api === 'i18n' ) {
+					return require.resolve( '@wordpress/i18n' );
+				}
+			}
+
 			return path.resolve( `assets/js/${ global }-${ api }.js` );
 		}
 	);
