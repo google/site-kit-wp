@@ -132,6 +132,10 @@ final class AdSense extends Module
 					add_filter( // For AMP Reader, and AMP Native and Transitional (as fallback).
 						'the_content',
 						function( $content ) use ( $client_id ) {
+							// Only run for the primary application of the `the_content` filter.
+							if ( ! in_the_loop() ) {
+								return $content;
+							}
 							return $this->amp_content_add_auto_ads( $content, $client_id );
 						}
 					);
@@ -695,7 +699,7 @@ final class AdSense extends Module
 				};
 		}
 
-		throw new Invalid_Datapoint_Exception();
+		return parent::create_data_request( $data );
 	}
 
 	/**
@@ -730,7 +734,7 @@ final class AdSense extends Module
 				return $response;
 		}
 
-		return $response;
+		return parent::parse_data_response( $data, $response );
 	}
 
 	/**
