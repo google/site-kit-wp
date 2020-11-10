@@ -19,35 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
-
-/**
- * Gets the current dateRange string.
- *
- * @since 1.8.0
- *
- * @param {string} [dateRange] Optional. The date range slug.
- * @return {string} The date range string.
- */
-export function getCurrentDateRange( dateRange = getCurrentDateRangeSlug() ) {
-	const daysMatch = dateRange.match( /last-(\d+)-days/ );
-
-	if ( daysMatch && daysMatch[ 1 ] ) {
-		return sprintf(
-			/* translators: %s: Number of days matched. */
-			_n( '%s day', '%s days', parseInt( daysMatch[ 1 ], 10 ), 'google-site-kit' ),
-			daysMatch[ 1 ]
-		);
-	}
-
-	throw new Error( 'Unrecognized date range slug.' );
-}
 
 /**
  * Gets the current dateRange day count.
@@ -86,25 +64,28 @@ export function getCurrentDateRangeSlug() {
  * @return {Object} The object hash where every key is a date range slug, and the value is an object with the date range slug and its translation.
  */
 export function getAvailableDateRanges() {
-	/* translators: %s: Number of days to request data. */
-	const format = __( 'Last %s days', 'google-site-kit' );
+	const label = ( days ) => sprintf(
+		/* translators: %s: number of days */
+		_n( 'Last %s day', 'Last %s days', days, 'google-site-kit', ),
+		days,
+	);
 
 	return {
 		'last-7-days': {
 			slug: 'last-7-days',
-			label: sprintf( format, 7 ),
+			label: label( 7 ),
 		},
 		'last-14-days': {
 			slug: 'last-14-days',
-			label: sprintf( format, 14 ),
+			label: label( 14 ),
 		},
 		'last-28-days': {
 			slug: 'last-28-days',
-			label: sprintf( format, 28 ),
+			label: label( 28 ),
 		},
 		'last-90-days': {
 			slug: 'last-90-days',
-			label: sprintf( format, 90 ),
+			label: label( 90 ),
 		},
 	};
 }
