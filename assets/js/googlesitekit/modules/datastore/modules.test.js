@@ -651,22 +651,13 @@ describe( 'core/modules modules', () => {
 		} );
 
 		describe( 'getCheckRequirementsStatus', () => {
-			it( 'makes no state changes without a call to canActivateModule selector', async () => {
-				await bootStrapActivateModulesTests();
-				const slug = 'slug1dependant';
-				const requirementsStatus = registry.select( STORE_NAME ).getCheckRequirementsStatus( slug );
-
-				expect( store.getState().checkRequirementsResults ).toEqual( {} );
-				expect( requirementsStatus ).toBeUndefined();
-			} );
-
 			it( 'has no error message when we can activate a module', async () => {
 				await bootStrapActivateModulesTests();
 				const slug = 'slug1dependant';
 				registry.select( STORE_NAME ).canActivateModule( slug );
 
 				const requirementsStatus = registry.select( STORE_NAME ).getCheckRequirementsStatus( slug );
-				expect( requirementsStatus ).toEqual( true );
+				expect( requirementsStatus ).toEqual( null );
 			} );
 
 			it( 'has an error message when we can not activate a module', async () => {
