@@ -79,7 +79,7 @@ domReady( () => {
 				const isAdBlockerActive = select( STORE_NAME ).isAdBlockerActive();
 				const errorMessage = __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' );
 
-				return ! isAdBlockerActive ? true : { adsense: errorMessage };
+				return ! isAdBlockerActive ? true : { slug: 'adsense', error: errorMessage };
 			},
 		}
 	);

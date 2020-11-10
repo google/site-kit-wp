@@ -273,14 +273,15 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} errorMap Map of errors of the format { slug: error }.
+	 * @param {string} slug  Module slug.
+	 * @param {string} error Error message.
 	 * @return {Object} Action for RECEIVE_CHECK_REQUIREMENTS_ERROR.
 	 */
-	receiveCheckRequirementsError( errorMap ) {
-		invariant( errorMap, 'errorMap is required' );
-		invariant( Object.keys( errorMap ).length, 'errorMap must contain at least one error' );
+	receiveCheckRequirementsError( slug, error ) {
+		invariant( slug, 'slug is required' );
+		invariant( error, 'error is required' );
 		return {
-			payload: errorMap,
+			payload: { slug, error },
 			type: RECEIVE_CHECK_REQUIREMENTS_ERROR,
 		};
 	},
@@ -341,9 +342,8 @@ const baseReducer = ( state, { type, payload } ) => {
 		case RECEIVE_CHECK_REQUIREMENTS_ERROR: {
 			const checkRequirementsResults = { ...state.checkRequirementsResults };
 
-			for ( const [ slug, error ] of Object.entries( payload ) ) {
-				checkRequirementsResults[ slug ] = error;
-			}
+			const { slug, error } = payload;
+			checkRequirementsResults[ slug ] = error;
 
 			return {
 				...state,
@@ -415,14 +415,14 @@ const baseResolvers = {
 			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
 			const errorMessage = sprintf( __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' ), formatter.format( inactiveModules ), module.name );
 
-			yield baseActions.receiveCheckRequirementsError( { [ slug ]: errorMessage } );
+			yield baseActions.receiveCheckRequirementsError( slug, errorMessage );
 		} else {
 			const checkResult = yield Data.commonActions.await( module.checkRequirements() );
 
 			if ( checkResult === true ) {
 				yield baseActions.receiveCheckRequirementsSuccess( slug );
 			} else {
-				yield baseActions.receiveCheckRequirementsError( checkResult );
+				yield baseActions.receiveCheckRequirementsError( checkResult.slug, checkResult.error );
 			}
 		}
 	},

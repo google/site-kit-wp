@@ -357,23 +357,21 @@ describe( 'core/modules modules', () => {
 		} );
 
 		describe( 'receiveCheckRequirementsError', () => {
-			it( 'requires the errorMap param', () => {
+			it( 'requires the error and slug params', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).receiveCheckRequirementsError();
-				} ).toThrow( 'errorMap is required' );
-			} );
-
-			it( 'requires the errorMap contains an error', () => {
+				} ).toThrow( 'slug is required' );
 				expect( () => {
-					registry.dispatch( STORE_NAME ).receiveCheckRequirementsError( {} );
-				} ).toThrow( 'errorMap must contain at least one error' );
+					registry.dispatch( STORE_NAME ).receiveCheckRequirementsError( 'slug' );
+				} ).toThrow( 'error is required' );
 			} );
 
 			it( 'receives and sets the error', () => {
-				const errors = { slug1: 'Error Message', slug2: 'Error Message Two' };
+				const slug = 'slug1';
+				const errorMessage = 'Error Message';
 				const state = { ... store.getState().checkRequirementsResults };
-				registry.dispatch( STORE_NAME ).receiveCheckRequirementsError( errors );
-				expect( store.getState().checkRequirementsResults ).toMatchObject( { ...state, ...errors } );
+				registry.dispatch( STORE_NAME ).receiveCheckRequirementsError( slug, errorMessage );
+				expect( store.getState().checkRequirementsResults ).toMatchObject( { ...state, [ slug ]: errorMessage } );
 			} );
 		} );
 
