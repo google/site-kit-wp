@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import GoogleLogoIcon from '../../svg/logo-g.svg';
 import SiteKitLogoIcon from '../../svg/logo-sitekit.svg';
+import VisuallyHidden from './VisuallyHidden';
 
 const Logo = () => {
 	return (
@@ -40,9 +41,9 @@ const Logo = () => {
 				height="26"
 				width="99"
 			/>
-			<span className="screen-reader-text">
+			<VisuallyHidden>
 				{ __( 'Site Kit by Google Logo', 'google-site-kit' ) }
-			</span>
+			</VisuallyHidden>
 		</div>
 	);
 };

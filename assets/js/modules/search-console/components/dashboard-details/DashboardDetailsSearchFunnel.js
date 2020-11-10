@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Layout from '../../../../components/layout/layout';
 import LegacyDashboardSearchFunnelInner from '../dashboard/LegacyDashboardSearchFunnelInner';
 import { getModulesData } from '../../../../util';
-import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
+import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 
 class DashboardDetailsSearchFunnel extends Component {

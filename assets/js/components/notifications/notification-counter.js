@@ -32,6 +32,7 @@ import { addAction, removeAction } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { getTotalNotifications, incrementCount, decrementCount } from '../notifications/util';
+import VisuallyHidden from '../VisuallyHidden';
 
 class NotificationCounter extends Component {
 	constructor( props ) {
@@ -91,7 +92,7 @@ class NotificationCounter extends Component {
 				`count-${ this.state.count }`
 			) }>
 				<span className="plugin-count" aria-hidden="true">{ this.state.count }</span>
-				<span className="screen-reader-text">{ screenReader }</span>
+				<VisuallyHidden>{ screenReader }</VisuallyHidden>
 			</span>
 		);
 
