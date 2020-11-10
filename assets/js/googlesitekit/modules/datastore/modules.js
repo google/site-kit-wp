@@ -428,6 +428,8 @@ const baseResolvers = {
 		}
 	},
 };
+// Use the canActivateModule resolver for getCheckRequirementsStatus
+baseResolvers.getCheckRequirementsStatus = baseResolvers.canActivateModule;
 
 const baseSelectors = {
 	/**
