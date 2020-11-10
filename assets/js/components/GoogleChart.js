@@ -80,19 +80,19 @@ export default function GoogleChart( props ) {
 
 	const drawChart = useCallback( () => {
 		let dataTable = global.google?.visualization?.arrayToDataTable?.( data );
-		if ( dataTable ) {
-			if ( selectedStats.length > 0 ) {
-				dataTable = new global.google.visualization.DataView( dataTable );
-				if ( ! singleStat ) {
-					dataTable.setColumns( [
-						0,
-						...selectedStats.map( ( stat ) => stat + 1 ),
-					] );
-				}
-			}
-
-			chart.draw( dataTable, options );
+		if ( ! dataTable ) {
+			return;
 		}
+		if ( selectedStats.length > 0 ) {
+			const dataView = new global.google.visualization.DataView( dataTable );
+			if ( ! singleStat ) {
+				dataView.setColumns(
+					[ 0, ...selectedStats.map( ( stat ) => stat + 1 ) ]
+				);
+			}
+			dataTable = dataView;
+		}
+		chart.draw( dataTable, options );
 	}, [ chart, data, singleStat, selectedStats ] );
 
 	useEffect( () => {
