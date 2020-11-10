@@ -19,28 +19,23 @@
 /**
  * WordPress dependencies
  */
-import { Component, createPortal } from '@wordpress/element';
+import { createPortal, useEffect, useState } from '@wordpress/element';
 
-export default class Modal extends Component {
-	constructor( props ) {
-		super( props );
-		this.el = document.createElement( 'div' );
-		// This class is the outermost wrapper which is present on all Site Kit pages.
-		this.root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
-	}
+function Modal( { children } ) {
+	// Using state as we need `el` to not change when the component re-renders
+	const [ el ] = useState( document.createElement( 'div' ) );
 
-	componentDidMount() {
-		this.root.appendChild( this.el );
-	}
+	useEffect( () => {
+		const root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
+		root.appendChild( el );
 
-	componentWillUnmount() {
-		this.root.removeChild( this.el );
-	}
+		return () => root.removeChild( el );
+	}, [] );
 
-	render() {
-		return createPortal(
-			this.props.children,
-			this.el,
-		);
-	}
+	return createPortal(
+		children,
+		el,
+	);
 }
+
+export default Modal;

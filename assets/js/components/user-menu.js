@@ -27,10 +27,10 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { getSiteKitAdminURL, clearWebStorage } from '../util';
-import Dialog from './Dialog';
 import Button from './Button';
+import Dialog from './Dialog';
 import Menu from './Menu';
-import Modal from './modal';
+import Modal from './Modal';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { withSelect } = Data;
