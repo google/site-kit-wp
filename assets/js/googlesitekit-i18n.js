@@ -16,5 +16,7 @@
  * limitations under the License.
  */
 
-global.googlesitekit = global.googlesitekit || {};
-global.googlesitekit.i18n = [];
+import i18n from '@wordpress/i18n__non-shim';
+
+global.wp = global.wp || {};
+global.wp.i18n = global.wp.i18n || i18n;

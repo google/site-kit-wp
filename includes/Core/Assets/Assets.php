@@ -316,18 +316,6 @@ final class Assets {
 
 		// Register plugin scripts.
 		$assets = array(
-			new Script(
-				'googlesitekit-i18n',
-				array(
-					'src' => $base_url . 'js/googlesitekit-i18n.js',
-				)
-			),
-			new Script(
-				'googlesitekit-vendor',
-				array(
-					'src' => $base_url . 'js/googlesitekit-vendor.js',
-				)
-			),
 			new Script_Data(
 				'googlesitekit-commons',
 				array(
@@ -394,6 +382,21 @@ final class Assets {
 					},
 				)
 			),
+			new Script(
+				'googlesitekit-i18n',
+				array(
+					'src' => $base_url . 'js/googlesitekit-i18n.js',
+				)
+			),
+			new Script(
+				'googlesitekit-vendor',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-vendor.js',
+					'dependencies' => array(
+						'googlesitekit-i18n',
+					),
+				)
+			),
 			// Admin assets.
 			new Script(
 				'googlesitekit-activation',
@@ -406,7 +409,11 @@ final class Assets {
 				'googlesitekit-base',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-base.js',
-					'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-base-data' ),
+					'dependencies' => array(
+						'googlesitekit-apifetch-data',
+						'googlesitekit-base-data',
+						'googlesitekit-i18n',
+					),
 					'execution'    => 'defer',
 				)
 			),
@@ -483,6 +490,7 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-widgets.js',
 					'dependencies' => array(
 						'googlesitekit-data',
+						'googlesitekit-i18n',
 					),
 				)
 			),
@@ -688,7 +696,6 @@ final class Assets {
 	 * @return array The inline data to be output.
 	 */
 	private function get_inline_data() {
-		$locale       = $this->get_jed_locale_data( 'google-site-kit' );
 		$cache        = new Cache();
 		$current_user = wp_get_current_user();
 		$site_url     = $this->context->get_reference_site_url();
@@ -736,7 +743,6 @@ final class Assets {
 			 * @param array $data Data about each module.
 			 */
 			'modules'       => apply_filters( 'googlesitekit_modules_data', array() ),
-			'locale'        => $locale,
 			'permissions'   => array(
 				'canAuthenticate'      => current_user_can( Permissions::AUTHENTICATE ),
 				'canSetup'             => current_user_can( Permissions::SETUP ),
@@ -771,35 +777,6 @@ final class Assets {
 			'publicPath'    => $this->context->url( 'dist/assets/js/' ),
 			'editmodule'    => $input->filter( INPUT_GET, 'editmodule', FILTER_SANITIZE_STRING ),
 		);
-	}
-
-	/**
-	 * Gets Jed-formatted localization data. From gutenberg.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $domain Text domain.
-	 * @return array Jed localization data.
-	 */
-	private function get_jed_locale_data( $domain ) {
-		$translations = get_translations_for_domain( $domain );
-
-		$locale = array(
-			'' => array(
-				'domain' => $domain,
-				'lang'   => is_admin() ? get_user_locale() : get_locale(),
-			),
-		);
-
-		if ( ! empty( $translations->headers['Plural-Forms'] ) ) {
-			$locale['']['plural_forms'] = $translations->headers['Plural-Forms'];
-		}
-
-		foreach ( $translations->entries as $msgid => $entry ) {
-			$locale[ $msgid ] = $entry->translations;
-		}
-
-		return $locale;
 	}
 
 	/**

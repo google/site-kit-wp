@@ -95,6 +95,10 @@ class Script extends Asset {
 		if ( ! empty( $this->args['execution'] ) ) {
 			wp_script_add_data( $this->handle, 'script_execution', $this->args['execution'] );
 		}
+
+		if ( ! empty( $src ) ) {
+			wp_set_script_translations( $this->handle, 'google-site-kit' );
+		}
 	}
 
 	/**

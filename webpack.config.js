@@ -78,6 +78,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
+	'@wordpress/i18n': [ 'wp', 'i18n' ],
 };
 
 const externals = { ...siteKitExternals };
@@ -132,6 +133,7 @@ const resolve = {
 		'@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
 		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
 		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
+		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 		'react__non-shim': require.resolve( 'react' ),
 		react: path.resolve( 'assets/js/react-shim.js' ),
 	},
