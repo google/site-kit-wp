@@ -272,6 +272,7 @@ const baseActions = {
 	 * Receives the check requirements error map for specified modules modules.
 	 *
 	 * @since n.e.x.t
+	 * @private
 	 *
 	 * @param {string} slug  Module slug.
 	 * @param {string} error Error message.
