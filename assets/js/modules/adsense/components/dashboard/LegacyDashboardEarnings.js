@@ -28,10 +28,25 @@ import { __ } from '@wordpress/i18n';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import LegacyDashboardAdSenseTopEarningPagesSmall from './LegacyDashboardAdSenseTopEarningPagesSmall';
 import LegacyAdSenseDashboardMainSummary from './LegacyAdSenseDashboardMainSummary';
-import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import classnames from 'classnames';
+import ErrorIcon from '../../../../../svg/error.svg';
+const { select } = Data;
 
 class LegacyDashboardEarnings extends Component {
 	render() {
+		const slug = 'adsense';
+
+		// @TODO: Resolver only runs once per set of args, so we are working around
+		// this to rerun after modules are loaded.
+		// Once #1769 is resolved, we can remove the call to getModules,
+		// and remove the !! modules cache busting param.
+		const modules = select( CORE_MODULES ).getModules();
+		const canActivateModule = select( CORE_MODULES ).canActivateModule( slug, !! modules );
+		const requirementsStatus = select( CORE_MODULES ).getCheckRequirementsStatus( slug, !! modules );
+		const errorMessage = canActivateModule ? null : requirementsStatus;
+
 		return (
 			<Fragment>
 				<div className="
@@ -42,7 +57,12 @@ class LegacyDashboardEarnings extends Component {
 						title={ __( 'Earnings', 'google-site-kit' ) }
 						description={ __( 'How much you’re earning from your content through AdSense.', 'google-site-kit' ) }
 					/>
-					<ModuleSettingsWarning slug="adsense" context="module-sitekit-dashboard" />
+					{ errorMessage &&
+					<div
+						className={ classnames( 'googlesitekit-settings-module-warning', 'googlesitekit-settings-module-warning--modules-list' ) } >
+						<ErrorIcon height="20" width="23" /> { errorMessage }
+					</div>
+					}
 				</div>
 				<LegacyAdSenseDashboardMainSummary />
 				<LegacyDashboardAdSenseTopEarningPagesSmall />

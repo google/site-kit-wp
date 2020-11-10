@@ -26,11 +26,16 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+
 import {
 	getReAuthURL,
 } from '../../util';
 import Link from '../Link';
-import ModuleSettingsWarning from '../notifications/module-settings-warning';
+import Data from 'googlesitekit-data';
+const { select } = Data;
+import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import classnames from 'classnames';
+import ErrorIcon from '../../../svg/error.svg';
 
 class ModuleSetupIncomplete extends Component {
 	render() {
@@ -38,9 +43,23 @@ class ModuleSetupIncomplete extends Component {
 			slug,
 		} = this.props;
 
+		// @TODO: Resolver only runs once per set of args, so we are working around
+		// this to rerun after modules are loaded.
+		// Once #1769 is resolved, we can remove the call to getModules,
+		// and remove the !! modules cache busting param.
+		const modules = select( CORE_MODULES ).getModules();
+		const canActivateModule = select( CORE_MODULES ).canActivateModule( slug, !! modules );
+		const requirementsStatus = select( CORE_MODULES ).getCheckRequirementsStatus( slug, !! modules );
+		const errorMessage = canActivateModule ? null : requirementsStatus;
+
 		return (
 			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ModuleSettingsWarning slug={ slug } context="settings" />
+				{ errorMessage &&
+				<div
+					className={ classnames( 'googlesitekit-settings-module-warning', 'googlesitekit-settings-module-warning--modules-list' ) } >
+					<ErrorIcon height="20" width="23" /> { errorMessage }
+				</div>
+				}
 				{ createInterpolateElement(
 					sprintf(
 						/* translators: %s: link with next step */

@@ -42,7 +42,10 @@ import Link from './Link';
 import data from '../components/data';
 import ModuleIcon from './ModuleIcon';
 import GenericError from './notifications/generic-error';
-import ModuleSettingsWarning from './notifications/module-settings-warning';
+import ErrorIcon from '../../svg/error.svg';
+import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import Data from 'googlesitekit-data';
+const { select } = Data;
 
 class ModulesList extends Component {
 	constructor( props ) {
@@ -129,6 +132,15 @@ class ModulesList extends Component {
 						} );
 					}
 
+					// @TODO: Resolver only runs once per set of args, so we are working around
+					// this to rerun after modules are loaded.
+					// Once #1769 is resolved, we can remove the call to getModules,
+					// and remove the !! modules cache busting param.
+					const modulesList = select( CORE_MODULES ).getModules();
+					const canActivateModule = select( CORE_MODULES ).canActivateModule( slug, !! modulesList );
+					const requirementsStatus = select( CORE_MODULES ).getCheckRequirementsStatus( slug, !! modulesList );
+					const errorMessage = canActivateModule ? null : requirementsStatus;
+
 					return (
 						<div
 							key={ slug }
@@ -146,7 +158,12 @@ class ModulesList extends Component {
 									{ name }
 								</h3>
 							</div>
-							<ModuleSettingsWarning slug={ slug } context="modules-list" />
+							{ errorMessage &&
+							<div
+								className={ classnames( 'googlesitekit-settings-module-warning', 'googlesitekit-settings-module-warning--modules-list' ) } >
+								<ErrorIcon height="20" width="23" /> { errorMessage }
+							</div>
+							}
 							{ isConnected && (
 								<span className="googlesitekit-settings-module__status">
 									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">

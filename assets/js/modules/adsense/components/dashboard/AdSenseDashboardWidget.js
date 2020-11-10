@@ -39,7 +39,6 @@ import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import ProgressBar from '../../../../components/ProgressBar';
-import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
 import HelpLink from '../../../../components/HelpLink';
 import Header from '../../../../components/Header';
@@ -48,8 +47,10 @@ import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { getCurrentDateRange } from '../../../../util/date-range';
+import ErrorIcon from '../../../../../svg/error.svg';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 
-const { withSelect } = Data;
+const { withSelect, select } = Data;
 
 // Empty component to allow filtering in refactored version.
 const AdSenseDashboardZeroData = withFilters( 'googlesitekit.AdSenseDashboardZeroData' )( () => null );
@@ -150,6 +151,17 @@ class AdSenseDashboardWidget extends Component {
 			);
 		}
 
+		const slug = 'adsense';
+
+		// @TODO: Resolver only runs once per set of args, so we are working around
+		// this to rerun after modules are loaded.
+		// Once #1769 is resolved, we can remove the call to getModules,
+		// and remove the !! modules cache busting param.
+		const modules = select( CORE_MODULES ).getModules();
+		const canActivateModule = select( CORE_MODULES ).canActivateModule( slug, !! modules );
+		const requirementsStatus = select( CORE_MODULES ).getCheckRequirementsStatus( slug, !! modules );
+		const errorMessage = canActivateModule ? null : requirementsStatus;
+
 		return (
 			<Fragment>
 				<Header />
@@ -199,7 +211,12 @@ class AdSenseDashboardWidget extends Component {
 								'mdc-layout-grid__cell--span-12',
 								wrapperClass
 							) }>
-								<ModuleSettingsWarning slug="adsense" context="module-dashboard" />
+								{ errorMessage &&
+								<div
+									className={ classnames( 'googlesitekit-settings-module-warning', 'googlesitekit-settings-module-warning--modules-list' ) } >
+									<ErrorIcon height="20" width="23" /> { errorMessage }
+								</div>
+								}
 							</div>
 							<div className={ classnames(
 								'mdc-layout-grid__cell',
@@ -248,8 +265,8 @@ class AdSenseDashboardWidget extends Component {
 	}
 }
 
-export default withSelect( ( select ) => (
+export default withSelect( ( dataSelect ) => (
 	{
-		dateRange: select( CORE_USER ).getDateRange(),
+		dateRange: dataSelect( CORE_USER ).getDateRange(),
 	} )
 )( AdSenseDashboardWidget );
