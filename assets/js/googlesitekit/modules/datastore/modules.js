@@ -291,6 +291,7 @@ const baseActions = {
 	 * Receives the check requirements success for a module.
 	 *
 	 * @since n.e.x.t
+	 * @private
 	 *
 	 * @param {string} slug Success for a module slug.
 	 * @return {Object} Action for RECEIVE_CHECK_REQUIREMENTS_SUCCESS.
