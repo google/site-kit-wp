@@ -231,7 +231,7 @@ const baseActions = {
 	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel. Default none.
 	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
-	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Returns an error object or true.
+	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws an error message for error or returns on success.
 	 * @return {Object} Redux-style action.
 	 */
 	registerModule( slug, {
@@ -417,12 +417,11 @@ const baseResolvers = {
 
 			yield baseActions.receiveCheckRequirementsError( slug, errorMessage );
 		} else {
-			const checkResult = yield Data.commonActions.await( module.checkRequirements() );
-
-			if ( checkResult === true ) {
+			try {
+				yield Data.commonActions.await( module.checkRequirements() );
 				yield baseActions.receiveCheckRequirementsSuccess( slug );
-			} else {
-				yield baseActions.receiveCheckRequirementsError( checkResult.slug, checkResult.error );
+			} catch ( error ) {
+				yield baseActions.receiveCheckRequirementsError( slug, error );
 			}
 		}
 	},
