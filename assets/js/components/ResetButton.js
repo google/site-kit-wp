@@ -75,11 +75,15 @@ function ResetButton( { children } ) {
 		setDialogActive( ! dialogActive );
 	}, [ dialogActive ] );
 
+	const openDialog = useCallback( () => {
+		setDialogActive( true );
+	}, [] );
+
 	return (
 		<Fragment>
 			<Link
 				className="googlesitekit-reset-button"
-				onClick={ () => setDialogActive( true ) }
+				onClick={ openDialog }
 				inherit
 			>
 				{ children || __( 'Reset Site Kit', 'google-site-kit' ) }

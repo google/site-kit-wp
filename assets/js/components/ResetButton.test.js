@@ -46,7 +46,7 @@ describe( 'ResetButton', () => {
 	describe( 'after click', () => {
 		let container;
 		beforeEach( () => {
-			( { container } = render( <ResetButton />, { registry } ) );
+			container = render( <ResetButton />, { registry } ).container;
 			fireEvent.click( container.querySelector( '.googlesitekit-reset-button' ) );
 		} );
 
