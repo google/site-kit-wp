@@ -19,23 +19,16 @@
 /**
  * Internal dependencies
  */
-import { render, createTestRegistry, fireEvent } from '../../../tests/js/test-utils';
-import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { render, createTestRegistry, fireEvent, provideUserInfo, provideSiteInfo } from '../../../tests/js/test-utils';
 import UserMenu from './UserMenu';
-import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 describe( 'UserMenu', () => {
 	let registry;
 
 	beforeAll( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			proxyPermissionsURL: 'https://sitekit.withgoogle.com/site-management/permissions/',
-		} );
-		registry.dispatch( CORE_USER ).receiveUserInfo( {
-			email: 'test@example.com',
-			picture: 'http://www.gravatar.com/avatar',
-		} );
+		provideUserInfo( registry );
+		provideSiteInfo( registry );
 	} );
 
 	describe( 'on clicking the UserMenu', () => {

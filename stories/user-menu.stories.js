@@ -24,21 +24,14 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { WithTestRegistry } from '../tests/js/utils';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { provideSiteInfo, provideUserInfo, WithTestRegistry } from '../tests/js/utils';
 import UserMenu from '../assets/js/components/UserMenu';
 
 storiesOf( 'Global', module )
 	.add( 'UserMenu', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				proxyPermissionsURL: 'https://sitekit.withgoogle.com/site-management/permissions/',
-			} );
-			dispatch( CORE_USER ).receiveUserInfo( {
-				email: 'test@example.com',
-				picture: 'http://www.gravatar.com/avatar',
-			} );
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry );
+			provideUserInfo( registry );
 		};
 
 		return (

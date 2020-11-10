@@ -26,11 +26,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getSiteKitAdminURL, clearWebStorage } from '../util';
+import { clearWebStorage } from '../util';
 import Dialog from './dialog';
 import Button from './button';
 import Menu from './menu';
-import Modal from './modal';
+import Modal from './Modal';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 
@@ -40,6 +40,8 @@ function UserMenu() {
 	const proxyPermissionsURL = useSelect( ( select ) => select( CORE_SITE ).getProxyPermissionsURL() );
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
 	const userPicture = useSelect( ( select ) => select( CORE_USER ).getPicture() );
+	const splashScreenURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { googlesitekit_context: 'revoked' } ) );
+
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, toggleMenu ] = useState( false );
 	const menuButtonRef = useRef();
@@ -61,7 +63,7 @@ function UserMenu() {
 		toggleMenu( ! menuOpen );
 	}, [ menuOpen ] );
 
-	const handleMenuClose = ( e ) => {
+	const handleMenuClose = useCallback( ( e ) => {
 		if (
 			( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
 			! menuButtonRef.current.buttonRef.current.contains( e.target ) &&
@@ -69,7 +71,7 @@ function UserMenu() {
 		) {
 			toggleMenu( false );
 		}
-	};
+	}, [] );
 
 	const handleDialog = useCallback( () => {
 		toggleDialog( ! dialogActive );
@@ -78,21 +80,17 @@ function UserMenu() {
 
 	const handleMenuItemSelect = useCallback( ( index, e ) => {
 		if (
-			( ( 'keydown' === e.type && (
-				13 === e.keyCode || // Enter
-					32 === e.keyCode // Space
-			) ) ||
-				'click' === e.type // Mouse
-			) ) {
+			( 'keydown' === e.type && ( 13 === e.keyCode || 32 === e.keyCode ) ) || // Enter or Space is pressed.
+			'click' === e.type // Mouse is clicked
+		) {
 			switch ( index ) {
 				case 0:
 					handleDialog();
 					break;
 				case 1:
-					if ( ! proxyPermissionsURL ) {
-						return;
+					if ( proxyPermissionsURL ) {
+						global.location.assign( proxyPermissionsURL );
 					}
-					global.location.assign( proxyPermissionsURL );
 					break;
 				default:
 					handleMenu();
@@ -100,15 +98,15 @@ function UserMenu() {
 		}
 	}, [ proxyPermissionsURL, handleMenu, handleDialog ] );
 
-	const handleDialogClose = ( e ) => {
+	const handleDialogClose = useCallback( ( e ) => {
 		if ( 27 === e.keyCode ) {
 			toggleDialog( false );
 			toggleMenu( false );
 		}
-	};
+	}, [] );
 
 	// Log the user out if they confirm the dialog.
-	const handleUnlinkConfirm = useCallback( async () => {
+	const handleUnlinkConfirm = useCallback( () => {
 		// Close the modal.
 		toggleDialog( false );
 
@@ -116,12 +114,7 @@ function UserMenu() {
 		clearWebStorage();
 
 		// Navigate back to the splash screen to reconnect.
-		document.location = getSiteKitAdminURL(
-			'googlesitekit-splash',
-			{
-				googlesitekit_context: 'revoked',
-			},
-		);
+		document.location = splashScreenURL;
 	}, [] );
 
 	if ( ! userEmail ) {
@@ -137,7 +130,7 @@ function UserMenu() {
 					text
 					onClick={ handleMenu }
 					icon={ userPicture
-						?						<i className="mdc-button__icon" aria-hidden="true"><img className="mdc-button__icon--image"
+						? <i className="mdc-button__icon" aria-hidden="true"><img className="mdc-button__icon--image"
 							src={ userPicture }
 							alt={ __( 'User Avatar', 'google-site-kit' ) } /></i>
 						: undefined
