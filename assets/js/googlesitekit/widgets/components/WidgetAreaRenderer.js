@@ -38,6 +38,7 @@ const WIDTH_GRID_COUNTER_MAP = {
 const WIDTH_GRID_CLASS_MAP = {
 	[ WIDGET_WIDTHS.QUARTER ]: [
 		'mdc-layout-grid__cell',
+		'mdc-layout-grid__cell--span-2-phone',
 		'mdc-layout-grid__cell--span-3-desktop',
 		'mdc-layout-grid__cell--span-4-tablet',
 	],
