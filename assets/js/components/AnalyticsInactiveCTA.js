@@ -24,73 +24,67 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import {
-	activateOrDeactivateModule,
-	getReAuthURL,
 	showErrorNotification,
 } from '../util';
-import { refreshAuthentication } from '../util/refresh-authentication';
-import data from './data';
+import Data from 'googlesitekit-data';
 import CTA from './notifications/cta';
 import GenericError from './notifications/generic-error';
+import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 
-class AnalyticsInactiveCTA extends Component {
-	static async setupAnalyticsClick() {
-		try {
-			await activateOrDeactivateModule( data, 'analytics', true );
+const { useSelect, useDispatch } = Data;
 
-			await refreshAuthentication();
+function AnalyticsInactiveCTA( props ) {
+	const {
+		title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
+		description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ),
+		ctaLabel = __( 'Set up Analytics', 'google-site-kit' ),
+	} = props;
+	const { activateModule } = useDispatch( CORE_MODULES );
 
-			// Redirect to ReAuthentication URL
-			global.location = getReAuthURL( 'analytics', true );
-		} catch ( err ) {
+	const onSetupAnalytics = useCallback( async () => {
+		const { error, response } = await activateModule( 'analytics' );
+
+		if ( ! error ) {
+			global.location.assign( response.moduleReauthURL );
+		} else {
 			showErrorNotification( GenericError, {
 				id: 'analytics-setup-error',
 				title: __( 'Internal Server Error', 'google-site-kit' ),
-				description: err.message,
+				description: error.message,
 				format: 'small',
 				type: 'win-error',
 			} );
 		}
+	} );
+
+	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
+
+	if ( ! canManageOptions ) {
+		return null;
 	}
 
-	render() {
-		const {
-			title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
-			description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ),
-			ctaLabel = __( 'Set up Analytics', 'google-site-kit' ),
-		} = this.props;
-
-		const { canManageOptions } = global._googlesitekitLegacyData.permissions;
-
-		if ( ! canManageOptions ) {
-			return null;
-		}
-
-		return (
-			<CTA
-				title={ title }
-				description={ description }
-				onClick={ AnalyticsInactiveCTA.setupAnalyticsClick }
-				ctaLabel={ ctaLabel }
-			/>
-		);
-	}
+	return (
+		<CTA
+			title={ title }
+			description={ description }
+			onClick={ onSetupAnalytics }
+			ctaLabel={ ctaLabel }
+		/>
+	);
 }
 
 AnalyticsInactiveCTA.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.string,
 	ctaLabel: PropTypes.string,
-};
-
-AnalyticsInactiveCTA.defaultProps = {
 };
 
 export default AnalyticsInactiveCTA;
