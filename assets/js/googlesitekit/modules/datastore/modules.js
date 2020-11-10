@@ -404,7 +404,7 @@ const baseResolvers = {
 
 		module.dependencies.forEach( ( dependencySlug ) => {
 			const dependedentModule = registry.select( STORE_NAME ).getModule( dependencySlug );
-			if ( ! dependedentModule.active ) {
+			if ( ! dependedentModule?.active ) {
 				inactiveModules.push( dependedentModule.name );
 			}
 		} );
