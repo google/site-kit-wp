@@ -26,7 +26,7 @@ import debounce from 'lodash/debounce';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState, useRef, useCallback } from '@wordpress/element';
+import { useEffect, useState, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -78,23 +78,7 @@ export default function GoogleChart( props ) {
 	const [ chart, setChart ] = useState( null );
 	const [ loading, setLoading ] = useState( true );
 
-	const drawChart = useCallback( () => {
-		let dataTable = global.google?.visualization?.arrayToDataTable?.( data );
-		if ( ! dataTable ) {
-			return;
-		}
-		if ( selectedStats.length > 0 ) {
-			const dataView = new global.google.visualization.DataView( dataTable );
-			if ( ! singleStat ) {
-				dataView.setColumns(
-					[ 0, ...selectedStats.map( ( stat ) => stat + 1 ) ]
-				);
-			}
-			dataTable = dataView;
-		}
-		chart.draw( dataTable, options );
-	}, [ chart, data, singleStat, selectedStats ] );
-
+	// Load the google charts library.
 	useEffect( () => {
 		loadCharts().then( () => {
 			global.google.charts.load( 'current', {
@@ -104,13 +88,6 @@ export default function GoogleChart( props ) {
 				},
 			} );
 		} );
-
-		const resize = debounce( drawChart, 100 );
-		global.addEventListener( 'resize', resize );
-
-		return () => {
-			global.removeEventListener( 'resize', resize );
-		};
 	}, [] );
 
 	// Create a new chart when the library is loaded.
@@ -125,11 +102,38 @@ export default function GoogleChart( props ) {
 
 	// Draw the chart whenever one of these properties has changed.
 	useEffect( () => {
-		if ( chart ) {
-			drawChart();
-		}
+		const drawChart = () => {
+			let dataTable = global.google?.visualization?.arrayToDataTable?.( data );
+			if ( ! dataTable ) {
+				return;
+			}
+
+			if ( selectedStats.length > 0 ) {
+				const dataView = new global.google.visualization.DataView( dataTable );
+				if ( ! singleStat ) {
+					dataView.setColumns(
+						[ 0, ...selectedStats.map( ( stat ) => stat + 1 ) ]
+					);
+				}
+				dataTable = dataView;
+			}
+
+			if ( chart ) {
+				chart.draw( dataTable, options );
+			}
+		};
+
+		const resize = debounce( drawChart, 100 );
+		global.addEventListener( 'resize', resize );
+
+		drawChart();
+
+		return () => {
+			global.removeEventListener( 'resize', resize );
+		};
 	}, [
 		chart,
+		data,
 		selectedStats,
 		options,
 		singleStat,
