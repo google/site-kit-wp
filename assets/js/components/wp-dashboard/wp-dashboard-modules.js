@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getModulesData } from '../../util';
-import AnalyticsInactiveCTA from '../analytics-inactive-cta';
+import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
 import WPDashboardModule from './wp-dashboard-module';
 import WPDashboardHeader from './wp-dashboard-header';
 
