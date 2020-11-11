@@ -26,15 +26,15 @@ import get from 'lodash/get';
  *
  * @since 1.0.0
  *
- * @param {Array}  rowData       An array of Google charts row data.
- * @param {number} column        The column to extract for the sparkline.
- * @param {number} [columnIndex] Optional. The index of the row.
+ * @param {Array}           rowData       An array of Google charts row data.
+ * @param {(number|string)} column        The path to the property of an individual row for the y-axis value.
+ * @param {(number|string)} [indexColumn] Optional. The path to the property of an individual row for the x-axis value.
  * @return {Array} Extracted column of dataset prepared for Google charts.
  */
-export default function extractForSparkline( rowData, column, columnIndex = 0 ) {
+export default function extractForSparkline( rowData, column, indexColumn = 0 ) {
 	return rowData.map( ( row, i ) => {
 		return [
-			get( row, columnIndex ), // row[0] always contains the x axis value (typically date).
+			get( row, indexColumn ), // row[0] always contains the x axis value (typically date).
 			get( row, column, ( 0 === i ? '' : 0 ) ), // the data for the sparkline.
 		];
 	} );
