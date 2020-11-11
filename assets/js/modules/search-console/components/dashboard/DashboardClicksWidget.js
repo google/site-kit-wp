@@ -105,6 +105,7 @@ function DashboardClicksWidget() {
 		],
 		...extractForSparkline( latestData, 'clicks', 'keys.0' ).map( ( row ) => {
 			const date = new Date( row[ 0 ] );
+			// Sparkline data needs headers and dates formatted as MM/DD
 			return [ date.getMonth() + 1 + '/' + date.getUTCDate(), row[ 1 ] ];
 		} ),
 	];
