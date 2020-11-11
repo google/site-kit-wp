@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 /**
  * Extracts a single column of data for a sparkline from a dataset prepared for Google charts.

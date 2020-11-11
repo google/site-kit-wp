@@ -205,6 +205,7 @@ describe( 'extractForSparkline', () => {
 	it.each( columnIndexValuesToTest )( 'for start date %s and columnIndex %s it should return %s', ( data, columnIndex, expected ) => {
 		expect( extractForSparkline( data, 0, columnIndex ) ).toStrictEqual( expected );
 	} );
+
 	const data = [
 		{
 			dimensions: [
