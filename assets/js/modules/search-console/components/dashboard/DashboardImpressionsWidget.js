@@ -98,7 +98,6 @@ function DashboardImpressionsWidget() {
 	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
 	const totalImpressionsChange = changeToPercent( totalOlderImpressions, totalImpressions );
 
-	// Sparkline data needs headers and dates formatted as MM/DD
 	const sparklineData = [
 		[
 			{ type: 'string', label: 'Day' },
@@ -106,6 +105,7 @@ function DashboardImpressionsWidget() {
 		],
 		...extractForSparkline( latestData, 'impressions', 'keys.0' ).map( ( row ) => {
 			const date = new Date( row[ 0 ] );
+			// Sparkline data needs headers and dates formatted as MM/DD
 			return [ date.getMonth() + 1 + '/' + date.getUTCDate(), row[ 1 ] ];
 		} ),
 	];
