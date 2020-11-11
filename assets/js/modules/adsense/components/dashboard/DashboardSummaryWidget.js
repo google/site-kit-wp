@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { reduceAdSenseData } from '../../util';
+import { isZeroReport, reduceAdSenseData } from '../../util';
 import { readableLargeNumber, extractForSparkline, getSiteKitAdminURL } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
@@ -83,7 +83,7 @@ function DashboardSummaryWidget() {
 		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
 	}
 
-	if ( ! today?.totals && ! period?.totals && ! daily?.totals ) {
+	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
 		return getNoDataComponent( __( 'AdSense', 'google-site-kit' ) );
 	}
 
