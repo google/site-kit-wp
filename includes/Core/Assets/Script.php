@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class representing a single script.
@@ -96,8 +97,20 @@ class Script extends Asset {
 			wp_script_add_data( $this->handle, 'script_execution', $this->args['execution'] );
 		}
 
-		if ( ! empty( $src ) && function_exists( 'wp_set_script_translations' ) ) {
-			wp_set_script_translations( $this->handle, 'google-site-kit' );
+		if ( ! empty( $src ) ) {
+			$textdomain = BC_Functions::load_script_textdomain( $this->handle, 'google-site-kit' );
+			if ( $textdomain ) {
+				$textdomain = json_decode( $textdomain, true );
+				if (
+					! empty( $textdomain['locale_data']['messages'] ) &&
+					is_array( $textdomain['locale_data']['messages'] ) &&
+					// There is always a default entity in the messages list that contains meta information
+					// about translations. So, we need to check that there is at least one real translations.
+					count( $textdomain['locale_data']['messages'] ) > 1
+				) {
+					BC_Functions::wp_set_script_translations( $this->handle, 'google-site-kit' );
+				}
+			}
 		}
 	}
 

@@ -165,7 +165,6 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
 				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
 				'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
-				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
@@ -301,6 +300,7 @@ const webpackConfig = ( env, argv ) => {
 		// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
 		{
 			entry: {
+				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				// Analytics advanced tracking script to be injected in the frontend.
 				'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
 			},

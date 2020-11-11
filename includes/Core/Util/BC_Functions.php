@@ -112,4 +112,24 @@ class BC_Functions {
 
 		return $memo;
 	}
+
+	/**
+	 * A fallback for the load_script_textdomain function introduced in the WordPress version 5.0.0.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return boolean Always returns FALSE.
+	 */
+	protected static function load_script_textdomain() {
+		return false;
+	}
+
+	/**
+	 * A fallback for the wp_set_script_translations function introduced in the WordPress version 5.0.0.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected static function wp_set_script_translations() {
+	}
+
 }

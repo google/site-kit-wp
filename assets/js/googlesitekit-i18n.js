@@ -16,7 +16,23 @@
  * limitations under the License.
  */
 
-import i18n from '@wordpress/i18n__non-shim';
+import {
+	sprintf,
+	setLocaleData,
+	__,
+	_x,
+	_n,
+	_nx,
+	isRTL,
+} from '@wordpress/i18n__non-shim';
 
 global.wp = global.wp || {};
-global.wp.i18n = global.wp.i18n || i18n;
+global.wp.i18n = global.wp.i18n || {
+	sprintf,
+	setLocaleData,
+	__,
+	_x,
+	_n,
+	_nx,
+	isRTL,
+};
