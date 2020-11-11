@@ -22,7 +22,7 @@ export default function ModuleSettingsWarning( {
 	const modules = useSelect( ( select ) => select( CORE_MODULES )?.getModules() );
 	const requirementsStatus = useSelect( ( select ) => select( CORE_MODULES )?.getCheckRequirementsStatus( slug, !! modules ) );
 
-	if ( requirementsStatus === null ) {
+	if ( [ null, undefined ].includes( requirementsStatus ) ) {
 		return null;
 	}
 
