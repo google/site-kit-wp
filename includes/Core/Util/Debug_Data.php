@@ -326,6 +326,27 @@ class Debug_Data {
 	}
 
 	/**
+	 * Gets capabilities for the current user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	private function get_capabilities_field() {
+		$user_data = apply_filters( 'googlesitekit_user_data', array() );
+		$value     = array();
+
+		foreach ( $user_data['permissions'] as $permission => $granted ) {
+			$value[ $permission ] = $granted ? '✅' : '⭕';
+		}
+
+		return array(
+			'label' => __( 'User Capabilities', 'google-site-kit' ),
+			'value' => $value,
+		);
+	}
+
+	/**
 	 * Gets field definitions for each active module that supports debug fields.
 	 *
 	 * @since 1.5.0
@@ -350,25 +371,4 @@ class Debug_Data {
 		return array_merge( array(), ...$fields_by_module );
 	}
 
-
-	/**
-	 * Gets capabilities for the current user.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array
-	 */
-	private function get_capabilities_field() {
-		$user_data = apply_filters( 'googlesitekit_user_data', array() );
-		$value     = array();
-
-		foreach ( $user_data['permissions'] as $permission => $granted ) {
-			$value[ $permission ] = $granted ? '✅' : '⭕';
-		}
-
-		return array(
-			'label' => __( 'User Capabilities', 'google-site-kit' ),
-			'value' => $value,
-		);
-	}
 }
