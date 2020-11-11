@@ -38,16 +38,15 @@ function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } ) );
 
 	const [ dialogActive, setDialogActive ] = useState( false );
-	// const postResetURL = addQueryArgs( splashURL,  );
-
-	const handleCloseModal = useCallback( ( event ) => {
-		if ( 27 === event.keyCode ) {
-			// Only close the modal if the "Escape" key is pressed.
-			setDialogActive( false );
-		}
-	} );
 
 	useEffect( () => {
+		const handleCloseModal = ( event ) => {
+			if ( 27 === event.keyCode ) {
+				// Only close the modal if the "Escape" key is pressed.
+				setDialogActive( false );
+			}
+		};
+
 		if ( dialogActive ) {
 			// When the dialogActive changes and it is set to true(has opened), add the event listener.
 			global.addEventListener( 'keyup', handleCloseModal, false );
