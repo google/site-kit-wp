@@ -46,11 +46,16 @@ module.exports = iterateJsdoc( ( {
 	} );
 
 	const checkTagOrder = ( { previousTag, tag, tagOrder } ) => {
+		// Only check for the tag order for a grouping of tags.
+		if ( ! tagOrder.includes( tag ) || ! tagOrder.includes( previousTag ) ) {
+			return;
+		}
+
 		const previousPositionInTagOrder = tagOrder.indexOf( previousTag );
 		const currentPositionInTagOrder = tagOrder.indexOf( tag );
 
 		if (
-			! jsdoc.source.match(
+			jsdoc.source.match(
 				new RegExp( `@${ previousTag }.*\\n\\n@${ tag }`, 'gm' )
 			)
 		) {
@@ -70,11 +75,49 @@ module.exports = iterateJsdoc( ( {
 		}
 	};
 
-	tags.forEach( ( tag, index ) => {
+	utils.filterTags( ( { tag } ) => {
+		return [
+			'since',
+			'see',
+			'deprecated',
+			'private',
+		].includes( tag );
+	} ).sort( ( tagA, tagB ) => {
+		return tagA.line > tagB.line ? 1 : -1;
+	} ).map( ( tag ) => {
+		return tag.tag;
+	} ).forEach( ( tag, index ) => {
 		checkTagOrder( {
 			previousTag: tags[ index - 1 ] || 'since',
 			tag,
-			tagOrder: expectedTagOrder,
+			tagOrder: [
+				'since',
+				'see',
+				'deprecated',
+				'private',
+			],
+		} );
+	} );
+
+	utils.filterTags( ( { tag } ) => {
+		return [
+			'param',
+			'type',
+			'return',
+		].includes( tag );
+	} ).sort( ( tagA, tagB ) => {
+		return tagA.line > tagB.line ? 1 : -1;
+	} ).map( ( tag ) => {
+		return tag.tag;
+	} ).forEach( ( tag, index ) => {
+		checkTagOrder( {
+			previousTag: tags[ index - 1 ] || 'param',
+			tag,
+			tagOrder: [
+				'param',
+				'type',
+				'return',
+			],
 		} );
 	} );
 }, {
