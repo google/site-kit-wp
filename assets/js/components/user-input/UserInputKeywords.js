@@ -75,7 +75,10 @@ export default function UserInputKeywords( { slug, max } ) {
 				) ) }
 
 				{ values.length !== max && (
-					<TextField>
+					<TextField
+						label={ __( 'Minimum one (1), maximum three (3) keywords', 'google-site-kit' ) }
+						noLabel
+					>
 						<Input
 							id={ `${ slug }-keywords` }
 							value={ keyword }
