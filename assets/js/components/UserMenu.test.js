@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render, createTestRegistry, fireEvent, provideUserInfo, provideSiteInfo } from '../../../tests/js/test-utils';
+import { render, createTestRegistry, fireEvent, provideUserInfo, provideSiteInfo, act } from '../../../tests/js/test-utils';
 import UserMenu from './UserMenu';
 import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
@@ -29,8 +29,6 @@ describe( 'UserMenu', () => {
 
 	beforeAll( () => {
 		registry = createTestRegistry();
-		provideUserInfo( registry );
-		provideSiteInfo( registry );
 
 		delete global.location;
 		global.location = Object.defineProperties(
@@ -48,9 +46,22 @@ describe( 'UserMenu', () => {
 		let container;
 		let menu;
 		beforeEach( () => {
+			provideUserInfo( registry );
+			provideSiteInfo( registry );
 			container = render( <UserMenu />, { registry } ).container;
 			fireEvent.click( container.querySelector( '.googlesitekit-header__dropdown span' ) );
 			menu = container.querySelector( '#user-menu' );
+		} );
+
+		it( 'should not show Manage Sites option when not using proxy', () => {
+			act( () => {
+				provideSiteInfo( registry, {
+					usingProxy: false,
+					proxyPermissionsURL: null,
+				} );
+			} );
+
+			expect( container.querySelector( '#user-menu' ).children.length ).toEqual( 1 );
 		} );
 
 		it( 'should open the menu when clicked', () => {
