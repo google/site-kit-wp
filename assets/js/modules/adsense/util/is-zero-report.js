@@ -26,7 +26,7 @@
  */
 export function isZeroReport( report ) {
 	if ( typeof report === 'undefined' ) {
-		return undefined;
+		return true;
 	}
 
 	const { rows, totals } = report || {};

@@ -23,6 +23,7 @@ import { isZeroReport } from './is-zero-report';
 
 describe( 'isZeroReport', () => {
 	it.each( [
+		[ 'undefined', undefined ],
 		[ 'NULL', null ],
 		[ 'FALSE', false ],
 		[ 'a number', 1 ],
@@ -38,7 +39,7 @@ describe( 'isZeroReport', () => {
 
 	it( 'should return FALSE when a valid object is passed', () => {
 		const report = {
-			totals: [ 1 ],
+			totals: [ '1' ],
 			rows: [ [] ],
 		};
 
