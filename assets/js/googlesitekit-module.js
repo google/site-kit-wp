@@ -26,17 +26,17 @@ import './modules';
  */
 import domReady from '@wordpress/dom-ready';
 import { applyFilters } from '@wordpress/hooks';
-import { Component, render, Suspense, lazy } from '@wordpress/element';
+import { Component, render } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { loadTranslations } from './util';
-import ProgressBar from './components/progress-bar';
 import './components/data';
 import './components/notifications';
 import Root from './components/root';
 import ModuleApp from './components/module-app';
+import Setup from './components/setup/setup-wrapper';
 
 class GoogleSitekitModule extends Component {
 	constructor( props ) {
@@ -52,6 +52,7 @@ class GoogleSitekitModule extends Component {
 			showModuleSetupWizard,
 		} = this.state;
 
+		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
 		const { currentAdminPage } = global._googlesitekitLegacyData.admin;
 
 		/**
@@ -62,43 +63,7 @@ class GoogleSitekitModule extends Component {
 		const moduleHasSetupWizard = applyFilters( 'googlesitekit.moduleHasSetupWizard', true, currentAdminPage );
 
 		if ( showModuleSetupWizard && moduleHasSetupWizard ) {
-			// Set webpackPublicPath on-the-fly.
-			if ( global._googlesitekitLegacyData && global._googlesitekitLegacyData.publicPath ) {
-				// eslint-disable-next-line no-undef
-				__webpack_public_path__ = global._googlesitekitLegacyData.publicPath; /*eslint camelcase: 0*/
-			}
-
-			const Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'./components/setup/setup-wrapper' ) );
-
-			return (
-				<Suspense fallback={
-					<div className="googlesitekit-setup">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-12
-								">
-									<div className="googlesitekit-setup__wrapper">
-										<div className="mdc-layout-grid">
-											<div className="mdc-layout-grid__inner">
-												<div className="
-													mdc-layout-grid__cell
-													mdc-layout-grid__cell--span-12
-												">
-													<ProgressBar />
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				}>
-					<Setup />
-				</Suspense>
-			);
+			return <Setup moduleSlug={ moduleToSetup } />;
 		}
 
 		return <ModuleApp />;
@@ -120,4 +85,3 @@ domReady( () => {
 		);
 	}
 } );
-

@@ -33,7 +33,7 @@ import { _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/analytics.svg';
 import SetupForm from './SetupForm';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';

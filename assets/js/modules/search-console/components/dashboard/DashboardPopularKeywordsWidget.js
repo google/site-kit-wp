@@ -30,11 +30,11 @@ import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { numberFormat } from '../../../../util';
+import { numberFormat, untrailingslashit } from '../../../../util';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import whenActive from '../../../../util/when-active';
-import PreviewTable from '../../../../components/preview-table';
-import SourceLink from '../../../../components/source-link';
+import PreviewTable from '../../../../components/PreviewTable';
+import SourceLink from '../../../../components/SourceLink';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
@@ -62,9 +62,13 @@ function DashboardPopularKeywordsWidget() {
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
+		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 		if ( url ) {
 			args.url = url;
 			baseServiceURLArgs.page = `!${ url }`;
+		} else if ( isDomainProperty && referenceSiteURL ) {
+			baseServiceURLArgs.page = `*${ referenceSiteURL }`;
 		}
 
 		return {

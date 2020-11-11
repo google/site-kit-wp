@@ -315,6 +315,19 @@ describe( 'core/modules modules', () => {
 				expect( store.getState().clientDefinitions[ 'test-module' ].name ).toBe( 'Original Name' );
 				expect( console ).toHaveWarned();
 			} );
+
+			it( 'accepts settings components for the module', () => {
+				const settingsViewComponent = () => 'view';
+				const settingsEditComponent = () => 'edit';
+
+				registry.dispatch( STORE_NAME ).registerModule( moduleSlug, {
+					settingsViewComponent,
+					settingsEditComponent,
+				} );
+
+				expect( store.getState().clientDefinitions[ moduleSlug ].settingsViewComponent ).toEqual( settingsViewComponent );
+				expect( store.getState().clientDefinitions[ moduleSlug ].settingsEditComponent ).toEqual( settingsEditComponent );
+			} );
 		} );
 
 		describe( 'fetchGetModules', () => {
@@ -443,6 +456,16 @@ describe( 'core/modules modules', () => {
 
 				expect( Object.keys( modules ) ).toEqual( [ 'first-module', 'second-module', 'third-module' ] );
 			} );
+
+			it( 'defaults settings components to `null` if not provided', () => {
+				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
+				registry.dispatch( STORE_NAME ).registerModule( 'test-module' );
+
+				const module = registry.select( STORE_NAME ).getModule( 'test-module' );
+
+				expect( module.settingsViewComponent ).toEqual( null );
+				expect( module.settingsEditComponent ).toEqual( null );
+			} );
 		} );
 
 		describe( 'getModule', () => {
@@ -517,6 +540,57 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( moduleLoaded ).toEqual( null );
+			} );
+		} );
+
+		describe.each( [
+			[ 'getModuleDependencyNames', 'dependencies' ],
+			[ 'getModuleDependantNames', 'dependants' ],
+		] )( '%s', ( selector, collectionName ) => {
+			it( 'returns undefined when no modules are loaded', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'optimize';
+				const namesLoaded = registry.select( STORE_NAME )[ selector ]( slug );
+
+				// The modules will be undefined whilst loading.
+				expect( namesLoaded ).toBeUndefined();
+			} );
+
+			it( `returns ${ collectionName } module names when modules are loaded`, async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'optimize';
+				registry.select( STORE_NAME )[ selector ]( slug );
+
+				// Wait for loading to complete.
+				await untilResolved( registry, STORE_NAME ).getModules();
+
+				const namesLoaded = registry.select( STORE_NAME )[ selector ]( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( namesLoaded ).toMatchObject( fixturesKeyValue[ slug ][ collectionName ].map( ( key ) => fixturesKeyValue[ key ].name ) );
+			} );
+
+			it( `returns an empty array when requesting ${ collectionName } for a non-existent module`, async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				const slug = 'non-existent-slug';
+				registry.select( STORE_NAME )[ selector ]( slug );
+
+				// Wait for loading to complete.
+				await untilResolved( registry, STORE_NAME ).getModules();
+
+				const namesLoaded = registry.select( STORE_NAME )[ selector ]( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( namesLoaded ).toMatchObject( {} );
 			} );
 		} );
 

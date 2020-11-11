@@ -32,8 +32,8 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import { trackEvent } from '../../util';
 import data, { TYPE_MODULES } from '../../components/data';
-import ProgressBar from '../../components/progress-bar';
-import HelpLink from '../../components/help-link';
+import ProgressBar from '../ProgressBar';
+import HelpLink from '../HelpLink';
 import { Select, TextField, Input } from '../../material-components';
 import Button from '../../components/button';
 

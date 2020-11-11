@@ -28,7 +28,7 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import SettingsForm from './SettingsForm';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsEdit() {
@@ -68,13 +68,8 @@ export default function SettingsEdit() {
 		};
 	}, [] );
 
-	// Fetch existing tag right here, to ensure the progress bar is still being
-	// shown while this is being loaded. It is technically used only by child
-	// components.
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-
 	let viewComponent;
-	if ( undefined === existingTag || isDoingSubmitChanges ) {
+	if ( isDoingSubmitChanges ) {
 		viewComponent = <ProgressBar />;
 	} else {
 		viewComponent = <SettingsForm />;

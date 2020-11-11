@@ -33,10 +33,9 @@ $c-device-icon-gray: #5f6368;
 $c-scarpa-flow: #5b5b61;
 $c-cape-cod: #3c4043;
 $c-black: #000;
-$c-selago: #e7f0fc;
 $c-cornflower-blue: #4285f4; // 3.56 contrast
 $c-royal-blue: #1a73e8; // 4.5 contrast
-$c-denim: #1872e6;
+$c-denim: #1967d2;
 $c-allports: #0073aa;
 $c-cerulean: #00a0d2;
 $c-deep-sky-blue: #00b9eb;
@@ -56,6 +55,7 @@ $c-purple-heart: #673ab7;
 $c-jewel: #178239;
 $c-mango-tango: #e67700;
 $c-thunderbird: #c7221f;
+$c-solitude: #e8f0fe;
 
 // PageSpeed Insights colors
 $c-pagespeed-fast: $c-green-700;
@@ -85,14 +85,24 @@ $c-background: $c-mercury;
 $c-background-subtle: $c-alabaster;
 $c-background-brand: $c-royal-blue;
 $c-background-notice: $c-golden-rod-yellow;
-$c-background-suggestion: $c-selago;
+$c-background-notice-warning: $c-golden-rod-yellow;
+$c-background-notice-info: $c-solitude;
+$c-background-notice-suggestion: $c-solitude;
 
 $c-border: $c-boulder;
 $c-border-light: $c-mercury;
 $c-border-medium: $c-silver;
 $c-border-brand: $c-royal-blue;
-$c-border-notice: $c-sun;
-$c-border-suggestion: $c-denim;
+
+$c-text-notice: rgba($c-black, 0.7);
+$c-text-notice-warning: rgba($c-black, 0.7);
+$c-text-notice-info: $c-denim;
+$c-text-notice-suggestion: $c-denim;
+
+$c-icon-notice: $c-sun;
+$c-icon-notice-warning: $c-sun;
+$c-icon-notice-info: $c-denim;
+$c-icon-notice-suggestion: $c-denim;
 
 $c-chart-1: $c-cornflower-blue;
 $c-chart-2: $c-scooter;
@@ -149,6 +159,9 @@ $bp-wpdb1: 800px;
 $bp-wpdb2: 1300px;
 $bp-wpdb3: 1500px;
 $bp-wpdb4: 2200px;
+
+// Custom max width for setup content
+$max-width-setup-content: 465px;
 
 // Google MDC Layout Grid Overrides
 

@@ -32,9 +32,9 @@ import { Component } from '@wordpress/element';
  */
 import { trackEvent } from '../../util';
 import Button from '../button';
-import Link from '../link';
+import Link from '../Link';
 import OptIn from '../optin';
-import HelpLink from '../help-link';
+import HelpLink from '../HelpLink';
 
 class WizardStepAuthentication extends Component {
 	render() {

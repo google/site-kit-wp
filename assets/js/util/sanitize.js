@@ -8,3 +8,14 @@ export const sanitizeHTML = ( unsafeHTML, domPurifyConfig = {} ) => {
 		__html: purify.sanitize( unsafeHTML, domPurifyConfig ),
 	};
 };
+
+/**
+ * Takes a string, removes the trailing stash if any and returns it.
+ *
+ * @since 1.20.0
+ * @private
+ *
+ * @param {string} string A string with or without trailing slash.
+ * @return {string|null} The string after removing the trailing slash.
+ */
+export const untrailingslashit = ( string ) => string?.replace?.( /\/+$/, '' );

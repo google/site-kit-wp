@@ -1,0 +1,134 @@
+#!/usr/bin/env node
+
+/**
+ * Release script.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Node dependencies
+ */
+const { resolve, dirname } = require( 'path' );
+
+/**
+ * External dependencies
+ */
+const archiver = require( 'archiver' );
+const fse = require( 'fs-extra' );
+const getRepoInfo = require( 'git-repo-info' );
+const sanitizeFilename = require( 'sanitize-filename' );
+
+/**
+ * Retrieves the plugin version from the plugin's file header.
+ *
+ * @since 1.20.0
+ *
+ * @return {string} Plugin version.
+ */
+function getPluginVersion() {
+	const path = resolve( __dirname, '../google-site-kit.php' );
+	const file = fse.readFileSync( path, { encoding: 'utf-8' } );
+	return file.match( /Version:\s+([0-9\.\w-]+)/ )[ 1 ];
+}
+
+/**
+ * Retrieves and prepares information from the current git state
+ * for use as components of the generated file name.
+ *
+ * @since 1.20.0
+ *
+ * @return {Object} Data related to the latest commit.
+ */
+function getGit() {
+	const { abbreviatedSha, branch } = getRepoInfo();
+
+	return {
+		branch: sanitizeFilename( branch, { replacement: '-' } ),
+		shortSha: abbreviatedSha,
+	};
+}
+
+/**
+ * Generates the filename to use for the resulting release zip file.
+ *
+ * @since 1.20.0
+ *
+ * @return {string} Sanitized release zip file name.
+ */
+function generateFilename() {
+	const version = getPluginVersion();
+	let gitSuffix = '';
+
+	try {
+		const { branch, shortSha } = getGit();
+		gitSuffix = `.${ branch }@${ shortSha }`;
+	} catch ( err ) {
+		// Do nothing.
+	}
+
+	return sanitizeFilename( `google-site-kit.v${ version }${ gitSuffix }.zip` );
+}
+
+/**
+ * Makes a new release.
+ *
+ * @since 1.20.0
+ *
+ * @return {Promise} A promise instance.
+ */
+async function makeRelease() {
+	const root = dirname( __dirname );
+	const releaseDir = resolve( root, 'release' );
+	const pluginDir = resolve( releaseDir, 'google-site-kit' );
+	const filename = resolve( root, generateFilename() );
+
+	console.log( `Creating ${ filename }` ); // eslint-disable-line no-console
+
+	const cp = ( path ) => fse.copy( resolve( root, path ), resolve( pluginDir, path ) );
+
+	// Remove release directory and release archive if it exists.
+	await Promise.all( [
+		fse.remove( releaseDir ),
+		fse.remove( filename ),
+	] );
+
+	// Create directory for release.
+	await fse.ensureDir( pluginDir );
+
+	// Copy files to the release directory.
+	await Promise.all( [
+		cp( 'readme.txt' ),
+		cp( 'google-site-kit.php' ),
+		cp( 'uninstall.php' ),
+		cp( 'dist/assets' ),
+		cp( 'includes' ),
+		cp( 'third-party' ),
+	] );
+
+	// Archvie the release directory.
+	const archive = archiver( 'zip', { zlib: { level: 9 } } );
+	archive.pipe( fse.createWriteStream( filename ) );
+	archive.directory( pluginDir, 'google-site-kit' );
+	await archive.finalize();
+
+	// Remove release folder at the end.
+	await fse.remove( releaseDir );
+}
+
+makeRelease().catch( ( error ) => {
+	console.error( error ); // eslint-disable-line no-console
+	process.exit( 1 );
+} );

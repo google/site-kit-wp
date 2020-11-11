@@ -26,7 +26,7 @@ import classnames from 'classnames';
  */
 import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __, _x, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,16 +38,16 @@ import Alert from '../../../../components/alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
-import HelpLink from '../../../../components/help-link';
-import Header from '../../../../components/header';
-import PageHeader from '../../../../components/page-header';
-import PageHeaderDateRange from '../../../../components/page-header-date-range';
+import HelpLink from '../../../../components/HelpLink';
+import Header from '../../../../components/Header';
+import PageHeader from '../../../../components/PageHeader';
+import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { getCurrentDateRange } from '../../../../util/date-range';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { withSelect } = Data;
 
@@ -130,7 +130,7 @@ class AdSenseDashboardWidget extends Component {
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
-		const currentDateRange = getCurrentDateRange( dateRange );
+		const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 		let moduleStatus;
 		let moduleStatusText;
@@ -208,10 +208,13 @@ class AdSenseDashboardWidget extends Component {
 							) }>
 								<Layout
 									header
-									/* translators: %s: date range */
-									title={ sprintf( __( 'Performance over the last %s', 'google-site-kit' ), currentDateRange ) }
-									headerCtaLabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
-									headerCtaLink={ homepage }
+									title={ sprintf(
+										/* translators: %s: number of days */
+										_n( 'Performance over the last %s day', 'Performance over the last %s days', currentDayCount, 'google-site-kit' ),
+										currentDayCount
+									) }
+									headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
+									headerCTALink={ homepage }
 								>
 									<AdSensePerformanceWidget
 										handleDataError={ ( err ) => {

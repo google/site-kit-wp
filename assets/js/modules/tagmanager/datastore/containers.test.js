@@ -66,12 +66,14 @@ describe( 'modules/tagmanager containers', () => {
 			it( 'creates a container and adds it to the store ', async () => {
 				const accountID = fixtures.createContainer.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
+				const containerName = 'sitekit';
+
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
 					{ body: fixtures.createContainer, status: 200 }
 				);
 
-				await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
+				await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext, { containerName } );
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
@@ -81,6 +83,7 @@ describe( 'modules/tagmanager containers', () => {
 							data: {
 								accountID,
 								usageContext,
+								name: containerName,
 							},
 						},
 					}
@@ -95,7 +98,7 @@ describe( 'modules/tagmanager containers', () => {
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/ );
-				const promise = registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
+				const promise = registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext, { containerName: 'sitekit' } );
 				expect( registry.select( STORE_NAME ).isDoingCreateContainer( accountID ) ).toEqual( true );
 
 				await promise;
@@ -106,6 +109,7 @@ describe( 'modules/tagmanager containers', () => {
 			it( 'dispatches an error if the request fails ', async () => {
 				const accountID = fixtures.createContainer.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
+				const containerName = 'sitekit';
 				const errorResponse = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -117,10 +121,10 @@ describe( 'modules/tagmanager containers', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				const { error } = await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext );
+				const { error } = await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext, { containerName } );
 
 				expect( error ).toEqual( errorResponse );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'createContainer', [ accountID, usageContext ] ) ).toEqual( errorResponse );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'createContainer', [ accountID, usageContext, { containerName } ] ) ).toEqual( errorResponse );
 
 				// Ignore the request fired by the `getContainers` selector.
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );

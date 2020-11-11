@@ -32,6 +32,7 @@ const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const ImageminPlugin = require( 'imagemin-webpack' );
 
 /**
  * Internal dependencies
@@ -137,7 +138,12 @@ const resolve = {
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
-const webpackConfig = ( mode ) => {
+const webpackConfig = ( env, argv ) => {
+	const {
+		mode,
+		flagMode = mode,
+	} = argv;
+
 	return [
 		// Build the settings js..
 		{
@@ -159,12 +165,12 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
+				'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
 				'googlesitekit-dashboard': './assets/js/googlesitekit-dashboard.js',
 				'googlesitekit-dashboard-details': './assets/js/googlesitekit-dashboard-details.js',
 				'googlesitekit-dashboard-splash': './assets/js/googlesitekit-dashboard-splash.js',
 				'googlesitekit-wp-dashboard': './assets/js/googlesitekit-wp-dashboard.js',
-				'googlesitekit-adminbar-loader': './assets/js/googlesitekit-adminbar-loader.js',
 				'googlesitekit-base': './assets/js/googlesitekit-base.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
 				// Needed to test if a browser extension blocks this by naming convention.
@@ -173,7 +179,7 @@ const webpackConfig = ( mode ) => {
 			externals,
 			output: {
 				filename: '[name].[contenthash].js',
-				path: __dirname + '/dist/assets/js',
+				path: path.join( __dirname, 'dist/assets/js' ),
 				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
 				/*
@@ -188,7 +194,33 @@ const webpackConfig = ( mode ) => {
 				maxEntrypointSize: 175000,
 			},
 			module: {
-				rules,
+				rules: [
+					...rules,
+					{
+						test: /\.(png|jpg)$/i,
+						use: [
+							{
+								loader: 'file-loader',
+								options: {
+									name: '[name].[ext]',
+									publicPath: 'images/',
+									outputPath: '../images',
+								},
+							},
+							{
+								loader: ImageminPlugin.loader,
+								options: {
+									imageminOptions: {
+										plugins: [
+											'jpegtran',
+											'optipng',
+										],
+									},
+								},
+							},
+						],
+					},
+				],
 			},
 			plugins: [
 				new ProvidePlugin( {
@@ -208,7 +240,7 @@ const webpackConfig = ( mode ) => {
 					flagsConfig,
 					{
 						modes: [ 'development', 'production' ],
-						mode,
+						mode: flagMode, // Default: mode; override with --flag-mode={mode}
 					},
 				),
 				new ManifestPlugin( {
@@ -366,9 +398,9 @@ module.exports = {
 	svgRule,
 };
 
-module.exports.default = ( ...args ) => {
-	const { includeTests, mode } = args[ 1 ];
-	const config = webpackConfig( mode );
+module.exports.default = ( env, argv ) => {
+	const config = webpackConfig( env, argv );
+	const { includeTests, mode } = argv;
 
 	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.

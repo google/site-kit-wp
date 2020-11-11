@@ -27,9 +27,8 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/button';
-import Link from '../../../../components/link';
+import Link from '../../../../components/Link';
 import { trackEvent } from '../../../../util';
-import { sanitizeHTML } from '../../../../util/sanitize';
 import { parseAccountID } from '../../util/parsing';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../../googlesitekit/datastore/site/constants';
@@ -97,14 +96,10 @@ export default function SetupAccountCreate() {
 					href="https://support.google.com/adsense/answer/2659101"
 					inherit
 					external
-					dangerouslySetInnerHTML={ sanitizeHTML(
-						__( 'Learn more<span class="screen-reader-text"> about adding a user to an existing AdSense account</span>', 'google-site-kit' ),
-						{
-							ALLOWED_TAGS: [ 'span' ],
-							ALLOWED_ATTR: [ 'class' ],
-						}
-					) }
-				/>
+					aria-label={ __( 'Learn more about adding a user to an existing AdSense account', 'google-site-kit' ) }
+				>
+					{ __( 'Learn more', 'google-site-kit' ) }
+				</Link>
 			</p>
 		</Fragment>
 	);

@@ -32,22 +32,29 @@ import Layout from '../../../../components/layout/layout';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
+import { untrailingslashit } from '../../../../util';
 
 const { useSelect } = Data;
 
 const DashboardDetailsWidgetKeywordsTable = () => {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const footerCtaLinkArgs = {
+	const footerCTALinkArgs = {
 		resource_id: propertyID,
 		num_of_days: getCurrentDateRangeDayCount(),
 	};
+	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const referenceSiteURL = useSelect( ( select ) => {
+		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
+	} );
 	if ( url ) {
-		footerCtaLinkArgs.page = `!${ url }`;
+		footerCTALinkArgs.page = `!${ url }`;
+	} else if ( isDomainProperty && referenceSiteURL ) {
+		footerCTALinkArgs.page = `*${ referenceSiteURL }`;
 	}
-	const footerCtaLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
+	const footerCTALink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
 		path: '/performance/search-analytics',
-		query: footerCtaLinkArgs,
+		query: footerCTALinkArgs,
 	} ) );
 
 	return (
@@ -67,8 +74,8 @@ const DashboardDetailsWidgetKeywordsTable = () => {
 				">
 				<Layout
 					footer
-					footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
-					footerCtaLink={ footerCtaLink }
+					footerCTALabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+					footerCTALink={ footerCTALink }
 				>
 					<LegacySearchConsoleDashboardWidgetKeywordTable />
 				</Layout>

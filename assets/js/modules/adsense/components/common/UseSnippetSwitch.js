@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Switch from '../../../../components/switch';
-import SettingsNotice from '../../../../components/settings-notice';
+import SettingsNotice from '../../../../components/SettingsNotice';
 import { trackEvent } from '../../../../util';
 import { STORE_NAME } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
@@ -73,14 +73,14 @@ export default function UseSnippetSwitch( props ) {
 				/> <span className="googlesitekit-recommended">{ __( 'Recommended', 'google-site-kit' ) }</span>
 			</div>
 			{ useSnippet && checkedMessage &&
-				<SettingsNotice
-					message={ checkedMessage }
-				/>
+				<SettingsNotice>
+					{ checkedMessage }
+				</SettingsNotice>
 			}
 			{ ! useSnippet && uncheckedMessage &&
-				<SettingsNotice
-					message={ uncheckedMessage }
-				/>
+				<SettingsNotice>
+					{ uncheckedMessage }
+				</SettingsNotice>
 			}
 		</Fragment>
 	);

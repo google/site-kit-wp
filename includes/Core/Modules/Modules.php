@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -19,6 +18,13 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Modules\AdSense;
+use Google\Site_Kit\Modules\Analytics;
+use Google\Site_Kit\Modules\Optimize;
+use Google\Site_Kit\Modules\PageSpeed_Insights;
+use Google\Site_Kit\Modules\Search_Console;
+use Google\Site_Kit\Modules\Site_Verification;
+use Google\Site_Kit\Modules\Tag_Manager;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -91,6 +97,30 @@ final class Modules {
 	 * @var array
 	 */
 	private $dependants = array();
+
+	/**
+	 * Module_Registry instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Module_Registry
+	 */
+	private $registry;
+
+	/**
+	 * Core module class names.
+	 *
+	 * @since n.e.x.t
+	 * @var string[] Core module class names.
+	 */
+	private $core_modules = array(
+		Site_Verification::class,
+		Search_Console::class,
+		Analytics::class,
+		Optimize::class,
+		Tag_Manager::class,
+		AdSense::class,
+		PageSpeed_Insights::class,
+	);
 
 	/**
 	 * Constructor.
@@ -221,15 +251,7 @@ final class Modules {
 	 */
 	public function get_available_modules() {
 		if ( empty( $this->modules ) ) {
-			$module_classes = array(
-				'Google\Site_Kit\Modules\Site_Verification',
-				'Google\Site_Kit\Modules\Search_Console',
-				'Google\Site_Kit\Modules\Analytics',
-				'Google\Site_Kit\Modules\Optimize',
-				'Google\Site_Kit\Modules\Tag_Manager',
-				'Google\Site_Kit\Modules\AdSense',
-				'Google\Site_Kit\Modules\PageSpeed_Insights',
-			);
+			$module_classes = $this->get_registry()->get_all();
 			foreach ( $module_classes as $module_class ) {
 				$instance = new $module_class( $this->context, $this->options, $this->user_options, $this->authentication );
 
@@ -468,6 +490,38 @@ final class Modules {
 				}
 			}
 		);
+	}
+
+	/**
+	 * Gets the configured module registry instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Registry
+	 */
+	protected function get_registry() {
+		if ( ! $this->registry instanceof Module_Registry ) {
+			$this->registry = $this->setup_registry();
+		}
+
+		return $this->registry;
+	}
+
+	/**
+	 * Sets up a fresh module registry instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Registry
+	 */
+	protected function setup_registry() {
+		$registry = new Module_Registry();
+
+		foreach ( $this->core_modules as $core_module ) {
+			$registry->register( $core_module );
+		}
+
+		return $registry;
 	}
 
 	/**

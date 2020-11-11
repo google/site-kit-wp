@@ -30,7 +30,7 @@ import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../../uti
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
-import PreviewTable from '../../../../components/preview-table';
+import PreviewTable from '../../../../components/PreviewTable';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME } from '../../datastore/constants';
 
@@ -54,8 +54,8 @@ const RenderLayout = ( { children } ) => {
 			<Layout
 				className="googlesitekit-popular-content"
 				footer
-				footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-				footerCtaLink={ serviceURL }
+				footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				footerCTALink={ serviceURL }
 				fill
 			>
 				{ children }

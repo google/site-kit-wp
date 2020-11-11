@@ -22,8 +22,8 @@
 import AMPContainerSelect from './AMPContainerSelect';
 import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
-import { STORE_NAME as CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../../googlesitekit/datastore/site/constants';
-import { createTestRegistry, freezeFetch, untilResolved } from '../../../../../../tests/js/utils';
+import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../../googlesitekit/datastore/site/constants';
+import { createTestRegistry, freezeFetch, provideSiteInfo, untilResolved } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'AMPContainerSelect', () => {
@@ -35,7 +35,7 @@ describe( 'AMPContainerSelect', () => {
 		// Set set no existing tag.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		// Set site info to prevent error in resolver.
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
+		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
 	} );
 
 	it( 'should render an option for each AMP container of the currently selected account.', () => {
@@ -49,7 +49,9 @@ describe( 'AMPContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( [ ...webContainers, ...ampContainers ], { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -69,7 +71,9 @@ describe( 'AMPContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -84,7 +88,9 @@ describe( 'AMPContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container, getByText } = render( <AMPContainerSelect />, { registry } );
 
@@ -102,7 +108,9 @@ describe( 'AMPContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container, getByText } = render( <AMPContainerSelect />, { registry } );
 
@@ -122,6 +130,10 @@ describe( 'AMPContainerSelect', () => {
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
+		const account = factories.accountBuilder();
+		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
 		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -134,6 +146,7 @@ describe( 'AMPContainerSelect', () => {
 		const account = factories.accountBuilder();
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
 		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
@@ -147,8 +160,9 @@ describe( 'AMPContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container } = render( <AMPContainerSelect />, { registry } );
 
@@ -160,8 +174,10 @@ describe( 'AMPContainerSelect', () => {
 		const accountID = account.accountId; // eslint-disable-line sitekit/camelcase-acronyms
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
+		provideSiteInfo( registry, { ampMode: AMP_MODE_SECONDARY } );
 
 		const { container } = render( <AMPContainerSelect />, { registry } );
 
@@ -171,7 +187,7 @@ describe( 'AMPContainerSelect', () => {
 	it( 'should render nothing in a non-AMP context', () => {
 		const account = factories.accountBuilder();
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } );
+		provideSiteInfo( registry, { ampMode: false } );
 
 		const { queryByRole, container } = render( <AMPContainerSelect />, { registry } );
 

@@ -29,8 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Switch from '../../../../components/switch';
-import Link from '../../../../components/link';
-import { sanitizeHTML } from '../../../../util';
+import Link from '../../../../components/Link';
 
 const { useSelect, useDispatch } = Data;
 
@@ -66,14 +65,10 @@ export default function AnonymizeIPSwitch() {
 					href="https://support.google.com/analytics/answer/2763052"
 					external
 					inherit
-					dangerouslySetInnerHTML={ sanitizeHTML(
-						__( 'Learn more<span class="screen-reader-text"> about IP anonymization.</span>', 'google-site-kit' ),
-						{
-							ALLOWED_TAGS: [ 'span' ],
-							ALLOWED_ATTR: [ 'class' ],
-						}
-					) }
-				/>
+					aria-label={ __( 'Learn more about IP anonymization.', 'google-site-kit' ) }
+				>
+					{ __( 'Learn more', 'google-site-kit' ) }
+				</Link>
 			</p>
 		</div>
 	);

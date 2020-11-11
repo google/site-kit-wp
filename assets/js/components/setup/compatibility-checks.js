@@ -33,9 +33,9 @@ import PropTypes from 'prop-types';
 import API from 'googlesitekit-api';
 import { sanitizeHTML } from '../../util/sanitize';
 import { getExistingTag } from '../../util/tag';
-import Link from '../link';
+import Link from '../Link';
 import Warning from '../notifications/warning';
-import ProgressBar from '../../components/progress-bar';
+import ProgressBar from '../ProgressBar';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'check_fetch_failed';
@@ -122,27 +122,31 @@ export default class CompatibilityChecks extends Component {
 
 		if ( ! installed && installURL ) {
 			return {
-				labelHTML: __( 'Install<span class="screen-reader-text"> the helper plugin</span>', 'google-site-kit' ),
+				'aria-label': __( 'Install the helper plugin', 'google-site-kit' ),
+				children: __( 'Install', 'google-site-kit' ),
 				href: installURL,
 				external: false,
 			};
 		}
 		if ( installed && ! active && activateURL ) {
 			return {
-				labelHTML: __( 'Activate<span class="screen-reader-text"> the helper plugin</span>', 'google-site-kit' ),
+				'aria-label': __( 'Activate the helper plugin', 'google-site-kit' ),
+				children: __( 'Activate', 'google-site-kit' ),
 				href: activateURL,
 				external: false,
 			};
 		}
 		if ( installed && active && configureURL ) {
 			return {
-				labelHTML: __( 'Configure<span class="screen-reader-text"> the helper plugin</span>', 'google-site-kit' ),
+				'aria-label': __( 'Configure the helper plugin', 'google-site-kit' ),
+				children: __( 'Configure', 'google-site-kit' ),
 				href: configureURL,
 				external: false,
 			};
 		}
 		return {
-			labelHTML: __( 'Learn how<span class="screen-reader-text"> to install and use the helper plugin</span>', 'google-site-kit' ),
+			'aria-label': __( 'Learn how to install and use the helper plugin', 'google-site-kit' ),
+			children: __( 'Learn how', 'google-site-kit' ),
 			href: 'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
 			external: true,
 		};
@@ -150,7 +154,6 @@ export default class CompatibilityChecks extends Component {
 
 	renderError( error ) {
 		const { installed } = this.state.developerPlugin;
-		const { labelHTML, href, external } = this.helperCTA();
 
 		switch ( error ) {
 			case ERROR_INVALID_HOSTNAME:
@@ -160,9 +163,7 @@ export default class CompatibilityChecks extends Component {
 					{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
 					{ ' ' }
 					<Link
-						href={ href }
-						dangerouslySetInnerHTML={ { __html: labelHTML } }
-						external={ external }
+						{ ...this.helperCTA() }
 						inherit
 					/>
 				</p>;

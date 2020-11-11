@@ -38,11 +38,12 @@ import {
 	getModulesData,
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
-import Link from './link';
+import Link from './Link';
 import data from '../components/data';
-import ModuleIcon from '../components/module-icon';
+import ModuleIcon from './ModuleIcon';
 import GenericError from './notifications/generic-error';
 import ModuleSettingsWarning from './notifications/module-settings-warning';
+import VisuallyHidden from './VisuallyHidden';
 
 class ModulesList extends Component {
 	constructor( props ) {
@@ -150,11 +151,9 @@ class ModulesList extends Component {
 							{ isConnected && (
 								<span className="googlesitekit-settings-module__status">
 									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
-										<span className="screen-reader-text">
-											{
-												__( 'Connected', 'google-site-kit' )
-											}
-										</span>
+										<VisuallyHidden>
+											{ __( 'Connected', 'google-site-kit' ) }
+										</VisuallyHidden>
 									</span>
 									{
 										__( 'Connected', 'google-site-kit' )

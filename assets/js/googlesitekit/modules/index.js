@@ -36,6 +36,9 @@ const Modules = {
 	deactivateModule: ( ...args ) => {
 		return Data.dispatch( STORE_NAME ).deactivateModule( ...args );
 	},
+	registerModule: ( ...args ) => {
+		return Data.dispatch( STORE_NAME ).registerModule( ...args );
+	},
 };
 
 export default Modules;

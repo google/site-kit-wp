@@ -20,13 +20,14 @@
  * External dependencies
  */
 import memize from 'memize';
+import defaults from 'lodash/defaults';
 import merge from 'lodash/merge';
 import invariant from 'invariant';
 
 /**
  * WordPress dependencies
  */
-import { WPElement } from '@wordpress/element';
+import { WPComponent } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,7 +38,6 @@ import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-import DefaultModuleSettings from '../components/DefaultModuleSettings';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -58,18 +58,19 @@ const moduleDefaults = {
 	dependants: [],
 	order: 10,
 	icon: null,
-	settingsComponent: DefaultModuleSettings,
+	settingsEditComponent: null,
+	settingsViewComponent: null,
+	setupComponent: null,
 };
 
 const normalizeModules = memize(
 	( modules ) => Object.keys( modules )
 		.map( ( slug ) => {
-			return {
-				...moduleDefaults,
-				name: slug, // Ensure `name` is not empty.
-				...modules[ slug ],
-				slug,
-			};
+			const module = { ...modules[ slug ], slug };
+			// Fill any `undefined` values with defaults.
+			defaults( module, { name: slug }, moduleDefaults );
+
+			return module;
 		} )
 		.sort( ( a, b ) => a.order - b.order )
 		.reduce( ( acc, module ) => {
@@ -212,15 +213,18 @@ const baseActions = {
 	 * Registers a module.
 	 *
 	 * @since 1.13.0
+	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 *
-	 * @param {string}    slug                         Module slug.
-	 * @param {Object}    [settings]                   Optional. Module settings.
-	 * @param {string}    [settings.name]              Optional. Module name. Default is the slug.
-	 * @param {string}    [settings.description]       Optional. Module description. Default empty string.
-	 * @param {string}    [settings.icon]              Optional. Module icon. Default empty string.
-	 * @param {number}    [settings.order]             Optional. Numeric indicator for module order. Default 10.
-	 * @param {string}    [settings.homepage]          Optional. Module homepage URL. Default empty string.
-	 * @param {WPElement} [settings.settingsComponent] React component to render the settings panel. Default is the DefaultModuleSettings component.
+	 * @param {string}      slug                             Module slug.
+	 * @param {Object}      [settings]                       Optional. Module settings.
+	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
+	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
+	 * @param {string}      [settings.icon]                  Optional. Module icon. Default empty string.
+	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
+	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
+	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel. Default none.
+	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
+	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
 	 * @return {Object} Redux-style action.
 	 */
 	registerModule( slug, {
@@ -229,7 +233,9 @@ const baseActions = {
 		icon,
 		order,
 		homepage,
-		settingsComponent = DefaultModuleSettings,
+		settingsEditComponent,
+		settingsViewComponent,
+		setupComponent,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
@@ -239,7 +245,9 @@ const baseActions = {
 			icon,
 			order,
 			homepage,
-			settingsComponent,
+			settingsEditComponent,
+			settingsViewComponent,
+			setupComponent,
 		};
 
 		return {
@@ -378,6 +386,70 @@ const baseSelectors = {
 
 		// This module exists, so let's return it.
 		return modules[ slug ];
+	} ),
+
+	/**
+	 * Gets module dependency names by slug.
+	 *
+	 * Returns a list of modules that depend on this module.
+	 * Returns `undefined` if state is still loading or if said module doesn't exist.
+	 *
+	 * @since 1.20.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(Array|undefined)} An array of dependency module names; `undefined` if state is still loading.
+	 */
+	getModuleDependencyNames: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if module with this slug isn't loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `[]` to signify the
+		// "not found" state.
+		if ( module === null ) {
+			return [];
+		}
+
+		// Module is found, return the names of the dependencies
+		// Modules are already resolved after we getModule() so they can't be undefined.
+		const modules = select( STORE_NAME ).getModules();
+		return module.dependencies.map( ( dependencySlug ) => modules[ dependencySlug ]?.name || dependencySlug );
+	} ),
+
+	/**
+	 * Gets module dependant names by slug.
+	 *
+	 * Returns a list of modules on which this module depends.
+	 * Returns `undefined` if state is still loading or if said module doesn't exist.
+	 *
+	 * @since 1.20.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(Array|undefined)} An array of dependant module names; `undefined` if state is still loading.
+	 */
+	getModuleDependantNames: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if module with this slug isn't loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `[]` to signify the
+		// "not found" state.
+		if ( module === null ) {
+			return [];
+		}
+
+		// Module is found, return the names of the dependants
+		// Modules are already resolved after we getModule() so they can't be undefined.
+		const modules = select( STORE_NAME ).getModules();
+		return module.dependants.map( ( dependantSlug ) => modules[ dependantSlug ]?.name || dependantSlug );
 	} ),
 
 	/**

@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/display-setting';
-import Link from '../../../../components/link';
+import DisplaySetting from '../../../../components/DisplaySetting';
+import Link from '../../../../components/Link';
 import { STORE_NAME } from '../../datastore/constants';
 import {
 	ACCOUNT_STATUS_DISAPPROVED,

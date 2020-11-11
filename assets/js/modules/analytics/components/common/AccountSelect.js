@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ProgressBar from '../../../../components/progress-bar';
+import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { STORE_NAME as MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
@@ -34,6 +34,13 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+
+	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
+		accounts: select( STORE_NAME ).getAccounts(),
+		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+	} ) );
+
 	const { hasExistingTag, hasGTMPropertyID } = useSelect( ( select ) => {
 		const data = {
 			hasExistingTag: select( STORE_NAME ).hasExistingTag(),
@@ -47,10 +54,6 @@ export default function AccountSelect() {
 
 		return data;
 	} );
-
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 
 	const { selectAccount } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {

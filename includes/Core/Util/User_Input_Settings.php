@@ -20,7 +20,7 @@ use WP_Error;
 /**
  * Class managing requests to user input settings endpoint.
  *
- * @since n.e.x.t
+ * @since 1.19.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class User_Input_Settings {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 * @var Authentication
 	 */
 	private $authentication;
@@ -39,7 +39,7 @@ class User_Input_Settings {
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 * @var Transients
 	 */
 	private $transients;
@@ -47,7 +47,7 @@ class User_Input_Settings {
 	/**
 	 * User_Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 * @var User_Transients
 	 */
 	private $user_transients;
@@ -55,7 +55,7 @@ class User_Input_Settings {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param Context         $context         Plugin context.
 	 * @param Authentication  $authentication  Optional. Authentication instance. Default a new instance.
@@ -76,7 +76,7 @@ class User_Input_Settings {
 	/**
 	 * Determines whether the site is connected to proxy or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @return boolean TRUE if connected, otherwise FALSE.
 	 */
@@ -89,7 +89,7 @@ class User_Input_Settings {
 	/**
 	 * Sends POST request to the proxy's settings endpoint to sync user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param array $settings User settings.
 	 * @return array|WP_Error User input settings.
@@ -134,7 +134,7 @@ class User_Input_Settings {
 	/**
 	 * Caches user input settings received from the proxy server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param array $settings Array with user input settings.
 	 */
@@ -147,11 +147,10 @@ class User_Input_Settings {
 				continue;
 			}
 
-			$values = is_array( $setting_data['values'] ) ? $setting_data['values'] : array();
 			if ( 'site' === $setting_data['scope'] ) {
-				$site_settings[ $setting_key ] = $values;
+				$site_settings[ $setting_key ] = $setting_data;
 			} elseif ( 'user' === $setting_data['scope'] ) {
-				$user_settings[ $setting_key ] = $values;
+				$user_settings[ $setting_key ] = $setting_data;
 			}
 		}
 
@@ -162,7 +161,7 @@ class User_Input_Settings {
 	/**
 	 * Gets user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @return array|WP_Error User input settings.
 	 */
@@ -184,15 +183,25 @@ class User_Input_Settings {
 			return $this->sync_with_proxy();
 		}
 
-		$settings = array();
+		$user_id  = get_current_user_id();
+		$settings = array_merge( $data['site'], $data['user'] );
 
-		foreach ( $data as $scope => $values ) {
-			foreach ( $values as $key => $value ) {
-				$settings[ $key ] = array(
-					'values' => $value,
-					'scope'  => $scope,
-				);
+		foreach ( $settings as &$setting ) {
+			if ( ! isset( $setting['answeredBy'] ) ) {
+				continue;
 			}
+
+			$answered_by = intval( $setting['answeredBy'] );
+			unset( $setting['answeredBy'] );
+
+			if ( ! $answered_by || $answered_by === $user_id ) {
+				continue;
+			}
+
+			$setting['author'] = array(
+				'photo' => get_avatar_url( $answered_by ),
+				'name'  => get_the_author_meta( 'user_email', $answered_by ),
+			);
 		}
 
 		return $settings;
@@ -201,7 +210,7 @@ class User_Input_Settings {
 	/**
 	 * Sets user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.19.0
 	 *
 	 * @param array $settings User settings.
 	 * @return array|WP_Error User input settings.

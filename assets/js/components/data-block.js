@@ -31,9 +31,9 @@ import { sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ChangeArrow from './change-arrow';
+import ChangeArrow from './ChangeArrow';
 import { numberFormat } from '../util/i18n';
-import SourceLink from '../components/source-link';
+import SourceLink from './SourceLink';
 
 class DataBlock extends Component {
 	constructor( props ) {

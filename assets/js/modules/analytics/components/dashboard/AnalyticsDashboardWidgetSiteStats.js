@@ -28,11 +28,11 @@ import { Component } from '@wordpress/element';
 import {
 	getTimeInSeconds,
 } from '../../../../util';
-import GoogleChart from '../../../../components/google-chart';
+import GoogleChart from '../../../../components/GoogleChart';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { extractAnalyticsDashboardData, siteAnalyticsReportDataDefaults } from '../../util';
-import PreviewBlock from '../../../../components/preview-block';
+import PreviewBlock from '../../../../components/PreviewBlock';
 
 class AnalyticsDashboardWidgetSiteStats extends Component {
 	constructor( props ) {

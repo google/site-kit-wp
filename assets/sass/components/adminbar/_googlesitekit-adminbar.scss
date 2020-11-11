@@ -76,15 +76,6 @@
 			margin: 5px 0 0 0;
 		}
 
-		.googlesitekit-adminbar__loading {
-			display: none;
-			padding: 0 $grid-gap-desktop * 2;
-		}
-
-		&.googlesitekit-adminbar--loading .googlesitekit-adminbar__loading {
-			display: block;
-		}
-
 		.googlesitekit-adminbar__link {
 			display: none;
 		}
