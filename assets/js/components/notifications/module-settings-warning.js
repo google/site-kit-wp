@@ -8,19 +8,9 @@ import ErrorIcon from '../../../svg/error.svg';
 
 const { useSelect } = Data;
 
-/**
+/*
  * A single module. Keeps track of its own active state and settings.
  */
-/*
-class ModuleSettingsWarning extends Component {
-	render() {
-		return null;
-	}
-}
-
-export default withFilters( 'googlesitekit.ModuleSettingsWarning' )( ModuleSettingsWarning );
-*/
-
 export default function ModuleSettingsWarning( {
 	slug,
 	// context,
@@ -29,8 +19,8 @@ export default function ModuleSettingsWarning( {
 	// this to rerun after modules are loaded.
 	// Once #1769 is resolved, we can remove the call to getModules,
 	// and remove the !! modules cache busting param.
-	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
-	const requirementsStatus = useSelect( ( select ) => select( CORE_MODULES ).getCheckRequirementsStatus( slug, !! modules ) );
+	const modules = useSelect( ( select ) => select( CORE_MODULES )?.getModules() );
+	const requirementsStatus = useSelect( ( select ) => select( CORE_MODULES )?.getCheckRequirementsStatus( slug, !! modules ) );
 
 	if ( requirementsStatus === null ) {
 		return null;
@@ -43,4 +33,3 @@ export default function ModuleSettingsWarning( {
 		</div>
 	);
 }
-
