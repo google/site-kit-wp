@@ -25,6 +25,7 @@ import {
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from 'tests/js/utils';
 import { STORE_NAME } from './constants';
 
@@ -32,9 +33,9 @@ describe( 'core/site developer plugin state', () => {
 	const responseDeveloperPluginState = {
 		active: true,
 		installed: true,
-		activateURL: 'http://something.test',
-		installURL: 'http://something.test',
-		configureURL: 'http://something.test',
+		activateURL: 'http://example.com/activate',
+		installURL: 'http://example.com/install',
+		configureURL: 'http://example.com/configure',
 	};
 
 	let registry;
@@ -71,7 +72,7 @@ describe( 'core/site developer plugin state', () => {
 			} );
 
 			it( 'receives and sets developer plugin state', async () => {
-				await registry.dispatch( STORE_NAME ).receiveGetDeveloperPluginState( responseDeveloperPluginState );
+				registry.dispatch( STORE_NAME ).receiveGetDeveloperPluginState( responseDeveloperPluginState );
 
 				const { developerPluginState } = registry.stores[ STORE_NAME ].store.getState();
 
@@ -91,21 +92,12 @@ describe( 'core/site developer plugin state', () => {
 				const initialDeveloperPluginState = registry.select( STORE_NAME ).getDeveloperPluginState();
 				// The developer plugin state will be its initial value while the developer plugin state is fetched.
 				expect( initialDeveloperPluginState ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getDeveloperPluginState() !== undefined
-					),
-				);
+				await untilResolved( registry, STORE_NAME ).getDeveloperPluginState();
 
 				const developerPluginState = registry.select( STORE_NAME ).getDeveloperPluginState();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( developerPluginState ).toEqual( responseDeveloperPluginState );
-
-				const developerPluginStateSelect = registry.select( STORE_NAME ).getDeveloperPluginState();
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-				expect( developerPluginStateSelect ).toEqual( developerPluginState );
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
@@ -113,10 +105,7 @@ describe( 'core/site developer plugin state', () => {
 
 				const developerPluginState = registry.select( STORE_NAME ).getDeveloperPluginState();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getDeveloperPluginState' )
-				);
+				await untilResolved( registry, STORE_NAME ).getDeveloperPluginState();
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( developerPluginState ).toEqual( responseDeveloperPluginState );
@@ -134,6 +123,7 @@ describe( 'core/site developer plugin state', () => {
 				);
 
 				registry.select( STORE_NAME ).getDeveloperPluginState();
+
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
