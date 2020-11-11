@@ -40,7 +40,7 @@ function UserMenu() {
 	const proxyPermissionsURL = useSelect( ( select ) => select( CORE_SITE ).getProxyPermissionsURL() );
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
 	const userPicture = useSelect( ( select ) => select( CORE_USER ).getPicture() );
-	const splashScreenURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { googlesitekit_context: 'revoked' } ) );
+	const postDisconnectURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { googlesitekit_context: 'revoked' } ) );
 
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, toggleMenu ] = useState( false );
@@ -48,6 +48,26 @@ function UserMenu() {
 	const menuRef = useRef();
 
 	useEffect( () => {
+		const handleMenuClose = ( e ) => {
+			// Close the menu if the user presses the Escape key
+			// or if they click outside of the menu.
+			if (
+				( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
+				! menuButtonRef.current.buttonRef.current.contains( e.target ) &&
+				! menuRef.current.menuRef.current.contains( e.target )
+			) {
+				toggleMenu( false );
+			}
+		};
+
+		const handleDialogClose = ( e ) => {
+			// Close if Escape key is pressed.
+			if ( 27 === e.keyCode ) {
+				toggleDialog( false );
+				toggleMenu( false );
+			}
+		};
+
 		global.addEventListener( 'mouseup', handleMenuClose );
 		global.addEventListener( 'keyup', handleMenuClose );
 		global.addEventListener( 'keyup', handleDialogClose );
@@ -62,16 +82,6 @@ function UserMenu() {
 	const handleMenu = useCallback( () => {
 		toggleMenu( ! menuOpen );
 	}, [ menuOpen ] );
-
-	const handleMenuClose = useCallback( ( e ) => {
-		if (
-			( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
-			! menuButtonRef.current.buttonRef.current.contains( e.target ) &&
-			! menuRef.current.menuRef.current.contains( e.target )
-		) {
-			toggleMenu( false );
-		}
-	}, [] );
 
 	const handleDialog = useCallback( () => {
 		toggleDialog( ! dialogActive );
@@ -98,13 +108,6 @@ function UserMenu() {
 		}
 	}, [ proxyPermissionsURL, handleMenu, handleDialog ] );
 
-	const handleDialogClose = useCallback( ( e ) => {
-		if ( 27 === e.keyCode ) {
-			toggleDialog( false );
-			toggleMenu( false );
-		}
-	}, [] );
-
 	// Log the user out if they confirm the dialog.
 	const handleUnlinkConfirm = useCallback( () => {
 		// Close the modal.
@@ -114,8 +117,8 @@ function UserMenu() {
 		clearWebStorage();
 
 		// Navigate back to the splash screen to reconnect.
-		document.location = splashScreenURL;
-	}, [] );
+		global.location.assign( postDisconnectURL );
+	}, [ postDisconnectURL ] );
 
 	if ( ! userEmail ) {
 		return null;
@@ -129,15 +132,20 @@ function UserMenu() {
 					className="googlesitekit-header__dropdown mdc-button--dropdown"
 					text
 					onClick={ handleMenu }
-					icon={ userPicture
-						? <i className="mdc-button__icon" aria-hidden="true"><img className="mdc-button__icon--image"
-							src={ userPicture }
-							alt={ __( 'User Avatar', 'google-site-kit' ) } /></i>
-						: undefined
+					icon={
+						!! userPicture && (
+							<i className="mdc-button__icon" aria-hidden="true">
+								<img
+									className="mdc-button__icon--image"
+									src={ userPicture }
+									alt={ __( 'User Avatar', 'google-site-kit' ) }
+								/>
+							</i>
+						)
 					}
-					ariaHaspopup="menu"
-					ariaExpanded={ menuOpen }
-					ariaControls="user-menu"
+					aria-haspopup="menu"
+					aria-expanded={ menuOpen }
+					aria-controls="user-menu"
 				>
 					{ userEmail }
 				</Button>
@@ -164,7 +172,6 @@ function UserMenu() {
 					title={ __( 'Disconnect', 'google-site-kit' ) }
 					subtitle={ __( 'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.', 'google-site-kit' ) }
 					confirmButton={ __( 'Disconnect', 'google-site-kit' ) }
-					provides={ [] }
 					danger
 				/>
 			</Modal>
