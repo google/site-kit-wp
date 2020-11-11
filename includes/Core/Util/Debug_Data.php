@@ -333,10 +333,10 @@ class Debug_Data {
 	 * @return array
 	 */
 	private function get_capabilities_field() {
-		$user_data = apply_filters( 'googlesitekit_user_data', array() );
-		$value     = array();
+		$permissions = new Permissions( $this->context, $this->authentication );
+		$value       = array();
 
-		foreach ( $user_data['permissions'] as $permission => $granted ) {
+		foreach ( $permissions->check_all_for_current_user() as $permission => $granted ) {
 			$value[ $permission ] = $granted ? '✅' : '⭕';
 		}
 
