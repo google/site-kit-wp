@@ -52,6 +52,10 @@ const Menu = forwardRef( ( {
 		menu.setDefaultFocusState( 1 );
 
 		menuRef.current.addEventListener( 'MDCMenu:selected', handleMenuSelected );
+
+		return () => {
+			menuRef.current.removeEventListener( 'MDCMenu:selected', handleMenuSelected );
+		};
 	}, [ menuRef.current, menuOpen ] );
 
 	return (

@@ -184,7 +184,8 @@ class UserMenu extends Component {
 							)
 						}
 						onSelected={ this.handleMenuItemSelect }
-						id="user-menu" />
+						id="user-menu"
+					/>
 				</div>
 				<Modal>
 					<Dialog
