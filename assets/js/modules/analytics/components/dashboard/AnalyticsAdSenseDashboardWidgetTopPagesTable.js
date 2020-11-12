@@ -52,11 +52,8 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		return null;
 	}
 
-	if ( ! data || ! data.length ) {
-		return null;
-	}
-
-	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+	const { rows } = data?.[ 0 ]?.data || {};
+	if ( ! Array.isArray( rows ) ) {
 		return null;
 	}
 
@@ -80,7 +77,7 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		},
 	];
 
-	const dataMapped = data[ 0 ].data.rows.map( ( row ) => {
+	const dataMapped = rows.map( ( row ) => {
 		/**
 		 * The shape of the dimensions and metrics objects:
 		 *
