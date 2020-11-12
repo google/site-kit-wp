@@ -78,6 +78,9 @@
     "assets/js/**/*.js": [
       "eslint"
     ],
+    "stories/**/*.js": [
+      "eslint"
+    ],
     "assets/sass/**/*.scss": [
       "stylelint --syntax scss"
     ],
