@@ -26,6 +26,26 @@ import { subscribeUntil } from '../../../tests/js/utils';
 
 describe( 'ResetButton', () => {
 	let registry;
+	let oldLocation;
+	const locationAssignMock = jest.fn();
+
+	beforeAll( () => {
+		oldLocation = global.location;
+		delete global.location;
+		global.location = Object.defineProperties(
+			{},
+			{
+				assign: {
+					configurable: true,
+					value: locationAssignMock,
+				},
+			},
+		);
+	} );
+
+	afterAll( () => {
+		global.location = oldLocation;
+	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -74,18 +94,6 @@ describe( 'ResetButton', () => {
 			fetchMock.postOnce(
 				/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
 				{ body: JSON.stringify( response ), status: 200 },
-			);
-
-			const locationAssignMock = jest.fn();
-			delete global.location;
-			global.location = Object.defineProperties(
-				{},
-				{
-					assign: {
-						configurable: true,
-						value: locationAssignMock,
-					},
-				},
 			);
 
 			await act( async () => {
