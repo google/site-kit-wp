@@ -25,11 +25,13 @@ import { STORE_NAME as CORE_SITE } from '../googlesitekit/datastore/site/constan
 
 describe( 'UserMenu', () => {
 	let registry;
+	let oldLocation;
 	const locationAssignMock = jest.fn();
 
 	beforeAll( () => {
 		registry = createTestRegistry();
 
+		oldLocation = global.location;
 		delete global.location;
 		global.location = Object.defineProperties(
 			{},
@@ -40,6 +42,10 @@ describe( 'UserMenu', () => {
 				},
 			},
 		);
+	} );
+
+	afterAll( () => {
+		global.location = oldLocation;
 	} );
 
 	describe( 'opening and closing the menu', () => {
