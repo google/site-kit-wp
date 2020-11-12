@@ -40,8 +40,10 @@ const Menu = forwardRef( ( {
 }, ref ) => {
 	const menuRef = useRef( null );
 	const mergedRefs = useMergedRef( ref, menuRef );
-	const handleMenuSelected = useCallback( ( { detail: { index } } ) => {
-		onSelected( index );
+	const handleMenuSelected = useCallback( ( event ) => {
+		const { detail: { index } } = event;
+
+		onSelected( index, event );
 	} );
 
 	useEffect( () => {

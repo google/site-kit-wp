@@ -87,13 +87,7 @@ class UserMenu extends Component {
 	handleMenuItemSelect( index, e ) {
 		const { proxyPermissionsURL } = this.props;
 
-		if (
-			( ( 'keydown' === e.type && (
-				13 === e.keyCode || // Enter
-				32 === e.keyCode // Space
-			) ) ||
-				'click' === e.type // Mouse
-			) ) {
+		if ( 'MDCMenu:selected' === e.type ) {
 			switch ( index ) {
 				case 0:
 					this.handleDialog();
