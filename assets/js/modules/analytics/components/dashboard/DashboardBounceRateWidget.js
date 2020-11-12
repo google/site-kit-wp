@@ -38,6 +38,7 @@ import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
+import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
 
@@ -90,7 +91,7 @@ function DashboardBounceRateWidget() {
 		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
-	if ( ! data || ! data.length ) {
+	if ( ! loading && isZeroReport( data ) ) {
 		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 

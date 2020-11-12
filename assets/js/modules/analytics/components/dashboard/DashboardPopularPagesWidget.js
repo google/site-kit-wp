@@ -35,6 +35,7 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../../compon
 import { numberFormat } from '../../../../util';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -83,7 +84,7 @@ function DashboardPopularPagesWidget() {
 		return getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error.message, false, false, false, error );
 	}
 
-	if ( ! Array.isArray( data?.[ 0 ]?.data?.rows ) ) {
+	if ( ! loading && isZeroReport( data ) ) {
 		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 

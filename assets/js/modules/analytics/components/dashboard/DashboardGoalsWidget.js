@@ -37,6 +37,7 @@ import { readableLargeNumber, changeToPercent } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
 
@@ -93,7 +94,7 @@ function DashboardGoalsWidget() {
 		);
 	}
 
-	if ( ! data || ! data.length ) {
+	if ( ! loading && isZeroReport( data ) ) {
 		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 

@@ -36,6 +36,7 @@ import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
+import { isZeroReport } from '../../../analytics/util';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -88,7 +89,7 @@ function DashboardTopEarningPagesWidget() {
 		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
-	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
+	if ( ! loading && isZeroReport( data ) ) {
 		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 
