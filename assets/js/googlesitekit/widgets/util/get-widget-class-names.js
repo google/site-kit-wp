@@ -45,6 +45,15 @@ const WIDTH_GRID_CLASS_MAP = {
 	],
 };
 
+/**
+ * Adjusts class names to better fit into the current row knowing that the default sizes don't fill the row completely.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<string>} classNames Current class names.
+ * @param {number}         counter    Current counter.
+ * @return {Array.<string>} Updated list of class names.
+ */
 function resizeClasses( classNames, counter ) {
 	// Safeguard: counter must always be 9 for this to work.
 	if ( counter !== 9 ) {
@@ -90,11 +99,39 @@ function resizeClasses( classNames, counter ) {
 	return [ classNames, counter ];
 }
 
+/**
+ * Gets widget class names for an area.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>} activeWidgets List of active widgets.
+ * @return {Array.<string>} List of class names for active widgets.
+ */
 export function getWidgetClassNames( activeWidgets ) {
-	let classNames = [].fill( null, 0, activeWidgets.length );
 	let counter = 0;
+	let classNames = [].fill( null, 0, activeWidgets.length );
+
 	activeWidgets.forEach( ( widget, i ) => {
-		const width = Array.isArray( widget.width ) ? widget.width[ 0 ] : widget.width;
+		// Let's make sure we always have an array of widths for the widget.
+		const widths = Array.isArray( widget.width ) ? widget.width : [ widget.width ];
+
+		// Get available sizes for the current widget to select the most appropriate width for the current row.
+		let sizes = widths.map( ( widgetWidth ) => [ counter + WIDTH_GRID_COUNTER_MAP[ widgetWidth ], widgetWidth ] );
+
+		// If it is the last widget, we can try to use an alternative size if it fits into the current row.
+		if ( i + 1 === activeWidgets.length ) {
+			// We need to check whether we have a size that can fit into the row and if so, try to get it.
+			const hasSizeThatCanFitIntoRow = sizes.some( ( [ widgetWidth ] ) => widgetWidth <= 12 );
+			if ( hasSizeThatCanFitIntoRow ) {
+				// Sort available sizes to have the descending order.
+				sizes = sizes.sort( ( [ a ], [ b ] ) => b - a );
+				// Filter out only those sizes that fit into the current row.
+				sizes = sizes.filter( ( [ widgetWidth ] ) => widgetWidth <= 12 );
+			}
+		}
+
+		// Grab the width of the first size in the sizes list, it's either the default one or the best suiting to the current row.
+		const width = sizes[ 0 ][ 1 ];
 
 		// Increase column counter based on width.
 		counter += WIDTH_GRID_COUNTER_MAP[ width ];

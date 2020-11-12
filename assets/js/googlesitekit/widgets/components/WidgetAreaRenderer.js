@@ -81,20 +81,18 @@ export default function WidgetAreaRenderer( { slug } ) {
 				</Cell>
 			</Row>
 
-			<div className="googlesitekit-widget-area-widgets">
-				<Row>
-					{ widgetArea.style === WIDGET_AREA_STYLES.BOXES && widgetsOutput }
-					{ widgetArea.style === WIDGET_AREA_STYLES.COMPOSITE && (
-						<Cell size={ 12 }>
-							<Grid>
-								<Row>
-									{ widgetsOutput }
-								</Row>
-							</Grid>
-						</Cell>
-					) }
-				</Row>
-			</div>
+			<Row className="googlesitekit-widget-area-widgets">
+				{ widgetArea.style === WIDGET_AREA_STYLES.BOXES && widgetsOutput }
+				{ widgetArea.style === WIDGET_AREA_STYLES.COMPOSITE && (
+					<Cell size={ 12 }>
+						<Grid>
+							<Row>
+								{ widgetsOutput }
+							</Row>
+						</Grid>
+					</Cell>
+				) }
+			</Row>
 		</Grid>
 	);
 }
