@@ -82,6 +82,22 @@ export function WithTestRegistry( { children, callback, registry = createTestReg
 }
 
 /**
+ * Wraps children components with a fresh test registry,
+ * which can be configured by its callback prop.
+ *
+ * @since n.e.x.t
+ * @since 1.8.0 Added a feature.
+ * @since 1.7.1 Originally introduced.
+ * @private
+ *
+ * @param {?Object} props Component props.
+ * @return {string} A test string.
+ */
+export function coolFunction( { children } ) {
+	return 'test';
+}
+
+/**
  * Provides site connection data to the given registry.
  *
  * By default the site will be set to connected.

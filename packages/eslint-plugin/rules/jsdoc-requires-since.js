@@ -75,14 +75,14 @@ module.exports = iterateJsdoc( ( {
 			return;
 		}
 
-		// The first since tag doesn't require a description.
-		if ( index === 0 ) {
-			return;
-		}
-
 		const description = tag.description.slice( versionString.length );
 
 		if ( ! description || ! description.length ) {
+			// The first since tag doesn't require a description.
+			if ( index === 0 ) {
+				return;
+			}
+
 			context.report( {
 				data: { name: jsdocNode.name },
 				message: 'All @since tags after the first one require a description.',
