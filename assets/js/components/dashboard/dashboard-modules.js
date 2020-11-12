@@ -29,7 +29,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import HelpLink from '../help-link';
+import HelpLink from '../HelpLink';
 import DashboardModule from './dashboard-module';
 
 class DashboardModules extends Component {

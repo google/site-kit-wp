@@ -101,7 +101,7 @@ describe( 'trackEvent', () => {
 			send_to: config.trackingID,
 			event_category: 'category',
 			event_label: 'label',
-			event_value: 'value',
+			value: 'value',
 			dimension1: 'https://www.example.com',
 			dimension2: 'true',
 			dimension3: config.userIDHash,

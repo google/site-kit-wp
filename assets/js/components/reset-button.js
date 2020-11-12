@@ -33,7 +33,7 @@ import {
 import data, { TYPE_CORE } from './data';
 import Dialog from './dialog';
 import Link from './Link';
-import Modal from './modal';
+import Modal from './Modal';
 
 export default class ResetButton extends Component {
 	constructor( props ) {

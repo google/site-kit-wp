@@ -30,7 +30,7 @@ export const USER_INPUT_QUESTION_SEARCH_TERMS = 'searchTerms';
 /**
  * Gets available answers for user input settings.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  * @private
  *
  * @return {Object} Answers object.
@@ -45,14 +45,15 @@ export function getUserInputAnwsers() {
 		},
 		USER_INPUT_ANSWERS_POST_FREQUENCY: {
 			never: __( 'Never', 'google-site-kit' ),
-			daily: __( 'Every day', 'google-site-kit' ),
-			weekly: __( 'Once a week or less', 'google-site-kit' ),
-			monthly: __( 'Once a month or less', 'google-site-kit' ),
+			daily: __( 'Daily / multiple times a day', 'google-site-kit' ),
+			weekly: __( 'Weekly / multiple times a week', 'google-site-kit' ),
+			monthly: __( 'Monthly or less', 'google-site-kit' ),
 		},
 		USER_INPUT_ANSWERS_GOALS: {
 			sell_products_or_service: __( 'Sell products or services', 'google-site-kit' ),
 			monetize_content: __( 'Monetize content (with ads or affiliate links)', 'google-site-kit' ),
 			publish_blog: __( 'Publish a blog', 'google-site-kit' ),
+			generate_leads: __( 'Generate leads', 'google-site-kit' ),
 			publish_news: __( 'Publish news content', 'google-site-kit' ),
 			share_portfolio: __( 'Share a business card or portfolio to represent me or my company online', 'google-site-kit' ),
 		},

@@ -24,7 +24,7 @@ import unescape from 'lodash/unescape';
 /**
  * Gets normalized container name.
  *
- * @since n.e.x.t
+ * @since 1.20.0
  *
  * @param {string} containerName Container name to normalize.
  * @return {string} Normalized container name.

@@ -138,6 +138,11 @@ final class Plugin {
 		$activation_flag = new Core\Util\Activation_Flag( $this->context, $options );
 		$activation_flag->register();
 
+		// Register uninstallation logic outside of 'init' since it hooks into
+		// plugin uninstallation.
+		$uninstallation = new Core\Util\Uninstallation( $this->context, $options );
+		$uninstallation->register();
+
 		// Initiate the plugin on 'init' for relying on current user being set.
 		add_action(
 			'init',

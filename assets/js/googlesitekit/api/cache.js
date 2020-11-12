@@ -28,7 +28,8 @@ export const STORAGE_KEY_PREFIX = 'googlesitekit_';
 
 const defaultOrder = [ 'sessionStorage', 'localStorage' ];
 let storageBackend;
-let storageOrder = [ ...defaultOrder	];
+let storageOrder = [ ...defaultOrder ];
+
 /**
  * Overrides the storage backend.
  *
@@ -129,7 +130,7 @@ export const isStorageAvailable = async ( type ) => {
 export const getStorage = async () => {
 	// If `googlesitekit.admin.nojscache` is `true`, we should never use
 	// the cache.
-	if ( global._googlesitekitLegacyData && global._googlesitekitLegacyData.admin && global._googlesitekitLegacyData.admin.nojscache ) {
+	if ( global._googlesitekitLegacyData?.admin?.nojscache ) {
 		return null;
 	}
 
