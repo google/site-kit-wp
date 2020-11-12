@@ -19,7 +19,7 @@
 /**
  * Node dependencies
  */
-import { join as pathJoin } from 'path';
+import { join as joinPaths } from 'path';
 
 /**
  * WordPress dependencies
@@ -84,7 +84,7 @@ export const selectors = {
 		}
 
 		const argsSegment = reportArgsToURLSegment( reportArgs );
-		const path = pathJoin( '/report', type, `a${ accountID }w${ internalWebPropertyID }p${ profileID }`, argsSegment, '/' );
+		const path = joinPaths( '/report', type, `a${ accountID }w${ internalWebPropertyID }p${ profileID }`, argsSegment, '/' );
 
 		return selectors.getServiceURL( state, { path } );
 	} ),
