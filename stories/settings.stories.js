@@ -44,24 +44,6 @@ import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
  * Add components to the settings page.
  */
 storiesOf( 'Settings', module )
-	.addDecorator( ( storyFn ) => {
-		const registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).registerModule( 'adsense', {
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
-		} );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
-		provideUserAuthentication( registry );
-		provideModules( registry, [ {
-			slug: 'adsense',
-			active: true,
-			connected: true,
-		} ] );
-
-		return storyFn( registry );
-	} )
 	.add( 'Settings Tabs', () => {
 		return (
 			<Layout>
@@ -112,8 +94,15 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.canAdsRun = true;
 		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
 		global._googlesitekitLegacyData.modules.adsense.active = false;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_MODULES ).registerModule( 'adsense', {
+				settingsEditComponent: SettingsEdit,
+				settingsViewComponent: SettingsView,
+				checkRequirements: () => true
+			} );
+		};
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry callback={ setupRegistry}>
 				<SettingsModules activeTab={ 1 } />
 			</WithTestRegistry>
 		);
