@@ -171,9 +171,9 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 				[ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.HALF ],
 				[ WIDGET_WIDTHS.FULL ],
 			].map( ( widths, i ) => {
-				const areaSlug = `area${ i + 1 }`;
-				createWidgets( registry, areaSlug, widths.map( ( width ) => ( { width } ) ) );
-				return ( <WidgetAreaRenderer slug={ areaSlug } key={ areaSlug } /> );
+				const slug = `area${ i + 1 }`;
+				createWidgets( registry, slug, widths.map( ( width ) => ( { width } ) ) );
+				return ( <WidgetAreaRenderer slug={ slug } key={ slug } /> );
 			} ) }
 		</WithTestRegistry>
 	) )
@@ -181,13 +181,13 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 		<WithTestRegistry registry={ registry }>
 			{ [
 				[ WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.HALF, [ WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.FULL ] ],
-				[ [ WIDGET_WIDTHS.FULL, WIDGET_WIDTHS.HALF ], WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER ],
+				[ [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ], WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER ],
 				[ WIDGET_WIDTHS.QUARTER, [ WIDGET_WIDTHS.FULL, WIDGET_WIDTHS.HALF ], WIDGET_WIDTHS.QUARTER ],
-				[ WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER, [ WIDGET_WIDTHS.FULL, WIDGET_WIDTHS.HALF ] ],
+				[ WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER, [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ] ],
 			].map( ( widths, i ) => {
-				const areaSlug = `area${ i + 1 }`;
-				createWidgets( registry, areaSlug, widths.map( ( width ) => ( { width } ) ) );
-				return ( <WidgetAreaRenderer slug={ areaSlug } key={ areaSlug } /> );
+				const slug = `area${ i + 1 }`;
+				createWidgets( registry, slug, widths.map( ( width ) => ( { width } ) ) );
+				return ( <WidgetAreaRenderer slug={ slug } key={ slug } /> );
 			} ) }
 		</WithTestRegistry>
 	) )
