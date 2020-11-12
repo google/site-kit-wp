@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Notification from './notification';
+import { getTimeInSeconds } from '../../util';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import personSitImage from '../../../images/person-sit.png';
@@ -45,13 +46,12 @@ export default function UserInputSettings() {
 		<Notification
 			id={ `user-input-settings-notification-${ instanceID }` }
 			title={ __( 'Customize Site Kit to match your goals', 'google-site-kit' ) }
-			description={ __( "Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site's goals", 'google-site-kit' ) }
-			handleDismiss={ () => {} }
+			description={ __( 'Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site’s goals', 'google-site-kit' ) }
 			format="large"
 			isDismissable
-			dismissExpire={ 10800 } // 3 hours
+			dismissExpires={ getTimeInSeconds( 'hour' ) * 3 }
 			ctaLink={ ctaLink }
-			ctaLabel={ __( "Let's go", 'google-site-kit' ) }
+			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + personSitImage }
 		/>
