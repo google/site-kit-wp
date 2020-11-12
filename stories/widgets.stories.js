@@ -6,7 +6,10 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
+import { createTestRegistry, WithTestRegistry } from '../tests/js/utils';
 import Widget from '../assets/js/googlesitekit/widgets/components/Widget';
+import WidgetAreaRenderer from '../assets/js/googlesitekit/widgets/components/WidgetAreaRenderer';
+import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../assets/js/googlesitekit/widgets/datastore/constants';
 
 function BoxesWidgets( { children } ) {
 	return (
@@ -44,6 +47,30 @@ function QuarterWidgetInGrid( props ) {
 			<Widget { ...props } />
 		</div>
 	);
+}
+
+function createWidgets( registry, areaName, widgets ) {
+	registry.dispatch( STORE_NAME ).registerWidgetArea( areaName, {
+		title: areaName.toUpperCase(),
+		subtitle: `${ areaName } subtitle`,
+		style: WIDGET_AREA_STYLES.BOXES,
+	} );
+
+	widgets.forEach( ( { component, slug, width }, i ) => {
+		const widgetSlug = slug || ( areaName + i );
+		const componentFallback = () => (
+			<div>
+				{ ( Array.isArray( width ) ? width.join( ' / ' ) : width ).toUpperCase() }
+			</div>
+		);
+
+		registry.dispatch( STORE_NAME ).registerWidget( widgetSlug, {
+			component: component || componentFallback,
+			width,
+		} );
+
+		registry.dispatch( STORE_NAME ).assignWidget( widgetSlug, areaName );
+	} );
 }
 
 storiesOf( 'Global/Widgets', module )
@@ -131,3 +158,37 @@ storiesOf( 'Global/Widgets', module )
 			) ) }
 		</CompositeWidgets>
 	) );
+
+storiesOf( 'Global/Widgets/Widget Area', module )
+	.addDecorator( ( storyFn ) => storyFn( createTestRegistry() ) )
+	.add( 'Regular sizes', ( registry ) => (
+		<WithTestRegistry registry={ registry }>
+			{ [
+				[ WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER ],
+				[ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER ],
+				[ WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.QUARTER ],
+				[ WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.HALF ],
+				[ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.HALF ],
+				[ WIDGET_WIDTHS.FULL ],
+			].map( ( widths, i ) => {
+				const areaSlug = `area${ i + 1 }`;
+				createWidgets( registry, areaSlug, widths.map( ( width ) => ( { width } ) ) );
+				return ( <WidgetAreaRenderer slug={ areaSlug } key={ areaSlug } /> );
+			} ) }
+		</WithTestRegistry>
+	) )
+	.add( 'Irregular sizes', ( registry ) => (
+		<WithTestRegistry registry={ registry }>
+			{ [
+				[ WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.HALF, [ WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.FULL ] ],
+				[ [ WIDGET_WIDTHS.FULL, WIDGET_WIDTHS.HALF ], WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER ],
+				[ WIDGET_WIDTHS.QUARTER, [ WIDGET_WIDTHS.FULL, WIDGET_WIDTHS.HALF ], WIDGET_WIDTHS.QUARTER ],
+				[ WIDGET_WIDTHS.QUARTER, WIDGET_WIDTHS.QUARTER, [ WIDGET_WIDTHS.FULL, WIDGET_WIDTHS.HALF ] ],
+			].map( ( widths, i ) => {
+				const areaSlug = `area${ i + 1 }`;
+				createWidgets( registry, areaSlug, widths.map( ( width ) => ( { width } ) ) );
+				return ( <WidgetAreaRenderer slug={ areaSlug } key={ areaSlug } /> );
+			} ) }
+		</WithTestRegistry>
+	) )
+;
