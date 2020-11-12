@@ -37,7 +37,6 @@ import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
 import { WithTestRegistry } from '../tests/js/utils';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { SettingsEdit, SettingsView } from '../assets/js/modules/adsense/components/settings';
 
 /**
  * Add components to the settings page.
@@ -94,11 +93,7 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
 		global._googlesitekitLegacyData.modules.adsense.active = false;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULES ).registerModule( 'adsense', {
-				settingsEditComponent: SettingsEdit,
-				settingsViewComponent: SettingsView,
-				checkRequirements: () => true,
-			} );
+			dispatch( CORE_MODULES ).registerModule( 'adsense' )
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
