@@ -182,6 +182,8 @@ final class Permissions {
 	/**
 	 * Check permissions for current user.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @return array
 	 */
 	public function check_all_for_current_user() {
