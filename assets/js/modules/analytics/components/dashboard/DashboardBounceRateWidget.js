@@ -32,7 +32,7 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
-import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
+import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { changeToPercent } from '../../../../util';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import getDataErrorComponent from '../../../../components/notifications/data-error';

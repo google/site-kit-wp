@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { getModulesData } from '../../../../util';
 import Layout from '../../../../components/layout/layout';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
-import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
+import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import LegacyDashboardSearchFunnelInner from './LegacyDashboardSearchFunnelInner';
 
 class LegacyDashboardSearchFunnel extends Component {
