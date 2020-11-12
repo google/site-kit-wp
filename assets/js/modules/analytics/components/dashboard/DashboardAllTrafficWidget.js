@@ -36,7 +36,7 @@ import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
-import { isDataZeroForReporting } from '../../util';
+import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -96,7 +96,7 @@ function DashboardAllTrafficWidget() {
 		return getDataErrorComponent( 'analytics', error.message, true, true, false, error );
 	}
 
-	if ( ! loading && isDataZeroForReporting( report ) ) {
+	if ( ! loading && isZeroReport( report ) ) {
 		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, false );
 	}
 
