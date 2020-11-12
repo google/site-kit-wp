@@ -35,10 +35,9 @@ import SettingsModules from '../assets/js/components/settings/settings-modules';
 import Layout from '../assets/js/components/layout/layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
-import { createTestRegistry, provideModules, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
+import { WithTestRegistry } from '../tests/js/utils';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { SettingsEdit, SettingsView } from '../assets/js/modules/adsense/components/settings';
-import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
 
 /**
  * Add components to the settings page.
@@ -98,11 +97,11 @@ storiesOf( 'Settings', module )
 			dispatch( CORE_MODULES ).registerModule( 'adsense', {
 				settingsEditComponent: SettingsEdit,
 				settingsViewComponent: SettingsView,
-				checkRequirements: () => true
+				checkRequirements: () => true,
 			} );
 		};
 		return (
-			<WithTestRegistry callback={ setupRegistry}>
+			<WithTestRegistry callback={ setupRegistry }>
 				<SettingsModules activeTab={ 1 } />
 			</WithTestRegistry>
 		);
