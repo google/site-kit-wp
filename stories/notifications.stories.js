@@ -11,6 +11,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Notification from '../assets/js/components/notifications/notification';
+import UserInputSettings from '../assets/js/components/notifications/UserInputSettings';
 import ModulesList from '../assets/js/components/modules-list';
 
 global._googlesitekitLegacyData.canAdsRun = true;
@@ -205,4 +206,7 @@ storiesOf( 'Global/Notifications', module )
 			}
 			type="win-stats"
 		/>
+	) )
+	.add( 'User Input Settings', () => (
+		<UserInputSettings />
 	) );
