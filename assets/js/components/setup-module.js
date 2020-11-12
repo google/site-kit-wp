@@ -40,7 +40,7 @@ import {
 } from '../util';
 import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
-import ModuleIcon from '../components/module-icon';
+import ModuleIcon from './ModuleIcon';
 import Spinner from './Spinner';
 import Link from './Link';
 import ModuleSettingsWarning from '../components/notifications/module-settings-warning';

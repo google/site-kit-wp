@@ -27,13 +27,17 @@ import { createRegistry } from '@wordpress/data';
 import API from 'googlesitekit-api';
 import { unsubscribeFromAll } from 'tests/js/utils';
 import { createNotificationsStore } from '../data/create-notifications-store';
+import { createSettingsStore } from '../data/create-settings-store';
 import { createInfoStore } from './create-info-store';
 import { createModuleStore } from './create-module-store';
+import { createSubmitChangesStore } from './create-submit-changes-store';
 
 const SETTING_SLUG = 'testSetting';
 const MODULE_SLUG = 'base';
 
 describe( 'createModuleStore store', () => {
+	const settingSlugs = [ SETTING_SLUG ];
+
 	let registry;
 	let storeDefinition;
 
@@ -44,10 +48,8 @@ describe( 'createModuleStore store', () => {
 	beforeEach( () => {
 		registry = createRegistry();
 
-		storeDefinition = createModuleStore( MODULE_SLUG, {
-			settingSlugs: [ SETTING_SLUG ],
-			registry,
-		} );
+		storeDefinition = createModuleStore( MODULE_SLUG, { settingSlugs, registry } );
+
 		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
 	} );
 
@@ -66,51 +68,26 @@ describe( 'createModuleStore store', () => {
 	} );
 
 	describe( 'actions', () => {
-		it( 'includes all notifications store actions', () => {
-			const notificationsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' );
-
+		it.each( [
+			[ 'createNotificationsStore', createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' ) ],
+			[ 'createSettingsStore', createSettingsStore( 'modules', MODULE_SLUG, 'settings', { settingSlugs, registry } ) ],
+			[ 'createSubmitChangesStore', createSubmitChangesStore( { storeName: MODULE_SLUG } ) ],
+		] )( 'includes all actions from %s store', ( partialStoreName, partialStore ) => {
 			expect( Object.keys( storeDefinition.actions ) ).toEqual(
-				expect.arrayContaining( Object.keys( notificationsStoreDefinition.actions ) )
-			);
-		} );
-
-		it( 'includes all settings store actions', () => {
-			const settingsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'settings', {
-				settingSlugs: [ SETTING_SLUG ],
-				registry,
-			} );
-
-			expect( Object.keys( storeDefinition.actions ) ).toEqual(
-				expect.arrayContaining( Object.keys( settingsStoreDefinition.actions ) )
+				expect.arrayContaining( Object.keys( partialStore.actions ) )
 			);
 		} );
 	} );
 
 	describe( 'selectors', () => {
-		it( 'includes all info store selectors', () => {
-			const createInfoStoreDefinition = createInfoStore();
-
+		it.each( [
+			[ 'createInfoStore', createInfoStore() ],
+			[ 'createNotificationsStore', createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' ) ],
+			[ 'createSettingsStore', createSettingsStore( 'modules', MODULE_SLUG, 'settings', { settingSlugs, registry } ) ],
+			[ 'createSubmitChangesStore', createSubmitChangesStore( { storeName: MODULE_SLUG } ) ],
+		] )( 'includes all actions from %s store', ( partialStoreName, partialStore ) => {
 			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
-				expect.arrayContaining( Object.keys( createInfoStoreDefinition.selectors ) )
-			);
-		} );
-
-		it( 'includes all notifications store selectors', () => {
-			const notificationsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' );
-
-			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
-				expect.arrayContaining( Object.keys( notificationsStoreDefinition.selectors ) )
-			);
-		} );
-
-		it( 'includes all settings store selectors', () => {
-			const settingsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'settings', {
-				settingSlugs: [ SETTING_SLUG ],
-				registry,
-			} );
-
-			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
-				expect.arrayContaining( Object.keys( settingsStoreDefinition.selectors ) )
+				expect.arrayContaining( Object.keys( partialStore.selectors ) )
 			);
 		} );
 	} );
