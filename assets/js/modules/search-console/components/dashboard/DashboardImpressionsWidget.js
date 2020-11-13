@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { extractSearchConsoleDashboardData } from '../../util';
+import { extractSearchConsoleDashboardData, isZeroReport } from '../../util';
 import { extractForSparkline, untrailingslashit } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
 import whenActive from '../../../../util/when-active';
@@ -84,7 +84,7 @@ function DashboardImpressionsWidget() {
 		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
-	if ( ! data || ! data.length ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="search-console" />;
 	}
 

@@ -30,7 +30,7 @@ import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/sit
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { extractForSparkline, untrailingslashit } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
-import { extractSearchConsoleDashboardData } from '../../util';
+import { extractSearchConsoleDashboardData, isZeroReport } from '../../util';
 import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
@@ -84,7 +84,7 @@ function DashboardClicksWidget() {
 		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
-	if ( ! data || ! data.length ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="search-console" />;
 	}
 
