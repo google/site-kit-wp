@@ -210,6 +210,24 @@ describe( 'modules/tagmanager settings', () => {
 					expect( console ).toHaveErrored();
 				} );
 
+				it( 'clears errors from past dispatches', async () => {
+					// emulates error that might have occurred while creating a new container.
+					await registry.dispatch( STORE_NAME ).receiveError( {}, 'createContainer', [] );
+					// emulates error dispatched by legacy components.
+					await registry.dispatch( STORE_NAME ).receiveError( {} );
+
+					expect( registry.select( STORE_NAME ).getErrors().length ).not.toEqual( 0 );
+
+					await registry.dispatch( STORE_NAME ).setSettings( validSettings );
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						{ body: validSettings, status: 200 }
+					);
+					await registry.dispatch( STORE_NAME ).submitChanges();
+
+					expect( registry.select( STORE_NAME ).getErrors().length ).toEqual( 0 );
+				} );
+
 				it( 'dispatches saveSettings', async () => {
 					registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
