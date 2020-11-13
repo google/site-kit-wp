@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -30,15 +35,6 @@ import CTA from '../components/notifications/cta';
 
 const { useSelect } = Data;
 
-/**
- * ReportZero component.
- *
- * @since n.e.x.t
- *
- * @param {Object} props            Component props.
- * @param {string} props.moduleSlug The module slug.
- * @return {WPElement} CTA component with data error message.
- */
 export default function ReportZero( { moduleSlug } ) {
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 	return <CTA
@@ -50,3 +46,7 @@ export default function ReportZero( { moduleSlug } ) {
 		description={ sprintf( __( '%s data is not yet available, please check back later.', 'google-site-kit' ), module?.name ) }
 	/>;
 }
+
+ReportZero.propTypes = {
+	moduleSlug: PropTypes.string.isRequired,
+};
