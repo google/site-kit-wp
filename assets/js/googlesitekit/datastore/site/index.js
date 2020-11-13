@@ -24,6 +24,7 @@ import connection from './connection';
 import html from './html';
 import info from './info';
 import reset from './reset';
+import developerPlugin from './developer-plugin';
 import { STORE_NAME } from './constants';
 import notifications from './notifications';
 import registryKey from './registry-key';
@@ -34,6 +35,7 @@ const store = Data.combineStores(
 	connection,
 	html,
 	info,
+	developerPlugin,
 	reset,
 	notifications,
 	registryKey,

@@ -28,7 +28,7 @@ import { Component } from '@wordpress/element';
 import { decodeHTMLEntity, getTimeInSeconds } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import GoogleChart from '../../../../components/google-chart.js';
+import GoogleChart from '../../../../components/GoogleChart';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import { extractSearchConsoleDashboardData } from '../../util';
 
