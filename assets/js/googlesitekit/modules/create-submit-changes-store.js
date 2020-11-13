@@ -71,7 +71,7 @@ export function createSubmitChangesStore( {
 		 */
 		*submitChanges() {
 			if ( clearError ) {
-				clearError( 'submitChanges', [] );
+				yield clearError( 'submitChanges', [] );
 			}
 
 			yield {
