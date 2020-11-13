@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Transients;
 use WP_Error;
@@ -257,13 +258,13 @@ class User_Input_Settings {
 		$response = $this->sync_with_proxy( $settings );
 		if ( ! is_wp_error( $response ) ) {
 			$this->authentication->get_user_input_state()->set(
-				$this->are_settings_empty()
+				$this->are_settings_empty( $response )
 					? User_Input_State::VALUE_MISSING
 					: User_Input_State::VALUE_COMPLETED
 			);
 		}
 
-		return $reponse;
+		return $response;
 	}
 
 }
