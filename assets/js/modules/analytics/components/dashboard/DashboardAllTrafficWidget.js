@@ -90,9 +90,9 @@ function DashboardAllTrafficWidget() {
 	if ( ! loading && error ) {
 		return (
 			<div className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-12
-					">
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--span-12
+			">
 				<ReportError moduleSlug="analytics" error={ error } />
 			</div>
 		);
@@ -101,9 +101,9 @@ function DashboardAllTrafficWidget() {
 	if ( ! loading && isDataZeroForReporting( report ) ) {
 		return (
 			<div className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-12
-					">
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--span-12
+			">
 				<ReportZero moduleSlug="analytics" />;
 			</div>
 		);
