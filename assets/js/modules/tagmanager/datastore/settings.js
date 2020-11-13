@@ -88,6 +88,11 @@ export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
 	if ( select( STORE_NAME ).haveSettingsChanged() ) {
+		// Clear any errors that may have been generated while creating container.
+		await dispatch( STORE_NAME ).clearErrors( 'createContainer' );
+		// Clear any error (in state.error) that legacy code may have reported.
+		await dispatch( STORE_NAME ).clearError();
+
 		const { error } = await dispatch( STORE_NAME ).saveSettings();
 
 		if ( error ) {

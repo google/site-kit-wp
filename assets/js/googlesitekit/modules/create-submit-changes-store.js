@@ -26,7 +26,13 @@ import invariant from 'invariant';
  */
 import Data from 'googlesitekit-data';
 import { createValidationSelector } from '../data/utils';
+import { actions as errorStoreActions } from '../data/create-error-store';
 const { createRegistryControl } = Data;
+
+// Get access to error store action creators.
+// If the parent store doesn't include the error store,
+// yielded error actions will be a no-op.
+const { clearError, receiveError } = errorStoreActions;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -64,9 +70,6 @@ export function createSubmitChangesStore( {
 		 * @return {Object} Empty object on success, object with `error` property on failure.
 		 */
 		*submitChanges() {
-			const { dispatch } = yield Data.commonActions.getRegistry();
-			const { clearError, receiveError } = dispatch( storeName );
-
 			if ( clearError ) {
 				clearError( 'submitChanges', [] );
 			}
@@ -82,7 +85,7 @@ export function createSubmitChangesStore( {
 			};
 
 			if ( result?.error && receiveError ) {
-				yield dispatch( storeName ).receiveError( result.error, 'submitChanges', [] );
+				yield receiveError( result.error, 'submitChanges', [] );
 			}
 
 			yield {
