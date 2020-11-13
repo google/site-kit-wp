@@ -51,17 +51,6 @@ describe( 'averageObjectValueList', () => {
 		expect( averageObjectValueList( list, 'count' ) ).toBe( 2.625 );
 	} );
 
-	it( 'only averages the correct fieldName', () => {
-		const list = [
-			{ count: 1 },
-			{ count: 2 },
-			{ number: 3 },
-			{ number: 4 },
-			{ number: 5 },
-		];
-		expect( averageObjectValueList( list, 'count' ) ).toBe( 2 );
-	} );
-
 	it( 'returns 0 if list is empty or fieldName is not found on any objects in list', () => {
 		const list = [
 			{ number: 1 },
@@ -72,5 +61,14 @@ describe( 'averageObjectValueList', () => {
 		];
 		expect( averageObjectValueList( [], 'count' ) ).toBe( 0 );
 		expect( averageObjectValueList( list, 'count' ) ).toBe( 0 );
+	} );
+
+	it( 'falls back to a value of 0 where fieldName is not present', () => {
+		const list = [
+			{},
+			{ value: 10 },
+		];
+		// 0 + 10 = 10 / 2 = 5
+		expect( averageObjectValueList( list, 'value' ) ).toBe( 5 );
 	} );
 } );
