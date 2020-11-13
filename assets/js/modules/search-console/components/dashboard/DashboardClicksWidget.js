@@ -35,8 +35,8 @@ import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportError from '../../../../components/ReportError';
+import ReportZero from '../../../../components/ReportZero';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
 
@@ -82,11 +82,11 @@ function DashboardClicksWidget() {
 
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return getDataErrorComponent( 'search-console', error.message, false, false, false, error );
+		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( ! data || ! data.length ) {
-		return getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="search-console" />;
 	}
 	// Split the data in two chunks.
 	const half = Math.floor( data.length / 2 );
