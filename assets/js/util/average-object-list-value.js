@@ -17,9 +17,10 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import sumObjectListValue from './sum-object-list-value.js';
+import get from 'lodash/get';
+import mean from 'lodash/mean';
 
 /**
  * Returns the average of a given fieldName in a list.
@@ -32,19 +33,18 @@ import sumObjectListValue from './sum-object-list-value.js';
  * @return {number} The average.
  */
 export default function averageObjectListValue( list, fieldName ) {
-	// Filter the list to remove any entries that don't have fieldName so our length is correct for division.
-	const filteredList = list.filter( ( item ) => {
-		return Object.keys( item ).includes( fieldName );
-	} );
+	if ( ! list?.length ) {
+		return 0;
+	}
 
-	const allIntegers = filteredList.every( ( item ) => {
-		return Number.isInteger( item[ fieldName ] );
-	} );
+	const values = list.map( ( item ) => get( item, fieldName, 0 ) );
+	const average = mean( values );
 
-	// Ensure that we don't divide empty arrays by 0.
-	const average = filteredList.length ? sumObjectListValue( list, fieldName ) / filteredList.length : 0;
+	if ( Number.isInteger( average ) ) {
+		return average;
+	}
 
-	if ( average > 0 && allIntegers ) {
+	if ( values.every( Number.isInteger ) ) {
 		return Math.round( average );
 	}
 
