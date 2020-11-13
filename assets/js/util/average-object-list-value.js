@@ -29,7 +29,7 @@ import mean from 'lodash/mean';
  *
  * @param {Array}  list      Array of objects or arrays.
  * @param {string} fieldName The path name of the field to be averaged.
- * @return {number} The average.
+ * @return {number} The average (mean) value of every item in the list.
  */
 export default function averageObjectListValue( list, fieldName ) {
 	if ( ! list?.length ) {

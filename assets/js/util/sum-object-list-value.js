@@ -28,7 +28,7 @@ import sumBy from 'lodash/sumBy';
  *
  * @param {Array}  list      Array of objects or arrays.
  * @param {string} fieldName The path name to the field to be summed.
- * @return {number} The sum.
+ * @return {number} The sum of all fields in the list.
  */
 export default function sumObjectListValue( list, fieldName ) {
 	return sumBy( list, fieldName ) || 0;
