@@ -85,7 +85,7 @@ function DashboardTopEarningPagesWidget() {
 	}
 
 	if ( error ) {
-		return <ReportError moduleSlug="adsense" error={ error } />;
+		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
