@@ -5,6 +5,7 @@ import extractForSparkline from '../extract-for-sparkline';
 
 const valuesToTest = [
 	[
+		// `data` to use and extract for the sparkline chart.
 		[
 			[
 				'1/1/2019',
@@ -19,7 +20,9 @@ const valuesToTest = [
 				6,
 			],
 		],
+		// `column` to use (eg. y-axis value).
 		1,
+		// Expected value/result in test after running `extractForSparkline( data, column )`.
 		[
 			[
 				'1/1/2019',
@@ -31,6 +34,7 @@ const valuesToTest = [
 			],
 		],
 	],
+	// `data` to use and extract for the sparkline chart.
 	[
 		[
 			[
@@ -46,7 +50,9 @@ const valuesToTest = [
 				6,
 			],
 		],
+		// `column` to use (eg. y-axis value).
 		2,
+		// Expected value/result in test after running `extractForSparkline( data, column )`.
 		[
 			[
 				'1/1/2019',
@@ -58,6 +64,7 @@ const valuesToTest = [
 			],
 		],
 	],
+	// `data` to use and extract for the sparkline chart.
 	[
 		[
 			[
@@ -73,7 +80,9 @@ const valuesToTest = [
 				6,
 			],
 		],
+		// `column` to use (eg. y-axis value).
 		3,
+		// Expected value/result in test after running `extractForSparkline( data, column )`.
 		[
 			[
 				'1/1/2019',
@@ -85,6 +94,7 @@ const valuesToTest = [
 			],
 		],
 	],
+	// `data` to use and extract for the sparkline chart.
 	[
 		[
 			[
@@ -100,7 +110,9 @@ const valuesToTest = [
 				6,
 			],
 		],
+		// `column` to use (eg. y-axis value).
 		0,
+		// Expected value/result in test after running `extractForSparkline( data, column )`.
 		[
 			[
 				'1/1/2019',
@@ -116,6 +128,7 @@ const valuesToTest = [
 
 const columnIndexValuesToTest = [
 	[
+		// `data` to use and extract for the sparkline chart.
 		[
 			[
 				'1/1/2019',
@@ -130,12 +143,15 @@ const columnIndexValuesToTest = [
 				6,
 			],
 		],
+		// `column` to use (eg. y-axis value).
 		0,
+		// Expected value/result in test after running `extractForSparkline( data, column )`.
 		[
 			[ '1/1/2019', '1/1/2019' ], [ '1/2/2019', '1/2/2019' ],
 		],
 	],
 	[
+		// `data` to use and extract for the sparkline chart.
 		[
 			[
 				'1/1/2019',
@@ -150,12 +166,15 @@ const columnIndexValuesToTest = [
 				6,
 			],
 		],
+		// `column` to use (eg. y-axis value).
 		1,
+		// Expected value/result in test after running `extractForSparkline( data, column )`.
 		[
 			[ 1, '1/1/2019' ], [ 4, '1/2/2019' ],
 		],
 	],
 	[
+		// `data` to use and extract for the sparkline chart.
 		[
 			[
 				'1/1/2019',
@@ -170,12 +189,15 @@ const columnIndexValuesToTest = [
 				6,
 			],
 		],
+		// `column` to use (eg. y-axis value).
 		2,
+		// Expected value/result in test after running `extractForSparkline( data, column )`.
 		[
 			[ 2, '1/1/2019' ], [ 5, '1/2/2019' ],
 		],
 	],
 	[
+		// `data` to use and extract for the sparkline chart.
 		[
 			[
 				'1/1/2019',
@@ -190,7 +212,9 @@ const columnIndexValuesToTest = [
 				6,
 			],
 		],
+		// `column` to use (eg. y-axis value).
 		3,
+		// Expected value/result in test after running `extractForSparkline( data, column )`.
 		[
 			[ 3, '1/1/2019' ], [ 6, '1/2/2019' ],
 		],
