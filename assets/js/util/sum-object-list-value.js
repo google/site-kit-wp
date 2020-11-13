@@ -17,17 +17,19 @@
  */
 
 /**
+ * External dependencies
+ */
+import sumBy from 'lodash/sumBy';
+
+/**
  * Returns the sum of a given fieldName in a list.
  *
  * @since n.e.x.t
  *
  * @param {Array}  list      Array of objects or arrays.
- * @param {string} fieldName The name of the field to be summed.
- *
+ * @param {string} fieldName The path name to the field to be summed.
  * @return {number} The sum.
  */
 export default function sumObjectListValue( list, fieldName ) {
-	return list.reduce( ( acc, item ) => {
-		return item[ fieldName ] ? acc + item[ fieldName ] : acc;
-	}, 0 );
+	return sumBy( list, fieldName ) || 0;
 }

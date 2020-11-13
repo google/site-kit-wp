@@ -28,8 +28,7 @@ import mean from 'lodash/mean';
  * @since n.e.x.t
  *
  * @param {Array}  list      Array of objects or arrays.
- * @param {string} fieldName The name of the field to be averaged.
- *
+ * @param {string} fieldName The path name of the field to be averaged.
  * @return {number} The average.
  */
 export default function averageObjectListValue( list, fieldName ) {
