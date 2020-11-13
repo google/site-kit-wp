@@ -37,14 +37,22 @@ const { useSelect } = Data;
 
 export default function ReportZero( { moduleSlug } ) {
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
-	return <CTA
 
-		/* translators: %s: Module name */
-		title={ sprintf( __( '%s Gathering Data', 'google-site-kit' ), module?.name ) }
-
-		/* translators: %s: Module name */
-		description={ sprintf( __( '%s data is not yet available, please check back later.', 'google-site-kit' ), module?.name ) }
-	/>;
+	return (
+		<CTA
+			title={
+				/* translators: %s: Module name */
+				sprintf( __( '%s Gathering Data', 'google-site-kit' ), module?.name )
+			}
+			description={
+				sprintf(
+					/* translators: %s: Module name */
+					__( '%s data is not yet available, please check back later.', 'google-site-kit' ),
+					module?.name
+				)
+			}
+		/>
+	);
 }
 
 ReportZero.propTypes = {
