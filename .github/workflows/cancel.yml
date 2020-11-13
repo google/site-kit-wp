@@ -25,5 +25,5 @@ jobs:
           WID_VRT: 2751946 # visual-regression.yml
           WID_ZIPS: 1979910 # zips.yml
         with:
-          workflow_id: ${{ join([ env.WID_SB, env.WID_VRT, env.WID_ZIPS ]) }}
+          workflow_id: ${{ env.WID_SB }},${{ env.WID_VRT }},${{ env.WID_ZIPS ]) }}
           access_token: ${{ github.token }}
