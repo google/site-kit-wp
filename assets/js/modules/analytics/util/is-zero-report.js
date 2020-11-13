@@ -22,34 +22,27 @@
  * @since n.e.x.t
  *
  * @param {Object} report Report data object.
- * @return {boolean | undefined} Returns undefined if in the loading state, TRUE if the report has no data or missing data, otherwise FALSE.
+ * @return {boolean | undefined} Returns undefined if in the loading state, true if the report has no data or missing data, otherwise false.
  */
 export function isZeroReport( report ) {
 	if ( report === undefined ) {
 		return undefined;
 	}
 
-	if ( report?.[ 0 ]?.data?.rows === undefined || report?.[ 0 ]?.data?.rows?.length === 0 || report?.[ 0 ]?.data?.totals?.[ 0 ] === undefined || report?.[ 0 ]?.data?.totals?.[ 0 ].length === 0 ) {
+	if ( ! report?.[ 0 ]?.data?.rows?.length || ! report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.length ) {
 		return true;
 	}
 
-	// Sum all values in all totals objects
-	const totals = report[ 0 ].data.totals;
-	let sumOfTotals = 0;
-	for ( let i = 0; i < totals.length; i++ ) {
-		const values = totals[ i ].values;
-		for ( let j = 0; j < values.length; j++ ) {
-			sumOfTotals += parseInt( values[ j ] );
-		}
-	}
+	const sumOfTotals = report[ 0 ].data.totals.reduce( function( totalSum, values ) {
+		return totalSum + values.values.reduce( ( valueSum, value ) => {
+			return valueSum + parseInt( value );
+		}, 0 );
+	}, 0 );
+
 	if ( sumOfTotals === 0 ) {
 		return true;
 	}
 
-	if ( typeof report !== 'object' ) {
-		// false means there _is_ data
-		return true;
-	}
-
+	// false means there _is_ value report data
 	return false;
 }

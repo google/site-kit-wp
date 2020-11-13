@@ -38,6 +38,7 @@ import getDataErrorComponent from '../../../../components/notifications/data-err
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
+import { isZeroReport } from '../../util';
 // import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
@@ -108,9 +109,7 @@ function DashboardUniqueVisitorsWidget() {
 		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
 	}
 
-	if ( ( ! sparkData || ! sparkData.length ) && ( ! visitorsData || ! visitorsData.length ) ) {
-		// sparkData and visitorsData are different to other widgets
-		// if ( ! loading && ( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) ) {
+	if ( ( isZeroReport( sparkData ) || isZeroReport( sparkData ) === undefined ) || ( isZeroReport( visitorsData ) || isZeroReport( visitorsData ) ) ) {
 		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
 	}
 

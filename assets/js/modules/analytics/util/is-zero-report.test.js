@@ -22,7 +22,7 @@
 import { isZeroReport } from './is-zero-report';
 
 describe( 'isZeroReport', () => {
-	it( 'should return undefined when a undefined is passed', () => {
+	it( 'returns undefined when undefined is passed', () => {
 		expect( isZeroReport( undefined ) ).toBe( undefined );
 	} );
 
@@ -35,11 +35,11 @@ describe( 'isZeroReport', () => {
 		[ 'an object without rows or totals', [ { data: {} } ] ],
 		[ 'an object with empty rows', [ { data: { rows: [] } } ] ],
 		[ 'an object with empty totals', [ { data: { totals: [] } } ] ],
-	] )( 'should return TRUE when %s is passed', ( _, report ) => {
+	] )( 'returns true when %s is passed', ( _, report ) => {
 		expect( isZeroReport( report ) ).toBe( true );
 	} );
 
-	it( 'should return TRUE none of the values in totals are greater than 0', () => {
+	it( 'returns true when the sum of totals values is 0', () => {
 		const report = [
 			{
 				data: {
@@ -49,6 +49,7 @@ describe( 'isZeroReport', () => {
 					totals: [
 						{
 							values: [
+								'0',
 								'0',
 							],
 						},
@@ -60,7 +61,7 @@ describe( 'isZeroReport', () => {
 		expect( isZeroReport( report ) ).toBe( true );
 	} );
 
-	it( 'should return FALSE when a valid object is passed', () => {
+	it( 'returns false for a report that has data', () => {
 		const report = [
 			{
 				data: {
@@ -70,6 +71,7 @@ describe( 'isZeroReport', () => {
 					totals: [
 						{
 							values: [
+								'928',
 								'928',
 							],
 						},
