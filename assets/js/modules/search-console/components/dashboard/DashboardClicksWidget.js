@@ -97,7 +97,6 @@ function DashboardClicksWidget() {
 	const totalOlderClicks = sumObjectListValue( olderData, 'clicks' );
 	const totalClicksChange = changeToPercent( totalOlderClicks, totalClicks );
 
-	// Sparkline data needs headers and dates formatted as MM/DD
 	const sparklineData = [
 		[
 			{ type: 'string', label: 'Day' },
@@ -109,6 +108,7 @@ function DashboardClicksWidget() {
 			return [ date.getMonth() + 1 + '/' + date.getUTCDate(), row[ 1 ] ];
 		} ),
 	];
+
 	return (
 		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--align-bottom mdc-layout-grid__cell--span-2-phone mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop">
 			<DataBlock
