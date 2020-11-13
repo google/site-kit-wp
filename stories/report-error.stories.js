@@ -24,19 +24,17 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
 import {
 	createTestRegistry,
+	provideModules,
 	WithTestRegistry,
 } from '../tests/js/utils';
-
+import { createModuleStore } from '../assets/js/googlesitekit/modules/create-module-store';
 import ReportError from '../assets/js/components/ReportError';
 
-const { createModuleStore } = Modules;
-
 const error = {
-	code: 'missing_required_param',
-	message: 'Request parameter is empty: metrics.',
+	code: 'test-error-code',
+	message: 'Test error message.',
 	data: {},
 };
 
@@ -45,7 +43,8 @@ storiesOf( 'Global', module )
 		const registry = createTestRegistry();
 		const testModuleDefinition = createModuleStore( 'test-module' );
 		registry.registerStore( testModuleDefinition.STORE_NAME, testModuleDefinition );
-		registry.dispatch( 'core/modules' ).registerModule( 'test-module', { name: 'Test Module' } );
+		provideModules( registry, [ { slug: 'test-module', name: 'Test Module' } ] );
+
 		return storyFn( registry );
 	} )
 	.add( 'ReportError', ( registry ) => (
