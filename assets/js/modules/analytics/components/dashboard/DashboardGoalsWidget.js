@@ -32,7 +32,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/notifications/cta';
-import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
+import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { readableLargeNumber, changeToPercent } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import ReportError from '../../../../components/ReportError';

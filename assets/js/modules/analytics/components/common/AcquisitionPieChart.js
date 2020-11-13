@@ -31,7 +31,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import GoogleChart from '../../../../components/google-chart';
+import GoogleChart from '../../../../components/GoogleChart';
 import Link from '../../../../components/Link';
 import { extractAnalyticsDataForTrafficChart } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
