@@ -35,8 +35,8 @@ import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportError from '../../../../components/ReportError';
+import ReportZero from '../../../../components/ReportZero';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
@@ -81,11 +81,11 @@ function DashboardClicksWidget() {
 
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return getDataErrorComponent( 'search-console', error.message, false, false, false, error );
+		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( ! data || ! data.length ) {
-		return getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="search-console" />;
 	}
 
 	const { totalClicks, totalClicksChange, dataMap } = extractSearchConsoleDashboardData( data );
