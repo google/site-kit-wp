@@ -23,7 +23,6 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
-	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
 } from 'tests/js/utils';
@@ -71,7 +70,7 @@ describe( 'core/site developer plugin state', () => {
 				} ).toThrow( 'response is required.' );
 			} );
 
-			it( 'receives and sets developer plugin state', async () => {
+			it( 'receives and sets developer plugin state', () => {
 				registry.dispatch( STORE_NAME ).receiveGetDeveloperPluginState( responseDeveloperPluginState );
 
 				const { developerPluginState } = registry.stores[ STORE_NAME ].store.getState();
@@ -124,11 +123,7 @@ describe( 'core/site developer plugin state', () => {
 
 				registry.select( STORE_NAME ).getDeveloperPluginState();
 
-				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => registry.select( STORE_NAME ).isFetchingGetDeveloperPluginState() === false,
-				);
+				await untilResolved( registry, STORE_NAME ).getDeveloperPluginState();
 
 				const developerPluginState = registry.select( STORE_NAME ).getDeveloperPluginState();
 
