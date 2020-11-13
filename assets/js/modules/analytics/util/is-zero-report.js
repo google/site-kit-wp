@@ -25,23 +25,14 @@
  * @return {boolean | undefined} Returns undefined if in the loading state, TRUE if the report has no data or missing data, otherwise FALSE.
  */
 export function isZeroReport( report ) {
-	// console.log( 'isZeroReport', report );
-
-	// If report is undefined, it should return undefined (to account for loading state).
 	if ( report === undefined ) {
 		return undefined;
 	}
 
-	// console.log( 'typeof report?.[ 0 ]?.data?.rows', typeof report?.[ 0 ]?.data?.rows );
-	// console.log( 'report?.[ 0 ]?.data?.rows.length', report?.[ 0 ]?.data?.rows.length );
-	// console.log( 'report[ 0 ].data.totals[ 0 ]', report?.[ 0 ]?.data?.totals?.[ 0 ] );
-
-	// Otherwise, it should return true if report?.[ 0 ]?.data?.rows is not set or empty or if report?.[ 0 ]?.data?.totals?.[ 0 ] is not set or empty.
 	if ( report?.[ 0 ]?.data?.rows === undefined || report?.[ 0 ]?.data?.rows?.length === 0 || report?.[ 0 ]?.data?.totals?.[ 0 ] === undefined || report?.[ 0 ]?.data?.totals?.[ 0 ].length === 0 ) {
 		return true;
 	}
 
-	//  It should also return true if none of the values in report[ 0 ].data.totals[ 0 ] is greater than 0.
 	// Sum all values in all totals objects
 	const totals = report[ 0 ].data.totals;
 	let sumOfTotals = 0;
@@ -55,12 +46,10 @@ export function isZeroReport( report ) {
 		return true;
 	}
 
-	// It should expect a report object like the one coming from the modules/analytics getReport selector.
 	if ( typeof report !== 'object' ) {
 		// false means there _is_ data
 		return true;
 	}
 
-	// Otherwise it should return false (i.e. there is data).
 	return false;
 }

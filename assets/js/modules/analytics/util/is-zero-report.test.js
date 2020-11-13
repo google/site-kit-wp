@@ -22,13 +22,10 @@
 import { isZeroReport } from './is-zero-report';
 
 describe( 'isZeroReport', () => {
-	// If report is undefined, it should return undefined (to account for loading state).
 	it( 'should return undefined when a undefined is passed', () => {
 		expect( isZeroReport( undefined ) ).toBe( undefined );
 	} );
 
-	// It should expect a report object like the one coming from the modules/analytics getReport selector.
-	// Otherwise, it should return true if report?.[ 0 ]?.data?.rows is not set or empty or if report?.[ 0 ]?.data?.totals?.[ 0 ] is not set or empty.
 	it.each( [
 		[ 'NULL', null ],
 		[ 'FALSE', false ],
@@ -42,9 +39,6 @@ describe( 'isZeroReport', () => {
 		expect( isZeroReport( report ) ).toBe( true );
 	} );
 
-	// //  It should also return true if none of the values in report[ 0 ].data.totals[ 0 ] is greater than 0.
-	// console.log( 'report[ 0 ].data.totals[ 0 ]', report?.[ 0 ]?.data?.totals?.[ 0 ] );
-	// // for (report[ 0 ].data.totals[ 0 ])
 	it( 'should return TRUE none of the values in totals are greater than 0', () => {
 		const report = [
 			{
@@ -66,7 +60,6 @@ describe( 'isZeroReport', () => {
 		expect( isZeroReport( report ) ).toBe( true );
 	} );
 
-	// Otherwise it should return false (i.e. there is data).
 	it( 'should return FALSE when a valid object is passed', () => {
 		const report = [
 			{
