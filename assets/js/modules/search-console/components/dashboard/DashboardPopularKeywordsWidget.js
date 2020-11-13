@@ -35,8 +35,8 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../../compon
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportError from '../../../../components/ReportError';
+import ReportZero from '../../../../components/ReportZero';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
@@ -86,11 +86,11 @@ function DashboardPopularKeywordsWidget() {
 		return <PreviewTable padding />;
 	}
 	if ( error ) {
-		return getDataErrorComponent( 'search-console', error.message, false, false, false, error );
+		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( ! data || ! data.length ) {
-		return getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="search-console" />;
 	}
 
 	const headers = [
