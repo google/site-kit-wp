@@ -25,7 +25,7 @@
  * @return {boolean} TRUE if the report has no data, otherwise FALSE.
  */
 export function isZeroReport( report ) {
-	if ( typeof report === 'undefined' ) {
+	if ( report === undefined ) {
 		return true;
 	}
 
