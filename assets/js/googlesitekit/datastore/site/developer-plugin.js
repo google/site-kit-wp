@@ -80,9 +80,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} Developer plugin state.
 	 */
 	getDeveloperPluginState( state ) {
-		const { developerPluginState } = state;
-
-		return developerPluginState;
+		return state.developerPluginState;
 	},
 };
 
