@@ -19,11 +19,6 @@ jobs:
     steps:
       # See https://github.com/marketplace/actions/cancel-workflow-action#advanced
       - uses: styfle/cancel-workflow-action@0.6.0
-        env:
-          # See https://api.github.com/repos/google/site-kit-wp/actions/workflows for reference.
-          WID_SB: 1979909 # storybook.yml
-          WID_VRT: 2751946 # visual-regression.yml
-          WID_ZIPS: 1979910 # zips.yml
         with:
-          workflow_id: ${{ env.WID_SB }},${{ env.WID_VRT }},${{ env.WID_ZIPS }}
+          workflow_id: storybook.yml,visual-regression.yml,zips.yml
           access_token: ${{ github.token }}
