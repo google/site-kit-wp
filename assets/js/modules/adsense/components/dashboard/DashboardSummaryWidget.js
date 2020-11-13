@@ -69,11 +69,15 @@ function DashboardSummaryWidget() {
 		};
 
 		return {
-			error: store.getErrorForSelector( 'getReport', [ todayArgs ] ) || store.getErrorForSelector( 'getReport', [ periodArgs ] ) || store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
-			loading: store.isResolving( 'getReport', [ todayArgs ] ) || store.isResolving( 'getReport', [ periodArgs ] ) || store.isResolving( 'getReport', [ dailyArgs ] ),
 			today: store.getReport( todayArgs ),
 			period: store.getReport( periodArgs ),
 			daily: store.getReport( dailyArgs ),
+			loading: store.isResolving( 'getReport', [ todayArgs ] ) ||
+				store.isResolving( 'getReport', [ periodArgs ] ) ||
+				store.isResolving( 'getReport', [ dailyArgs ] ),
+			error: store.getErrorForSelector( 'getReport', [ todayArgs ] ) ||
+				store.getErrorForSelector( 'getReport', [ periodArgs ] ) ||
+				store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
 		};
 	} );
 

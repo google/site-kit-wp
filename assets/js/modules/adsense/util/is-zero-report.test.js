@@ -23,7 +23,6 @@ import { isZeroReport } from './is-zero-report';
 
 describe( 'isZeroReport', () => {
 	it.each( [
-		[ 'undefined', undefined ],
 		[ 'NULL', null ],
 		[ 'FALSE', false ],
 		[ 'a number', 1 ],
@@ -44,5 +43,9 @@ describe( 'isZeroReport', () => {
 		};
 
 		expect( isZeroReport( report ) ).toBe( false );
+	} );
+
+	it( 'should return undefined when an undefined value is passed', () => {
+		expect( isZeroReport( undefined ) ).toBeUndefined();
 	} );
 } );
