@@ -20,7 +20,6 @@
  * External dependencies
  */
 import {
-	map,
 	isEqual,
 	isFinite,
 	get,
@@ -328,25 +327,6 @@ export const changeToPercent = ( previous, current ) => {
 	}
 
 	return change;
-};
-
-/**
- * Extracts a single column of data for a sparkline from a dataset prepared for Google charts.
- *
- * @since 1.0.0
- *
- * @param {Array}  rowData An array of Google charts row data.
- * @param {number} column  The column to extract for the sparkline.
- * @return {Array} Extracted column of dataset prepared for Google charts.
- *
- */
-export const extractForSparkline = ( rowData, column ) => {
-	return map( rowData, ( row, i ) => {
-		return [
-			row[ 0 ], // row[0] always contains the x axis value (typically date).
-			row[ column ] || ( 0 === i ? '' : 0 ), // the data for the sparkline.
-		];
-	} );
 };
 
 /**
