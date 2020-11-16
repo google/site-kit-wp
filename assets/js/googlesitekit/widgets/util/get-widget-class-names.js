@@ -134,7 +134,7 @@ export function getWidgetClassNames( activeWidgets ) {
 		let sizes = getWidgetSizes( counter, widget );
 
 		if (
-			// If it is the last widget in the current row.
+			// If it is the last widget in the entire widget area.
 			i + 1 === activeWidgets.length ||
 			// Or the next widget can't fit into the current row anyway, then we can try to use alternative sizes.
 			getWidgetSizes( sizes.sort( ascending )[ 0 ][ 0 ], activeWidgets[ i + 1 ] ).filter( fitIntoRow ).length === 0
