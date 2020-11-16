@@ -196,20 +196,26 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
  * @since 1.17.0
  * @private
  *
- * @param {Object} registry    Registry object to dispatch to.
- * @param {Array}  [extraData] List of module objects, will be merged with defaults. Default empty array.
+ * @param {Object}   registry    Registry object to dispatch to.
+ * @param {Object[]} [extraData] List of module objects to be merged with defaults. Default empty array.
  */
 export const provideModules = ( registry, extraData = [] ) => {
 	const extraModules = extraData.reduce( ( acc, module ) => {
 		return { ...acc, [ module.slug ]: module };
 	}, {} );
 
-	const modules = [ ...coreModulesFixture ].map( ( module ) => {
-		if ( extraModules[ module.slug ] ) {
-			return { ...module, ...extraModules[ module.slug ] };
-		}
-		return { ...module };
-	} );
+	const moduleSlugs = coreModulesFixture.map( ( { slug } ) => slug );
+	const modules = coreModulesFixture
+		.map( ( module ) => {
+			if ( extraModules[ module.slug ] ) {
+				return { ...module, ...extraModules[ module.slug ] };
+			}
+			return { ...module };
+		} )
+		.concat(
+			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) )
+		)
+	;
 
 	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
 };
