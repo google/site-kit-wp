@@ -76,7 +76,7 @@ domReady( () => {
 		'searchConsolePopularKeywords',
 		{
 			component: DashboardPopularKeywordsWidget,
-			width: Widgets.WIDGET_WIDTHS.HALF,
+			width: [ Widgets.WIDGET_WIDTHS.HALF, Widgets.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
 		},
