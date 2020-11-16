@@ -26,7 +26,7 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import Logo from './Logo';
-import UserMenu from './user-menu';
+import UserMenu from './UserMenu';
 import ErrorNotification from '../components/notifications/error-notification';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
