@@ -89,7 +89,6 @@ export const createModuleStore = ( slug, {
 		} );
 
 		const submitChangesStore = createSubmitChangesStore( {
-			storeName,
 			submitChanges: submitChanges || makeDefaultSubmitChanges( slug, storeName ),
 			validateCanSubmitChanges: validateCanSubmitChanges || makeDefaultCanSubmitChanges( storeName ),
 		} );
@@ -111,7 +110,6 @@ export const createModuleStore = ( slug, {
 			infoStore,
 			createErrorStore(),
 			createSubmitChangesStore( {
-				storeName,
 				submitChanges,
 				validateCanSubmitChanges,
 			} ),
