@@ -31,10 +31,6 @@ import { createSubmitChangesStore } from './create-submit-changes-store';
 describe( 'createSubmitChangesStore', () => {
 	const storeName = 'test store';
 
-	it( 'should throw an error if storeName isnt provided', () => {
-		expect( () => createSubmitChangesStore() ).toThrow( 'storeName is required.' );
-	} );
-
 	describe( 'actions', () => {
 		it( 'should be available in the returned object', () => {
 			const { actions } = createSubmitChangesStore( { storeName } );
