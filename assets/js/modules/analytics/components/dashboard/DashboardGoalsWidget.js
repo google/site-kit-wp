@@ -35,9 +35,9 @@ import CTA from '../../../../components/notifications/cta';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { readableLargeNumber, changeToPercent } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
-import getNoDataComponent from '../../../../components/notifications/nodata';
 import { isZeroReport } from '../../util';
+import ReportError from '../../../../components/ReportError';
+import ReportZero from '../../../../components/ReportZero';
 
 const { useSelect } = Data;
 
@@ -80,7 +80,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
+		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
@@ -95,7 +95,7 @@ function DashboardGoalsWidget() {
 	}
 
 	if ( ! loading && isZeroReport( data ) ) {
-		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [

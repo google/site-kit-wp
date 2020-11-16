@@ -33,9 +33,9 @@ import { Fragment, useState, useEffect } from '@wordpress/element';
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
-	extractForSparkline,
 	changeToPercent,
 } from '../../../../util';
+import extractForSparkline from '../../../../util/extract-for-sparkline';
 import {
 	calculateOverviewData,
 	extractAnalyticsDashboardSparklineData,

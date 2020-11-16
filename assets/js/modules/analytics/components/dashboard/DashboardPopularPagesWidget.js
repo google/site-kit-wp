@@ -33,9 +33,9 @@ import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
 import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
 import { numberFormat } from '../../../../util';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
-import getNoDataComponent from '../../../../components/notifications/nodata';
 import { isZeroReport } from '../../util';
+import ReportError from '../../../../components/ReportError';
+import ReportZero from '../../../../components/ReportZero';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -81,11 +81,11 @@ function DashboardPopularPagesWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error.message, false, false, false, error );
+		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( ! loading && isZeroReport( data ) ) {
-		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const headers = [
