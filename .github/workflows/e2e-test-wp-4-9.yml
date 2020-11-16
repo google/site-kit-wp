@@ -11,7 +11,7 @@ env:
   WP_VERSION=4.9.16
   GUTENBERG_VERSION=4.9.0
 jobs:
-  name: E2E Tests
+  name: E2E Tests (WordPress 4.9.16, Gutenberg 4.9.0)
   runs-on: ubuntu-latest
   if: github.event.pull_request.draft == false
   steps:
