@@ -20,35 +20,33 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { debounce } from 'lodash';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { useEffect, useRef, useState } from '@wordpress/element';
 
-/**
- * Internal dependencies
- */
-import { debounce } from 'lodash';
-import classnames from 'classnames';
-
 function TableOverflowContainer( { children } ) {
 	const [ isScrolling, setScrolling ] = useState( false );
 	const scrollRef = useRef();
 
 	useEffect( () => {
-		updateFadeOnScroll();
+		setIsScrolling();
 
-		const resize = debounce( function() {
-			updateFadeOnScroll();
-		}, 100 );
+		const resize = debounce( setIsScrolling, 100 );
 
 		global.addEventListener( 'resize', resize );
 
 		return () => global.removeEventListener( 'resize', resize );
 	}, [] );
 
-	const updateFadeOnScroll = () => {
+	const setIsScrolling = () => {
+		if ( ! scrollRef.current ) {
+			return;
+		}
+
 		const { scrollLeft, scrollWidth, offsetWidth } = scrollRef.current;
 		const maxScroll = scrollWidth - offsetWidth;
 		const scrolling = scrollLeft < ( maxScroll - 16 ) && 0 < ( maxScroll - 16 ); // 16 = $grid-gap-phone
@@ -58,7 +56,7 @@ function TableOverflowContainer( { children } ) {
 
 	return (
 		<div
-			onScroll={ debounce( updateFadeOnScroll, 100 ) }
+			onScroll={ debounce( setIsScrolling, 100 ) }
 			className={ classnames(
 				'googlesitekit-table-overflow',
 				{ 'googlesitekit-table-overflow--gradient': isScrolling }
