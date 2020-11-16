@@ -110,7 +110,10 @@ function resizeClasses( classNames, counter ) {
  */
 function getWidgetSizes( counter, widget ) {
 	const widths = Array.isArray( widget.width ) ? widget.width : [ widget.width ];
-	return widths.map( ( width ) => [ counter + WIDTH_GRID_COUNTER_MAP[ width ], width ] );
+	return widths.map( ( width ) => ( {
+		counter: counter + WIDTH_GRID_COUNTER_MAP[ width ],
+		width,
+	} ) );
 }
 
 /**
@@ -125,9 +128,9 @@ export function getWidgetClassNames( activeWidgets ) {
 	let counter = 0;
 	let classNames = [].fill( null, 0, activeWidgets.length );
 
-	const ascending = ( [ a ], [ b ] ) => a - b;
-	const descending = ( [ a ], [ b ] ) => b - a;
-	const fitIntoRow = ( [ width ] ) => width <= 12;
+	const ascending = ( { counter: a }, { counter: b } ) => a - b;
+	const descending = ( { counter: a }, { counter: b } ) => b - a;
+	const fitIntoRow = ( { counter: width } ) => width <= 12;
 
 	activeWidgets.forEach( ( widget, i ) => {
 		// Get available sizes for the current widget to select the most appropriate width for the current row.
@@ -137,7 +140,7 @@ export function getWidgetClassNames( activeWidgets ) {
 			// If it is the last widget in the entire widget area.
 			i + 1 === activeWidgets.length ||
 			// Or the next widget can't fit into the current row anyway, then we can try to use alternative sizes.
-			getWidgetSizes( sizes.sort( ascending )[ 0 ][ 0 ], activeWidgets[ i + 1 ] ).filter( fitIntoRow ).length === 0
+			getWidgetSizes( sizes.sort( ascending )[ 0 ].counter, activeWidgets[ i + 1 ] ).filter( fitIntoRow ).length === 0
 		) {
 			// We need to check whether we have a size that can fit into the row and if so, try to get it.
 			const hasSizeThatCanFitIntoRow = sizes.some( fitIntoRow );
@@ -150,7 +153,7 @@ export function getWidgetClassNames( activeWidgets ) {
 		}
 
 		// Grab the width of the first size in the sizes list, it's either the default one or the best suiting to the current row.
-		const width = sizes[ 0 ][ 1 ];
+		const width = sizes[ 0 ].width;
 
 		// Increase column counter based on width.
 		counter += WIDTH_GRID_COUNTER_MAP[ width ];
