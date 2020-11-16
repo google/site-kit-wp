@@ -28,8 +28,8 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { extractSearchConsoleDashboardData } from '../../util';
-import { extractForSparkline, untrailingslashit } from '../../../../util';
+import { changeToPercent, readableLargeNumber, untrailingslashit } from '../../../../util';
+import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { trackEvent } from '../../../../util/tracking';
 import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
@@ -37,6 +37,7 @@ import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
+import sumObjectListValue from '../../../../util/sum-object-list-value';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
@@ -88,14 +89,33 @@ function DashboardImpressionsWidget() {
 		return <ReportZero moduleSlug="search-console" />;
 	}
 
-	const { totalImpressions, totalImpressionsChange, dataMap } = extractSearchConsoleDashboardData( data );
+	// Split the data in two chunks.
+	const half = Math.floor( data.length / 2 );
+	const latestData = data.slice( half );
+	const olderData = data.slice( 0, half );
+
+	const totalImpressions = sumObjectListValue( latestData, 'impressions' );
+	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
+	const totalImpressionsChange = changeToPercent( totalOlderImpressions, totalImpressions );
+
+	const sparklineData = [
+		[
+			{ type: 'string', label: 'Day' },
+			{ type: 'number', label: 'Clicks' },
+		],
+		...extractForSparkline( latestData, 'impressions', 'keys.0' ).map( ( row ) => {
+			const date = new Date( row[ 0 ] );
+			// Sparkline data needs headers and dates formatted as MM/DD
+			return [ `${ date.getMonth() + 1 }/${ date.getUTCDate() }`, row[ 1 ] ];
+		} ),
+	];
 
 	return (
 		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--align-bottom mdc-layout-grid__cell--span-2-phone mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop">
 			<DataBlock
 				className="overview-total-impressions"
 				title={ __( 'Impressions', 'google-site-kit' ) }
-				datapoint={ totalImpressions }
+				datapoint={ readableLargeNumber( totalImpressions ) }
 				change={ totalImpressionsChange }
 				changeDataUnit="%"
 				source={ {
@@ -105,7 +125,7 @@ function DashboardImpressionsWidget() {
 				} }
 				sparkline={
 					<Sparkline
-						data={ extractForSparkline( dataMap, 2 ) }
+						data={ sparklineData }
 						change={ totalImpressionsChange }
 					/>
 				}
