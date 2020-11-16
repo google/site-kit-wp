@@ -11,8 +11,9 @@ env:
   WP_VERSION=4.7.19
   AMP_VERSION=1.5.5
 jobs:
-  name: E2E Tests (WordPress 4.7.19, Gutenberg 4.7.19, Amp 1.5.5)
-  runs-on: ubuntu-latest
-  if: github.event.pull_request.draft == false
-  steps:
-    - uses: actions/checkout@v2
+  e2e:
+    name: E2E Tests (WordPress 4.7.19, Gutenberg 4.7.19, Amp 1.5.5)
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v2

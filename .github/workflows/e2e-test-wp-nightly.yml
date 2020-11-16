@@ -10,8 +10,9 @@ env:
   E2E=1
   WP_VERSION=nightly
 jobs:
-  name: E2E Tests (WordPress nightly)
-  runs-on: ubuntu-latest
-  if: github.event.pull_request.draft == false
-  steps:
-    - uses: actions/checkout@v2
+  e2e:
+    name: E2E Tests (WordPress nightly)
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v2

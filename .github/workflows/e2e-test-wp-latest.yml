@@ -7,12 +7,13 @@ on:
       - synchronize
       - ready_for_review
 jobs:
-  name: E2E Tests (WordPress latest)
-  runs-on: ubuntu-latest
-  # if: github.event.pull_request.draft == false
-  steps:
-    - uses: actions/checkout@v2
-    - uses: ./.github/actions/composer
-    - uses: ./.github/actions/npm
-      with:
-        command: build:test
+  e2e:
+    name: E2E Tests (WordPress latest)
+    runs-on: ubuntu-latest
+    # if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/composer
+      - uses: ./.github/actions/npm
+        with:
+          command: build:test
