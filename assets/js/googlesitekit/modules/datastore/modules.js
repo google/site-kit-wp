@@ -40,6 +40,7 @@ import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { getLocale } from '../../../util';
+import { ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from '../../../util/errors';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -231,7 +232,7 @@ const baseActions = {
 	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel. Default none.
 	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
-	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws an error message for error or returns on success.
+	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 * @return {Object} Redux-style action.
 	 */
 	registerModule( slug, {
@@ -342,14 +343,14 @@ const baseReducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_CHECK_REQUIREMENTS_ERROR: {
-			const checkRequirementsResults = { ...state.checkRequirementsResults };
-
 			const { slug, error } = payload;
-			checkRequirementsResults[ slug ] = error;
 
 			return {
 				...state,
-				checkRequirementsResults,
+				checkRequirementsResults: {
+					...state.checkRequirementsResults,
+					[ slug ]: error,
+				},
 			};
 		}
 
@@ -417,7 +418,11 @@ const baseResolvers = {
 			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
 			const errorMessage = sprintf( __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' ), formatter.format( inactiveModules ), module.name );
 
-			yield baseActions.receiveCheckRequirementsError( slug, errorMessage );
+			yield baseActions.receiveCheckRequirementsError( slug, {
+				code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
+				message: errorMessage,
+				data: { inactiveModules },
+			} );
 		} else {
 			try {
 				yield Data.commonActions.await( module.checkRequirements() );

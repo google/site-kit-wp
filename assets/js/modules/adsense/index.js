@@ -45,6 +45,7 @@ import {
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
 import { STORE_NAME } from './datastore/constants';
+import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../util/errors';
 
 addFilter(
 	'googlesitekit.ModuleSetupIncomplete',
@@ -81,7 +82,10 @@ domReady( () => {
 					return;
 				}
 
-				throw __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' );
+				throw {
+					code: ERROR_CODE_ADBLOCKER_ACTIVE,
+					message: __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' ),
+				};
 			},
 		}
 	);

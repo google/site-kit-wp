@@ -30,6 +30,7 @@ import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
 import { STORE_NAME } from './constants';
 import FIXTURES from './fixtures.json';
+import { ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from '../../../util/errors';
 
 describe( 'core/modules modules', () => {
 	const sortedFixtures = sortByProperty( FIXTURES, 'order' );
@@ -660,13 +661,19 @@ describe( 'core/modules modules', () => {
 				expect( requirementsStatus ).toEqual( null );
 			} );
 
-			it( 'has an error message when we can not activate a module', async () => {
+			it( 'has an error when we can not activate a module', async () => {
 				await bootStrapActivateModulesTests();
 				const slug = 'slug2dependant';
 				registry.select( STORE_NAME ).canActivateModule( slug );
 
 				const requirementsStatus = registry.select( STORE_NAME ).getCheckRequirementsStatus( slug );
-				expect( requirementsStatus ).toEqual( 'You need to set up slug2 to gain access to slug2dependant.' );
+				expect( requirementsStatus ).toEqual( {
+					code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
+					data: {
+						inactiveModules: [ 'slug2' ],
+					},
+					message: 'You need to set up slug2 to gain access to slug2dependant.',
+				} );
 			} );
 		} );
 
