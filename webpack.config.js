@@ -78,7 +78,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
-	'@wordpress/i18n': [ 'wp', 'i18n' ],
+	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
 const externals = { ...siteKitExternals };

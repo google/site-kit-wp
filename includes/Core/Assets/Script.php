@@ -98,19 +98,7 @@ class Script extends Asset {
 		}
 
 		if ( ! empty( $src ) ) {
-			$textdomain = BC_Functions::load_script_textdomain( $this->handle, 'google-site-kit' );
-			if ( $textdomain ) {
-				$textdomain = json_decode( $textdomain, true );
-				if (
-					! empty( $textdomain['locale_data']['messages'] ) &&
-					is_array( $textdomain['locale_data']['messages'] ) &&
-					// There is always a default entity in the messages list that contains meta information
-					// about translations. So, we need to check that there is at least one real translations.
-					count( $textdomain['locale_data']['messages'] ) > 1
-				) {
-					BC_Functions::wp_set_script_translations( $this->handle, 'google-site-kit' );
-				}
-			}
+			$this->set_locale_data();
 		}
 	}
 
@@ -122,4 +110,30 @@ class Script extends Asset {
 	public function enqueue() {
 		wp_enqueue_script( $this->handle );
 	}
+
+	/**
+	 * Sets locale data for the script, if it has translations.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function set_locale_data() {
+		$json_translations = BC_Functions::load_script_textdomain( $this->handle, 'google-site-kit' );
+		if ( ! $json_translations ) {
+			return;
+		}
+
+		$output = <<<JS
+( function( domain, translations ) {
+	try {
+		var localeData = translations.locale_data[ domain ] || translations.locale_data.messages;
+		localeData[""].domain = domain;
+		googlesitekit.i18n.setLocaleData( localeData, domain );
+	} catch {
+	}
+} )( "google-site-kit", {$json_translations} );
+JS;
+
+		wp_add_inline_script( $this->handle, $output, 'before' );
+	}
+
 }

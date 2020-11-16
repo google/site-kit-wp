@@ -124,12 +124,4 @@ class BC_Functions {
 		return false;
 	}
 
-	/**
-	 * A fallback for the wp_set_script_translations function introduced in the WordPress version 5.0.0.
-	 *
-	 * @since n.e.x.t
-	 */
-	protected static function wp_set_script_translations() {
-	}
-
 }

@@ -26,8 +26,8 @@ import {
 	isRTL,
 } from '@wordpress/i18n__non-shim';
 
-global.wp = global.wp || {};
-global.wp.i18n = global.wp.i18n || {
+global.googlesitekit = global.googlesitekit || {};
+global.googlesitekit.i18n = global.googlesitekit.i18n || {
 	sprintf,
 	setLocaleData,
 	__,
