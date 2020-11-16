@@ -1219,11 +1219,10 @@ final class Authentication {
 			&& $this->credentials()->has()
 			&& $this->credentials->using_proxy()
 		) {
-			$state = $this->user_input_settings->are_settings_empty()
-				? User_Input_State::VALUE_MISSING
-				: User_Input_State::VALUE_COMPLETED;
-
-			$this->user_input_state->set( $state );
+			$is_empty = $this->user_input_settings->are_settings_empty();
+			if ( ! is_null( $is_empty ) ) {
+				$this->user_input_state->set( $is_empty ? User_Input_State::VALUE_MISSING : User_Input_State::VALUE_COMPLETED );
+			}
 		}
 	}
 

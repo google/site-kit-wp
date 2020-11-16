@@ -257,11 +257,10 @@ class User_Input_Settings {
 
 		$response = $this->sync_with_proxy( $settings );
 		if ( ! is_wp_error( $response ) ) {
-			$this->authentication->get_user_input_state()->set(
-				$this->are_settings_empty( $response )
-					? User_Input_State::VALUE_MISSING
-					: User_Input_State::VALUE_COMPLETED
-			);
+			$is_empty = $this->are_settings_empty( $response );
+			if ( ! is_null( $is_empty ) ) {
+				$this->authentication->get_user_input_state()->set( $is_empty ? User_Input_State::VALUE_MISSING : User_Input_State::VALUE_COMPLETED );
+			}
 		}
 
 		return $response;
