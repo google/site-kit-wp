@@ -11,10 +11,7 @@ const { useSelect } = Data;
 /*
  * A single module. Keeps track of its own active state and settings.
  */
-export default function ModuleSettingsWarning( {
-	slug,
-	// context,
-} ) {
+export default function ModuleSettingsWarning( { slug } ) {
 	// @TODO: Resolver only runs once per set of args, so we are working around
 	// this to rerun after modules are loaded.
 	// Once #1769 is resolved, we can remove the call to getModules,

@@ -147,7 +147,7 @@ class ModulesList extends Component {
 									{ name }
 								</h3>
 							</div>
-							<ModuleSettingsWarning slug={ slug } context="modules-list" />
+							<ModuleSettingsWarning slug={ slug } />
 							{ isConnected && (
 								<span className="googlesitekit-settings-module__status">
 									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">

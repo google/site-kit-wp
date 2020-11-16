@@ -40,7 +40,7 @@ class ModuleSetupIncomplete extends Component {
 
 		return (
 			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ModuleSettingsWarning slug={ slug } context="settings" />
+				<ModuleSettingsWarning slug={ slug } />
 				{ createInterpolateElement(
 					sprintf(
 						/* translators: %s: link with next step */

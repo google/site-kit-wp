@@ -109,7 +109,7 @@ export default function SetupModule( {
 				{ description }
 			</p>
 
-			<ModuleSettingsWarning slug={ slug } context="modules-list" />
+			<ModuleSettingsWarning slug={ slug } />
 
 			<p className="googlesitekit-settings-connect-module__cta">
 				<Link
