@@ -17,16 +17,16 @@ export default function ModuleSettingsWarning( { slug } ) {
 	// Once #1769 is resolved, we can remove the call to getModules,
 	// and remove the !! modules cache busting param.
 	const modules = useSelect( ( select ) => select( CORE_MODULES )?.getModules() );
-	const requirementsStatus = useSelect( ( select ) => select( CORE_MODULES )?.getCheckRequirementsStatus( slug, !! modules ) );
+	const error = useSelect( ( select ) => select( CORE_MODULES )?.getCheckRequirementsStatus( slug, !! modules ) );
 
-	if ( ! requirementsStatus ) {
+	if ( ! error ) {
 		return null;
 	}
 
 	return (
 		<div
 			className={ classnames( 'googlesitekit-settings-module-warning', 'googlesitekit-settings-module-warning--modules-list' ) } >
-			<ErrorIcon height="20" width="23" /> { requirementsStatus }
+			<ErrorIcon height="20" width="23" /> { error.message }
 		</div>
 	);
 }
