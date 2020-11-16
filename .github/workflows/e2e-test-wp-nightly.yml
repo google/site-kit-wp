@@ -1,0 +1,17 @@
+name: WordPress Nightly
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+env:
+  E2E=1
+  WP_VERSION=nightly
+jobs:
+  name: E2E Tests
+  runs-on: ubuntu-latest
+  if: github.event.pull_request.draft == false
+  steps:
+    - uses: actions/checkout@v2
