@@ -85,6 +85,7 @@ domReady( () => {
 				throw {
 					code: ERROR_CODE_ADBLOCKER_ACTIVE,
 					message: __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' ),
+					data: null,
 				};
 			},
 		}
