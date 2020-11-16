@@ -32,10 +32,10 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
-import AnalyticsInactiveCTA from '../../../../components/analytics-inactive-cta';
+import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { changeToPercent, readableLargeNumber } from '../../../../util';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportError from '../../../../components/ReportError';
+import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
@@ -104,11 +104,11 @@ function DashboardUniqueVisitorsWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( 'analytics', error.message, false, false, false, error );
+		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( ( ! sparkData || ! sparkData.length ) && ( ! visitorsData || ! visitorsData.length ) ) {
-		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ) );
+		return <ReportZero moduleSlug="analytics" />;
 	}
 
 	const sparkLineData = [

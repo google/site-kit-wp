@@ -24,129 +24,16 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
-import { TYPE_MODULES } from '../../../components/data/constants';
-import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
-import { createStrictSelect, createValidationSelector } from '../../../googlesitekit/data/utils';
-import {
-	isValidOptimizeID,
-	isValidAMPExperimentJSON,
-} from '../util';
 import { STORE_NAME } from './constants';
-
-const { createRegistryControl } = Data;
+import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { isValidOptimizeID, isValidAMPExperimentJSON } from '../util';
 
 // Invariant error messages.
-export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
-export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
 export const INVARIANT_INVALID_AMP_EXPERIMENT_JSON = 'ampExperimentJSON must be valid JSON if set';
 export const INVARIANT_INVALID_OPTIMIZE_ID = 'a valid optimizeID is required';
 
-// Actions
-const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
-const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
-const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
-
-export const initialState = {
-	isDoingSubmitChanges: false,
-};
-
-export const actions = {
-	/**
-	 * Submits all changes currently present in the client, persisting them on the server.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @return {Object} Empty object on success, object with `error` property on failure.
-	 */
-	*submitChanges() {
-		const registry = yield Data.commonActions.getRegistry();
-		registry.dispatch( STORE_NAME ).clearError( 'submitChanges', [] );
-
-		yield {
-			payload: {},
-			type: START_SUBMIT_CHANGES,
-		};
-
-		const result = yield {
-			payload: {},
-			type: SUBMIT_CHANGES,
-		};
-
-		if ( result.error ) {
-			yield registry.dispatch( STORE_NAME ).receiveError( result.error, 'submitChanges', [] );
-		}
-
-		yield {
-			payload: {},
-			type: FINISH_SUBMIT_CHANGES,
-		};
-
-		return result;
-	},
-};
-
-export const controls = {
-	[ SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => async () => {
-		// This action shouldn't be called if settings haven't changed,
-		// but this prevents errors in tests.
-		if ( registry.select( STORE_NAME ).haveSettingsChanged() ) {
-			const { error } = await registry.dispatch( STORE_NAME ).saveSettings();
-
-			if ( error ) {
-				return { error };
-			}
-		}
-
-		await API.invalidateCache( 'modules', 'optimize' );
-		// TODO: Remove once legacy dataAPI is no longer used.
-		invalidateCacheGroup( TYPE_MODULES, 'optimize' );
-
-		return {};
-	} ),
-};
-
-export const reducer = ( state, { type } ) => {
-	switch ( type ) {
-		case START_SUBMIT_CHANGES: {
-			return {
-				...state,
-				isDoingSubmitChanges: true,
-			};
-		}
-
-		case FINISH_SUBMIT_CHANGES: {
-			return {
-				...state,
-				isDoingSubmitChanges: false,
-			};
-		}
-
-		default: return state;
-	}
-};
-
-export const resolvers = {};
-
-export const selectors = {
-	/**
-	 * Checks whether changes are currently being submitted.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} `true` if submitting, `false` if not.
-	 */
-	isDoingSubmitChanges( state ) {
-		return !! state.isDoingSubmitChanges;
-	},
-};
-
-const {
-	safeSelector: canSubmitChanges,
-	dangerousSelector: __dangerousCanSubmitChanges,
-} = createValidationSelector( ( select ) => {
+export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
 	const {
 		getOptimizeID,
@@ -164,17 +51,4 @@ const {
 
 	const optimizeID = getOptimizeID();
 	invariant( '' === optimizeID || isValidOptimizeID( optimizeID ), INVARIANT_INVALID_OPTIMIZE_ID );
-} );
-
-export default {
-	initialState,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors: {
-		...selectors,
-		canSubmitChanges,
-		__dangerousCanSubmitChanges,
-	},
-};
+}

@@ -25,28 +25,28 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { Fragment, useState } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __, _n, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/analytics.svg';
-import Header from '../../../../components/header';
+import Header from '../../../../components/Header';
 import AnalyticsDashboardWidgetSiteStats from './AnalyticsDashboardWidgetSiteStats';
 import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTopPagesTable';
 import AnalyticsDashboardWidgetOverview from './AnalyticsDashboardWidgetOverview';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import Layout from '../../../../components/layout/layout';
-import PageHeader from '../../../../components/page-header';
-import PageHeaderDateRange from '../../../../components/page-header-date-range';
+import PageHeader from '../../../../components/PageHeader';
+import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
 import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/ProgressBar';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
-import { getCurrentDateRange } from '../../../../util/date-range';
-import HelpLink from '../../../../components/help-link';
+import HelpLink from '../../../../components/HelpLink';
+import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
 
@@ -142,7 +142,7 @@ export default function AnalyticsDashboardWidget() {
 
 	// Hide Analytics data display when we don't have data.
 	const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
-	const currentDateRange = getCurrentDateRange( dateRange );
+	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 	return (
 		<Fragment>
@@ -186,8 +186,11 @@ export default function AnalyticsDashboardWidget() {
 						) }>
 							<Layout
 								header
-								/* translators: %s: date range */
-								title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), currentDateRange ) }
+								title={ sprintf(
+									/* translators: %s: number of days */
+									_n( 'Audience overview for the last %s day', 'Audience overview for the last %s days', currentDayCount, 'google-site-kit', ),
+									currentDayCount,
+								) }
 								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
 									__( 'See full stats in %s', 'google-site-kit' ),
@@ -217,8 +220,11 @@ export default function AnalyticsDashboardWidget() {
 							<Layout
 								header
 								footer
-								/* translators: %s: date range */
-								title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), currentDateRange ) }
+								title={ sprintf(
+									/* translators: %s: number of days */
+									_n( 'Top content over the last %s day', 'Top content over the last %s days', currentDayCount, 'google-site-kit', ),
+									currentDayCount,
+								) }
 								headerCTALink={ topContentServiceURL }
 								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */
@@ -239,8 +245,11 @@ export default function AnalyticsDashboardWidget() {
 							<Layout
 								header
 								footer
-								/* translators: %s: date range */
-								title={ sprintf( __( 'Top acquisition channels over the last %s', 'google-site-kit' ), currentDateRange ) }
+								title={ sprintf(
+									/* translators: %s: number of days */
+									_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', currentDayCount, 'google-site-kit', ),
+									currentDayCount,
+								) }
 								headerCTALink={ topAcquisitionServiceURL }
 								headerCTALabel={ sprintf(
 									/* translators: %s: module name. */

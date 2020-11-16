@@ -39,7 +39,7 @@ import ReportDetailsLink from './ReportDetailsLink';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../../util';
 import Link from '../../../../components/Link';
-import ErrorText from '../../../../components/error-text';
+import ErrorText from '../../../../components/ErrorText';
 import {
 	STORE_NAME,
 	STRATEGY_MOBILE,
