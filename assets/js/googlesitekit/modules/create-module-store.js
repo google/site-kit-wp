@@ -94,7 +94,7 @@ export const createModuleStore = ( slug, {
 		} );
 
 		// to prevent duplication errors during combining stores, we don't need to combine
-		// Data.commontStore here since settingsStore already uses commonActions and commonControls
+		// Data.commonStore here since settingsStore already uses commonActions and commonControls
 		// from the Data.commonStore.
 		combinedStore = Data.combineStores(
 			notificationsStore,
