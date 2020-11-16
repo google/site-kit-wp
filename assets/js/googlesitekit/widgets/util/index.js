@@ -1,5 +1,5 @@
 /**
- * Material UI > Layout > Row component.
+ * Widgets API utilities.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,25 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-
-export default function Row( { className, children } ) {
-	return (
-		<div className={ classnames( 'mdc-layout-grid__inner', className ) }>
-			{ children }
-		</div>
-	);
-}
-
-Row.propTypes = {
-	className: PropTypes.string,
-	children: PropTypes.node,
-};
-
-Row.defaultProps = {
-	className: '',
-};
+export * from './get-widget-class-names';
