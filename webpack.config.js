@@ -78,6 +78,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
+	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
 const externals = { ...siteKitExternals };
@@ -132,6 +133,7 @@ const resolve = {
 		'@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
 		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
 		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
+		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 		'react__non-shim': require.resolve( 'react' ),
 		react: path.resolve( 'assets/js/react-shim.js' ),
 	},
@@ -244,16 +246,20 @@ const webpackConfig = ( env, argv ) => {
 					},
 				),
 				new ManifestPlugin( {
-					fileName: '../../../includes/Core/Assets/Manifest.php',
+					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
+					filter( file ) {
+						return ( file.name || '' ).match( /\.js$/ );
+					},
 					serialize( manifest ) {
-						const files = [];
-						Object.keys( manifest ).forEach( ( key ) => {
-							if ( key.match( /.js$/ ) ) {
-								files.push( `"${ key.replace( '.js', '' ) }" => "${ manifest[ key ] }",` );
-							}
-						} );
+						const maxLen = Math.max( ...Object.keys( manifest ).map( ( key ) => key.length ) );
+						const content = manifestTemplate.replace(
+							'{{assets}}',
+							Object.keys( manifest )
+								.map( ( key ) => `"${ key.replace( '.js', '' ) }"${ ''.padEnd( maxLen - key.length, ' ' ) } => "${ manifest[ key ] }",` )
+								.join( '\n\t\t' )
+						);
 
-						return manifestTemplate.replace( '{{assets}}', files.join( '\n\t\t' ) );
+						return content;
 					},
 				} ),
 			],
@@ -294,6 +300,7 @@ const webpackConfig = ( env, argv ) => {
 		// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
 		{
 			entry: {
+				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				// Analytics advanced tracking script to be injected in the frontend.
 				'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
 			},
