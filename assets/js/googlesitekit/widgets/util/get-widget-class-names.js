@@ -52,7 +52,8 @@ const WIDTH_GRID_CLASS_MAP = {
  *
  * @param {Array.<string>} classNames Current class names.
  * @param {number}         counter    Current counter.
- * @return {Array.<string>} Updated list of class names.
+ * @return {Array} Array where the first element is the updated list of class names
+ *                 and the second element is the resulting counter after the update.
  */
 function resizeClasses( classNames, counter ) {
 	// Safeguard: counter must always be 9 for this to work.
@@ -106,7 +107,7 @@ function resizeClasses( classNames, counter ) {
  *
  * @param {number} counter The current counter.
  * @param {Object} widget  Widget object.
- * @return {Array.<Array.<number, string>>} Sizes array.
+ * @return {Array.<Object>} List of objects with `counter` and `width` properties.
  */
 function getWidgetSizes( counter, widget ) {
 	const widths = Array.isArray( widget.width ) ? widget.width : [ widget.width ];
