@@ -60,7 +60,7 @@ export default function UserInputApp() {
 					) }
 					{ hasFinishedGettingInputSettings && (
 						<Fragment>
-							<Grid>
+							<Grid className="googlesitekit-user-input__header">
 								<Row>
 									<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 										<PageHeader
