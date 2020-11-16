@@ -379,6 +379,9 @@ const baseResolvers = {
 
 		if ( ! existingModules ) {
 			yield fetchGetModulesStore.actions.fetchGetModules();
+			// @TODO after #1769, we can remove this:
+			yield registry.dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'canActivateModule' );
+			yield registry.dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getCheckRequirementsStatus' );
 		}
 	},
 
@@ -388,8 +391,9 @@ const baseResolvers = {
 
 		// We use yield dataControls.resolveSelect in favour of registry.select
 		// to avoid a race condition where the module hasn't loaded yet.
-		// @TODO after #1769, we can do this.
+		// @TODO after #1769, we can do this:
 		// const module = yield dataControls.resolveSelect( STORE_NAME, 'getModule', slug );
+		// and remove the invalidateResolutionForStoreSelector calls in getModules generator.
 
 		// Return `undefined` if module with this slug isn't loaded yet.
 		if ( module === undefined ) {

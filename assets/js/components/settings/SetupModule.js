@@ -77,12 +77,7 @@ export default function SetupModule( {
 		}
 	};
 
-	// @TODO: Resolver only runs once per set of args, so we are working around
-	// this to rerun after modules are loaded.
-	// Once #1769 is resolved, we can remove the call to getModules,
-	// and remove the !! modules cache busting param.
-	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
-	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug, !! modules ) );
+	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug ) );
 
 	return (
 		<div
