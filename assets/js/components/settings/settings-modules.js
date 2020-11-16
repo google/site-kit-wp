@@ -88,21 +88,23 @@ class SettingsModules extends Component {
 	async handleButtonAction( module, action, submitChanges ) {
 		if ( 'confirm' === action ) {
 			this.setState( { isSaving: module } );
-			const { error: err } = await submitChanges( module );
+			const { error } = await submitChanges( module );
 
-			if ( err ) {
-				let error;
-				if ( isPermissionScopeError( err ) ) {
-					error = false;
+			if ( error ) {
+				if ( isPermissionScopeError( error ) ) {
+					this.setState( {
+						error: false,
+					} );
 				} else {
-					error = {
-						errorCode: err.code,
-						errorMsg: err.message,
-					};
+					this.setState( {
+						error: {
+							errorCode: error.code,
+							errorMsg: error.message,
+						},
+					} );
 				}
 				this.setState( {
 					isSaving: false,
-					error,
 				} );
 				return;
 			}

@@ -222,6 +222,14 @@ class SettingsModule extends Component {
 			}
 		}
 
+		// Set button action based on state.
+		let buttonActionName = 'cancel';
+		let buttonAction;
+		if ( hasSettings && setupComplete ) {
+			buttonActionName = 'confirm';
+			buttonAction = submitChanges;
+		}
+
 		return (
 			<Fragment>
 				{ active ? (
@@ -366,7 +374,7 @@ class SettingsModule extends Component {
 											{ isEditing[ moduleKey ] || isSavingModule ? (
 												<Fragment>
 													<Button
-														onClick={ () => handleEdit( moduleKey, hasSettings && setupComplete ? 'confirm' : 'cancel', hasSettings && setupComplete ? submitChanges : null ) }
+														onClick={ () => handleEdit( moduleKey, buttonActionName, buttonAction ) }
 														disabled={ isSavingModule || ! canSubmitChanges }
 														id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 													>
