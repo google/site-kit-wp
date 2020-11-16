@@ -49,6 +49,10 @@
 		display: flex;
 		padding: 20px 0;
 
+		@media (min-width: $bp-tablet) {
+			padding: 3px 0;
+		}
+
 		.mdc-text-field {
 			background-color: transparent;
 			height: 36px;
@@ -64,6 +68,10 @@
 			color: $c-user-input-options;
 
 			@include responsive-text("body1", "body3");
+
+			@media (min-width: $bp-tablet) {
+				padding: 10px 0;
+			}
 		}
 
 		.mdc-checkbox--disabled,
@@ -77,8 +85,12 @@
 		border-radius: 4px;
 		display: flex;
 		height: 56px;
-		margin-top: 13px;
+		margin: 13px 0 8px;
 		padding: 12px;
+
+		@media (min-width: $bp-tablet) {
+			margin-top: 0;
+		}
 
 		.mdc-text-field {
 			height: 32px;
@@ -89,7 +101,11 @@
 			background-color: $c-white;
 			border: none;
 			margin: 0;
-			padding: 0;
+			padding: 0 12px;
+
+			&::placeholder {
+				color: $c-user-input-placeholder;
+			}
 		}
 	}
 

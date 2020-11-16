@@ -44,6 +44,32 @@
 		z-index: 10;
 	}
 
+	.googlesitekit-user-input__question--next {
+		display: none;
+		position: relative;
+	}
+
+	.googlesitekit-user-input__question--active + .googlesitekit-user-input__question--next {
+		border: 0;
+		box-shadow: none;
+		padding-bottom: 0;
+
+		@media (min-width: $bp-desktop) {
+			display: block;
+		}
+
+		&::after {
+			background: linear-gradient(180deg, transparent, #f1f1f1 100%);
+			bottom: 0;
+			content: "";
+			height: 75%;
+			left: 0;
+			position: absolute;
+			width: 100%;
+			z-index: 11;
+		}
+	}
+
 	.googlesitekit-user-input__question-number {
 		color: $c-silver;
 		margin: 0 0 13px;
@@ -60,7 +86,7 @@
 
 	.googlesitekit-user-input__question-instructions {
 
-		p,
+		p:not(.googlesitekit-user-input__question-number),
 		.googlesitekit-user-input__question-instructions--notice {
 			color: $c-black;
 			margin: 0 0 13px;
