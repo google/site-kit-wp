@@ -59,7 +59,6 @@ domReady( () => {
 			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
-
 	Widgets.registerWidget(
 		'searchConsoleClicks',
 		{
@@ -73,7 +72,6 @@ domReady( () => {
 			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 		],
 	);
-
 	Widgets.registerWidget(
 		'searchConsolePopularKeywords',
 		{
