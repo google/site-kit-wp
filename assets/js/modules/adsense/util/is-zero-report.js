@@ -22,7 +22,7 @@
  * @since n.e.x.t
  *
  * @param {Object} report Report data.
- * @return {boolean} TRUE if the report has no data, otherwise FALSE.
+ * @return {boolean|undefined} TRUE if the report has no data, otherwise FALSE. `undefined` if the `report` passed is undefined.
  */
 export function isZeroReport( report ) {
 	if ( report === undefined ) {
