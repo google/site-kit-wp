@@ -25,7 +25,7 @@ import domReady from '@wordpress/dom-ready';
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { registerWidget, WIDGET_WIDTHS } from 'googlesitekit-widgets';
+import Widgets from 'googlesitekit-widgets';
 import './datastore';
 import { SettingsView } from './components/settings';
 import DashboardImpressionsWidget from './components/dashboard/DashboardImpressionsWidget';
@@ -46,11 +46,11 @@ domReady( () => {
 		}
 	);
 
-	registerWidget(
+	Widgets.registerWidget(
 		'searchConsoleImpressions',
 		{
 			component: DashboardImpressionsWidget,
-			width: WIDGET_WIDTHS.QUARTER,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: true,
 		},
@@ -60,11 +60,11 @@ domReady( () => {
 		],
 	);
 
-	registerWidget(
+	Widgets.registerWidget(
 		'searchConsoleClicks',
 		{
 			component: DashboardClicksWidget,
-			width: WIDGET_WIDTHS.QUARTER,
+			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 2,
 			wrapWidget: true,
 		},
@@ -74,11 +74,11 @@ domReady( () => {
 		],
 	);
 
-	registerWidget(
+	Widgets.registerWidget(
 		'searchConsolePopularKeywords',
 		{
 			component: DashboardPopularKeywordsWidget,
-			width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ],
+			width: [ Widgets.WIDGET_WIDTHS.HALF, Widgets.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
 		},

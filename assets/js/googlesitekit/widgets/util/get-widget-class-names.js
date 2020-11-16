@@ -100,6 +100,20 @@ function resizeClasses( classNames, counter ) {
 }
 
 /**
+ * Gets an array of sizes that widget can take accounting the current counter value.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} counter The current counter.
+ * @param {Object} widget  Widget object.
+ * @return {Array.<Array.<number, string>>} Sizes array.
+ */
+function getWidgetSizes( counter, widget ) {
+	const widths = Array.isArray( widget.width ) ? widget.width : [ widget.width ];
+	return widths.map( ( width ) => [ counter + WIDTH_GRID_COUNTER_MAP[ width ], width ] );
+}
+
+/**
  * Gets widget class names for an area.
  *
  * @since n.e.x.t
@@ -111,22 +125,27 @@ export function getWidgetClassNames( activeWidgets ) {
 	let counter = 0;
 	let classNames = [].fill( null, 0, activeWidgets.length );
 
+	const ascending = ( [ a ], [ b ] ) => a - b;
+	const descending = ( [ a ], [ b ] ) => b - a;
+	const fitIntoRow = ( [ width ] ) => width <= 12;
+
 	activeWidgets.forEach( ( widget, i ) => {
-		// Let's make sure we always have an array of widths for the widget.
-		const widths = Array.isArray( widget.width ) ? widget.width : [ widget.width ];
-
 		// Get available sizes for the current widget to select the most appropriate width for the current row.
-		let sizes = widths.map( ( widgetWidth ) => [ counter + WIDTH_GRID_COUNTER_MAP[ widgetWidth ], widgetWidth ] );
+		let sizes = getWidgetSizes( counter, widget );
 
-		// If it is the last widget, we can try to use an alternative size if it fits into the current row.
-		if ( i + 1 === activeWidgets.length ) {
+		if (
+			// If it is the last widget in the current row.
+			i + 1 === activeWidgets.length ||
+			// Or the next widget can't fit into the current row anyway, then we can try to use alternative sizes.
+			getWidgetSizes( sizes.sort( ascending )[ 0 ][ 0 ], activeWidgets[ i + 1 ] ).filter( fitIntoRow ).length === 0
+		) {
 			// We need to check whether we have a size that can fit into the row and if so, try to get it.
-			const hasSizeThatCanFitIntoRow = sizes.some( ( [ widgetWidth ] ) => widgetWidth <= 12 );
+			const hasSizeThatCanFitIntoRow = sizes.some( fitIntoRow );
 			if ( hasSizeThatCanFitIntoRow ) {
 				// Sort available sizes to have the descending order.
-				sizes = sizes.sort( ( [ a ], [ b ] ) => b - a );
+				sizes = sizes.sort( descending );
 				// Filter out only those sizes that fit into the current row.
-				sizes = sizes.filter( ( [ widgetWidth ] ) => widgetWidth <= 12 );
+				sizes = sizes.filter( fitIntoRow );
 			}
 		}
 

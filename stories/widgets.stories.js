@@ -66,7 +66,7 @@ function createWidgetArea( registry, areaName, widgets ) {
 	} );
 
 	widgets.forEach( ( { component, slug, width }, i ) => {
-		const widgetSlug = slug || ( areaName + i );
+		const widgetSlug = slug || `${ areaName }-width${ i + 1 }`;
 		const componentFallback = () => (
 			<div>
 				{ ( Array.isArray( width ) ? width.join( ' / ' ) : width ).toUpperCase() }
@@ -189,7 +189,9 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 		<WithTestRegistry registry={ registry }>
 			{ createWidgetAreas(
 				registry,
+				[ QUARTER, QUARTER, QUARTER, HALF, QUARTER ],
 				[ QUARTER, QUARTER, HALF, [ QUARTER, FULL ] ],
+				[ HALF, [ QUARTER, HALF ], FULL ],
 				[ [ HALF, FULL ], QUARTER, QUARTER ],
 				[ QUARTER, [ FULL, HALF ], QUARTER ],
 				[ QUARTER, QUARTER, [ HALF, FULL ] ],
