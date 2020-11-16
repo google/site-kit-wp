@@ -25,7 +25,7 @@ import { render, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { clearWebStorage, loadTranslations } from './util';
+import { clearWebStorage } from './util';
 import Root from './components/root';
 import './modules';
 import Setup from './components/setup/setup-wrapper';
@@ -57,8 +57,6 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard' );
 
 	if ( renderTarget ) {
-		loadTranslations();
-
 		render( <Root dataAPIContext="Dashboard"><GoogleSitekitDashboard /></Root>, renderTarget );
 	}
 } );
