@@ -36,12 +36,11 @@ import { WPComponent } from '@wordpress/element';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { getLocale } from '../../../util';
-import { ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from '../../../util/errors';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 

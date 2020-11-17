@@ -21,10 +21,9 @@
  */
 import isPlainObject from 'lodash/isPlainObject';
 
-// Export codes and reasons.
+// Error codes and reasons.
 export const ERROR_CODE_MISSING_REQUIRED_SCOPE = 'missing_required_scopes'; // When scopes are missing.
 export const ERROR_REASON_INSUFFICIENT_PERMISSIONS = 'insufficientPermissions';
-export const ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES = 'insufficient_module_dependencies';
 export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';
 
 /**

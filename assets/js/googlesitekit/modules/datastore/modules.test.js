@@ -28,9 +28,8 @@ import {
 } from '../../../../../tests/js/utils';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './constants';
 import FIXTURES from './fixtures.json';
-import { ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from '../../../util/errors';
 
 describe( 'core/modules modules', () => {
 	const sortedFixtures = sortByProperty( FIXTURES, 'order' );
