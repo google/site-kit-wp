@@ -27,7 +27,7 @@ import { Component } from '@wordpress/element';
  */
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
 import {
 	getTimeInSeconds,
@@ -37,6 +37,7 @@ import {
 	isDataZeroForReporting,
 	getTopPagesReportDataDefaults,
 } from '../../util';
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {
