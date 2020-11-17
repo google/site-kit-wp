@@ -19,7 +19,8 @@
 /**
  * External dependencies
  */
-import { each } from 'lodash';
+import castArray from 'lodash/castArray';
+import each from 'lodash/each';
 
 /**
  * WordPress dependencies
@@ -35,6 +36,7 @@ import { getModulesData } from '../../util';
 import getNoDataComponent from '../notifications/nodata';
 import getDataErrorComponent from '../notifications/data-error';
 import getSetupIncompleteComponent from '../notifications/setup-incomplete';
+import { TYPE_MODULES } from '../data/constants';
 
 /**
  * Provides data from the API to components. (Legacy HOC.)
@@ -219,34 +221,32 @@ const withData = (
 
 			// Resolve all selectedData.
 			each( selectData, ( data ) => {
+				const { type, identifier } = data || {};
 				// Handle single contexts, or arrays of contexts.
-				if ( Array.isArray( data.context ) ) {
-					each( data.context, ( acontext ) => {
-						/**
-						 * Request data for the context.
-						 */
-						addFilter( `googlesitekit.module${ acontext }DataRequest`,
-							`googlesitekit.data${ acontext }`, ( moduleData ) => {
-								data.callback = ( returnedData ) => {
-									handleReturnedData( returnedData, data );
-								};
-								moduleData.push( data );
-								return moduleData;
-							} );
-					} );
-				} else {
+				each( castArray( data.context ), ( context ) => {
 					/**
 					 * Request data for the context.
 					 */
-					addFilter( `googlesitekit.module${ data.context }DataRequest`,
-						`googlesitekit.data${ data.context }`, ( moduleData ) => {
-							data.callback = ( returnedData ) => {
+					addFilter(
+						`googlesitekit.module${ context }DataRequest`,
+						`googlesitekit.data${ context }`,
+						( moduleData ) => {
+							const modulesData = getModulesData();
+
+							if ( TYPE_MODULES === type && ! modulesData[ identifier ]?.setupComplete ) {
+								// We need to set the module (slug) here as it is normally set in handleReturnedData.
+								this.setState( { module: identifier } );
+								return moduleData;
+							}
+
+							const callback = ( returnedData ) => {
 								handleReturnedData( returnedData, data );
 							};
-							moduleData.push( data );
-							return moduleData;
-						} );
-				}
+
+							return moduleData.concat( { ...data, callback } );
+						}
+					);
+				} );
 			} );
 		}
 
@@ -261,17 +261,16 @@ const withData = (
 				requestDataToState,
 			} = this.state;
 
+			const modulesData = getModulesData();
+			const { active, setupComplete } = modulesData?.[ module ] || {};
+
+			if ( active && ! setupComplete ) {
+				return getSetupIncompleteComponent( module, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+			}
+
 			// Render the loading component until we have data.
 			if ( ! data ) {
 				return loadingComponent;
-			}
-
-			const modulesData = getModulesData();
-			const moduleName = module ? modulesData[ module ].name : __( 'Site Kit', 'google-site-kit' );
-
-			// If module is active but setup not complete.
-			if ( module && modulesData[ module ].active && ! modulesData[ module ].setupComplete ) {
-				return getSetupIncompleteComponent( module, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
 			}
 
 			// If we have an error, display the DataErrorComponent.
@@ -281,6 +280,8 @@ const withData = (
 
 			// If we have zeroData, display the NoDataComponent.
 			if ( zeroData ) {
+				const moduleName = module ? modulesData[ module ].name : __( 'Site Kit', 'google-site-kit' );
+
 				return getNoDataComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
 			}
 
