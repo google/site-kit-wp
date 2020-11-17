@@ -24,7 +24,6 @@ import isPlainObject from 'lodash/isPlainObject';
 // Error codes and reasons.
 export const ERROR_CODE_MISSING_REQUIRED_SCOPE = 'missing_required_scopes'; // When scopes are missing.
 export const ERROR_REASON_INSUFFICIENT_PERMISSIONS = 'insufficientPermissions';
-export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';
 
 /**
  * Checks if the provided object is an instance of WP_Error class.

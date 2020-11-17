@@ -45,7 +45,7 @@ import {
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
 import { STORE_NAME } from './datastore/constants';
-import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../util/errors';
+import { ERROR_CODE_ADBLOCKER_ACTIVE } from './constants';
 
 addFilter(
 	'googlesitekit.ModuleSetupIncomplete',
