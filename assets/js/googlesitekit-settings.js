@@ -30,7 +30,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { loadTranslations } from './util';
 import './components/notifications';
 import Root from './components/root';
 import SettingsApp from './components/settings/settings-app';
@@ -40,8 +39,6 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'googlesitekit-settings-wrapper' );
 
 	if ( renderTarget ) {
-		loadTranslations();
-
 		render( <Root dataAPIContext="Settings"><SettingsApp /></Root>, renderTarget );
 	}
 } );

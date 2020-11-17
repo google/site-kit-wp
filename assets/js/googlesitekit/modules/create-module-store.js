@@ -89,13 +89,12 @@ export const createModuleStore = ( slug, {
 		} );
 
 		const submitChangesStore = createSubmitChangesStore( {
-			storeName,
 			submitChanges: submitChanges || makeDefaultSubmitChanges( slug, storeName ),
 			validateCanSubmitChanges: validateCanSubmitChanges || makeDefaultCanSubmitChanges( storeName ),
 		} );
 
 		// to prevent duplication errors during combining stores, we don't need to combine
-		// Data.commontStore here since settingsStore already uses commonActions and commonControls
+		// Data.commonStore here since settingsStore already uses commonActions and commonControls
 		// from the Data.commonStore.
 		combinedStore = Data.combineStores(
 			notificationsStore,
@@ -111,7 +110,6 @@ export const createModuleStore = ( slug, {
 			infoStore,
 			createErrorStore(),
 			createSubmitChangesStore( {
-				storeName,
 				submitChanges,
 				validateCanSubmitChanges,
 			} ),
