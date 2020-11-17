@@ -84,9 +84,6 @@ describe( 'CompatibilityChecks', () => {
 	it( 'should make API requests to "setup-checks, health-checks and AMP Project test URL', async () => {
 		const token = 'test-token-value';
 
-		global._googlesitekitBaseData = global._googlesitekitBaseData || {};
-		global._googlesitekitBaseData[ 'isWP5.0+' ] = true;
-
 		// Mock request to setup-tag.
 		fetchMock.postOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/,
@@ -129,9 +126,6 @@ describe( 'CompatibilityChecks', () => {
 
 	it( 'should not contain incomplete or error messages if checks are successful', async () => {
 		const token = 'test-token-value';
-
-		global._googlesitekitBaseData = global._googlesitekitBaseData || {};
-		global._googlesitekitBaseData[ 'isWP5.0+' ] = true;
 
 		// Mock request to setup-tag.
 		fetchMock.postOnce(

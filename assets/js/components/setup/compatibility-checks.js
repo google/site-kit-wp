@@ -91,8 +91,10 @@ const checks = [
 	},
 	// Check that the current version of WordPress is 5.0+.
 	async () => {
-		if ( ! global._googlesitekitBaseData[ 'isWP5.0+' ] ) {
-			throw ERROR_OLD_VERSION;
+		const { wpVersion } = global._googlesitekitBaseData || {};
+		// Throw only if we can get the current version, otherwise ignore it.
+		if ( wpVersion && wpVersion.major < 5 ) {
+			throw ERROR_WP_PRE_V5;
 		}
 	},
 ];
@@ -220,7 +222,7 @@ export default class CompatibilityChecks extends Component {
 						}
 					) } />
 				);
-			case ERROR_OLD_VERSION:
+			case ERROR_WP_PRE_V5:
 				return (
 					<p>
 						{ __( 'Looks like you’re using a version of WordPress that’s older than 5.0. You can still install and use Site Kit, but some of its features might not work (for example translations).', 'google-site-kit' ) }
