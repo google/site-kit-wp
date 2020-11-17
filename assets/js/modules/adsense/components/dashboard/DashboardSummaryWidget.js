@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { reduceAdSenseData } from '../../util';
+import { isZeroReport, reduceAdSenseData } from '../../util';
 import { readableLargeNumber, getSiteKitAdminURL } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import whenActive from '../../../../util/when-active';
@@ -69,11 +69,15 @@ function DashboardSummaryWidget() {
 		};
 
 		return {
-			error: store.getErrorForSelector( 'getReport', [ todayArgs ] ) || store.getErrorForSelector( 'getReport', [ periodArgs ] ) || store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
-			loading: store.isResolving( 'getReport', [ todayArgs ] ) || store.isResolving( 'getReport', [ periodArgs ] ) || store.isResolving( 'getReport', [ dailyArgs ] ),
 			today: store.getReport( todayArgs ),
 			period: store.getReport( periodArgs ),
 			daily: store.getReport( dailyArgs ),
+			loading: store.isResolving( 'getReport', [ todayArgs ] ) ||
+				store.isResolving( 'getReport', [ periodArgs ] ) ||
+				store.isResolving( 'getReport', [ dailyArgs ] ),
+			error: store.getErrorForSelector( 'getReport', [ todayArgs ] ) ||
+				store.getErrorForSelector( 'getReport', [ periodArgs ] ) ||
+				store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
 		};
 	} );
 
@@ -85,7 +89,7 @@ function DashboardSummaryWidget() {
 		return <ReportError moduleSlug="adsense" error={ error } />;
 	}
 
-	if ( ! today?.totals && ! period?.totals && ! daily?.totals ) {
+	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
 		return <ReportZero moduleSlug="adsense" />;
 	}
 

@@ -63,12 +63,12 @@ export const actions = {
 	 * @since 1.9.0
 	 * @since 1.12.0 Added wrapWidget setting.
 	 *
-	 * @param {string}      slug                  Widget's slug.
-	 * @param {Object}      settings              Widget's settings.
-	 * @param {WPComponent} settings.component    React component used to display the contents of this widget.
-	 * @param {number}      [settings.priority]   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
-	 * @param {string}      [settings.width]      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
-	 * @param {boolean}     [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
+	 * @param {string}                slug                  Widget's slug.
+	 * @param {Object}                settings              Widget's settings.
+	 * @param {WPComponent}           settings.component    React component used to display the contents of this widget.
+	 * @param {number}                [settings.priority]   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string|Array.<string>} [settings.width]      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @param {boolean}               [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget( slug, {
@@ -77,8 +77,13 @@ export const actions = {
 		width = WIDGET_WIDTHS.QUARTER,
 		wrapWidget = true,
 	} = {} ) {
+		const allWidths = Object.values( WIDGET_WIDTHS );
+
 		invariant( component, 'component is required to register a widget.' );
-		invariant( Object.values( WIDGET_WIDTHS ).includes( width ), `Widget width should be one of: ${ WidgetWidthKeys }, but "${ width }" was provided.` );
+		invariant(
+			( Array.isArray( width ) && width.some( allWidths.includes, allWidths ) ) || ( ! Array.isArray( width ) && allWidths.includes( width ) ),
+			`Widget width should be one of: ${ WidgetWidthKeys }, but "${ width }" was provided.`,
+		);
 
 		return {
 			payload: {

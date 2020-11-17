@@ -9,6 +9,13 @@ module.exports = async ( { config } ) => {
 	const siteKitPackageAliases = mapValues(
 		mainConfig.siteKitExternals,
 		( [ global, api ] ) => {
+			// Revert "@wordpress/i18n: [ googlesitekit, i18n ]" external back to the original @wordpress/i18n.
+			if ( global === 'googlesitekit' ) {
+				if ( api === 'i18n' ) {
+					return require.resolve( '@wordpress/i18n' );
+				}
+			}
+
 			return path.resolve( `assets/js/${ global }-${ api }.js` );
 		}
 	);
