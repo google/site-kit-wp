@@ -32,10 +32,7 @@ export default function Row( { className, children } ) {
 
 Row.propTypes = {
 	className: PropTypes.string,
-	children: PropTypes.oneOfType( [
-		PropTypes.element,
-		PropTypes.arrayOf( PropTypes.element ),
-	] ).isRequired,
+	children: PropTypes.node,
 };
 
 Row.defaultProps = {

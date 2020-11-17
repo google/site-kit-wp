@@ -31,7 +31,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { loadTranslations } from './util';
 import './components/data';
 import Root from './components/root';
 import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
@@ -41,8 +40,6 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-wp-dashboard' );
 
 	if ( renderTarget ) {
-		loadTranslations();
-
 		render( <Root dataAPIContext="WPDashboard"><WPDashboardMain /></Root>, renderTarget );
 	}
 } );

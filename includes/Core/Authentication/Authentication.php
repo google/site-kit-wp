@@ -246,22 +246,16 @@ final class Authentication {
 
 		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
+		add_action( 'admin_init', $this->get_method_proxy( 'verify_user_input_settings' ) );
 		add_action(
 			'admin_init',
 			function() {
-				$this->verify_user_input_settings();
-			}
-		);
-		add_action(
-			'admin_init',
-			function() {
-
 				if (
 					'googlesitekit-dashboard' === $this->context->input()->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING )
 					&& User_Input_State::VALUE_REQUIRED === $this->user_input_state->get()
-					) {
-						wp_safe_redirect( $this->context->admin_url( 'user-input' ) );
-						exit;
+				) {
+					wp_safe_redirect( $this->context->admin_url( 'user-input' ) );
+					exit;
 				}
 			}
 		);
@@ -450,6 +444,17 @@ final class Authentication {
 	 */
 	public function get_google_proxy() {
 		return $this->google_proxy;
+	}
+
+	/**
+	 * Gets the User Input State instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return User_Input_State An instance of the User_Input_State class.
+	 */
+	public function get_user_input_state() {
+		return $this->user_input_state;
 	}
 
 	/**
@@ -1202,7 +1207,6 @@ final class Authentication {
 		);
 	}
 
-
 	/**
 	 * Verifies the user input settings
 	 *
@@ -1210,21 +1214,16 @@ final class Authentication {
 	 */
 	private function verify_user_input_settings() {
 		if (
-			! empty( $this->user_input_state->get() )
-			|| ! $this->is_authenticated()
-			|| ! $this->credentials()->has()
-			|| ! $this->credentials->using_proxy()
+			empty( $this->user_input_state->get() )
+			&& $this->is_authenticated()
+			&& $this->credentials()->has()
+			&& $this->credentials->using_proxy()
 		) {
-			return;
-		}
-		$settings = $this->user_input_settings->get_settings();
-
-		$empty_settings = array_filter(
-			$settings,
-			function( $setting ) {
-				return empty( $setting['values'] );
+			$is_empty = $this->user_input_settings->are_settings_empty();
+			if ( ! is_null( $is_empty ) ) {
+				$this->user_input_state->set( $is_empty ? User_Input_State::VALUE_MISSING : User_Input_State::VALUE_COMPLETED );
 			}
-		);
-		$this->user_input_state->set( 0 === count( $empty_settings ) ? User_Input_State::VALUE_COMPLETED : User_Input_State::VALUE_MISSING );
+		}
 	}
+
 }

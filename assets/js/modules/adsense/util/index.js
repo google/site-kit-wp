@@ -21,6 +21,7 @@
  */
 import each from 'lodash/each';
 
+export * from './is-zero-report';
 export * from './parsing';
 export * from './status';
 export * from './validation';
