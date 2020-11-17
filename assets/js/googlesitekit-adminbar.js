@@ -30,10 +30,7 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
-import {
-	loadTranslations,
-	trackEvent,
-} from './util';
+import { trackEvent } from './util';
 import Root from './components/root';
 import AdminBarApp from './components/adminbar/AdminBarApp';
 import './modules';
@@ -47,8 +44,6 @@ const init = once( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-adminbar-modules' );
 
 	if ( renderTarget ) {
-		loadTranslations();
-
 		render( <Root dataAPIContext="Adminbar"><GoogleSitekitAdminbar /></Root>, renderTarget );
 
 		trackEvent( 'admin_bar', 'page_stats_view' );
