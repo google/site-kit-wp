@@ -30,7 +30,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { loadTranslations } from './util';
 import './components/notifications';
 import Root from './components/root';
 import UserInputApp from './components/user-input/UserInputApp';
@@ -40,8 +39,6 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-user-input' );
 
 	if ( renderTarget ) {
-		loadTranslations();
-
 		render( <Root dataAPIContext="UserInput"><UserInputApp /></Root>, renderTarget );
 	}
 } );

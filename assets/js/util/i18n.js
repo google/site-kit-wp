@@ -22,18 +22,6 @@
 import { get } from 'lodash';
 
 /**
- * WordPress dependencies
- */
-import { setLocaleData } from '@wordpress/i18n';
-
-/**
- * Loads the translations for the google-site-kit text domain.
- */
-export function loadTranslations() {
-	setLocaleData( global._googlesitekitLegacyData.locale, 'google-site-kit' );
-}
-
-/**
  * Formats a number using the JS Internationalization Number Format API.
  *
  * @since 1.8.0

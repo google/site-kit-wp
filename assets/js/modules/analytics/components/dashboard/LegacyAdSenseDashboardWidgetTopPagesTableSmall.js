@@ -27,7 +27,7 @@ import { Component } from '@wordpress/element';
  */
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
 import Layout from '../../../../components/layout/layout';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
@@ -36,6 +36,7 @@ import {
 	analyticsAdsenseReportDataDefaults,
 	isDataZeroForReporting,
 } from '../../util';
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 
 class LegacyAdSenseDashboardWidgetTopPagesTableSmall extends Component {
 	static renderLayout( component ) {
