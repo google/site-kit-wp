@@ -68,3 +68,35 @@
 @mixin shadow {
 	box-shadow: 0 1px 3px rgba($c-black, 0.2);
 }
+
+/**
+ * Allows to set the font size and line height
+ * dynamically across mostly the small screen and tablet breakpoints
+ * It checks for a specific value in a map (default is the $typography map)
+ * and returns the font size and line height
+ *
+ * @param {string} $tag An existing tag from the map
+ * @param {string} $tagAfterBreakpoint Another tag for the tablet breakpoint
+ * @param {string} $breakpoint Breakpoint for the second tag
+ * @param {map} $map Map with keys having font-size and line-height keys.
+ */
+@mixin responsive-text($tag, $tagAfterBreakpoint: null, $breakpoint: $bp-tablet, $map: $typography) {
+	$tagTypography: map-get($map, $tag);
+
+	@if $tagTypography {
+		font-size: map-get($tagTypography, "font-size");
+		line-height: map-get($tagTypography, "line-height");
+	}
+
+	@if $breakpoint and $tagAfterBreakpoint {
+		$tagAfterBreakpointTypography: map-get($map, $tagAfterBreakpoint);
+
+		@if $tagAfterBreakpointTypography {
+
+			@media (min-width: $breakpoint) {
+				font-size: map-get($tagAfterBreakpointTypography, "font-size");
+				line-height: map-get($tagAfterBreakpointTypography, "line-height");
+			}
+		}
+	}
+}

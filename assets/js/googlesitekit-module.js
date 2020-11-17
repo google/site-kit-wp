@@ -31,7 +31,6 @@ import { Component, render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { loadTranslations } from './util';
 import './components/data';
 import './components/notifications';
 import Root from './components/root';
@@ -75,8 +74,6 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-module' );
 
 	if ( renderTarget ) {
-		loadTranslations();
-
 		render(
 			<Root dataAPIContext="Single" dataAPIModuleArgs={ global.googlesitekitCurrentModule } >
 				<GoogleSitekitModule />
