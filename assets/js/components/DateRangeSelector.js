@@ -19,46 +19,91 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import DateRangeIcon from '../../svg/date-range.svg';
-import { Option, Select } from '../material-components';
+import Menu from './menu';
 import { getAvailableDateRanges } from '../util/date-range';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
+import Button from './button';
+import { map } from 'lodash';
 const { useSelect, useDispatch } = Data;
 
 function DateRangeSelector() {
 	const ranges = Object.values( getAvailableDateRanges() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const { setDateRange } = useDispatch( CORE_USER );
-	const onChange = useCallback( ( index, item ) => {
-		setDateRange( item.dataset.value );
-	}, [ ranges ] );
+
+	const [ menuOpen, toggleMenu ] = useState( false );
+	const menuButtonRef = useRef();
+	const menuRef = useRef();
+
+	useEffect( () => {
+		const handleMenuClose = ( e ) => {
+			// Close the menu if the user presses the Escape key
+			// or if they click outside of the menu.
+			if (
+				( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
+				! menuButtonRef.current.buttonRef.current.contains( e.target ) &&
+				! menuRef.current.menuRef.current.contains( e.target )
+			) {
+				toggleMenu( false );
+			}
+		};
+
+		global.addEventListener( 'mouseup', handleMenuClose );
+		global.addEventListener( 'keyup', handleMenuClose );
+
+		return () => {
+			global.removeEventListener( 'mouseup', handleMenuClose );
+			global.removeEventListener( 'keyup', handleMenuClose );
+		};
+	}, [] );
+
+	const handleMenu = useCallback( () => {
+		toggleMenu( ! menuOpen );
+	}, [ menuOpen ] );
+
+	const handleMenuItemSelect = useCallback( ( index, e ) => {
+		if (
+			( 'keydown' === e.type && ( 13 === e.keyCode || 32 === e.keyCode ) ) || // Enter or Space is pressed.
+			'click' === e.type // Mouse is clicked
+		) {
+			setDateRange( ranges[ index ].slug );
+			toggleMenu( false );
+		}
+	}, [ handleMenu ] );
+
+	const currentDateRangeLabel = ranges.reduce( ( acc, range ) => {
+		return range.slug === dateRange ? range : acc;
+	}, {} ).label;
+
+	const menuItems = map( ranges, 'label' );
 
 	return (
 		<div className="googlesitekit-date-range-selector">
-			<div className="googlesitekit-date-range-selector__icon">
-				<DateRangeIcon width="18" height="20" />
-			</div>
-			<Select
-				id="date-selector-menu"
-				enhanced
-				className="googlesitekit-date-range-selector__select mdc-select--minimal"
-				name="time_period"
-				label=""
-				onEnhancedChange={ onChange }
-				value={ dateRange }
+			<Button
+				ref={ menuButtonRef }
+				className="googlesitekit-header__date-range-selector-menu mdc-button--dropdown"
+				text
+				onClick={ handleMenu }
+				icon={ ( <DateRangeIcon width="18" height="20" /> ) }
+				aria-haspopup="menu"
+				aria-expanded={ menuOpen }
+				aria-controls="date-range-selector-menu"
 			>
-				{ ranges.map( ( { slug, label } ) => (
-					<Option key={ slug } value={ slug }>
-						{ label }
-					</Option>
-				) ) }
-			</Select>
+				{ currentDateRangeLabel }
+			</Button>
+			<Menu
+				ref={ menuRef }
+				menuOpen={ menuOpen }
+				menuItems={ menuItems }
+				onSelected={ handleMenuItemSelect }
+				id="date-range-selector-menu" />
 		</div>
 	);
 }

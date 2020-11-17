@@ -47,9 +47,9 @@ class DashboardApp extends Component {
 							<div className="mdc-layout-grid__inner">
 								<div className="
 									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-10-desktop
-									mdc-layout-grid__cell--span-6-tablet
-									mdc-layout-grid__cell--span-2-phone
+									mdc-layout-grid__cell--span-12-desktop
+									mdc-layout-grid__cell--span-8-tablet
+									mdc-layout-grid__cell--span-4-phone
 								">
 									<PageHeader
 										className="
@@ -58,17 +58,6 @@ class DashboardApp extends Component {
 										"
 										title={ __( 'Site Overview', 'google-site-kit' ) }
 									/>
-								</div>
-								<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-2-desktop
-										mdc-layout-grid__cell--span-2-tablet
-										mdc-layout-grid__cell--span-2-phone
-										mdc-layout-grid__cell--align-middle
-										mdc-layout-grid__cell--align-right
-								">
-									{ /* <DateRangeSelector />
-									TODO: remove */ }
 								</div>
 								{ featureFlags.widgets.dashboard.enabled && (
 									<div className="

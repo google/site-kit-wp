@@ -25,7 +25,7 @@
 	position: sticky;
 	right: 0;
 	top: 46px;
-	// z-index: 12;
+	z-index: 12;
 
 	@media (min-width: $bp-wpAdminBarTablet) {
 		top: 32px;
@@ -62,43 +62,35 @@
 		}
 	}
 
+	.mdc-button__label {
+		font-weight: $fw-primary-normal;
+	}
+
 	.googlesitekit-date-range-selector {
 		display: inline-block;
 		margin-right: 8px;
+		overflow: visible;
+		position: relative;
+
+		.mdc-button--dropdown {
+			padding-right: 25px;
+
+			.mdc-button__label {
+				clip: none;
+				height: auto;
+				overflow: visible;
+				position: relative !important;
+				width: auto;
+			}
+		}
 
 		@media (min-width: $bp-wpAdminBarTablet) {
 			margin-right: 24px;
 		}
 
-		&__icon {
-			display: inline-block;
+		svg {
 			margin-right: 8px;
-
-			svg {
-				fill: $c-cape-cod; // TODO: Apply this color here to the svg
-				vertical-align: middle;
-			}
 		}
-
-		&__select {
-			display: inline-block;
-			height: 21px;
-			width: 100px;
-
-			.mdc-select__dropdown-icon {
-				bottom: 0;
-			}
-
-			.mdc-select__selected-text {
-				color: $c-cape-cod;
-				font-size: 14px !important;
-				line-height: 20px;
-			}
-		}
-	}
-
-	.mdc-menu-surface--open {
-		z-index: 13;
 	}
 
 	.googlesitekit-dropdown-menu {
@@ -117,15 +109,10 @@
 		.mdc-button--dropdown {
 			background-image: none;
 			padding-right: 8px;
-
-			.mdc-button__label {
-				font-weight: $fw-primary-normal;
-			}
 		}
 	}
 
 	.googlesitekit-header__dropdown {
 		margin-right: -8px;
 	}
-
 }
