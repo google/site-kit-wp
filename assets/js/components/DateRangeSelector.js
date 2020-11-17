@@ -25,6 +25,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import DateRangeIcon from '../../svg/date-range.svg';
 import { Option, Select } from '../material-components';
 import { getAvailableDateRanges } from '../util/date-range';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
@@ -39,20 +40,26 @@ function DateRangeSelector() {
 	}, [ ranges ] );
 
 	return (
-		<Select
-			enhanced
-			className="mdc-select--minimal"
-			name="time_period"
-			label=""
-			onEnhancedChange={ onChange }
-			value={ dateRange }
-		>
-			{ ranges.map( ( { slug, label } ) => (
-				<Option key={ slug } value={ slug }>
-					{ label }
-				</Option>
-			) ) }
-		</Select>
+		<div className="googlesitekit-date-range-selector">
+			<div className="googlesitekit-date-range-selector__icon">
+				<DateRangeIcon width="18" height="20" />
+			</div>
+			<Select
+				id="date-selector-menu"
+				enhanced
+				className="googlesitekit-date-range-selector__select mdc-select--minimal"
+				name="time_period"
+				label=""
+				onEnhancedChange={ onChange }
+				value={ dateRange }
+			>
+				{ ranges.map( ( { slug, label } ) => (
+					<Option key={ slug } value={ slug }>
+						{ label }
+					</Option>
+				) ) }
+			</Select>
+		</div>
 	);
 }
 

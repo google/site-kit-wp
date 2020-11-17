@@ -37,7 +37,9 @@ class DashboardApp extends Component {
 	render() {
 		return (
 			<Fragment>
-				<Header />
+				<Header>
+					<DateRangeSelector />
+				</Header>
 				<DashboardNotifications />
 				<div className="googlesitekit-module-page">
 					<div className="googlesitekit-dashboard">
@@ -65,7 +67,8 @@ class DashboardApp extends Component {
 										mdc-layout-grid__cell--align-middle
 										mdc-layout-grid__cell--align-right
 								">
-									<DateRangeSelector />
+									{ /* <DateRangeSelector />
+									TODO: remove */ }
 								</div>
 								{ featureFlags.widgets.dashboard.enabled && (
 									<div className="
