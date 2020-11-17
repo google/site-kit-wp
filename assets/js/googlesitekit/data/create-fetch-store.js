@@ -40,7 +40,7 @@ const defaultValidateParams = () => {};
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
 // yielded error actions will be a no-op.
-const { clearErrors, receiveError } = errorStoreActions;
+const { clearError, receiveError } = errorStoreActions;
 
 /**
  * Creates a store object implementing the necessary infrastructure for a
@@ -142,7 +142,7 @@ export const createFetchStore = ( {
 			type: START_FETCH,
 		};
 
-		yield clearErrors( baseName );
+		yield clearError( baseName, args );
 
 		try {
 			response = yield {

@@ -105,7 +105,7 @@ const baseActions = {
 	 */
 	*saveUserInputSettings() {
 		const registry = yield Data.commonActions.getRegistry();
-		clearError( 'saveUserInputSettings', [] );
+		yield clearError( 'saveUserInputSettings', [] );
 
 		const settings = registry.select( STORE_NAME ).getUserInputSettings();
 		const values = Object.keys( settings ).reduce( ( accum, key ) => ( {
@@ -116,7 +116,7 @@ const baseActions = {
 		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( values );
 		if ( error ) {
 			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
-			receiveError( error, 'saveUserInputSettings', [] );
+			yield receiveError( error, 'saveUserInputSettings', [] );
 		}
 
 		return { response, error };

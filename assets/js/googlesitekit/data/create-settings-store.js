@@ -182,15 +182,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		*saveSettings() {
 			const registry = yield Data.commonActions.getRegistry();
 
-			if ( clearError ) {
-				clearError( 'saveSettings', [] );
-			}
+			yield clearError( 'saveSettings', [] );
 
 			const values = registry.select( STORE_NAME ).getSettings();
 			const { response, error } = yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
-			if ( error && receiveError ) {
+			if ( error ) {
 				// Store error manually since saveSettings signature differs from fetchSaveSettings.
-				receiveError( error, 'saveSettings', [] );
+				yield receiveError( error, 'saveSettings', [] );
 			}
 
 			return { response, error };

@@ -285,7 +285,7 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		clearError( 'getProperties', [ accountID ] );
+		yield clearError( 'getProperties', [ accountID ] );
 
 		// Only fetch properties if there are none in the store for the given account.
 		let properties = registry.select( STORE_NAME ).getProperties( accountID );

@@ -153,7 +153,6 @@ const baseActions = {
 	 */
 	*createAccount() {
 		const registry = yield Data.commonActions.getRegistry();
-		clearError( 'createAccount', [] );
 
 		const { getValue } = registry.select( CORE_FORMS );
 		const data = {
@@ -163,6 +162,7 @@ const baseActions = {
 			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
 		};
 
+		yield clearError( 'createAccount', [] );
 		const { response, error } = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
 		if ( error ) {
 			// Store error manually since createAccount signature differs from fetchCreateAccount.
@@ -213,7 +213,7 @@ const baseReducer = ( state, { type, payload } ) => {
 const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
-		clearError( 'getAccounts', [] );
+		yield clearError( 'getAccounts', [] );
 
 		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
 		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
@@ -256,7 +256,7 @@ const baseResolvers = {
 
 			if ( error ) {
 				// Store error manually since getAccounts signature differs from fetchGetAccountsPropertiesProfiles.
-				receiveError( error, 'getAccounts', [] );
+				yield receiveError( error, 'getAccounts', [] );
 			}
 
 			dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
