@@ -22,6 +22,7 @@
 import memize from 'memize';
 import defaults from 'lodash/defaults';
 import merge from 'lodash/merge';
+import isPlainObject from 'lodash/isPlainObject';
 import invariant from 'invariant';
 import { sprintf, __ } from '@wordpress/i18n';
 
@@ -282,6 +283,7 @@ const baseActions = {
 	receiveCheckRequirementsError( slug, error ) {
 		invariant( slug, 'slug is required' );
 		invariant( error, 'error is required' );
+		invariant( isPlainObject( error ), 'error must be an object' );
 		return {
 			payload: { slug, error },
 			type: RECEIVE_CHECK_REQUIREMENTS_ERROR,
