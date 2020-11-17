@@ -276,7 +276,7 @@ const baseActions = {
 	 * @private
 	 *
 	 * @param {string} slug  Module slug.
-	 * @param {string} error Error message.
+	 * @param {Object} error WordPress Error object containing code, message and data properties.
 	 * @return {Object} Action for RECEIVE_CHECK_REQUIREMENTS_ERROR.
 	 */
 	receiveCheckRequirementsError( slug, error ) {
