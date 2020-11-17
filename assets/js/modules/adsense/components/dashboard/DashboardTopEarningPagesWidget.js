@@ -31,11 +31,12 @@ import { STORE_NAME as ANALYTICS_STORE } from '../../../analytics/datastore/cons
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
-import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import { getDataTableFromData } from '../../../../components/data-table';
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
