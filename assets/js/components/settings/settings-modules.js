@@ -93,19 +93,18 @@ class SettingsModules extends Component {
 			if ( error ) {
 				if ( isPermissionScopeError( error ) ) {
 					this.setState( {
+						isSaving: false,
 						error: false,
 					} );
 				} else {
 					this.setState( {
+						isSaving: false,
 						error: {
 							errorCode: error.code,
 							errorMsg: error.message,
 						},
 					} );
 				}
-				this.setState( {
-					isSaving: false,
-				} );
 				return;
 			}
 
