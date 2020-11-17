@@ -665,8 +665,21 @@ const baseSelectors = {
 		return state.isAwaitingModulesRefresh;
 	} ),
 
+	/**
+	 * Checks if we can activate a module with a given slug.
+	 *
+	 * Returns `true` if the module can be activated.
+	 * Returns `false` if the module can not be activated.
+	 * Returns `undefined` if slug can not be found in state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} Can activate module status; `undefined` if state is still loading or if no module with that slug exists.
+	 */
 	canActivateModule( state, slug ) {
-		const moduleRequirements = state.checkRequirementsResults?.[slug];
+		const moduleRequirements = state.checkRequirementsResults[ slug ];
 
 		if ( moduleRequirements === undefined ) {
 			return undefined;
