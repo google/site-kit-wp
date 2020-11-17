@@ -391,14 +391,8 @@ const baseResolvers = {
 		yield Data.commonActions.await( registry.__experimentalResolveSelect( STORE_NAME ).getModules() );
 		const module = registry.select( STORE_NAME ).getModule( slug );
 
-		// Return `undefined` if module with this slug isn't loaded yet.
-		if ( module === undefined ) {
-			return undefined;
-		}
-
-		// A module with this slug couldn't be found return null
-		if ( module === null ) {
-			return null;
+		if ( ! module ) {
+			return;
 		}
 
 		const inactiveModules = [];
