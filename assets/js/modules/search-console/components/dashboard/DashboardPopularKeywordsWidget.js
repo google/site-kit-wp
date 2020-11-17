@@ -31,13 +31,14 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { numberFormat, untrailingslashit } from '../../../../util';
-import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import { getDataTableFromData } from '../../../../components/data-table';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
