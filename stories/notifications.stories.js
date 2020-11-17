@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Notification from '../assets/js/components/notifications/notification';
-import ModulesList from '../assets/js/components/modules-list';
+import ModulesList from '../assets/js/components/ModulesList';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
