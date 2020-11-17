@@ -382,7 +382,7 @@ const baseResolvers = {
 		if ( ! existingModules ) {
 			yield fetchGetModulesStore.actions.fetchGetModules();
 			yield registry.dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'canActivateModule' );
-			yield registry.dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getCheckRequirementsStatus' );
+			yield registry.dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getCheckRequirementsError' );
 		}
 	},
 
@@ -427,8 +427,8 @@ const baseResolvers = {
 		}
 	},
 };
-// Use the canActivateModule resolver for getCheckRequirementsStatus
-baseResolvers.getCheckRequirementsStatus = baseResolvers.canActivateModule;
+// Use the canActivateModule resolver for getCheckRequirementsError
+baseResolvers.getCheckRequirementsError = baseResolvers.canActivateModule;
 
 const baseSelectors = {
 	/**
@@ -688,7 +688,19 @@ const baseSelectors = {
 		return moduleRequirements === true;
 	},
 
-	getCheckRequirementsStatus( state, slug ) {
+	/**
+	 * Gets the module activation error for a given slug.
+	 *
+	 * Returns `null` if the module can be activated and there is no error.
+	 * Returns `object` containing code, message and optional data property if there is an activation error for a slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(null|Object)} Activation error for a module slug; `null` if there is no error or an error object if we cannot activate a given module.
+	 */
+	getCheckRequirementsError( state, slug ) {
 		invariant( slug, 'slug is required.' );
 		const requirementsStatus = state.checkRequirementsResults[ slug ];
 		return requirementsStatus === true ? null : requirementsStatus;

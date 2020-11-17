@@ -651,14 +651,14 @@ describe( 'core/modules modules', () => {
 			} );
 		} );
 
-		describe( 'getCheckRequirementsStatus', () => {
+		describe( 'getCheckRequirementsError', () => {
 			it( 'has no error message when we can activate a module', async () => {
 				await bootStrapActivateModulesTests();
 				const slug = 'slug1dependant';
 				registry.select( STORE_NAME ).canActivateModule( slug );
 
-				const requirementsStatus = registry.select( STORE_NAME ).getCheckRequirementsStatus( slug );
-				expect( requirementsStatus ).toEqual( null );
+				const error = registry.select( STORE_NAME ).getCheckRequirementsError( slug );
+				expect( error ).toEqual( null );
 			} );
 
 			it( 'has an error when we can not activate a module', async () => {
@@ -666,8 +666,8 @@ describe( 'core/modules modules', () => {
 				const slug = 'slug2dependant';
 				registry.select( STORE_NAME ).canActivateModule( slug );
 
-				const requirementsStatus = registry.select( STORE_NAME ).getCheckRequirementsStatus( slug );
-				expect( requirementsStatus ).toEqual( {
+				const error = registry.select( STORE_NAME ).getCheckRequirementsError( slug );
+				expect( error ).toEqual( {
 					code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 					data: {
 						inactiveModules: [ 'slug2' ],

@@ -12,7 +12,7 @@ const { useSelect } = Data;
  * A single module. Keeps track of its own active state and settings.
  */
 export default function ModuleSettingsWarning( { slug } ) {
-	const error = useSelect( ( select ) => select( CORE_MODULES )?.getCheckRequirementsStatus( slug ) );
+	const error = useSelect( ( select ) => select( CORE_MODULES )?.getCheckRequirementsError( slug ) );
 
 	if ( ! error ) {
 		return null;
