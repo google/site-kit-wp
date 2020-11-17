@@ -30,6 +30,7 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
+const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const ImageminPlugin = require( 'imagemin-webpack' );
@@ -140,165 +141,164 @@ const resolve = {
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
-const webpackConfig = ( env, argv ) => {
-	const {
-		mode,
-		flagMode = mode,
-	} = argv;
+function* webpackConfig( env, argv ) {
+	const { mode, flagMode = mode } = argv;
+	const { ANALYZE } = env;
 
-	return [
-		// Build the settings js..
-		{
-			entry: {
-				// New Modules (Post-JSR).
-				'googlesitekit-api': './assets/js/googlesitekit-api.js',
-				'googlesitekit-data': './assets/js/googlesitekit-data.js',
-				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
-				'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
-				'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
-				'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
-				'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
-				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
-				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
-				'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
-				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
-				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
-				'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
-				'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
-				// Old Modules
-				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
-				'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
-				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
-				'googlesitekit-dashboard': './assets/js/googlesitekit-dashboard.js',
-				'googlesitekit-dashboard-details': './assets/js/googlesitekit-dashboard-details.js',
-				'googlesitekit-dashboard-splash': './assets/js/googlesitekit-dashboard-splash.js',
-				'googlesitekit-wp-dashboard': './assets/js/googlesitekit-wp-dashboard.js',
-				'googlesitekit-base': './assets/js/googlesitekit-base.js',
-				'googlesitekit-module': './assets/js/googlesitekit-module.js',
-				// Needed to test if a browser extension blocks this by naming convention.
-				'pagead2.ads': './assets/js/pagead2.ads.js',
-			},
-			externals,
-			output: {
-				filename: '[name].[contenthash].js',
-				path: path.join( __dirname, 'dist/assets/js' ),
-				chunkFilename: '[name]-[chunkhash].js',
-				publicPath: '',
-				/*
-					If multiple webpack runtimes (from different compilations) are used on the
-					same webpage, there is a risk of conflicts of on-demand chunks in the global
-					namespace.
-					See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-				*/
-				jsonpFunction: '__googlesitekit_webpackJsonp',
-			},
-			performance: {
-				maxEntrypointSize: 175000,
-			},
-			module: {
-				rules: [
-					...rules,
-					{
-						test: /\.(png|jpg)$/i,
-						use: [
-							{
-								loader: 'file-loader',
-								options: {
-									name: '[name].[ext]',
-									publicPath: 'images/',
-									outputPath: '../images',
+	// Build the settings js..
+	yield {
+		entry: {
+			// New Modules (Post-JSR).
+			'googlesitekit-api': './assets/js/googlesitekit-api.js',
+			'googlesitekit-data': './assets/js/googlesitekit-data.js',
+			'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
+			'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
+			'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
+			'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
+			'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
+			'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
+			'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
+			'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
+			'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
+			'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
+			'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
+			'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
+			// Old Modules
+			'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
+			'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
+			'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
+			'googlesitekit-dashboard': './assets/js/googlesitekit-dashboard.js',
+			'googlesitekit-dashboard-details': './assets/js/googlesitekit-dashboard-details.js',
+			'googlesitekit-dashboard-splash': './assets/js/googlesitekit-dashboard-splash.js',
+			'googlesitekit-wp-dashboard': './assets/js/googlesitekit-wp-dashboard.js',
+			'googlesitekit-base': './assets/js/googlesitekit-base.js',
+			'googlesitekit-module': './assets/js/googlesitekit-module.js',
+			// Needed to test if a browser extension blocks this by naming convention.
+			'pagead2.ads': './assets/js/pagead2.ads.js',
+		},
+		externals,
+		output: {
+			filename: '[name].[contenthash].js',
+			path: path.join( __dirname, 'dist/assets/js' ),
+			chunkFilename: '[name]-[chunkhash].js',
+			publicPath: '',
+			/*
+				If multiple webpack runtimes (from different compilations) are used on the
+				same webpage, there is a risk of conflicts of on-demand chunks in the global
+				namespace.
+				See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
+			*/
+			jsonpFunction: '__googlesitekit_webpackJsonp',
+		},
+		performance: {
+			maxEntrypointSize: 175000,
+		},
+		module: {
+			rules: [
+				...rules,
+				{
+					test: /\.(png|jpg)$/i,
+					use: [
+						{
+							loader: 'file-loader',
+							options: {
+								name: '[name].[ext]',
+								publicPath: 'images/',
+								outputPath: '../images',
+							},
+						},
+						{
+							loader: ImageminPlugin.loader,
+							options: {
+								imageminOptions: {
+									plugins: [
+										'jpegtran',
+										'optipng',
+									],
 								},
 							},
-							{
-								loader: ImageminPlugin.loader,
-								options: {
-									imageminOptions: {
-										plugins: [
-											'jpegtran',
-											'optipng',
-										],
-									},
-								},
-							},
-						],
-					},
-				],
-			},
-			plugins: [
-				new ProvidePlugin( {
-					React: 'react',
-				} ),
-				new WebpackBar( {
-					name: 'Module Entry Points',
-					color: '#fbbc05',
-				} ),
-				new CircularDependencyPlugin( {
-					exclude: /node_modules/,
-					failOnError: true,
-					allowAsyncCycles: false,
-					cwd: process.cwd(),
-				} ),
-				new FeatureFlagsPlugin(
-					flagsConfig,
-					{
-						modes: [ 'development', 'production' ],
-						mode: flagMode, // Default: mode; override with --flag-mode={mode}
-					},
-				),
-				new ManifestPlugin( {
-					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
-					filter( file ) {
-						return ( file.name || '' ).match( /\.js$/ );
-					},
-					serialize( manifest ) {
-						const maxLen = Math.max( ...Object.keys( manifest ).map( ( key ) => key.length ) );
-						const content = manifestTemplate.replace(
-							'{{assets}}',
-							Object.keys( manifest )
-								.map( ( key ) => `"${ key.replace( '.js', '' ) }"${ ''.padEnd( maxLen - key.length, ' ' ) } => "${ manifest[ key ] }",` )
-								.join( '\n\t\t' )
-						);
+						},
+					],
+				},
+			],
+		},
+		plugins: [
+			new ProvidePlugin( {
+				React: 'react',
+			} ),
+			new WebpackBar( {
+				name: 'Module Entry Points',
+				color: '#fbbc05',
+			} ),
+			new CircularDependencyPlugin( {
+				exclude: /node_modules/,
+				failOnError: true,
+				allowAsyncCycles: false,
+				cwd: process.cwd(),
+			} ),
+			new FeatureFlagsPlugin(
+				flagsConfig,
+				{
+					modes: [ 'development', 'production' ],
+					mode: flagMode, // Default: mode; override with --flag-mode={mode}
+				},
+			),
+			new ManifestPlugin( {
+				fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
+				filter( file ) {
+					return ( file.name || '' ).match( /\.js$/ );
+				},
+				serialize( manifest ) {
+					const maxLen = Math.max( ...Object.keys( manifest ).map( ( key ) => key.length ) );
+					const content = manifestTemplate.replace(
+						'{{assets}}',
+						Object.keys( manifest )
+							.map( ( key ) => `"${ key.replace( '.js', '' ) }"${ ''.padEnd( maxLen - key.length, ' ' ) } => "${ manifest[ key ] }",` )
+							.join( '\n\t\t' )
+					);
 
-						return content;
+					return content;
+				},
+			} ),
+			...( ANALYZE ? [ new BundleAnalyzerPlugin() ] : [] ),
+		],
+		optimization: {
+			minimizer: [
+				new TerserPlugin( {
+					parallel: true,
+					sourceMap: false,
+					cache: true,
+					terserOptions: {
+						// We preserve function names that start with capital letters as
+						// they're _likely_ component names, and these are useful to have
+						// in tracebacks and error messages.
+						keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
+						output: {
+							comments: /translators:/i,
+						},
 					},
+					extractComments: false,
 				} ),
 			],
-			optimization: {
-				minimizer: [
-					new TerserPlugin( {
-						parallel: true,
-						sourceMap: false,
-						cache: true,
-						terserOptions: {
-							// We preserve function names that start with capital letters as
-							// they're _likely_ component names, and these are useful to have
-							// in tracebacks and error messages.
-							keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
-							output: {
-								comments: /translators:/i,
-							},
-						},
-						extractComments: false,
-					} ),
-				],
-				runtimeChunk: false,
-				splitChunks: {
-					cacheGroups: {
-						vendor: {
-							chunks: 'initial',
-							name: 'googlesitekit-vendor',
-							filename: 'googlesitekit-vendor.[contenthash].js',
-							enforce: true,
-							test: /[\\/]node_modules[\\/]/,
-						},
+			runtimeChunk: false,
+			splitChunks: {
+				cacheGroups: {
+					vendor: {
+						chunks: 'initial',
+						name: 'googlesitekit-vendor',
+						filename: 'googlesitekit-vendor.[contenthash].js',
+						enforce: true,
+						test: /[\\/]node_modules[\\/]/,
 					},
 				},
 			},
-			resolve,
 		},
+		resolve,
+	};
 
-		// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
-		{
+	// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
+	if ( ! ANALYZE ) {
+		yield {
 			entry: {
 				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				// Analytics advanced tracking script to be injected in the frontend.
@@ -323,10 +323,12 @@ const webpackConfig = ( env, argv ) => {
 				concatenateModules: true,
 			},
 			resolve,
-		},
+		};
+	}
 
-		// Build the main plugin admin css.
-		{
+	// Build the main plugin admin css.
+	if ( ! ANALYZE ) {
+		yield {
 			entry: {
 				admin: './assets/sass/admin.scss',
 				adminbar: './assets/sass/adminbar.scss',
@@ -365,9 +367,9 @@ const webpackConfig = ( env, argv ) => {
 					color: '#4285f4',
 				} ),
 			],
-		},
-	];
-};
+		};
+	}
+}
 
 const testBundle = () => {
 	return {
@@ -406,13 +408,18 @@ module.exports = {
 };
 
 module.exports.default = ( env, argv ) => {
-	const config = webpackConfig( env, argv );
-	const { includeTests, mode } = argv;
+	const configs = [];
 
-	if ( mode !== 'production' || includeTests ) {
-		// Build the test files if we aren't doing a production build.
-		config.push( testBundle() );
+	const configGenerator = webpackConfig( env, argv );
+	for ( const config of configGenerator ) {
+		configs.push( config );
 	}
 
-	return config;
+	const { includeTests, mode } = argv;
+	if ( mode !== 'production' || includeTests ) {
+		// Build the test files if we aren't doing a production build.
+		configs.push( testBundle() );
+	}
+
+	return configs;
 };
