@@ -233,9 +233,9 @@ const baseActions = {
 	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
 	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
-	 * @return {Object} Redux-style action.
+	 * @return {void}
 	 */
-	registerModule( slug, {
+	*registerModule( slug, {
 		name,
 		description,
 		icon,
@@ -260,13 +260,19 @@ const baseActions = {
 			checkRequirements,
 		};
 
-		return {
+		yield {
 			payload: {
 				settings,
 				slug,
 			},
 			type: REGISTER_MODULE,
 		};
+
+		const registry = yield Data.commonActions.getRegistry();
+
+		// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
+		yield registry.dispatch( STORE_NAME ).invalidateResolution( 'canActivateModule', [ slug ] );
+		yield registry.dispatch( STORE_NAME ).invalidateResolution( 'getCheckRequirementsError', [ slug ] );
 	},
 
 	/**
@@ -380,8 +386,6 @@ const baseResolvers = {
 
 		if ( ! existingModules ) {
 			yield fetchGetModulesStore.actions.fetchGetModules();
-			yield registry.dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'canActivateModule' );
-			yield registry.dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getCheckRequirementsError' );
 		}
 	},
 
