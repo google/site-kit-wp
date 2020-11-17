@@ -28,9 +28,10 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { extractForSparkline, untrailingslashit } from '../../../../util';
+import extractForSparkline from '../../../../util/extract-for-sparkline';
+import { untrailingslashit, changeToPercent, readableLargeNumber } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
-import { extractSearchConsoleDashboardData, isZeroReport } from '../../util';
+import { isZeroReport } from '../../util';
 import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
@@ -38,6 +39,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
+import sumObjectListValue from '../../../../util/sum-object-list-value';
 
 const { useSelect } = Data;
 
@@ -87,15 +89,33 @@ function DashboardClicksWidget() {
 	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="search-console" />;
 	}
+	// Split the data in two chunks.
+	const half = Math.floor( data.length / 2 );
+	const latestData = data.slice( half );
+	const olderData = data.slice( 0, half );
 
-	const { totalClicks, totalClicksChange, dataMap } = extractSearchConsoleDashboardData( data );
+	const totalClicks = sumObjectListValue( latestData, 'clicks' );
+	const totalOlderClicks = sumObjectListValue( olderData, 'clicks' );
+	const totalClicksChange = changeToPercent( totalOlderClicks, totalClicks );
+
+	const sparklineData = [
+		[
+			{ type: 'string', label: 'Day' },
+			{ type: 'number', label: 'Clicks' },
+		],
+		...extractForSparkline( latestData, 'clicks', 'keys.0' ).map( ( row ) => {
+			const date = new Date( row[ 0 ] );
+			// Sparkline data needs headers and dates formatted as MM/DD
+			return [ `${ date.getMonth() + 1 }/${ date.getUTCDate() }`, row[ 1 ] ];
+		} ),
+	];
 
 	return (
 		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--align-bottom mdc-layout-grid__cell--span-2-phone mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop">
 			<DataBlock
 				className="overview-total-clicks"
 				title={ __( 'Clicks', 'google-site-kit' ) }
-				datapoint={ totalClicks }
+				datapoint={ readableLargeNumber( totalClicks ) }
 				change={ totalClicksChange }
 				changeDataUnit="%"
 				source={ {
@@ -105,7 +125,7 @@ function DashboardClicksWidget() {
 				} }
 				sparkline={
 					<Sparkline
-						data={ extractForSparkline( dataMap, 1 ) }
+						data={ sparklineData }
 						change={ totalClicksChange }
 					/>
 				}
