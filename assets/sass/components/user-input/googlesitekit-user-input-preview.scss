@@ -21,7 +21,7 @@
 	.googlesitekit-user-input__preview {
 
 		background-color: $c-white;
-		padding: 34px;
+		padding: 50px 23px;
 		position: relative;
 
 		@media (min-width: $bp-tablet) {
@@ -29,61 +29,83 @@
 			margin-right: -10px;
 		}
 
-		& .mdc-layout-grid__inner .mdc-layout-grid__inner .mdc-layout-grid__cell {
-			padding: 0 12px;
+		.googlesitekit-user-input__question-instructions--notice {
+			background-color: $c-alabaster;
+			color: $c-cape-cod;
+			display: block;
+			margin-left: auto;
+			width: 85%;
 
-			&:first-child {
-				padding-left: 0;
-			}
+			@include responsive-text("body1", "body3");
 
-			&:last-child {
-				padding-right: 0;
+			@media (min-width: $bp-tablet) {
+				display: inline-block;
+				margin: 0;
+				width: auto;
 			}
 		}
+	}
 
-		& .googlesitekit-user-input__buttons {
+	.googlesitekit-user-input__preview-answers {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.googlesitekit-user-input__preview-answer {
+		align-items: center;
+		background-color: $c-solitude;
+		border-radius: 100px;
+		color: $c-denim;
+		display: flex;
+		font-weight: $fw-secondary-medium;
+		margin-bottom: 12px;
+		margin-right: 12px;
+		padding: 8px 13px;
+
+		@include responsive-text("body1", "body3");
+	}
+
+	.googlesitekit-user-input__preview-group {
+		border-bottom: 1px solid $c-mercury;
+		margin-bottom: 12px;
+		padding-bottom: 12px;
+	}
+
+	.googlesitekit-user-input__preview-group-title {
+		align-items: flex-start;
+		display: flex;
+		justify-content: space-between;
+
+		p {
+			color: $c-cape-cod;
+			margin-top: 0;
+
+			@include responsive-text("body1", "body3");
+		}
+
+		button {
+			font-weight: $fw-secondary-normal;
+			letter-spacing: normal;
+			margin-top: -4px;
+			text-transform: none;
+
+			@include responsive-text("body1", "body3");
+		}
+	}
+
+	.googlesitekit-user-input__preview--footer {
+
+		@media (min-width: $bp-tablet) {
 			align-items: center;
-			justify-content: space-between;
-		}
-
-		&-answers {
-			display: flex;
-			flex-wrap: wrap;
-		}
-
-		&-answer {
-			align-items: center;
-			background-color: $c-solitude;
-			border-radius: 100px;
-			color: $c-denim;
-			display: flex;
-			font-weight: 500;
-			margin-bottom: 12px;
-			margin-right: 12px;
-			padding: 3px 12px;
-			white-space: nowrap;
-		}
-
-		&-group {
-			border-bottom: 1px solid $c-mercury;
-			margin-bottom: 12px;
-			padding-bottom: 12px;
-		}
-
-		&-group-title {
-			align-items: flex-start;
 			display: flex;
 			justify-content: space-between;
+			margin-top: 50px;
+		}
 
-			& p {
-				color: $c-cape-cod;
-				margin-top: 0;
-			}
+		.googlesitekit-user-input__buttons {
 
-			& button {
-				font-weight: 400;
-				margin-top: -0.5em;
-				text-transform: none;
+			@media (min-width: $bp-tablet) {
+				margin: 0;
 			}
 		}
 	}
