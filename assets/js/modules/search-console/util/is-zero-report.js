@@ -29,15 +29,18 @@ export function isZeroReport( report ) {
 		return undefined;
 	}
 
-	if ( Array.isArray( report ) && report.length ) {
+	if ( ! Array.isArray( report ) || ! report.length ) {
 		return true;
 	}
 
-	const sumOfMetrics = report.reduce( function( sum, values ) {
-		return sum + values.clicks + values.impressions + values.ctr + values.position;
-	}, 0 );
+	const hasMetric = report.some( ( value ) => (
+		value.clicks > 0 ||
+        value.ctr > 0 ||
+        value.impressions > 0 ||
+        value.position > 0
+	) );
 
-	if ( sumOfMetrics === 0 ) {
+	if ( ! hasMetric ) {
 		return true;
 	}
 

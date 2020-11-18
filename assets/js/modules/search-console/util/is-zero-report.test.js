@@ -37,14 +37,14 @@ describe( 'isZeroReport', () => {
 		expect( isZeroReport( report ) ).toBe( true );
 	} );
 
-	it( 'returns true when sum of clicks, impressions, ctr and position is 0', () => {
+	it( 'returns true when all fields in all rows are 0', () => {
 		const report = [
 			{
 				clicks: 0,
 				ctr: 0,
 				impressions: 0,
 				keys: [
-					'2020-11-09',
+					'2000-01-01',
 				],
 				position: 0,
 			},
@@ -53,7 +53,7 @@ describe( 'isZeroReport', () => {
 				ctr: 0,
 				impressions: 0,
 				keys: [
-					'2020-11-10',
+					'2000-01-01',
 				],
 				position: 0,
 			},
@@ -62,25 +62,25 @@ describe( 'isZeroReport', () => {
 		expect( isZeroReport( report ) ).toBe( true );
 	} );
 
-	it( 'returns false for a report that has valid data', () => {
+	it( 'returns false when any row has a positive value for any of its fields', () => {
 		const report = [
 			{
 				clicks: 0,
 				ctr: 0,
 				impressions: 0,
 				keys: [
-					'2020-10-22',
+					'2000-01-01',
 				],
 				position: 0,
 			},
 			{
 				clicks: 0,
 				ctr: 0,
-				impressions: 1,
+				impressions: 123,
 				keys: [
-					'2020-10-23',
+					'2000-01-01',
 				],
-				position: 61,
+				position: 234,
 			},
 		];
 
