@@ -82,12 +82,10 @@ describe( 'withData', () => {
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
-		const key = getCacheKeyForDataset( dataset );
 		const responseData = { foo: 'bar' };
-
 		fetchMock.postOnce(
 			/^\/google-site-kit\/v1\/data/,
-			{ body: { [ key ]: responseData } }
+			{ body: { [ getCacheKeyForDataset( dataset ) ]: responseData } }
 		);
 		await act(
 			() => new Promise( ( resolve ) => {
@@ -131,15 +129,11 @@ describe( 'withData', () => {
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
-		// testModuleAlt's request will not be filtered out because its setup is complete.
-		const testModuleAltCacheKey = getCacheKeyForDataset( requests[ 1 ] );
-		const testModuleAltResponse = {
-			[ testModuleAltCacheKey ]: { foo: 'bar' },
+		// testModuleAlt's request will not be filtered out because its setup is complete so a response is needed.
+		const body = {
+			[ getCacheKeyForDataset( requests[ 1 ] ) ]: { foo: 'bar' },
 		};
-		fetchMock.postOnce(
-			/^\/google-site-kit\/v1\/data/,
-			{ body: { [ testModuleAltCacheKey ]: testModuleAltResponse } }
-		);
+		fetchMock.postOnce( /^\/google-site-kit\/v1\/data/, { body } );
 		await act(
 			() => new Promise( ( resolve ) => {
 				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
@@ -151,5 +145,36 @@ describe( 'withData', () => {
 		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Test Module activation' );
 		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( 'Test Module module needs to be configured' );
 		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/data/ );
+	} );
+
+	it( 'renders the error component when an error is returned for any request', async () => {
+		global._googlesitekitLegacyData.modules[ testModule.slug ] = testModule;
+
+		const requests = [
+			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint-a', { dateRange } ),
+			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint-b', { dateRange } ),
+		];
+		const WrappedComponent = withData( TestComponent, requests, loadingNode );
+
+		const { container, queryByTestID } = render( <WrappedComponent /> );
+
+		const error = { code: 'test_error', message: 'Error!', data: { status: 500 } };
+		const body = {
+			[ getCacheKeyForDataset( requests[ 0 ] ) ]: error,
+			[ getCacheKeyForDataset( requests[ 1 ] ) ]: { foo: 'some data' },
+		};
+		fetchMock.postOnce( /^\/google-site-kit\/v1\/data/, { body } );
+		await act(
+			() => new Promise( ( resolve ) => {
+				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
+				collectModuleData( context );
+			} )
+		);
+
+		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
+		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Data error in Test Module' );
+		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( error.message );
+		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/data/ );
+		expect( console ).toHaveWarned();
 	} );
 } );
