@@ -22,31 +22,31 @@ export COMPOSE_PROJECT_NAME='googlesitekit-e2e'
 # @returns {bool} true if the user replies Yes, false if the user replies No.
 ##
 ask() {
-    # Source: https://djm.me/ask
-    local timeout endtime timediff prompt default reply
+	# Source: https://djm.me/ask
+	local timeout endtime timediff prompt default reply
 
-    while true; do
+	while true; do
 
 		timeout="${3:-}"
 
-        if [ "${2:-}" = "Y" ]; then
-            prompt="Y/n"
-            default=Y
-        elif [ "${2:-}" = "N" ]; then
-            prompt="y/N"
-            default=N
-        else
-            prompt="y/n"
-            default=
+		if [ "${2:-}" = "Y" ]; then
+			prompt="Y/n"
+			default=Y
+		elif [ "${2:-}" = "N" ]; then
+			prompt="y/N"
+			default=N
+		else
+			prompt="y/n"
+			default=
 			timeout=
-        fi
+		fi
 
 		if [ -z "$timeout" ]; then
-        	# Ask the question (not using "read -p" as it uses stderr not stdout)
-        	echo -en "$1 [$prompt] "
+			# Ask the question (not using "read -p" as it uses stderr not stdout)
+			echo -en "$1 [$prompt] "
 
-        	# Read the answer (use /dev/tty in case stdin is redirected from somewhere else)
-        	read reply </dev/tty
+			# Read the answer (use /dev/tty in case stdin is redirected from somewhere else)
+			read reply </dev/tty
 		else
 			endtime=$((`date +%s` + $timeout));
 			while [ "$endtime" -ge `date +%s` ]; do
@@ -61,18 +61,18 @@ ask() {
 			done
 		fi
 
-        # Default?
-        if [ -z "$reply" ]; then
-            reply=$default
-        fi
+		# Default?
+		if [ -z "$reply" ]; then
+			reply=$default
+		fi
 
-        # Check if the reply is valid
-        case "$reply" in
-            Y*|y*) return 0 ;;
-            N*|n*) return 1 ;;
-        esac
+		# Check if the reply is valid
+		case "$reply" in
+			Y*|y*) return 0 ;;
+			N*|n*) return 1 ;;
+		esac
 
-    done
+	done
 }
 
 ##
@@ -86,11 +86,11 @@ ask() {
 # @return {bool} Whether the download succeeded or not.
 ##
 download() {
-    if command_exists "curl"; then
-        curl -s -o "${2:--}" "$1"
-    elif command_exists "wget"; then
+	if command_exists "curl"; then
+		curl -s -o "${2:--}" "$1"
+	elif command_exists "wget"; then
 		wget -nv -O "${2:--}" "$1"
-    fi
+	fi
 }
 
 ##
