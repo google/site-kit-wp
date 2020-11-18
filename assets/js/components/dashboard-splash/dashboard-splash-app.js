@@ -17,134 +17,23 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Component, Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import DashboardSplashMain from './dashboard-splash-main';
-import DashboardSplashNotifications from './dashboard-splash-notifications';
-import { trackEvent } from '../../util';
 import '../publisher-wins';
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import SetupUsingProxy from '../setup/setup-proxy';
-import SetupUsingGCP from '../setup';
-import SetupWrapper from '../setup/setup-wrapper';
+import LegacyDashboardSplashApp from './LegacyDashboardSplashApp';
+const { useSelect } = Data;
 
-const AUTHENTICATION = 1;
-const SETUP = 2;
+export default function DashboardSplashApp() {
+	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
-class DashboardSplashApp extends Component {
-	constructor( props ) {
-		super( props );
-
-		const { connectURL } = global._googlesitekitLegacyData.admin;
-
-		const {
-			showModuleSetupWizard,
-			isAuthenticated,
-			isVerified,
-			hasSearchConsoleProperty,
-		} = global._googlesitekitLegacyData.setup;
-
-		const {
-			canAuthenticate,
-			canSetup,
-			canViewDashboard,
-			canPublishPosts,
-		} = global._googlesitekitLegacyData.permissions;
-
-		this.state = {
-			showAuthenticationSetupWizard: canSetup && ( ! isAuthenticated || ! isVerified || ! hasSearchConsoleProperty ),
-			showModuleSetupWizard,
-			canViewDashboard,
-			canPublishPosts,
-			buttonMode: 0,
-			connectURL,
-		};
-
-		if ( canAuthenticate && ! isAuthenticated ) {
-			this.state.buttonMode = AUTHENTICATION;
-		}
-		if ( canSetup && ( ! isAuthenticated || ! isVerified || ! hasSearchConsoleProperty ) ) {
-			this.state.buttonMode = SETUP;
-		}
-
-		this.openAuthenticationSetupWizard = this.openAuthenticationSetupWizard.bind( this );
-		this.gotoConnectURL = this.gotoConnectURL.bind( this );
+	if ( usingProxy === true ) {
+		return <SetupUsingProxy />;
+	} else if ( usingProxy === false ) {
+		return <LegacyDashboardSplashApp />;
 	}
 
-	async openAuthenticationSetupWizard() {
-		await trackEvent( 'plugin_setup', 'setup_sitekit' );
-
-		this.setState( {
-			showAuthenticationSetupWizard: true,
-		} );
-	}
-
-	async gotoConnectURL() {
-		this.setState( {
-			showAuthenticationInstructionsWizard: false,
-			showAuthenticationSetupWizard: false,
-		} );
-
-		await trackEvent( 'plugin_setup', 'connect_account' );
-
-		document.location = this.state.connectURL;
-	}
-
-	render() {
-		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
-		const { usingProxy } = global._googlesitekitBaseData;
-
-		// If `usingProxy` is true it means the proxy is in use. We should never
-		// show the GCP splash screen when the proxy is being used, so skip this
-		// when `usingProxy` is set.
-		// See: https://github.com/google/site-kit-wp/issues/704.
-		if ( ! usingProxy && ! this.state.showAuthenticationSetupWizard && ! this.state.showModuleSetupWizard ) {
-			let introDescription, outroDescription, buttonLabel, onButtonClick;
-
-			switch ( this.state.buttonMode ) {
-				case AUTHENTICATION:
-					introDescription = __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' );
-					outroDescription = __( 'Connecting your account only takes a few minutes. Faster than brewing a cup of coffee.', 'google-site-kit' );
-					buttonLabel = __( 'Connect your account', 'google-site-kit' );
-					onButtonClick = this.gotoConnectURL;
-					break;
-				case SETUP:
-					introDescription = __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' );
-					outroDescription = __( 'Setup only takes a few minutes. Faster than brewing a cup of coffee.', 'google-site-kit' );
-					buttonLabel = __( 'Set Up Site Kit', 'google-site-kit' );
-					onButtonClick = this.openAuthenticationSetupWizard;
-					break;
-				default:
-					if ( this.state.canViewDashboard ) {
-						introDescription = __( 'Start gaining insights on how your site is performing in search by visiting the dashboard.', 'google-site-kit' );
-					} else if ( this.state.canPublishPosts ) {
-						introDescription = __( 'Start gaining insights on how your site is performing in search by editing one of your posts.', 'google-site-kit' );
-					} else {
-						introDescription = __( 'Start gaining insights on how your site is performing in search by viewing one of your published posts.', 'google-site-kit' );
-					}
-			}
-
-			return (
-				<Fragment>
-					<DashboardSplashNotifications />
-					<DashboardSplashMain introDescription={ introDescription } outroDescription={ outroDescription } buttonLabel={ buttonLabel } onButtonClick={ onButtonClick } />
-				</Fragment>
-			);
-		}
-
-		// `usingProxy` is only set if the proxy is in use.
-		if ( usingProxy ) {
-			return <SetupUsingProxy />;
-		} else if ( this.state.showAuthenticationSetupWizard ) {
-			return <SetupUsingGCP />;
-		}
-		return <SetupWrapper moduleSlug={ moduleToSetup } />;
-	}
+	return null;
 }
-
-export default DashboardSplashApp;
