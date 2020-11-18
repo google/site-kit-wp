@@ -22,6 +22,11 @@
 import { join as joinPaths } from 'path';
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
@@ -78,6 +83,8 @@ export const selectors = {
 		const accountID = select( STORE_NAME ).getAccountID();
 		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
 		const profileID = select( STORE_NAME ).getProfileID();
+
+		invariant( type, 'type is required to get a service report URL.' );
 
 		if ( ! accountID || ! internalWebPropertyID || ! profileID ) {
 			return undefined;
