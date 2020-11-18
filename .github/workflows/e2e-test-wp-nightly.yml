@@ -1,4 +1,4 @@
-name: WordPress Nightly
+name: WordPress nightly
 on:
   pull_request:
     types:
@@ -11,7 +11,7 @@ env:
   WP_VERSION=nightly
 jobs:
   e2e:
-    name: E2E Tests (WordPress nightly)
+    name: E2E Tests (Nightly)
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:

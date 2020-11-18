@@ -1,4 +1,4 @@
-name: WordPress Latest
+name: WordPress latest
 on:
   pull_request:
     types:
@@ -8,11 +8,19 @@ on:
       - ready_for_review
 jobs:
   e2e:
-    name: E2E Tests (WordPress latest)
+    name: E2E Tests
     runs-on: ubuntu-latest
     # if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      # - uses: actions/cache@v2
+      #   with:
+      #     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+      #     path: ${{ steps.composer-cache.outputs.composerCacheFilesDir }}
       - uses: ./.github/actions/composer
       - uses: ./.github/actions/npm
         with:

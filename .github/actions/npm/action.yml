@@ -8,10 +8,6 @@ runs:
   steps:
     - run: nvm install
       shell: bash -l {0}
-    - uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
     - run: npm ci
       shell: bash
     - run: npm run ${{ inputs.command }}
