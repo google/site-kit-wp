@@ -142,7 +142,7 @@ const withData = (
 	}
 ) => {
 	// ...and returns another component...
-	return class NewComponent extends Component {
+	class NewComponent extends Component {
 		constructor( props ) {
 			super( props );
 
@@ -293,7 +293,12 @@ const withData = (
 				/>
 			);
 		}
-	};
+	}
+
+	const displayName = DataDependentComponent.displayName || DataDependentComponent.name || 'AnonymousComponent';
+	NewComponent.displayName = `withData(${ displayName })`;
+
+	return NewComponent;
 };
 
 export default withData;
