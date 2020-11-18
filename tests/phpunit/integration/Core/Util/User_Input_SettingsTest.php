@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
 use Google\Site_Kit\Tests\TestCase;
@@ -51,7 +52,6 @@ class User_Input_SettingsTest extends TestCase {
 			->getMock();
 
 		$settings
-			->expects( $this->once() )
 			->method( 'is_connected_to_proxy' )
 			->willReturn( true );
 
@@ -73,6 +73,27 @@ class User_Input_SettingsTest extends TestCase {
 			$this->assertArrayHasKey( 'status', $data );
 			$this->assertEquals( 400, $data['status'] );
 		}
+	}
+
+	public function test_are_settings_empty() {
+		$settings = new User_Input_Settings( $this->context );
+
+		$data = array(
+			'setting1' => array( 'values' => null ),
+		);
+		$this->assertTrue( $settings->are_settings_empty( $data ) );
+
+		$data = array(
+			'setting1' => array( 'values' => null ),
+			'setting2' => array( 'values' => array( '1', '2', '3' ) ),
+		);
+		$this->assertTrue( $settings->are_settings_empty( $data ) );
+
+		$data = array(
+			'setting1' => array( 'values' => array( 'a', 'b', 'c' ) ),
+			'setting2' => array( 'values' => array( '1', '2', '3' ) ),
+		);
+		$this->assertFalse( $settings->are_settings_empty( $data ) );
 	}
 
 	public function test_get_settings_from_cache() {
@@ -232,6 +253,82 @@ class User_Input_SettingsTest extends TestCase {
 		$settings->set_settings( $data );
 
 		$this->assertEquals( $data, $body );
+	}
+
+	public function test_set_settings_completed_flag() {
+		remove_all_filters( 'pre_http_request' );
+
+		add_filter(
+			'pre_http_request',
+			function( $pre, $args, $url ) {
+				$authentication          = new Authentication( $this->context );
+				$user_input_settings_url = $authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
+				if ( $url !== $user_input_settings_url ) {
+					return $pre;
+				}
+
+				return array(
+					'headers'  => array(),
+					'response' => array( 'code' => 200 ),
+					'body'     => json_encode(
+						array(
+							'setting1' => array( 'values' => array( '1', '2', '3' ) ),
+							'setting2' => array( 'values' => array( 'a', 'b', 'c' ) ),
+						)
+					),
+				);
+			},
+			10,
+			3
+		);
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$settings = $this->get_connected_to_proxy_mock();
+		$settings->set_settings( array() );
+
+		$user_options = new User_Options( $this->context, $user_id );
+		$state        = new User_Input_State( $user_options );
+		$this->assertEquals( User_Input_State::VALUE_COMPLETED, $state->get() );
+	}
+
+	public function test_set_settings_missing_flag() {
+		remove_all_filters( 'pre_http_request' );
+
+		add_filter(
+			'pre_http_request',
+			function( $pre, $args, $url ) {
+				$authentication          = new Authentication( $this->context );
+				$user_input_settings_url = $authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
+				if ( $url !== $user_input_settings_url ) {
+					return $pre;
+				}
+
+				return array(
+					'headers'  => array(),
+					'response' => array( 'code' => 200 ),
+					'body'     => json_encode(
+						array(
+							'setting1' => array( 'values' => array( '1', '2', '3' ) ),
+							'setting2' => array( 'values' => array() ),
+						)
+					),
+				);
+			},
+			10,
+			3
+		);
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$settings = $this->get_connected_to_proxy_mock();
+		$settings->set_settings( array() );
+
+		$user_options = new User_Options( $this->context, $user_id );
+		$state        = new User_Input_State( $user_options );
+		$this->assertEquals( User_Input_State::VALUE_MISSING, $state->get() );
 	}
 
 }

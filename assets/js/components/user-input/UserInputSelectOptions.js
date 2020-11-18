@@ -98,34 +98,36 @@ export default function UserInputSelectOptions( { slug, options, max } ) {
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
-			{ items }
+			<div className="googlesitekit-user-input__select-options">
+				{ items }
 
-			<div className="googlesitekit-user-input__select-option">
-				<ListComponent
-					id={ `${ slug }-other` }
-					name={ max === 1 ? slug : `${ slug }-other` }
-					value={ other }
-					checked={ values.includes( other ) }
-					disabled={ max > 1 && values.length >= max && ! values.includes( other ) }
-					{ ...onClickProps }
-				>
-					{ __( 'Other:', 'google-site-kit' ) }
-				</ListComponent>
-
-				<TextField>
-					<Input
-						id={ `${ slug }-select-options` }
+				<div className="googlesitekit-user-input__select-option">
+					<ListComponent
+						id={ `${ slug }-other` }
+						name={ max === 1 ? slug : `${ slug }-other` }
 						value={ other }
-						onChange={ onOtherChange }
-					/>
-				</TextField>
+						checked={ values.includes( other ) }
+						disabled={ max > 1 && values.length >= max && ! values.includes( other ) }
+						{ ...onClickProps }
+					>
+						{ __( 'Other:', 'google-site-kit' ) }
+					</ListComponent>
+
+					<TextField>
+						<Input
+							id={ `${ slug }-select-options` }
+							value={ other }
+							onChange={ onOtherChange }
+						/>
+					</TextField>
+				</div>
 			</div>
 
-			<small>
+			<p className="googlesitekit-user-input__note">
 				{ max === 1 && __( 'Choose only one (1) answer', 'google-site-kit' ) }
 				{ max === 2 && __( 'Choose only two (2) answers', 'google-site-kit' ) }
 				{ max === 3 && __( 'Choose only three (3) answers', 'google-site-kit' ) }
-			</small>
+			</p>
 		</Cell>
 	);
 }
