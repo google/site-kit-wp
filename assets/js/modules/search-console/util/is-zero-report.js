@@ -29,7 +29,7 @@ export function isZeroReport( report ) {
 		return undefined;
 	}
 
-	if ( ! report?.length || ( typeof report !== 'object' && report !== null ) ) {
+	if ( Array.isArray( report ) && report.length ) {
 		return true;
 	}
 
