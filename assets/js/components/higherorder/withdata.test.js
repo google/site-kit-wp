@@ -177,4 +177,30 @@ describe( 'withData', () => {
 		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/data/ );
 		expect( console ).toHaveWarned();
 	} );
+
+	it( 'renders the no data component when isDataZero returns `true` for the returned data', async () => {
+		global._googlesitekitLegacyData.modules[ testModule.slug ] = testModule;
+		const dataset = createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } );
+		const isDataZero = jest.fn( ( data ) => data.hasAnything === 'no' );
+		const WrappedComponent = withData( TestComponent, [ dataset ], loadingNode, {}, isDataZero );
+
+		const { container, queryByTestID } = render( <WrappedComponent /> );
+
+		const responseData = { hasAnything: 'no', foo: 'bar', something: 'else' };
+		const body = {
+			[ getCacheKeyForDataset( dataset ) ]: responseData,
+		};
+		fetchMock.postOnce( /^\/google-site-kit\/v1\/data/, { body } );
+		await act(
+			() => new Promise( ( resolve ) => {
+				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
+				collectModuleData( context );
+			} )
+		);
+
+		expect( isDataZero ).toHaveBeenCalledWith( responseData, 'test-datapoint', dataset );
+		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
+		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Test Module Gathering Data' );
+		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/data/ );
+	} );
 } );
