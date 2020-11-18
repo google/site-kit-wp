@@ -356,7 +356,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 /**
  * Creates a default submitChanges control function.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {string} slug      Module slug.
  * @param {string} storeName Datastore slug.
@@ -382,7 +382,7 @@ export function makeDefaultSubmitChanges( slug, storeName ) {
 /**
  * Creates a default canSubmitChanges function.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {string} storeName Datastore slug.
  * @return {Function} A function to check if settings can be submitted.
