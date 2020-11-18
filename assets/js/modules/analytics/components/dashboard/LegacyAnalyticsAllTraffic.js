@@ -126,11 +126,11 @@ class LegacyAnalyticsAllTraffic extends Component {
 							<div className="mdc-layout-grid">
 								<div className="mdc-layout-grid__inner">
 									<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-4-desktop
-									mdc-layout-grid__cell--span-4-tablet
-									mdc-layout-grid__cell--span-4-phone
-								">
+										mdc-layout-grid__cell
+										mdc-layout-grid__cell--span-4-desktop
+										mdc-layout-grid__cell--span-4-tablet
+										mdc-layout-grid__cell--span-4-phone
+									">
 										<LegacyDashboardAcquisitionPieChart
 											source
 											handleDataError={ this.handleDataError }
@@ -138,11 +138,11 @@ class LegacyAnalyticsAllTraffic extends Component {
 										/>
 									</div>
 									<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-8-desktop
-									mdc-layout-grid__cell--span-4-tablet
-									mdc-layout-grid__cell--span-4-phone
-								">
+										mdc-layout-grid__cell
+										mdc-layout-grid__cell--span-8-desktop
+										mdc-layout-grid__cell--span-4-tablet
+										mdc-layout-grid__cell--span-4-phone
+									">
 										<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
 									</div>
 								</div>
