@@ -17,16 +17,13 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { actions as errorActions } from '../../googlesitekit/data/create-error-store';
 import { createValidationSelector } from '../data/utils';
 const { createRegistryControl } = Data;
+const { clearError, receiveError } = errorActions;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -39,18 +36,14 @@ const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
  * @since n.e.x.t
  *
  * @param {Object}   args                            Arguments for creating the submitChanges store.
- * @param {string}   args.storeName                  Datastore slug.
  * @param {Function} [args.submitChanges]            Optional. Callback function to issue the submit changes request. Will be used inside the submit changes control.
  * @param {Function} [args.validateCanSubmitChanges] Optional. A helper function to validate that settings can be submitted.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
 export function createSubmitChangesStore( {
-	storeName,
 	submitChanges = () => ( {} ),
 	validateCanSubmitChanges = () => {},
 } = {} ) {
-	invariant( storeName, 'storeName is required.' );
-
 	const initialState = {
 		isDoingSubmitChanges: false,
 	};
@@ -64,12 +57,7 @@ export function createSubmitChangesStore( {
 		 * @return {Object} Empty object on success, object with `error` property on failure.
 		 */
 		*submitChanges() {
-			const { dispatch } = yield Data.commonActions.getRegistry();
-			const { clearError, receiveError } = dispatch( storeName );
-
-			if ( clearError ) {
-				clearError( 'submitChanges', [] );
-			}
+			yield clearError( 'submitChanges', [] );
 
 			yield {
 				type: START_SUBMIT_CHANGES,
@@ -81,8 +69,8 @@ export function createSubmitChangesStore( {
 				payload: {},
 			};
 
-			if ( result?.error && receiveError ) {
-				yield dispatch( storeName ).receiveError( result.error, 'submitChanges', [] );
+			if ( result?.error ) {
+				yield receiveError( result.error, 'submitChanges', [] );
 			}
 
 			yield {

@@ -18,43 +18,50 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-user-input {
+	.googlesitekit-user-input__header {
+		padding-bottom: 50px;
+		padding-top: 50px;
 
-		&__heading {
-			font-size: 36px;
-			line-height: 44px;
-
-			@media (min-width: $bp-tablet) {
-				font-size: 28px;
-				line-height: 36px;
-			}
+		.mdc-layout-grid__inner {
+			align-items: center;
 		}
+	}
 
-		&__subtitle {
-			color: $c-secondary;
-			font-size: 22px;
-			line-height: 28px;
+	.googlesitekit-user-input__heading {
 
-			@media (min-width: $bp-tablet) {
-				font-size: 16px;
-				line-height: 24px;
-			}
+		@include responsive-text("headline1", "headline3");
+	}
+
+	.googlesitekit-user-input__subtitle {
+		color: $c-secondary;
+
+		@include responsive-text("body1", "body2");
+	}
+
+	.googlesitekit-user-input__content {
+		padding: 0;
+
+		.mdc-linear-progress__buffer {
+			background-color: $c-progress-bg;
 		}
+	}
 
-		&__content {
-			padding: 0;
+	.googlesitekit-user-input__congrats {
+		background-color: $c-white;
+		margin: -10px;
+		padding: 35px;
+
+		@include shadow;
+
+		h1 {
+			margin-bottom: 0;
 		}
+	}
 
-		&__congrats {
-			background-color: $c-white;
-			margin: -10px;
-			padding: 35px;
+	.googlesitekit-user-input__note {
+		color: $c-user-input-note;
+		margin: 0 0 0 43px;
 
-			@include shadow;
-
-			& h1 {
-				margin-bottom: 0;
-			}
-		}
+		@include responsive-text("body2", "caption");
 	}
 }

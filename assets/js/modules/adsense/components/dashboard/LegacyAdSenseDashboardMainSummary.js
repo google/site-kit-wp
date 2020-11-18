@@ -36,9 +36,9 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
-	extractForSparkline,
 	getSiteKitAdminURL,
 } from '../../../../util';
+import extractForSparkline from '../../../../util/extract-for-sparkline';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 

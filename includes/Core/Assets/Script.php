@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class representing a single script.
@@ -95,6 +96,10 @@ class Script extends Asset {
 		if ( ! empty( $this->args['execution'] ) ) {
 			wp_script_add_data( $this->handle, 'script_execution', $this->args['execution'] );
 		}
+
+		if ( ! empty( $src ) ) {
+			$this->set_locale_data();
+		}
 	}
 
 	/**
@@ -105,4 +110,30 @@ class Script extends Asset {
 	public function enqueue() {
 		wp_enqueue_script( $this->handle );
 	}
+
+	/**
+	 * Sets locale data for the script, if it has translations.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function set_locale_data() {
+		$json_translations = BC_Functions::load_script_textdomain( $this->handle, 'google-site-kit' );
+		if ( ! $json_translations ) {
+			return;
+		}
+
+		$output = <<<JS
+( function( domain, translations ) {
+	try {
+		var localeData = translations.locale_data[ domain ] || translations.locale_data.messages;
+		localeData[""].domain = domain;
+		googlesitekit.i18n.setLocaleData( localeData, domain );
+	} catch {
+	}
+} )( "google-site-kit", {$json_translations} );
+JS;
+
+		wp_add_inline_script( $this->handle, $output, 'before' );
+	}
+
 }
