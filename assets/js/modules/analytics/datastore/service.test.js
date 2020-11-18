@@ -22,10 +22,10 @@
  */
 import {
 	createTestRegistry,
+	provideUserInfo,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'module/analytics service store', () => {
 	const userData = {
@@ -40,7 +40,7 @@ describe( 'module/analytics service store', () => {
 
 	beforeAll( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
+		provideUserInfo( registry, userData );
 	} );
 
 	afterAll( () => {
