@@ -97,10 +97,11 @@ describe( 'withData', () => {
 
 	it( 'renders the data dependent component when there is data', async () => {
 		const [ type, identifier, datapoint, data ] = [ 'test', 'test-identifier', 'test-datapoint', { dateRange } ];
-		const dataset = { type, identifier, datapoint, data, context };
+		const toState = () => {};
+		const dataset = { type, identifier, datapoint, data, context, toState };
 		const WrappedComponent = withData( TestComponent, [ dataset ] );
 
-		const { container, queryByTestID } = render( <WrappedComponent /> );
+		const { container, queryByTestID } = render( <WrappedComponent arbitraryProp="oh yeah" /> );
 
 		const responseData = { foo: 'bar' };
 		fetchMock.postOnce(
@@ -116,8 +117,13 @@ describe( 'withData', () => {
 
 		expect( container.firstChild ).toBe( queryByTestID( 'test-component' ) );
 		expect( queryByTestID( 'loading-component' ) ).not.toBeInTheDocument();
-		expect( TestComponent.mock.calls[ 0 ][ 0 ].data ).toEqual( responseData );
-		expect( TestComponent.mock.calls[ 0 ][ 0 ].datapoint ).toEqual( datapoint );
+		// Check props that were passed to the data dependent component.
+		expect( TestComponent.mock.calls[ 0 ][ 0 ] ).toMatchObject( {
+			data: responseData,
+			datapoint,
+			requestDataToState: toState,
+			arbitraryProp: 'oh yeah', // All other props are passed through.
+		} );
 	} );
 
 	it( 'renders the setup incomplete component when requesting data for a module with incomplete setup', () => {
