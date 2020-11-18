@@ -31,8 +31,10 @@ import { isValidAccountSelection } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
 const { createRegistrySelector } = Data;
+const { receiveError, clearError } = errorStoreActions;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getAccountsPropertiesProfiles',
@@ -151,7 +153,6 @@ const baseActions = {
 	 */
 	*createAccount() {
 		const registry = yield Data.commonActions.getRegistry();
-		registry.dispatch( STORE_NAME ).clearError( 'createAccount', [] );
 
 		const { getValue } = registry.select( CORE_FORMS );
 		const data = {
@@ -161,10 +162,11 @@ const baseActions = {
 			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
 		};
 
+		yield clearError( 'createAccount', [] );
 		const { response, error } = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
 		if ( error ) {
 			// Store error manually since createAccount signature differs from fetchCreateAccount.
-			yield registry.dispatch( STORE_NAME ).receiveError( error, 'createAccount', [] );
+			yield receiveError( error, 'createAccount', [] );
 		}
 
 		return { response, error };
@@ -211,7 +213,7 @@ const baseReducer = ( state, { type, payload } ) => {
 const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
-		registry.dispatch( STORE_NAME ).clearError( 'getAccounts', [] );
+		yield clearError( 'getAccounts', [] );
 
 		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
 		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
@@ -254,7 +256,7 @@ const baseResolvers = {
 
 			if ( error ) {
 				// Store error manually since getAccounts signature differs from fetchGetAccountsPropertiesProfiles.
-				dispatch( STORE_NAME ).receiveError( error, 'getAccounts', [] );
+				yield receiveError( error, 'getAccounts', [] );
 			}
 
 			dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();

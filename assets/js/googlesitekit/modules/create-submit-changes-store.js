@@ -20,10 +20,14 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { actions as errorActions } from '../../googlesitekit/data/create-error-store';
 import { createValidationSelector } from '../data/utils';
+import { actions as errorStoreActions } from '../data/create-error-store';
 const { createRegistryControl } = Data;
-const { clearError, receiveError } = errorActions;
+
+// Get access to error store action creators.
+// If the parent store doesn't include the error store,
+// yielded error actions will be a no-op.
+const { clearError, receiveError } = errorStoreActions;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
