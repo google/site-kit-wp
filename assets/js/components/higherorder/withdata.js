@@ -150,6 +150,7 @@ const withData = (
 				data: false,
 				zeroData: false,
 				errorMessage: false,
+				moduleRequiringSetup: '',
 			};
 
 			addAction(
@@ -231,11 +232,10 @@ const withData = (
 						`googlesitekit.module${ context }DataRequest`,
 						`googlesitekit.data${ context }`,
 						( moduleData ) => {
-							const modulesData = getModulesData();
-
-							if ( TYPE_MODULES === type && ! modulesData[ identifier ]?.setupComplete ) {
-								// We need to set the module (slug) here as it is normally set in handleReturnedData.
-								this.setState( { module: identifier } );
+							// If any module in the selectData requires setup, set it in the state.
+							// This will cause the setup incomplete component to be rendered in all cases.
+							if ( TYPE_MODULES === type && ! getModulesData()[ identifier ]?.setupComplete ) {
+								this.setState( { moduleRequiringSetup: identifier } );
 								return moduleData;
 							}
 
@@ -259,13 +259,11 @@ const withData = (
 				errorMessage,
 				errorObj,
 				requestDataToState,
+				moduleRequiringSetup,
 			} = this.state;
 
-			const modulesData = getModulesData();
-			const { active, setupComplete } = modulesData?.[ module ] || {};
-
-			if ( active && ! setupComplete ) {
-				return getSetupIncompleteComponent( module, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+			if ( moduleRequiringSetup ) {
+				return getSetupIncompleteComponent( moduleRequiringSetup, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
 			}
 
 			// Render the loading component until we have data.
@@ -280,7 +278,7 @@ const withData = (
 
 			// If we have zeroData, display the NoDataComponent.
 			if ( zeroData ) {
-				const moduleName = module ? modulesData[ module ].name : __( 'Site Kit', 'google-site-kit' );
+				const moduleName = getModulesData()[ module ]?.name || __( 'Site Kit', 'google-site-kit' );
 
 				return getNoDataComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
 			}
