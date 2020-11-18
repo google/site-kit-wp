@@ -449,7 +449,7 @@ final class Authentication {
 	/**
 	 * Gets the User Input State instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return User_Input_State An instance of the User_Input_State class.
 	 */

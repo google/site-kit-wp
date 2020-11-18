@@ -19,7 +19,7 @@
 /**
  * Checks whether the report data is empty or not.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Object} report Report data.
  * @return {boolean|undefined} TRUE if the report has no data, otherwise FALSE. `undefined` if the `report` passed is undefined.
