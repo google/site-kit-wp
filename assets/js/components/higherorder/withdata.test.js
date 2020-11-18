@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { addAction, removeAllActions, removeAllFilters } from '@wordpress/hooks';
+import { addAction, hasFilter, removeAllActions, removeAllFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -64,6 +64,25 @@ describe( 'withData', () => {
 	afterEach( () => {
 		delete global._googlesitekitLegacyData.modules[ testModule.slug ];
 		delete global._googlesitekitLegacyData.modules[ testModuleAlt.slug ];
+	} );
+
+	it( 'supports datasets with single or multiple contexts', () => {
+		const datasetCommon = [ 'test', 'test-identifier', 'test-datapoint', {} ];
+		const singleContextDataset = createDataset( ...datasetCommon, 'context_a' );
+		const multipleContextDataset = createDataset( ...datasetCommon, [ 'context_y', 'context_z' ] );
+		const hasFilterForContext = ( _context ) => hasFilter( `googlesitekit.module${ _context }DataRequest` );
+
+		const WrappedComponent = withData( TestComponent, [ singleContextDataset, multipleContextDataset ] );
+
+		expect( hasFilterForContext( 'context_a' ) ).toBe( false );
+		expect( hasFilterForContext( 'context_y' ) ).toBe( false );
+		expect( hasFilterForContext( 'context_z' ) ).toBe( false );
+
+		render( <WrappedComponent /> );
+
+		expect( hasFilterForContext( 'context_a' ) ).toBe( true );
+		expect( hasFilterForContext( 'context_y' ) ).toBe( true );
+		expect( hasFilterForContext( 'context_z' ) ).toBe( true );
 	} );
 
 	it( 'renders the loading when there is no data yet', () => {
