@@ -36,8 +36,13 @@ import {
 	camelCaseToConstantCase,
 } from './transform-case';
 import { createFetchStore } from './create-fetch-store';
+import { actions as errorStoreActions } from '../data/create-error-store';
 
 const { createRegistrySelector } = Data;
+// Get access to error store action creators.
+// If the parent store doesn't include the error store,
+// yielded error actions will be a no-op.
+const { clearError, receiveError } = errorStoreActions;
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
@@ -177,16 +182,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		*saveSettings() {
 			const registry = yield Data.commonActions.getRegistry();
 
-			const { clearError, receiveError } = registry.dispatch( STORE_NAME );
-			if ( clearError ) {
-				clearError( 'saveSettings', [] );
-			}
+			yield clearError( 'saveSettings', [] );
 
 			const values = registry.select( STORE_NAME ).getSettings();
 			const { response, error } = yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
-			if ( error && receiveError ) {
+			if ( error ) {
 				// Store error manually since saveSettings signature differs from fetchSaveSettings.
-				receiveError( error, 'saveSettings', [] );
+				yield receiveError( error, 'saveSettings', [] );
 			}
 
 			return { response, error };
