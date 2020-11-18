@@ -17,7 +17,7 @@ jobs:
   build-zips:
     name: Build Zips
     runs-on: ubuntu-latest
-    if: false == ( ( github.event_name == 'pull_request' && github.event.action == 'closed' ) || github.event.pull_request.head.repo.fork )
+    if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true ) ) || github.event.pull_request.head.repo.fork )
     steps:
       - uses: actions/checkout@v2
       - name: Load Composer cache
