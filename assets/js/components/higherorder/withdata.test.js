@@ -36,7 +36,8 @@ describe( 'withData', () => {
 	const context = 'TestContext';
 	// A dummy dateRange is used to allow for getting a stable cache key for the dataset.
 	const dateRange = 'last-99-days';
-	const loadingNode = <div data-testid="loading-component">loading</div>;
+	// The `loadingComponent` argument to withData is actually an element/node, not a component type.
+	const loadingComponent = <div data-testid="loading-component">loading</div>;
 	const testModule = {
 		slug: 'test',
 		name: 'Test Module',
@@ -86,7 +87,7 @@ describe( 'withData', () => {
 	} );
 
 	it( 'renders the loading when there is no data yet', () => {
-		const WrappedComponent = withData( TestComponent, [], loadingNode );
+		const WrappedComponent = withData( TestComponent, [], loadingComponent );
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
@@ -142,7 +143,7 @@ describe( 'withData', () => {
 			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } ),
 			createDataset( TYPE_MODULES, testModuleAlt.slug, 'test-datapoint', { dateRange } ),
 		];
-		const WrappedComponent = withData( TestComponent, requests, loadingNode );
+		const WrappedComponent = withData( TestComponent, requests, loadingComponent );
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
@@ -171,7 +172,7 @@ describe( 'withData', () => {
 			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint-a', { dateRange } ),
 			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint-b', { dateRange } ),
 		];
-		const WrappedComponent = withData( TestComponent, requests, loadingNode );
+		const WrappedComponent = withData( TestComponent, requests, loadingComponent );
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
@@ -199,7 +200,7 @@ describe( 'withData', () => {
 		global._googlesitekitLegacyData.modules[ testModule.slug ] = testModule;
 		const dataset = createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } );
 		const isDataZero = jest.fn( ( data ) => data.hasAnything === 'no' );
-		const WrappedComponent = withData( TestComponent, [ dataset ], loadingNode, {}, isDataZero );
+		const WrappedComponent = withData( TestComponent, [ dataset ], loadingComponent, {}, isDataZero );
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
