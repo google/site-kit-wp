@@ -91,7 +91,7 @@ function DateRangeSelector() {
 				className="googlesitekit-header__date-range-selector-menu mdc-button--dropdown"
 				text
 				onClick={ handleMenu }
-				icon={ ( <DateRangeIcon width="18" height="20" /> ) }
+				icon={ <DateRangeIcon width="18" height="20" /> }
 				aria-haspopup="menu"
 				aria-expanded={ menuOpen }
 				aria-controls="date-range-selector-menu"
