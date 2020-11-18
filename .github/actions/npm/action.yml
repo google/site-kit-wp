@@ -3,6 +3,7 @@ description: Sets up Node.js, loads cache for NPM, installs dependencies, and ru
 inputs:
   command:
     description: A custom command to run.
+    required: true
 runs:
   using: composite
   steps:
@@ -11,5 +12,4 @@ runs:
     - run: npm ci
       shell: bash
     - run: npm run ${{ inputs.command }}
-      if: inputs.command != ''
       shell: bash
