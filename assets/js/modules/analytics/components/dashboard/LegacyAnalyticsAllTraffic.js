@@ -101,13 +101,7 @@ class LegacyAnalyticsAllTraffic extends Component {
 	}
 
 	render() {
-		const {
-			error,
-			receivingData,
-		} = this.state;
-
-		const dataError = ( error || ! receivingData );
-		const wrapperClass = dataError ? 'googlesitekit-nodata' : '';
+		const errorComponent = this.getErrorDataComponent();
 
 		return (
 			<Fragment>
@@ -115,42 +109,47 @@ class LegacyAnalyticsAllTraffic extends Component {
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
 				">
-					<DashboardModuleHeader description={ __( 'How people found your site.', 'google-site-kit' ) } title={ __( 'All Traffic', 'google-site-kit' ) } />
-
+					<DashboardModuleHeader
+						title={ __( 'All Traffic', 'google-site-kit' ) }
+						description={ __( 'How people found your site.', 'google-site-kit' ) }
+					/>
 				</div>
-				{ this.getErrorDataComponent() }
-				<div className={ classnames(
-					'mdc-layout-grid__cell',
-					'mdc-layout-grid__cell--span-12',
-					wrapperClass
-				) }>
-					<Layout className="googlesitekit-dashboard-all-traffic">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								<div className="
+
+				{ errorComponent || (
+					<div
+						className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-12',
+						) }
+					>
+						<Layout className="googlesitekit-dashboard-all-traffic">
+							<div className="mdc-layout-grid">
+								<div className="mdc-layout-grid__inner">
+									<div className="
 									mdc-layout-grid__cell
 									mdc-layout-grid__cell--span-4-desktop
 									mdc-layout-grid__cell--span-4-tablet
 									mdc-layout-grid__cell--span-4-phone
 								">
-									<LegacyDashboardAcquisitionPieChart
-										source
-										handleDataError={ this.handleDataError }
-										handleDataSuccess={ this.handleDataSuccess }
-									/>
-								</div>
-								<div className="
+										<LegacyDashboardAcquisitionPieChart
+											source
+											handleDataError={ this.handleDataError }
+											handleDataSuccess={ this.handleDataSuccess }
+										/>
+									</div>
+									<div className="
 									mdc-layout-grid__cell
 									mdc-layout-grid__cell--span-8-desktop
 									mdc-layout-grid__cell--span-4-tablet
 									mdc-layout-grid__cell--span-4-phone
 								">
-									<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
+										<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
+									</div>
 								</div>
 							</div>
-						</div>
-					</Layout>
-				</div>
+						</Layout>
+					</div>
+				) }
 			</Fragment>
 		);
 	}
