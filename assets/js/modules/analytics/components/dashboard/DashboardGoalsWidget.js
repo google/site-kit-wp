@@ -94,7 +94,7 @@ function DashboardGoalsWidget() {
 		);
 	}
 
-	if ( ! loading && isZeroReport( data ) ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 

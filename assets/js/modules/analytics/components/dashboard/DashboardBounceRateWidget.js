@@ -91,7 +91,7 @@ function DashboardBounceRateWidget() {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! loading && isZeroReport( data ) ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 

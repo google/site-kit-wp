@@ -98,7 +98,7 @@ function DashboardAllTrafficWidget() {
 		);
 	}
 
-	if ( ! loading && isZeroReport( report ) ) {
+	if ( isZeroReport( report ) ) {
 		return (
 			<div className="
 				mdc-layout-grid__cell
