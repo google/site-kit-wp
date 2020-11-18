@@ -102,9 +102,7 @@ describe( 'withData', () => {
 
 	it( 'renders the setup incomplete component when requesting data for a module with incomplete setup', () => {
 		global._googlesitekitLegacyData.modules[ testModule.slug ] = { ...testModule, setupComplete: false };
-
-		const [ type, identifier, datapoint, data ] = [ TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } ];
-		const dataset = { type, identifier, datapoint, data, context };
+		const dataset = createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } );
 		const WrappedComponent = withData( TestComponent, [ dataset ] );
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
