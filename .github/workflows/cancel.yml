@@ -10,15 +10,14 @@ on:
       - closed
       - reopened
       - synchronize
-
 jobs:
   cancel:
-    name: 'Cancel Previous Runs'
+    name: Cancel Previous Runs
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
       # See https://github.com/marketplace/actions/cancel-workflow-action#advanced
       - uses: styfle/cancel-workflow-action@0.6.0
         with:
-          workflow_id: storybook.yml,visual-regression.yml,zips.yml
+          workflow_id: storybook.yml,visual-regression.yml,zips.yml,e2e-test-wp-4-9.yml,e2e-test-wp-latest.yml,e2e-test-wp-nightly.yml,e2e-test-wp-oldest.yml
           access_token: ${{ github.token }}
