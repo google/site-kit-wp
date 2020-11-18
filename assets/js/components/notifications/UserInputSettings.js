@@ -54,6 +54,7 @@ export default function UserInputSettings() {
 			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + personSitImage }
+			className="googlesitekit-user-input__notification"
 		/>
 	);
 }

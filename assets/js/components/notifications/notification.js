@@ -149,6 +149,7 @@ class Notification extends Component {
 			pageIndex,
 			anchorLink,
 			anchorLinkLabel,
+			className,
 		} = this.props;
 
 		if ( getCache( `notification::dismissed::${ id }` ) ) {
@@ -266,6 +267,7 @@ class Notification extends Component {
 			<section
 				ref={ this.cardRef }
 				className={ classnames(
+					className,
 					'googlesitekit-publisher-win',
 					{
 						[ `googlesitekit-publisher-win--${ format }` ]: format,
@@ -403,12 +405,14 @@ Notification.propTypes = {
 	onDismiss: PropTypes.func,
 	anchorLink: PropTypes.string,
 	anchorLinkLabel: PropTypes.string,
+	className: PropTypes.string,
 };
 
 Notification.defaultProps = {
 	isDismissable: true,
 	dismissExpires: 0,
 	showOnce: false,
+	className: '',
 };
 
 export default Notification;
