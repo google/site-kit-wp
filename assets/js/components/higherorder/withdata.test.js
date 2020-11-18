@@ -147,7 +147,7 @@ describe( 'withData', () => {
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
-		// testModuleAlt's request will not be filtered out because its setup is complete so a response is needed.
+		// testModuleAlt's request will not be filtered out because its setup is complete so a request is expected.
 		const body = {
 			[ getCacheKeyForDataset( requests[ 1 ] ) ]: { foo: 'bar' },
 		};
