@@ -34,6 +34,8 @@ const collectModuleData = dataAPI.collectModuleData.bind( dataAPI );
 describe( 'withData', () => {
 	let TestComponent;
 	const context = 'TestContext';
+	// A dummy dateRange is used to allow for getting a stable cache key for the dataset.
+	const dateRange = 'last-99-days';
 	const loadingNode = <div data-testid="loading-component">loading</div>;
 	const testModule = {
 		slug: 'test',
@@ -41,6 +43,15 @@ describe( 'withData', () => {
 		active: true,
 		setupComplete: true,
 	};
+	const testModuleAlt = {
+		slug: 'test-alt',
+		name: 'Alternate Test Module',
+		active: true,
+		setupComplete: true,
+	};
+
+	const createDataset = ( type, identifier, datapoint, data, _context = context ) => ( { type, identifier, datapoint, data, context: _context } );
+	const getCacheKeyForDataset = ( { type, identifier, datapoint, data } ) => getCacheKey( type, identifier, datapoint, data );
 
 	beforeEach( () => {
 		TestComponent = jest.fn(
@@ -52,6 +63,7 @@ describe( 'withData', () => {
 
 	afterEach( () => {
 		delete global._googlesitekitLegacyData.modules[ testModule.slug ];
+		delete global._googlesitekitLegacyData.modules[ testModuleAlt.slug ];
 	} );
 
 	it( 'renders the loading when there is no data yet', () => {
@@ -64,13 +76,13 @@ describe( 'withData', () => {
 	} );
 
 	it( 'renders the data dependent component when there is data', async () => {
-		const [ type, identifier, datapoint, data ] = [ 'test', 'test-identifier', 'test-datapoint', { dateRange: 'test' } ];
+		const [ type, identifier, datapoint, data ] = [ 'test', 'test-identifier', 'test-datapoint', { dateRange } ];
 		const dataset = { type, identifier, datapoint, data, context };
 		const WrappedComponent = withData( TestComponent, [ dataset ] );
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
-		const key = getCacheKey( type, identifier, datapoint, data );
+		const key = getCacheKeyForDataset( dataset );
 		const responseData = { foo: 'bar' };
 
 		fetchMock.postOnce(
@@ -93,7 +105,7 @@ describe( 'withData', () => {
 	it( 'renders the setup incomplete component when requesting data for a module with incomplete setup', () => {
 		global._googlesitekitLegacyData.modules[ testModule.slug ] = { ...testModule, setupComplete: false };
 
-		const [ type, identifier, datapoint, data ] = [ TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange: 'test' } ];
+		const [ type, identifier, datapoint, data ] = [ TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } ];
 		const dataset = { type, identifier, datapoint, data, context };
 		const WrappedComponent = withData( TestComponent, [ dataset ] );
 
@@ -105,5 +117,39 @@ describe( 'withData', () => {
 		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Test Module activation' );
 		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( 'Test Module module needs to be configured' );
 		expect( fetchMock ).not.toHaveFetched();
+	} );
+
+	it( 'renders the setup incomplete component when requesting data from any module with incomplete setup', async () => {
+		global._googlesitekitLegacyData.modules[ testModule.slug ] = { ...testModule, setupComplete: false };
+		global._googlesitekitLegacyData.modules[ testModuleAlt.slug ] = testModuleAlt;
+
+		const requests = [
+			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } ),
+			createDataset( TYPE_MODULES, testModuleAlt.slug, 'test-datapoint', { dateRange } ),
+		];
+		const WrappedComponent = withData( TestComponent, requests, loadingNode );
+
+		const { container, queryByTestID } = render( <WrappedComponent /> );
+
+		// testModuleAlt's request will not be filtered out because its setup is complete.
+		const testModuleAltCacheKey = getCacheKeyForDataset( requests[ 1 ] );
+		const testModuleAltResponse = {
+			[ testModuleAltCacheKey ]: { foo: 'bar' },
+		};
+		fetchMock.postOnce(
+			/^\/google-site-kit\/v1\/data/,
+			{ body: { [ testModuleAltCacheKey ]: testModuleAltResponse } }
+		);
+		await act(
+			() => new Promise( ( resolve ) => {
+				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
+				collectModuleData( context );
+			} )
+		);
+
+		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
+		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Test Module activation' );
+		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( 'Test Module module needs to be configured' );
+		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/data/ );
 	} );
 } );
