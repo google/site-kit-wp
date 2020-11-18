@@ -25,7 +25,7 @@ import { render, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { clearWebStorage, loadTranslations } from './util';
+import { clearWebStorage } from './util';
 import './components/notifications';
 import Root from './components/root';
 import DashboardSplashApp from './components/dashboard-splash/dashboard-splash-app';
@@ -49,8 +49,6 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-splash' );
 
 	if ( renderTarget ) {
-		loadTranslations();
-
 		render( <Root dataAPIContext="Splash"><GoogleSitekitDashboardSplash /></Root>, renderTarget );
 	}
 } );

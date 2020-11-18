@@ -33,11 +33,12 @@ import {
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
 import MiniChart from '../../../../components/MiniChart';
 import { trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 
 function LegacyAnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {

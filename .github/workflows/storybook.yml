@@ -59,15 +59,17 @@ jobs:
           name: storybook-files
           path: dist
       - name: Set branch environment variables
+        id: branch-target
         if: github.event_name != 'pull_request'
         run: |
-          echo "::set-env name=TARGET_DIR::${GITHUB_REF##*/}"
+          echo "::set-output name=dir::${GITHUB_REF##*/}"
       - name: Set PR environment variables
+        id: pr-target
         if: github.event_name == 'pull_request'
         env:
           PULL_REQUEST_NUMBER: ${{ github.event.number }}
         run: |
-          echo "::set-env name=TARGET_DIR::pull/${PULL_REQUEST_NUMBER}"
+          echo "::set-output name=dir::pull/${PULL_REQUEST_NUMBER}"
       - name: Commit updates
         run: |
           mkdir -p storybook/${TARGET_DIR}
@@ -80,6 +82,7 @@ jobs:
           git commit -m "Deploy storybook for ${TARGET_DIR}."
           git push origin gh-pages
         env:
+          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
           GIT_AUTHOR_NAME: ${{ github.actor }}
           GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
