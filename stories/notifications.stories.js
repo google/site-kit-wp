@@ -13,8 +13,7 @@ import { __ } from '@wordpress/i18n';
 import Notification from '../assets/js/components/notifications/notification';
 import UserInputSettings from '../assets/js/components/notifications/UserInputSettings';
 import ModulesList from '../assets/js/components/modules-list';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
@@ -210,13 +209,8 @@ storiesOf( 'Global/Notifications', module )
 		/>
 	) )
 	.add( 'User Input Settings', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				usingProxy: true,
-				referenceSiteURL: 'http://example.com',
-				adminURL: 'http://example.com/wp-admin',
-				siteName: 'My Site Name',
-			} );
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry );
 		};
 
 		return (
