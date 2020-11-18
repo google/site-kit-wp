@@ -84,6 +84,10 @@
 			}
 		}
 
+		@media (max-width: $bp-xsmallOnly) {
+			margin-right: 0;
+		}
+
 		@media (min-width: $bp-wpAdminBarTablet) {
 			margin-right: 24px;
 		}
