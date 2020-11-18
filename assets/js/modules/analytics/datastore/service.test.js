@@ -25,6 +25,7 @@ import {
 	provideUserInfo,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import * as fixtures from './__fixtures__';
 import { STORE_NAME } from './constants';
 
 describe( 'module/analytics service store', () => {
@@ -41,6 +42,7 @@ describe( 'module/analytics service store', () => {
 	beforeAll( () => {
 		registry = createTestRegistry();
 		provideUserInfo( registry, userData );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( fixtures.settings.default );
 	} );
 
 	afterAll( () => {
@@ -73,6 +75,64 @@ describe( 'module/analytics service store', () => {
 				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
 				expect( serviceURL.endsWith( `#${ path }` ) ).toBe( true );
 				expect( serviceURL ).toMatchQueryParameters( query );
+			} );
+		} );
+
+		describe( 'getServiceReportURL', () => {
+			const type = 'test-type';
+
+			it( 'requires a report type', () => {
+				expect( () => registry.select( STORE_NAME ).getServiceReportURL() )
+					.toThrow( 'type is required' );
+			} );
+
+			it( 'returns `undefined` when no accountID is set', () => {
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBeFalsy();
+
+				expect( registry.select( STORE_NAME ).getServiceReportURL( type ) ).toBeUndefined();
+			} );
+
+			it( 'returns `undefined` when no internalWebPropertyID is set', () => {
+				registry.dispatch( STORE_NAME ).setAccountID( '12345' );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBeFalsy();
+
+				expect( registry.select( STORE_NAME ).getServiceReportURL( type ) ).toBeUndefined();
+			} );
+
+			it( 'returns `undefined` when no profileID is set', () => {
+				registry.dispatch( STORE_NAME ).setAccountID( '12345' );
+				registry.dispatch( STORE_NAME ).setInternalWebPropertyID( '34567' );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBeFalsy();
+
+				expect( registry.select( STORE_NAME ).getServiceReportURL( type ) ).toBeUndefined();
+			} );
+
+			describe( 'with necessary account data', () => {
+				const [ accountID, internalWebPropertyID, profileID ] = [ '12345', '34567', '56789' ];
+
+				beforeEach( () => {
+					registry.dispatch( STORE_NAME ).setAccountID( accountID );
+					registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalWebPropertyID );
+					registry.dispatch( STORE_NAME ).setProfileID( profileID );
+				} );
+
+				it( 'returns a service URL for the given report type for the current account, property, and profile', () => {
+					const reportServiceURL = registry.select( STORE_NAME ).getServiceReportURL( type );
+					const url = new URL( reportServiceURL );
+					expect( reportServiceURL.startsWith( baseURI ) ).toBe( true );
+					expect( url.hash ).toBe( `#/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` );
+				} );
+
+				it( 'returns a service URL for the given report type including any extra report-specific arguments', () => {
+					const reportArgs = { foo: 'bar' };
+					const reportServiceURL = registry.select( STORE_NAME ).getServiceReportURL( type, reportArgs );
+					const url = new URL( reportServiceURL );
+					expect( reportServiceURL.startsWith( baseURI ) ).toBe( true );
+					// For more details about how `reportArgs` are handled, see assets/js/modules/analytics/util/report-args.test.js.
+					expect( url.hash ).toBe(
+						`#/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/foo=bar/`
+					);
+				} );
 			} );
 		} );
 	} );
