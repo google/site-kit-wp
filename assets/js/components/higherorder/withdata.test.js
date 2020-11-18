@@ -86,7 +86,7 @@ describe( 'withData', () => {
 		expect( hasFilterForContext( 'context_z' ) ).toBe( true );
 	} );
 
-	it( 'renders the loading when there is no data yet', () => {
+	it( 'renders the loading component when there is no data yet', () => {
 		const WrappedComponent = withData( TestComponent, [], loadingComponent );
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
