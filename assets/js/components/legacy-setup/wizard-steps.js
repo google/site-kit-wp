@@ -55,9 +55,9 @@ const STEPS = {
 /**
  * Internal dependencies
  */
-import WizardStepAuthentication from '../../components/setup-wizard/wizard-step-authentication';
-import WizardStepVerification from '../../components/setup-wizard/wizard-step-verification';
-import WizardStepSearchConsoleProperty from '../../components/setup-wizard/wizard-step-search-console-property';
-import WizardStepCompleteSetup from '../../components/setup-wizard/wizard-step-complete-setup';
+import WizardStepAuthentication from '../../components/legacy-setup/wizard-step-authentication';
+import WizardStepVerification from '../../components/legacy-setup/wizard-step-verification';
+import WizardStepSearchConsoleProperty from '../../components/legacy-setup/wizard-step-search-console-property';
+import WizardStepCompleteSetup from '../../components/legacy-setup/wizard-step-complete-setup';
 
 export default STEPS;

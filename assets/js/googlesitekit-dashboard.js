@@ -28,7 +28,7 @@ import { render, Fragment } from '@wordpress/element';
 import { clearWebStorage } from './util';
 import Root from './components/root';
 import './modules';
-import Setup from './components/setup/setup-wrapper';
+import Setup from './components/setup/ModuleSetup';
 import DashboardApp from './components/dashboard/dashboard-app';
 import NotificationCounter from './components/notifications/notification-counter';
 import './components/notifications';

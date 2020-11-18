@@ -29,7 +29,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import SiteVerification from '../../components/setup/site-verification';
+import SiteVerification from '../../components/legacy-setup/site-verification';
 
 class WizardStepVerification extends Component {
 	render() {

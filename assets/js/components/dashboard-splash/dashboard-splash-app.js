@@ -31,7 +31,7 @@ import { trackEvent } from '../../util';
 import '../publisher-wins';
 import SetupUsingProxy from '../setup/setup-proxy';
 import SetupUsingGCP from '../setup';
-import SetupWrapper from '../setup/setup-wrapper';
+import ModuleSetup from '../setup/ModuleSetup';
 
 const AUTHENTICATION = 1;
 const SETUP = 2;
@@ -143,7 +143,7 @@ class DashboardSplashApp extends Component {
 		} else if ( this.state.showAuthenticationSetupWizard ) {
 			return <SetupUsingGCP />;
 		}
-		return <SetupWrapper moduleSlug={ moduleToSetup } />;
+		return <ModuleSetup moduleSlug={ moduleToSetup } />;
 	}
 }
 

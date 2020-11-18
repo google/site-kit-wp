@@ -35,8 +35,8 @@ import Button from '../components/button';
 import Layout from '../components/layout/layout';
 import data, { TYPE_CORE } from '../components/data';
 import { trackEvent, clearWebStorage, getSiteKitAdminURL } from '../util';
-import STEPS from '../components/setup-wizard/wizard-steps';
-import WizardProgressStep from '../components/setup-wizard/wizard-progress-step';
+import STEPS from '../components/legacy-setup/wizard-steps';
+import WizardProgressStep from '../components/legacy-setup/wizard-progress-step';
 
 class Setup extends Component {
 	constructor( props ) {
