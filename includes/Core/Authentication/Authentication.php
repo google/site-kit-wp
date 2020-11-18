@@ -673,6 +673,14 @@ final class Authentication {
 			$data['usingProxy']          = true;
 		}
 
+		$version               = get_bloginfo( 'version' );
+		list( $major, $minor ) = explode( '.', $version );
+		$data['wpVersion']     = array(
+			'version' => $version,
+			'major'   => (int) $major,
+			'minor'   => (int) $minor,
+		);
+
 		return $data;
 	}
 
