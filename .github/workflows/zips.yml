@@ -20,43 +20,25 @@ jobs:
     if: false == ( ( github.event_name == 'pull_request' && github.event.action == 'closed' ) || github.event.pull_request.head.repo.fork )
     steps:
       - uses: actions/checkout@v2
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-      - name: Composer Install
-        run: composer install --no-dev --no-interaction --no-progress
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        id: nvm
-      - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v1
-        with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
-      - name: Cache Node - npm
+      - name: Load Composer cache
         uses: actions/cache@v2
         with:
-          path: ~/.npm
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          path: ~/.cache/composer/files
+      - name: Install Composer dependencies
+        run: composer install --no-dev --no-interaction --no-progress
+      - name: Load NPM cache
+        uses: actions/cache@v2
+        with:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-cache-
-      - name: npm install
+          path: ~/.npm
+      - name: Install NPM dependencies
+        uses: ./.github/actions/npm
+      - name: Create archives
         run: |
-          npm ci
-      - name: Create destination directory
-        run: mkdir -p ${{ github.ref }}
-      - name: Build develop version
-        run: |
+          mkdir -p ${{ github.ref }}
           npm run dev-zip
           mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
-      - name: Build release version
-        run: |
           npm run release-zip
           mv *.zip ${{ github.ref }}/google-site-kit.zip
       - name: Upload artifacts

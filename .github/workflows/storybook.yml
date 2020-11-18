@@ -19,26 +19,15 @@ jobs:
     if: false == ( ( github.event_name == 'pull_request' && github.event.action == 'closed' ) || github.event.pull_request.head.repo.fork )
     steps:
     - uses: actions/checkout@v2
-    - name: Read .nvmrc
-      run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-      id: nvm
-    - name: Setup Node.js (.nvmrc)
-      uses: actions/setup-node@v1
-      with:
-        node-version: "${{ steps.nvm.outputs.NVMRC }}"
-    - name: Cache Node - npm
+    - name: Load NPM cache
       uses: actions/cache@v2
       with:
-        path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-cache-
-    - name: npm install
-      run: |
-        npm ci
-    - name: Build Storybook
-      run: |
-        npm run build:storybook
+        path: ~/.npm
+    - name: Build storybook assets
+      uses: ./.github/actions/npm
+      with:
+        command: build:storybook
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:

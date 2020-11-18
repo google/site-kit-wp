@@ -13,15 +13,19 @@ jobs:
     # if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          path: ~/.npm
-      - uses: actions/cache@v2
+      - name: Load Composer cache
+        uses: actions/cache@v2
         with:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           path: ~/.cache/composer/files
-      - uses: ./.github/actions/composer
-      - uses: ./.github/actions/npm
+      - name: Install Composer dependencies
+        run: composer install --no-dev --no-interaction --no-progress
+      - name: Load NPM cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.npm
+      - name: Build assets
+        uses: ./.github/actions/npm
         with:
           command: build:test
