@@ -1,0 +1,6 @@
+name: E2E environment
+description: Sets up test environment for E2E tests.
+runs:
+  using: node12
+  main: up.js
+  post: down.js
