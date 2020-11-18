@@ -1,4 +1,22 @@
 /**
+ * ESLint rules: since tag tests.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * External dependencies
  */
 import { RuleTester } from 'eslint';
@@ -20,8 +38,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.1
  * @private
@@ -29,7 +46,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
  * @param {?Object}   props          Component props.
  * @return {string} A test string.
  */
-export function WithTestRegistry( props ) {
+export function exampleTestFunction( props ) {
 	return 'test';
 }
       `,
@@ -37,8 +54,7 @@ export function WithTestRegistry( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since n.e.x.t
  * @since 1.8.0 Added a feature.
@@ -56,8 +72,7 @@ export function coolFunction( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since 1.9.1
  * @since 1.8.0 Added a feature.
@@ -75,8 +90,7 @@ export function coolFunction( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since 1.9.1 Added another feature.
  * @since 1.8.0 Added a feature.
@@ -94,8 +108,7 @@ export function coolFunction( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since n.e.x.t Added another feature.
  * @since 1.8.0 Added a feature.
@@ -115,8 +128,7 @@ export function coolFunction( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.1
  * @since 1.7.0
@@ -125,7 +137,7 @@ export function coolFunction( props ) {
  * @param {?Object}   props          Component props.
  * @return {string} A test string.
  */
-export function WithTestRegistry( props ) {
+export function exampleTestFunction( props ) {
 	return 'test';
 }
       `,
@@ -139,8 +151,7 @@ export function WithTestRegistry( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.1 Add a feature.
  * @since 1.7.0
@@ -149,7 +160,7 @@ export function WithTestRegistry( props ) {
  * @param {?Object}   props          Component props.
  * @return {string} A test string.
  */
-export function WithTestRegistry( props ) {
+export function exampleTestFunction( props ) {
 	return 'test';
 }
       `,
@@ -163,8 +174,7 @@ export function WithTestRegistry( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.1 Add a feature.
  * @since 1.7.0
@@ -174,7 +184,7 @@ export function WithTestRegistry( props ) {
  * @param {?Object}   props          Component props.
  * @return {string} A test string.
  */
-export function WithTestRegistry( props ) {
+export function exampleTestFunction( props ) {
 	return 'test';
 }
       `,
@@ -188,8 +198,7 @@ export function WithTestRegistry( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.1 Missing a full-stop
  * @private
@@ -197,7 +206,7 @@ export function WithTestRegistry( props ) {
  * @param {?Object}   props          Component props.
  * @return {string} A test string.
  */
-export function WithTestRegistry( props ) {
+export function exampleTestFunction( props ) {
 	return 'test';
 }
       `,
@@ -211,8 +220,7 @@ export function WithTestRegistry( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.2
  * @since 1.7.1 Missing a full-stop
@@ -221,7 +229,7 @@ export function WithTestRegistry( props ) {
  * @param {?Object}   props          Component props.
  * @return {string} A test string.
  */
-export function WithTestRegistry( props ) {
+export function exampleTestFunction( props ) {
 	return 'test';
 }
       `,
@@ -235,8 +243,7 @@ export function WithTestRegistry( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.2
  * @since 1.7.1 lowercase description.
@@ -245,7 +252,7 @@ export function WithTestRegistry( props ) {
  * @param {?Object}   props          Component props.
  * @return {string} A test string.
  */
-export function WithTestRegistry( props ) {
+export function exampleTestFunction( props ) {
 	return 'test';
 }
       `,
@@ -259,8 +266,7 @@ export function WithTestRegistry( props ) {
 		{
 			code: `
 /**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
+ * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.2 lowercase description.
  * @since 1.7.1 Normal description.
@@ -269,7 +275,7 @@ export function WithTestRegistry( props ) {
  * @param {?Object}   props          Component props.
  * @return {string} A test string.
  */
-export function WithTestRegistry( props ) {
+export function exampleTestFunction( props ) {
 	return 'test';
 }
       `,
