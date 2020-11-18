@@ -166,5 +166,5 @@ wp() {
 # Executes the given command in the wordpress container.
 ##
 container() {
-	dc exec $CONTAINER "$@"
+	dc exec -T $CONTAINER "$@"
 }
