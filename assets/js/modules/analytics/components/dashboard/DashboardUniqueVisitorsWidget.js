@@ -108,7 +108,7 @@ function DashboardUniqueVisitorsWidget() {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ( isZeroReport( sparkData ) || isZeroReport( sparkData ) === undefined ) || ( isZeroReport( visitorsData ) || isZeroReport( visitorsData ) ) ) {
+	if ( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
