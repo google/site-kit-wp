@@ -22,18 +22,6 @@
 import { get } from 'lodash';
 
 /**
- * WordPress dependencies
- */
-import { setLocaleData } from '@wordpress/i18n';
-
-/**
- * Loads the translations for the google-site-kit text domain.
- */
-export function loadTranslations() {
-	setLocaleData( global._googlesitekitLegacyData.locale, 'google-site-kit' );
-}
-
-/**
  * Formats a number using the JS Internationalization Number Format API.
  *
  * @since 1.8.0
@@ -60,7 +48,7 @@ export const numberFormat = ( number, options = {} ) => {
  *                  E.g. `en-US` or `de-DE`
  */
 export const getLocale = ( _global = global ) => {
-	const siteKitLocale = get( _global, [ '_googlesitekitLegacyData', 'locale', '', 'lang' ] );
+	const siteKitLocale = get( _global, [ '_googlesitekitLegacyData', 'locale' ] );
 	if ( siteKitLocale ) {
 		const matches = siteKitLocale.match( /^(\w{2})?(_)?(\w{2})/ );
 		if ( matches && matches[ 0 ] ) {

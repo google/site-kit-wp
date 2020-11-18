@@ -29,10 +29,11 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import { getDataTableFromData } from '../../../../components/data-table';
 import MiniChart from '../../../../components/MiniChart';
 import { numberFormat } from '../../../../util/i18n';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 
 function AcquisitionSources( { data, args } ) {
 	if ( ! data ) {

@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
-import { addFilter, removeFilter } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -34,7 +33,7 @@ import {
 	ExistingTagError,
 } from '../common';
 import SettingsForm from './SettingsForm';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
 export default function SettingsEdit() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
@@ -56,31 +55,6 @@ export default function SettingsEdit() {
 			confirm.disabled = ! canSubmitChanges;
 		}
 	}, [ canSubmitChanges ] );
-
-	const { submitChanges } = useDispatch( STORE_NAME );
-	useEffect( () => {
-		addFilter(
-			'googlekit.SettingsConfirmed',
-			'googlekit.TagManagerSettingsConfirmed',
-			async ( chain, module ) => {
-				if ( 'tagmanager-module' === module ) {
-					const { error } = await submitChanges();
-					if ( error ) {
-						return Promise.reject( error );
-					}
-					return Promise.resolve();
-				}
-				return chain;
-			}
-		);
-
-		return () => {
-			removeFilter(
-				'googlekit.SettingsConfirmed',
-				'googlekit.TagManagerSettingsConfirmed',
-			);
-		};
-	}, [] );
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below

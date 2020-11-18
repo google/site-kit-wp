@@ -71,7 +71,7 @@ describe( 'createModuleStore store', () => {
 		it.each( [
 			[ 'createNotificationsStore', createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' ) ],
 			[ 'createSettingsStore', createSettingsStore( 'modules', MODULE_SLUG, 'settings', { settingSlugs, registry } ) ],
-			[ 'createSubmitChangesStore', createSubmitChangesStore( { storeName: MODULE_SLUG } ) ],
+			[ 'createSubmitChangesStore', createSubmitChangesStore() ],
 		] )( 'includes all actions from %s store', ( partialStoreName, partialStore ) => {
 			expect( Object.keys( storeDefinition.actions ) ).toEqual(
 				expect.arrayContaining( Object.keys( partialStore.actions ) )
@@ -84,7 +84,7 @@ describe( 'createModuleStore store', () => {
 			[ 'createInfoStore', createInfoStore() ],
 			[ 'createNotificationsStore', createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' ) ],
 			[ 'createSettingsStore', createSettingsStore( 'modules', MODULE_SLUG, 'settings', { settingSlugs, registry } ) ],
-			[ 'createSubmitChangesStore', createSubmitChangesStore( { storeName: MODULE_SLUG } ) ],
+			[ 'createSubmitChangesStore', createSubmitChangesStore() ],
 		] )( 'includes all actions from %s store', ( partialStoreName, partialStore ) => {
 			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
 				expect.arrayContaining( Object.keys( partialStore.selectors ) )
