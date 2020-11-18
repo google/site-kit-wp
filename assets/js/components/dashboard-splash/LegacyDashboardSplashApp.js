@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DashboardSplashMain from './dashboard-splash-main';
-import DashboardSplashNotifications from './dashboard-splash-notifications';
+import LegacyDashboardSplashMain from './LegacyDashboardSplashMain';
+import LegacyDashboardSplashNotifications from './LegacyDashboardSplashNotifications';
 import { trackEvent } from '../../util';
 import SetupUsingGCP from '../setup';
 import SetupWrapper from '../setup/setup-wrapper';
@@ -124,8 +124,13 @@ class LegacyDashboardSplashApp extends Component {
 
 			return (
 				<Fragment>
-					<DashboardSplashNotifications />
-					<DashboardSplashMain introDescription={ introDescription } outroDescription={ outroDescription } buttonLabel={ buttonLabel } onButtonClick={ onButtonClick } />
+					<LegacyDashboardSplashNotifications />
+					<LegacyDashboardSplashMain
+						introDescription={ introDescription }
+						outroDescription={ outroDescription }
+						buttonLabel={ buttonLabel }
+						onButtonClick={ onButtonClick }
+					/>
 				</Fragment>
 			);
 		}
