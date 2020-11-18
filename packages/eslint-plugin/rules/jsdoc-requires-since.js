@@ -49,7 +49,7 @@ module.exports = iterateJsdoc( ( {
 
 	// Get all @since tags and make sure the format is correct.
 	const sinceTags = utils.filterTags( ( { tag } ) => {
-		return [ 'since' ].includes( tag );
+		return tag === 'since';
 	} );
 
 	sinceTags.forEach( ( tag, index ) => {
@@ -85,7 +85,7 @@ module.exports = iterateJsdoc( ( {
 
 			context.report( {
 				data: { name: jsdocNode.name },
-				message: 'All @since tags after the first one require a description.',
+				message: 'All @since tags after the first require a description.',
 				node: jsdocNode,
 			} );
 

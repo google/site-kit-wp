@@ -144,7 +144,7 @@ export function exampleTestFunction( props ) {
 			errors: [
 				{
 					message:
-						'All @since tags after the first one require a description.',
+						'All @since tags after the first require a description.',
 				},
 			],
 		},
@@ -167,7 +167,7 @@ export function exampleTestFunction( props ) {
 			errors: [
 				{
 					message:
-						'All @since tags after the first one require a description.',
+						'All @since tags after the first require a description.',
 				},
 			],
 		},
@@ -191,7 +191,7 @@ export function exampleTestFunction( props ) {
 			errors: [
 				{
 					message:
-						'All @since tags after the first one require a description.',
+						'All @since tags after the first require a description.',
 				},
 			],
 		},

@@ -76,5 +76,47 @@ export function exampleTestFunction( props ) {
 				},
 			],
 		},
+		{
+			code: `
+/**
+ * A function that returns a string, to test out ESLint.
+ *
+ * @since 1.7.1
+ * @private
+ *
+ *
+ * @return {string} A test string.
+ */
+export function exampleTestFunction() {
+	return 'test';
+}
+      `,
+			errors: [
+				{
+					message:
+						'The @private tag should be followed by an empty line, and then by the @return tag.',
+				},
+			],
+		},
+		{
+			code: `
+/**
+ * A function that returns a string, to test out ESLint.
+ *
+ * @since 1.7.1
+ * @private
+ *
+ */
+export function exampleTestFunction( props ) {
+	return 'test';
+}
+      `,
+			errors: [
+				{
+					message:
+						'The @private tag should not be followed by an empty line when it is the last tag.',
+				},
+			],
+		},
 	],
 } );
