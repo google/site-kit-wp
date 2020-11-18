@@ -30,6 +30,8 @@ jobs:
         with:
           command: build:test
       - name: E2E environment
-        uses: ./.github/actions/e2e-env
+        run: npm run env:start
       - name: Run E2E Tests
-        run: npm run test:e2e
+        run: npm run test:e2e:ci
+      - name: Stop E2e environment
+        run: npm run env:stop

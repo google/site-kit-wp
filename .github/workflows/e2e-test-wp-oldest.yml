@@ -6,10 +6,6 @@ on:
       - reopened
       - synchronize
       - ready_for_review
-env:
-  E2E: "1"
-  WP_VERSION: "4.7.19"
-  AMP_VERSION: "1.5.5"
 jobs:
   e2e:
     name: E2E Tests
@@ -33,7 +29,12 @@ jobs:
         uses: ./.github/actions/npm
         with:
           command: build:test
-      - name: E2E environment
-        uses: ./.github/actions/e2e-env
+      - name: Start E2E environment
+        run: npm run env:start
+        env:
+          WP_VERSION: 4.7.19
+          AMP_VERSION: 1.5.5
       - name: Run E2E Tests
-        run: npm run test:e2e
+        run: npm run test:e2e:ci
+      - name: Stop E2e environment
+        run: npm run env:stop

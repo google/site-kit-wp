@@ -6,13 +6,34 @@ on:
       - reopened
       - synchronize
       - ready_for_review
-env:
-  E2E: "1"
-  WP_VERSION: "nightly"
 jobs:
   e2e:
-    name: E2E Tests (Nightly)
+    name: E2E Tests
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
+      - name: Load Composer cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          path: ~/.cache/composer/files
+      - name: Install Composer dependencies
+        run: composer install --no-dev --no-interaction --no-progress
+      - name: Load NPM cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.npm
+      - name: Build assets
+        uses: ./.github/actions/npm
+        with:
+          command: build:test
+      - name: E2E environment
+        run: npm run env:start
+        env:
+          WP_VERSION: nightly
+      - name: Run E2E Tests
+        run: npm run test:e2e:ci
+      - name: Stop E2e environment
+        run: npm run env:stop
