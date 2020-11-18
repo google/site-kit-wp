@@ -30,7 +30,7 @@ import Menu from './menu';
 import { getAvailableDateRanges } from '../util/date-range';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 import Button from './button';
-import { map } from 'lodash';
+
 const { useSelect, useDispatch } = Data;
 
 function DateRangeSelector() {
@@ -38,20 +38,20 @@ function DateRangeSelector() {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const { setDateRange } = useDispatch( CORE_USER );
 
-	const [ menuOpen, toggleMenu ] = useState( false );
+	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuButtonRef = useRef();
 	const menuRef = useRef();
 
 	useEffect( () => {
-		const handleMenuClose = ( e ) => {
+		const handleMenuClose = ( event ) => {
 			// Close the menu if the user presses the Escape key
 			// or if they click outside of the menu.
 			if (
-				( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
-				! menuButtonRef.current.buttonRef.current.contains( e.target ) &&
-				! menuRef.current.menuRef.current.contains( e.target )
+				( ( 'keyup' === event.type && 27 === event.keyCode ) || 'mouseup' === event.type ) &&
+				! menuButtonRef.current.buttonRef.current.contains( event.target ) &&
+				! menuRef.current.menuRef.current.contains( event.target )
 			) {
-				toggleMenu( false );
+				setMenuOpen( false );
 			}
 		};
 
@@ -65,16 +65,16 @@ function DateRangeSelector() {
 	}, [] );
 
 	const handleMenu = useCallback( () => {
-		toggleMenu( ! menuOpen );
+		setMenuOpen( ! menuOpen );
 	}, [ menuOpen ] );
 
-	const handleMenuItemSelect = useCallback( ( index, e ) => {
+	const handleMenuItemSelect = useCallback( ( index, event ) => {
 		if (
-			( 'keydown' === e.type && ( 13 === e.keyCode || 32 === e.keyCode ) ) || // Enter or Space is pressed.
-			'click' === e.type // Mouse is clicked
+			( 'keydown' === event.type && ( 13 === event.keyCode || 32 === event.keyCode ) ) || // Enter or Space is pressed.
+			'click' === event.type // Mouse is clicked
 		) {
 			setDateRange( ranges[ index ].slug );
-			toggleMenu( false );
+			setMenuOpen( false );
 		}
 	}, [ handleMenu ] );
 
@@ -82,7 +82,7 @@ function DateRangeSelector() {
 		return range.slug === dateRange ? range : acc;
 	}, {} ).label;
 
-	const menuItems = map( ranges, 'label' );
+	const menuItems = ranges.map( ( range ) => range.label );
 
 	return (
 		<div className="googlesitekit-date-range-selector">
@@ -103,7 +103,8 @@ function DateRangeSelector() {
 				menuOpen={ menuOpen }
 				menuItems={ menuItems }
 				onSelected={ handleMenuItemSelect }
-				id="date-range-selector-menu" />
+				id="date-range-selector-menu"
+			/>
 		</div>
 	);
 }
