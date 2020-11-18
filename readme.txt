@@ -110,6 +110,7 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 
 **Fixed**
 
+* Fix bug where Analytics widgets would fire their API requests even when the module wasn't completely set up, resulting in unnecessary error responses. See [#2358](https://github.com/google/site-kit-wp/issues/2358).
 * Fix JavaScript translations that were not appearing to work correctly, given the site uses WordPress >= 5.0, which is required for support of JavaScript translations. See [#2171](https://github.com/google/site-kit-wp/issues/2171).
 * Fix bug where a previous error from an action would not be cleared when trying the same action again. See [#2156](https://github.com/google/site-kit-wp/issues/2156).
 * Fix a few translation strings that were concatenating date ranges, making them correctly translatable. See [#2146](https://github.com/google/site-kit-wp/issues/2146).
