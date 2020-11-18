@@ -33,13 +33,9 @@ export function isZeroReport( report ) {
 		return true;
 	}
 
-	const sumOfTotals = report[ 0 ].data.totals.reduce( function( totalSum, values ) {
-		return totalSum + values.values.reduce( ( valueSum, value ) => {
-			return valueSum + parseInt( value );
-		}, 0 );
-	}, 0 );
+	const hasDataValue = report[ 0 ].data.totals[ 0 ].values.some( ( value ) => value > 0 );
 
-	if ( sumOfTotals === 0 ) {
+	if ( ! hasDataValue ) {
 		return true;
 	}
 

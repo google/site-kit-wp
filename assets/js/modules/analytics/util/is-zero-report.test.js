@@ -39,7 +39,7 @@ describe( 'isZeroReport', () => {
 		expect( isZeroReport( report ) ).toBe( true );
 	} );
 
-	it( 'returns true when the sum of totals values is 0', () => {
+	it( 'returns true id all totals are 0', () => {
 		const report = [
 			{
 				data: {
@@ -59,6 +59,51 @@ describe( 'isZeroReport', () => {
 		];
 
 		expect( isZeroReport( report ) ).toBe( true );
+
+		const reportMultipleItems = [
+			{
+				data: {
+					rows: [
+						{}, {}, {},
+					],
+					totals: [
+						{
+							values: [
+								'0',
+								'0',
+							],
+						},
+						{
+							values: [
+								'0',
+								'0',
+							],
+						},
+					],
+				},
+			},
+		];
+
+		expect( isZeroReport( reportMultipleItems ) ).toBe( true );
+
+		const reportSingleValue = [
+			{
+				data: {
+					rows: [
+						{}, {}, {},
+					],
+					totals: [
+						{
+							values: [
+								'0',
+							],
+						},
+					],
+				},
+			},
+		];
+
+		expect( isZeroReport( reportSingleValue ) ).toBe( true );
 	} );
 
 	it( 'returns false for a report that has data', () => {
@@ -71,8 +116,8 @@ describe( 'isZeroReport', () => {
 					totals: [
 						{
 							values: [
-								'928',
-								'928',
+								'123',
+								'234',
 							],
 						},
 					],
@@ -81,6 +126,71 @@ describe( 'isZeroReport', () => {
 		];
 
 		expect( isZeroReport( report ) ).toBe( false );
+
+		const reportMixed = [
+			{
+				data: {
+					rows: [
+						{}, {}, {},
+					],
+					totals: [
+						{
+							values: [
+								'0',
+								'123',
+							],
+						},
+					],
+				},
+			},
+		];
+
+		expect( isZeroReport( reportMixed ) ).toBe( false );
+
+		const reportMultipleItems = [
+			{
+				data: {
+					rows: [
+						{}, {}, {},
+					],
+					totals: [
+						{
+							values: [
+								'123',
+								'234',
+							],
+						},
+						{
+							values: [
+								'0',
+								'345',
+							],
+						},
+					],
+				},
+			},
+		];
+
+		expect( isZeroReport( reportMultipleItems ) ).toBe( false );
+
+		const reportSingleValue = [
+			{
+				data: {
+					rows: [
+						{}, {}, {},
+					],
+					totals: [
+						{
+							values: [
+								'123',
+							],
+						},
+					],
+				},
+			},
+		];
+
+		expect( isZeroReport( reportSingleValue ) ).toBe( false );
 	} );
 } );
 
