@@ -74,7 +74,9 @@ global.wp = global.wp || wp;
 global.React = React;
 global.lodash = lodash;
 global._googlesitekitLegacyData = dashboardData;
-global._googlesitekitLegacyData.admin.assetsRoot = './assets/';
+// The assets root is relative automatically in storybook.
+// This empty string is to unset it from the legacy cached `dashboardData`.
+global._googlesitekitLegacyData.admin.assetsRoot = '';
 global._googlesitekitLegacyData.isStorybook = true;
 global._googlesitekitBaseData = {
 	homeURL: 'http://example.com/',
