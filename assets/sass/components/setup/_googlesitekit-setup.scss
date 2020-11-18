@@ -107,6 +107,17 @@
 	.googlesitekit-setup__footer {
 		border-top: 1px solid $c-border-light;
 	}
+
+	.googlesitekit-setup__splash {
+		border-bottom: 1px solid #e6e6e6;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
+	.googlesitekit-setup__splash .googlesitekit-setup__title {
+		font-family: "Google Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		margin: 0.67em 0;
+	}
 }
 
 .googlesitekit-setup-compat {
