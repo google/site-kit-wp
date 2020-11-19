@@ -33,7 +33,7 @@ runs:
       run: |
         cp -r --force tests/e2e/mu-plugins /tmp/wp/wp-content/mu-plugins
         cp -r --force tests/e2e/plugins /tmp/wp/wp-content/plugins
-        ln -s $PWD /tmp/wp/wp-content/plugins/google-site-kit
+        cp -r --force $PWD /tmp/wp/wp-content/plugins/google-site-kit
     - shell: bash
       working-directory: /tmp/wp
       run: |
