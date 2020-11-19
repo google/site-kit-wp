@@ -56,6 +56,7 @@ $c-jewel: #178239;
 $c-mango-tango: #e67700;
 $c-thunderbird: #c7221f;
 $c-solitude: #e8f0fe;
+$c-heather: #bdc1c6;
 
 // PageSpeed Insights colors
 $c-pagespeed-fast: $c-green-700;
@@ -108,6 +109,12 @@ $c-chart-1: $c-cornflower-blue;
 $c-chart-2: $c-scooter;
 $c-chart-3: $c-elm;
 $c-chart-4: $c-purple-heart;
+
+$c-progress-bg: $c-solitude;
+
+$c-user-input-options: $c-cape-cod;
+$c-user-input-note: $c-device-icon-gray;
+$c-user-input-placeholder: $c-heather;
 
 // Google MDC Theme Overrides
 $mdc-theme-primary: $c-brand;
@@ -162,6 +169,34 @@ $bp-wpdb4: 2200px;
 
 // Custom max width for setup content
 $max-width-setup-content: 465px;
+
+// Typography
+$typography: (
+	headline1: (
+		font-size: 36px,
+		line-height: 44px,
+	),
+	headline3: (
+		font-size: 28px,
+		line-height: 36px,
+	),
+	body1: (
+		font-size: 22px,
+		line-height: 28px,
+	),
+	body2: (
+		font-size: 16px,
+		line-height: 24px,
+	),
+	body3: (
+		font-size: 14px,
+		line-height: 20px,
+	),
+	caption: (
+		font-size: 12px,
+		line-height: 16px,
+	)
+);
 
 // Google MDC Layout Grid Overrides
 

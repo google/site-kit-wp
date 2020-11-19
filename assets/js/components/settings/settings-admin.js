@@ -27,8 +27,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Layout from '../layout/layout';
 import OptIn from '../optin';
-import ResetButton from '../reset-button';
 import VisuallyHidden from '../VisuallyHidden';
+import ResetButton from '../ResetButton';
 
 const SettingsAdmin = () => {
 	return (

@@ -67,7 +67,7 @@ Cell.propTypes = {
 	size: PropTypes.number,
 	align: PropTypes.oneOf( [ 'top', 'middle', 'bottom', 'right', 'left', '' ] ),
 	className: PropTypes.string,
-	children: PropTypes.node.isRequired,
+	children: PropTypes.node,
 };
 
 Cell.defaultProps = {

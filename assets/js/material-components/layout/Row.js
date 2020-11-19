@@ -32,7 +32,7 @@ export default function Row( { className, children, ...otherProps } ) {
 
 Row.propTypes = {
 	className: PropTypes.string,
-	children: PropTypes.node.isRequired,
+	children: PropTypes.node,
 };
 
 Row.defaultProps = {
