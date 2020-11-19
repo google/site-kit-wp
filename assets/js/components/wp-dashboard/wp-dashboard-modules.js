@@ -52,8 +52,8 @@ class WPDashboardModules extends Component {
 						( ! modulesData.analytics.active ) &&
 						<div className="googlesitekit-wp-dashboard-stats__cta">
 							<AnalyticsInactiveCTA
-								title={ __( 'See unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }
 								ctaLabel={ __( 'Set up analytics', 'google-site-kit' ) }
+								title={ __( 'See unique visitors, goal completions, top pages and more.', 'google-site-kit' ) }
 								description=""
 							/>
 						</div>
