@@ -94,7 +94,7 @@ export default function UseSnippetInstructions() {
 		return (
 			<Fragment>
 				<p>
-					{ __( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }
+					{ __( 'You disabled analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }
 				</p>
 				<pre>
 					ga(&quot;require&quot;, &quot;{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }&quot;);
