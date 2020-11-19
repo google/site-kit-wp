@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     # if: github.event.pull_request.draft == false
     steps:
+      - name: Docker Info
+        run: docker info
       - uses: actions/checkout@v2
       - name: Load Composer cache
         uses: actions/cache@v2
