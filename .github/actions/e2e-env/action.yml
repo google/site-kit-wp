@@ -12,6 +12,7 @@ runs:
       run: |
         sudo systemctl start mysql.service
         composer global require wp-cli/wp-cli
+        composer global require wp-cli/core-command
         mkdir /tmp/wp
     - shell: bash
       working-directory: /tmp/wp
