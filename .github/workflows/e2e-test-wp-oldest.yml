@@ -12,8 +12,6 @@ jobs:
     runs-on: ubuntu-20.04
     # if: github.event.pull_request.draft == false
     steps:
-      - name: Show services
-        run: sudo systemctl list-units | grep postgre
       - uses: actions/checkout@v2
       - name: Load Composer cache
         uses: actions/cache@v2
@@ -32,7 +30,10 @@ jobs:
         with:
           command: build:test
       - name: Start MySQL service
-        run: sudo systemctl start mysql.service
+        run: |
+          sudo systemctl start mysql.service
+          sleep 1m
+          echo "show databases" | mysql -uroot -proot -h mysql
       - name: Start E2E environment
         run: npm run env:start
         env:
