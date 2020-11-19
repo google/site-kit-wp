@@ -114,7 +114,7 @@ class Script extends Asset {
 	/**
 	 * Sets locale data for the script, if it has translations.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 */
 	private function set_locale_data() {
 		$json_translations = BC_Functions::load_script_textdomain( $this->handle, 'google-site-kit' );

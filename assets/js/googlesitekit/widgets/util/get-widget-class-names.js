@@ -48,7 +48,7 @@ const WIDTH_GRID_CLASS_MAP = {
 /**
  * Adjusts class names to better fit into the current row knowing that the default sizes don't fill the row completely.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Array.<string>} classNames Current class names.
  * @param {number}         counter    Current counter.
@@ -103,7 +103,7 @@ function resizeClasses( classNames, counter ) {
 /**
  * Gets an array of sizes that widget can take accounting the current counter value.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {number} counter The current counter.
  * @param {Object} widget  Widget object.
@@ -120,7 +120,7 @@ function getWidgetSizes( counter, widget ) {
 /**
  * Gets widget class names for an area.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Array.<Object>} activeWidgets List of active widgets.
  * @return {Array.<string>} List of class names for active widgets.
