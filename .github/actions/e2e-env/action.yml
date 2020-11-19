@@ -11,9 +11,14 @@ runs:
     - shell: bash
       run: |
         sudo systemctl start mysql.service
-        composer global require wp-cli/wp-cli
-        composer global require wp-cli/core-command
         mkdir /tmp/wp
+        composer global require \
+          wp-cli/wp-cli \
+          wp-cli/core-command \
+          wp-cli/config-command \
+          wp-cli/server-command \
+          wp-cli/rewrite-command \
+          wp-cli/entity-command
     - shell: bash
       working-directory: /tmp/wp
       run: |
@@ -47,4 +52,4 @@ runs:
         wp plugin activate google-site-kit
         wp rewrite structure '%postname%' --hard
 
-        php -S localhost:9002 &
+        wp server --host=0.0.0.0 --port=9002 &
