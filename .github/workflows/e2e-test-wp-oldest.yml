@@ -13,16 +13,16 @@ jobs:
     # if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
-      - name: Start E2E environment
-        uses: ./.github/actions/e2e-env
-        with:
-          version: 4.7.19
-          amp: 1.5.5
       - name: Load Composer cache
         uses: actions/cache@v2
         with:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           path: ~/.cache/composer/files
+      - name: Start E2E environment
+        uses: ./.github/actions/e2e-env
+        with:
+          version: 4.7.19
+          amp: 1.5.5
       - name: Install Composer dependencies
         run: composer install --no-dev --no-interaction --no-progress
       - name: Load NPM cache
