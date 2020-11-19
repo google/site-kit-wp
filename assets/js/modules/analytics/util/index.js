@@ -201,7 +201,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 		);
 
 		const statInfo = sprintf(
-			/* translators: %1$s: selected stat label, %2$s: numberic value of selected stat, %3$s: up or down arrow , %4$s: different change in percentage, %%: percent symbol */
+			/* translators: %1$s: selected stat label, %2$s: numeric value of selected stat, %3$s: up or down arrow , %4$s: different change in percentage, %%: percent symbol */
 			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for Analytics dashboard chart tooltip', 'google-site-kit' ),
 			dataLabels[ selectedStats ],
 			dataFormats[ selectedStats ]( row[ 1 ] ),
