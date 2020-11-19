@@ -19,13 +19,15 @@ runs:
           wp-cli/server-command \
           wp-cli/rewrite-command \
           wp-cli/entity-command \
-          wp-cli/extension-command
+          wp-cli/extension-command \
+          wp-cli/db-command
     - shell: bash
       working-directory: /tmp/wp
       run: |
         export PATH="$(composer config -g home)/vendor/bin:$PATH"
         wp core download --version=${{ inputs.version }} --force --skip-content
         wp config create --dbname=wordpress_test --dbuser=root --dbpass=root
+        wp db create
         wp core install --title="SiteKit" --admin_user=admin --admin_password=password --admin_email=test@test.com --skip-email --url=http://localhost:3306
     - shell: bash
       run: |
