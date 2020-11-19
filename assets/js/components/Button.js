@@ -50,7 +50,7 @@ const Button = forwardRef( ( {
 
 	useEffect( () => {
 		MDCRipple.attachTo( buttonRef.current );
-	}, [ buttonRef.current ] );
+	} );
 
 	// Use a button if disabled, even if a href is provided to ensure expected behavior.
 	const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';

@@ -46,7 +46,7 @@ const Switch = ( {
 
 	useEffect( () => {
 		MDCSwitch.attachTo( switchRef.current );
-	}, [ switchRef.current ] );
+	} );
 
 	const onKeyDown = useCallback( ( event ) => {
 		// If the Enter key is pressed.

@@ -52,7 +52,7 @@ const Dialog = ( {
 
 	useEffect( () => {
 		MDCDialog.attachTo( dialogRef.current );
-	}, [ dialogRef.current ] );
+	} );
 
 	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const instanceID = useInstanceId( Dialog );
