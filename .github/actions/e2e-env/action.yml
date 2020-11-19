@@ -18,7 +18,8 @@ runs:
           wp-cli/config-command \
           wp-cli/server-command \
           wp-cli/rewrite-command \
-          wp-cli/entity-command
+          wp-cli/entity-command \
+          wp-cli/extension-command
     - shell: bash
       working-directory: /tmp/wp
       run: |
