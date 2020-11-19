@@ -50,13 +50,15 @@ const Menu = forwardRef( ( {
 		const menu = new MDCMenu( menuRef.current );
 		menu.open = menuOpen;
 		menu.setDefaultFocusState( 1 );
+	}, [ menuRef.current, menuOpen ] );
 
+	useEffect( () => {
 		menuRef.current.addEventListener( 'MDCMenu:selected', handleMenuSelected );
 
 		return () => {
 			menuRef.current.removeEventListener( 'MDCMenu:selected', handleMenuSelected );
 		};
-	}, [ menuRef.current, menuOpen ] );
+	}, [ menuRef.current ] );
 
 	return (
 		<div

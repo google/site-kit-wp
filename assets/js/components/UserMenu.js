@@ -53,8 +53,8 @@ function UserMenu() {
 			// or if they click outside of the menu.
 			if (
 				( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
-				! menuButtonRef.current.buttonRef.current.contains( e.target ) &&
-				! menuRef.current.menuRef.current.contains( e.target )
+				! menuButtonRef.current.contains( e.target ) &&
+				! menuRef.current.contains( e.target )
 			) {
 				toggleMenu( false );
 			}
@@ -88,23 +88,18 @@ function UserMenu() {
 		toggleMenu( false );
 	}, [ dialogActive ] );
 
-	const handleMenuItemSelect = useCallback( ( index, e ) => {
-		if (
-			( 'keydown' === e.type && ( 13 === e.keyCode || 32 === e.keyCode ) ) || // Enter or Space is pressed.
-			'click' === e.type // Mouse is clicked
-		) {
-			switch ( index ) {
-				case 0:
-					handleDialog();
-					break;
-				case 1:
-					if ( proxyPermissionsURL ) {
-						global.location.assign( proxyPermissionsURL );
-					}
-					break;
-				default:
-					handleMenu();
-			}
+	const handleMenuItemSelect = useCallback( ( index ) => {
+		switch ( index ) {
+			case 0:
+				handleDialog();
+				break;
+			case 1:
+				if ( proxyPermissionsURL ) {
+					global.location.assign( proxyPermissionsURL );
+				}
+				break;
+			default:
+				handleMenu();
 		}
 	}, [ proxyPermissionsURL, handleMenu, handleDialog ] );
 
