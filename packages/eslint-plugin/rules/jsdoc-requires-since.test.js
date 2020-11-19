@@ -286,5 +286,71 @@ export function exampleTestFunction( props ) {
 				},
 			],
 		},
+		{
+			code: `
+/**
+ * A function that returns a string, to test out ESLint.
+ *
+ * @since 1.7.1 Normal description.
+ * @since 1.7.2 Another description.
+ * @private
+ *
+ * @return {string} A test string.
+ */
+export function exampleTestFunction() {
+	return 'test';
+}
+      `,
+			errors: [
+				{
+					message:
+						'@since tags should appear in order of version number.',
+				},
+			],
+		},
+		{
+			code: `
+/**
+ * A function that returns a string, to test out ESLint.
+ *
+ * @since 1.7.1 Normal description.
+ * @since 1.7.1 Another description.
+ * @private
+ *
+ * @return {string} A test string.
+ */
+export function exampleTestFunction() {
+	return 'test';
+}
+      `,
+			errors: [
+				{
+					message:
+						'Each version should have only one @since tag.',
+				},
+			],
+		},
+		{
+			code: `
+/**
+ * An object.
+ *
+ * @since 1.0.0 Bar.
+ *
+ * @since 1.2.0 \`F\`
+ *
+ * @type {Object} A cool object.
+ */
+export const myCoolObject = {
+	foo: 'bar',
+};
+      `,
+			errors: [
+				{
+					message:
+						'All @since tags should have a description that ends with a period/full-stop.',
+				},
+			],
+		},
 	],
 } );

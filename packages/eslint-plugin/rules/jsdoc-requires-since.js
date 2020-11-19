@@ -20,6 +20,7 @@
  * External dependencies
  */
 const { default: iterateJsdoc } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
+const semverCompare = require( 'semver-compare' );
 const semverRegex = require( 'semver-regex' );
 
 module.exports = iterateJsdoc( ( {
@@ -53,6 +54,8 @@ module.exports = iterateJsdoc( ( {
 	} );
 
 	sinceTags.forEach( ( tag, index ) => {
+		const previousTag = sinceTags[ index - 1 ] || null;
+
 		if ( ! tag.description || ! tag.description.length ) {
 			context.report( {
 				data: { name: jsdocNode.name },
@@ -113,6 +116,30 @@ module.exports = iterateJsdoc( ( {
 				message: `All @since tags should have a description that ends with a period/full-stop.`,
 				node: jsdocNode,
 			} );
+
+			return;
+		}
+
+		if ( previousTag ) {
+			const [ previousVersionString ] = previousTag.description.split( ' ', 1 );
+
+			if ( semverRegex().test( versionString ) && semverRegex().test( previousVersionString ) && semverCompare( versionString, previousVersionString ) === 0 ) {
+				context.report( {
+					data: { name: jsdocNode.name },
+					message: `Each version should have only one @since tag.`,
+					node: jsdocNode,
+				} );
+
+				return;
+			}
+
+			if ( semverRegex().test( versionString ) && semverRegex().test( previousVersionString ) && semverCompare( versionString, previousVersionString ) !== -1 ) {
+				context.report( {
+					data: { name: jsdocNode.name },
+					message: `@since tags should appear in order of version number.`,
+					node: jsdocNode,
+				} );
+			}
 		}
 	} );
 }, {

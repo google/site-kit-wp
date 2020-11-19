@@ -51,10 +51,8 @@ module.exports = iterateJsdoc( ( {
 			return;
 		}
 
-		const previousPositionInTagOrder = tagOrder.indexOf( previousTag );
-		const currentPositionInTagOrder = tagOrder.indexOf( tag );
-
 		if (
+			previousTag &&
 			jsdoc.source.match(
 				new RegExp( `@${ previousTag }.*\\n\\n@${ tag }`, 'gm' )
 			)
@@ -64,7 +62,12 @@ module.exports = iterateJsdoc( ( {
 				message: `The @${ previousTag } tag should not have a newline between it and the following @${ tag } tag.`,
 				node: jsdocNode,
 			} );
+
+			return;
 		}
+
+		const previousPositionInTagOrder = tagOrder.indexOf( previousTag );
+		const currentPositionInTagOrder = tagOrder.indexOf( tag );
 
 		if ( previousPositionInTagOrder > currentPositionInTagOrder ) {
 			context.report( {
@@ -88,7 +91,7 @@ module.exports = iterateJsdoc( ( {
 		return tag.tag;
 	} ).forEach( ( tag, index ) => {
 		checkTagOrder( {
-			previousTag: tags[ index - 1 ] || 'since',
+			previousTag: tags[ index - 1 ],
 			tag,
 			tagOrder: [
 				'since',
