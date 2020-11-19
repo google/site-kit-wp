@@ -39,7 +39,7 @@
 
 		.mdc-layout-grid__cell--order-1-tablet {
 
-			@media (max-width: $bp-desktop) {
+			@media (max-width: $bp-tablet) {
 				grid-column: -1/1;
 			}
 		}
@@ -47,9 +47,13 @@
 		.mdc-layout-grid__cell--order-2-tablet {
 			display: none;
 
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+				display: flex;
+			}
+
 			@media (min-width: $bp-desktop) {
 				align-items: flex-end;
-				display: flex;
 			}
 
 			@media (min-width: $bp-xlarge) {

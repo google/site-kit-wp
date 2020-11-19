@@ -128,6 +128,7 @@ class Notification extends Component {
 		const {
 			children,
 			id,
+			className,
 			title,
 			description,
 			blockData,
@@ -149,7 +150,6 @@ class Notification extends Component {
 			pageIndex,
 			anchorLink,
 			anchorLinkLabel,
-			className,
 		} = this.props;
 
 		if ( getCache( `notification::dismissed::${ id }` ) ) {
@@ -381,6 +381,7 @@ class Notification extends Component {
 
 Notification.propTypes = {
 	id: PropTypes.string.isRequired,
+	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
 	learnMoreURL: PropTypes.string,
@@ -405,14 +406,13 @@ Notification.propTypes = {
 	onDismiss: PropTypes.func,
 	anchorLink: PropTypes.string,
 	anchorLinkLabel: PropTypes.string,
-	className: PropTypes.string,
 };
 
 Notification.defaultProps = {
 	isDismissable: true,
+	className: '',
 	dismissExpires: 0,
 	showOnce: false,
-	className: '',
 };
 
 export default Notification;
