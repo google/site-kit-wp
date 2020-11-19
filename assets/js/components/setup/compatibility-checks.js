@@ -55,7 +55,7 @@ const checks = [
 			throw ERROR_INVALID_HOSTNAME;
 		}
 	},
-	// Generate and check for a Site Kit specific meta tag on the page to test for agressive caching.
+	// Generate and check for a Site Kit specific meta tag on the page to test for aggressive caching.
 	async () => {
 		const { token } = await API.set( 'core', 'site', 'setup-tag' );
 
