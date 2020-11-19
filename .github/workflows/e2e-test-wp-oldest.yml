@@ -13,7 +13,7 @@ jobs:
     # if: github.event.pull_request.draft == false
     steps:
       - name: Show services
-        run: sudo systemctl --type=service
+        run: sudo systemctl list-units | grep postgre
       - uses: actions/checkout@v2
       - name: Load Composer cache
         uses: actions/cache@v2
