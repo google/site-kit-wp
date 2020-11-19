@@ -96,9 +96,6 @@ function ModulesList( { moduleSlugs } ) {
 		.filter( ( module ) => 0 === module.dependencies.length )
 		.sort( ( module1, module2 ) => module1.sort - module2.sort );
 
-	// eslint-disable-next-line no-console
-	console.log( sortedModules );
-
 	return (
 		<div className="googlesitekit-modules-list">
 			{ map( sortedModules, ( module ) => {
