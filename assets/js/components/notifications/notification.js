@@ -302,7 +302,10 @@ class Notification extends Component {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-1
 							">
-								<img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage } />
+								{
+									typeof smallImage === 'string'
+										? <img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage } /> : smallImage
+								}
 							</div>
 						}
 
@@ -386,7 +389,10 @@ Notification.propTypes = {
 	learnMoreLabel: PropTypes.string,
 	blockData: PropTypes.array,
 	winImage: PropTypes.string,
-	smallImage: PropTypes.string,
+	smallImage: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.node,
+	] ),
 	format: PropTypes.string,
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,

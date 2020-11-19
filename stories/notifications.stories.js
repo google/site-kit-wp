@@ -12,6 +12,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Notification from '../assets/js/components/notifications/notification';
 import ModulesList from '../assets/js/components/modules-list';
+import UserInputSuccessNotification from '../assets/js/components/notifications/UserInputSuccessNotification';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
@@ -205,4 +206,7 @@ storiesOf( 'Global/Notifications', module )
 			}
 			type="win-stats"
 		/>
+	) )
+	.add( 'User Input Success Notification', () => (
+		<UserInputSuccessNotification />
 	) );

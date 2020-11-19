@@ -57,7 +57,7 @@ export default function UserInputPreview( { back, goTo } ) {
 		setIsNavigating( true );
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			global.location.assign( dashboardURL );
+			global.location.assign( `${ dashboardURL }&notification=user_input_success` );
 		} else {
 			setIsNavigating( false );
 		}

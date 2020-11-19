@@ -30,6 +30,7 @@ import { getQueryParameter, getModulesData } from '../../util';
 import Notification from './notification';
 import ModulesList from '../modules-list';
 import rocketImage from '../../../images/rocket.png';
+import UserInputSuccessNotification from './UserInputSuccessNotification';
 
 class DashboardSetupAlerts extends Component {
 	render() {
@@ -112,6 +113,9 @@ class DashboardSetupAlerts extends Component {
 
 					</Fragment>
 				);
+
+			case 'user_input_success':
+				return <UserInputSuccessNotification />;
 		}
 	}
 }
