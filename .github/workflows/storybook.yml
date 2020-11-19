@@ -15,7 +15,7 @@ on:
 jobs:
   build-storybook:
     name: Build Storybook
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true ) ) || github.event.pull_request.head.repo.fork )
     steps:
     - uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
 
   deploy-storybook:
     name: Deploy Storybook
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: build-storybook
     steps:
       - uses: actions/checkout@v2
@@ -79,7 +79,7 @@ jobs:
 
   remove-storybook:
     name: Remove Storybook
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' ) && github.event.pull_request.head.repo.fork == false
     steps:
       - uses: actions/checkout@v2
