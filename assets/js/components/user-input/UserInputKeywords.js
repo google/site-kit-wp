@@ -88,7 +88,7 @@ export default function UserInputKeywords( { slug, max } ) {
 					</TextField>
 				) }
 			</div>
-			<small>{ __( 'Separate with commas or the Enter key', 'google-site-kit' ) }</small>
+			<p className="googlesitekit-user-input__note">{ __( 'Separate with commas or the Enter key', 'google-site-kit' ) }</p>
 		</Cell>
 	);
 }

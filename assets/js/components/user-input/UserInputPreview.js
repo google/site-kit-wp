@@ -120,9 +120,10 @@ export default function UserInputPreview( { back, goTo } ) {
 
 							{ error && <ErrorNotice error={ error } /> }
 
-							<div className="googlesitekit-user-input__buttons">
+							<div className="googlesitekit-user-input__preview--footer">
 								<UserInputQuestionNotice />
-								<div>
+
+								<div className="googlesitekit-user-input__buttons">
 									<Button text onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
 									<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
 								</div>

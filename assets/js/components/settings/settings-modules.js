@@ -26,7 +26,6 @@ import { map, filter, sortBy } from 'lodash';
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
-import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -82,45 +81,42 @@ class SettingsModules extends Component {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param {string} module The module slug.
-	 * @param {string} action The action being performed, one of 'edit', 'cancel' or 'confirm'.
+	 * @param {string}   module        The module slug.
+	 * @param {string}   action        The action being performed, one of 'edit', 'cancel' or 'confirm'.
+	 * @param {Function} submitChanges The action dispatcher to submit the changes.
 	 */
-	handleButtonAction( module, action ) {
+	async handleButtonAction( module, action, submitChanges ) {
 		if ( 'confirm' === action ) {
-			const modulePromise = applyFilters( 'googlekit.SettingsConfirmed', false, module );
-
 			this.setState( { isSaving: module } );
-			if ( ! modulePromise ) {
-				// Clears session and local storage on successful setting.
-				clearWebStorage();
+			const { error } = await submitChanges( module );
 
+			if ( error ) {
+				if ( isPermissionScopeError( error ) ) {
+					this.setState( {
+						isSaving: false,
+						error: false,
+					} );
+				} else {
+					this.setState( {
+						isSaving: false,
+						error: {
+							errorCode: error.code,
+							errorMsg: error.message,
+						},
+					} );
+				}
 				return;
 			}
-			modulePromise.then( () => {
-				// Clears session and local storage on every successful setting.
-				clearWebStorage();
 
-				this.setState( {
-					isSaving: false,
-					error: false,
-				} );
+			// Clears session and local storage on every successful setting.
+			clearWebStorage();
 
-				this.props.setModuleState( 'view' );
-			} ).catch( ( err ) => {
-				let error;
-				if ( isPermissionScopeError( err ) ) {
-					error = false;
-				} else {
-					error = {
-						errorCode: err.code,
-						errorMsg: err.message,
-					};
-				}
-				this.setState( {
-					isSaving: false,
-					error,
-				} );
+			this.setState( {
+				isSaving: false,
+				error: false,
 			} );
+
+			this.props.setModuleState( 'view' );
 		} else {
 			this.setState( {
 				error: false, // Reset error state when switching modules.

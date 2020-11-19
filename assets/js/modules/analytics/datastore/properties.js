@@ -29,6 +29,12 @@ import Data from 'googlesitekit-data';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
 import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+
+// Get access to error store action creators.
+// If the parent store doesn't include the error store,
+// yielded error actions will be a no-op.
+const { clearError, receiveError } = errorStoreActions;
 const { createRegistrySelector, createRegistryControl } = Data;
 
 const fetchGetPropertiesProfilesStore = createFetchStore( {
@@ -279,7 +285,7 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		registry.dispatch( STORE_NAME ).clearError( 'getProperties', [ accountID ] );
+		yield clearError( 'getProperties', [ accountID ] );
 
 		// Only fetch properties if there are none in the store for the given account.
 		let properties = registry.select( STORE_NAME ).getProperties( accountID );
@@ -306,7 +312,7 @@ const baseResolvers = {
 			dispatch( STORE_NAME ).receivePropertiesProfilesCompletion( accountID );
 			if ( error ) {
 				// Store error manually since getProperties signature differs from fetchGetPropertiesProfiles.
-				yield dispatch( STORE_NAME ).receiveError( error, 'getProperties', [ accountID ] );
+				yield receiveError( error, 'getProperties', [ accountID ] );
 				return;
 			}
 		}

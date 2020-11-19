@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { sprintf, __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -65,19 +65,13 @@ export default function UserInputQuestionWrapper( props ) {
 		) }>
 			<Row>
 				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
-					<p className="googlesitekit-user-input__question-number">
-						{
-							/* translators: %s: the number of the question */
-							sprintf( __( '%s out of 5', 'google-site-kit' ), questionNumber )
-						}
-					</p>
-
 					<Row>
 						{ title && (
 							<UserInputQuestionInfo
 								title={ title }
 								description={ description }
 								scope={ scope }
+								questionNumber={ questionNumber }
 								author={ author }
 							/>
 						) }

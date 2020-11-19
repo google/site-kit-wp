@@ -17,16 +17,17 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { createValidationSelector } from '../data/utils';
+import { actions as errorStoreActions } from '../data/create-error-store';
 const { createRegistryControl } = Data;
+
+// Get access to error store action creators.
+// If the parent store doesn't include the error store,
+// yielded error actions will be a no-op.
+const { clearError, receiveError } = errorStoreActions;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -36,21 +37,17 @@ const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
 /**
  * Creates a store object implementing the necessary infrastructure for submitting module settings.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Object}   args                            Arguments for creating the submitChanges store.
- * @param {string}   args.storeName                  Datastore slug.
  * @param {Function} [args.submitChanges]            Optional. Callback function to issue the submit changes request. Will be used inside the submit changes control.
  * @param {Function} [args.validateCanSubmitChanges] Optional. A helper function to validate that settings can be submitted.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
 export function createSubmitChangesStore( {
-	storeName,
 	submitChanges = () => ( {} ),
 	validateCanSubmitChanges = () => {},
 } = {} ) {
-	invariant( storeName, 'storeName is required.' );
-
 	const initialState = {
 		isDoingSubmitChanges: false,
 	};
@@ -59,17 +56,12 @@ export function createSubmitChangesStore( {
 		/**
 		 * Submits all changes currently present in the client, persisting them on the server.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.21.0
 		 *
 		 * @return {Object} Empty object on success, object with `error` property on failure.
 		 */
 		*submitChanges() {
-			const { dispatch } = yield Data.commonActions.getRegistry();
-			const { clearError, receiveError } = dispatch( storeName );
-
-			if ( clearError ) {
-				clearError( 'submitChanges', [] );
-			}
+			yield clearError( 'submitChanges', [] );
 
 			yield {
 				type: START_SUBMIT_CHANGES,
@@ -81,8 +73,8 @@ export function createSubmitChangesStore( {
 				payload: {},
 			};
 
-			if ( result?.error && receiveError ) {
-				yield dispatch( storeName ).receiveError( result.error, 'submitChanges', [] );
+			if ( result?.error ) {
+				yield receiveError( result.error, 'submitChanges', [] );
 			}
 
 			yield {
@@ -134,7 +126,7 @@ export function createSubmitChangesStore( {
 		/**
 		 * Checks whether changes are currently being submitted.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.21.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {boolean} TRUE if submitting, otherwise FALSE.

@@ -28,6 +28,7 @@ import classnames from 'classnames';
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { compose } from '@wordpress/compose';
 import { applyFilters } from '@wordpress/hooks';
 
 /**
@@ -56,7 +57,7 @@ import ModuleSetupIncomplete from '../../components/settings/module-setup-incomp
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import SettingsRenderer from '../settings/SettingsRenderer';
 import VisuallyHidden from '../VisuallyHidden';
-const { withSelect } = Data;
+const { withSelect, withDispatch } = Data;
 
 /**
  * A single module. Keeps track of its own active state and settings.
@@ -185,6 +186,8 @@ class SettingsModule extends Component {
 			handleEdit,
 			description,
 			hasSettings,
+			canSubmitChanges,
+			submitChanges,
 			autoActivate,
 			provides,
 			isSaving,
@@ -217,6 +220,14 @@ class SettingsModule extends Component {
 			} else {
 				buttonText = __( 'Confirm Changes', 'google-site-kit' );
 			}
+		}
+
+		// Set button action based on state.
+		let buttonActionName = 'cancel';
+		let buttonAction;
+		if ( hasSettings && setupComplete ) {
+			buttonActionName = 'confirm';
+			buttonAction = submitChanges;
 		}
 
 		return (
@@ -363,8 +374,8 @@ class SettingsModule extends Component {
 											{ isEditing[ moduleKey ] || isSavingModule ? (
 												<Fragment>
 													<Button
-														onClick={ () => handleEdit( moduleKey, hasSettings && setupComplete ? 'confirm' : 'cancel' ) }
-														disabled={ isSavingModule }
+														onClick={ () => handleEdit( moduleKey, buttonActionName, buttonAction ) }
+														disabled={ isSavingModule || ! canSubmitChanges }
 														id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 													>
 														{ buttonText }
@@ -488,6 +499,8 @@ SettingsModule.propTypes = {
 	handleDialog: PropTypes.func,
 	autoActivate: PropTypes.bool,
 	hasSettings: PropTypes.bool,
+	canSubmitChanges: PropTypes.bool,
+	submitChanges: PropTypes.func,
 	required: PropTypes.array,
 	active: PropTypes.bool,
 	setupComplete: PropTypes.bool,
@@ -504,10 +517,21 @@ SettingsModule.defaultProps = {
 	setupComplete: false,
 };
 
-export default withSelect( ( select, { slug } ) => {
-	const module = select( CORE_MODULES ).getModule( slug );
+export default compose( [
+	withSelect( ( select, { slug } ) => {
+		const module = select( CORE_MODULES ).getModule( slug );
+		const canSubmitChanges = select( CORE_MODULES ).canSubmitChanges( slug );
 
-	return {
-		hasSettings: !! module?.settingsEditComponent,
-	};
-} )( SettingsModule );
+		return {
+			hasSettings: !! module?.settingsEditComponent,
+			canSubmitChanges,
+		};
+	} ),
+	withDispatch( ( dispatch, { slug } ) => {
+		const submitChanges = () => dispatch( CORE_MODULES ).submitChanges( slug );
+
+		return {
+			submitChanges,
+		};
+	} ),
+] )( SettingsModule );
