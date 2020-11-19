@@ -25,7 +25,7 @@ runs:
       working-directory: /tmp/wp
       run: |
         export PATH="$(composer config -g home)/vendor/bin:$PATH"
-        wp core download --version=${{ inputs.version }} --force --skip-content
+        wp core download --version=${{ inputs.version }} --force
         wp config create --dbname=wordpress_test --dbuser=root --dbpass=root
         wp db create
         wp core install --title="SiteKit" --admin_user=admin --admin_password=password --admin_email=test@test.com --skip-email --url=http://localhost:3306
@@ -38,15 +38,15 @@ runs:
       working-directory: /tmp/wp
       run: |
         export PATH="$(composer config -g home)/vendor/bin:$PATH"
-        wp user create admin-2 admin-2@example.com --role=administrator --user_pass=password
-        wp user create editor editor@example.com --role=editor --user_pass=password
-        wp user create author author@example.com --role=author --user_pass=password
-        wp user create contributor contributor@example.com --role=contributor --user_pass=password
+        wp user create admin-2 admin-2@example.com --role=administrator --user_pass=password --quiet
+        wp user create editor editor@example.com --role=editor --user_pass=password --quiet
+        wp user create author author@example.com --role=author --user_pass=password --quiet
+        wp user create contributor contributor@example.com --role=contributor --user_pass=password --quiet
 
-        wp post create --post_status=publish --post_title="Hello Solar System!"
-        wp post create --post_status=publish --post_title="Hello Milky Way!"
-        wp post create --post_status=publish --post_title="Hello Universe!"
-        wp post create --post_status=publish --post_title="Hello Spéçïåł čhāràćtęrß!"
+        wp post create --post_status=publish --post_title="Hello Solar System!" --quiet
+        wp post create --post_status=publish --post_title="Hello Milky Way!" --quiet
+        wp post create --post_status=publish --post_title="Hello Universe!" --quiet
+        wp post create --post_status=publish --post_title="Hello Spéçïåł čhāràćtęrß!" --quiet
 
         if [ ! -z "${{ inputs.amp }}" ]; then
           wp plugin install amp --force --version=${{ inputs.amp }}
