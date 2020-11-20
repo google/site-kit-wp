@@ -111,8 +111,10 @@ function ModulesList( { moduleSlugs } ) {
 					slug,
 					name,
 					connected,
+					active,
 					dependencies,
 				} = module;
+				const setupComplete = connected && active;
 
 				// Check if required modules are active.
 				if ( 0 < dependencies.length ) {
@@ -142,7 +144,7 @@ function ModulesList( { moduleSlugs } ) {
 							</h3>
 						</div>
 						<ModuleSettingsWarning slug={ slug } context="modules-list" />
-						{ connected && (
+						{ setupComplete && (
 							<span className="googlesitekit-settings-module__status">
 								<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
 									<VisuallyHidden>
@@ -152,7 +154,7 @@ function ModulesList( { moduleSlugs } ) {
 								{ __( 'Connected', 'google-site-kit' ) }
 							</span>
 						) }
-						{ ! connected && ! blockedByParentModule && (
+						{ ! setupComplete && ! blockedByParentModule && (
 							<Link
 								arrow
 								small
@@ -162,7 +164,7 @@ function ModulesList( { moduleSlugs } ) {
 								{ __( 'Connect Service', 'google-site-kit' ) }
 							</Link>
 						) }
-						{ ! connected && blockedByParentModule && (
+						{ ! setupComplete && blockedByParentModule && (
 							<Link disabled small inherit>
 								{
 									/* translators: %s: parent module name */
