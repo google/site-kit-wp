@@ -25,8 +25,8 @@ import { WithTestRegistry } from '../../tests/js/utils';
 /**
  * Creates a legacy settings wrapper component for the given module.
  *
- * @since 1.12.0
  * @since 1.20.0 Removed `moduleComponent` argument (now provided via module registration).
+ * @since 1.12.0 Function introduced.
  * @private
  *
  * @param {string} moduleSlug The module's slug.

@@ -47,8 +47,8 @@ export default function SetupWrapper( { moduleSlug } ) {
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
 	 *
-	 * @since 1.0.0
 	 * @since 1.18.0 Added optional redirectURL parameter.
+	 * @since 1.0.0 Function introduced.
 	 *
 	 * @param {string} [redirectURL] URL to redirect to when complete. Defaults to Site Kit dashboard.
 	 */

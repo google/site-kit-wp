@@ -212,8 +212,8 @@ const baseActions = {
 	/**
 	 * Registers a module.
 	 *
-	 * @since 1.13.0
 	 * @since 1.20.0 Introduced the ability to register settings and setup components.
+	 * @since 1.13.0 Function introduced.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.

@@ -54,8 +54,8 @@ module.exports = iterateJsdoc( ( {
 	// If there's no second group, don't check tag grouping.
 	if ( ! hasSecondGroup ) {
 		if (
-			! jsdoc.source.match(
-				new RegExp( `@${ lastTagInFirstGroup }.*\\n*/`, 'gm' )
+			jsdoc.source.match(
+				new RegExp( `@${ lastTagInFirstGroup }.*\\n\\n`, 'gm' )
 			)
 		) {
 			context.report( {
@@ -66,6 +66,8 @@ module.exports = iterateJsdoc( ( {
 
 			return;
 		}
+
+		return;
 	}
 
 	const firstTagInSecondGroup = findTagInGroup( [ 'param', 'typedef', 'type', 'return' ], utils );

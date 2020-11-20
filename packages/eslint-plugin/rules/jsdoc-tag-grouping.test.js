@@ -51,6 +51,19 @@ export function exampleTestFunction( props ) {
 }
       `,
 		},
+		{
+			code: `
+/**
+ * A function without a second group, that ends with a "private" tag.
+ *
+ * @since 1.7.1
+ * @private
+ */
+export function exampleTestFunction( props ) {
+	return 'test';
+}
+      `,
+		},
 	],
 	invalid: [
 		{
