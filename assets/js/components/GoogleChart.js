@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
+import { until } from 'wait-promise';
 
 /**
  * WordPress dependencies
@@ -33,6 +33,7 @@ import { useEffect, useState, useRef } from '@wordpress/element';
  */
 import ProgressBar from './ProgressBar';
 
+let loadedOnce = false;
 let chartLoadPromise;
 
 async function loadCharts() {
@@ -45,13 +46,16 @@ async function loadCharts() {
 		const script = document.createElement( 'script' );
 		script.type = 'text/javascript';
 
-		chartLoadPromise = new Promise( ( resolve ) => {
-			script.onload = resolve;
-			// Add the script to the DOM
-			global.document.head.appendChild( script );
-			// Set the `src` to begin transport
-			script.src = 'https://www.gstatic.com/charts/loader.js';
-		} );
+		// Only insert the DOM element if no Charts loader script is detected.
+		if ( document.querySelectorAll( 'script[src="https://www.gstatic.com/charts/loader.js"]' ).length === 0 ) {
+			chartLoadPromise = new Promise( ( resolve ) => {
+				script.onload = resolve;
+				// Add the script to the DOM
+				global.document.head.appendChild( script );
+				// Set the `src` to begin transport
+				script.src = 'https://www.gstatic.com/charts/loader.js';
+			} );
+		}
 	} else {
 		// Charts is already available - resolve immediately.
 		chartLoadPromise = Promise.resolve();
@@ -77,28 +81,37 @@ export default function GoogleChart( props ) {
 	const chartRef = useRef( null );
 	const [ chart, setChart ] = useState( null );
 	const [ loading, setLoading ] = useState( true );
+	const [ visualizationLoaded, setVisualizationLoaded ] = useState( false );
 
 	// Load the google charts library.
 	useEffect( () => {
-		loadCharts().then( () => {
-			global.google.charts.load( 'current', {
-				packages: [ 'corechart' ],
-				callback: () => {
-					setLoading( false );
-				},
-			} );
-		} );
+		( async () => {
+			await loadCharts();
+
+			// Only call `charts.load` if the charts haven't been loaded yet.
+			if ( ! loadedOnce && global.google?.charts ) {
+				loadedOnce = true;
+				global.google.charts.load( 'current', {
+					packages: [ 'corechart' ],
+					callback: () => {
+						setLoading( false );
+					},
+				} );
+			}
+		} )();
 	}, [] );
 
 	// Create a new chart when the library is loaded.
 	useEffect( () => {
-		if ( ! loading && chartRef.current && global.google ) {
+		if ( ! loading && chartRef?.current && visualizationLoaded ) {
 			const googleChart = 'pie' === chartType
 				? new global.google.visualization.PieChart( chartRef.current )
 				: new global.google.visualization.LineChart( chartRef.current );
+
 			setChart( googleChart );
 		}
-	}, [ loading, !! chartRef.current, chartType ] );
+	}, [ loading, !! chartRef.current, chartType, visualizationLoaded ] );
+	// } );
 
 	// Draw the chart whenever one of these properties has changed.
 	useEffect( () => {
@@ -139,6 +152,21 @@ export default function GoogleChart( props ) {
 		singleStat,
 	] );
 
+	useEffect( () => {
+		( async () => {
+			await until( () => {
+				return (
+					!! global.google?.visualization &&
+					!! global.google?.visualization?.PieChart &&
+					!! global.google?.visualization?.LineChart
+				);
+			} );
+
+			setLoading( false );
+			setVisualizationLoaded( true );
+		} )();
+	}, [] );
+
 	return (
 		<div className="googlesitekit-graph-wrapper">
 			<div ref={ chartRef } className="googlesitekit-line-chart">
@@ -162,19 +190,6 @@ export default function GoogleChart( props ) {
 		</div>
 	);
 }
-
-GoogleChart.propTypes = {
-	chartType: PropTypes.string,
-	className: PropTypes.string,
-	data: PropTypes.arrayOf( PropTypes.array ),
-	loadCompressed: PropTypes.bool,
-	loadHeight: PropTypes.number,
-	loadSmall: PropTypes.bool,
-	loadText: PropTypes.bool,
-	options: PropTypes.object.isRequired,
-	selectedStats: PropTypes.array,
-	singleStat: PropTypes.bool,
-};
 
 GoogleChart.defaultProps = {
 	chartType: 'line',
