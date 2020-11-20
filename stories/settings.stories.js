@@ -93,7 +93,7 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
 		global._googlesitekitLegacyData.modules.adsense.active = false;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULES ).registerModule( 'adsense' )
+			dispatch( CORE_MODULES ).registerModule( 'adsense' );
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
