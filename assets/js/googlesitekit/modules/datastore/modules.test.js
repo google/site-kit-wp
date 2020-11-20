@@ -297,12 +297,6 @@ describe( 'core/modules modules', () => {
 				expect( modules[ moduleSlug ] ).toMatchObject( { active: false, connected: false } );
 			} );
 
-			it( 'requires the module slug to be provided', () => {
-				expect( () => {
-					registry.dispatch( STORE_NAME ).registerModule();
-				} ).toThrow( 'module slug is required' );
-			} );
-
 			it( 'does not allow the same module to be registered more than once on the client', () => {
 				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
 
@@ -368,10 +362,10 @@ describe( 'core/modules modules', () => {
 
 			it( 'receives and sets the error', () => {
 				const slug = 'slug1';
-				const errorMessage = 'Error Message';
+				const error = { code: 'error_code', message: 'Error Message', data: null };
 				const state = { ... store.getState().checkRequirementsResults };
-				registry.dispatch( STORE_NAME ).receiveCheckRequirementsError( slug, errorMessage );
-				expect( store.getState().checkRequirementsResults ).toMatchObject( { ...state, [ slug ]: errorMessage } );
+				registry.dispatch( STORE_NAME ).receiveCheckRequirementsError( slug, error );
+				expect( store.getState().checkRequirementsResults ).toMatchObject( { ...state, [ slug ]: error } );
 			} );
 		} );
 
@@ -379,7 +373,7 @@ describe( 'core/modules modules', () => {
 			it( 'requires the slug param', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).receiveCheckRequirementsSuccess();
-				} ).toThrow( 'module slug is required' );
+				} ).toThrow( 'slug is required' );
 			} );
 
 			it( 'receives and sets success', () => {
