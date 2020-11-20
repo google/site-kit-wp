@@ -449,7 +449,7 @@ final class Authentication {
 	/**
 	 * Gets the User Input State instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return User_Input_State An instance of the User_Input_State class.
 	 */
@@ -672,6 +672,14 @@ final class Authentication {
 			$data['proxyPermissionsURL'] = esc_url_raw( $this->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
 		}
+
+		$version               = get_bloginfo( 'version' );
+		list( $major, $minor ) = explode( '.', $version );
+		$data['wpVersion']     = array(
+			'version' => $version,
+			'major'   => (int) $major,
+			'minor'   => (int) $minor,
+		);
 
 		return $data;
 	}

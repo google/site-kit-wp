@@ -35,7 +35,7 @@ const defaultSettings = {
 /**
  * Activates the AdSense module and complete the setup process.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Object} [settingsOverrides] Optional. Settings to override the defaults.
  */

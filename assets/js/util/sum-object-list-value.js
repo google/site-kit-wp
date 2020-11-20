@@ -24,7 +24,7 @@ import sumBy from 'lodash/sumBy';
 /**
  * Returns the sum of a given fieldName in a list.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Array}  list      Array of objects or arrays.
  * @param {string} fieldName The path name to the field to be summed.
