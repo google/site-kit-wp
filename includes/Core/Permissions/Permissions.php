@@ -182,7 +182,7 @@ final class Permissions {
 	/**
 	 * Check permissions for current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return array
 	 */
