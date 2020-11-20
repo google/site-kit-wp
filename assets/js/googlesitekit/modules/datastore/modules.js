@@ -287,8 +287,7 @@ const baseActions = {
 	 */
 	receiveCheckRequirementsError( slug, error ) {
 		invariant( slug, 'slug is required' );
-		invariant( error, 'error is required' );
-		invariant( isPlainObject( error ), 'error must be an object' );
+		invariant( isPlainObject( error ), 'error is required and must be an object' );
 		return {
 			payload: { slug, error },
 			type: RECEIVE_CHECK_REQUIREMENTS_ERROR,
