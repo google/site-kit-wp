@@ -305,7 +305,7 @@ const baseActions = {
 	 * @return {Object} Action for RECEIVE_CHECK_REQUIREMENTS_SUCCESS.
 	 */
 	receiveCheckRequirementsSuccess( slug ) {
-		invariant( slug, 'module slug is required' );
+		invariant( slug, 'slug is required' );
 		return {
 			payload: {
 				slug,
@@ -682,6 +682,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} Can activate module status; `undefined` if state is still loading or if no module with that slug exists.
 	 */
 	canActivateModule( state, slug ) {
+		invariant( slug, 'slug is required' );
 		const moduleRequirements = state.checkRequirementsResults[ slug ];
 
 		if ( moduleRequirements === undefined ) {
