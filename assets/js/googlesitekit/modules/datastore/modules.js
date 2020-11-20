@@ -233,7 +233,6 @@ const baseActions = {
 	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
 	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
-	 * @return {void}
 	 */
 	*registerModule( slug, {
 		name,
