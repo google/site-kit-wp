@@ -1,7 +1,7 @@
 /**
  * ModulesList component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { map } from 'lodash';
+import map from 'lodash/map';
 import classnames from 'classnames';
 
 /**
@@ -33,6 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import {
 	showErrorNotification,
+	trackEvent,
 } from '../util';
 import Data from 'googlesitekit-data';
 import Link from './Link';
@@ -58,6 +59,11 @@ function ModulesList( { moduleSlugs } ) {
 	const handleSetupModule = useCallback( async ( slug ) => {
 		try {
 			const { response } = await activateModule( slug );
+			await trackEvent(
+				`${ slug }_setup`,
+				'module_activate',
+				slug,
+			);
 
 			// Redirect to ReAuthentication URL
 			global.location.assign( response.moduleReauthURL );
@@ -84,7 +90,7 @@ function ModulesList( { moduleSlugs } ) {
 
 	// Map of slug => name for every module that is active and completely set up.
 	const completedModuleNames = modules
-		.filter( ( module ) => module.active && module.setupComplete )
+		.filter( ( module ) => module.active && module.connected )
 		.reduce( ( completed, module ) => {
 			completed[ module.slug ] = module.name;
 			return completed;
@@ -104,7 +110,7 @@ function ModulesList( { moduleSlugs } ) {
 				const {
 					slug,
 					name,
-					active: isConnected,
+					connected,
 					dependencies,
 				} = module;
 
@@ -136,7 +142,7 @@ function ModulesList( { moduleSlugs } ) {
 							</h3>
 						</div>
 						<ModuleSettingsWarning slug={ slug } context="modules-list" />
-						{ isConnected && (
+						{ connected && (
 							<span className="googlesitekit-settings-module__status">
 								<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
 									<VisuallyHidden>
@@ -146,7 +152,7 @@ function ModulesList( { moduleSlugs } ) {
 								{ __( 'Connected', 'google-site-kit' ) }
 							</span>
 						) }
-						{ ! isConnected && ! blockedByParentModule && (
+						{ ! connected && ! blockedByParentModule && (
 							<Link
 								arrow
 								small
@@ -156,7 +162,7 @@ function ModulesList( { moduleSlugs } ) {
 								{ __( 'Connect Service', 'google-site-kit' ) }
 							</Link>
 						) }
-						{ ! isConnected && blockedByParentModule && (
+						{ ! connected && blockedByParentModule && (
 							<Link disabled small inherit>
 								{
 									/* translators: %s: parent module name */
