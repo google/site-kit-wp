@@ -32,9 +32,9 @@ export default function UserInputSuccessNotification() {
 		<Notification
 			id="user-input-success"
 			title={ __( 'Congrats! You set your site goals.', 'google-site-kit' ) }
-			description={ __( 'Based on your goals, now Site Kit will begin showing you suggestions how to add more metrics to your dashboard that are relevant specifically to you', 'google-site-kit' ) }
+			description={ __( 'Based on your goals, now Site Kit will begin showing you suggestions how to add more metrics to your dashboard that are relevant specifically to you.', 'google-site-kit' ) }
 			smallImage={ <UserInputSuccessImage /> }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
 			format="small"
 		/>
 	);
