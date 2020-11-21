@@ -632,6 +632,8 @@ describe( 'core/modules modules', () => {
 			it( 'checks that we can activate modules with an active dependency', async () => {
 				await bootStrapActivateModulesTests();
 				const slug = 'slug1dependant';
+				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
 				const canActivate = registry.select( STORE_NAME ).canActivateModule( slug );
 				expect( canActivate ).toEqual( true );
 			} );
@@ -639,6 +641,8 @@ describe( 'core/modules modules', () => {
 			it( 'checks that we cannot activate a module with an inactive dependency', async () => {
 				await bootStrapActivateModulesTests();
 				const slug = 'slug2dependant';
+				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
 				const canActivate = registry.select( STORE_NAME ).canActivateModule( slug );
 				expect( canActivate ).toEqual( false );
 			} );
@@ -649,6 +653,7 @@ describe( 'core/modules modules', () => {
 				await bootStrapActivateModulesTests();
 				const slug = 'slug1dependant';
 				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
 
 				const error = registry.select( STORE_NAME ).getCheckRequirementsError( slug );
 				expect( error ).toEqual( null );
@@ -658,6 +663,7 @@ describe( 'core/modules modules', () => {
 				await bootStrapActivateModulesTests();
 				const slug = 'slug2dependant';
 				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
 
 				const error = registry.select( STORE_NAME ).getCheckRequirementsError( slug );
 				expect( error ).toEqual( {
