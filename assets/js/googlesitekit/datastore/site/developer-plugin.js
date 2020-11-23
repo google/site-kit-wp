@@ -73,7 +73,7 @@ const baseSelectors = {
 	 * }
 	 * ```
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

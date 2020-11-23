@@ -15,7 +15,7 @@ use InvalidArgumentException;
 /**
  * Class for managing module registration.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  * @access private
  * @ignore
  */
@@ -23,7 +23,7 @@ class Module_Registry {
 	/**
 	 * Registered modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 * @var array
 	 */
 	private $registry = array();
@@ -31,7 +31,7 @@ class Module_Registry {
 	/**
 	 * Registers a module class on the registry.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @param string $module_classname Fully-qualified module class name to register.
 	 * @throws InvalidArgumentException Thrown if an invalid module class name is provided.
@@ -57,7 +57,7 @@ class Module_Registry {
 	/**
 	 * Gets all registered module class names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return string[] Registered module class names.
 	 */
