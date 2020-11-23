@@ -90,7 +90,7 @@ class User_Input_Settings {
 	/**
 	 * Determines whether the current user input settings have empty values or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @param array $settings The settings to check.
 	 * @return boolean|null TRUE if at least one of the settings has empty values, otherwise FALSE. If a request to the proxy server fails, it will return NULL.

@@ -35,7 +35,13 @@ import { getSiteKitAdminURL } from '../util';
 export const getDataTableFromData = ( data, headers, options ) => {
 	const dataRows = [];
 
-	const { links, source, showURLs, useAdminURLs = false } = options;
+	const {
+		links,
+		source,
+		showURLs,
+		useAdminURLs = false,
+		PrimaryLink = Link,
+	} = options;
 
 	if ( options.cap ) {
 		data = data.slice( 0, options.cap );
@@ -64,14 +70,14 @@ export const getDataTableFromData = ( data, headers, options ) => {
 				>
 					{ row[ 0 ] === cell && link
 						? <div className="googlesitekit-table__body-item-content">
-							<Link
+							<PrimaryLink
 								className="googlesitekit-table__body-item-link"
 								href={ useAdminURLs ? getSiteKitAdminURL( 'googlesitekit-dashboard', { permaLink } ) : link }
 								external={ ! useAdminURLs }
 								inherit
 							>
 								{ cell }
-							</Link>
+							</PrimaryLink>
 
 							{ showURLs &&
 								<Link
