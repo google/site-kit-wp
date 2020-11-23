@@ -38,7 +38,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * The first since tag does not require a description.
  *
  * @since 1.7.1
  */
@@ -47,7 +47,8 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * The first since tag does not require a description, but others do.
+ * Also n.e.x.t is a valid version, which should always be last.
  *
  * @since 1.7.1
  * @since 1.8.0 Added a feature.
@@ -58,7 +59,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * The first since tag does not require a description, but others do.
  *
  * @since 1.7.1
  * @since 1.8.0 Added a feature.
@@ -69,7 +70,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * The first since tag does not require a description, but may have one.
  *
  * @since 1.7.1 Originally introduced.
  * @since 1.8.0 Added a feature.
@@ -80,7 +81,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * Since tags must be in the order of the version, with n.e.x.t last if present.
  *
  * @since 1.7.1 Originally introduced.
  * @since 1.8.0 Added a feature.
@@ -93,7 +94,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * Invalid because the second since tag is missing a description.
  *
  * @since 1.7.0
  * @since 1.7.1
@@ -109,27 +110,11 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
- *
- * @since 1.7.0
- * @since 1.7.1
- */
-      `,
-			errors: [
-				{
-					message:
-						'All @since tags after the first require a description.',
-				},
-			],
-		},
-		{
-			code: `
-/**
- * A function that returns a string, to test out ESLint.
+ * Invalid because the third since tag is missing a description.
  *
  * @since 1.6.0
- * @since 1.7.0
- * @since 1.7.1 Add a feature.
+ * @since 1.7.0 Add a feature.
+ * @since 1.7.1
  */
       `,
 			errors: [
@@ -142,7 +127,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * Invalid because the since description is missing a full-stop.
  *
  * @since 1.7.1 Missing a full-stop
  */
@@ -157,7 +142,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * Invalid because a since description is missing a full-stop.
  *
  * @since 1.7.1
  * @since 1.7.2 Missing a full-stop
@@ -173,7 +158,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * Invalid because a since description does not start with a capital letter.
  *
  * @since 1.7.1
  * @since 1.7.2 lowercase description.
@@ -189,7 +174,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * Invalid because a since description does not start with a capital letter.
  *
  * @since 1.7.1 lowercase description.
  * @since 1.7.2 Normal description.
@@ -205,7 +190,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * Invalid because the since tags are in the wrong order.
  *
  * @since 1.7.2 Another description.
  * @since 1.7.1 Normal description.
@@ -221,7 +206,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * A function that returns a string, to test out ESLint.
+ * Invalid because there are multiple since tags for the same version.
  *
  * @since 1.7.1 Normal description.
  * @since 1.7.1 Another description.
@@ -237,7 +222,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * An object.
+ * Invalid because a since tag does not end in a full-stop.
  *
  * @since 1.0.0 Bar.
  * @since 1.2.0 \`F\`
