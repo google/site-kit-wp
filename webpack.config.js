@@ -29,7 +29,6 @@ const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
-const { ProvidePlugin } = require( 'webpack' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const ImageminPlugin = require( 'imagemin-webpack' );
@@ -109,7 +108,6 @@ const rules = [
 					cacheDirectory: true,
 					presets: [
 						'@wordpress/default',
-						'@babel/preset-react',
 					],
 				},
 			},
@@ -225,9 +223,6 @@ const webpackConfig = ( env, argv ) => {
 				],
 			},
 			plugins: [
-				new ProvidePlugin( {
-					React: 'react',
-				} ),
 				new WebpackBar( {
 					name: 'Module Entry Points',
 					color: '#fbbc05',

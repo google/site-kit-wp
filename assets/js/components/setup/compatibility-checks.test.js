@@ -17,11 +17,15 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import CompatibilityChecks, { AMP_PROJECT_TEST_URL } from './compatibility-checks';
 import { render, waitFor } from '../../../../tests/js/test-utils';
-import { Fragment } from 'react';
 import { muteFetch } from '../../../../tests/js/utils';
 
 const compatibilityChildren = ( { complete, inProgressFeedback, CTAFeedback } ) => (
