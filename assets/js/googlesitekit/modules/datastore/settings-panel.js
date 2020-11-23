@@ -21,19 +21,13 @@
  */
 import invariant from 'invariant';
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-const { createRegistrySelector } = Data;
-
 // Actions
 const SET_MODULE_SETTINGS_PANEL_STATE = 'SET_MODULE_SETTINGS_PANEL_STATE';
 
 export const initialState = {
-	panelState: {
-		modules: {},
-		editing: null,
+	settingsPanel: {
+		currentModule: null,
+		isEditing: false,
 	},
 };
 
@@ -65,23 +59,14 @@ export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_MODULE_SETTINGS_PANEL_STATE: {
 			const { slug, value } = payload;
-			const { panelState } = { ...state };
-			panelState.modules[ slug ] = value;
-			if ( value === 'edit' ) {
-				panelState.editing = slug;
-			} else if ( panelState.editing === slug ) {
-				panelState.editing = null;
-				for ( const [ moduleSlug, moduleState ] of Object.entries( panelState.modules ) ) {
-					if ( moduleState === 'edit' ) {
-						// Set all other module panelStates to view if they were edit which would have given them derived state of locked.
-						panelState.modules[ moduleSlug ] = 'view';
-					}
-				}
-			}
+			const settingsPanel = { ...state.settingsPanel };
+
+			settingsPanel.currentModule = 'closed' === value ? null : slug;
+			settingsPanel.isEditing = 'edit' === value;
 
 			return {
 				...state,
-				panelState,
+				settingsPanel,
 			};
 		}
 
@@ -97,28 +82,21 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} slug Slug for panelState.
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Slug for panelState.
 	 * @return {string} Module's panelState as one of: 'view', 'edit', 'closed', 'locked' or null.
 	 */
-	getModuleSettingsPanelState: createRegistrySelector( ( select ) => ( state, slug ) => {
+	getModuleSettingsPanelState: ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
 
-		const isModuleActive = select( 'core/modules' ).isModuleActive( slug );
+		const settingsPanel = { ...state.settingsPanel };
 
-		// Return the panel state if we have it.
-		if ( state.panelState.modules[ slug ] ) {
-			if ( isModuleActive === false ) {
-				// Module is no longer active so we return a default closed state for it.
-				return 'closed';
-			}
-			const slugState = state.panelState.modules[ slug ];
-			// If another module is being currently being edited, and we think ours is being edited, it should be locked.
-			return slugState === 'edit' && state.panelState.editing !== slug && state.panelState.editing !== null ? 'locked' : slugState;
+		if ( settingsPanel.currentModule === slug ) {
+			return settingsPanel.isEditing ? 'edit' : 'view';
 		}
 
-		return isModuleActive === null ? null : 'closed';
-	} ),
-
+		return 'closed';
+	},
 };
 
 export default {
