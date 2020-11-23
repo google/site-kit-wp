@@ -38,6 +38,7 @@ import SourceLink from '../../../../components/SourceLink';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
+import { isZeroReport } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
@@ -90,7 +91,7 @@ function DashboardPopularKeywordsWidget() {
 		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
-	if ( ! data || ! data.length ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="search-console" />;
 	}
 

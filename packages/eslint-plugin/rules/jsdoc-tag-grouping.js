@@ -53,6 +53,20 @@ module.exports = iterateJsdoc( ( {
 
 	// If there's no second group, don't check tag grouping.
 	if ( ! hasSecondGroup ) {
+		if (
+			jsdocNode.value.match(
+				new RegExp( `@${ lastTagInFirstGroup }.*\\n\\s*\\*`, 'gm' )
+			)
+		) {
+			context.report( {
+				data: { name: jsdocNode.name },
+				message: `The @${ lastTagInFirstGroup } tag should not be followed by an empty line when it is the last tag.`,
+				node: jsdocNode,
+			} );
+
+			return;
+		}
+
 		return;
 	}
 
