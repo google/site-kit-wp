@@ -36,6 +36,12 @@ import { STORE_NAME as MODULES_TAGMANAGER } from '../../assets/js/modules/tagman
 import modulesOptimizeStore from '../../assets/js/modules/optimize/datastore';
 import { STORE_NAME as MODULES_OPTIMIZE } from '../../assets/js/modules/optimize/datastore/constants';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/fixtures.json';
+import AdsenseIcon from '../../assets/svg/adsense.svg';
+import AnalyticsIcon from '../../assets/svg/analytics.svg';
+import PagespeedInsightsIcon from '../../assets/svg/pagespeed-insights.svg';
+import SearchConsoleIcon from '../../assets/svg/search-console.svg';
+import TagManagerIcon from '../../assets/svg/tagmanager.svg';
+import OptimizeIcon from '../../assets/svg/optimize.svg';
 
 /**
  * Creates a registry with all available stores.
@@ -207,10 +213,31 @@ export const provideModules = ( registry, extraData = [] ) => {
 	const moduleSlugs = coreModulesFixture.map( ( { slug } ) => slug );
 	const modules = coreModulesFixture
 		.map( ( module ) => {
-			if ( extraModules[ module.slug ] ) {
-				return { ...module, ...extraModules[ module.slug ] };
+			let icon;
+			switch ( module.slug ) {
+				case 'adsense':
+					icon = AdsenseIcon;
+					break;
+				case 'analytics':
+					icon = AnalyticsIcon;
+					break;
+				case 'pagespeed-insights':
+					icon = PagespeedInsightsIcon;
+					break;
+				case 'search-console':
+					icon = SearchConsoleIcon;
+					break;
+				case 'tagmanager':
+					icon = TagManagerIcon;
+					break;
+				case 'optimize':
+					icon = OptimizeIcon;
+					break;
 			}
-			return { ...module };
+			if ( extraModules[ module.slug ] ) {
+				return { ...module, ...extraModules[ module.slug ], icon };
+			}
+			return { ...module, icon };
 		} )
 		.concat(
 			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) )

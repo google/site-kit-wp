@@ -12,23 +12,32 @@ import { __ } from '@wordpress/i18n';
  */
 import Notification from '../assets/js/components/notifications/notification';
 import ModulesList from '../assets/js/components/modules-list';
+import { provideModules, WithTestRegistry } from '../tests/js/utils';
+import { set } from '../assets/js/googlesitekit/api';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
 storiesOf( 'Global/Notifications', module )
-	.add( 'Module Setup Complete', () => (
-		<Notification
-			id="notification-id"
-			title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
-			handleDismiss={ () => {} }
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png` }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			format="large"
-			type="win-success"
-		>
-			<ModulesList />
-		</Notification>
-	) )
+	.add( 'Module Setup Complete', () => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry );
+		};
+
+		return <WithTestRegistry callback={ setupRegistry }>
+			<Notification
+				id="notification-id"
+				title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
+				handleDismiss={ () => {
+				} }
+				winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png` }
+				dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+				format="large"
+				type="win-success"
+			>
+				<ModulesList />
+			</Notification>
+		</WithTestRegistry>;
+	} )
 	.add( 'Small with Image', () => (
 		<Notification
 			id="notification-id"
@@ -83,34 +92,42 @@ storiesOf( 'Global/Notifications', module )
 			pageIndex="First detected: 2/13/18"
 		/>
 	) )
-	.add( 'Traffic Increase Win', () => (
-		<Notification
-			id="notification-id"
-			title={ __( 'Congrats on more website visitors!', 'google-site-kit' ) }
-			description={ __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ) }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			format="large"
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/sun.png` }
-			logo
-			module="analytics"
-			moduleName="Analytics"
-			blockData={
-				[
-					{
-						title: 'Site Visitors',
-						datapoint: '23,780',
-						datapointUnit: '',
-					},
-					{
-						title: 'Increase',
-						datapoint: 25,
-						datapointUnit: '%',
-					},
-				]
-			}
-			type="win-stats"
-		/>
-	) )
+	.add( 'Traffic Increase Win', () => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<Notification
+					id="notification-id"
+					title={ __( 'Congrats on more website visitors!', 'google-site-kit' ) }
+					description={ __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ) }
+					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+					format="large"
+					winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/sun.png` }
+					logo
+					module="analytics"
+					moduleName="Analytics"
+					blockData={
+						[
+							{
+								title: 'Site Visitors',
+								datapoint: '23,780',
+								datapointUnit: '',
+							},
+							{
+								title: 'Increase',
+								datapoint: 25,
+								datapointUnit: '%',
+							},
+						]
+					}
+					type="win-stats"
+				/>
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Pageview Increase Win', () => (
 		<Notification
 			id="notification-id"

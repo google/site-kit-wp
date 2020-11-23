@@ -42,6 +42,7 @@ import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
+import AdSenseIcon from '../../../svg/adsense.svg';
 
 addFilter(
 	'googlesitekit.ModuleSetupIncomplete',
@@ -84,6 +85,7 @@ domReady( () => {
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
 			setupComponent: SetupMain,
+			icon: AdSenseIcon,
 		}
 	);
 
