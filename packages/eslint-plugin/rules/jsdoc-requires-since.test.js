@@ -41,14 +41,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
  * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.1
- * @private
- *
- * @param {?Object}   props          Component props.
- * @return {string} A test string.
  */
-export function exampleTestFunction( props ) {
-	return 'test';
-}
       `,
 		},
 		{
@@ -59,14 +52,7 @@ export function exampleTestFunction( props ) {
  * @since 1.7.1
  * @since 1.8.0 Added a feature.
  * @since n.e.x.t Added another feature.
- * @private
- *
- * @param {?Object} props Component props.
- * @return {string} A test string.
  */
-export function coolFunction( props ) {
-	return 'test';
-}
       `,
 		},
 		{
@@ -77,14 +63,7 @@ export function coolFunction( props ) {
  * @since 1.7.1
  * @since 1.8.0 Added a feature.
  * @since 1.9.1 Added another feature.
- * @private
- *
- * @param {?Object} props Component props.
- * @return {string} A test string.
  */
-export function coolFunction( props ) {
-	return 'test';
-}
       `,
 		},
 		{
@@ -95,14 +74,7 @@ export function coolFunction( props ) {
  * @since 1.7.1 Originally introduced.
  * @since 1.8.0 Added a feature.
  * @since 1.9.1 Added another feature.
- * @private
- *
- * @param {?Object} props Component props.
- * @return {string} A test string.
  */
-export function coolFunction( props ) {
-	return 'test';
-}
       `,
 		},
 		{
@@ -113,14 +85,7 @@ export function coolFunction( props ) {
  * @since 1.7.1 Originally introduced.
  * @since 1.8.0 Added a feature.
  * @since n.e.x.t Added another feature.
- * @private
- *
- * @param {?Object} props Component props.
- * @return {string} A test string.
  */
-export function coolFunction( props ) {
-	return 'test';
-}
       `,
 		},
 	],
@@ -132,14 +97,7 @@ export function coolFunction( props ) {
  *
  * @since 1.7.0
  * @since 1.7.1
- * @private
- *
- * @param {?Object}   props          Component props.
- * @return {string} A test string.
  */
-export function exampleTestFunction( props ) {
-	return 'test';
-}
       `,
 			errors: [
 				{
@@ -155,14 +113,7 @@ export function exampleTestFunction( props ) {
  *
  * @since 1.7.0
  * @since 1.7.1
- * @private
- *
- * @param {?Object}   props          Component props.
- * @return {string} A test string.
  */
-export function exampleTestFunction( props ) {
-	return 'test';
-}
       `,
 			errors: [
 				{
@@ -179,14 +130,7 @@ export function exampleTestFunction( props ) {
  * @since 1.6.0
  * @since 1.7.0
  * @since 1.7.1 Add a feature.
- * @private
- *
- * @param {?Object}   props          Component props.
- * @return {string} A test string.
  */
-export function exampleTestFunction( props ) {
-	return 'test';
-}
       `,
 			errors: [
 				{
@@ -201,14 +145,7 @@ export function exampleTestFunction( props ) {
  * A function that returns a string, to test out ESLint.
  *
  * @since 1.7.1 Missing a full-stop
- * @private
- *
- * @param {?Object}   props          Component props.
- * @return {string} A test string.
  */
-export function exampleTestFunction( props ) {
-	return 'test';
-}
       `,
 			errors: [
 				{
@@ -224,14 +161,7 @@ export function exampleTestFunction( props ) {
  *
  * @since 1.7.1
  * @since 1.7.2 Missing a full-stop
- * @private
- *
- * @param {?Object}   props          Component props.
- * @return {string} A test string.
  */
-export function exampleTestFunction( props ) {
-	return 'test';
-}
       `,
 			errors: [
 				{
@@ -247,14 +177,7 @@ export function exampleTestFunction( props ) {
  *
  * @since 1.7.1
  * @since 1.7.2 lowercase description.
- * @private
- *
- * @param {?Object}   props          Component props.
- * @return {string} A test string.
  */
-export function exampleTestFunction( props ) {
-	return 'test';
-}
       `,
 			errors: [
 				{
@@ -270,14 +193,7 @@ export function exampleTestFunction( props ) {
  *
  * @since 1.7.1 lowercase description.
  * @since 1.7.2 Normal description.
- * @private
- *
- * @param {?Object}   props          Component props.
- * @return {string} A test string.
  */
-export function exampleTestFunction( props ) {
-	return 'test';
-}
       `,
 			errors: [
 				{
@@ -293,13 +209,7 @@ export function exampleTestFunction( props ) {
  *
  * @since 1.7.2 Another description.
  * @since 1.7.1 Normal description.
- * @private
- *
- * @return {string} A test string.
  */
-export function exampleTestFunction() {
-	return 'test';
-}
       `,
 			errors: [
 				{
@@ -315,13 +225,7 @@ export function exampleTestFunction() {
  *
  * @since 1.7.1 Normal description.
  * @since 1.7.1 Another description.
- * @private
- *
- * @return {string} A test string.
  */
-export function exampleTestFunction() {
-	return 'test';
-}
       `,
 			errors: [
 				{
@@ -336,14 +240,8 @@ export function exampleTestFunction() {
  * An object.
  *
  * @since 1.0.0 Bar.
- *
  * @since 1.2.0 \`F\`
- *
- * @type {Object} A cool object.
  */
-export const myCoolObject = {
-	foo: 'bar',
-};
       `,
 			errors: [
 				{
