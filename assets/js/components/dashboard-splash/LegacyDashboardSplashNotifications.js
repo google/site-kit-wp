@@ -1,5 +1,5 @@
 /**
- * DashboardSplashNotifications component.
+ * LegacyDashboardSplashNotifications component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -25,10 +25,10 @@ import { Component } from '@wordpress/element';
 /**
  * A single module. Keeps track of its own active state and settings.
  */
-class DashboardSplashNotifications extends Component {
+class LegacyDashboardSplashNotifications extends Component {
 	render() {
 		return null;
 	}
 }
 
-export default withFilters( 'googlesitekit.DashboardSplashNotifications' )( DashboardSplashNotifications );
+export default withFilters( 'googlesitekit.DashboardSplashNotifications' )( LegacyDashboardSplashNotifications );
