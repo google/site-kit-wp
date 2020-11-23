@@ -12,16 +12,14 @@ import { __ } from '@wordpress/i18n';
  */
 import Notification from '../assets/js/components/notifications/notification';
 import ModulesList from '../assets/js/components/ModulesList';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import FIXTURES from '../assets/js/googlesitekit/modules/datastore/fixtures';
-import { WithTestRegistry } from '../tests/js/utils';
+import { provideModules, WithTestRegistry } from '../tests/js/utils';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
 storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
+		const setupRegistry = ( registry ) => {
+			provideModules( registry );
 		};
 
 		return (
@@ -29,7 +27,6 @@ storiesOf( 'Global/Notifications', module )
 				<Notification
 					id="notification-id"
 					title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
-					handleDismiss={ () => {} }
 					winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png` }
 					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 					format="large"

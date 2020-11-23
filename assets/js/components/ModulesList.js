@@ -19,14 +19,13 @@
 /**
  * External dependencies
  */
-import map from 'lodash/map';
 import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -47,36 +46,35 @@ const { useSelect, useDispatch } = Data;
 
 function ModulesList( { moduleSlugs } ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
-	const modulesData = useSelect( ( select ) => select( CORE_MODULES ).getModules() ?? {} );
+	const modulesData = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
-	/**
-	 * Handle setup module click event.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param {string} slug Module slug.
-	 */
 	const handleSetupModule = useCallback( async ( slug ) => {
-		try {
-			const { response } = await activateModule( slug );
-			await trackEvent(
-				`${ slug }_setup`,
-				'module_activate',
-				slug,
-			);
+		const { response, error } = await activateModule( slug );
 
-			// Redirect to ReAuthentication URL
-			global.location.assign( response.moduleReauthURL );
-		} catch ( err ) {
+		if ( error ) {
 			showErrorNotification( GenericError, {
 				id: 'setup-module-error',
 				title: __( 'Internal Server Error', 'google-site-kit' ),
-				description: err.message,
+				description: error.message,
 				format: 'small',
 				type: 'win-error',
 			} );
+			return null;
 		}
+
+		await trackEvent(
+			`${ slug }_setup`,
+			'module_activate',
+			slug,
+		);
+
+		// Redirect to ReAuthentication URL
+		global.location.assign( response.moduleReauthURL );
 	}, [ activateModule ] );
+
+	if ( ! modulesData ) {
+		return null;
+	}
 
 	// Filter specific modules
 	const moduleObjects = Array.isArray( moduleSlugs ) && moduleSlugs.length
@@ -85,46 +83,24 @@ function ModulesList( { moduleSlugs } ) {
 			.reduce( ( acc, slug ) => ( { ...acc, [ slug ]: modulesData[ slug ] } ), {} )
 		: modulesData;
 
-	// Filter out internal modules.
-	const modules = Object.values( moduleObjects ).filter( ( module ) => ! module.internal );
-
-	// Map of slug => name for every module that is active and completely set up.
-	const completedModuleNames = modules
-		.filter( ( module ) => module.active && module.connected )
-		.reduce( ( completed, module ) => {
-			completed[ module.slug ] = module.name;
-			return completed;
-		}, {} );
+	// Filter out internal modules and remove modules with dependencies.
+	const modules = Object.values( moduleObjects ).filter( ( module ) => ! module.internal && 0 === module.dependencies.length );
 
 	// Sort modules and exclude those that required other modules to be set up.
 	// Logic still in place below in case we want to add blocked modules back.
 	const sortedModules = modules
-		.filter( ( module ) => 0 === module.dependencies.length )
 		.sort( ( module1, module2 ) => module1.sort - module2.sort );
 
 	return (
 		<div className="googlesitekit-modules-list">
-			{ map( sortedModules, ( module ) => {
-				let blockedByParentModule = false;
-				let parentBlockerName = '';
+			{ sortedModules.map( ( module ) => {
 				const {
 					slug,
 					name,
 					connected,
 					active,
-					dependencies,
 				} = module;
 				const setupComplete = connected && active;
-
-				// Check if required modules are active.
-				if ( 0 < dependencies.length ) {
-					dependencies.forEach( ( requiredModule ) => {
-						if ( completedModuleNames[ requiredModule ] ) {
-							blockedByParentModule = true;
-							parentBlockerName = completedModuleNames[ requiredModule ];
-						}
-					} );
-				}
 
 				return (
 					<div
@@ -132,7 +108,6 @@ function ModulesList( { moduleSlugs } ) {
 						className={ classnames(
 							'googlesitekit-modules-list__module',
 							`googlesitekit-modules-list__module--${ slug }`,
-							{ 'googlesitekit-modules-list__module--disabled': blockedByParentModule }
 						) }
 					>
 						<div className="googlesitekit-settings-connect-module__wrapper">
@@ -154,22 +129,14 @@ function ModulesList( { moduleSlugs } ) {
 								{ __( 'Connected', 'google-site-kit' ) }
 							</span>
 						) }
-						{ ! setupComplete && ! blockedByParentModule && (
+						{ ! setupComplete && (
 							<Link
+								onClick={ () => handleSetupModule( slug ) }
 								arrow
 								small
 								inherit
-								onClick={ () => handleSetupModule( slug ) }
 							>
 								{ __( 'Connect Service', 'google-site-kit' ) }
-							</Link>
-						) }
-						{ ! setupComplete && blockedByParentModule && (
-							<Link disabled small inherit>
-								{
-									/* translators: %s: parent module name */
-									sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName )
-								}
 							</Link>
 						) }
 					</div>

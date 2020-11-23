@@ -1,5 +1,5 @@
 /**
- * ModulesList stories.
+ * Modules List stories.
  *
  * Google Site Kit, Copyright 2020 Google LLC
  *
@@ -25,14 +25,12 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import ModulesList from '../assets/js/components/ModulesList';
-import { WithTestRegistry } from '../tests/js/utils';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import FIXTURES from '../assets/js/googlesitekit/modules/datastore/fixtures';
+import { provideModules, WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Global', module )
-	.add( 'ModulesList', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
+	.add( 'Modules List', () => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry );
 		};
 
 		return (
