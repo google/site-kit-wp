@@ -48,7 +48,7 @@ export const numberFormat = ( number, options = {} ) => {
  *                  E.g. `en-US` or `de-DE`
  */
 export const getLocale = ( _global = global ) => {
-	const siteKitLocale = get( _global, [ '_googlesitekitLegacyData', 'locale', '', 'lang' ] );
+	const siteKitLocale = get( _global, [ '_googlesitekitLegacyData', 'locale' ] );
 	if ( siteKitLocale ) {
 		const matches = siteKitLocale.match( /^(\w{2})?(_)?(\w{2})/ );
 		if ( matches && matches[ 0 ] ) {

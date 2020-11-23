@@ -29,7 +29,9 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { actions as errorStoreActions } from '../../data/create-error-store';
 const { commonActions, createRegistrySelector } = Data;
+const { receiveError, clearError } = errorStoreActions;
 
 function fetchStoreReducerCallback( state, inputSettings ) {
 	return { ...state, inputSettings };
@@ -103,7 +105,7 @@ const baseActions = {
 	 */
 	*saveUserInputSettings() {
 		const registry = yield Data.commonActions.getRegistry();
-		registry.dispatch( STORE_NAME ).clearError( 'saveUserInputSettings', [] );
+		yield clearError( 'saveUserInputSettings', [] );
 
 		const settings = registry.select( STORE_NAME ).getUserInputSettings();
 		const values = Object.keys( settings ).reduce( ( accum, key ) => ( {
@@ -114,7 +116,7 @@ const baseActions = {
 		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( values );
 		if ( error ) {
 			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
-			registry.dispatch( STORE_NAME ).receiveError( error, 'saveUserInputSettings', [] );
+			yield receiveError( error, 'saveUserInputSettings', [] );
 		}
 
 		return { response, error };

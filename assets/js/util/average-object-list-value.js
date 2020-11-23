@@ -25,7 +25,7 @@ import mean from 'lodash/mean';
 /**
  * Returns the average of a given fieldName in a list.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {Array}  list      Array of objects or arrays.
  * @param {string} fieldName The path name of the field to be averaged.
