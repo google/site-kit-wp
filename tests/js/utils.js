@@ -210,30 +210,19 @@ export const provideModules = ( registry, extraData = [] ) => {
 		return { ...acc, [ module.slug ]: module };
 	}, {} );
 
+	const moduleIconMap = {
+		adsense: AdsenseIcon,
+		analytics: AnalyticsIcon,
+		optimize: OptimizeIcon,
+		'pagespeed-insights': PagespeedInsightsIcon,
+		'search-console': SearchConsoleIcon,
+		tagmanager: TagManagerIcon,
+	};
+
 	const moduleSlugs = coreModulesFixture.map( ( { slug } ) => slug );
 	const modules = coreModulesFixture
 		.map( ( module ) => {
-			let icon;
-			switch ( module.slug ) {
-				case 'adsense':
-					icon = AdsenseIcon;
-					break;
-				case 'analytics':
-					icon = AnalyticsIcon;
-					break;
-				case 'pagespeed-insights':
-					icon = PagespeedInsightsIcon;
-					break;
-				case 'search-console':
-					icon = SearchConsoleIcon;
-					break;
-				case 'tagmanager':
-					icon = TagManagerIcon;
-					break;
-				case 'optimize':
-					icon = OptimizeIcon;
-					break;
-			}
+			const icon = moduleIconMap[ module.slug ];
 			if ( extraModules[ module.slug ] ) {
 				return { ...module, ...extraModules[ module.slug ], icon };
 			}
