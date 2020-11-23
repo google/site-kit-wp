@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -49,8 +44,8 @@ const Header = ( { children } ) => {
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--align-middle
 							mdc-layout-grid__cell--span-1-phone
-							mdc-layout-grid__cell--span-3-tablet
-							mdc-layout-grid__cell--span-6-desktop
+							mdc-layout-grid__cell--span-2-tablet
+							mdc-layout-grid__cell--span-4-desktop
 						">
 							<Logo />
 						</div>
@@ -59,8 +54,8 @@ const Header = ( { children } ) => {
 							mdc-layout-grid__cell--align-middle
 							mdc-layout-grid__cell--align-right-phone
 							mdc-layout-grid__cell--span-3-phone
-							mdc-layout-grid__cell--span-5-tablet
-							mdc-layout-grid__cell--span-6-desktop
+							mdc-layout-grid__cell--span-6-tablet
+							mdc-layout-grid__cell--span-8-desktop
 						">
 							{ isAuthenticated && children }
 							{ isAuthenticated && <UserMenu /> }
@@ -71,10 +66,6 @@ const Header = ( { children } ) => {
 			<ErrorNotification />
 		</Fragment>
 	);
-};
-
-Header.propTypes = {
-	children: PropTypes.element,
 };
 
 export default Header;

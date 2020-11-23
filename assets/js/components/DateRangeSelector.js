@@ -85,7 +85,7 @@ function DateRangeSelector() {
 	const menuItems = ranges.map( ( range ) => range.label );
 
 	return (
-		<div className="googlesitekit-date-range-selector">
+		<div className="googlesitekit-date-range-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
 			<Button
 				ref={ menuButtonRef }
 				className="googlesitekit-header__date-range-selector-menu mdc-button--dropdown"
