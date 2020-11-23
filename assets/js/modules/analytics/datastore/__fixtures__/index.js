@@ -42,3 +42,8 @@ export * from './dashboard-unique-visitors-data';
 export * from './dashboard-unique-visitors-args';
 export { pageDashboardUniqueVisitorsSparkData, pageDashboardUniqueVisitorsVisitorData } from './page-dashboard-unique-visitors-data';
 export { pageDashboardUniqueVisitorsSparkArgs, pageDashboardUniqueVisitorsVisitorArgs } from './page-dashboard-unique-visitors-args';
+import defaultSettings from './settings--default.json';
+
+export const settings = {
+	default: defaultSettings,
+};
