@@ -13,7 +13,6 @@ import { __ } from '@wordpress/i18n';
 import Notification from '../assets/js/components/notifications/notification';
 import ModulesList from '../assets/js/components/modules-list';
 import { provideModules, WithTestRegistry } from '../tests/js/utils';
-import { set } from '../assets/js/googlesitekit/api';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
