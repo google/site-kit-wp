@@ -97,6 +97,74 @@ export const selectors = {
 
 		return 'closed';
 	},
+
+	/**
+	 * Checks whether the module settings panel is open for a given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Slug for panelState.
+	 * @return {boolean} Whether or not the module settings panel is open for the module.
+	 */
+	isModuleSettingsPanelOpen: ( state, slug ) => {
+		invariant( slug, 'slug is required.' );
+
+		const settingsPanel = { ...state.settingsPanel };
+
+		return slug === settingsPanel.currentModule;
+	},
+
+	/**
+	 * Checks whether the module settings panel is closed for a given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Slug for panelState.
+	 * @return {boolean} Whether or not the module settings panel is closed for the module.
+	 */
+	isModuleSettingsPanelClosed: ( state, slug ) => {
+		invariant( slug, 'slug is required.' );
+
+		const settingsPanel = { ...state.settingsPanel };
+
+		return slug !== settingsPanel.currentModule;
+	},
+
+	/**
+	 * Checks whether the module settings panel is in edit state for a given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Slug for panelState.
+	 * @return {boolean} Whether or not the module settings panel is in edit state for the module.
+	 */
+	isModuleSettingsPanelEdit: ( state, slug ) => {
+		invariant( slug, 'slug is required.' );
+
+		const settingsPanel = { ...state.settingsPanel };
+
+		return slug === settingsPanel.currentModule && settingsPanel.isEditing;
+	},
+
+	/**
+	 * Checks whether the module settings panel is locked for a given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Slug for panelState.
+	 * @return {boolean} Whether or not the module settings panel is locked for the module.
+	 */
+	isModuleSettingsPanelLocked: ( state, slug ) => {
+		invariant( slug, 'slug is required.' );
+
+		const settingsPanel = { ...state.settingsPanel };
+
+		return slug !== settingsPanel.currentModule && settingsPanel.isEditing;
+	},
 };
 
 export default {
