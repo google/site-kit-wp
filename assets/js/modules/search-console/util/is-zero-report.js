@@ -17,34 +17,33 @@
  */
 
 /**
- * Checks whether the report data is empty or not.
+ * Checks whether the report data is valid.
  *
- * @since 1.21.0
+ * @since n.e.x.t
  *
- * @param {Object} report Report data.
- * @return {boolean|undefined} TRUE if the report has no data, otherwise FALSE. `undefined` if the `report` passed is undefined.
+ * @param {Object} report Report data object.
+ * @return {(boolean|undefined)} Returns undefined if in the loading state, true if the report has no data or missing data, otherwise false.
  */
 export function isZeroReport( report ) {
 	if ( report === undefined ) {
 		return undefined;
 	}
 
-	const { rows, totals } = report || {};
-	if ( ! rows || ! totals ) {
+	if ( ! Array.isArray( report ) || ! report.length ) {
 		return true;
 	}
 
-	if ( rows && ( ! Array.isArray( rows ) || ! rows.length ) ) {
+	const hasMetric = report.some( ( value ) => (
+		value.clicks > 0 ||
+        value.ctr > 0 ||
+        value.impressions > 0 ||
+        value.position > 0
+	) );
+
+	if ( ! hasMetric ) {
 		return true;
 	}
 
-	if ( totals && ( ! Array.isArray( totals ) || ! totals.length ) ) {
-		return true;
-	}
-
-	if ( ! totals.some( ( total ) => total > 0 ) ) {
-		return true;
-	}
-
+	// false means there _is_ valid report data
 	return false;
 }

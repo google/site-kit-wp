@@ -19,7 +19,7 @@
 /**
  * Asserts the URL at the given path contains an <amp-auto-ads> tag.
  *
- * @since n.e.x.t
+ * @since 1.21.0
  *
  * @param {string} path The URL path of the current site to check.
  * @return {Object} Matcher result.

@@ -101,7 +101,7 @@ final class Modules {
 	/**
 	 * Module_Registry instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 * @var Module_Registry
 	 */
 	private $registry;
@@ -109,7 +109,7 @@ final class Modules {
 	/**
 	 * Core module class names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 * @var string[] Core module class names.
 	 */
 	private $core_modules = array(
@@ -495,7 +495,7 @@ final class Modules {
 	/**
 	 * Gets the configured module registry instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return Module_Registry
 	 */
@@ -510,7 +510,7 @@ final class Modules {
 	/**
 	 * Sets up a fresh module registry instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return Module_Registry
 	 */
