@@ -45,6 +45,7 @@ export default function UserInputSettings() {
 	return (
 		<Notification
 			id={ `user-input-settings-notification-${ instanceID }` }
+			className="googlesitekit-user-input__notification"
 			title={ __( 'Customize Site Kit to match your goals', 'google-site-kit' ) }
 			description={ __( 'Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site’s goals', 'google-site-kit' ) }
 			format="large"
@@ -54,7 +55,6 @@ export default function UserInputSettings() {
 			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + personSitImage }
-			className="googlesitekit-user-input__notification"
 		/>
 	);
 }
