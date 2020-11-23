@@ -33,12 +33,6 @@ export function isZeroReport( report ) {
 		return true;
 	}
 
-	const hasDataValue = report[ 0 ].data.totals[ 0 ].values.some( ( value ) => value > 0 );
-
-	if ( ! hasDataValue ) {
-		return true;
-	}
-
 	// false means there _is_ value report data
-	return false;
+	return ! report[ 0 ].data.totals.some( ( totals ) => totals.values.some( ( value ) => value > 0 ) );
 }

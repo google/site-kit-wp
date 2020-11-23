@@ -60,7 +60,7 @@ describe( 'isZeroReport', () => {
 
 		expect( isZeroReport( report ) ).toBe( true );
 
-		const reportMultipleItems = [
+		const reportMultipleTotals = [
 			{
 				data: {
 					rows: [
@@ -84,9 +84,9 @@ describe( 'isZeroReport', () => {
 			},
 		];
 
-		expect( isZeroReport( reportMultipleItems ) ).toBe( true );
+		expect( isZeroReport( reportMultipleTotals ) ).toBe( true );
 
-		const reportSingleValue = [
+		const reportSingleTotal = [
 			{
 				data: {
 					rows: [
@@ -103,7 +103,7 @@ describe( 'isZeroReport', () => {
 			},
 		];
 
-		expect( isZeroReport( reportSingleValue ) ).toBe( true );
+		expect( isZeroReport( reportSingleTotal ) ).toBe( true );
 	} );
 
 	it( 'returns false for a report that has data', () => {
@@ -127,7 +127,7 @@ describe( 'isZeroReport', () => {
 
 		expect( isZeroReport( report ) ).toBe( false );
 
-		const reportMixed = [
+		const reportMixedTotalValues = [
 			{
 				data: {
 					rows: [
@@ -145,9 +145,9 @@ describe( 'isZeroReport', () => {
 			},
 		];
 
-		expect( isZeroReport( reportMixed ) ).toBe( false );
+		expect( isZeroReport( reportMixedTotalValues ) ).toBe( false );
 
-		const reportMultipleItems = [
+		const reportMultipleTotals = [
 			{
 				data: {
 					rows: [
@@ -171,9 +171,9 @@ describe( 'isZeroReport', () => {
 			},
 		];
 
-		expect( isZeroReport( reportMultipleItems ) ).toBe( false );
+		expect( isZeroReport( reportMultipleTotals ) ).toBe( false );
 
-		const reportSingleValue = [
+		const reportSingleTotal = [
 			{
 				data: {
 					rows: [
@@ -190,7 +190,7 @@ describe( 'isZeroReport', () => {
 			},
 		];
 
-		expect( isZeroReport( reportSingleValue ) ).toBe( false );
+		expect( isZeroReport( reportSingleTotal ) ).toBe( false );
 	} );
 } );
 
