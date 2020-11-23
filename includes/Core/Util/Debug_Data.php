@@ -328,7 +328,7 @@ class Debug_Data {
 	/**
 	 * Gets capabilities for the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return array
 	 */

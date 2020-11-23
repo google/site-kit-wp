@@ -116,7 +116,7 @@ class BC_Functions {
 	/**
 	 * A fallback for the load_script_textdomain function introduced in the WordPress version 5.0.0.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.21.0
 	 *
 	 * @return boolean Always returns FALSE.
 	 */
