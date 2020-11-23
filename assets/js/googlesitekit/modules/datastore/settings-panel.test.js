@@ -19,8 +19,6 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import { initialState } from './settings-panel';
 import { createTestRegistry } from '../../../../../tests/js/utils';
@@ -29,21 +27,10 @@ describe( 'core/modules settings-panel', () => {
 	let registry;
 	let store;
 	const slug = 'test-module';
-	const moduleStoreName = `modules/${ slug }`;
 	const expectedInitialState = { ...initialState.settingsPanel };
 
 	beforeEach( () => {
-		const storeDefinition = Modules.createModuleStore( moduleStoreName );
-
 		registry = createTestRegistry();
-		registry.dispatch( STORE_NAME ).receiveGetModules( [
-			{ slug, active: true },
-		] );
-
-		registry.registerStore( moduleStoreName, Data.combineStores(
-			storeDefinition,
-		) );
-
 		store = registry.stores[ STORE_NAME ].store;
 	} );
 
