@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
+import { initialState } from './settings-panel';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 
 describe( 'core/modules settings-panel', () => {
@@ -30,7 +31,7 @@ describe( 'core/modules settings-panel', () => {
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
 	const moduleStoreName = `modules/${ slug }`;
-	const expectedInitialState = { editing: null, modules: {} };
+	const expectedInitialState = { ...initialState };
 
 	beforeEach( () => {
 		const storeDefinition = Modules.createModuleStore( moduleStoreName );
@@ -44,7 +45,7 @@ describe( 'core/modules settings-panel', () => {
 			storeDefinition,
 		) );
 
-		store = registry.stores[ 'core/modules' ].store;
+		store = registry.stores[ STORE_NAME ].store;
 	} );
 
 	describe( 'reducer', () => {
@@ -67,12 +68,12 @@ describe( 'core/modules settings-panel', () => {
 				expect( store.getState().panelState ).toEqual( { ...expectedInitialState, modules: { [ slug ]: 'edit' }, editing: slug } );
 			} );
 
-			it( 'state should not change when we set an invalid panel state value', () => {
+			it( 'should not change the panel state when called with an invalid value', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'closed' );
 
 				expect( () => {
 					registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'invalid' );
-				} ).toThrow();
+				} ).toThrow( 'value should be one of closed,edit,view' );
 				expect( store.getState().panelState ).toEqual( { ...expectedInitialState, modules: { [ slug ]: 'closed' } } );
 			} );
 		} );
