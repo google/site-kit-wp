@@ -40,12 +40,21 @@ export default function WidgetAreaRenderer( { slug } ) {
 
 	const activeWidgets = widgets.filter( ( widget ) => {
 		const widgetExists = widgets.some( ( item ) => item.slug === widget.slug );
-		const isComponent = typeof widget.component === 'function';
-		const isActive = 	widget.component.prototype.render
-			? new widget.component( {} ).render()
-			: widget.component( {} );
+		if ( ! widgetExists ) {
+			return false;
+		}
 
-		return widgetExists && isComponent && Boolean( isActive );
+		const widgetComponent = widget.component?.wrappedComponent || widget.component;
+		const isComponent = typeof widgetComponent === 'function';
+		if ( ! isComponent ) {
+			return false;
+		}
+
+		const isActive = widgetComponent.prototype.render
+			? new widgetComponent( {} ).render()
+			: widgetComponent( {} );
+
+		return Boolean( isActive );
 	} );
 
 	if ( activeWidgets.length === 0 ) {

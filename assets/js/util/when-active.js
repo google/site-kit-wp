@@ -27,7 +27,7 @@ import { createElement } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { kebabCaseToPascalCase } from '../googlesitekit/data/transform-case';
-const { useSelect } = Data;
+const { RegistryConsumer } = Data;
 
 /**
  * Higher-Order Component to render wrapped components when selected module is active and connected.
@@ -39,38 +39,41 @@ const { useSelect } = Data;
  *
  * @since 1.16.0
  *
- * @param {Object}   options                     Options for enhancing function.
- * @param {string}   options.moduleName          Name of a module to check.
- * @param {Function} [options.fallbackComponent] Optional. Fallback component to render when the module is not active.
+ * @param {Object}                options                     Options for enhancing function.
+ * @param {string|Array.<string>} options.moduleName          Name of a module to check.
+ * @param {Function}              [options.fallbackComponent] Optional. Fallback component to render when the module is not active.
  * @return {Function} Enhancing function.
  */
 export default function whenActive( { moduleName, fallbackComponent = null } ) {
-	return ( wrappedComponent ) => {
-		const whenActiveComponent = ( props ) => {
-			// The following eslint rule is disabled because it treats the following hook as such that doesn't adhere
-			// the "rules of hooks" which is incorrect because the following hook is a valid one.
+	const modules = Array.isArray( moduleName ) ? moduleName : [ moduleName ];
+	return ( WrappedComponent ) => {
+		const WhenActiveComponent = ( props ) => (
+			<RegistryConsumer>
+				{ ( registry ) => {
+					const areConnected = modules.map( ( module ) => registry.select( CORE_MODULES ).isModuleConnected( module ) );
 
-			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const isConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleName ) );
+					// Return null if the module is not loaded yet or doesn't exist.
+					if ( ! areConnected.some( ( isConnected ) => isConnected !== undefined && isConnected !== null ) ) {
+						return null;
+					}
 
-			// Return null if the module is not loaded yet or doesn't exist.
-			if ( typeof isConnected === 'undefined' || isConnected === null ) {
-				return null;
-			}
+					// Return a fallback if the module isn't connected yet.
+					if ( areConnected.some( ( isConnected ) => ! isConnected ) ) {
+						return fallbackComponent ? createElement( fallbackComponent ) : fallbackComponent;
+					}
 
-			// Return a fallback if the module isn't connected yet.
-			if ( ! isConnected ) {
-				return fallbackComponent ? createElement( fallbackComponent ) : fallbackComponent;
-			}
+					return <WrappedComponent { ...props } />;
+				} }
+			</RegistryConsumer>
+		);
 
-			return createElement( wrappedComponent, props );
-		};
+		WhenActiveComponent.wrappedComponent = WrappedComponent;
 
-		whenActiveComponent.displayName = `When${ kebabCaseToPascalCase( moduleName ) }Active`;
-		if ( wrappedComponent.displayName || wrappedComponent.name ) {
-			whenActiveComponent.displayName += `(${ wrappedComponent.displayName || wrappedComponent.name })`;
+		WhenActiveComponent.displayName = `When${ modules.map( ( module ) => kebabCaseToPascalCase( module ) ).join( 'And' ) }Active`;
+		if ( WrappedComponent.displayName || WrappedComponent.name ) {
+			WhenActiveComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
 		}
 
-		return whenActiveComponent;
+		return WhenActiveComponent;
 	};
 }

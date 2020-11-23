@@ -171,5 +171,4 @@ function DashboardSummaryWidget() {
 	);
 }
 
-// export default DashboardSummaryWidget;
 export default whenActive( { moduleName: 'adsense' } )( DashboardSummaryWidget );

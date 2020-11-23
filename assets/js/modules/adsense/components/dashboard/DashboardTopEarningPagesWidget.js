@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { compose } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -143,7 +142,6 @@ function DashboardTopEarningPagesWidget() {
 	);
 }
 
-export default compose(
-	whenActive( { moduleName: 'adsense' } ),
-	whenActive( { moduleName: 'analytics' } ),
-)( DashboardTopEarningPagesWidget );
+export default whenActive( {
+	moduleName: [ 'adsense', 'analytics' ],
+} )( DashboardTopEarningPagesWidget );

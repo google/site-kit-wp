@@ -28,6 +28,7 @@ import {
 	useRegistry,
 	withSelect,
 	withDispatch,
+	RegistryConsumer,
 	RegistryProvider,
 } from '@wordpress/data';
 
@@ -56,6 +57,7 @@ Data.useDispatch = useDispatch;
 Data.useRegistry = useRegistry;
 Data.withSelect = withSelect;
 Data.withDispatch = withDispatch;
+Data.RegistryConsumer = RegistryConsumer;
 Data.RegistryProvider = RegistryProvider;
 
 export default Data;
