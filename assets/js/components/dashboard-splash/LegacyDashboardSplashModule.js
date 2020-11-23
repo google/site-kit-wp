@@ -1,5 +1,5 @@
 /**
- * DashboardSplashModule component.
+ * LegacyDashboardSplashModule component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -21,7 +21,7 @@
  */
 import PropTypes from 'prop-types';
 
-function DashboardSplashModule( { icon, title, content } ) {
+function LegacyDashboardSplashModule( { icon, title, content } ) {
 	return (
 		<div className="googlesitekit-splash-module">
 			<div className="googlesitekit-splash-module__logo">
@@ -40,16 +40,16 @@ function DashboardSplashModule( { icon, title, content } ) {
 	);
 }
 
-DashboardSplashModule.propTypes = {
+LegacyDashboardSplashModule.propTypes = {
 	icon: PropTypes.node,
 	title: PropTypes.string,
 	content: PropTypes.string,
 };
 
-DashboardSplashModule.defaultProps = {
+LegacyDashboardSplashModule.defaultProps = {
 	icon: '',
 	title: '',
 	content: '',
 };
 
-export default DashboardSplashModule;
+export default LegacyDashboardSplashModule;
