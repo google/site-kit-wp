@@ -133,7 +133,7 @@ module.exports = iterateJsdoc( ( {
 				return;
 			}
 
-			if ( semverRegex().test( versionString ) && semverRegex().test( previousVersionString ) && semverCompare( versionString, previousVersionString ) !== -1 ) {
+			if ( semverRegex().test( versionString ) && semverRegex().test( previousVersionString ) && semverCompare( versionString, previousVersionString ) !== 1 ) {
 				context.report( {
 					data: { name: jsdocNode.name },
 					message: `@since tags should appear in order of version number.`,
