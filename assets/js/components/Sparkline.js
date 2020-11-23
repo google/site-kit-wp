@@ -29,7 +29,7 @@ import { withInstanceId } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import GoogleChart from './google-chart';
+import GoogleChart from './GoogleChart';
 
 function Sparkline( {
 	data,

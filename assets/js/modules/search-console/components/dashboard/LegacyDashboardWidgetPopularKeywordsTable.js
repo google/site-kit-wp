@@ -26,10 +26,10 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getTimeInSeconds, numberFormat } from '../../../../util';
+import { getTimeInSeconds, numberFormat, untrailingslashit } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
 import Layout from '../../../../components/layout/layout';
 import {
@@ -37,18 +37,28 @@ import {
 } from '../../util';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 const { useSelect } = Data;
 
 const LegacyDashboardWidgetPopularKeywordsTable = ( props ) => {
 	const { data } = props;
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const referenceSiteURL = useSelect( ( select ) => {
+		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
+	} );
+	const baseServiceArgs = {
+		resource_id: domain,
+		num_of_days: getCurrentDateRangeDayCount(),
+	};
+	if ( isDomainProperty && referenceSiteURL ) {
+		baseServiceArgs.page = `*${ referenceSiteURL }`;
+	}
 	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
 		{
 			path: '/performance/search-analytics',
-			query: {
-				resource_id: domain,
-				num_of_days: getCurrentDateRangeDayCount(),
-			},
+			query: baseServiceArgs,
 		} ) );
 
 	if ( ! data || ! data.length ) {

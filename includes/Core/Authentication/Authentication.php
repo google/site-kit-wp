@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -21,6 +22,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\User_Input_Settings;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -62,6 +64,24 @@ final class Authentication {
 	 * @var User_Options
 	 */
 	private $user_options = null;
+
+	/**
+	 * User_Input_State object.
+	 *
+	 * @since 1.20.0
+	 *
+	 * @var User_Input_State
+	 */
+	private $user_input_state = null;
+
+	/**
+	 * User_Input_Settings
+	 *
+	 * @since 1.20.0
+	 *
+	 * @var User_Input_Settings
+	 */
+	private $user_input_settings = null;
 
 	/**
 	 * Transients object.
@@ -188,6 +208,8 @@ final class Authentication {
 		$this->options              = $options ?: new Options( $this->context );
 		$this->user_options         = $user_options ?: new User_Options( $this->context );
 		$this->transients           = $transients ?: new Transients( $this->context );
+		$this->user_input_state     = new User_Input_State( $this->user_options );
+		$this->user_input_settings  = new User_Input_Settings( $context, $this, $transients );
 		$this->google_proxy         = new Google_Proxy( $this->context );
 		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
 		$this->verification         = new Verification( $this->user_options );
@@ -214,6 +236,7 @@ final class Authentication {
 		$this->owner_id->register();
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
+		$this->user_input_state->register();
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
@@ -223,6 +246,19 @@ final class Authentication {
 
 		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
+		add_action( 'admin_init', $this->get_method_proxy( 'verify_user_input_settings' ) );
+		add_action(
+			'admin_init',
+			function() {
+				if (
+					'googlesitekit-dashboard' === $this->context->input()->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING )
+					&& User_Input_State::VALUE_REQUIRED === $this->user_input_state->get()
+				) {
+					wp_safe_redirect( $this->context->admin_url( 'user-input' ) );
+					exit;
+				}
+			}
+		);
 		// Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
 		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
 		// Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
@@ -278,6 +314,14 @@ final class Authentication {
 
 				$user['verified'] = $this->verification->has();
 
+				return $user;
+			}
+		);
+
+		add_filter(
+			'googlesitekit_user_data',
+			function( $user ) {
+				$user['userInputState'] = $this->user_input_state->get();
 				return $user;
 			}
 		);
@@ -400,6 +444,17 @@ final class Authentication {
 	 */
 	public function get_google_proxy() {
 		return $this->google_proxy;
+	}
+
+	/**
+	 * Gets the User Input State instance.
+	 *
+	 * @since 1.21.0
+	 *
+	 * @return User_Input_State An instance of the User_Input_State class.
+	 */
+	public function get_user_input_state() {
+		return $this->user_input_state;
 	}
 
 	/**
@@ -617,6 +672,14 @@ final class Authentication {
 			$data['proxyPermissionsURL'] = esc_url_raw( $this->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
 		}
+
+		$version               = get_bloginfo( 'version' );
+		list( $major, $minor ) = explode( '.', $version );
+		$data['wpVersion']     = array(
+			'version' => $version,
+			'major'   => (int) $major,
+			'minor'   => (int) $minor,
+		);
 
 		return $data;
 	}
@@ -1151,4 +1214,24 @@ final class Authentication {
 			admin_url( 'index.php' )
 		);
 	}
+
+	/**
+	 * Verifies the user input settings
+	 *
+	 * @since 1.20.0
+	 */
+	private function verify_user_input_settings() {
+		if (
+			empty( $this->user_input_state->get() )
+			&& $this->is_authenticated()
+			&& $this->credentials()->has()
+			&& $this->credentials->using_proxy()
+		) {
+			$is_empty = $this->user_input_settings->are_settings_empty();
+			if ( ! is_null( $is_empty ) ) {
+				$this->user_input_state->set( $is_empty ? User_Input_State::VALUE_MISSING : User_Input_State::VALUE_COMPLETED );
+			}
+		}
+	}
+
 }

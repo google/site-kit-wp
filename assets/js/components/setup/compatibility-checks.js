@@ -42,6 +42,7 @@ const ERROR_FETCH_FAIL = 'check_fetch_failed';
 const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
 const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
 const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
+const ERROR_WP_PRE_V5 = 'wp_pre_v5';
 
 export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
 
@@ -88,6 +89,14 @@ const checks = [
 			throw ERROR_AMP_CDN_RESTRICTED;
 		}
 	},
+	// Check that the current version of WordPress is 5.0+.
+	async () => {
+		const { wpVersion } = global._googlesitekitBaseData || {};
+		// Throw only if we can get the current version, otherwise ignore it.
+		if ( wpVersion && wpVersion.major < 5 ) {
+			throw ERROR_WP_PRE_V5;
+		}
+	},
 ];
 
 export default class CompatibilityChecks extends Component {
@@ -122,27 +131,31 @@ export default class CompatibilityChecks extends Component {
 
 		if ( ! installed && installURL ) {
 			return {
-				labelHTML: __( 'Install<span class="screen-reader-text"> the helper plugin</span>', 'google-site-kit' ),
+				'aria-label': __( 'Install the helper plugin', 'google-site-kit' ),
+				children: __( 'Install', 'google-site-kit' ),
 				href: installURL,
 				external: false,
 			};
 		}
 		if ( installed && ! active && activateURL ) {
 			return {
-				labelHTML: __( 'Activate<span class="screen-reader-text"> the helper plugin</span>', 'google-site-kit' ),
+				'aria-label': __( 'Activate the helper plugin', 'google-site-kit' ),
+				children: __( 'Activate', 'google-site-kit' ),
 				href: activateURL,
 				external: false,
 			};
 		}
 		if ( installed && active && configureURL ) {
 			return {
-				labelHTML: __( 'Configure<span class="screen-reader-text"> the helper plugin</span>', 'google-site-kit' ),
+				'aria-label': __( 'Configure the helper plugin', 'google-site-kit' ),
+				children: __( 'Configure', 'google-site-kit' ),
 				href: configureURL,
 				external: false,
 			};
 		}
 		return {
-			labelHTML: __( 'Learn how<span class="screen-reader-text"> to install and use the helper plugin</span>', 'google-site-kit' ),
+			'aria-label': __( 'Learn how to install and use the helper plugin', 'google-site-kit' ),
+			children: __( 'Learn how', 'google-site-kit' ),
 			href: 'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
 			external: true,
 		};
@@ -150,68 +163,71 @@ export default class CompatibilityChecks extends Component {
 
 	renderError( error ) {
 		const { installed } = this.state.developerPlugin;
-		const { labelHTML, href, external } = this.helperCTA();
 
 		switch ( error ) {
 			case ERROR_INVALID_HOSTNAME:
 			case ERROR_FETCH_FAIL:
-				return <p>
-					{ ! installed && __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }
-					{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
-					{ ' ' }
-					<Link
-						href={ href }
-						dangerouslySetInnerHTML={ { __html: labelHTML } }
-						external={ external }
-						inherit
-					/>
-				</p>;
+				return (
+					<p>
+						{ ! installed && __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }
+						{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
+						{ ' ' }
+						<Link
+							{ ...this.helperCTA() }
+							inherit
+						/>
+					</p>
+				);
 			case ERROR_TOKEN_MISMATCH:
-				return <p>
-					{ __( 'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.', 'google-site-kit' ) }
-				</p>;
+				return (
+					<p>
+						{ __( 'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.', 'google-site-kit' ) }
+					</p>
+				);
 			case ERROR_GOOGLE_API_CONNECTION_FAIL:
-				return <Fragment>
-					<p
-						dangerouslySetInnerHTML={ sanitizeHTML(
-							`
-							${ __( 'Looks like your site is having a technical issue with requesting data from Google services.', 'google-site-kit' ) }
-							<br/>
-							${ sprintf(
-								/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
-								__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
-								'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-								`<br/>${ error }` // eslint-disable-line indent
-							) /* eslint-disable-line indent */ }
-							`,
-							{
-								ALLOWED_TAGS: [ 'a', 'br' ],
-								ALLOWED_ATTR: [ 'href' ],
-							}
-						) }
-					/>
-				</Fragment>;
+				return (
+					<p dangerouslySetInnerHTML={ sanitizeHTML(
+						`
+						${ __( 'Looks like your site is having a technical issue with requesting data from Google services.', 'google-site-kit' ) }
+						<br/>
+						${ sprintf(
+							/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+							__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
+							'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
+							`<br/>${ error }` // eslint-disable-line indent
+						) /* eslint-disable-line indent */ }
+						`,
+						{
+							ALLOWED_TAGS: [ 'a', 'br' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
+					) } />
+				);
 			case ERROR_AMP_CDN_RESTRICTED:
-				return <Fragment>
-					<p
-						dangerouslySetInnerHTML={ sanitizeHTML(
-							`
-							${ __( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.', 'google-site-kit' ) }
-							<br/>
-							${ sprintf(
-								/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
-								__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
-								'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-								`<br/>${ error }` // eslint-disable-line indent
-							) /* eslint-disable-line indent */ }
-							`,
-							{
-								ALLOWED_TAGS: [ 'a', 'br' ],
-								ALLOWED_ATTR: [ 'href' ],
-							}
-						) }
-					/>
-				</Fragment>;
+				return (
+					<p dangerouslySetInnerHTML={ sanitizeHTML(
+						`
+						${ __( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.', 'google-site-kit' ) }
+						<br/>
+						${ sprintf(
+							/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+							__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
+							'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
+							`<br/>${ error }` // eslint-disable-line indent
+						) /* eslint-disable-line indent */ }
+						`,
+						{
+							ALLOWED_TAGS: [ 'a', 'br' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
+					) } />
+				);
+			case ERROR_WP_PRE_V5:
+				return (
+					<p>
+						{ __( 'Looks like you’re using a version of WordPress that’s older than 5.0. You can still install and use Site Kit, but some of its features might not work (for example translations).', 'google-site-kit' ) }
+					</p>
+				);
 		}
 	}
 

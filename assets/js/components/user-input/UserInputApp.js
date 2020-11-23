@@ -28,8 +28,8 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../../material-components';
-import Header from '../header';
-import PageHeader from '../page-header';
+import Header from '../Header';
+import PageHeader from '../PageHeader';
 import ProgressBar from '../ProgressBar';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
 const { useSelect } = Data;
@@ -60,7 +60,7 @@ export default function UserInputApp() {
 					) }
 					{ hasFinishedGettingInputSettings && (
 						<Fragment>
-							<Grid>
+							<Grid className="googlesitekit-user-input__header">
 								<Row>
 									<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 										<PageHeader

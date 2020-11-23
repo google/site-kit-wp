@@ -31,8 +31,10 @@ import { isValidAccountSelection } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
 const { createRegistrySelector } = Data;
+const { receiveError, clearError } = errorStoreActions;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getAccountsPropertiesProfiles',
@@ -121,10 +123,13 @@ const baseActions = {
 		invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
 
 		const registry = yield Data.commonActions.getRegistry();
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).setPropertyID( '' );
-		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( '' );
-		registry.dispatch( STORE_NAME ).setProfileID( '' );
+
+		registry.dispatch( STORE_NAME ).setSettings( {
+			accountID,
+			internalWebPropertyID: '',
+			propertyID: '',
+			profileID: '',
+		} );
 
 		if ( ACCOUNT_CREATE === accountID ) {
 			return;
@@ -148,8 +153,8 @@ const baseActions = {
 	 */
 	*createAccount() {
 		const registry = yield Data.commonActions.getRegistry();
-		const { getValue } = registry.select( CORE_FORMS );
 
+		const { getValue } = registry.select( CORE_FORMS );
 		const data = {
 			accountName: getValue( FORM_ACCOUNT_CREATE, 'accountName' ),
 			propertyName: getValue( FORM_ACCOUNT_CREATE, 'propertyName' ),
@@ -157,10 +162,11 @@ const baseActions = {
 			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
 		};
 
+		yield clearError( 'createAccount', [] );
 		const { response, error } = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
 		if ( error ) {
 			// Store error manually since createAccount signature differs from fetchCreateAccount.
-			yield registry.dispatch( STORE_NAME ).receiveError( error, 'createAccount', [] );
+			yield receiveError( error, 'createAccount', [] );
 		}
 
 		return { response, error };
@@ -207,6 +213,8 @@ const baseReducer = ( state, { type, payload } ) => {
 const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
+		yield clearError( 'getAccounts', [] );
+
 		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
 		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 		// Only fetch accounts if there are none in the store.
@@ -248,7 +256,7 @@ const baseResolvers = {
 
 			if ( error ) {
 				// Store error manually since getAccounts signature differs from fetchGetAccountsPropertiesProfiles.
-				dispatch( STORE_NAME ).receiveError( error, 'getAccounts', [] );
+				yield receiveError( error, 'getAccounts', [] );
 			}
 
 			dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();

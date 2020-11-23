@@ -28,9 +28,9 @@ import { __ } from '@wordpress/i18n';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
-import Header from '../header';
-import DateRangeSelector from '../date-range-selector';
-import PageHeader from '../page-header';
+import Header from '../Header';
+import DateRangeSelector from '../DateRangeSelector';
+import PageHeader from '../PageHeader';
 import '../publisher-wins';
 
 class DashboardApp extends Component {

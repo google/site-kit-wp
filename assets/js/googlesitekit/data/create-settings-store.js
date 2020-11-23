@@ -28,13 +28,25 @@ import isEqual from 'lodash/isEqual';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { TYPE_MODULES } from '../../components/data/constants';
+import { invalidateCacheGroup } from '../../components/data/invalidate-cache-group';
+import { createStrictSelect } from './utils';
 import {
 	camelCaseToPascalCase,
 	camelCaseToConstantCase,
 } from './transform-case';
 import { createFetchStore } from './create-fetch-store';
+import { actions as errorStoreActions } from '../data/create-error-store';
 
 const { createRegistrySelector } = Data;
+// Get access to error store action creators.
+// If the parent store doesn't include the error store,
+// yielded error actions will be a no-op.
+const { clearError, receiveError } = errorStoreActions;
+
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
+export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
 
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
@@ -169,12 +181,14 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 */
 		*saveSettings() {
 			const registry = yield Data.commonActions.getRegistry();
-			const values = registry.select( STORE_NAME ).getSettings();
 
+			yield clearError( 'saveSettings', [] );
+
+			const values = registry.select( STORE_NAME ).getSettings();
 			const { response, error } = yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
 			if ( error ) {
 				// Store error manually since saveSettings signature differs from fetchSaveSettings.
-				registry.dispatch( STORE_NAME ).receiveError( error, 'saveSettings' );
+				yield receiveError( error, 'saveSettings', [] );
 			}
 
 			return { response, error };
@@ -338,3 +352,50 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		STORE_NAME,
 	};
 };
+
+/**
+ * Creates a default submitChanges control function.
+ *
+ * @since 1.21.0
+ *
+ * @param {string} slug      Module slug.
+ * @param {string} storeName Datastore slug.
+ * @return {Function} Control function to submit changes.
+ */
+export function makeDefaultSubmitChanges( slug, storeName ) {
+	return async ( { select, dispatch } ) => {
+		if ( select( storeName ).haveSettingsChanged() ) {
+			const { error } = await dispatch( storeName ).saveSettings();
+			if ( error ) {
+				return { error };
+			}
+		}
+
+		await API.invalidateCache( 'modules', slug );
+		// TODO: Remove once legacy dataAPI is no longer used.
+		invalidateCacheGroup( TYPE_MODULES, slug );
+
+		return {};
+	};
+}
+
+/**
+ * Creates a default canSubmitChanges function.
+ *
+ * @since 1.21.0
+ *
+ * @param {string} storeName Datastore slug.
+ * @return {Function} A function to check if settings can be submitted.
+ */
+export function makeDefaultCanSubmitChanges( storeName ) {
+	return ( select ) => {
+		const strictSelect = createStrictSelect( select );
+		const {
+			haveSettingsChanged,
+			isDoingSubmitChanges,
+		} = strictSelect( storeName );
+
+		invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
+		invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
+	};
+}

@@ -27,7 +27,7 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { loadTranslations, trackEvent } from './util';
+import { trackEvent } from './util';
 import './components/notifications';
 import { ActivationApp } from './components/activation/activation-app';
 import Root from './components/root';
@@ -36,7 +36,6 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );
 
 	if ( renderTarget ) {
-		loadTranslations();
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
 		render( <Root dataAPIContext="Activation"><ActivationApp /></Root>, renderTarget );

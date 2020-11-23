@@ -31,6 +31,7 @@ import {
 	setSelectedStorageBackend,
 	setStorageOrder,
 } from './cache';
+import { getCache as getItemFromLegacyCache } from '../../components/data/cache';
 
 let previousCacheValue;
 const disableCache = () => {
@@ -123,6 +124,19 @@ describe( 'googlesitekit.api.cache', () => {
 				expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }modern-key` );
 				expect( result.cacheHit ).toEqual( true );
 				expect( result.value ).toEqual( 'something' );
+			} );
+
+			it( 'should not return data from the legacy cache', async () => {
+				const didSave = await setItem( 'modern-key', 'something' );
+				expect( didSave ).toEqual( true );
+
+				const result = await getItem( 'modern-key', 100 );
+
+				expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }modern-key` );
+				expect( result.cacheHit ).toEqual( true );
+				expect( result.value ).toEqual( 'something' );
+
+				expect( getItemFromLegacyCache( 'modern-key' ) ).toBeUndefined();
 			} );
 
 			it( 'should return an undefined saved value but set cacheHit to true', async () => {

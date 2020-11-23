@@ -30,7 +30,7 @@ import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/da
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ExistingTagNotice from './ExistingTagNotice';
-import ErrorText from '../../../../components/error-text';
+import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
 export default function FormInstructions() {

@@ -37,9 +37,9 @@ import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import {
 	getTimeInSeconds,
-	extractForSparkline,
-	trackEvent,
+	trackEvent, untrailingslashit,
 } from '../../../../util';
+import extractForSparkline from '../../../../util/extract-for-sparkline';
 import CTA from '../../../../components/notifications/cta';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -55,6 +55,10 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const referenceSiteURL = useSelect( ( select ) => {
+		return untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
+	} );
 
 	const serviceBaseURLArgs = {
 		resource_id: propertyID,
@@ -62,6 +66,8 @@ function LegacySearchConsoleDashboardWidgetTopLevel( { data } ) {
 	};
 	if ( url ) {
 		serviceBaseURLArgs.page = `!${ url }`;
+	} else if ( isDomainProperty && referenceSiteURL ) {
+		serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
 	}
 
 	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(

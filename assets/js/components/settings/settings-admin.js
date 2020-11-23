@@ -27,7 +27,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Layout from '../layout/layout';
 import OptIn from '../optin';
-import ResetButton from '../reset-button';
+import VisuallyHidden from '../VisuallyHidden';
+import ResetButton from '../ResetButton';
 
 const SettingsAdmin = () => {
 	return (
@@ -76,9 +77,9 @@ const SettingsAdmin = () => {
 												googlesitekit-settings-module__status-icon
 												googlesitekit-settings-module__status-icon--connected
 											">
-												<span className="screen-reader-text">
+												<VisuallyHidden>
 													{ __( 'Connected', 'google-site-kit' ) }
-												</span>
+												</VisuallyHidden>
 											</span>
 										</p>
 									</div>

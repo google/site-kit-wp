@@ -75,7 +75,10 @@ export default function UserInputKeywords( { slug, max } ) {
 				) ) }
 
 				{ values.length !== max && (
-					<TextField>
+					<TextField
+						label={ __( 'Minimum one (1), maximum three (3) keywords', 'google-site-kit' ) }
+						noLabel
+					>
 						<Input
 							id={ `${ slug }-keywords` }
 							value={ keyword }
@@ -85,7 +88,7 @@ export default function UserInputKeywords( { slug, max } ) {
 					</TextField>
 				) }
 			</div>
-			<small>{ __( 'Separate with commas or the Enter key', 'google-site-kit' ) }</small>
+			<p className="googlesitekit-user-input__note">{ __( 'Separate with commas or the Enter key', 'google-site-kit' ) }</p>
 		</Cell>
 	);
 }

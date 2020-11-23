@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { Cell } from '../../material-components';
 
-export default function UserInputQuestionInfo( { title, scope, author } ) {
+export default function UserInputQuestionInfo( { title, description, scope, questionNumber, author } ) {
 	return (
 		<Cell
 			className="googlesitekit-user-input__question-instructions"
@@ -41,13 +41,22 @@ export default function UserInputQuestionInfo( { title, scope, author } ) {
 			mdSize={ 8 }
 			smSize={ 4 }
 		>
+			<p className="googlesitekit-user-input__question-number">
+				{
+					/* translators: %s: the number of the question */
+					sprintf( __( '%s out of 5', 'google-site-kit' ), questionNumber )
+				}
+			</p>
+
 			<h1>
 				{ title }
 			</h1>
 
-			<p>
-				{ __( 'Place a text here that gives more context and information to the user to answer the question correctly.', 'google-site-kit' ) }
-			</p>
+			{ description && (
+				<p>
+					{ description }
+				</p>
+			) }
 
 			<UserInputQuestionNotice />
 
@@ -75,7 +84,9 @@ export default function UserInputQuestionInfo( { title, scope, author } ) {
 
 UserInputQuestionInfo.propTypes = {
 	title: PropTypes.string.isRequired,
+	description: PropTypes.string,
 	scope: PropTypes.string,
+	questionNumber: PropTypes.number,
 	author: PropTypes.shape( {
 		photo: PropTypes.string,
 		name: PropTypes.string,

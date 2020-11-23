@@ -161,21 +161,7 @@ final class Permissions {
 		add_filter(
 			'googlesitekit_user_data',
 			function( $data ) {
-				$permissions = array(
-					self::AUTHENTICATE,
-					self::SETUP,
-					self::VIEW_POSTS_INSIGHTS,
-					self::VIEW_DASHBOARD,
-					self::VIEW_MODULE_DETAILS,
-					self::MANAGE_OPTIONS,
-					self::PUBLISH_POSTS,
-				);
-
-				$data['permissions'] = array_combine(
-					$permissions,
-					array_map( 'current_user_can', $permissions )
-				);
-
+				$data['permissions'] = $this->check_all_for_current_user();
 				return $data;
 			}
 		);
@@ -190,6 +176,30 @@ final class Permissions {
 			function( array $allcaps ) {
 				return $this->grant_additional_caps( $allcaps );
 			}
+		);
+	}
+
+	/**
+	 * Check permissions for current user.
+	 *
+	 * @since 1.21.0
+	 *
+	 * @return array
+	 */
+	public function check_all_for_current_user() {
+		$permissions = array(
+			self::AUTHENTICATE,
+			self::SETUP,
+			self::VIEW_POSTS_INSIGHTS,
+			self::VIEW_DASHBOARD,
+			self::VIEW_MODULE_DETAILS,
+			self::MANAGE_OPTIONS,
+			self::PUBLISH_POSTS,
+		);
+
+		return array_combine(
+			$permissions,
+			array_map( 'current_user_can', $permissions )
 		);
 	}
 

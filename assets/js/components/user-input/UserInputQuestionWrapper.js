@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { sprintf, __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -44,8 +44,11 @@ export default function UserInputQuestionWrapper( props ) {
 		isActive,
 		questionNumber,
 		title,
+		description,
 		next,
+		nextLabel,
 		back,
+		backLabel,
 	} = props;
 
 	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
@@ -62,18 +65,13 @@ export default function UserInputQuestionWrapper( props ) {
 		) }>
 			<Row>
 				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
-					<p className="googlesitekit-user-input__question-number">
-						{
-							/* translators: %s: the number of the question */
-							sprintf( __( '%s out of 5', 'google-site-kit' ), questionNumber )
-						}
-					</p>
-
 					<Row>
 						{ title && (
 							<UserInputQuestionInfo
 								title={ title }
+								description={ description }
 								scope={ scope }
+								questionNumber={ questionNumber }
 								author={ author }
 							/>
 						) }
@@ -85,7 +83,7 @@ export default function UserInputQuestionWrapper( props ) {
 						<div className="googlesitekit-user-input__buttons">
 							{ back && (
 								<Button text onClick={ back }>
-									{ __( 'Back', 'google-site-kit' ) }
+									{ backLabel || __( 'Back', 'google-site-kit' ) }
 								</Button>
 							) }
 							{ next && (
@@ -93,7 +91,7 @@ export default function UserInputQuestionWrapper( props ) {
 									onClick={ next }
 									disabled={ values.filter( ( value ) => value.trim().length > 0 ).length === 0 }
 								>
-									{ __( 'Next', 'google-site-kit' ) }
+									{ nextLabel || __( 'Next', 'google-site-kit' ) }
 								</Button>
 							) }
 						</div>
@@ -110,6 +108,9 @@ UserInputQuestionWrapper.propTypes = {
 	children: PropTypes.node,
 	isActive: PropTypes.bool,
 	title: PropTypes.string,
+	description: PropTypes.string,
 	next: PropTypes.func,
+	nextLabel: PropTypes.string,
 	back: PropTypes.func,
+	backLabel: PropTypes.string,
 };

@@ -36,7 +36,7 @@ import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/sit
 import { STORE_NAME as MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAMPExperimentJSON } from '../../util';
 import Link from '../../../../components/Link';
-import ErrorText from '../../../../components/error-text';
+import ErrorText from '../../../../components/ErrorText';
 
 const { useSelect, useDispatch } = Data;
 
