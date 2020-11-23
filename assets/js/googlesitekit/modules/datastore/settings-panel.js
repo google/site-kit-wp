@@ -84,7 +84,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Slug for panelState.
-	 * @return {string} Module's panelState as one of: 'view', 'edit', 'closed', 'locked' or null.
+	 * @return {string} Module settings panel state for a given module as one of: 'view', 'edit', or 'closed'.
 	 */
 	getModuleSettingsPanelState: ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
