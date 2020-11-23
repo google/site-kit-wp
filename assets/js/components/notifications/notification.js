@@ -128,6 +128,7 @@ class Notification extends Component {
 		const {
 			children,
 			id,
+			className,
 			title,
 			description,
 			blockData,
@@ -266,6 +267,7 @@ class Notification extends Component {
 			<section
 				ref={ this.cardRef }
 				className={ classnames(
+					className,
 					'googlesitekit-publisher-win',
 					{
 						[ `googlesitekit-publisher-win--${ format }` ]: format,
@@ -379,6 +381,7 @@ class Notification extends Component {
 
 Notification.propTypes = {
 	id: PropTypes.string.isRequired,
+	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
 	learnMoreURL: PropTypes.string,
@@ -407,6 +410,7 @@ Notification.propTypes = {
 
 Notification.defaultProps = {
 	isDismissable: true,
+	className: '',
 	dismissExpires: 0,
 	showOnce: false,
 };
