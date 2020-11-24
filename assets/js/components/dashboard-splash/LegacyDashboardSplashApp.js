@@ -1,7 +1,7 @@
 /**
- * DashboardSplashApp component.
+ * LegacyDashboardSplashApp component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,18 +25,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DashboardSplashMain from './dashboard-splash-main';
-import DashboardSplashNotifications from './dashboard-splash-notifications';
+import LegacyDashboardSplashMain from './LegacyDashboardSplashMain';
+import LegacyDashboardSplashNotifications from './LegacyDashboardSplashNotifications';
 import { trackEvent } from '../../util';
-import '../publisher-wins';
-import SetupUsingProxy from '../setup/setup-proxy';
 import SetupUsingGCP from '../setup';
 import ModuleSetup from '../setup/ModuleSetup';
 
 const AUTHENTICATION = 1;
 const SETUP = 2;
 
-class DashboardSplashApp extends Component {
+class LegacyDashboardSplashApp extends Component {
 	constructor( props ) {
 		super( props );
 
@@ -97,13 +95,8 @@ class DashboardSplashApp extends Component {
 
 	render() {
 		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
-		const { usingProxy } = global._googlesitekitBaseData;
 
-		// If `usingProxy` is true it means the proxy is in use. We should never
-		// show the GCP splash screen when the proxy is being used, so skip this
-		// when `usingProxy` is set.
-		// See: https://github.com/google/site-kit-wp/issues/704.
-		if ( ! usingProxy && ! this.state.showAuthenticationSetupWizard && ! this.state.showModuleSetupWizard ) {
+		if ( ! this.state.showAuthenticationSetupWizard && ! this.state.showModuleSetupWizard ) {
 			let introDescription, outroDescription, buttonLabel, onButtonClick;
 
 			switch ( this.state.buttonMode ) {
@@ -131,20 +124,22 @@ class DashboardSplashApp extends Component {
 
 			return (
 				<Fragment>
-					<DashboardSplashNotifications />
-					<DashboardSplashMain introDescription={ introDescription } outroDescription={ outroDescription } buttonLabel={ buttonLabel } onButtonClick={ onButtonClick } />
+					<LegacyDashboardSplashNotifications />
+					<LegacyDashboardSplashMain
+						introDescription={ introDescription }
+						outroDescription={ outroDescription }
+						buttonLabel={ buttonLabel }
+						onButtonClick={ onButtonClick }
+					/>
 				</Fragment>
 			);
 		}
 
-		// `usingProxy` is only set if the proxy is in use.
-		if ( usingProxy ) {
-			return <SetupUsingProxy />;
-		} else if ( this.state.showAuthenticationSetupWizard ) {
+		if ( this.state.showAuthenticationSetupWizard ) {
 			return <SetupUsingGCP />;
 		}
 		return <ModuleSetup moduleSlug={ moduleToSetup } />;
 	}
 }
 
-export default DashboardSplashApp;
+export default LegacyDashboardSplashApp;
