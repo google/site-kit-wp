@@ -32,7 +32,6 @@ import { isZeroReport } from '../../util';
 import { changeToPercent, readableLargeNumber, untrailingslashit } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { trackEvent } from '../../../../util/tracking';
-import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
@@ -43,7 +42,7 @@ import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 
 const { useSelect } = Data;
 
-function DashboardImpressionsWidget() {
+export default function DashboardImpressionsWidget() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
@@ -132,5 +131,3 @@ function DashboardImpressionsWidget() {
 		</div>
 	);
 }
-
-export default whenActive( { moduleName: 'search-console' } )( DashboardImpressionsWidget );

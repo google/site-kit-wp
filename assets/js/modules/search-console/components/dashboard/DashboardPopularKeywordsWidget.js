@@ -32,7 +32,6 @@ import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/sit
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { numberFormat, untrailingslashit } from '../../../../util';
 import { getDataTableFromData } from '../../../../components/data-table';
-import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
 import ReportError from '../../../../components/ReportError';
@@ -43,7 +42,7 @@ import TableOverflowContainer from '../../../../components/TableOverflowContaine
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
-function DashboardPopularKeywordsWidget() {
+export default function DashboardPopularKeywordsWidget() {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
@@ -144,5 +143,3 @@ function DashboardPopularKeywordsWidget() {
 		</Widget>
 	);
 }
-
-export default whenActive( { moduleName: 'search-console' } )( DashboardPopularKeywordsWidget );

@@ -27,7 +27,7 @@ import { __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import whenActive from '../../../../util/when-active';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
@@ -40,7 +40,8 @@ import ReportZero from '../../../../components/ReportZero';
 
 const { useSelect } = Data;
 
-function DashboardGoalsWidget() {
+export default function DashboardGoalsWidget() {
+	const analyticsModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'analytics' ) );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
@@ -58,13 +59,27 @@ function DashboardGoalsWidget() {
 
 	const resolvedReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
 	const resolvedGoals = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getGoals', [] ) );
-	const { data, error, serviceURL, goals } = useSelect( ( select ) => ( {
-		serviceURL: select( STORE_NAME ).getServiceURL( { path: `/report/conversions-goals-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` } ),
-		data: select( STORE_NAME ).getReport( args ),
-		goals: select( STORE_NAME ).getGoals(),
-		error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) ||
-			select( STORE_NAME ).getErrorForSelector( 'getGoals', [] ),
-	} ) );
+	const { data, error, serviceURL, goals } = useSelect( ( select ) => {
+		if ( ! analyticsModule || ! analyticsModule.active || ! analyticsModule.connected ) {
+			return {};
+		}
+
+		return {
+			serviceURL: select( STORE_NAME ).getServiceURL( { path: `/report/conversions-goals-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` } ),
+			data: select( STORE_NAME ).getReport( args ),
+			goals: select( STORE_NAME ).getGoals(),
+			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getGoals', [] ),
+		};
+	} );
+
+	if ( ! analyticsModule ) {
+		return null;
+	}
+
+	if ( ! analyticsModule.active || ! analyticsModule.connected ) {
+		return <AnalyticsInactiveCTA />;
+	}
 
 	if ( ! resolvedReport || ! resolvedGoals ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -136,8 +151,3 @@ function DashboardGoalsWidget() {
 		/>
 	);
 }
-
-export default whenActive( {
-	moduleName: 'analytics',
-	fallbackComponent: AnalyticsInactiveCTA,
-} )( DashboardGoalsWidget );

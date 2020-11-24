@@ -53,6 +53,7 @@ domReady( () => {
 			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: true,
+			modules: [ 'search-console' ],
 		},
 		[
 			AREA_DASHBOARD_SEARCH_FUNNEL,
@@ -66,6 +67,7 @@ domReady( () => {
 			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 2,
 			wrapWidget: true,
+			modules: [ 'search-console' ],
 		},
 		[
 			AREA_DASHBOARD_SEARCH_FUNNEL,
@@ -79,6 +81,7 @@ domReady( () => {
 			width: [ Widgets.WIDGET_WIDTHS.HALF, Widgets.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
+			modules: [ 'search-console' ],
 		},
 		[
 			AREA_DASHBOARD_POPULARITY,

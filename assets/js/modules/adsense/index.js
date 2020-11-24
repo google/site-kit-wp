@@ -94,7 +94,7 @@ domReady( () => {
 			width: Widgets.WIDGET_WIDTHS.HALF,
 			priority: 1,
 			wrapWidget: false,
-
+			modules: [ 'adsense' ],
 		},
 		[
 			AREA_DASHBOARD_EARNINGS,
@@ -107,6 +107,7 @@ domReady( () => {
 			width: Widgets.WIDGET_WIDTHS.HALF,
 			priority: 2,
 			wrapWidget: false,
+			modules: [ 'adsense', 'analytics' ],
 		},
 		[
 			AREA_DASHBOARD_EARNINGS,

@@ -31,7 +31,6 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import { isZeroReport, reduceAdSenseData } from '../../util';
 import { readableLargeNumber, getSiteKitAdminURL } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
-import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
@@ -42,7 +41,7 @@ import { Row, Cell } from '../../../../material-components';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
-function DashboardSummaryWidget() {
+export default function DashboardSummaryWidget() {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
 	const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
@@ -152,5 +151,3 @@ function DashboardSummaryWidget() {
 		</Widget>
 	);
 }
-
-export default whenActive( { moduleName: 'adsense' } )( DashboardSummaryWidget );

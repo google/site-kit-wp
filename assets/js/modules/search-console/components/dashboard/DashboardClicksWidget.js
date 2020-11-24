@@ -32,7 +32,6 @@ import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { untrailingslashit, changeToPercent, readableLargeNumber } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
 import { isZeroReport } from '../../util';
-import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
@@ -43,7 +42,7 @@ import sumObjectListValue from '../../../../util/sum-object-list-value';
 
 const { useSelect } = Data;
 
-function DashboardClicksWidget() {
+export default function DashboardClicksWidget() {
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
@@ -132,5 +131,3 @@ function DashboardClicksWidget() {
 		</div>
 	);
 }
-
-export default whenActive( { moduleName: 'search-console' } )( DashboardClicksWidget );

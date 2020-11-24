@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import whenActive from '../../../../util/when-active';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
@@ -41,7 +41,8 @@ import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
 const { useSelect } = Data;
 
-function DashboardUniqueVisitorsWidget() {
+export default function DashboardUniqueVisitorsWidget() {
+	const analyticsModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'analytics' ) );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
@@ -78,6 +79,10 @@ function DashboardUniqueVisitorsWidget() {
 		serviceURL,
 		visitorsData,
 	} = useSelect( ( select ) => {
+		if ( ! analyticsModule || ! analyticsModule.active || ! analyticsModule.connected ) {
+			return {};
+		}
+
 		const store = select( STORE_NAME );
 
 		const accountID = store.getAccountID();
@@ -93,6 +98,14 @@ function DashboardUniqueVisitorsWidget() {
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 		};
 	} );
+
+	if ( ! analyticsModule ) {
+		return null;
+	}
+
+	if ( ! analyticsModule.active || ! analyticsModule.connected ) {
+		return <AnalyticsInactiveCTA />;
+	}
 
 	if ( ! resolvedSparkDataReport || ! resolvedVisitorsReport ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -152,8 +165,3 @@ function DashboardUniqueVisitorsWidget() {
 		/>
 	);
 }
-
-export default whenActive( {
-	moduleName: 'analytics',
-	fallbackComponent: AnalyticsInactiveCTA,
-} )( DashboardUniqueVisitorsWidget );

@@ -27,34 +27,40 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../modules/datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
 import { getWidgetClassNames } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug } ) {
+	const { modules, resolvedModules } = useSelect( ( select ) => ( {
+		modules: select( CORE_MODULES ).getModules(),
+		resolvedModules: select( CORE_MODULES ).hasFinishedResolution( 'getModules', [] ),
+	} ) );
+
 	const { widgets, widgetArea } = useSelect( ( select ) => ( {
 		widgetArea: select( STORE_NAME ).getWidgetArea( slug ),
 		widgets: select( STORE_NAME ).getWidgets( slug ),
 	} ) );
 
+	// Don't render widgets until getModules isn't resolved because widgets rely
+	// on module information and we need to minimize getModules resolution timeout
+	// to properly determine which widgets should be rendered.
+	if ( ! resolvedModules ) {
+		return null;
+	}
+
 	const activeWidgets = widgets.filter( ( widget ) => {
-		const widgetExists = widgets.some( ( item ) => item.slug === widget.slug );
-		if ( ! widgetExists ) {
-			return false;
+		if ( Array.isArray( widget.modules ) && widget.modules.length > 0 ) {
+			for ( const module of widget.modules ) {
+				if ( ! modules[ module ]?.active || ! modules[ module ]?.connected ) {
+					return false;
+				}
+			}
 		}
 
-		const widgetComponent = widget.component?.wrappedComponent || widget.component;
-		const isComponent = typeof widgetComponent === 'function';
-		if ( ! isComponent ) {
-			return false;
-		}
-
-		const isActive = widgetComponent.prototype.render
-			? new widgetComponent( {} ).render()
-			: widgetComponent( {} );
-
-		return Boolean( isActive );
+		return true;
 	} );
 
 	if ( activeWidgets.length === 0 ) {

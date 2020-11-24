@@ -21,14 +21,14 @@
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as MODULES_STORE } from '../../../../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import DashboardPageSpeedCTA from './DashboardPageSpeedCTA';
 import DashboardPageSpeed from './DashboardPageSpeed';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
 function DashboardPageSpeedWidget() {
-	const pagespeedInsightsModule = useSelect( ( select ) => select( MODULES_STORE ).getModule( 'pagespeed-insights' ) );
+	const pagespeedInsightsModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'pagespeed-insights' ) );
 	if ( ! pagespeedInsightsModule ) {
 		return null;
 	}

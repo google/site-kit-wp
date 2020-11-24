@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import whenActive from '../../../../util/when-active';
+import { STORE_NAME as CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
@@ -41,48 +41,55 @@ import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 
 const { useSelect } = Data;
 
-function DashboardBounceRateWidget() {
-	const {
-		data,
-		error,
-		loading,
-		serviceURL,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+export default function DashboardBounceRateWidget() {
+	const analyticsModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'analytics' ) );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 
-		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			multiDateRange: 1,
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-			],
-		};
+	const path = applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` );
+	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path } ), [ path ] );
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
+	const args = {
+		dateRange,
+		multiDateRange: 1,
+		dimensions: 'ga:date',
+		metrics: [
+			{
+				expression: 'ga:bounceRate',
+				alias: 'Bounce Rate',
+			},
+		],
+	};
+
+	if ( url ) {
+		args.url = url;
+	}
+
+	const resolvedReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const { data, error } = useSelect( ( select ) => {
+		if ( ! analyticsModule || ! analyticsModule.active || ! analyticsModule.connected ) {
+			return {};
 		}
+
 		return {
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
-			serviceURL: store.getServiceURL(
-				{
-					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
-				}
-			),
+			data: select( STORE_NAME ).getReport( args ),
+			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ),
 		};
 	} );
 
-	if ( loading ) {
+	if ( ! analyticsModule ) {
+		return null;
+	}
+
+	if ( ! analyticsModule.active || ! analyticsModule.connected ) {
+		return <AnalyticsInactiveCTA />;
+	}
+
+	if ( ! resolvedReport ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -143,8 +150,3 @@ function DashboardBounceRateWidget() {
 		/>
 	);
 }
-
-export default whenActive( {
-	moduleName: 'analytics',
-	fallbackComponent: AnalyticsInactiveCTA,
-} )( DashboardBounceRateWidget );

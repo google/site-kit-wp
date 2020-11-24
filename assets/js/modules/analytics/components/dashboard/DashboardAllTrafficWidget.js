@@ -24,7 +24,6 @@ import Widgets from 'googlesitekit-widgets';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import PreviewTable from '../../../../components/PreviewTable';
 import ReportZero from '../../../../components/ReportZero';
@@ -32,106 +31,89 @@ import ReportError from '../../../../components/ReportError';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
 import { isDataZeroForReporting } from '../../util';
+import { Cell, Grid, Row } from '../../../../material-components';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
-function DashboardAllTrafficWidget() {
-	const {
-		loading,
-		report,
-		reportArgs,
-		error,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			dimensions: 'ga:channelGrouping',
-			orderby: {
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
+export default function DashboardAllTrafficWidget() {
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+
+	const args = {
+		dateRange,
+		dimensions: 'ga:channelGrouping',
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 10,
+	};
+
+	if ( url ) {
+		args.url = url;
+		args.metrics = [
+			{
+				expression: 'ga:sessions',
+				alias: 'Sessions',
 			},
-			limit: 10,
-		};
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+			{
+				expression: 'ga:newUsers',
+				alias: 'New Users',
+			},
+		];
+	} else {
+		args.metrics = [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		];
+	}
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-			args.metrics = [
-				{
-					expression: 'ga:sessions',
-					alias: 'Sessions',
-				},
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-				{
-					expression: 'ga:newUsers',
-					alias: 'New Users',
-				},
-			];
-		} else {
-			args.metrics = [
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-			];
-		}
+	const resolvedReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const { report, error } = useSelect( ( select ) => ( {
+		report: select( STORE_NAME ).getReport( args ),
+		error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ),
+	} ) );
 
-		return {
-			loading: store.isResolving( 'getReport', [ args ] ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			report: store.getReport( args ),
-			reportArgs: args,
-		};
-	} );
-
-	if ( ! loading && error ) {
+	if ( resolvedReport && error ) {
 		return (
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
+			<Cell size={ 12 }>
 				<ReportError moduleSlug="analytics" error={ error } />
-			</div>
+			</Cell>
 		);
 	}
 
-	if ( ! loading && isDataZeroForReporting( report ) ) {
+	if ( resolvedReport && isDataZeroForReporting( report ) ) {
 		return (
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
+			<Cell size={ 12 }>
 				<ReportZero moduleSlug="analytics" />;
-			</div>
+			</Cell>
 		);
 	}
 
 	return (
-		<Widget
-			slug="analyticsAllTraffic"
-			noPadding
-		>
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
-						{ loading
+		<Widget slug="analyticsAllTraffic" noPadding>
+			<Grid>
+				<Row>
+					<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
+						{ ! resolvedReport
 							? <PreviewBlock width="282px" height="282px" shape="circular" />
-							: <AcquisitionPieChart data={ report } args={ reportArgs } source />
+							: <AcquisitionPieChart data={ report } args={ args } source />
 						}
-					</div>
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
-						{ loading
+					</Cell>
+					<Cell lgSize={ 8 } mdSize={ 4 } smSize={ 4 }>
+						{ ! resolvedReport
 							? <PreviewTable rows={ 3 } rowHeight={ 50 } />
-							: <AcquisitionSources data={ report } args={ reportArgs } />
+							: <AcquisitionSources data={ report } args={ args } />
 						}
-					</div>
-				</div>
-			</div>
+					</Cell>
+				</Row>
+			</Grid>
 		</Widget>
 	);
 }
-
-export default whenActive( { moduleName: 'analytics' } )( DashboardAllTrafficWidget );

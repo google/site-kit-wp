@@ -59,6 +59,7 @@ domReady( () => {
 			width: Widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
+			modules: [ 'analytics' ],
 		},
 		[
 			AREA_DASHBOARD_ALL_TRAFFIC,
@@ -113,6 +114,7 @@ domReady( () => {
 			width: Widgets.WIDGET_WIDTHS.HALF,
 			priority: 2,
 			wrapWidget: false,
+			modules: [ 'analytics' ],
 		},
 		[
 			AREA_DASHBOARD_POPULARITY,

@@ -69,6 +69,7 @@ export const actions = {
 	 * @param {number}                [settings.priority]   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
 	 * @param {string|Array.<string>} [settings.width]      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
 	 * @param {boolean}               [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
+	 * @param {Array.<string>}        [settings.modules]    Optional. Modules list that are required to be connected before this widget can be displayed.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget( slug, {
@@ -76,6 +77,7 @@ export const actions = {
 		priority = 10,
 		width = WIDGET_WIDTHS.QUARTER,
 		wrapWidget = true,
+		modules = [],
 	} = {} ) {
 		const allWidths = Object.values( WIDGET_WIDTHS );
 
@@ -93,6 +95,7 @@ export const actions = {
 					priority,
 					width,
 					wrapWidget,
+					modules,
 				},
 			},
 			type: REGISTER_WIDGET,
