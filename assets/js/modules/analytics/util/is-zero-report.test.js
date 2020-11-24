@@ -39,7 +39,28 @@ describe( 'isZeroReport', () => {
 		expect( isZeroReport( report ) ).toBe( true );
 	} );
 
-	it( 'returns true if all totals are 0', () => {
+	it( 'returns true for a report that has no data within a single total with a single value', () => {
+		const reportSingleTotal = [
+			{
+				data: {
+					rows: [
+						{}, {}, {},
+					],
+					totals: [
+						{
+							values: [
+								'0',
+							],
+						},
+					],
+				},
+			},
+		];
+
+		expect( isZeroReport( reportSingleTotal ) ).toBe( true );
+	} );
+
+	it( 'returns true for a report that has no data within a single total with multiple values', () => {
 		const report = [
 			{
 				data: {
@@ -59,7 +80,9 @@ describe( 'isZeroReport', () => {
 		];
 
 		expect( isZeroReport( report ) ).toBe( true );
+	} );
 
+	it( 'returns true for a report that has no data within multiple totals with multiple values', () => {
 		const reportMultipleTotals = [
 			{
 				data: {
@@ -85,25 +108,6 @@ describe( 'isZeroReport', () => {
 		];
 
 		expect( isZeroReport( reportMultipleTotals ) ).toBe( true );
-
-		const reportSingleTotal = [
-			{
-				data: {
-					rows: [
-						{}, {}, {},
-					],
-					totals: [
-						{
-							values: [
-								'0',
-							],
-						},
-					],
-				},
-			},
-		];
-
-		expect( isZeroReport( reportSingleTotal ) ).toBe( true );
 	} );
 
 	it( 'returns false for a report that has data', () => {
