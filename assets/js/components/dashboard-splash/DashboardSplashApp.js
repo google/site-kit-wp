@@ -1,5 +1,5 @@
 /**
- * DashboardPermissionAlert component.
+ * DashboardSplashApp component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -17,27 +17,23 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import Notification from '../../components/notifications/notification';
+import '../publisher-wins';
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import SetupUsingProxy from '../setup/setup-proxy';
+import LegacyDashboardSplashApp from './LegacyDashboardSplashApp';
+const { useSelect } = Data;
 
-const DashboardPermissionAlert = () => {
-	return (
-		<Notification
-			id="permission error"
-			title={ __( 'Permissions issue accessing data', 'google-site-kit' ) }
-			description={ __( 'This account does not have access to the requested data.', 'google-site-kit' ) }
-			handleDismiss={ () => {} }
-			format="small"
-			type="win-error"
-			isDismissable={ true }
-		/>
-	);
-};
+export default function DashboardSplashApp() {
+	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
-export default DashboardPermissionAlert;
+	if ( usingProxy === true ) {
+		return <SetupUsingProxy />;
+	} else if ( usingProxy === false ) {
+		return <LegacyDashboardSplashApp />;
+	}
+
+	return null;
+}
