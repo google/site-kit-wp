@@ -32,6 +32,7 @@ import PreviewTable from '../../../../components/PreviewTable';
 import { getDataTableFromData } from '../../../../components/data-table';
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
+import { isZeroReport } from '../../../analytics/util';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
@@ -85,7 +86,7 @@ export default function DashboardTopEarningPagesWidget() {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 

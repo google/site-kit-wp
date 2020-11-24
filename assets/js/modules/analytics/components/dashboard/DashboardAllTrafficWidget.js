@@ -30,8 +30,8 @@ import ReportZero from '../../../../components/ReportZero';
 import ReportError from '../../../../components/ReportError';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
-import { isDataZeroForReporting } from '../../util';
 import { Cell, Grid, Row } from '../../../../material-components';
+import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -88,7 +88,7 @@ export default function DashboardAllTrafficWidget() {
 		);
 	}
 
-	if ( resolvedReport && isDataZeroForReporting( report ) ) {
+	if ( resolvedReport && isZeroReport( report ) ) {
 		return (
 			<Cell size={ 12 }>
 				<ReportZero moduleSlug="analytics" />;
