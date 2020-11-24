@@ -50,8 +50,8 @@
 
 	.googlesitekit-setup__title {
 		display: inline-block;
-		font-family: $f-primary;
-		margin: 0 0 10px 0;
+		font-family: $f-secondary;
+		margin: 0.67em 0;
 	}
 
 	.googlesitekit-setup__description {
@@ -106,6 +106,12 @@
 
 	.googlesitekit-setup__footer {
 		border-top: 1px solid $c-border-light;
+	}
+
+	.googlesitekit-setup__splash {
+		border-bottom: 1px solid $c-border-light;
+		padding-left: 10px;
+		padding-right: 10px;
 	}
 }
 
