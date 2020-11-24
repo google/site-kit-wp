@@ -31,12 +31,12 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Header from './Header';
-import Button from '../components/button';
-import Layout from '../components/layout/layout';
-import data, { TYPE_CORE } from '../components/data';
+import Button from './button';
+import Layout from './layout/layout';
+import data, { TYPE_CORE } from './data';
 import { trackEvent, clearWebStorage, getSiteKitAdminURL } from '../util';
-import STEPS from '../components/legacy-setup/wizard-steps';
-import WizardProgressStep from '../components/legacy-setup/wizard-progress-step';
+import STEPS from './legacy-setup/wizard-steps';
+import WizardProgressStep from './legacy-setup/wizard-progress-step';
 
 class Setup extends Component {
 	constructor( props ) {

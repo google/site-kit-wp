@@ -29,7 +29,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import SearchConsole from '../../components/legacy-setup/search-console';
+import SearchConsole from './search-console';
 
 class WizardStepSearchConsoleProperty extends Component {
 	render() {
