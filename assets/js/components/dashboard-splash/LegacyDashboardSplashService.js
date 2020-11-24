@@ -1,5 +1,5 @@
 /**
- * DashboardSplashService component.
+ * LegacyDashboardSplashService component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -32,7 +32,7 @@ import { Component } from '@wordpress/element';
  */
 import Link from '../Link';
 
-class DashboardSplashService extends Component {
+class LegacyDashboardSplashService extends Component {
 	render() {
 		const imagePath = global._googlesitekitLegacyData.admin.assetsRoot + 'images/';
 		const { image, title, content, link, linkText, opposite } = this.props;
@@ -77,7 +77,7 @@ class DashboardSplashService extends Component {
 	}
 }
 
-DashboardSplashService.propTypes = {
+LegacyDashboardSplashService.propTypes = {
 	image: PropTypes.string,
 	title: PropTypes.string,
 	content: PropTypes.string,
@@ -86,7 +86,7 @@ DashboardSplashService.propTypes = {
 	opposite: PropTypes.bool,
 };
 
-DashboardSplashService.defaultProps = {
+LegacyDashboardSplashService.defaultProps = {
 	image: '',
 	title: '',
 	content: '',
@@ -95,4 +95,4 @@ DashboardSplashService.defaultProps = {
 	opposite: false,
 };
 
-export default DashboardSplashService;
+export default LegacyDashboardSplashService;
