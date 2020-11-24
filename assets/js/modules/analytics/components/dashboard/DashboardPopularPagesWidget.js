@@ -40,43 +40,35 @@ const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
 function DashboardPopularPagesWidget() {
-	const {
-		data,
-		error,
-		loading,
-		analyticsMainURL,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			dimensions: 'ga:pageTitle,ga:pagePath',
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-			],
-			orderby: [
-				{
-					fieldName: 'ga:pageviews',
-					sortOrder: 'DESCENDING',
-				},
-			],
-			limit: 10,
-		};
-		const accountID = select( STORE_NAME ).getAccountID();
-		const profileID = select( STORE_NAME ).getProfileID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 
-		return {
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
-			analyticsMainURL: store.getServiceURL( { path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }` } ),
-		};
-	} );
+	const path = `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }`;
+	const analyticsMainURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path } ), [ path ] );
 
-	if ( loading ) {
+	const args = {
+		dateRange,
+		limit: 10,
+		dimensions: 'ga:pageTitle,ga:pagePath',
+		metrics: [ {
+			expression: 'ga:pageviews',
+			alias: 'Pageviews',
+		} ],
+		orderby: [ {
+			fieldName: 'ga:pageviews',
+			sortOrder: 'DESCENDING',
+		} ],
+	};
+
+	const resolvedReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const { data, error } = useSelect( ( select ) => ( {
+		data: select( STORE_NAME ).getReport( args ),
+		error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ),
+	} ) );
+
+	if ( ! resolvedReport ) {
 		return <PreviewTable padding />;
 	}
 
