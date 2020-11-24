@@ -37,51 +37,33 @@ import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
+import { Row, Cell } from '../../../../material-components';
 
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
 function DashboardSummaryWidget() {
-	const {
-		error,
-		loading,
-		today,
-		period,
-		daily,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-		const todayArgs = {
-			dateRange: 'today',
-			metrics,
-		};
+	const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
+	const rangeArgs = { metrics, dateRange };
+	const todayArgs = { metrics, dateRange: 'today' };
+	const dailyArgs = { metrics, dateRange: 'this-month', dimensions: [ 'DATE' ] };
 
-		const periodArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			metrics,
-		};
+	const resolvedTodayReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ todayArgs ] ) );
+	const resolvedRangeReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ rangeArgs ] ) );
+	const resolvedDailyReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ dailyArgs ] ) );
 
-		const dailyArgs = {
-			dateRange: 'this-month',
-			metrics,
-			dimensions: [ 'DATE' ],
-		};
+	const { error, today, period, daily } = useSelect( ( select ) => ( {
+		today: select( STORE_NAME ).getReport( todayArgs ),
+		period: select( STORE_NAME ).getReport( rangeArgs ),
+		daily: select( STORE_NAME ).getReport( dailyArgs ),
+		error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ todayArgs ] ) ||
+			select( STORE_NAME ).getErrorForSelector( 'getReport', [ rangeArgs ] ) ||
+			select( STORE_NAME ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
+	} ) );
 
-		return {
-			today: store.getReport( todayArgs ),
-			period: store.getReport( periodArgs ),
-			daily: store.getReport( dailyArgs ),
-			loading: store.isResolving( 'getReport', [ todayArgs ] ) ||
-				store.isResolving( 'getReport', [ periodArgs ] ) ||
-				store.isResolving( 'getReport', [ dailyArgs ] ),
-			error: store.getErrorForSelector( 'getReport', [ todayArgs ] ) ||
-				store.getErrorForSelector( 'getReport', [ periodArgs ] ) ||
-				store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
-		};
-	} );
-
-	if ( loading ) {
+	if ( ! resolvedDailyReport || ! resolvedRangeReport || ! resolvedTodayReport ) {
 		return <PreviewBlock width="100%" height="276px" />;
 	}
 
@@ -104,8 +86,8 @@ function DashboardSummaryWidget() {
 			slug="adsenseSummary"
 			className="googlesitekit-dashboard-adsense-stats mdc-layout-grid"
 		>
-			<div className="mdc-layout-grid__inner">
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+			<Row>
+				<Cell size={ 12 }>
 					<DataBlock
 						className="overview-adsense-rpm"
 						title={ __( 'RPM', 'google-site-kit' ) }
@@ -123,9 +105,9 @@ function DashboardSummaryWidget() {
 						}
 						context="compact"
 					/>
-				</div>
+				</Cell>
 
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<Cell size={ 12 }>
 					<DataBlock
 						className="overview-adsense-earnings"
 						title={ __( 'Total Earnings', 'google-site-kit' ) }
@@ -145,9 +127,9 @@ function DashboardSummaryWidget() {
 						}
 						context="compact"
 					/>
-				</div>
+				</Cell>
 
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<Cell size={ 12 }>
 					<DataBlock
 						className="overview-adsense-impressions"
 						title={ __( 'Ad Impressions', 'google-site-kit' ) }
@@ -165,8 +147,8 @@ function DashboardSummaryWidget() {
 						}
 						context="compact"
 					/>
-				</div>
-			</div>
+				</Cell>
+			</Row>
 		</Widget>
 	);
 }

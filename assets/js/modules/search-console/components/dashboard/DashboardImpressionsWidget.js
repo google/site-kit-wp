@@ -44,40 +44,38 @@ import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 const { useSelect } = Data;
 
 function DashboardImpressionsWidget() {
-	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const referenceSiteURL = useSelect( ( select ) => untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() || '' ) );
 
-		const propertyID = store.getPropertyID();
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
-		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
+	const args = {
+		dateRange,
+		dimensions: 'date',
+		compareDateRanges: true,
+	};
 
-		const args = {
-			dimensions: 'date',
-			compareDateRanges: true,
-			dateRange: select( CORE_USER ).getDateRange(),
-		};
+	const serviceBaseURLArgs = {
+		resource_id: propertyID,
+		num_of_days: getCurrentDateRangeDayCount( args.dateRange ),
+	};
 
-		const serviceBaseURLArgs = {
-			resource_id: propertyID,
-			num_of_days: getCurrentDateRangeDayCount( args.dateRange ),
-		};
-		if ( url ) {
-			args.url = url;
-			serviceBaseURLArgs.page = `!${ url }`;
-		} else if ( isDomainProperty && referenceSiteURL ) {
-			serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
-		}
+	if ( url ) {
+		args.url = url;
+		serviceBaseURLArgs.page = `!${ url }`;
+	} else if ( isDomainProperty && referenceSiteURL ) {
+		serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
+	}
 
-		return {
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
-			serviceURL: store.getServiceURL( { path: '/performance/search-analytics', query: serviceBaseURLArgs } ),
-		};
-	} );
+	const resolvedReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const { data, error, serviceURL } = useSelect( ( select ) => ( {
+		data: select( STORE_NAME ).getReport( args ),
+		error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ),
+		serviceURL: select( STORE_NAME ).getServiceURL( { path: '/performance/search-analytics', query: serviceBaseURLArgs } ),
+	} ) );
 
-	if ( loading ) {
+	if ( ! resolvedReport ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 

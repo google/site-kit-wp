@@ -42,8 +42,37 @@ import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 const { useSelect } = Data;
 
 function DashboardUniqueVisitorsWidget() {
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+
+	const commonArgs = { dateRange };
+	if ( url ) {
+		commonArgs.url = url;
+	}
+
+	const sparklineArgs = {
+		...commonArgs,
+		dimensions: 'ga:date',
+		metrics: [ {
+			expression: 'ga:users',
+			alias: 'Users',
+		} ],
+	};
+
+	// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
+	const args = {
+		...commonArgs,
+		multiDateRange: 1,
+		metrics: [ {
+			expression: 'ga:users',
+			alias: 'Total Users',
+		} ],
+	};
+
+	const resolvedSparkDataReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ sparklineArgs ] ) );
+	const resolvedVisitorsReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+
 	const {
-		loading,
 		error,
 		sparkData,
 		serviceURL,
@@ -54,52 +83,18 @@ function DashboardUniqueVisitorsWidget() {
 		const accountID = store.getAccountID();
 		const profileID = store.getProfileID();
 		const internalWebPropertyID = store.getInternalWebPropertyID();
-		const commonArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			commonArgs.url = url;
-		}
-		const sparklineArgs = {
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-			],
-			...commonArgs,
-		};
-
-		// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
-		const args = {
-			multiDateRange: 1,
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Total Users',
-				},
-			],
-			...commonArgs,
-		};
+		const path = applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` );
 
 		return {
-			loading: store.isResolving( 'getReport', [ sparklineArgs ] ) || store.isResolving( 'getReport', [ args ] ),
-			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
+			serviceURL: store.getServiceURL( { path } ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
-			serviceURL: store.getServiceURL(
-				{
-					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
-				}
-			),
 			visitorsData: store.getReport( args ),
+			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 		};
 	} );
 
-	if ( loading ) {
+	if ( ! resolvedSparkDataReport || ! resolvedVisitorsReport ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
