@@ -126,8 +126,10 @@ describe( 'isZeroReport', () => {
 		];
 
 		expect( isZeroReport( report ) ).toBe( false );
+	} );
 
-		const reportMixedTotalValues = [
+	it( 'returns false for a report that has data with a zero value', () => {
+		const report = [
 			{
 				data: {
 					rows: [
@@ -145,9 +147,11 @@ describe( 'isZeroReport', () => {
 			},
 		];
 
-		expect( isZeroReport( reportMixedTotalValues ) ).toBe( false );
+		expect( isZeroReport( report ) ).toBe( false );
+	} );
 
-		const reportMultipleTotals = [
+	it( 'returns false for a report that has data with multiple totals', () => {
+		const report = [
 			{
 				data: {
 					rows: [
@@ -171,9 +175,11 @@ describe( 'isZeroReport', () => {
 			},
 		];
 
-		expect( isZeroReport( reportMultipleTotals ) ).toBe( false );
+		expect( isZeroReport( report ) ).toBe( false );
+	} );
 
-		const reportSingleTotal = [
+	it( 'returns false for a report that has data with a single value', () => {
+		const report = [
 			{
 				data: {
 					rows: [
@@ -190,6 +196,6 @@ describe( 'isZeroReport', () => {
 			},
 		];
 
-		expect( isZeroReport( reportSingleTotal ) ).toBe( false );
+		expect( isZeroReport( report ) ).toBe( false );
 	} );
 } );
