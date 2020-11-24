@@ -37,7 +37,7 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} slug  Slug for module.
+	 * @param {string} slug  Module slug.
 	 * @param {string} value New setting for module, one of: closed, edit, view.
 	 * @return {Object} Action for SET_MODULE_SETTINGS_PANEL_STATE.
 	 */
@@ -83,16 +83,16 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Slug for panelState.
+	 * @param {string} slug  Module slug.
 	 * @return {string} Module settings panel state for a given module as one of: 'view', 'edit', or 'closed'.
 	 */
 	getModuleSettingsPanelState: ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
 
-		const settingsPanel = { ...state.settingsPanel };
+		const { currentModule, isEditing } = state.settingsPanel;
 
-		if ( settingsPanel.currentModule === slug ) {
-			return settingsPanel.isEditing ? 'edit' : 'view';
+		if ( currentModule === slug ) {
+			return isEditing ? 'edit' : 'view';
 		}
 
 		return 'closed';
@@ -104,15 +104,13 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Slug for panelState.
+	 * @param {string} slug  Module slug.
 	 * @return {boolean} Whether or not the module settings panel is open for the module.
 	 */
 	isModuleSettingsPanelOpen: ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
 
-		const settingsPanel = { ...state.settingsPanel };
-
-		return slug === settingsPanel.currentModule;
+		return slug === state.settingsPanel.currentModule;
 	},
 
 	/**
@@ -121,15 +119,13 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Slug for panelState.
+	 * @param {string} slug  Module slug.
 	 * @return {boolean} Whether or not the module settings panel is closed for the module.
 	 */
 	isModuleSettingsPanelClosed: ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
 
-		const settingsPanel = { ...state.settingsPanel };
-
-		return slug !== settingsPanel.currentModule;
+		return slug !== state.settingsPanel.currentModule;
 	},
 
 	/**
@@ -138,15 +134,15 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Slug for panelState.
+	 * @param {string} slug  Module slug.
 	 * @return {boolean} Whether or not the module settings panel is in edit state for the module.
 	 */
 	isModuleSettingsPanelEdit: ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
 
-		const settingsPanel = { ...state.settingsPanel };
+		const { currentModule, isEditing } = state.settingsPanel;
 
-		return slug === settingsPanel.currentModule && settingsPanel.isEditing;
+		return slug === currentModule && isEditing;
 	},
 
 	/**
@@ -155,15 +151,15 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Slug for panelState.
+	 * @param {string} slug  Module slug.
 	 * @return {boolean} Whether or not the module settings panel is locked for the module.
 	 */
 	isModuleSettingsPanelLocked: ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
 
-		const settingsPanel = { ...state.settingsPanel };
+		const { currentModule, isEditing } = state.settingsPanel;
 
-		return slug !== settingsPanel.currentModule && settingsPanel.isEditing;
+		return slug !== currentModule && isEditing;
 	},
 };
 
