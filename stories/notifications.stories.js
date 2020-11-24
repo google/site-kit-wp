@@ -12,14 +12,14 @@ import { __ } from '@wordpress/i18n';
  */
 import Notification from '../assets/js/components/notifications/notification';
 import ModulesList from '../assets/js/components/modules-list';
-import { provideModules, WithTestRegistry } from '../tests/js/utils';
+import { provideModuleRegistrations, WithTestRegistry } from '../tests/js/utils';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
 storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
 		const setupRegistry = ( registry ) => {
-			provideModules( registry );
+			provideModuleRegistrations( registry );
 		};
 
 		return <WithTestRegistry callback={ setupRegistry }>
@@ -93,7 +93,7 @@ storiesOf( 'Global/Notifications', module )
 	) )
 	.add( 'Traffic Increase Win', () => {
 		const setupRegistry = ( registry ) => {
-			provideModules( registry );
+			provideModuleRegistrations( registry );
 		};
 
 		return (

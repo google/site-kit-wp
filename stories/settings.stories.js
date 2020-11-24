@@ -35,7 +35,7 @@ import SettingsModules from '../assets/js/components/settings/settings-modules';
 import Layout from '../assets/js/components/layout/layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
-import { provideModules, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
+import { provideModuleRegistrations, provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 
 /**
  * Add components to the settings page.
@@ -75,7 +75,7 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
 
 		const setupRegistry = ( registry ) => {
-			provideModules( registry );
+			provideModuleRegistrations( registry );
 		};
 
 		return (
@@ -97,7 +97,7 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.modules.adsense.active = false;
 
 		const setupRegistry = ( registry ) => {
-			provideModules( registry );
+			provideModuleRegistrations( registry );
 		};
 
 		return (

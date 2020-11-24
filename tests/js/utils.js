@@ -197,15 +197,15 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 };
 
 /**
- * Provides modules data to the given registry.
+ * Provides modules data to the given registry using registerModule with custom overrides.
  *
- * @since 1.17.0
+ * @since n.e.x.t
  * @private
  *
  * @param {Object}   registry    Registry object to dispatch to.
  * @param {Object[]} [extraData] List of module objects to be merged with defaults. Default empty array.
  */
-export const provideModules = ( registry, extraData = [] ) => {
+export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 	const extraModules = extraData.reduce( ( acc, module ) => {
 		return { ...acc, [ module.slug ]: module };
 	}, {} );
@@ -220,13 +220,42 @@ export const provideModules = ( registry, extraData = [] ) => {
 	};
 
 	const moduleSlugs = coreModulesFixture.map( ( { slug } ) => slug );
+
+	coreModulesFixture
+		.concat(
+			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) )
+		).forEach( ( module ) => {
+			const icon = moduleIconMap[ module.slug ];
+			let moduleData = { ...module, icon };
+			if ( extraModules[ module.slug ] ) {
+				moduleData = { ...moduleData, ...extraModules[ module.slug ] };
+			}
+			delete moduleData.slug;
+			registry.dispatch( CORE_MODULES ).registerModule( module.slug, moduleData );
+		} );
+};
+
+/**
+ * Provides modules data to the given registry.
+ *
+ * @since 1.17.0
+ * @private
+ *
+ * @param {Object}   registry    Registry object to dispatch to.
+ * @param {Object[]} [extraData] List of module objects to be merged with defaults. Default empty array.
+ */
+export const provideModules = ( registry, extraData = [] ) => {
+	const extraModules = extraData.reduce( ( acc, module ) => {
+		return { ...acc, [ module.slug ]: module };
+	}, {} );
+
+	const moduleSlugs = coreModulesFixture.map( ( { slug } ) => slug );
 	const modules = coreModulesFixture
 		.map( ( module ) => {
-			const icon = moduleIconMap[ module.slug ];
 			if ( extraModules[ module.slug ] ) {
-				return { ...module, ...extraModules[ module.slug ], icon };
+				return { ...module, ...extraModules[ module.slug ] };
 			}
-			return { ...module, icon };
+			return { ...module };
 		} )
 		.concat(
 			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) )

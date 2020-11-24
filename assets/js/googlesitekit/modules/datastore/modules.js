@@ -279,7 +279,7 @@ const baseReducer = ( state, { type, payload } ) => {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
 
-			if ( state.clientDefinitions[ slug ] ) {
+			if ( !! state.clientDefinitions[ slug ] ) {
 				global.console.warn( `Could not register module with slug "${ slug }". Module "${ slug }" is already registered.` );
 				return state;
 			}
@@ -398,7 +398,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(WPComponent|null|undefined)} A specific module's icon; `undefined` if state is still loading or if said module doesn't exist; `null` if it doesn't have an icon.
+	 * @return {(WPComponent|undefined|null)} A specific module's icon; `undefined` if state is still loading; `null` if said module doesn't exist or doesn't have an icon.
 	 */
 	getModuleIcon: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const module = select( STORE_NAME ).getModule( slug );

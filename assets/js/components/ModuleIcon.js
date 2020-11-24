@@ -29,7 +29,7 @@ import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/c
 
 const { useSelect } = Data;
 
-export default function ModuleIcon( { slug, size = 33, ...props } ) {
+export default function ModuleIcon( { slug, size, ...props } ) {
 	const ModuleIconComponent = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( slug ) );
 
 	if ( ! ModuleIconComponent ) {
@@ -46,6 +46,10 @@ export default function ModuleIcon( { slug, size = 33, ...props } ) {
 }
 
 ModuleIcon.propTypes = {
-	slug: PropTypes.string,
+	slug: PropTypes.string.isRequired,
 	size: PropTypes.number,
+};
+
+ModuleIcon.defaultProps = {
+	size: 33,
 };
