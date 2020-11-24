@@ -40,6 +40,7 @@ import ErrorNotice from '../ErrorNotice';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { getUserInputAnwsers } from './util/constants';
+import { addQueryArgs } from '@wordpress/url';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputPreview( { back, goTo } ) {
@@ -57,7 +58,7 @@ export default function UserInputPreview( { back, goTo } ) {
 		setIsNavigating( true );
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			global.location.assign( `${ dashboardURL }&notification=user_input_success` );
+			global.location.assign( addQueryArgs( dashboardURL, { notification: 'user_input_success' } ) );
 		} else {
 			setIsNavigating( false );
 		}
