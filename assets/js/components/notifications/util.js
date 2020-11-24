@@ -20,20 +20,13 @@
  * WordPress dependencies
  */
 import { applyFilters } from '@wordpress/hooks';
-import { camelCase } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import { getDaysBetweenDates } from '../../util';
-import WinsWithData from './wins-withdata';
 import data, { TYPE_MODULES } from '../data';
-import { getCache, deleteCache } from '../data/cache';
+import { getCache } from '../data/cache';
 export const wincallbacks = applyFilters( 'googlesitekit.winCallbacks', {} );
-
-export const winsNotificationsToRequest = () => {
-	return applyFilters( 'googlesitekit.WinsNotificationsRequest', [] );
-};
 
 export const modulesNotificationsToRequest = () => {
 	return applyFilters( 'googlesitekit.ModulesNotificationsRequest', [] );
@@ -63,11 +56,6 @@ export async function getTotalNotifications() {
 	const modulesResponse = await getModulesNotifications();
 	if ( modulesResponse && modulesResponse.total ) {
 		total = total + modulesResponse.total;
-	}
-
-	const winsResponse = await getWinsNotifications();
-	if ( winsResponse && winsResponse.total ) {
-		total = total + winsResponse.total;
 	}
 
 	total = applyFilters( 'googlesitekit.TotalNotifications', total );
@@ -106,68 +94,6 @@ const removeDismissed = ( notifications ) => {
 };
 
 /**
- * Removes displayed wins set to show once.
- * Display 1 win at a time. So user would see something new each time.
- *
- * @since 1.0.0
- *
- * @param {Array} wins Wins are notifications (including all errors).
- *                      "Publisher Wins" are things like increased pageviews,
- *                      or traffic that Site Kit will let user know.
- *
- * @return {Array} First win if there are wins to show. Otherwise return all wins.
- *
- */
-const removeDisplayedWins = ( wins ) => {
-	const firstWin = ( items ) => Object.keys( items ).slice( 0, 1 ).map( ( i ) => {
-		return items[ i ];
-	} );
-
-	if ( 1 >= Object.keys( wins ).length ) {
-		return wins;
-	}
-
-	// Get only the wins that haven't been displayed yet.
-	const notDisplayed = Object.values( wins ).filter( ( win ) => {
-		const displayed = getCache( `notification::displayed::${ win[ 0 ].id }` );
-
-		if ( displayed ) {
-			const displayedDate = new Date( displayed );
-			const now = new Date();
-			const today = new Date( Date.UTC( now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() ) );
-			displayedDate.setHours( 0, 0, 0 );
-			today.setHours( 0, 0, 0 );
-
-			// Return the win if it has displayed today.
-			if ( displayedDate.getTime() === today.getTime() ) {
-				return true;
-			}
-
-			// Remove the displayed storage if it has been displayed a week ago.
-			const days = getDaysBetweenDates( displayedDate, today );
-			if ( 7 <= days ) {
-				deleteCache( `notification::displayed::${ win[ 0 ].id }` );
-			}
-		}
-
-		return null === displayed;
-	} );
-
-	let first = null;
-	const result = [];
-
-	// Return 1st value if we have more than 1 win to show.
-	if ( 0 < Object.keys( notDisplayed ).length ) {
-		first = firstWin( notDisplayed );
-		return result[ Object.keys( notDisplayed )[ 0 ] ] = first;
-	}
-
-	// At least return 1st value if all have been displayed before.
-	first = firstWin( wins );
-	return result[ Object.keys( wins )[ 0 ] ] = first;
-};
-
-/**
  * Gets notifications from session storage, fallback to notifications API request.
  *
  * @since 1.0.0
@@ -203,64 +129,6 @@ export async function getModulesNotifications() {
 			}
 		} );
 	} );
-
-	return { results, total };
-}
-
-/**
- * Gets "win" notifications, fallback to callback declared function.
- *
- * @since 1.0.0
- *
- * @return {number} Number of "wins" notifications.
- */
-export async function getWinsNotifications() {
-	let results = {};
-	let total = 0;
-
-	const wins = await winsNotificationsToRequest();
-	const winsWithData = await new WinsWithData( wins ).get();
-	const promises = [];
-
-	wins.map( async ( win ) => {
-		const promise = new Promise( async ( resolve ) => {
-			const { identifier } = win;
-			const callback = win.callback || camelCase( identifier );
-			let notificationData = null;
-			let notifications = [];
-
-			if ( win.withData ) {
-				const moduleData = winsWithData[ identifier ] || null;
-				notificationData = wincallbacks[ callback ]( moduleData, identifier );
-			} else {
-				notificationData = wincallbacks[ callback ]( identifier );
-			}
-
-			if ( ! notificationData ) {
-				notifications = [];
-			} else {
-				notifications = [ notificationData ];
-			}
-
-			// Remove dismissed ones.
-			notifications = removeDismissed( notifications );
-
-			resolve( { identifier, notifications } );
-		} );
-
-		promises.push( promise );
-	} );
-
-	await Promise.all( promises ).then( ( res ) => {
-		res.forEach( ( r ) => {
-			if ( r.notifications.length ) {
-				results[ r.identifier ] = r.notifications;
-			}
-		} );
-	} );
-
-	results = removeDisplayedWins( results );
-	total = results.length || Object.keys( results ).length || 0;
 
 	return { results, total };
 }

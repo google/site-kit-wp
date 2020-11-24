@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import '../publisher-wins';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import SetupUsingProxy from '../setup/setup-proxy';
