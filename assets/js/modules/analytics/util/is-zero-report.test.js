@@ -39,7 +39,7 @@ describe( 'isZeroReport', () => {
 		expect( isZeroReport( report ) ).toBe( true );
 	} );
 
-	it( 'returns true id all totals are 0', () => {
+	it( 'returns true if all totals are 0', () => {
 		const report = [
 			{
 				data: {
@@ -193,4 +193,3 @@ describe( 'isZeroReport', () => {
 		expect( isZeroReport( reportSingleTotal ) ).toBe( false );
 	} );
 } );
-
