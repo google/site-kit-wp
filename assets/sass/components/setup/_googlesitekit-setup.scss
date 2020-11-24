@@ -59,10 +59,6 @@
 		margin: 0.67em 0;
 	}
 
-	.googlesitekit-setup__description {
-		margin: 0;
-	}
-
 	.googlesitekit-setup__notice {
 		font-weight: 500;
 	}
@@ -132,6 +128,7 @@
 	margin-right: 16px;
 }
 
+// feature: user-input
 .googlesitekit-setup__content {
 	margin: 0 auto;
 	max-width: $max-width-setup-content;
@@ -140,6 +137,10 @@
 	@media (min-width: $bp-desktop) {
 		max-width: none;
 		padding: 0;
+	}
+
+	.googlesitekit-setup__description {
+		margin: 0;
 	}
 
 	.googlesitekit-opt-in {
