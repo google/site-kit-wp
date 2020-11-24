@@ -2,15 +2,15 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import set from 'lodash/set';
 
 /**
  * Internal dependencies
  */
 import Setup from '../assets/js/components/setup';
 import SetupUsingProxy from '../assets/js/components/setup/setup-proxy';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
-import { WithTestRegistry } from '../tests/js/utils';
+import { provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Setup', module )
 	.add( 'Step one', () => {
@@ -36,22 +36,51 @@ storiesOf( 'Setup', module )
 	} );
 
 storiesOf( 'Setup / Using Proxy', module )
+	.addDecorator( ( storyFn ) => {
+		set( global, 'featureFlags.userInput.enabled', false );
+		return storyFn();
+	} )
+	.add( 'Start', () => {
+		return (
+			<WithTestRegistry>
+				<SetupUsingProxy />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Start [User Input]', () => {
+		global.featureFlags.userInput.enabled = true;
+		return (
+			<WithTestRegistry>
+				<SetupUsingProxy />
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Disconnected - URL Mismatch', () => {
-		global._googlesitekitLegacyData.setup.isSiteKitConnected = true;
-
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveGetConnection( {} );
-			dispatch( CORE_USER ).receiveGetAuthentication( {
+		const setupRegistry = ( registry ) => {
+			provideUserAuthentication( registry, {
 				authenticated: false,
-				requiredScopes: [],
-				grantedScopes: [],
 				disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 			} );
 		};
-
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupUsingProxy />
 			</WithTestRegistry>
 		);
-	} );
+	} )
+	.add( 'Disconnected - URL Mismatch [User Input]', () => {
+		global.featureFlags.userInput.enabled = true;
+
+		const setupRegistry = ( registry ) => {
+			provideUserAuthentication( registry, {
+				authenticated: false,
+				disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+			} );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupUsingProxy />
+			</WithTestRegistry>
+		);
+	} )
+;
