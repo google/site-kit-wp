@@ -23,6 +23,8 @@ import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
 import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_MODULES } from '../../modules/datastore/constants';
+import { withActive } from '../../modules/datastore/__fixtures__';
 import {
 	createTestRegistry,
 	render,
@@ -56,10 +58,11 @@ const WidgetComponentEmpty = () => {
 };
 
 const createWidgets = ( registry, areaName, widgets ) => {
-	widgets.forEach( ( { component, slug, width } ) => {
+	widgets.forEach( ( { component, slug, width, modules = [] } ) => {
 		registry.dispatch( STORE_NAME ).registerWidget( slug, {
 			component,
 			width,
+			modules,
 		} );
 		registry.dispatch( STORE_NAME ).assignWidget( slug, areaName );
 	} );
@@ -69,10 +72,12 @@ describe( 'WidgetAreaRenderer', () => {
 	const areaName = 'gridcell-test';
 	let registry;
 
-	beforeEach( async () => {
-		registry = createTestRegistryWithArea( areaName );
+	beforeEach( () => {
 		const connection = { connected: true };
-		await registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
+
+		registry = createTestRegistryWithArea( areaName );
+		registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive() );
 	} );
 
 	afterEach( () => {
@@ -98,7 +103,7 @@ describe( 'WidgetAreaRenderer', () => {
 	it( 'should treat widgets that render no content as zero-width (ignoring them)', async () => {
 		createWidgets( registry, areaName, [
 			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-			{ component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
+			{ component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF, modules: [ 'notexisting' ] },
 			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
 		] );
 
@@ -262,7 +267,10 @@ describe( 'WidgetAreaRenderer', () => {
 
 	it( 'should output composite style with extra grid markup', async () => {
 		registry = createTestRegistryWithArea( areaName, WIDGET_AREA_STYLES.COMPOSITE );
+
+		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive() );
 		registry.dispatch( CORE_SITE ).receiveGetConnection( { connected: true } );
+
 		createWidgets( registry, areaName, [
 			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
 			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
