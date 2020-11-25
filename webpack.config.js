@@ -31,6 +31,7 @@ const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
+const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const ImageminPlugin = require( 'imagemin-webpack' );
 
@@ -245,6 +246,11 @@ const webpackConfig = ( env, argv ) => {
 						mode: flagMode, // Default: mode; override with --flag-mode={mode}
 					},
 				),
+				new CreateFileWebpack( {
+					path: './dist',
+					fileName: 'config.json',
+					content: JSON.stringify( { flagMode } ),
+				} ),
 				new ManifestPlugin( {
 					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
 					filter( file ) {
