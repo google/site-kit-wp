@@ -6,4 +6,10 @@ exports[`showErrorNotification filters the ErrorNotification component 1`] = `
 </div>
 `;
 
+exports[`showErrorNotification filters the LegacyErrorNotification component 1`] = `
+<div>
+  Error Message
+</div>
+`;
+
 exports[`showErrorNotification returns null if nothing is passed 1`] = `<div />`;

@@ -30,8 +30,8 @@ import Root from './components/root';
 import './modules';
 import Setup from './components/setup/setup-wrapper';
 import DashboardApp from './components/dashboard/DashboardApp';
-import NotificationCounter from './components/notifications/notification-counter';
-import './components/notifications';
+import NotificationCounter from './components/legacy-notifications/notification-counter';
+import './components/legacy-notifications';
 
 const GoogleSitekitDashboard = () => {
 	const { showModuleSetupWizard, moduleToSetup } = global._googlesitekitLegacyData.setup;

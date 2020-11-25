@@ -39,7 +39,7 @@ import Header from '../Header';
 import Button from '../button';
 import ResetButton from '../ResetButton';
 import Layout from '../layout/layout';
-import Notification from '../notifications/notification';
+import Notification from '../legacy-notifications/notification';
 import OptIn from '../optin';
 import CompatibilityChecks from './compatibility-checks';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';

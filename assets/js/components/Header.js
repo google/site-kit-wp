@@ -27,7 +27,8 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
-import ErrorNotification from '../components/notifications/error-notification';
+import LegacyErrorNotification from './legacy-notifications/error-notification';
+import ErrorNotification from './notifications/ErrorNotifications';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
@@ -61,7 +62,8 @@ const Header = () => {
 					</div>
 				</section>
 			</header>
-			<ErrorNotification />
+			<LegacyErrorNotification />
+			{ featureFlags.storeErrorNotifications.enabled && ( <ErrorNotification /> ) }
 		</Fragment>
 	);
 };

@@ -12,6 +12,8 @@ import { WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Global', module )
 	.add( 'Plugin Header', () => {
+		global.featureFlags = { storeErrorNotifications: { enabled: true } };
+
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {
 				usingProxy: true,
