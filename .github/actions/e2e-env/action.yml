@@ -95,10 +95,3 @@ runs:
         echo "::endgroup::"
 
         wp server --host=0.0.0.0 --port=9002 &
-    - shell: bash
-      run: |
-        echo "::group::Ping wp-admin"
-        curl -vvv http://localhost:9002/wp-admin/
-        echo "::endgroup::"
-
-        npm run test:e2e

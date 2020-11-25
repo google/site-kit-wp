@@ -39,6 +39,7 @@ import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
 } from '../utils';
+import { registerScreenshotReporter } from './screenshots';
 import * as customMatchers from '../matchers';
 
 /**
@@ -336,3 +337,5 @@ afterAll( async () => {
 	removePageEvents();
 	await page.setRequestInterception( false );
 } );
+
+registerScreenshotReporter();
