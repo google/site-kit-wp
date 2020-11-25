@@ -64,13 +64,6 @@ final class Plugin {
 	 * @since 1.0.0
 	 */
 	public function register() {
-		Feature_Flags::set_instance(
-			new Feature_Flags(
-				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' ),
-				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' )
-			)
-		);
-
 		if ( $this->context->is_network_active() ) {
 			add_action(
 				'network_admin_notices',
@@ -248,6 +241,13 @@ final class Plugin {
 		if ( null !== static::$instance ) {
 			return false;
 		}
+
+		Feature_Flags::set_instance(
+			new Feature_Flags(
+				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' ),
+				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' )
+			)
+		);
 
 		static::$instance = new static( $main_file );
 		static::$instance->register();
