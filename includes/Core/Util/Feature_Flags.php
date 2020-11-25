@@ -106,6 +106,9 @@ class Feature_Flags {
 	 * @return bool
 	 */
 	public function is_feature_enabled( $feature ) {
+		if ( ! $feature || ! is_string( $feature ) ) {
+			return false;
+		}
 		$feature_path  = explode( '.', $feature );
 		$feature_modes = array_reduce(
 			$feature_path,

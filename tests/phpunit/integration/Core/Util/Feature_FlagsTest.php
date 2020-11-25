@@ -96,6 +96,14 @@ class Feature_FlagsTest extends TestCase {
 				'',
 				false,
 			),
+			'non-string truthy feature given'              => array(
+				array(
+					'test_feature' => 'production',
+				),
+				array( 'flagMode' => 'production' ),
+				(object) array( 'foo' => 'bar' ),
+				false,
+			),
 			'feature enabled for production in production' => array(
 				array(
 					'test_feature' => 'production',
