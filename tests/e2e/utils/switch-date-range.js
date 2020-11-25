@@ -38,5 +38,5 @@ export async function switchDateRange( fromRange, toRange ) {
 		page.waitForSelector( '.googlesitekit-date-range-selector .mdc-menu-surface--open .mdc-list-item' ),
 	] );
 	// Intentionally left off the '--open' suffix here as it proved problematic for stability.
-	await expect( page ).toClick( '.mdc-menu-surface .mdc-list-item', { text: new RegExp( toRange, 'i' ) } );
+	await expect( page ).toClick( '.googlesitekit-date-range-selector .mdc-menu-surface .mdc-list-item', { text: new RegExp( toRange, 'i' ) } );
 }
