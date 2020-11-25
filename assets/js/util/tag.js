@@ -121,7 +121,6 @@ export const extractTag = ( string, module ) => {
  *
  * @param {string} html        The string of html from which to extract the tag.
  * @param {Array}  tagMatchers An array of the matchers to use.
- *
  * @return {(string|boolean)} The tag id if found, otherwise false.
  */
 export const extractExistingTag = ( html, tagMatchers ) => {
