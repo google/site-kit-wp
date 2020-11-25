@@ -52,12 +52,8 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	 * @since n.e.x.t
 	 *
 	 * @param string $file_path Path to JSON file.
-	 * @throws InvalidArgumentException If the file does not exist at the given path.
 	 */
 	public function __construct( $file_path ) {
-		if ( ! file_exists( $file_path ) ) {
-			throw new InvalidArgumentException( "No file exists at '$file_path'" );
-		}
 		$this->file_path = $file_path;
 	}
 

@@ -26,15 +26,6 @@ class JSON_FileTest extends TestCase {
 		);
 	}
 
-	public function test_constructor() {
-		try {
-			new JSON_File( 'non/existent/file' );
-			$this->fail( 'Expected an exception to be thrown!' );
-		} catch ( \Exception $exception ) {
-			$this->assertContains( 'No file exists', $exception->getMessage() );
-		}
-	}
-
 	public function test_array_access() {
 		$json_file = new JSON_File( self::$composer['path'] );
 
