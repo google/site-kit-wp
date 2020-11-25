@@ -34,7 +34,7 @@ import { pageWait } from '../utils';
 export async function switchDateRange( fromRange, toRange ) {
 	await pageWait();
 	await Promise.all( [
-		expect( page ).toClick( '.mdc-button__label', { text: new RegExp( fromRange, 'i' ) } ),
+		expect( page ).toClick( '.googlesitekit-date-range-selector .mdc-button__label', { text: new RegExp( fromRange, 'i' ) } ),
 		page.waitForSelector( '.mdc-menu-surface--open .mdc-list-item' ),
 	] );
 	// Intentionally left off the '--open' suffix here as it proved problematic for stability.
