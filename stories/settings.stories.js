@@ -35,7 +35,7 @@ import SettingsModules from '../assets/js/components/settings/settings-modules';
 import Layout from '../assets/js/components/layout/layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
-import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
+import { provideSiteInfo, WithTestRegistry, provideModules } from '../tests/js/utils';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 
 /**
@@ -92,8 +92,13 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.canAdsRun = true;
 		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
 		global._googlesitekitLegacyData.modules.adsense.active = false;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_MODULES ).registerModule( 'adsense' );
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_MODULES ).registerModule( 'adsense' );
+			provideModules( registry, [ {
+				slug: 'adsense',
+				active: true,
+				connected: true,
+			} ] );
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
