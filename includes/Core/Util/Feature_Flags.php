@@ -29,20 +29,20 @@ class Feature_Flags {
 	protected static $instance;
 
 	/**
-	 * Feature flag config.
-	 *
-	 * @since n.e.x.t
-	 * @var array|ArrayAccess
-	 */
-	private $config;
-
-	/**
 	 * Feature flag definitions.
 	 *
 	 * @since n.e.x.t
 	 * @var array|ArrayAccess
 	 */
 	private $features;
+
+	/**
+	 * Feature flag mode.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $mode;
 
 	/**
 	 * Gets the main feature flags instance.
@@ -85,16 +85,12 @@ class Feature_Flags {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array|ArrayAccess $features Feature flag definitions. Default: empty array.
-	 * @param array|ArrayAccess $config {
-	 *     Feature flag config object.
-	 *
-	 *     @type string $flagMode Feature flag mode. Default: 'production'.
-	 * }
+	 * @param array|ArrayAccess $features Feature flag definitions.
+	 * @param string            $mode     Feature flag mode. Default: "production".
 	 */
-	public function __construct( $features = array(), $config = array() ) {
-		$this->config   = $config;
+	public function __construct( $features, $mode = 'production' ) {
 		$this->features = $features;
+		$this->mode     = $mode;
 	}
 
 	/**
@@ -132,8 +128,13 @@ class Feature_Flags {
 	 * @return string Current mode.
 	 */
 	public function get_mode() {
-		$mode = ! empty( $this->config['flagMode'] ) ? $this->config['flagMode'] : 'production';
-
-		return (string) apply_filters( 'googlesitekit_flag_mode', $mode ) ?: 'production';
+		/**
+		 * Filter the feature flag mode.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param string $mode The current feature flag mode.
+		 */
+		return (string) apply_filters( 'googlesitekit_flag_mode', $this->mode ) ?: 'production';
 	}
 }
