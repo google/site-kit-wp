@@ -34,5 +34,5 @@ jobs:
         with:
           version: 4.7.19
           amp: 1.5.5
-      - name: Run E2E Tests
-        run: npm run test:e2e
+      # - name: Run E2E Tests
+      #   run: npm run test:e2e
