@@ -28,39 +28,27 @@ import Header from '../assets/js/components/Header';
 import DateRangeSelector from '../assets/js/components/DateRangeSelector';
 import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 
-function Setup( props ) {
-	return (
-		<WithTestRegistry { ...props }>
-			<Header>
-				{ props.children }
-			</Header>
-		</WithTestRegistry>
-	);
-}
-
 storiesOf( 'Global', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
 		provideUserAuthentication( registry );
-		provideSiteInfo( registry, {
-			usingProxy: true,
-			proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/',
-			proxyPermissionsURL: 'https://sitekit.withgoogle.com/site-management/permissions/',
-			referenceSiteURL: 'http://example.com',
-			siteName: 'My Site Name',
-		} );
+		provideSiteInfo( registry );
 
 		return storyFn( registry );
 	} )
 	.add( 'Plugin Header', ( registry ) => {
 		return (
-			<Setup registry={ registry } />
+			<WithTestRegistry registry={ registry }>
+				<Header />
+			</WithTestRegistry>
 		);
 	} )
 	.add( 'Plugin Header with Date Selector', ( registry ) => {
 		return (
-			<Setup registry={ registry }>
-				<DateRangeSelector />
-			</Setup>
+			<WithTestRegistry registry={ registry }>
+				<Header>
+					<DateRangeSelector />
+				</Header>
+			</WithTestRegistry>
 		);
 	} );
