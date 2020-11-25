@@ -31,6 +31,7 @@ runs:
         wp core install --title="SiteKit" --admin_user=admin --admin_password=password --admin_email=test@test.com --skip-email --url=http://localhost:9002
     - shell: bash
       run: |
+        rm -rf /tmp/wp/wp-content/mu-plugins /tmp/wp/wp-content/plugins
         cp -r --force tests/e2e/mu-plugins /tmp/wp/wp-content/mu-plugins
         cp -r --force tests/e2e/plugins /tmp/wp/wp-content/plugins
         cp -r --force $PWD /tmp/wp/wp-content/plugins/google-site-kit
