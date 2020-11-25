@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit;
 
+use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\JSON_File;
+
 /**
  * Main class for the plugin.
  *
@@ -61,6 +64,13 @@ final class Plugin {
 	 * @since 1.0.0
 	 */
 	public function register() {
+		Feature_Flags::set_instance(
+			new Feature_Flags(
+				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' ),
+				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' )
+			)
+		);
+
 		if ( $this->context->is_network_active() ) {
 			add_action(
 				'network_admin_notices',

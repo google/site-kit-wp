@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests;
 
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Plugin;
 
 /**
@@ -52,6 +53,8 @@ class PluginTest extends TestCase {
 		$GLOBALS['wp_actions'] = array();
 
 		$plugin->register();
+
+		$this->assertInstanceOf( Feature_Flags::class, Feature_Flags::get_instance() );
 
 		$this->assertActionRendersGeneratorTag( 'wp_head' );
 		$this->assertActionRendersGeneratorTag( 'login_head' );
