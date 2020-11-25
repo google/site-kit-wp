@@ -29,12 +29,19 @@ jobs:
         uses: ./.github/actions/npm
         with:
           command: build:test
-      - name: E2E environment
-        run: npm run env:start
-        env:
-          WP_VERSION: 4.9.16
-          GUTENBERG_VERSION: 4.9.0
+      - name: Start E2E environment
+        uses: ./.github/actions/e2e-env
+        with:
+          version: 4.9.16
+          gutenberg: 4.9.0
       - name: Run E2E Tests
-        run: npm run test:e2e:ci
-      - name: Stop E2e environment
-        run: npm run env:stop
+        uses: ./.github/actions/npm
+        with:
+          command: test:e2e
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: e2e-screenshots
+          path: |
+            tests/e2e/screenshots

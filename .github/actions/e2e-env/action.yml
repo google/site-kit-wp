@@ -2,9 +2,11 @@ name: E2E environment
 description: Sets up test environment for E2E tests.
 inputs:
   version:
-    description: WordPress version to install.
+    description: The version of WordPress to install.
+  gutenberg:
+    description: The version of the Gutenberg plugin to install.
   amp:
-    description: AMP plugin version to install.
+    description: The version of the AMP plugin to install.
 runs:
   using: composite
   steps:
@@ -31,19 +33,19 @@ runs:
       working-directory: /tmp/wp
       run: |
         export PATH="$(composer config -g home)/vendor/bin:$PATH"
-        echo "::group::Download WordPress"
+        echo "::group::Downloading WordPress"
         wp core download --version=${{ inputs.version }} --force
         echo "::endgroup::"
 
-        echo "::group::Create config"
+        echo "::group::Creating a new config file"
         wp config create --dbname=wordpress_test --dbuser=root --dbpass=root
         echo "::endgroup::"
 
-        echo "::group::Create database"
+        echo "::group::Creating the database"
         wp db create
         echo "::endgroup::"
 
-        echo "::group::Install the site"
+        echo "::group::Installing the site"
         wp core install --title="SiteKit" --admin_user=admin --admin_password=password --admin_email=test@test.com --skip-email --url=http://localhost:9002
         echo "::endgroup::"
     - shell: bash
@@ -66,31 +68,37 @@ runs:
       run: |
         export PATH="$(composer config -g home)/vendor/bin:$PATH"
 
-        echo "::group::Create users"
+        echo "::group::Creating users"
         wp user create admin-2 admin-2@example.com --role=administrator --user_pass=password --quiet
         wp user create editor editor@example.com --role=editor --user_pass=password --quiet
         wp user create author author@example.com --role=author --user_pass=password --quiet
         wp user create contributor contributor@example.com --role=contributor --user_pass=password --quiet
         echo "::endgroup::"
 
-        echo "::group::Create posts"
+        echo "::group::Creating posts"
         wp post create --post_status=publish --post_title="Hello Solar System!" --quiet
         wp post create --post_status=publish --post_title="Hello Milky Way!" --quiet
         wp post create --post_status=publish --post_title="Hello Universe!" --quiet
         wp post create --post_status=publish --post_title="Hello Spéçïåł čhāràćtęrß!" --quiet
         echo "::endgroup::"
 
+        if [ ! -z "${{ inputs.gutenberg }}" ]; then
+          echo "::group::Installing Gutenberg ${{ inputs.gutenberg }}"
+          wp plugin install gutenberg --version=${{ inputs.gutenberg }} --activate --force
+          echo "::endgroup::"
+        fi
+
         if [ ! -z "${{ inputs.amp }}" ]; then
-          echo "::group::Install AMP ${{ inputs.amp }}"
+          echo "::group::Installing AMP ${{ inputs.amp }}"
           wp plugin install amp --force --version=${{ inputs.amp }}
           echo "::endgroup::"
         fi
 
-        echo "::group::Activate site-kit"
+        echo "::group::Activating site-kit"
         wp plugin activate google-site-kit
         echo "::endgroup::"
 
-        echo "::group::Update rewrite rules structure"
+        echo "::group::Updating rewrite rules structure"
         wp rewrite structure '%postname%' --hard
         echo "::endgroup::"
 

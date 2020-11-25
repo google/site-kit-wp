@@ -8,7 +8,7 @@ runs:
   steps:
     - run: nvm install
       shell: bash -l {0}
-    - run: npm ci
+    - run: if [ ! -d node_modules ]; then npm ci; fi
       shell: bash
     - run: if [ ! -z "${{ inputs.command }}" ]; then npm run ${{ inputs.command }}; fi
       shell: bash
