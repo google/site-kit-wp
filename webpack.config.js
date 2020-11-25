@@ -38,7 +38,7 @@ const ImageminPlugin = require( 'imagemin-webpack' );
 /**
  * Internal dependencies
  */
-const flagsConfig = require( './feature-flags.json' );
+const featureFlags = require( './feature-flags.json' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -240,7 +240,7 @@ const webpackConfig = ( env, argv ) => {
 					cwd: process.cwd(),
 				} ),
 				new FeatureFlagsPlugin(
-					flagsConfig,
+					{ featureFlags },
 					{
 						modes: [ 'development', 'production' ],
 						mode: flagMode, // Default: mode; override with --flag-mode={mode}
