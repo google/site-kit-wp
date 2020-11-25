@@ -34,6 +34,10 @@ jobs:
         with:
           version: 4.7.19
           amp: 1.5.5
+      - name: Node version
+        run: |
+          node --version
+          npm --version
       - name: Run E2E Tests
         run: npm run test:e2e
       - name: Upload artifacts
