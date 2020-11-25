@@ -37,6 +37,7 @@
 	}
 
 	.googlesitekit-header__logo {
+		// prevent the logo from wrapping towards the tablet and mobile breakpoints
 		min-width: 150px;
 
 		@media (max-width: $bp-xsmallOnly) {
@@ -75,6 +76,7 @@
 
 		.mdc-button__icon,
 		.mdc-button__icon--image {
+			// increase default button image size
 			height: 28px;
 			width: 28px;
 		}
@@ -85,40 +87,42 @@
 	}
 
 	.googlesitekit-date-range-selector {
-		margin-right: 8px;
+		margin-right: $grid-gap-phone / 2;
 
 		@media (max-width: $bp-xsmallOnly) {
-			margin-right: 0;
+			margin-right: $grid-gap-phone;
 		}
 
 		@media (min-width: $bp-wpAdminBarTablet) {
-			margin-right: 24px;
+			margin-right: $grid-gap-desktop;
 		}
 
 		svg {
-			margin-right: 8px;
+			margin-right: $grid-gap-phone / 2;
 		}
 
 		.mdc-button--dropdown {
-			padding-right: 25px;
-
-			.mdc-button__label {
-
-				@media (max-width: $bp-xsmallOnly) {
-					display: none;
-				}
-			}
+			padding-right: $grid-gap-desktop;
 		}
 
 		.mdc-menu-surface {
 			right: 0;
 			width: 100%;
 		}
+
+		.mdc-button__label {
+			// prevent the default action of hiding button labels on xsmall screens
+			display: inline-block;
+			height: auto;
+			position: relative !important;
+			width: auto;
+		}
 	}
 
 	.googlesitekit-user-selector {
 
 		.googlesitekit-header__dropdown {
+			// align the dropdown with it's button
 			margin-right: -8px;
 		}
 
@@ -126,7 +130,7 @@
 
 			.mdc-button--dropdown {
 				background-image: none;
-				padding-right: 8px;
+				padding-right: $grid-gap-phone / 2;
 			}
 		}
 	}
