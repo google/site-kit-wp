@@ -84,13 +84,13 @@ function ModulesList( { moduleSlugs } ) {
 		: modulesData;
 
 	// Filter out internal modules and remove modules with dependencies.
-	const modules = Object.values( moduleObjects ).filter( ( module ) => ! module.internal && 0 === module.dependencies.length );
-	const sortedModules = modules
+	const modules = Object.values( moduleObjects )
+		.filter( ( module ) => ! module.internal && 0 === module.dependencies.length )
 		.sort( ( module1, module2 ) => module1.sort - module2.sort );
 
 	return (
 		<div className="googlesitekit-modules-list">
-			{ sortedModules.map( ( module ) => {
+			{ modules.map( ( module ) => {
 				const {
 					slug,
 					name,
