@@ -115,41 +115,42 @@ class LegacyAnalyticsAllTraffic extends Component {
 					/>
 				</div>
 
-				{ errorComponent || (
-					<div
-						className={ classnames(
-							'mdc-layout-grid__cell',
-							'mdc-layout-grid__cell--span-12',
-						) }
-					>
-						<Layout className="googlesitekit-dashboard-all-traffic">
-							<div className="mdc-layout-grid">
-								<div className="mdc-layout-grid__inner">
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-4-desktop
-										mdc-layout-grid__cell--span-4-tablet
-										mdc-layout-grid__cell--span-4-phone
-									">
-										<LegacyDashboardAcquisitionPieChart
-											source
-											handleDataError={ this.handleDataError }
-											handleDataSuccess={ this.handleDataSuccess }
-										/>
-									</div>
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-8-desktop
-										mdc-layout-grid__cell--span-4-tablet
-										mdc-layout-grid__cell--span-4-phone
-									">
-										<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
-									</div>
+				{ errorComponent }
+
+				<div
+					className={ classnames(
+						'mdc-layout-grid__cell',
+						'mdc-layout-grid__cell--span-12',
+						{ 'googlesitekit-nodata': errorComponent }
+					) }
+				>
+					<Layout className="googlesitekit-dashboard-all-traffic">
+						<div className="mdc-layout-grid">
+							<div className="mdc-layout-grid__inner">
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-4-desktop
+									mdc-layout-grid__cell--span-4-tablet
+									mdc-layout-grid__cell--span-4-phone
+								">
+									<LegacyDashboardAcquisitionPieChart
+										source
+										handleDataError={ this.handleDataError }
+										handleDataSuccess={ this.handleDataSuccess }
+									/>
+								</div>
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-8-desktop
+									mdc-layout-grid__cell--span-4-tablet
+									mdc-layout-grid__cell--span-4-phone
+								">
+									<LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
 								</div>
 							</div>
-						</Layout>
-					</div>
-				) }
+						</div>
+					</Layout>
+				</div>
 			</Fragment>
 		);
 	}

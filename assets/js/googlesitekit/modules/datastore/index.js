@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import settingsPanel from './settings-panel';
 import settings from './settings';
 import modules from './modules';
 import { STORE_NAME } from './constants';
@@ -29,6 +30,7 @@ const store = Data.combineStores(
 	Data.commonStore,
 	modules,
 	createErrorStore(),
+	settingsPanel,
 	settings,
 );
 

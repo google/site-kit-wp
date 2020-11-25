@@ -1,5 +1,5 @@
 /**
- * DashboardPermissionAlert component.
+ * LegacyDashboardSplashNotifications component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -19,25 +19,16 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { withFilters } from '@wordpress/components';
+import { Component } from '@wordpress/element';
 
 /**
- * Internal dependencies
+ * A single module. Keeps track of its own active state and settings.
  */
-import Notification from '../../components/notifications/notification';
+class LegacyDashboardSplashNotifications extends Component {
+	render() {
+		return null;
+	}
+}
 
-const DashboardPermissionAlert = () => {
-	return (
-		<Notification
-			id="permission error"
-			title={ __( 'Permissions issue accessing data', 'google-site-kit' ) }
-			description={ __( 'This account does not have access to the requested data.', 'google-site-kit' ) }
-			handleDismiss={ () => {} }
-			format="small"
-			type="win-error"
-			isDismissable={ true }
-		/>
-	);
-};
-
-export default DashboardPermissionAlert;
+export default withFilters( 'googlesitekit.DashboardSplashNotifications' )( LegacyDashboardSplashNotifications );
