@@ -25,7 +25,11 @@ import classnames from 'classnames';
 export default function Cell( props ) {
 	const {
 		className,
-		align,
+		top,
+		middle,
+		bottom,
+		right,
+		left,
 		smSize,
 		smStart,
 		mdSize,
@@ -42,7 +46,11 @@ export default function Cell( props ) {
 			className,
 			'mdc-layout-grid__cell',
 			{
-				[ `mdc-layout-grid__cell--align-${ align }` ]: align.length > 0,
+				[ `mdc-layout-grid__cell--align-${ top }` ]: top,
+				[ `mdc-layout-grid__cell--align-${ middle }` ]: middle,
+				[ `mdc-layout-grid__cell--align-${ bottom }` ]: bottom,
+				[ `mdc-layout-grid__cell--align-${ right }` ]: right,
+				[ `mdc-layout-grid__cell--align-${ left }` ]: left,
 				[ `mdc-layout-grid__cell--span-${ size }` ]: 12 >= size && size > 0,
 				[ `mdc-layout-grid__cell--span-${ lgSize }-desktop` ]: 12 >= lgSize && lgSize > 0,
 				[ `mdc-layout-grid__cell--start-${ lgStart }-desktop` ]: 12 >= lgStart && lgStart > 0,
@@ -65,14 +73,17 @@ Cell.propTypes = {
 	lgSize: PropTypes.number,
 	lgStart: PropTypes.number,
 	size: PropTypes.number,
-	align: PropTypes.oneOf( [ 'top', 'middle', 'bottom', 'right', 'left', '' ] ),
+	top: PropTypes.bool,
+	middle: PropTypes.bool,
+	bottom: PropTypes.bool,
+	right: PropTypes.bool,
+	left: PropTypes.bool,
 	className: PropTypes.string,
 	children: PropTypes.node,
 };
 
 Cell.defaultProps = {
 	className: '',
-	align: '',
 	size: 0,
 	smSize: 0,
 	smStart: 0,

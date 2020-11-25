@@ -96,7 +96,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 	return (
 		<Grid>
 			<Row>
-				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+				<Cell top smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 0 }
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
@@ -110,7 +110,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 					/>
 				</Cell>
 
-				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+				<Cell top smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 1 }
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
@@ -124,7 +124,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 					/>
 				</Cell>
 
-				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+				<Cell top smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 2 }
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-3"
@@ -138,7 +138,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 					/>
 				</Cell>
 
-				<Cell align="top" smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+				<Cell top smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 3 }
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
