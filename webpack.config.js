@@ -37,7 +37,7 @@ const ImageminPlugin = require( 'imagemin-webpack' );
 /**
  * Internal dependencies
  */
-const flagsConfig = require( './webpack.feature-flags.config' );
+const flagsConfig = require( './feature-flags.json' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );

@@ -1,0 +1,13 @@
+{
+	"widgets": {
+		"dashboard": {
+			"enabled": "development"
+		},
+		"pageDashboard": {
+			"enabled": "development"
+		}
+	},
+	"userInput": {
+		"enabled": "development"
+	}
+}
