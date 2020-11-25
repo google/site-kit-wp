@@ -92,7 +92,7 @@ describe( 'core/modules settings-panel', () => {
 			} );
 
 			it( 'returns true when module settings panel is in edit state for a given module', () => {
-				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
+				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'edit' );
 				expect( registry.select( STORE_NAME ).isModuleSettingsPanelOpen( slug ) ).toBe( true );
 			} );
 
