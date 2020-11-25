@@ -38,6 +38,7 @@ import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
+import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
 
@@ -90,7 +91,7 @@ function DashboardBounceRateWidget() {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! data || ! data.length ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
