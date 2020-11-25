@@ -85,10 +85,14 @@ class Feature_Flags {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array|ArrayAccess $config   Config object.
-	 * @param array|ArrayAccess $features Feature flag definitions.
+	 * @param array|ArrayAccess $features Feature flag definitions. Default: empty array.
+	 * @param array|ArrayAccess $config {
+	 *     Feature flag config object.
+	 *
+	 *     @type string $flagMode Feature flag mode. Default: 'production'.
+	 * }
 	 */
-	public function __construct( $config = array(), $features = array() ) {
+	public function __construct( $features = array(), $config = array() ) {
 		$this->config   = $config;
 		$this->features = $features;
 	}

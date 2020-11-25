@@ -244,8 +244,8 @@ final class Plugin {
 
 		Feature_Flags::set_instance(
 			new Feature_Flags(
-				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' ),
-				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' )
+				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' ),
+				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' )
 			)
 		);
 

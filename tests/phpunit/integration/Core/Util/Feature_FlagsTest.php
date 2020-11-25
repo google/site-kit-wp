@@ -35,29 +35,30 @@ class Feature_FlagsTest extends TestCase {
 		$this->assertEquals( 'production', ( new Feature_Flags() )->get_mode() );
 
 		// It reads the flag mode from the config.
-		$this->assertEquals( 'foo', ( new Feature_Flags( array( 'flagMode' => 'foo' ) ) )->get_mode() );
+		$this->assertEquals( 'foo', ( new Feature_Flags( array(), array( 'flagMode' => 'foo' ) ) )->get_mode() );
 
 		// Is filterable.
 		$return_custom_mode = function () {
 			return 'custom';
 		};
 		add_filter( 'googlesitekit_flag_mode', $return_custom_mode );
-		$this->assertEquals( 'custom', ( new Feature_Flags( array( 'flagMode' => 'foo' ) ) )->get_mode() );
+		$this->assertEquals( 'custom', ( new Feature_Flags( array(), array( 'flagMode' => 'foo' ) ) )->get_mode() );
 
 		// Defaults to production if filter returns falsy.
 		add_filter( 'googlesitekit_flag_mode', '__return_false' );
-		$this->assertEquals( 'production', ( new Feature_Flags( array( 'flagMode' => 'foo' ) ) )->get_mode() );
+		$this->assertEquals( 'production', ( new Feature_Flags( array(), array( 'flagMode' => 'foo' ) ) )->get_mode() );
 	}
 
 	/**
 	 * @dataProvider data_is_feature_enabled
-	 * @param array $config
-	 * @param array $features
-	 * @param string $feature
+	 *
+	 * @param array   $features
+	 * @param array   $config
+	 * @param string  $feature
 	 * @param boolean $expected
 	 */
-	public function test_is_feature_enabled( $config, $features, $feature, $expected ) {
-		$feature_flags = new Feature_Flags( $config, $features );
+	public function test_is_feature_enabled( $features, $config, $feature, $expected ) {
+		$feature_flags = new Feature_Flags( $features, $config );
 
 		if ( $expected ) {
 			$this->assertTrue( $feature_flags->is_feature_enabled( $feature ) );
@@ -68,13 +69,14 @@ class Feature_FlagsTest extends TestCase {
 
 	/**
 	 * @dataProvider data_is_feature_enabled
-	 * @param array $config
-	 * @param array $features
-	 * @param string $feature
+	 *
+	 * @param array   $features
+	 * @param array   $config
+	 * @param string  $feature
 	 * @param boolean $expected
 	 */
-	public function test_static_enabled( $config, $features, $feature, $expected ) {
-		$feature_flags = new Feature_Flags( $config, $features );
+	public function test_static_enabled( $features, $config, $feature, $expected ) {
+		$feature_flags = new Feature_Flags( $features, $config );
 		Feature_Flags::set_instance( $feature_flags );
 
 		if ( $expected ) {
@@ -87,59 +89,58 @@ class Feature_FlagsTest extends TestCase {
 	public function data_is_feature_enabled() {
 		return array(
 			'no feature given'                             => array(
-				array( 'flagMode' => 'production' ),
 				array(
 					'test_feature' => 'production',
 				),
+				array( 'flagMode' => 'production' ),
 				'',
 				false,
 			),
 			'feature enabled for production in production' => array(
-				array( 'flagMode' => 'production' ),
 				array(
 					'test_feature' => 'production',
 				),
+				array( 'flagMode' => 'production' ),
 				'test_feature',
 				true,
 			),
 			'sub-feature enabled for production in production' => array(
-				array( 'flagMode' => 'production' ),
 				array(
 					'test_feature' => array(
 						'sub_feature' => 'production',
 					),
 				),
+				array( 'flagMode' => 'production' ),
 				'test_feature.sub_feature',
 				true,
 			),
 			'feature enabled for development in production' => array(
-				array( 'flagMode' => 'production' ),
 				array(
 					'test_feature' => 'development',
 				),
+				array( 'flagMode' => 'production' ),
 				'test_feature',
 				false,
 			),
 			'sub-feature enabled for development in production' => array(
-				array( 'flagMode' => 'production' ),
 				array(
 					'test_feature' => array(
 						'sub_feature' => 'development',
 					),
 				),
+				array( 'flagMode' => 'production' ),
 				'test_feature.sub_feature',
 				false,
 			),
 			'feature enabled for development and production in development' => array(
-				array( 'flagMode' => 'development' ),
 				array(
 					'test_feature' => array( 'development', 'production' ),
 				),
+				array( 'flagMode' => 'development' ),
 				'test_feature',
 				true,
 			),
 			'deeply nested test feature for test in test'  => array(
-				array( 'flagMode' => 'test' ),
 				array(
 					'test_feature' => array(
 						'sub_feature' => array(
@@ -149,6 +150,7 @@ class Feature_FlagsTest extends TestCase {
 						),
 					),
 				),
+				array( 'flagMode' => 'test' ),
 				'test_feature.sub_feature.third_level.fourth',
 				true,
 			),
