@@ -33,6 +33,7 @@ import Alert from '../../../../components/alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
+import ProgressBar from '../../../../components/ProgressBar';
 import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
 import HelpLink from '../../../../components/HelpLink';
@@ -56,6 +57,7 @@ class AdSenseDashboardWidget extends Component {
 			receivingData: true,
 			error: false,
 			zeroData: false,
+			loading: true,
 		};
 		this.handleDataError = this.handleDataError.bind( this );
 		this.handleDataSuccess = this.handleDataSuccess.bind( this );
@@ -82,6 +84,7 @@ class AdSenseDashboardWidget extends Component {
 			receivingData: false,
 			error,
 			errorObj,
+			loading: false,
 		} );
 	}
 
@@ -92,6 +95,7 @@ class AdSenseDashboardWidget extends Component {
 		this.setState( {
 			receivingData: true,
 			error: false,
+			loading: false,
 			zeroData: false,
 		} );
 	}
@@ -102,6 +106,7 @@ class AdSenseDashboardWidget extends Component {
 	handleZeroData() {
 		this.setState( {
 			zeroData: true,
+			loading: false,
 		} );
 	}
 
@@ -112,6 +117,7 @@ class AdSenseDashboardWidget extends Component {
 			receivingData,
 			error,
 			errorObj,
+			loading,
 			zeroData,
 		} = this.state;
 
@@ -119,7 +125,7 @@ class AdSenseDashboardWidget extends Component {
 		const { homepage } = modulesData.adsense;
 
 		// Hide AdSense data display when we don't have data.
-		const wrapperClass = ( ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
+		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
 		const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 		let moduleStatus;
@@ -165,6 +171,7 @@ class AdSenseDashboardWidget extends Component {
 								>
 									<PageHeaderDateRange />
 								</PageHeader>
+								{ loading && <ProgressBar /> }
 							</Cell>
 
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

@@ -26,13 +26,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { _x, sprintf } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
@@ -42,8 +42,18 @@ import { readableLargeNumber, changeToPercent, numberFormat } from '../../../../
 import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 
-export default function AdSenseDashboardWidgetOverview( { metrics, selectedStats, handleStatSelection } ) {
-	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
+export default function AdSenseDashboardWidgetOverview( props ) {
+	const {
+		startDate,
+		endDate,
+		compareStartDate,
+		compareEndDate,
+		metrics,
+		selectedStats,
+		handleStatSelection,
+		handleDataError,
+		handleDataSuccess,
+	} = props;
 
 	const currentRangeArgs = {
 		metrics: Object.keys( metrics ),
@@ -65,6 +75,23 @@ export default function AdSenseDashboardWidgetOverview( { metrics, selectedStats
 
 	const currentError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) );
 	const previousError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] ) );
+
+	// TODO: remove the following logic when AdSenseDashboardWidget is refactored.
+	useEffect( () => {
+		if ( resolvedCurrentData && resolvedPreviousData ) {
+			if ( currentError || previousError ) {
+				handleDataError( currentError || previousError );
+			} else if ( isZeroReport( currentRangeData ) ) {
+				handleDataError();
+			} else {
+				handleDataSuccess();
+			}
+		}
+	}, [
+		resolvedCurrentData && resolvedPreviousData, // All reports are fetched.
+		!! currentError || !! previousError, // Whether there is an error or not.
+		JSON.stringify( currentRangeData ),
+	] );
 
 	if ( ! resolvedCurrentData || ! resolvedPreviousData ) {
 		return <PreviewBlock width="100%" height="250px" />;
@@ -150,7 +177,13 @@ export default function AdSenseDashboardWidgetOverview( { metrics, selectedStats
 }
 
 AdSenseDashboardWidgetOverview.propTypes = {
+	startDate: PropTypes.string.isRequired,
+	endDate: PropTypes.string.isRequired,
+	compareStartDate: PropTypes.string.isRequired,
+	compareEndDate: PropTypes.string.isRequired,
 	metrics: PropTypes.shape( {} ).isRequired,
 	selectedStats: PropTypes.number.isRequired,
 	handleStatSelection: PropTypes.func.isRequired,
+	handleDataError: PropTypes.func.isRequired,
+	handleDataSuccess: PropTypes.func.isRequired,
 };

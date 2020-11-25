@@ -31,7 +31,6 @@ import { _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
@@ -40,8 +39,15 @@ import GoogleChart from '../../../../components/GoogleChart';
 import { getSiteStatsDataForGoogleChart, isZeroReport } from '../../util';
 const { useSelect } = Data;
 
-export default function AdSenseDashboardWidgetSiteStats( { metrics, selectedStats } ) {
-	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
+export default function AdSenseDashboardWidgetSiteStats( props ) {
+	const {
+		startDate,
+		endDate,
+		compareStartDate,
+		compareEndDate,
+		metrics,
+		selectedStats,
+	} = props;
 
 	const currentRangeArgs = {
 		dimensions: [ 'DATE' ],
@@ -176,6 +182,10 @@ AdSenseDashboardWidgetSiteStats.colorMap = [
 ];
 
 AdSenseDashboardWidgetSiteStats.propTypes = {
+	startDate: PropTypes.string.isRequired,
+	endDate: PropTypes.string.isRequired,
+	compareStartDate: PropTypes.string.isRequired,
+	compareEndDate: PropTypes.string.isRequired,
 	metrics: PropTypes.shape( {} ).isRequired,
 	selectedStats: PropTypes.number.isRequired,
 };

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { Fragment, useState, useCallback } from '@wordpress/element';
@@ -25,11 +30,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import AdSenseDashboardWidgetOverview from './AdSenseDashboardWidgetOverview';
 import AdSenseDashboardWidgetSiteStats from './AdSenseDashboardWidgetSiteStats';
+const { useSelect } = Data;
 
-export default function AdSensePerformanceWidget() {
+export default function AdSensePerformanceWidget( { handleDataSuccess, handleDataError } ) {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
+
+	const {
+		startDate,
+		endDate,
+		compareStartDate,
+		compareEndDate,
+	} = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
 
 	const handleStatSelection = useCallback( ( stat ) => {
 		setSelectedStats( stat );
@@ -45,15 +60,30 @@ export default function AdSensePerformanceWidget() {
 	return (
 		<Fragment>
 			<AdSenseDashboardWidgetOverview
+				startDate={ startDate }
+				endDate={ endDate }
+				compareStartDate={ compareStartDate }
+				compareEndDate={ compareEndDate }
 				metrics={ metrics }
 				selectedStats={ selectedStats }
 				handleStatSelection={ handleStatSelection }
+				handleDataSuccess={ handleDataSuccess }
+				handleDataError={ handleDataError }
 			/>
 
 			<AdSenseDashboardWidgetSiteStats
+				startDate={ startDate }
+				endDate={ endDate }
+				compareStartDate={ compareStartDate }
+				compareEndDate={ compareEndDate }
 				metrics={ metrics }
 				selectedStats={ selectedStats }
 			/>
 		</Fragment>
 	);
 }
+
+AdSensePerformanceWidget.propTpyes = {
+	handleDataError: PropTypes.func.isRequired,
+	handleDataSuccess: PropTypes.func.isRequired,
+};
