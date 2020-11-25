@@ -41,52 +41,38 @@ import { isDataZeroAdSense, getSiteStatsDataForGoogleChart } from '../../util';
 const { useSelect } = Data;
 
 export default function AdSenseDashboardWidgetSiteStats( { selectedStats } ) {
-	const {
-		currentRangeData,
-		prevRangeData,
-		error,
-		isLoading,
-	} = useSelect( ( select ) => {
-		const {
-			startDate,
-			endDate,
-			compareStartDate,
-			compareEndDate,
-		} = select( CORE_USER ).getDateRangeDates( { compare: true } );
+	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
+	const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ];
 
-		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ];
+	const currentRangeArgs = {
+		dimension: [ 'DATE' ],
+		metrics,
+		startDate,
+		endDate,
+	};
 
-		const currentRangeArgs = {
-			dimension: [ 'DATE' ],
-			metrics,
-			startDate,
-			endDate,
-		};
+	const prevRangeArgs = {
+		dimension: [ 'DATE' ],
+		metrics,
+		startDate: compareStartDate,
+		endDate: compareEndDate,
+	};
 
-		const prevRangeArgs = {
-			dimension: [ 'DATE' ],
-			metrics,
-			startDate: compareStartDate,
-			endDate: compareEndDate,
-		};
+	const currentRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeArgs ) );
+	const prevRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( prevRangeArgs ) );
 
-		return {
-			currentRangeData: select( STORE_NAME ).getReport( currentRangeArgs ) || {},
-			prevRangeData: select( STORE_NAME ).getReport( prevRangeArgs ) || {},
+	const resolvedCurrentData = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) );
+	const resolvedPreviousData = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ prevRangeArgs ] ) );
 
-			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
-				select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] ),
+	const currentError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) );
+	const previousError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] ) );
 
-			isLoading: select( STORE_NAME ).isResolving( 'getReport', [ currentRangeArgs ] ) ||
-				select( STORE_NAME ).isResolving( 'getReport', [ prevRangeArgs ] ),
-		};
-	} );
-
-	if ( isLoading ) {
+	if ( ! resolvedCurrentData || ! resolvedPreviousData ) {
 		return <PreviewBlock width="100%" height="250px" />;
 	}
 
-	if ( error ) {
+	if ( currentError || previousError ) {
+		const error = currentError || previousError;
 		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
 	}
 
@@ -173,11 +159,10 @@ export default function AdSenseDashboardWidgetSiteStats( { selectedStats } ) {
 
 	options.vAxes = null;
 
-	const metrics = [ 'Earnings', 'Page RPM', 'Impressions', 'Page CTR' ];
 	const dataMap = getSiteStatsDataForGoogleChart(
 		currentRangeData,
 		prevRangeData,
-		metrics[ selectedStats ],
+		[ 'Earnings', 'Page RPM', 'Impressions', 'Page CTR' ][ selectedStats ],
 		selectedStats,
 	);
 
