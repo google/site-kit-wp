@@ -29,10 +29,14 @@ jobs:
         uses: ./.github/actions/npm
         with:
           command: build:test
-      - name: Start E2E environment
-        uses: ./.github/actions/e2e-env
+      - name: Start E2E environment using NPM script
+        uses: ./.github/actions/npm
         with:
-          version: latest
+          command: env:start
+      # - name: Start E2E environment
+      #   uses: ./.github/actions/e2e-env
+      #   with:
+      #     version: latest
       - name: Run E2E Tests
         uses: ./.github/actions/npm
         with:

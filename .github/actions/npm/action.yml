@@ -1,5 +1,5 @@
-name: NPM Dependencies
-description: Sets up Node.js, loads cache for NPM, installs dependencies, and runs a custom command.
+name: Node.js
+description: Sets up Node.js, installs dependencies if needed, and runs a custom command.
 inputs:
   command:
     description: A custom command to run.
