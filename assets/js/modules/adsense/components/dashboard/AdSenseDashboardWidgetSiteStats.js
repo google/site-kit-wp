@@ -37,23 +37,22 @@ import getDataErrorComponent from '../../../../components/notifications/data-err
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import GoogleChart from '../../../../components/GoogleChart';
-import { isDataZeroAdSense, getSiteStatsDataForGoogleChart } from '../../util';
+import { getSiteStatsDataForGoogleChart, isZeroReport } from '../../util';
 const { useSelect } = Data;
 
-export default function AdSenseDashboardWidgetSiteStats( { selectedStats } ) {
+export default function AdSenseDashboardWidgetSiteStats( { metrics, selectedStats } ) {
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
-	const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ];
 
 	const currentRangeArgs = {
 		dimensions: [ 'DATE' ],
-		metrics,
+		metrics: Object.keys( metrics ),
 		startDate,
 		endDate,
 	};
 
 	const prevRangeArgs = {
 		dimensions: [ 'DATE' ],
-		metrics,
+		metrics: Object.keys( metrics ),
 		startDate: compareStartDate,
 		endDate: compareEndDate,
 	};
@@ -76,18 +75,9 @@ export default function AdSenseDashboardWidgetSiteStats( { selectedStats } ) {
 		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
 	}
 
-	// TODO: rework this to use the new isZeroReport function once https://github.com/google/site-kit-wp/issues/2242 is implemented
-	const dataRequest = { data: { dateRange: 'last-28-days' } };
-	if ( isDataZeroAdSense( currentRangeData, undefined, dataRequest ) ) {
+	if ( isZeroReport( currentRangeData ) ) {
 		return getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true );
 	}
-
-	const colorMap = {
-		0: '#4285f4',
-		1: '#27bcd4',
-		2: '#1b9688',
-		3: '#673ab7',
-	};
 
 	const options = {
 		curveType: 'line',
@@ -138,31 +128,28 @@ export default function AdSenseDashboardWidgetSiteStats( { selectedStats } ) {
 			orientation: 'vertical',
 			trigger: 'both',
 		},
-		// tooltip: {
-		// 	isHtml: true, // eslint-disable-line sitekit/camelcase-acronyms
-		// 	trigger: 'both',
-		// },
-	};
-
-	options.series = {
-		0: {
-			color: colorMap[ selectedStats ],
-			targetAxisIndex: 0,
+		tooltip: {
+			isHtml: true, // eslint-disable-line sitekit/camelcase-acronyms
+			trigger: 'both',
 		},
-		1: {
-			color: colorMap[ selectedStats ],
-			targetAxisIndex: 0,
-			lineDashStyle: [ 3, 3 ],
-			lineWidth: 1,
+		series: {
+			0: {
+				color: AdSenseDashboardWidgetSiteStats.colorMap[ selectedStats ],
+				targetAxisIndex: 0,
+			},
+			1: {
+				color: AdSenseDashboardWidgetSiteStats.colorMap[ selectedStats ],
+				targetAxisIndex: 0,
+				lineDashStyle: [ 3, 3 ],
+				lineWidth: 1,
+			},
 		},
 	};
-
-	options.vAxes = null;
 
 	const dataMap = getSiteStatsDataForGoogleChart(
 		currentRangeData,
 		prevRangeData,
-		[ 'Earnings', 'Page RPM', 'Impressions', 'Page CTR' ][ selectedStats ],
+		Object.values( metrics )[ selectedStats ],
 		selectedStats + 1,
 	);
 
@@ -181,6 +168,14 @@ export default function AdSenseDashboardWidgetSiteStats( { selectedStats } ) {
 	);
 }
 
+AdSenseDashboardWidgetSiteStats.colorMap = [
+	'#4285f4',
+	'#27bcd4',
+	'#1b9688',
+	'#673ab7',
+];
+
 AdSenseDashboardWidgetSiteStats.propTypes = {
+	metrics: PropTypes.shape( {} ).isRequired,
 	selectedStats: PropTypes.number.isRequired,
 };

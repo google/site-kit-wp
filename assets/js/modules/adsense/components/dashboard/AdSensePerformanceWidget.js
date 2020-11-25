@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment, useState, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,14 +35,23 @@ export default function AdSensePerformanceWidget() {
 		setSelectedStats( stat );
 	}, [] );
 
+	const metrics = {
+		EARNINGS: __( 'Earnings', 'google-site-kit' ),
+		PAGE_VIEWS_RPM: __( 'Page RPM', 'google-site-kit' ),
+		IMPRESSIONS: __( 'Impressions', 'google-site-kit' ),
+		PAGE_VIEWS_CTR: __( 'Page CTR', 'google-site-kit' ),
+	};
+
 	return (
 		<Fragment>
 			<AdSenseDashboardWidgetOverview
+				metrics={ metrics }
 				selectedStats={ selectedStats }
 				handleStatSelection={ handleStatSelection }
 			/>
 
 			<AdSenseDashboardWidgetSiteStats
+				metrics={ metrics }
 				selectedStats={ selectedStats }
 			/>
 		</Fragment>

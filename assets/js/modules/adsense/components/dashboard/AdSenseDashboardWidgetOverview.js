@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -39,21 +39,20 @@ import DataBlock from '../../../../components/data-block';
 import getDataErrorComponent from '../../../../components/notifications/data-error';
 import getNoDataComponent from '../../../../components/notifications/nodata';
 import { readableLargeNumber, changeToPercent, numberFormat } from '../../../../util';
-import { isDataZeroAdSense } from '../../util';
+import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 
-export default function AdSenseDashboardWidgetOverview( { selectedStats, handleStatSelection } ) {
+export default function AdSenseDashboardWidgetOverview( { metrics, selectedStats, handleStatSelection } ) {
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
-	const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ];
 
 	const currentRangeArgs = {
-		metrics,
+		metrics: Object.keys( metrics ),
 		startDate,
 		endDate,
 	};
 
 	const prevRangeArgs = {
-		metrics,
+		metrics: Object.keys( metrics ),
 		startDate: compareStartDate,
 		endDate: compareEndDate,
 	};
@@ -76,9 +75,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
 	}
 
-	// TODO: rework this to use the new isZeroReport function once https://github.com/google/site-kit-wp/issues/2242 is implemented
-	const dataRequest = { data: { dateRange: 'last-28-days' } };
-	if ( isDataZeroAdSense( currentRangeData, undefined, dataRequest ) ) {
+	if ( isZeroReport( currentRangeData ) ) {
 		return getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true );
 	}
 
@@ -92,7 +89,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 					<DataBlock
 						stat={ 0 }
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
-						title={ __( 'Earnings', 'google-site-kit' ) }
+						title={ metrics[ headers[ 0 ].name ] }
 						datapoint={ readableLargeNumber( totals[ 0 ], headers[ 0 ]?.currency ) }
 						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 0 ], totals[ 0 ] ) : 0 }
 						changeDataUnit="%"
@@ -106,7 +103,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 					<DataBlock
 						stat={ 1 }
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
-						title={ __( 'Page RPM', 'google-site-kit' ) }
+						title={ metrics[ headers[ 1 ].name ] }
 						datapoint={ readableLargeNumber( totals[ 1 ], headers[ 1 ]?.currency ) }
 						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 1 ], totals[ 1 ] ) : 0 }
 						changeDataUnit="%"
@@ -120,7 +117,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 					<DataBlock
 						stat={ 2 }
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-3"
-						title={ __( 'Impressions', 'google-site-kit' ) }
+						title={ metrics[ headers[ 2 ].name ] }
 						datapoint={ readableLargeNumber( totals[ 2 ] ) }
 						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 2 ], totals[ 2 ] ) : 0 }
 						changeDataUnit="%"
@@ -134,7 +131,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 					<DataBlock
 						stat={ 3 }
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"
-						title={ __( 'Page CTR', 'google-site-kit' ) }
+						title={ metrics[ headers[ 3 ].name ] }
 						datapoint={ sprintf(
 							/* translators: %s: percentage value. */
 							_x( ' %1$s%%', 'AdSense performance Page CTA percentage', 'google-site-kit' ),
@@ -153,6 +150,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 }
 
 AdSenseDashboardWidgetOverview.propTypes = {
+	metrics: PropTypes.shape( {} ).isRequired,
 	selectedStats: PropTypes.number.isRequired,
 	handleStatSelection: PropTypes.func.isRequired,
 };
