@@ -1,7 +1,7 @@
 /**
- * DashboardSplashNotifications component.
+ * Modules List stories.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Google Site Kit, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,25 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
+import { storiesOf } from '@storybook/react';
 
 /**
- * A single module. Keeps track of its own active state and settings.
+ * Internal dependencies
  */
-class DashboardSplashNotifications extends Component {
-	render() {
-		return null;
-	}
-}
+import ModulesList from '../assets/js/components/ModulesList';
+import { provideModules, WithTestRegistry } from '../tests/js/utils';
 
-export default withFilters( 'googlesitekit.DashboardSplashNotifications' )( DashboardSplashNotifications );
+storiesOf( 'Global', module )
+	.add( 'Modules List', () => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry } >
+				<ModulesList />
+			</WithTestRegistry>
+		);
+	} );
