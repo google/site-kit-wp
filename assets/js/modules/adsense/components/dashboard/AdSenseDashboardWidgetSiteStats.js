@@ -45,14 +45,14 @@ export default function AdSenseDashboardWidgetSiteStats( { selectedStats } ) {
 	const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ];
 
 	const currentRangeArgs = {
-		dimension: [ 'DATE' ],
+		dimensions: [ 'DATE' ],
 		metrics,
 		startDate,
 		endDate,
 	};
 
 	const prevRangeArgs = {
-		dimension: [ 'DATE' ],
+		dimensions: [ 'DATE' ],
 		metrics,
 		startDate: compareStartDate,
 		endDate: compareEndDate,
@@ -163,7 +163,7 @@ export default function AdSenseDashboardWidgetSiteStats( { selectedStats } ) {
 		currentRangeData,
 		prevRangeData,
 		[ 'Earnings', 'Page RPM', 'Impressions', 'Page CTR' ][ selectedStats ],
-		selectedStats,
+		selectedStats + 1,
 	);
 
 	return (

@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  * @param {number} selectedColumn Selected column index.
  * @return {Array.<Array.<number|string>>} Data array.
  */
-export function getSiteStatsDataForGoogleChart( current, previous, label, selectedColumn = 1 ) {
+export function getSiteStatsDataForGoogleChart( current, previous, label, selectedColumn ) {
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
@@ -41,15 +41,23 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 		],
 	];
 
-	if ( Array.isArray( current?.rows ) ) {
-		current.rows.forEach( ( row ) => {
-			const date = new Date( row[ 0 ] );
-			dataMap.push( [
-				date,
-				row[ selectedColumn ],
-				previous?.rows?.[ selectedColumn ],
-			] );
-		} );
+	const strToDate = ( strDate ) => new Date( `${ strDate } 00:00:00` );
+	const findRowByDate = ( searchDate ) => ( ( [ rowDate ] ) => +searchDate === +strToDate( rowDate ) );
+
+	const currentDate = strToDate( current.startDate );
+	const previousDate = strToDate( previous.startDate );
+
+	const ends = strToDate( current.endDate );
+
+	while ( +currentDate <= +ends ) {
+		dataMap.push( [
+			new Date( currentDate ), // Copy the current date.
+			parseFloat( ( current?.rows || [] ).find( findRowByDate( currentDate ) )?.[ selectedColumn ] || 0 ),
+			parseFloat( ( previous?.rows || [] ).find( findRowByDate( previousDate ) )?.[ selectedColumn ] || 0 ),
+		] );
+
+		currentDate.setDate( currentDate.getDate() + 1 );
+		previousDate.setDate( previousDate.getDate() + 1 );
 	}
 
 	return dataMap;

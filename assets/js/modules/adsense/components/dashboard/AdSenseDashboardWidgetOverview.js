@@ -43,44 +43,36 @@ import { isDataZeroAdSense } from '../../util';
 const { useSelect } = Data;
 
 export default function AdSenseDashboardWidgetOverview( { selectedStats, handleStatSelection } ) {
-	const {
-		currentRangeData,
-		prevRangeData,
-		error,
-		isLoading,
-	} = useSelect( ( select ) => {
-		const {
-			startDate,
-			endDate,
-			compareStartDate,
-			compareEndDate,
-		} = select( CORE_USER ).getDateRangeDates( { compare: true } );
+	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
+	const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ];
 
-		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ];
-		const currentRangeArgs = { metrics, startDate, endDate };
-		const prevRangeArgs = {
-			metrics,
-			startDate: compareStartDate,
-			endDate: compareEndDate,
-		};
+	const currentRangeArgs = {
+		metrics,
+		startDate,
+		endDate,
+	};
 
-		return {
-			currentRangeData: select( STORE_NAME ).getReport( currentRangeArgs ) || {},
-			prevRangeData: select( STORE_NAME ).getReport( prevRangeArgs ) || {},
+	const prevRangeArgs = {
+		metrics,
+		startDate: compareStartDate,
+		endDate: compareEndDate,
+	};
 
-			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
-				select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] ),
+	const currentRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeArgs ) );
+	const prevRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( prevRangeArgs ) );
 
-			isLoading: select( STORE_NAME ).isResolving( 'getReport', [ currentRangeArgs ] ) ||
-				select( STORE_NAME ).isResolving( 'getReport', [ prevRangeArgs ] ),
-		};
-	} );
+	const resolvedCurrentData = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) );
+	const resolvedPreviousData = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ prevRangeArgs ] ) );
 
-	if ( isLoading ) {
+	const currentError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) );
+	const previousError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] ) );
+
+	if ( ! resolvedCurrentData || ! resolvedPreviousData ) {
 		return <PreviewBlock width="100%" height="250px" />;
 	}
 
-	if ( error ) {
+	if ( currentError || previousError ) {
+		const error = currentError || previousError;
 		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
 	}
 
@@ -96,7 +88,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 	return (
 		<Grid>
 			<Row>
-				<Cell top smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+				<Cell alignTop smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 0 }
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
@@ -110,7 +102,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 					/>
 				</Cell>
 
-				<Cell top smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+				<Cell alignTop smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 1 }
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
@@ -124,7 +116,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 					/>
 				</Cell>
 
-				<Cell top smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+				<Cell alignTop smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 2 }
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-3"
@@ -138,7 +130,7 @@ export default function AdSenseDashboardWidgetOverview( { selectedStats, handleS
 					/>
 				</Cell>
 
-				<Cell top smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
+				<Cell alignTop smSize={ 2 } mdSize={ 2 } lgSize={ 3 }>
 					<DataBlock
 						stat={ 3 }
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-4"

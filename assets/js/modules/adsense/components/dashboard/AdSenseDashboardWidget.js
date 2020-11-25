@@ -213,7 +213,7 @@ class AdSenseDashboardWidget extends Component {
 								<DashboardAdSenseTopPages />
 							</Cell>
 
-							<Cell right size={ 12 }>
+							<Cell alignRight size={ 12 }>
 								<HelpLink />
 							</Cell>
 						</Row>
