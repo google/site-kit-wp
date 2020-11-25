@@ -85,9 +85,6 @@ function ModulesList( { moduleSlugs } ) {
 
 	// Filter out internal modules and remove modules with dependencies.
 	const modules = Object.values( moduleObjects ).filter( ( module ) => ! module.internal && 0 === module.dependencies.length );
-
-	// Sort modules and exclude those that required other modules to be set up.
-	// Logic still in place below in case we want to add blocked modules back.
 	const sortedModules = modules
 		.sort( ( module1, module2 ) => module1.sort - module2.sort );
 
