@@ -86,12 +86,17 @@ describe( 'core/modules settings-panel', () => {
 		} );
 
 		describe( 'isModuleSettingsPanelOpen', () => {
-			it( 'returns true when module settings panel is open for a given module', () => {
+			it( 'returns true when module settings panel is in view state for a given module', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
 				expect( registry.select( STORE_NAME ).isModuleSettingsPanelOpen( slug ) ).toBe( true );
 			} );
 
-			it( 'returns false when module settings panel is not open for a given module', () => {
+			it( 'returns true when module settings panel is in edit state for a given module', () => {
+				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
+				expect( registry.select( STORE_NAME ).isModuleSettingsPanelOpen( slug ) ).toBe( true );
+			} );
+
+			it( 'returns false when module settings panel is closed for a given module', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'closed' );
 				expect( registry.select( STORE_NAME ).isModuleSettingsPanelOpen( slug ) ).toBe( false );
 			} );
@@ -103,8 +108,13 @@ describe( 'core/modules settings-panel', () => {
 				expect( registry.select( STORE_NAME ).isModuleSettingsPanelClosed( slug ) ).toBe( true );
 			} );
 
-			it( 'returns false when module settings panel is not closed for a given module', () => {
+			it( 'returns false when module settings panel is in view state for a given module', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
+				expect( registry.select( STORE_NAME ).isModuleSettingsPanelClosed( slug ) ).toBe( false );
+			} );
+
+			it( 'returns false when module settings panel is in edit state for a given module', () => {
+				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'edit' );
 				expect( registry.select( STORE_NAME ).isModuleSettingsPanelClosed( slug ) ).toBe( false );
 			} );
 		} );
@@ -115,8 +125,13 @@ describe( 'core/modules settings-panel', () => {
 				expect( registry.select( STORE_NAME ).isModuleSettingsPanelEdit( slug ) ).toBe( true );
 			} );
 
-			it( 'returns false when module settings panel is in edit state for a given module', () => {
+			it( 'returns false when module settings panel is in view state for a given module', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
+				expect( registry.select( STORE_NAME ).isModuleSettingsPanelEdit( slug ) ).toBe( false );
+			} );
+
+			it( 'returns false when module settings panel is in closed state for a given module', () => {
+				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'closed' );
 				expect( registry.select( STORE_NAME ).isModuleSettingsPanelEdit( slug ) ).toBe( false );
 			} );
 		} );
@@ -129,6 +144,11 @@ describe( 'core/modules settings-panel', () => {
 
 			it( 'returns false when module settings panel is not locked for a given module', () => {
 				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'edit' );
+				expect( registry.select( STORE_NAME ).isModuleSettingsPanelLocked( slug ) ).toBe( false );
+			} );
+
+			it( 'returns false when module settings panel is in view state for a given module', () => {
+				registry.dispatch( STORE_NAME ).setModuleSettingsPanelState( slug, 'view' );
 				expect( registry.select( STORE_NAME ).isModuleSettingsPanelLocked( slug ) ).toBe( false );
 			} );
 		} );
