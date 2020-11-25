@@ -28,7 +28,7 @@ runs:
         wp core download --version=${{ inputs.version }} --force
         wp config create --dbname=wordpress_test --dbuser=root --dbpass=root
         wp db create
-        wp core install --title="SiteKit" --admin_user=admin --admin_password=password --admin_email=test@test.com --skip-email --url=http://localhost:3306
+        wp core install --title="SiteKit" --admin_user=admin --admin_password=password --admin_email=test@test.com --skip-email --url=http://localhost:9002
     - shell: bash
       run: |
         cp -r --force tests/e2e/mu-plugins /tmp/wp/wp-content/mu-plugins
