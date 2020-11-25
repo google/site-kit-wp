@@ -34,7 +34,7 @@ import Button from './button';
 const { useSelect, useDispatch } = Data;
 
 function DateRangeSelector() {
-	const ranges = Object.values( getAvailableDateRanges() );
+	const ranges = getAvailableDateRanges();
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const { setDateRange } = useDispatch( CORE_USER );
 
@@ -73,16 +73,13 @@ function DateRangeSelector() {
 			( 'keydown' === event.type && ( 13 === event.keyCode || 32 === event.keyCode ) ) || // Enter or Space is pressed.
 			'click' === event.type // Mouse is clicked
 		) {
-			setDateRange( ranges[ index ].slug );
+			setDateRange( Object.values( ranges )[ index ].slug );
 			setMenuOpen( false );
 		}
 	}, [ handleMenu ] );
 
-	const currentDateRangeLabel = ranges.reduce( ( acc, range ) => {
-		return range.slug === dateRange ? range : acc;
-	}, {} ).label;
-
-	const menuItems = ranges.map( ( range ) => range.label );
+	const currentDateRangeLabel = ranges[ dateRange ]?.label;
+	const menuItems = Object.values( ranges ).map( ( range ) => range.label );
 
 	return (
 		<div className="googlesitekit-date-range-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
