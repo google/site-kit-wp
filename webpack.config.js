@@ -281,7 +281,7 @@ const webpackConfig = ( env, argv ) => {
 						extractComments: false,
 					} ),
 				],
-				runtimeChunk: false,
+				runtimeChunk: 'single',
 				splitChunks: {
 					cacheGroups: {
 						vendor: {
