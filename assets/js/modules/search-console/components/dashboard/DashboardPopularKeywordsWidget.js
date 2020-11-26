@@ -44,49 +44,44 @@ const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
 function DashboardPopularKeywordsWidget() {
-	const {
-		data,
-		error,
-		loading,
-		baseServiceURL,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		const domain = store.getPropertyID();
-		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			dimensions: 'query',
-			limit: 10,
-		};
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const domain = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const isDomainProperty = useSelect( ( select ) => select( STORE_NAME ).isDomainProperty() );
+	const referenceSiteURL = useSelect( ( select ) => untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() ) );
 
-		const baseServiceURLArgs = {
-			resource_id: domain,
-			num_of_days: getCurrentDateRangeDayCount(),
-		};
+	const args = {
+		dateRange,
+		dimensions: 'query',
+		limit: 10,
+	};
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
-		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
-		if ( url ) {
-			args.url = url;
-			baseServiceURLArgs.page = `!${ url }`;
-		} else if ( isDomainProperty && referenceSiteURL ) {
-			baseServiceURLArgs.page = `*${ referenceSiteURL }`;
-		}
+	const baseServiceURLArgs = {
+		resource_id: domain,
+		num_of_days: getCurrentDateRangeDayCount(),
+	};
 
-		return {
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
-			baseServiceURL: store.getServiceURL( {
-				path: '/performance/search-analytics',
-				query: baseServiceURLArgs,
-			} ),
-		};
-	} );
+	if ( url ) {
+		args.url = url;
+		baseServiceURLArgs.page = `!${ url }`;
+	} else if ( isDomainProperty && referenceSiteURL ) {
+		baseServiceURLArgs.page = `*${ referenceSiteURL }`;
+	}
 
-	if ( loading ) {
+	const resolvedReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const { data, error, baseServiceURL } = useSelect( ( select ) => ( {
+		data: select( STORE_NAME ).getReport( args ),
+		error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ),
+		baseServiceURL: select( STORE_NAME ).getServiceURL( {
+			path: '/performance/search-analytics',
+			query: baseServiceURLArgs,
+		} ),
+	} ) );
+
+	if ( ! resolvedReport ) {
 		return <PreviewTable padding />;
 	}
+
 	if ( error ) {
 		return <ReportError moduleSlug="search-console" error={ error } />;
 	}

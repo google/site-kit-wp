@@ -42,40 +42,32 @@ import ReportZero from '../../../../components/ReportZero';
 const { useSelect } = Data;
 
 function DashboardGoalsWidget() {
-	const {
-		data,
-		error,
-		loading,
-		serviceURL,
-		goals,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 
-		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			multiDateRange: 1,
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:goalCompletionsAll',
-					alias: 'Goal Completions',
-				},
-			],
-		};
+	const args = {
+		dateRange,
+		multiDateRange: 1,
+		dimensions: 'ga:date',
+		metrics: [ {
+			expression: 'ga:goalCompletionsAll',
+			alias: 'Goal Completions',
+		} ],
+	};
 
-		return {
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
-			loading: store.isResolving( 'getReport', [ args ] ) || store.isResolving( 'getGoals', [] ),
-			serviceURL: store.getServiceURL( { path: `/report/conversions-goals-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` } ),
-			goals: store.getGoals(),
-		};
-	} );
+	const resolvedReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const resolvedGoals = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getGoals', [] ) );
+	const { data, error, serviceURL, goals } = useSelect( ( select ) => ( {
+		serviceURL: select( STORE_NAME ).getServiceURL( { path: `/report/conversions-goals-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` } ),
+		data: select( STORE_NAME ).getReport( args ),
+		goals: select( STORE_NAME ).getGoals(),
+		error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ) ||
+			select( STORE_NAME ).getErrorForSelector( 'getGoals', [] ),
+	} ) );
 
-	if ( loading ) {
+	if ( ! resolvedReport || ! resolvedGoals ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 

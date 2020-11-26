@@ -42,48 +42,46 @@ const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
 function DashboardTopEarningPagesWidget() {
-	const {
-		isAdSenseLinked,
-		analyticsMainURL,
-		data,
-		error,
-		loading,
-	} = useSelect( ( select ) => {
-		const store = select( ANALYTICS_STORE );
-		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-			metrics: [
-				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-				{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-				{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
-			],
-			orderby: {
-				fieldName: 'ga:adsenseRevenue',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 10,
-		};
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const isAdSenseLinked = useSelect( ( select ) => select( ANALYTICS_STORE ).getAdsenseLinked() );
+	const analyticsMainURL = useSelect( ( select ) => select( ANALYTICS_STORE ).getServiceURL() );
 
-		return {
-			isAdSenseLinked: store.getAdsenseLinked(),
-			analyticsMainURL: store.getServiceURL(),
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
-		};
+	const args = {
+		dateRange,
+		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+		metrics: [
+			{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+			{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+			{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
+		],
+		orderby: {
+			fieldName: 'ga:adsenseRevenue',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 10,
+	};
+
+	const resolvedReport = useSelect( ( select ) => select( ANALYTICS_STORE ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const { data, error } = useSelect( ( select ) => {
+		// Don't send getReport request if the current AdSense account isn't linked.
+		return ! isAdSenseLinked
+			? {}
+			: {
+				data: select( ANALYTICS_STORE ).getReport( args ),
+				error: select( ANALYTICS_STORE ).getErrorForSelector( 'getReport', [ args ] ),
+			};
 	} );
-
-	if ( loading ) {
-		return (
-			<PreviewTable rows={ 5 } padding />
-		);
-	}
 
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
 	if ( ! isAdSenseLinked ) {
 		return <AdSenseLinkCTA />;
+	}
+
+	if ( ! resolvedReport ) {
+		return (
+			<PreviewTable rows={ 5 } padding />
+		);
 	}
 
 	if ( error ) {

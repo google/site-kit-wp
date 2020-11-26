@@ -43,47 +43,39 @@ import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 
 function DashboardBounceRateWidget() {
-	const {
-		data,
-		error,
-		loading,
-		serviceURL,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 
-		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
-			multiDateRange: 1,
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-			],
-		};
+	const path = applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` );
+	const serviceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path } ), [ path ] );
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
-		return {
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
-			serviceURL: store.getServiceURL(
-				{
-					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
-				}
-			),
-		};
-	} );
+	const args = {
+		dateRange,
+		multiDateRange: 1,
+		dimensions: 'ga:date',
+		metrics: [
+			{
+				expression: 'ga:bounceRate',
+				alias: 'Bounce Rate',
+			},
+		],
+	};
 
-	if ( loading ) {
+	if ( url ) {
+		args.url = url;
+	}
+
+	const resolvedReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const { data, error } = useSelect( ( select ) => ( {
+		data: select( STORE_NAME ).getReport( args ),
+		error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ args ] ),
+	} ) );
+
+	if ( ! resolvedReport ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
