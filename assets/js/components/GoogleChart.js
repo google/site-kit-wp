@@ -33,12 +33,17 @@ import { useEffect, useState, useRef } from '@wordpress/element';
  */
 import ProgressBar from './ProgressBar';
 
-let loadedOnce = false;
-let chartLoadPromise;
+// Use a global variable to prevent separate webpack bundles from loading the
+// script multiples times.
+if ( global.googlesitekit === undefined ) {
+	global.googlesitekit = {};
+}
+
+global.googlesitekit.__hasLoadedGoogleCharts = false;
 
 async function loadCharts() {
-	if ( chartLoadPromise ) {
-		return chartLoadPromise;
+	if ( global.googlesitekit.__chartLoadPromise ) {
+		return global.googlesitekit.__chartLoadPromise;
 	}
 
 	// Inject the script if not already loaded and resolve on load.
@@ -48,7 +53,7 @@ async function loadCharts() {
 
 		// Only insert the DOM element if no Charts loader script is detected.
 		if ( document.querySelectorAll( 'script[src="https://www.gstatic.com/charts/loader.js"]' ).length === 0 ) {
-			chartLoadPromise = new Promise( ( resolve ) => {
+			global.googlesitekit.__chartLoadPromise = new Promise( ( resolve ) => {
 				script.onload = resolve;
 				// Add the script to the DOM
 				global.document.head.appendChild( script );
@@ -58,10 +63,10 @@ async function loadCharts() {
 		}
 	} else {
 		// Charts is already available - resolve immediately.
-		chartLoadPromise = Promise.resolve();
+		global.googlesitekit.__chartLoadPromise = Promise.resolve();
 	}
 
-	return chartLoadPromise;
+	return global.googlesitekit.__chartLoadPromise;
 }
 
 export default function GoogleChart( props ) {
@@ -89,8 +94,8 @@ export default function GoogleChart( props ) {
 			await loadCharts();
 
 			// Only call `charts.load` if the charts haven't been loaded yet.
-			if ( ! loadedOnce && global.google?.charts ) {
-				loadedOnce = true;
+			if ( ! global.googlesitekit.__hasLoadedGoogleCharts && global.google?.charts ) {
+				global.googlesitekit.__hasLoadedGoogleCharts = true;
 				global.google.charts.load( 'current', {
 					packages: [ 'corechart' ],
 					callback: () => {
