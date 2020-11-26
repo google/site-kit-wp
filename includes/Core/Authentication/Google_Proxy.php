@@ -102,10 +102,11 @@ class Google_Proxy {
 	 * @since x.x.x
 	 *
 	 * @param Credentials $credentials Credentials instance.
+	 * @return (array|object) The response as an associative array or WP_Error on failure.
 	 *
-	 * @return (array|WP_Error) The response as an array or WP_Error on failure.
+	 * @throws Exception Thrown when the request resulted in an error response.
 	 */
-	public function fetch_site_field( Credentials $credentials ) {
+	public function fetch_site_fields( Credentials $credentials ) {
 		if ( ! $credentials->has() ) {
 			return null;
 		}
@@ -113,20 +114,34 @@ class Google_Proxy {
 		$creds = $credentials->get();
 
 		$request_args = array(
-			'body' => array_merge(
-				$this->get_site_fields(),
-				array(
-					'site_id'     => $creds['oauth2_client_id'],
-					'site_secret' => $creds['oauth2_client_secret'],
-				)
+			'body' => array(
+				'site_id'     => $creds['oauth2_client_id'],
+				'site_secret' => $creds['oauth2_client_secret'],
 			),
 		);
 
-		return wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
+		$response = wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
+		$raw_body = wp_remote_retrieve_body( $response );
+
+		if ( is_wp_error( $raw_body ) ) {
+			return $raw_body;
+		}
+
+		$response_data = json_decode( $raw_body, true );
+
+		if ( ! $response_data || isset( $response_data['error'] ) ) {
+			throw new Exception(
+				isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response'
+			);
+		}
+
+		return $response_data;
 	}
 
 	/**
 	 * Are site fields synced
+	 *
+	 * @since x.x.x
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 *
@@ -142,7 +157,7 @@ class Google_Proxy {
 		$get_site_fields = $this->get_site_fields();
 
 		foreach ( $get_site_fields as $key => $site_field ) {
-			if ( ! $get_site_fields[ $key ] || $get_site_fields[ $key ] !== $site_field ) {
+			if ( ! array_key_exists( $key, $fetch_site_fields ) || $fetch_site_fields[ $key ] !== $site_field ) {
 				return false;
 			}
 		}
