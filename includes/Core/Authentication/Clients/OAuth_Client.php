@@ -228,6 +228,10 @@ final class OAuth_Client {
 		$application_name = $this->get_application_name();
 		// The application name is included in the Google client's user-agent for requests to Google APIs.
 		$client->setApplicationName( $application_name );
+
+		// Enable exponential retries, try up to three times.
+		$client->setConfig( 'retry', array( 'retries' => 3 ) );
+
 		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
 		// By default this header uses the generic Guzzle client's user-agent and includes
 		// Guzzle, cURL, and PHP versions as it is normally shared.
