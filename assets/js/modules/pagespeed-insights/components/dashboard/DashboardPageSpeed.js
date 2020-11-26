@@ -54,25 +54,18 @@ export default function DashboardPageSpeed() {
 	const strategy = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'strategy' ) ) || STRATEGY_MOBILE;
 	const dataSrc = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_DASH_WIDGET, 'dataSrc' ) ) || DATA_SRC_LAB;
 
-	const {
-		isFetchingMobile,
-		isFetchingDesktop,
-		reportMobile,
-		reportDesktop,
-		errorMobile,
-		errorDesktop,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+	const resolvedMobileReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ) );
+	const resolvedDesktopReport = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ) );
 
-		return {
-			isFetchingMobile: store.isFetchingGetReport( referenceURL, STRATEGY_MOBILE ),
-			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
-			errorMobile: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
-			isFetchingDesktop: store.isFetchingGetReport( referenceURL, STRATEGY_DESKTOP ),
-			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
-			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
-		};
-	} );
+	const { reportDesktop, errorDesktop } = useSelect( ( select ) => ( {
+		reportDesktop: select( STORE_NAME ).getReport( referenceURL, STRATEGY_DESKTOP ),
+		errorDesktop: select( STORE_NAME ).getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
+	} ) );
+
+	const { reportMobile, errorMobile } = useSelect( ( select ) => ( {
+		reportMobile: select( STORE_NAME ).getReport( referenceURL, STRATEGY_MOBILE ),
+		errorMobile: select( STORE_NAME ).getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
+	} ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const setStrategyMobile = useCallback( () => setValues( FORM_DASH_WIDGET, { strategy: STRATEGY_MOBILE } ), [] );
@@ -104,7 +97,7 @@ export default function DashboardPageSpeed() {
 		}
 	}, [ reportMobile, reportDesktop ] );
 
-	if ( ! referenceURL || isFetchingMobile || isFetchingDesktop || ! dataSrc ) {
+	if ( ! referenceURL || ! resolvedMobileReport || ! resolvedDesktopReport || ! dataSrc ) {
 		return (
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
