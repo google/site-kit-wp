@@ -35,7 +35,7 @@ import SettingsModules from '../assets/js/components/settings/settings-modules';
 import Layout from '../assets/js/components/layout/layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
-import { provideSiteInfo, WithTestRegistry, provideModules } from '../tests/js/utils';
+import { provideSiteInfo, WithTestRegistry, provideModules, untilResolved } from '../tests/js/utils';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 
 /**
@@ -92,13 +92,66 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.canAdsRun = true;
 		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
 		global._googlesitekitLegacyData.modules.adsense.active = false;
-		const setupRegistry = ( registry ) => {
+		const setupRegistry = async ( registry ) => {
+			provideModules( registry, [
+				{
+					slug: 'adsense',
+					active: true,
+					dependencies: [],
+					dependants: [],
+				},
+				{
+					slug: 'analytics',
+					active: false,
+					connected: false,
+					dependencies: [],
+					dependants: [ 'optimize' ],
+				},
+				{
+					slug: 'optimize',
+					active: false,
+					connected: false,
+					dependencies: [ 'analytics' ],
+					dependants: [],
+				},
+				{
+					slug: 'pagespeed-insights',
+					active: false,
+					connected: false,
+					dependencies: [],
+					dependants: [],
+				},
+				{
+					slug: 'search-console',
+					active: false,
+					connected: false,
+					dependencies: [],
+					dependants: [],
+				},
+				{
+					slug: 'site-verification',
+					active: false,
+					connected: false,
+					dependencies: [],
+					dependants: [],
+				},
+				{
+					slug: 'tagmanager',
+					active: false,
+					connected: false,
+					dependencies: [],
+					dependants: [],
+				},
+			] );
 			registry.dispatch( CORE_MODULES ).registerModule( 'adsense' );
-			provideModules( registry, [ {
-				slug: 'adsense',
-				active: true,
-				connected: true,
-			} ] );
+			registry.dispatch( CORE_MODULES ).registerModule( 'analytics' );
+			registry.dispatch( CORE_MODULES ).registerModule( 'optimize' );
+			registry.dispatch( CORE_MODULES ).registerModule( 'pagespeed-insights' );
+			registry.dispatch( CORE_MODULES ).registerModule( 'search-console' );
+			registry.dispatch( CORE_MODULES ).registerModule( 'site-verification' );
+			registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager' );
+			registry.select( CORE_MODULES ).getModule( 'adsense' );
+			await untilResolved( registry, CORE_MODULES ).getModules();
 		};
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
