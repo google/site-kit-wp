@@ -22,6 +22,7 @@ use Exception;
  */
 class Google_Proxy {
 
+
 	const BASE_URL                = 'https://sitekit.withgoogle.com';
 	const OAUTH2_SITE_URI         = '/o/oauth2/site/';
 	const OAUTH2_REVOKE_URI       = '/o/oauth2/revoke/';
@@ -93,6 +94,60 @@ class Google_Proxy {
 			'return_uri'             => $this->context->admin_url( 'splash' ),
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
+	}
+
+	/**
+	 * Fetch site fields
+	 *
+	 * @since x.x.x
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 *
+	 * @return (array|WP_Error) The response as an array or WP_Error on failure.
+	 */
+	public function fetch_site_field( Credentials $credentials ) {
+		if ( ! $credentials->has() ) {
+			return null;
+		}
+
+		$creds = $credentials->get();
+
+		$request_args = array(
+			'body' => array_merge(
+				$this->get_site_fields(),
+				array(
+					'site_id'     => $creds['oauth2_client_id'],
+					'site_secret' => $creds['oauth2_client_secret'],
+				)
+			),
+		);
+
+		return wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
+	}
+
+	/**
+	 * Are site fields synced
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 *
+	 * @return boolean Boolean do the site fields match.
+	 */
+	public function are_site_fields_synced( Credentials $credentials ) {
+		$fetch_site_fields = $this->fetch_site_fields( $credentials );
+
+		if ( is_wp_error( $fetch_site_fields ) ) {
+			return $fetch_site_fields;
+		}
+
+		$get_site_fields = $this->get_site_fields();
+
+		foreach ( $get_site_fields as $key => $site_field ) {
+			if ( ! $get_site_fields[ $key ] || $get_site_fields[ $key ] !== $site_field ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -179,7 +234,6 @@ class Google_Proxy {
 			'body' => array_merge(
 				$this->get_site_fields(),
 				array(
-					'nonce'       => wp_create_nonce( self::ACTION_SETUP ),
 					'site_id'     => $creds['oauth2_client_id'],
 					'site_secret' => $creds['oauth2_client_secret'],
 				)
