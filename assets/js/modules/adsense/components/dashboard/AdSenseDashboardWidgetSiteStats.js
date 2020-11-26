@@ -111,6 +111,7 @@ export default function AdSenseDashboardWidgetSiteStats( props ) {
 			},
 		},
 		vAxis: {
+			format: AdSenseDashboardWidgetSiteStats.formats[ currentRangeData.headers[ selectedStats + 1 ].type ],
 			gridlines: {
 				color: '#eee',
 			},
@@ -140,11 +141,11 @@ export default function AdSenseDashboardWidgetSiteStats( props ) {
 		},
 		series: {
 			0: {
-				color: AdSenseDashboardWidgetSiteStats.colorMap[ selectedStats ],
+				color: AdSenseDashboardWidgetSiteStats.colors[ selectedStats ],
 				targetAxisIndex: 0,
 			},
 			1: {
-				color: AdSenseDashboardWidgetSiteStats.colorMap[ selectedStats ],
+				color: AdSenseDashboardWidgetSiteStats.colors[ selectedStats ],
 				targetAxisIndex: 0,
 				lineDashStyle: [ 3, 3 ],
 				lineWidth: 1,
@@ -174,12 +175,20 @@ export default function AdSenseDashboardWidgetSiteStats( props ) {
 	);
 }
 
-AdSenseDashboardWidgetSiteStats.colorMap = [
+AdSenseDashboardWidgetSiteStats.colors = [
 	'#4285f4',
 	'#27bcd4',
 	'#1b9688',
 	'#673ab7',
 ];
+
+AdSenseDashboardWidgetSiteStats.formats = {
+	METRIC_TALLY: undefined,
+	METRIC_CURRENCY: 'currency',
+	METRIC_RATIO: 'percent',
+	METRIC_DECIMAL: 'decimal',
+	METRIC_MILLISECONDS: undefined,
+};
 
 AdSenseDashboardWidgetSiteStats.propTypes = {
 	startDate: PropTypes.string.isRequired,
