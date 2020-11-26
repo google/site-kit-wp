@@ -78,7 +78,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
-	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
+	// '@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
 const externals = { ...siteKitExternals };
@@ -129,13 +129,13 @@ const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
-		'@wordpress/element__non-shim': require.resolve( '@wordpress/element' ),
-		'@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
-		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
-		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
-		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
-		'react__non-shim': require.resolve( 'react' ),
-		react: path.resolve( 'assets/js/react-shim.js' ),
+		// '@wordpress/element__non-shim': require.resolve( '@wordpress/element' ),
+		// '@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
+		// '@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
+		// '@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
+		// '@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
+		// 'react__non-shim': require.resolve( 'react' ),
+		// react: path.resolve( 'assets/js/react-shim.js' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };

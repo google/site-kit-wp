@@ -16,23 +16,7 @@
  * limitations under the License.
  */
 
-import {
-	sprintf,
-	setLocaleData,
-	__,
-	_x,
-	_n,
-	_nx,
-	isRTL,
-} from '@wordpress/i18n__non-shim';
+import * as i18n from '@wordpress/i18n';
 
 global.googlesitekit = global.googlesitekit || {};
-global.googlesitekit.i18n = global.googlesitekit.i18n || {
-	sprintf,
-	setLocaleData,
-	__,
-	_x,
-	_n,
-	_nx,
-	isRTL,
-};
+global.googlesitekit.i18n = i18n;
