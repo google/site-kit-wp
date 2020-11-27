@@ -57,8 +57,11 @@ function DashboardSummaryWidget() {
 			metrics,
 		};
 
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
+
 		const periodArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate,
+			endDate,
 			metrics,
 		};
 
