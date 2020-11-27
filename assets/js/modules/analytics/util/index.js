@@ -38,6 +38,7 @@ import { prepareSecondsForDisplay } from '../../../util';
 export { calculateOverviewData };
 
 export { default as parsePropertyID } from './parse-property-id';
+export * from './is-zero-report';
 export * from './validation';
 
 /**

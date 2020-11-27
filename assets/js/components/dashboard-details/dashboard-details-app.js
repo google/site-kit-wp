@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Header from '../Header';
 import Link from '../Link';
+import DateRangeSelector from '../DateRangeSelector';
 import PageHeader from '../PageHeader';
 import HelpLink from '../HelpLink';
 import DashboardDetailsEntityView from './DashboardDetailsEntityView';
@@ -45,7 +46,9 @@ export default function DashboardDetailsApp() {
 
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				{ currentEntityURL && <DateRangeSelector /> }
+			</Header>
 			<div className="googlesitekit-module-page">
 				<div className="googlesitekit-dashboard-single-url">
 					<div className="mdc-layout-grid">

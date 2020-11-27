@@ -1,5 +1,5 @@
 /**
- * DashboardSplashIntro component.
+ * LegacyDashboardSplashIntro component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Button from '../button';
 import Logo from '../Logo';
 
-class DashboardSplashIntro extends Component {
+class LegacyDashboardSplashIntro extends Component {
 	render() {
 		const {
 			title = __( 'Welcome to Site Kit.', 'google-site-kit' ),
@@ -85,14 +85,14 @@ class DashboardSplashIntro extends Component {
 	}
 }
 
-DashboardSplashIntro.propTypes = {
+LegacyDashboardSplashIntro.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.string,
 	buttonLabel: PropTypes.string,
 	onButtonClick: PropTypes.func,
 };
 
-DashboardSplashIntro.defaultProps = {
+LegacyDashboardSplashIntro.defaultProps = {
 };
 
-export default DashboardSplashIntro;
+export default LegacyDashboardSplashIntro;

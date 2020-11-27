@@ -11,8 +11,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Notification from '../assets/js/components/notifications/notification';
-import ModulesList from '../assets/js/components/modules-list';
 import { provideModuleRegistrations, WithTestRegistry } from '../tests/js/utils';
+import ModulesList from '../assets/js/components/ModulesList';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
@@ -22,20 +22,20 @@ storiesOf( 'Global/Notifications', module )
 			provideModuleRegistrations( registry );
 		};
 
-		return <WithTestRegistry callback={ setupRegistry }>
-			<Notification
-				id="notification-id"
-				title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
-				handleDismiss={ () => {
-				} }
-				winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png` }
-				dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-				format="large"
-				type="win-success"
-			>
-				<ModulesList />
-			</Notification>
-		</WithTestRegistry>;
+		return (
+			<WithTestRegistry callback={ setupRegistry } >
+				<Notification
+					id="notification-id"
+					title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
+					winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png` }
+					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+					format="large"
+					type="win-success"
+				>
+					<ModulesList />
+				</Notification>
+			</WithTestRegistry>
+		);
 	} )
 	.add( 'Small with Image', () => (
 		<Notification

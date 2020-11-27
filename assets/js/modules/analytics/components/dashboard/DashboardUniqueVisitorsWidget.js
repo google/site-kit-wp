@@ -38,6 +38,7 @@ import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
+import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
 
@@ -107,7 +108,7 @@ function DashboardUniqueVisitorsWidget() {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ( ! sparkData || ! sparkData.length ) && ( ! visitorsData || ! visitorsData.length ) ) {
+	if ( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
