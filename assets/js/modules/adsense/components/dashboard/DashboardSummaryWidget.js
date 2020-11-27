@@ -42,10 +42,10 @@ const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
 export default function DashboardSummaryWidget() {
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates() );
 
 	const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
-	const rangeArgs = { metrics, dateRange };
+	const rangeArgs = { metrics, startDate, endDate };
 	const todayArgs = { metrics, dateRange: 'today' };
 	const dailyArgs = { metrics, dateRange: 'this-month', dimensions: [ 'DATE' ] };
 

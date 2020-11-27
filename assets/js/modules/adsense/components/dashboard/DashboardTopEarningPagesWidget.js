@@ -40,12 +40,13 @@ const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
 export default function DashboardTopEarningPagesWidget() {
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates() );
 	const isAdSenseLinked = useSelect( ( select ) => select( ANALYTICS_STORE ).getAdsenseLinked() );
 	const analyticsMainURL = useSelect( ( select ) => select( ANALYTICS_STORE ).getServiceURL() );
 
 	const args = {
-		dateRange,
+		startDate,
+		endDate,
 		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
 		metrics: [
 			{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
