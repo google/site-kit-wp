@@ -140,6 +140,11 @@ const resolve = {
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
+// Get the app version from the google-site-kit.php file - optional chaining operator not supported here
+const googleSiteKitFile = fs.readFileSync( path.resolve( __dirname, 'google-site-kit.php' ), 'utf8' );
+const googleSiteKitVersion = googleSiteKitFile.match( /(?<!GOOGLESITEKIT_VERSION',\s+')\d+\.\d+\.\d+(?=')/ig );
+const GOOGLESITEKIT_VERSION = googleSiteKitVersion ? googleSiteKitVersion[ 0 ] + '_' : '';
+
 const webpackConfig = ( env, argv ) => {
 	const {
 		mode,
@@ -263,7 +268,7 @@ const webpackConfig = ( env, argv ) => {
 					},
 				} ),
 				new DefinePlugin( {
-					GOOGLESITEKIT_VERSION: fs.readFileSync( path.resolve( __dirname, 'google-site-kit.php' ), 'utf8' ).match( /(?<!GOOGLESITEKIT_VERSION',\s+')\d+\.\d+\.\d+(?=')/ig )[ 0 ] || '',
+					'global.GOOGLESITEKIT_VERSION': JSON.stringify( GOOGLESITEKIT_VERSION ),
 				} ),
 			],
 			optimization: {
