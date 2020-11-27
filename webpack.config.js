@@ -274,6 +274,13 @@ const webpackConfig = ( env, argv ) => {
 						extractComments: false,
 					} ),
 				],
+				/*
+					The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
+					Without this, imported modules are initialized for each runtime chunk separately which
+					results in duplicate module initialization when a shared module is imported by separate entries
+					on the same page.
+					See: https://v4.webpack.js.org/configuration/optimization/#optimizationruntimechunk
+				*/
 				runtimeChunk: 'single',
 				splitChunks: {
 					cacheGroups: {
