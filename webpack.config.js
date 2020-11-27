@@ -78,6 +78,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
+	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
 const externals = { ...siteKitExternals };
@@ -148,7 +149,6 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
 				'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
 				'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
-				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 				'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
 				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
@@ -295,6 +295,29 @@ const webpackConfig = ( env, argv ) => {
 				},
 			},
 			resolve,
+		},
+
+		// API modules
+		{
+			entry: {
+				i18n: '@wordpress/i18n',
+			},
+			output: {
+				devtoolNamespace: 'googlesitekit',
+				filename: 'googlesitekit-[name].js',
+				path: path.join( __dirname, 'dist/assets/js' ),
+				library: [ 'googlesitekit', '[name]' ],
+				libraryTarget: 'window',
+			},
+			optimization: {
+				concatenateModules: true,
+			},
+			plugins: [
+				new WebpackBar( {
+					name: 'API Modules',
+					color: 'green',
+				} ),
+			],
 		},
 
 		// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
