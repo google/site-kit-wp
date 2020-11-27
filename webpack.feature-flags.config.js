@@ -28,4 +28,7 @@ exports.featureFlags = {
 	userInput: {
 		enabled: 'development',
 	},
+	serviceSetupV2: {
+		enabled: 'development',
+	},
 };
