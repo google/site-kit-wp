@@ -41,10 +41,10 @@ import getDataErrorComponent from '../../../../components/legacy-notifications/d
 import ProgressBar from '../../../../components/ProgressBar';
 import ModuleSettingsWarning from '../../../../components/legacy-notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
+import DateRangeSelector from '../../../../components/DateRangeSelector';
 import HelpLink from '../../../../components/HelpLink';
 import Header from '../../../../components/Header';
 import PageHeader from '../../../../components/PageHeader';
-import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import Layout from '../../../../components/layout/layout';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
@@ -152,7 +152,9 @@ class AdSenseDashboardWidget extends Component {
 
 		return (
 			<Fragment>
-				<Header />
+				<Header>
+					{ moduleStatus === 'connected' && <DateRangeSelector /> }
+				</Header>
 				<div className={ wrapperClass }>
 					<Alert module="adsense" />
 				</div>
@@ -175,9 +177,7 @@ class AdSenseDashboardWidget extends Component {
 									}
 									status={ moduleStatus }
 									statusText={ moduleStatusText }
-								>
-									<PageHeaderDateRange />
-								</PageHeader>
+								/>
 								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

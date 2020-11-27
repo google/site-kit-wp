@@ -31,4 +31,7 @@ exports.featureFlags = {
 	storeErrorNotifications: {
 		enabled: 'development',
 	},
+	serviceSetupV2: {
+		enabled: 'development',
+	},
 };
