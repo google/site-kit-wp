@@ -54,8 +54,8 @@ function DashboardClicksWidget() {
 
 		const args = {
 			dimensions: 'date',
-			compareDateRanges: true,
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate: select( CORE_USER ).getDateRangeDates().startDate,
+			endDate: select( CORE_USER ).getDateRangeDates().endDate,
 		};
 		const serviceBaseURLArgs = {
 			resource_id: propertyID,

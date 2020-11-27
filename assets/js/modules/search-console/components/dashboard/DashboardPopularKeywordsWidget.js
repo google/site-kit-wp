@@ -53,7 +53,8 @@ function DashboardPopularKeywordsWidget() {
 		const store = select( STORE_NAME );
 		const domain = store.getPropertyID();
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate: select( CORE_USER ).getDateRangeDates().startDate,
+			endDate: select( CORE_USER ).getDateRangeDates().endDate,
 			dimensions: 'query',
 			limit: 10,
 		};
