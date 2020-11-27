@@ -197,7 +197,7 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 };
 
 /**
- * Provides modules data to the given registry using registerModule with custom overrides.
+ * Registers the given module with settings to the given registry.
  *
  * @since n.e.x.t
  * @private
@@ -221,18 +221,22 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 
 	const moduleSlugs = coreModulesFixture.map( ( { slug } ) => slug );
 
-	coreModulesFixture
+	const modules = coreModulesFixture
 		.concat(
-			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) )
-		).forEach( ( module ) => {
-			const icon = moduleIconMap[ module.slug ];
-			let moduleData = { ...module, icon };
-			if ( extraModules[ module.slug ] ) {
-				moduleData = { ...moduleData, ...extraModules[ module.slug ] };
-			}
-			delete moduleData.slug;
-			registry.dispatch( CORE_MODULES ).registerModule( module.slug, moduleData );
-		} );
+			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) ),
+		);
+
+	modules.forEach( ( module ) => {
+		const icon = moduleIconMap[ module.slug ];
+		let moduleData = { ...module, icon };
+		if ( extraModules[ module.slug ] ) {
+			moduleData = { ...moduleData, ...extraModules[ module.slug ] };
+		}
+		delete moduleData.slug;
+		registry.dispatch( CORE_MODULES ).registerModule( module.slug, { ...moduleData } );
+	} );
+
+	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
 };
 
 /**
@@ -258,9 +262,9 @@ export const provideModules = ( registry, extraData = [] ) => {
 			return { ...module };
 		} )
 		.concat(
-			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) )
+			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) ),
 		)
-	;
+    ;
 
 	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
 };
@@ -296,7 +300,8 @@ export const muteFetch = ( matcher, response = {} ) => {
  *                                                      (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
  */
 export const freezeFetch = ( matcher ) => {
-	fetchMock.once( matcher, new Promise( () => {} ) );
+	fetchMock.once( matcher, new Promise( () => {
+	} ) );
 };
 
 /**
@@ -352,9 +357,9 @@ export const untilResolved = ( registry, storeName ) => {
 		( resolverFn, resolverName ) => ( ...args ) => {
 			return subscribeUntil(
 				registry,
-				() => registry.select( storeName ).hasFinishedResolution( resolverName, args )
+				() => registry.select( storeName ).hasFinishedResolution( resolverName, args ),
 			);
-		}
+		},
 	);
 };
 
@@ -402,6 +407,6 @@ export const unsubscribeFromAll = () => {
  */
 export const unexpectedSuccess = () => {
 	return Promise.reject( new Error(
-		'Some code (likely a Promise) succeeded unexpectedly; check your test.'
+		'Some code (likely a Promise) succeeded unexpectedly; check your test.',
 	) );
 };
