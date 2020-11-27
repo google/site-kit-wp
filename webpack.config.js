@@ -78,7 +78,6 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
-	// '@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
 const externals = { ...siteKitExternals };
@@ -149,6 +148,7 @@ const webpackConfig = ( env, argv ) => {
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
 				'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
 				'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
+				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 				'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
 				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
@@ -300,7 +300,6 @@ const webpackConfig = ( env, argv ) => {
 		// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
 		{
 			entry: {
-				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				// Analytics advanced tracking script to be injected in the frontend.
 				'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
 			},
