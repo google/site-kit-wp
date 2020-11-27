@@ -21,18 +21,18 @@
 	@include googlesitekit-inner-padding;
 	@include shadow;
 	background-color: $c-base;
+	left: 0;
+	position: sticky;
+	right: 0;
+	top: 0;
 	z-index: 12;
-
-	// only become sticky when WordPress's #wpadminbar becomes sticky
-	@media (min-width: $bp-tablet) {
-		left: 0;
-		position: sticky;
-		right: 0;
-		top: 46px;
-	}
 
 	@media (min-width: $bp-wpAdminBarTablet) {
 		top: 32px;
+	}
+
+	@media (min-width: $bp-tablet) {
+		top: 46px;
 	}
 
 	.wp-responsive-open & {
