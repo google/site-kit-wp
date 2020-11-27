@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import set from 'lodash/set';
 
 /**
  * Internal dependencies
@@ -37,7 +38,7 @@ storiesOf( 'Global', module )
 		return storyFn( registry );
 	} )
 	.add( 'Plugin Header', ( registry ) => {
-		global.featureFlags = { storeErrorNotifications: { enabled: true } };
+		set( global, 'featureFlags.storeErrorNotifications.enabled', true );
 
 		return (
 			<WithTestRegistry registry={ registry }>
@@ -46,7 +47,7 @@ storiesOf( 'Global', module )
 		);
 	} )
 	.add( 'Plugin Header with Date Selector', ( registry ) => {
-		global.featureFlags = { storeErrorNotifications: { enabled: true } };
+		set( global, 'featureFlags.storeErrorNotifications.enabled', true );
 
 		return (
 			<WithTestRegistry registry={ registry }>

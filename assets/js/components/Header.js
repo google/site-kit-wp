@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
 import LegacyErrorNotification from './legacy-notifications/error-notification';
-import ErrorNotification from './notifications/ErrorNotifications';
+import ErrorNotifications from './notifications/ErrorNotifications';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
@@ -65,7 +65,7 @@ const Header = ( { children } ) => {
 				</section>
 			</header>
 			<LegacyErrorNotification />
-			{ featureFlags.storeErrorNotifications.enabled && ( <ErrorNotification /> ) }
+			{ featureFlags.storeErrorNotifications.enabled && <ErrorNotifications /> }
 		</Fragment>
 	);
 };

@@ -2,6 +2,7 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import set from 'lodash/set';
 
 /**
  * Internal dependencies
@@ -19,7 +20,7 @@ storiesOf( 'Setup', module )
 		global._googlesitekitLegacyData.setup.isVerified = false;
 		global._googlesitekitLegacyData.setup.hasSearchConsoleProperty = false;
 		global._googlesitekitLegacyData.permissions.canSetup = true;
-		global.featureFlags = { storeErrorNotifications: { enabled: true } };
+		set( global, 'featureFlags.storeErrorNotifications.enabled', true );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_USER ).receiveGetAuthentication( {
