@@ -36,8 +36,8 @@ import Header from '../../../../components/Header';
 import SearchConsoleDashboardWidgetSiteStats from './SearchConsoleDashboardWidgetSiteStats';
 import LegacySearchConsoleDashboardWidgetKeywordTable from './LegacySearchConsoleDashboardWidgetKeywordTable';
 import SearchConsoleDashboardWidgetOverview from './SearchConsoleDashboardWidgetOverview';
+import DateRangeSelector from '../../../../components/DateRangeSelector';
 import PageHeader from '../../../../components/PageHeader';
-import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import Layout from '../../../../components/layout/layout';
 import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/ProgressBar';
@@ -165,7 +165,9 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				<DateRangeSelector />
+			</Header>
 			<Alert module="search-console" />
 			<div className="googlesitekit-module-page googlesitekit-module-page--search-console">
 				<div className="mdc-layout-grid">
@@ -189,9 +191,7 @@ const GoogleSitekitSearchConsoleDashboardWidget = () => {
 									__( '%s is connected', 'google-site-kit' ),
 									_x( 'Search Console', 'Service name', 'google-site-kit' )
 								) }
-							>
-								<PageHeaderDateRange />
-							</PageHeader>
+							/>
 							{ loading && <ProgressBar /> }
 						</div>
 						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

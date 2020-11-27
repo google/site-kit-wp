@@ -115,74 +115,72 @@ function SetupUsingProxy() {
 					isDismissable={ false }
 				/>
 			) }
-			<div className="googlesitekit-wizard">
+			<div className="googlesitekit-setup">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							<Layout>
-								<section className="googlesitekit-wizard-progress">
-									<div className="googlesitekit-setup__footer">
-										<div className="mdc-layout-grid">
-											<div className={ classnames(
-												'mdc-layout-grid__inner',
-												{
-													'googlesitekit-setup__content': featureFlags.userInput.enabled,
-												}
-											) }>
-												{ featureFlags.userInput.enabled && (
-													<div
-														className="
+								<section className="googlesitekit-setup__splash">
+									<div className="mdc-layout-grid">
+										<div className={ classnames(
+											'mdc-layout-grid__inner',
+											{
+												'googlesitekit-setup__content': featureFlags.serviceSetupV2.enabled,
+											}
+										) }>
+											{ featureFlags.serviceSetupV2.enabled && (
+												<div
+													className="
 															googlesitekit-setup__icon
 															mdc-layout-grid__cell
 															mdc-layout-grid__cell--span-12-tablet
 															mdc-layout-grid__cell--span-6-desktop
 														"
-													>
-														<PersonWalking width="570" height="337" />
-													</div>
-												) }
-
-												<div
-													className={ classnames(
-														'mdc-layout-grid__cell',
-														'mdc-layout-grid__cell--span-12-tablet',
-														{
-															'mdc-layout-grid__cell--span-6-desktop': featureFlags.userInput.enabled,
-															'mdc-layout-grid__cell--span-12-desktop': ! featureFlags.userInput.enabled,
-														}
-													) }
 												>
-													<h1 className="googlesitekit-setup__title">
-														{ title }
-													</h1>
-
-													<p className="googlesitekit-setup__description">
-														{ description }
-													</p>
-
-													<CompatibilityChecks>
-														{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
-															<Fragment>
-																{ CTAFeedback }
-
-																<OptIn optinAction="analytics_optin_setup_fallback" />
-
-																<div className="googlesitekit-start-setup-wrap">
-																	<Button
-																		className="googlesitekit-start-setup"
-																		href={ proxySetupURL }
-																		onClick={ onButtonClick }
-																		disabled={ ! complete }
-																	>
-																		{ __( 'Sign in with Google', 'google-site-kit' ) }
-																	</Button>
-																	{ inProgressFeedback }
-																	{ ! isSecondAdmin && isResettable && <ResetButton /> }
-																</div>
-															</Fragment>
-														) }
-													</CompatibilityChecks>
+													<PersonWalking width="570" height="337" />
 												</div>
+											) }
+
+											<div
+												className={ classnames(
+													'mdc-layout-grid__cell',
+													'mdc-layout-grid__cell--span-12-tablet',
+													{
+														'mdc-layout-grid__cell--span-6-desktop': featureFlags.serviceSetupV2.enabled,
+														'mdc-layout-grid__cell--span-12-desktop': ! featureFlags.serviceSetupV2.enabled,
+													}
+												) }
+											>
+												<h1 className="googlesitekit-setup__title">
+													{ title }
+												</h1>
+
+												<p className="googlesitekit-setup__description">
+													{ description }
+												</p>
+
+												<CompatibilityChecks>
+													{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
+														<Fragment>
+															{ CTAFeedback }
+
+															<OptIn optinAction="analytics_optin_setup_fallback" />
+
+															<div className="googlesitekit-start-setup-wrap">
+																<Button
+																	className="googlesitekit-start-setup"
+																	href={ proxySetupURL }
+																	onClick={ onButtonClick }
+																	disabled={ ! complete }
+																>
+																	{ __( 'Sign in with Google', 'google-site-kit' ) }
+																</Button>
+																{ inProgressFeedback }
+																{ ! isSecondAdmin && isResettable && <ResetButton /> }
+															</div>
+														</Fragment>
+													) }
+												</CompatibilityChecks>
 											</div>
 										</div>
 									</div>
