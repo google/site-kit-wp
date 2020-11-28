@@ -87,7 +87,7 @@ class DataBlock extends Component {
 		if ( change ) {
 			// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
 			if ( changeDataUnit ) {
-				changeFormatted = numberFormatWithUnit( change, changeDataUnit );
+				changeFormatted = numberFormatWithUnit( Math.abs( change ), changeDataUnit );
 			}
 
 			// If period is given (requires %s placeholder), add it.
@@ -119,7 +119,7 @@ class DataBlock extends Component {
 						{ title }
 					</h3>
 					<div className="googlesitekit-data-block__datapoint">
-						{ numberFormatWithUnit( datapoint, datapointUnit ) }
+						{ datapointUnit ? numberFormatWithUnit( datapoint, datapointUnit ) : datapoint }
 					</div>
 				</div>
 				{ sparklineComponent &&

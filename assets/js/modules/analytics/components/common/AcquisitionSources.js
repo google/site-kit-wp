@@ -30,7 +30,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getDataTableFromData } from '../../../../components/data-table';
-import MiniChart from ' ../../../../components/MiniChart';
+import MiniChart from '../../../../components/MiniChart';
 import { numberFormat, numberFormatWithUnit } from '../../../../util/i18n';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';

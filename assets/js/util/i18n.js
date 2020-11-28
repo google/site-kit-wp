@@ -61,6 +61,7 @@ export const numberFormatWithUnit = ( number, unit, options = {} ) => {
 		return numberFormat( number / 100, {
 			...options,
 			maximumFractionDigits: 2,
+			minimumFractionDigits: 0,
 			style: 'percent',
 		} );
 	}
