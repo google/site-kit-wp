@@ -59,10 +59,9 @@ export const numberFormatWithUnit = ( number, unit, options = {} ) => {
 
 	if ( unit === '%' ) {
 		return numberFormat( number / 100, {
-			...options,
 			maximumFractionDigits: 2,
-			minimumFractionDigits: 0,
 			style: 'percent',
+			...options,
 		} );
 	}
 
