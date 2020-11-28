@@ -39,6 +39,40 @@ export const numberFormat = ( number, options = {} ) => {
 };
 
 /**
+ * Formats a number with unit using the JS Internationalization Number Format API.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number|string}    number           The number to format.
+ * @param {string|undefined} unit             The unit for the number.
+ * @param {Object}           [options]        Formatting options.
+ * @param {string}           [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
+ * @return {string} The formatted number with unit.
+ */
+export const numberFormatWithUnit = ( number, unit, options = {} ) => {
+	if ( typeof number === 'string' ) {
+		number = parseFloat( number );
+	}
+	if ( ! unit || ! unit.length ) {
+		return numberFormat( number, options );
+	}
+
+	if ( unit === '%' ) {
+		return numberFormat( number / 100, {
+			...options,
+			maximumFractionDigits: 2,
+			style: 'percent',
+		} );
+	}
+
+	try {
+		return numberFormat( Math.abs( number ), { style: 'currency', currency: unit, ...options } );
+	} catch ( e ) {
+		return `${ numberFormat( Math.abs( number ) ) }${ unit }`;
+	}
+};
+
+/**
  * Gets the current locale for use with browser APIs.
  *
  * @since 1.8.0

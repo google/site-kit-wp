@@ -32,7 +32,7 @@ import { sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ChangeArrow from './ChangeArrow';
-import { numberFormat } from '../util/i18n';
+import { numberFormatWithUnit } from '../util/i18n';
 import SourceLink from './SourceLink';
 
 class DataBlock extends Component {
@@ -87,11 +87,7 @@ class DataBlock extends Component {
 		if ( change ) {
 			// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
 			if ( changeDataUnit ) {
-				try {
-					changeFormatted = numberFormat( Math.abs( change ), { style: 'currency', currency: changeDataUnit } );
-				} catch ( e ) {
-					changeFormatted = `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit }`;
-				}
+				changeFormatted = numberFormatWithUnit( change, changeDataUnit );
 			}
 
 			// If period is given (requires %s placeholder), add it.
@@ -123,7 +119,7 @@ class DataBlock extends Component {
 						{ title }
 					</h3>
 					<div className="googlesitekit-data-block__datapoint">
-						{ `${ datapoint }${ datapointUnit }` }
+						{ numberFormatWithUnit( datapoint, datapointUnit ) }
 					</div>
 				</div>
 				{ sparklineComponent &&

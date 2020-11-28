@@ -30,7 +30,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getLocale } from '../../../util/i18n';
+import { getLocale, numberFormatWithUnit } from '../../../util/i18n';
 import calculateOverviewData from './calculateOverviewData';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
 import { prepareSecondsForDisplay } from '../../../util';
@@ -130,10 +130,10 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			const month = ( date.getMonth() + 1 ).toString();
 			const day = date.getDate().toString();
 			const dateString = date.getFullYear().toString() +
-				( 2 > month.length ? '0' : '' ) +
-				month +
-				( 2 > day.length ? '0' : '' ) +
-				day;
+          ( 2 > month.length ? '0' : '' ) +
+          month +
+          ( 2 > day.length ? '0' : '' ) +
+          day;
 
 			if ( i > rowLength ) {
 				const emptyWeek = {
@@ -157,7 +157,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const dataFormats = [
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) => parseFloat( x ).toFixed( 2 ) + '%',
+		( x ) => numberFormatWithUnit( x, '%' ),
 		prepareSecondsForDisplay,
 
 	];
@@ -202,8 +202,8 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 		);
 
 		const statInfo = sprintf(
-			/* translators: %1$s: selected stat label, %2$s: numberic value of selected stat, %3$s: up or down arrow , %4$s: different change in percentage, %%: percent symbol */
-			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for Analytics dashboard chart tooltip', 'google-site-kit' ),
+			/* translators: %1$s: selected stat label, %2$s: numberic value of selected stat, %3$s: up or down arrow , %4$s: different change in percentage */
+			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s</em>', 'Stat information for Analytics dashboard chart tooltip', 'google-site-kit' ),
 			dataLabels[ selectedStats ],
 			dataFormats[ selectedStats ]( row[ 1 ] ),
 			`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {
@@ -212,7 +212,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			} ) }">
 				<path d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z" fill="currentColor" />
 			</svg>`,
-			Math.abs( difference ).toFixed( 2 ).replace( /(.00|0)$/, '' ), // .replace( ... ) removes trailing zeros
+			numberFormatWithUnit( Math.abs( difference ), '%' ),
 		);
 
 		dataMap.push( [

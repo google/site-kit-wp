@@ -25,7 +25,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds } from '../../../../util';
+import { getTimeInSeconds, numberFormatWithUnit } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
@@ -64,7 +64,7 @@ class LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Comp
 
 			return [
 				row.dimensions[ 0 ],
-				<Fragment key={ 'minichart-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ `${ percent.toFixed( 2 ) }%` } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
+				<Fragment key={ 'minichart-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ numberFormatWithUnit( percent, '%' ) } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
 			];
 		} );
 

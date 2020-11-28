@@ -28,7 +28,7 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	getTimeInSeconds,
-	numberFormat,
+	numberFormat, numberFormatWithUnit,
 } from '../../../../util';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import withData from '../../../../components/higherorder/withdata';
@@ -95,7 +95,7 @@ function LegacyAnalyticsDashboardWidgetTopAcquisitionSources( { data } ) {
 			numberFormat( row.metrics[ 0 ].values[ 0 ] ),
 			numberFormat( row.metrics[ 0 ].values[ 1 ] ),
 			numberFormat( row.metrics[ 0 ].values[ 2 ] ),
-			<Fragment key={ 'minichart-analytics-top-as-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ `${ percent.toFixed( 2 ) }%` } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
+			<Fragment key={ 'minichart-analytics-top-as-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ numberFormatWithUnit( percent, '%' ) } <MiniChart percent={ percent.toFixed( 1 ) } index={ i } /></div></Fragment>,
 		];
 	} );
 

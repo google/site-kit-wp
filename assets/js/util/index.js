@@ -43,6 +43,7 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
  */
 import { trackEvent } from './tracking';
 import { fillFilterWithComponent } from './helpers';
+import { numberFormatWithUnit } from './i18n';
 export { trackEvent };
 export * from './sanitize';
 export * from './stringify';
@@ -145,7 +146,7 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 	}
 
 	if ( currencyCode ) {
-		return numberFormat( number, { style: 'currency', currency: currencyCode } );
+		return numberFormatWithUnit( number, currencyCode );
 	}
 
 	const withSingleDecimal = {

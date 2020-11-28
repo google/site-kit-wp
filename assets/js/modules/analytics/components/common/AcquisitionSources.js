@@ -30,8 +30,8 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getDataTableFromData } from '../../../../components/data-table';
-import MiniChart from '../../../../components/MiniChart';
-import { numberFormat } from '../../../../util/i18n';
+import MiniChart from ' ../../../../components/MiniChart';
+import { numberFormat, numberFormatWithUnit } from '../../../../util/i18n';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 
@@ -113,10 +113,7 @@ function AcquisitionSources( { data, args } ) {
 
 		cells.push(
 			<div key={ `minichart-${ i }` } className="googlesitekit-table__body-item-chart-wrap">
-				{
-					/* translators: %1$s: acquisition source percentage */
-					sprintf( __( '%1$s%%', 'google-site-kit' ), percent.toFixed( 2 ) )
-				}
+				{ numberFormatWithUnit( percent, '%' ) }
 				<MiniChart percent={ percent.toFixed( 1 ) } index={ i } />
 			</div>
 		);
