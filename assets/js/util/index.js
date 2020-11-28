@@ -165,8 +165,6 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 
 	// Numbers between 10,000 and 1,000,000 round normally and have no decimals
 	if ( 10000 <= number ) {
-		// eslint-disable-next-line no-console
-		console.log( number, currencyCode );
 		return sprintf(
 			// translators: %s: an abbreviated number in thousands.
 			__( '%sK', 'google-site-kit' ),
