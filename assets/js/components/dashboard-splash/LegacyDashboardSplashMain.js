@@ -1,5 +1,5 @@
 /**
- * DashboardSplashMain component.
+ * LegacyDashboardSplashMain component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -29,12 +29,12 @@ import AdSenseIcon from '../../../svg/adsense.svg';
 import AnalyticsIcon from '../../../svg/analytics.svg';
 import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
-import DashboardSplashIntro from './dashboard-splash-intro';
-import DashboardSplashService from './dashboard-splash-service';
-import DashboardSplashOutro from './dashboard-splash-outro';
-import DashboardSplashModule from './dashboard-splash-module';
+import LegacyDashboardSplashIntro from './LegacyDashboardSplashIntro';
+import LegacyDashboardSplashService from './LegacyDashboardSplashService';
+import LegacyDashboardSplashOutro from './LegacyDashboardSplashOutro';
+import LegacyDashboardSplashModule from './LegacyDashboardSplashModule';
 
-class DashboardSplashMain extends Component {
+class LegacyDashboardSplashMain extends Component {
 	constructor( props ) {
 		super( props );
 
@@ -96,7 +96,7 @@ class DashboardSplashMain extends Component {
 
 		return (
 			<div className="googlesitekit-splash">
-				<DashboardSplashIntro description={ introDescription } buttonLabel={ buttonLabel } onButtonClick={ this.handleButtonClick } />
+				<LegacyDashboardSplashIntro description={ introDescription } buttonLabel={ buttonLabel } onButtonClick={ this.handleButtonClick } />
 				<section className="googlesitekit-splash__wrapper">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
@@ -119,7 +119,7 @@ class DashboardSplashMain extends Component {
 											mdc-layout-grid__cell--span-2-tablet
 											mdc-layout-grid__cell--span-3-desktop
 										">
-										<DashboardSplashModule
+										<LegacyDashboardSplashModule
 											icon={ splashModules[ module ].icon }
 											title={ splashModules[ module ].title }
 											content={ splashModules[ module ].content }
@@ -137,7 +137,7 @@ class DashboardSplashMain extends Component {
 										mdc-layout-grid__cell
 										mdc-layout-grid__cell--span-12
 									">
-										<DashboardSplashService
+										<LegacyDashboardSplashService
 											image={ splashServices[ service ].image }
 											title={ splashServices[ service ].title }
 											content={ splashServices[ service ].content }
@@ -150,10 +150,10 @@ class DashboardSplashMain extends Component {
 						</div>
 					</section>
 				</section>
-				<DashboardSplashOutro description={ outroDescription } buttonLabel={ buttonLabel } onButtonClick={ this.handleButtonClick } />
+				<LegacyDashboardSplashOutro description={ outroDescription } buttonLabel={ buttonLabel } onButtonClick={ this.handleButtonClick } />
 			</div>
 		);
 	}
 }
 
-export default DashboardSplashMain;
+export default LegacyDashboardSplashMain;

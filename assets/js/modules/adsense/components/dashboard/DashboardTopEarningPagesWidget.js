@@ -34,6 +34,7 @@ import PreviewTable from '../../../../components/PreviewTable';
 import { getDataTableFromData } from '../../../../components/data-table';
 import SourceLink from '../../../../components/SourceLink';
 import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
+import { isZeroReport } from '../../../analytics/util';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
@@ -49,8 +50,11 @@ function DashboardTopEarningPagesWidget() {
 		loading,
 	} = useSelect( ( select ) => {
 		const store = select( ANALYTICS_STORE );
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
+
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate,
+			endDate,
 			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
 			metrics: [
 				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
@@ -89,7 +93,7 @@ function DashboardTopEarningPagesWidget() {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! data || ! data.length || ! data[ 0 ]?.data?.rows ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
