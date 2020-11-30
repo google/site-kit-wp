@@ -144,7 +144,7 @@ class Google_ProxyTest extends TestCase {
 		);
 		$error_response_data = $google_proxy->are_site_fields_synced( $credentials );
 		// Ensure WP_Error response returns WP_Error.
-		$this->assertWPErrorWithMessage( $error_response_data, 'test_message' );
+		$this->assertWPErrorWithMessage( $error_response_data, $mock_wp_error_response );
 
 		// Mock non matching response.
 		$mock_non_matching_response = array(
