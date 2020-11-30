@@ -67,6 +67,17 @@ class Google_ProxyTest extends TestCase {
 			3
 		);
 
+		// Mock WP_Error response
+		$mock_wp_error_response = new WP_Error( 'test_message', 'test_message' );
+		$this->mock_http_request(
+			$google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ),
+			$mock_wp_error_response
+		);
+		$error_response_data = $google_proxy->fetch_site_fields( $credentials );
+
+		// Ensure WP_Error response returns matching WP_Error.
+		$this->assertWPErrorWithMessage( 'test_message', $error_response_data );
+
 		// Mock reponse.
 		$mock_response = array(
 			'site_id',
@@ -137,14 +148,14 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( $success_response_data, true );
 
 		// Mock WP_Error response
-		$mock_wp_error_response = new WP_Error( 'test_message' );
+		$mock_wp_error_response = new WP_Error( 'test_message', 'test_message' );
 		$this->mock_http_request(
 			$google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ),
 			$mock_wp_error_response
 		);
 		$error_response_data = $google_proxy->are_site_fields_synced( $credentials );
-		// Ensure WP_Error response returns WP_Error.
-		$this->assertWPErrorWithMessage( $error_response_data, $mock_wp_error_response );
+		// Ensure WP_Error response returns matching WP_Error.
+		$this->assertWPErrorWithMessage( 'test_message', $error_response_data );
 
 		// Mock non matching response.
 		$mock_non_matching_response = array(

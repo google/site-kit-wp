@@ -120,7 +120,7 @@ class Google_Proxy {
 		$response = wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
 
 		if ( is_wp_error( $response['body'] ) ) {
-			return $response;
+			return $response['body'];
 		}
 
 		$raw_body = wp_remote_retrieve_body( $response );
