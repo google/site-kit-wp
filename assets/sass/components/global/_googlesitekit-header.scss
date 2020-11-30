@@ -27,12 +27,12 @@
 	top: 0;
 	z-index: 12;
 
-	@media (min-width: $bp-wpAdminBarTablet) {
-		top: 32px;
-	}
-
 	@media (min-width: $bp-tablet) {
 		top: 46px;
+	}
+
+	@media (min-width: $bp-wpAdminBarTablet) {
+		top: 32px;
 	}
 
 	.wp-responsive-open & {
