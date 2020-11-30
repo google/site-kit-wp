@@ -30,7 +30,7 @@ import Notification from './notification';
 import { getTimeInSeconds } from '../../util';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import PersonSittingSVG from '../../../../assets/svg/person-sitting.svg';
+import PersonSittingSVG from '../../../svg/person-sitting.svg';
 const { useSelect } = Data;
 
 export default function UserInputSettings() {
@@ -53,7 +53,7 @@ export default function UserInputSettings() {
 			ctaLink={ ctaLink }
 			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			ImageSVG={ <PersonSittingSVG width="100%" height="100%" /> }
+			WinImageSVG={ <PersonSittingSVG width="100%" height="100%" /> }
 			isDismissable
 		/>
 	);
