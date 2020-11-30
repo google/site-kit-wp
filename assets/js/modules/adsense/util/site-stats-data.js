@@ -41,13 +41,13 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 		],
 	];
 
-	const strToDate = ( strDate ) => new Date( `${ strDate } 00:00:00` );
-	const findRowByDate = ( searchDate ) => ( ( [ rowDate ] ) => +searchDate === +strToDate( rowDate ) );
+	const stringToDate = ( dateString ) => new Date( `${ dateString } 00:00:00` );
+	const findRowByDate = ( searchDate ) => ( ( [ rowDate ] ) => searchDate.getTime() === stringToDate( rowDate ).getTime() );
 
-	const currentDate = strToDate( current.startDate );
-	const previousDate = strToDate( previous.startDate );
+	const currentDate = stringToDate( current.startDate );
+	const previousDate = stringToDate( previous.startDate );
 
-	const ends = strToDate( current.endDate );
+	const ends = stringToDate( current.endDate );
 
 	while ( +currentDate <= +ends ) {
 		dataMap.push( [

@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { isUndefined } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -61,24 +60,24 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 		endDate,
 	};
 
-	const prevRangeArgs = {
+	const previousRangeArgs = {
 		metrics: Object.keys( metrics ),
 		startDate: compareStartDate,
 		endDate: compareEndDate,
 	};
 
 	const currentRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeArgs ) );
-	const prevRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( prevRangeArgs ) );
+	const previousRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeArgs ) );
 
-	const resolvedCurrentData = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) );
-	const resolvedPreviousData = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ prevRangeArgs ] ) );
+	const currentDataLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) );
+	const previousDataLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) );
 
 	const currentError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) );
-	const previousError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ prevRangeArgs ] ) );
+	const previousError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeArgs ] ) );
 
 	// TODO: remove the following logic when AdSenseDashboardWidget is refactored.
 	useEffect( () => {
-		if ( resolvedCurrentData && resolvedPreviousData ) {
+		if ( currentDataLoaded && previousDataLoaded ) {
 			if ( currentError || previousError ) {
 				handleDataError( currentError || previousError );
 			} else if ( isZeroReport( currentRangeData ) ) {
@@ -88,12 +87,12 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 			}
 		}
 	}, [
-		resolvedCurrentData && resolvedPreviousData, // All reports are fetched.
+		currentDataLoaded && previousDataLoaded, // All reports are fetched.
 		!! currentError || !! previousError, // Whether there is an error or not.
 		JSON.stringify( currentRangeData ),
 	] );
 
-	if ( ! resolvedCurrentData || ! resolvedPreviousData ) {
+	if ( ! currentDataLoaded || ! previousDataLoaded ) {
 		return <PreviewBlock width="100%" height="250px" />;
 	}
 
@@ -107,7 +106,7 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 	}
 
 	const { totals, headers } = currentRangeData;
-	const { totals: prevTotals } = prevRangeData;
+	const { totals: previousTotals } = previousRangeData;
 
 	return (
 		<Grid>
@@ -118,11 +117,11 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-1"
 						title={ metrics[ headers[ 0 ].name ] }
 						datapoint={ readableLargeNumber( totals[ 0 ], headers[ 0 ]?.currency ) }
-						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 0 ], totals[ 0 ] ) : 0 }
+						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 0 ], totals[ 0 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 0 }
-						handleStatSelection={ handleStatSelection.bind( null, 0 ) }
+						handleStatSelection={ () => handleStatSelection( 0 ) }
 					/>
 				</Cell>
 
@@ -132,11 +131,11 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						className="googlesitekit-data-block--page-rpm googlesitekit-data-block--button-2"
 						title={ metrics[ headers[ 1 ].name ] }
 						datapoint={ readableLargeNumber( totals[ 1 ], headers[ 1 ]?.currency ) }
-						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 1 ], totals[ 1 ] ) : 0 }
+						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 1 ], totals[ 1 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 1 }
-						handleStatSelection={ handleStatSelection.bind( null, 1 ) }
+						handleStatSelection={ () => handleStatSelection( 1 ) }
 					/>
 				</Cell>
 
@@ -146,11 +145,11 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 						className="googlesitekit-data-block--impression googlesitekit-data-block--button-3"
 						title={ metrics[ headers[ 2 ].name ] }
 						datapoint={ readableLargeNumber( totals[ 2 ] ) }
-						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 2 ], totals[ 2 ] ) : 0 }
+						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 2 ], totals[ 2 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 2 }
-						handleStatSelection={ handleStatSelection.bind( null, 2 ) }
+						handleStatSelection={ () => handleStatSelection( 2 ) }
 					/>
 				</Cell>
 
@@ -164,11 +163,11 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 							_x( ' %1$s%%', 'AdSense performance Page CTA percentage', 'google-site-kit' ),
 							numberFormat( totals[ 3 ] * 100, { maximumFractionDigits: 2 } )
 						) }
-						change={ ! isUndefined( prevTotals ) ? changeToPercent( prevTotals[ 3 ], totals[ 3 ] ) : 0 }
+						change={ previousTotals !== undefined ? changeToPercent( previousTotals[ 3 ], totals[ 3 ] ) : 0 }
 						changeDataUnit="%"
 						context="button"
 						selected={ selectedStats === 3 }
-						handleStatSelection={ handleStatSelection.bind( null, 3 ) }
+						handleStatSelection={ () => handleStatSelection( 3 ) }
 					/>
 				</Cell>
 			</Row>
