@@ -52,10 +52,11 @@ function DashboardClicksWidget() {
 		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
 		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
+		const dateRange = select( CORE_USER ).getDateRangeDates( { compare: true } );
 		const args = {
 			dimensions: 'date',
-			startDate: select( CORE_USER ).getDateRangeDates().startDate,
-			endDate: select( CORE_USER ).getDateRangeDates().endDate,
+			startDate: dateRange.compareStartDate,
+			endDate: dateRange.compareEndDate,
 		};
 		const serviceBaseURLArgs = {
 			resource_id: propertyID,
