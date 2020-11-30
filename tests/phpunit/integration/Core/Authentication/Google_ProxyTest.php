@@ -133,25 +133,18 @@ class Google_ProxyTest extends TestCase {
 			$matching_mock_response
 		);
 		$success_response_data = $google_proxy->are_site_fields_synced( $credentials );
-
-		// Ensure the request was made with the proper URL and body parameters.
-		$this->assertEquals( $google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ), $pre_url );
-		$this->assertEquals( 'POST', $pre_args['method'] );
-		$this->assertEqualSetsWithIndex(
-			array(
-				'site_id',
-				'site_secret',
-			),
-			array_keys( $pre_args['body'] )
-		);
+		// Ensure matching response array returns true.
+		$this->assertEquals( $success_response_data, true );
 
 		// Mock WP_Error response
-		$mock_wp_error_response = new WP_Error();
+		$mock_wp_error_response = new WP_Error( 'test_message' );
 		$this->mock_http_request(
 			$google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ),
 			$mock_wp_error_response
 		);
 		$error_response_data = $google_proxy->are_site_fields_synced( $credentials );
+		// Ensure WP_Error response returns WP_Error.
+		$this->assertWPErrorWithMessage( $error_response_data, 'test_message' );
 
 		// Mock non matching response.
 		$mock_non_matching_response = array(
@@ -163,11 +156,6 @@ class Google_ProxyTest extends TestCase {
 			$mock_non_matching_response
 		);
 		$failure_response_data = $google_proxy->are_site_fields_synced( $credentials );
-
-		// Ensure matching response array returns true.
-		$this->assertEquals( $success_response_data, true );
-		// Ensure WP_Error response returns WP_Error.
-		$this->assertEquals( is_wp_error( $error_response_data ), true );
 		// Ensure non-matching response array returns false.
 		$this->assertEquals( $failure_response_data, false );
 	}

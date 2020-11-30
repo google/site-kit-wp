@@ -101,9 +101,7 @@ class Google_Proxy {
 	 * @since x.x.x
 	 *
 	 * @param Credentials $credentials Credentials instance.
-	 * @return (array|object) The response as an associative array or WP_Error on failure.
-	 *
-	 * @throws Exception Thrown when the request resulted in an error response.
+	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
 	 */
 	public function fetch_site_fields( Credentials $credentials ) {
 		if ( ! $credentials->has() ) {
@@ -120,7 +118,8 @@ class Google_Proxy {
 		);
 
 		$response = wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
-		if ( is_wp_error( $response ) ) {
+
+		if ( is_wp_error( $response['body'] ) ) {
 			return $response;
 		}
 
@@ -129,9 +128,7 @@ class Google_Proxy {
 		$response_data = json_decode( $raw_body, true );
 
 		if ( ! $response_data || isset( $response_data['error'] ) ) {
-			throw new Exception(
-				isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response'
-			);
+			return new WP_Error( isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response' );
 		}
 
 		return $response_data;
@@ -144,7 +141,7 @@ class Google_Proxy {
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 *
-	 * @return boolean Boolean do the site fields match.
+	 * @return boolean|WP_Error Boolean do the site fields match or WP_Error on failure.
 	 */
 	public function are_site_fields_synced( Credentials $credentials ) {
 		$fetch_site_fields = $this->fetch_site_fields( $credentials );
