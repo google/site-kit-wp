@@ -28,7 +28,7 @@ import { applyFilters } from '@wordpress/hooks';
  */
 import { getQueryParameter, getModulesData } from '../../util';
 import Notification from './notification';
-import ModulesList from '../modules-list';
+import ModulesList from '../ModulesList';
 import rocketImage from '../../../images/rocket.png';
 
 class DashboardSetupAlerts extends Component {

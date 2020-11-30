@@ -1,7 +1,7 @@
 /**
- * PageHeaderDateRange component.
+ * Modules List stories.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Google Site Kit, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,25 @@
  */
 
 /**
+ * External dependencies
+ */
+import { storiesOf } from '@storybook/react';
+
+/**
  * Internal dependencies
  */
-import DateRangeSelector from './DateRangeSelector';
+import ModulesList from '../assets/js/components/ModulesList';
+import { provideModules, WithTestRegistry } from '../tests/js/utils';
 
-export default function PageHeaderDateRange() {
-	return (
-		<span className="googlesitekit-page-header__range">
-			<DateRangeSelector />
-		</span>
-	);
-}
+storiesOf( 'Global', module )
+	.add( 'Modules List', () => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry } >
+				<ModulesList />
+			</WithTestRegistry>
+		);
+	} );
