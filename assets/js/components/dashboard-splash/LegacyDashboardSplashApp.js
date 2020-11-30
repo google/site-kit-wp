@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import LegacyDashboardSplashMain from './LegacyDashboardSplashMain';
 import LegacyDashboardSplashNotifications from './LegacyDashboardSplashNotifications';
 import { trackEvent } from '../../util';
-import SetupUsingGCP from '../setup';
+import SetupUsingGCP from '../legacy-setup/SetupUsingGCP';
 import ModuleSetup from '../setup/ModuleSetup';
 
 const AUTHENTICATION = 1;
