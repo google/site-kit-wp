@@ -64,6 +64,17 @@ export default function DashboardPageSpeed() {
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
+		const audits = [];
+		const allAudits = store.getAudits( referenceURL, strategy );
+		if ( allAudits ) {
+			Object.keys( allAudits ).forEach( ( auditSlug ) => {
+				const audit = allAudits[ auditSlug ];
+				if ( ( audit.scoreDisplayMode === 'numeric' || audit.scoreDisplayMode === 'binary' ) && audit.score < .9 ) {
+					audits.push( audit );
+				}
+			} );
+		}
+
 		return {
 			isFetchingMobile: store.isFetchingGetReport( referenceURL, STRATEGY_MOBILE ),
 			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
@@ -71,6 +82,7 @@ export default function DashboardPageSpeed() {
 			isFetchingDesktop: store.isFetchingGetReport( referenceURL, STRATEGY_DESKTOP ),
 			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
 			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
+			audits,
 		};
 	} );
 
