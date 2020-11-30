@@ -121,7 +121,7 @@ function UserMenu() {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-dropdown-menu mdc-menu-surface--anchor">
+			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
 				<Button
 					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown"

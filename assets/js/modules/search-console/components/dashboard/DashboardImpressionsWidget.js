@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { isZeroReport } from '../../util';
 import { changeToPercent, readableLargeNumber, untrailingslashit } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { trackEvent } from '../../../../util/tracking';
@@ -85,7 +86,7 @@ function DashboardImpressionsWidget() {
 		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
-	if ( ! data || ! data.length ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="search-console" />;
 	}
 

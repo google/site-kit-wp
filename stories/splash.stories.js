@@ -32,98 +32,78 @@ import AdSenseIcon from '../assets/svg/adsense.svg';
 import AnalyticsIcon from '../assets/svg/analytics.svg';
 import PageSpeedInsightsIcon from '../assets/svg/pagespeed-insights.svg';
 import SearchConsoleIcon from '../assets/svg/search-console.svg';
-import DashboardSplashIntro from '../assets/js/components/dashboard-splash/dashboard-splash-intro';
-import DashboardSplashModule from '../assets/js/components/dashboard-splash/dashboard-splash-module';
-import DashboardSplashService from '../assets/js/components/dashboard-splash/dashboard-splash-service';
-import DashboardSplashOutro from '../assets/js/components/dashboard-splash/dashboard-splash-outro';
+import LegacyDashboardSplashIntro from '../assets/js/components/dashboard-splash/LegacyDashboardSplashIntro';
+import LegacyDashboardSplashModule from '../assets/js/components/dashboard-splash/LegacyDashboardSplashModule';
+import LegacyDashboardSplashService from '../assets/js/components/dashboard-splash/LegacyDashboardSplashService';
+import LegacyDashboardSplashOutro from '../assets/js/components/dashboard-splash/LegacyDashboardSplashOutro';
+import { Cell, Grid, Row } from '../assets/js/material-components';
 
 storiesOf( 'Splash', module )
 	.add( 'Splash Page', () => (
 		<div className="googlesitekit-splash">
-			<DashboardSplashIntro description={ __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' ) } buttonLabel={ __( 'Set Up Site Kit', 'google-site-kit' ) } onButtonClick={ () => {} } />
+			<LegacyDashboardSplashIntro
+				description={ __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' ) }
+				buttonLabel={ __( 'Set Up Site Kit', 'google-site-kit' ) }
+				onButtonClick={ () => {} }
+			/>
+
 			<section className="googlesitekit-splash__wrapper">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-							">
-							<h2 className="
-									googlesitekit-splash__title
-									googlesitekit-subheading-2
-								">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<h2 className="googlesitekit-splash__title googlesitekit-subheading-2">
 								{ __( 'Powerful tools integrated into your WordPress dashboard.', 'google-site-kit' ) }
 							</h2>
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-2-phone
-							mdc-layout-grid__cell--span-2-tablet
-							mdc-layout-grid__cell--span-3-desktop
-						">
-							<DashboardSplashModule
+						</Cell>
+
+						<Cell lgSize={ 3 } mdSize={ 2 } smSize={ 2 }>
+							<LegacyDashboardSplashModule
 								icon={ <SearchConsoleIcon width="33" height="33" /> }
 								title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Keep track of how people find you in Search, and how many of them visit your site.', 'google-site-kit' ) }
 							/>
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-2-phone
-							mdc-layout-grid__cell--span-2-tablet
-							mdc-layout-grid__cell--span-3-desktop
-						">
-							<DashboardSplashModule
+						</Cell>
+
+						<Cell lgSize={ 3 } mdSize={ 2 } smSize={ 2 }>
+							<LegacyDashboardSplashModule
 								icon={ <AnalyticsIcon width="33" height="33" /> }
 								title={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Understand your customers better: track how they navigate across your site and evaluate the performance of your products or posts.', 'google-site-kit' ) }
 							/>
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-2-phone
-							mdc-layout-grid__cell--span-2-tablet
-							mdc-layout-grid__cell--span-3-desktop
-						">
-							<DashboardSplashModule
+						</Cell>
+
+						<Cell lgSize={ 3 } mdSize={ 2 } smSize={ 2 }>
+							<LegacyDashboardSplashModule
 								icon={ <AdSenseIcon width="33" height="33" /> }
 								title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Make your content work for you -- earning money by placing ads on your site.', 'google-site-kit' ) }
 							/>
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-2-phone
-							mdc-layout-grid__cell--span-2-tablet
-							mdc-layout-grid__cell--span-3-desktop
-						">
-							<DashboardSplashModule
+						</Cell>
+
+						<Cell lgSize={ 3 } mdSize={ 2 } smSize={ 2 }>
+							<LegacyDashboardSplashModule
 								icon={ <PageSpeedInsightsIcon width="33" height="33" /> }
 								title={ _x( 'PageSpeed', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Analyze your site’s performance and get actionable tips to improve its speed across all devices.', 'google-site-kit' ) }
 							/>
-						</div>
-					</div>
-				</div>
-				<section className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						">
-							<DashboardSplashService
+						</Cell>
+					</Row>
+				</Grid>
+
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<LegacyDashboardSplashService
 								image="analytics"
 								title={ __( 'Get to know your customers.', 'google-site-kit' ) }
 								content={ __( 'Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ) }
 								link="https://marketingplatform.google.com/about/analytics/"
 								linkText={ __( 'Learn More', 'google-site-kit' ) }
 							/>
-						</div>
-						<div className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						">
-							<DashboardSplashService
+						</Cell>
+
+						<Cell size={ 12 }>
+							<LegacyDashboardSplashService
 								image="search_console"
 								title={ __( 'You want to be found on the web. We want to help.', 'google-site-kit' ) }
 								content={ __( 'Track your site’s search performance with Google Search Console and browse around for more webmaster resources.', 'google-site-kit' ) }
@@ -131,10 +111,14 @@ storiesOf( 'Splash', module )
 								linkText={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 								opposite={ true }
 							/>
-						</div>
-					</div>
-				</section>
+						</Cell>
+					</Row>
+				</Grid>
 			</section>
-			<DashboardSplashOutro buttonLabel={ __( 'Set Up Site Kit', 'google-site-kit' ) } onButtonClick={ () => {} } />
+
+			<LegacyDashboardSplashOutro
+				buttonLabel={ __( 'Set Up Site Kit', 'google-site-kit' ) }
+				onButtonClick={ () => {} }
+			/>
 		</div>
 	) );

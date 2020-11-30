@@ -31,7 +31,7 @@ import ErrorNotification from '../components/notifications/error-notification';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
-const Header = () => {
+const Header = ( { children } ) => {
 	const isAuthenticated = useSelect( ( select ) => select( CORE_USER ).isAuthenticated() );
 
 	return (
@@ -40,11 +40,12 @@ const Header = () => {
 				<section className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 						<div className="
+							googlesitekit-header__logo
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--align-middle
-							mdc-layout-grid__cell--span-3-phone
-							mdc-layout-grid__cell--span-4-tablet
-							mdc-layout-grid__cell--span-6-desktop
+							mdc-layout-grid__cell--span-1-phone
+							mdc-layout-grid__cell--span-2-tablet
+							mdc-layout-grid__cell--span-4-desktop
 						">
 							<Logo />
 						</div>
@@ -52,10 +53,11 @@ const Header = () => {
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--align-middle
 							mdc-layout-grid__cell--align-right-phone
-							mdc-layout-grid__cell--span-1-phone
-							mdc-layout-grid__cell--span-4-tablet
-							mdc-layout-grid__cell--span-6-desktop
+							mdc-layout-grid__cell--span-3-phone
+							mdc-layout-grid__cell--span-6-tablet
+							mdc-layout-grid__cell--span-8-desktop
 						">
+							{ isAuthenticated && children }
 							{ isAuthenticated && <UserMenu /> }
 						</div>
 					</div>

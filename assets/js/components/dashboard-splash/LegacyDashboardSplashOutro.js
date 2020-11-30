@@ -1,5 +1,5 @@
 /**
- * DashboardSplashOutro component.
+ * LegacyDashboardSplashOutro component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Button from '../Button';
 
-class DashboardSplashOutro extends Component {
+class LegacyDashboardSplashOutro extends Component {
 	render() {
 		const {
 			description = __( 'Bringing the best of Google tools to WordPress.', 'google-site-kit' ),
@@ -73,14 +73,14 @@ class DashboardSplashOutro extends Component {
 	}
 }
 
-DashboardSplashOutro.propTypes = {
+LegacyDashboardSplashOutro.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.string,
 	buttonLabel: PropTypes.string,
 	onButtonClick: PropTypes.func,
 };
 
-DashboardSplashOutro.defaultProps = {
+LegacyDashboardSplashOutro.defaultProps = {
 };
 
-export default DashboardSplashOutro;
+export default LegacyDashboardSplashOutro;
