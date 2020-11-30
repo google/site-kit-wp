@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Notification from '../assets/js/components/notifications/notification';
 import UserInputSettings from '../assets/js/components/notifications/UserInputSettings';
-import ModulesList from '../assets/js/components/modules-list';
+import ModulesList from '../assets/js/components/ModulesList';
 import { provideSiteInfo, provideModules, WithTestRegistry } from '../tests/js/utils';
 import rocketImage from '../assets/images/rocket.png';
 import thumbsUpImage from '../assets/images/thumbs-up.png';
@@ -51,7 +51,7 @@ storiesOf( 'Global/Notifications', module )
 			learnMore={ __( 'Learn more', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="small"
-			smallImage={ global._googlesitekitLegacyData.admin.assetsRoot + thumbsUpImage }
+			smallImage={ thumbsUpImage }
 			type="win-success"
 		/>
 	) )

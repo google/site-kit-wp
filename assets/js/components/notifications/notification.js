@@ -133,6 +133,7 @@ class Notification extends Component {
 			description,
 			blockData,
 			winImage,
+			ImageSVG,
 			smallImage,
 			format,
 			learnMoreURL,
@@ -347,7 +348,7 @@ class Notification extends Component {
 
 						</div>
 
-						{ winImage &&
+						{ ( winImage || ImageSVG ) &&
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--order-1-phone
@@ -356,7 +357,8 @@ class Notification extends Component {
 								mdc-layout-grid__cell--span-4-desktop
 							">
 								<div className="googlesitekit-publisher-win__image-large">
-									<img alt="" src={ winImage } />
+									{ winImage && <img alt="" src={ winImage } /> }
+									{ ImageSVG && ImageSVG }
 								</div>
 							</div>
 						}
@@ -389,6 +391,7 @@ Notification.propTypes = {
 	learnMoreLabel: PropTypes.string,
 	blockData: PropTypes.array,
 	winImage: PropTypes.string,
+	ImageSVG: PropTypes.elementType,
 	smallImage: PropTypes.string,
 	format: PropTypes.string,
 	ctaLink: PropTypes.string,

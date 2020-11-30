@@ -54,7 +54,7 @@ if ( setup.needReauthenticate ) {
 }
 
 if ( featureFlags.userInput.enabled ) {
-	addFilter( 'googlesitekit.ErrorNotification',
+	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.UserInputSettings',
 		addUserInputSettings, 1 );
 }
