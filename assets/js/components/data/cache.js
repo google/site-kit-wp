@@ -27,7 +27,7 @@ import { cloneDeep } from 'lodash';
 import { getStorage } from '../../util/storage';
 import { stringifyObject } from '../../util/stringify';
 
-export const STORAGE_KEY_PREFIX = 'googlesitekit_legacy_' + global.GOOGLESITEKIT_VERSION;
+export const STORAGE_KEY_PREFIX = 'googlesitekit_legacy_' + global.GOOGLESITEKIT_VERSION + '_';
 
 /**
  * Ensures that the local datacache object is properly set up.

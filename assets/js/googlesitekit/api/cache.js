@@ -24,7 +24,7 @@
  * @since 1.5.0
  * @private
  */
-export const STORAGE_KEY_PREFIX = 'googlesitekit_' + global.GOOGLESITEKIT_VERSION;
+export const STORAGE_KEY_PREFIX = 'googlesitekit_' + global.GOOGLESITEKIT_VERSION + '_';
 
 const defaultOrder = [ 'sessionStorage', 'localStorage' ];
 let storageBackend;
