@@ -49,14 +49,16 @@ function UserMenu() {
 
 	useEffect( () => {
 		const handleMenuClose = ( e ) => {
-			// Close the menu if the user presses the Escape key
-			// or if they click outside of the menu.
-			if (
-				( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
-				! menuButtonRef.current.contains( e.target ) &&
-				! menuRef.current.contains( e.target )
-			) {
-				toggleMenu( false );
+			if ( ( menuButtonRef && menuButtonRef.current ) && ( menuRef && menuRef.current ) ) {
+				// Close the menu if the user presses the Escape key
+				// or if they click outside of the menu.
+				if (
+					( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
+					! menuButtonRef.current.contains( e.target ) &&
+					! menuRef.current.contains( e.target )
+				) {
+					toggleMenu( false );
+				}
 			}
 		};
 

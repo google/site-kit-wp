@@ -44,14 +44,16 @@ function DateRangeSelector() {
 
 	useEffect( () => {
 		const handleMenuClose = ( event ) => {
-			// Close the menu if the user presses the Escape key
-			// or if they click outside of the menu.
-			if (
-				( ( 'keyup' === event.type && 27 === event.keyCode ) || 'mouseup' === event.type ) &&
-				! menuButtonRef.current.buttonRef.current.contains( event.target ) &&
-				! menuRef.current.menuRef.current.contains( event.target )
-			) {
-				setMenuOpen( false );
+			if ( ( menuButtonRef && menuButtonRef.current ) && ( menuRef && menuRef.current ) ) {
+				// Close the menu if the user presses the Escape key
+				// or if they click outside of the menu.
+				if (
+					( ( 'keyup' === event.type && 27 === event.keyCode ) || 'mouseup' === event.type ) &&
+					! menuButtonRef.current.contains( event.target ) &&
+					! menuRef.current.contains( event.target )
+				) {
+					setMenuOpen( false );
+				}
 			}
 		};
 
@@ -68,14 +70,9 @@ function DateRangeSelector() {
 		setMenuOpen( ! menuOpen );
 	}, [ menuOpen ] );
 
-	const handleMenuItemSelect = useCallback( ( index, event ) => {
-		if (
-			( 'keydown' === event.type && ( 13 === event.keyCode || 32 === event.keyCode ) ) || // Enter or Space is pressed.
-			'click' === event.type // Mouse is clicked
-		) {
-			setDateRange( Object.values( ranges )[ index ].slug );
-			setMenuOpen( false );
-		}
+	const handleMenuItemSelect = useCallback( ( index ) => {
+		setDateRange( Object.values( ranges )[ index ].slug );
+		setMenuOpen( false );
 	}, [ handleMenu ] );
 
 	const currentDateRangeLabel = ranges[ dateRange ]?.label;
