@@ -63,7 +63,7 @@ export default function UnsatisfiedScopesAlert() {
 		redirectURL: global.location.href,
 	} ) );
 
-	if ( unsatisfiedScopes === undefined || connectURL === undefined ) {
+	if ( unsatisfiedScopes === undefined || ! unsatisfiedScopes.length || connectURL === undefined ) {
 		return null;
 	}
 
