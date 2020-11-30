@@ -69,7 +69,7 @@ function DashboardGoalsWidget() {
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
-			loading: store.isResolving( 'getReport', [ args ] ) || store.isResolving( 'getGoals', [] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ) || ! store.hasFinishedResolution( 'getGoals', [] ),
 			serviceURL: store.getServiceURL( { path: `/report/conversions-goals-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` } ),
 			goals: store.getGoals(),
 		};
