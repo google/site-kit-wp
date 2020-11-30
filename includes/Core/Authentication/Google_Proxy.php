@@ -140,7 +140,7 @@ class Google_Proxy {
 	/**
 	 * Are site fields synced
 	 *
-	 * @since x.x.x
+	 * @since n.e.x.t
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 *
