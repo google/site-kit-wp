@@ -45,7 +45,7 @@ const Switch = ( {
 	const switchRef = useRef( null );
 
 	useEffect( () => {
-		if ( switchRef.current ) {
+		if ( switchRef && switchRef.current ) {
 			MDCSwitch.attachTo( switchRef.current );
 		}
 	} );

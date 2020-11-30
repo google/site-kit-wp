@@ -49,7 +49,7 @@ const Button = forwardRef( ( {
 	const mergedRefs = useMergedRef( ref, buttonRef );
 
 	useEffect( () => {
-		if ( buttonRef.current ) {
+		if ( buttonRef && buttonRef.current ) {
 			MDCRipple.attachTo( buttonRef.current );
 		}
 	} );

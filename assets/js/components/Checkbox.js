@@ -45,7 +45,7 @@ const Checkbox = ( {
 	const checkboxRef = useRef( null );
 
 	useEffect( () => {
-		if ( formFieldRef.current && checkboxRef.current ) {
+		if ( ( formFieldRef && formFieldRef.current ) && ( checkboxRef && checkboxRef.current ) ) {
 			const formField = new MDCFormField( formFieldRef.current );
 			formField.input = new MDCCheckbox( checkboxRef.current );
 		}

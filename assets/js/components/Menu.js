@@ -47,7 +47,7 @@ const Menu = forwardRef( ( {
 	} );
 
 	useEffect( () => {
-		if ( menuRef.current ) {
+		if ( menuRef && menuRef.current ) {
 			const menu = new MDCMenu( menuRef.current );
 			menu.open = menuOpen;
 			menu.setDefaultFocusState( 1 );

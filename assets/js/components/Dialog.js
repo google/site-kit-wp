@@ -51,7 +51,7 @@ const Dialog = ( {
 	const dialogRef = useRef( null );
 
 	useEffect( () => {
-		if ( dialogRef.current ) {
+		if ( dialogRef && dialogRef.current ) {
 			MDCDialog.attachTo( dialogRef.current );
 		}
 	} );
