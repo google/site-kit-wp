@@ -22,7 +22,6 @@ use Exception;
  */
 class Google_Proxy {
 
-
 	const BASE_URL                = 'https://sitekit.withgoogle.com';
 	const OAUTH2_SITE_URI         = '/o/oauth2/site/';
 	const OAUTH2_REVOKE_URI       = '/o/oauth2/revoke/';
