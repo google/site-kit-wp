@@ -47,9 +47,11 @@ const Menu = forwardRef( ( {
 	} );
 
 	useEffect( () => {
-		const menu = new MDCMenu( menuRef.current );
-		menu.open = menuOpen;
-		menu.setDefaultFocusState( 1 );
+		if ( menuRef.current ) {
+			const menu = new MDCMenu( menuRef.current );
+			menu.open = menuOpen;
+			menu.setDefaultFocusState( 1 );
+		}
 	}, [ menuOpen ] );
 
 	useEffect( () => {

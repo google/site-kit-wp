@@ -45,7 +45,9 @@ const Switch = ( {
 	const switchRef = useRef( null );
 
 	useEffect( () => {
-		MDCSwitch.attachTo( switchRef.current );
+		if ( switchRef.current ) {
+			MDCSwitch.attachTo( switchRef.current );
+		}
 	} );
 
 	const onKeyDown = useCallback( ( event ) => {

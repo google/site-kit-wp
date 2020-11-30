@@ -45,8 +45,10 @@ const Radio = ( {
 	const radioRef = useRef( null );
 
 	useEffect( () => {
-		const formField = new MDCFormField( formFieldRef.current );
-		formField.input = new MDCRadio( radioRef.current );
+		if ( formFieldRef.current && radioRef.current ) {
+			const formField = new MDCFormField( formFieldRef.current );
+			formField.input = new MDCRadio( radioRef.current );
+		}
 	} );
 
 	return (

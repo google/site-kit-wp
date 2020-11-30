@@ -51,7 +51,9 @@ const Dialog = ( {
 	const dialogRef = useRef( null );
 
 	useEffect( () => {
-		MDCDialog.attachTo( dialogRef.current );
+		if ( dialogRef.current ) {
+			MDCDialog.attachTo( dialogRef.current );
+		}
 	} );
 
 	// eslint-disable-next-line sitekit/camelcase-acronyms

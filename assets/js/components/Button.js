@@ -49,7 +49,9 @@ const Button = forwardRef( ( {
 	const mergedRefs = useMergedRef( ref, buttonRef );
 
 	useEffect( () => {
-		MDCRipple.attachTo( buttonRef.current );
+		if ( buttonRef.current ) {
+			MDCRipple.attachTo( buttonRef.current );
+		}
 	} );
 
 	// Use a button if disabled, even if a href is provided to ensure expected behavior.
