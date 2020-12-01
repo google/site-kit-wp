@@ -32,6 +32,30 @@ function markdownLinks( text ) {
 }
 
 /**
+ * Adds paragraphs to the text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} text Markdown text.
+ * @return {string} Text with HTML links.
+ */
+function markdownParagraphs( text ) {
+	return `<p>${ text.replace( /\n{2,}/g, '</p><p>' ) }</p>`;
+}
+
+/**
+ * Replaces line breaks in the text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} text Markdown text.
+ * @return {string} Text with HTML links.
+ */
+function markdownBreaks( text ) {
+	return text.replace( /\n/ig, '<br>' );
+}
+
+/**
  * Converts markdown to HTML.
  *
  * @since n.e.x.t
@@ -42,6 +66,8 @@ function markdownLinks( text ) {
 export function markdownToHTML( text ) {
 	const rules = [
 		markdownLinks,
+		markdownParagraphs,
+		markdownBreaks,
 	];
 
 	let html = text;

@@ -109,10 +109,6 @@ function DashboardAllTrafficWidget() {
 		);
 	}
 
-	if ( ! report ) {
-		return null;
-	}
-
 	return (
 		<Widget
 			slug="analyticsAllTraffic"

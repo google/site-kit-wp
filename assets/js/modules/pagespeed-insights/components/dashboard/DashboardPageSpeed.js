@@ -36,6 +36,7 @@ import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/ProgressBar';
 import LabReportMetrics from '../common/LabReportMetrics';
 import FieldReportMetrics from '../common/FieldReportMetrics';
+import Recommendations from '../common/Recommendations';
 import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
@@ -64,17 +65,6 @@ export default function DashboardPageSpeed() {
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const audits = [];
-		const allAudits = store.getAudits( referenceURL, strategy );
-		if ( allAudits ) {
-			Object.keys( allAudits ).forEach( ( auditSlug ) => {
-				const audit = allAudits[ auditSlug ];
-				if ( ( audit.scoreDisplayMode === 'numeric' || audit.scoreDisplayMode === 'binary' ) && audit.score < .9 ) {
-					audits.push( audit );
-				}
-			} );
-		}
-
 		return {
 			isFetchingMobile: ! store.hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
 			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
@@ -82,7 +72,6 @@ export default function DashboardPageSpeed() {
 			isFetchingDesktop: ! store.hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
 			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
 			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
-			audits,
 		};
 	} );
 
@@ -177,6 +166,9 @@ export default function DashboardPageSpeed() {
 				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } error={ reportError } /> }
 				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } error={ reportError } /> }
 			</section>
+			{ ! reportError && (
+				<Recommendations referenceURL={ referenceURL } strategy={ strategy } />
+			) }
 		</Fragment>
 	);
 }
