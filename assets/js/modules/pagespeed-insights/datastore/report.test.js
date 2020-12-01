@@ -125,5 +125,70 @@ describe( 'modules/pagespeed-insights report', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'getAudits', () => {
+			it( 'should return audits object', () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy } );
+				registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, strategy ] );
+
+				const audits = registry.select( STORE_NAME ).getAudits( url, strategy );
+				expect( audits ).toEqual( fixtures.pagespeedDesktop.lighthouseResult.audits );
+			} );
+		} );
+
+		describe( 'getStackPackDescriptions', () => {
+			const strategy = 'desktop';
+			const url = 'http://example.com/';
+
+			const report = {
+				...fixtures.pagespeedDesktop,
+				lighthouseResult: {
+					...fixtures.pagespeedDesktop.lighthouseResult,
+					stackPacks: [
+						{
+							id: 'wordpress',
+							iconDataURL: '',
+							title: 'WordPress',
+							descriptions: {
+								'unminified-css': 'A number of [WordPress plugins](https://wordpress.org/plugins/search/minify+css/) can speed up your site by concatenating, minifying, and compressing your styles. You may also want to use a build process to do this minification up-front if possible.',
+								'uses-text-compression': 'You can enable text compression in your web server configuration.',
+								'uses-webp-images': 'Consider using a [plugin](https://wordpress.org/plugins/search/convert+webp/) or service that will automatically convert your uploaded images to the optimal formats.',
+							},
+						},
+						{
+							id: 'amp',
+							iconDataURL: '',
+							title: 'AMP',
+							descriptions: {
+								'uses-text-compression': 'You can enable text compression in your web server configuration.',
+								'server-response-time': 'Themes, plugins, and server specifications all contribute to server response time. Consider finding a more optimized theme, carefully selecting an optimization plugin, and/or upgrading your server.',
+							},
+						},
+					],
+				},
+			};
+
+			beforeEach( () => {
+				registry.dispatch( STORE_NAME ).receiveGetReport( report, { url, strategy } );
+				registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, strategy ] );
+			} );
+
+			it( 'should return stack packs array with correct data for an available audit', () => {
+				const stackPacks = registry.select( STORE_NAME ).getStackPackDescriptions( url, strategy, 'uses-text-compression' );
+				expect( Array.isArray( stackPacks ) ).toBe( true );
+				expect( stackPacks.length ).toBe( 2 );
+				expect( stackPacks[ 0 ].id ).toBe( 'wordpress' );
+				expect( stackPacks[ 1 ].id ).toBe( 'amp' );
+			} );
+
+			it( 'should return an empty array for non-existing audit', () => {
+				const stackPacks = registry.select( STORE_NAME ).getStackPackDescriptions( url, strategy, 'unused-css-rules' );
+				expect( Array.isArray( stackPacks ) ).toBe( true );
+				expect( stackPacks.length ).toBe( 0 );
+			} );
+		} );
 	} );
 } );
