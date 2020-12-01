@@ -28,7 +28,6 @@ import Data from 'googlesitekit-data';
 import { decodeHTMLEntity } from '../../util';
 import Link from '../Link';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
-import DateRangeSelector from '../DateRangeSelector';
 import DashboardDetailsModules from './dashboard-details-modules';
 import DashboardDetailsEntityHeaderContainer from './DashboardDetailsEntityHeaderContainer';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -40,17 +39,6 @@ export default function DashboardDetailsEntityView() {
 
 	return (
 		<Fragment>
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-2-phone
-				mdc-layout-grid__cell--span-4-tablet
-				mdc-layout-grid__cell--span-4-desktop
-				mdc-layout-grid__cell--align-right
-				mdc-layout-grid__cell--align-bottom
-			">
-				<DateRangeSelector />
-			</div>
-
 			<DashboardDetailsEntityHeaderContainer>
 				<h3 className="
 					googlesitekit-heading-3

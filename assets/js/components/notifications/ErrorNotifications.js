@@ -1,5 +1,5 @@
 /**
- * PageHeaderDateRange component.
+ * ErrorNotifications component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,14 +17,21 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import DateRangeSelector from './DateRangeSelector';
+import AuthError from './AuthError';
+import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
 
-export default function PageHeaderDateRange() {
+export default function ErrorNotifications() {
 	return (
-		<span className="googlesitekit-page-header__range">
-			<DateRangeSelector />
-		</span>
+		<Fragment>
+			<AuthError />
+			<UnsatisfiedScopesAlert />
+		</Fragment>
 	);
 }

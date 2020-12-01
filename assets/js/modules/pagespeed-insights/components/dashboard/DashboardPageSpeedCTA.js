@@ -30,9 +30,9 @@ import {
 	getReAuthURL,
 	showErrorNotification,
 } from '../../../../util';
-import CTA from '../../../../components/notifications/cta';
+import CTA from '../../../../components/legacy-notifications/cta';
 import data from '../../../../components/data';
-import GenericError from '../../../../components/notifications/generic-error';
+import GenericError from '../../../../components/legacy-notifications/generic-error';
 import { STORE_NAME as MODULES_STORE } from '../../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as USER_STORE, PERMISSION_MANAGE_OPTIONS } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
