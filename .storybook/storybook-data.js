@@ -127,6 +127,20 @@ module.exports = [
 		},
 	},
 	{
+		id: 'global--plugin-header-with-date-selector',
+		kind: 'Global',
+		name: 'Plugin Header with Date Selector',
+		story: 'Plugin Header with Date Selector',
+		parameters: {
+			fileName: './stories/header-date-selector.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				delay: 3000,
+			},
+		},
+	},
+	{
 		id: 'global-layout--layout-with-header-footer-and-ctas',
 		kind: 'Global/Layout',
 		name: 'Layout with Header Footer and CTAs',
@@ -466,8 +480,8 @@ module.exports = [
 		},
 	},
 	{
-		id: 'setup--step-one',
-		kind: 'Setup',
+		id: 'setup-using-gcp--step-one',
+		kind: 'Setup / Using GCP',
 		name: 'Step One',
 		story: 'Step One',
 		parameters: {

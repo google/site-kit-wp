@@ -29,7 +29,7 @@ const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
-const { ProvidePlugin } = require( 'webpack' );
+const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
@@ -140,6 +140,11 @@ const resolve = {
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
+
+// Get the app version from the google-site-kit.php file - optional chaining operator not supported here
+const googleSiteKitFile = fs.readFileSync( path.resolve( __dirname, 'google-site-kit.php' ), 'utf8' );
+const googleSiteKitVersion = googleSiteKitFile.match( /(?<='GOOGLESITEKIT_VERSION',\s+')\d+.\d+.\d+(?=')/ig );
+const GOOGLESITEKIT_VERSION = googleSiteKitVersion ? googleSiteKitVersion[ 0 ] : '';
 
 const webpackConfig = ( env, argv ) => {
 	const {
@@ -267,6 +272,9 @@ const webpackConfig = ( env, argv ) => {
 
 						return content;
 					},
+				} ),
+				new DefinePlugin( {
+					'global.GOOGLESITEKIT_VERSION': JSON.stringify( GOOGLESITEKIT_VERSION ),
 				} ),
 			],
 			optimization: {

@@ -410,7 +410,6 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-base.js',
 					'dependencies' => array(
-						'googlesitekit-apifetch-data',
 						'googlesitekit-base-data',
 						'googlesitekit-i18n',
 					),

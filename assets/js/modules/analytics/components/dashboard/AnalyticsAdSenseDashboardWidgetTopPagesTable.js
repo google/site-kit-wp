@@ -30,7 +30,7 @@ import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
-import ctaWrapper from '../../../../components/notifications/cta-wrapper';
+import ctaWrapper from '../../../../components/legacy-notifications/cta-wrapper';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
