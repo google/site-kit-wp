@@ -1,5 +1,5 @@
 /**
- * Analytics AdSense Link CTA component.
+ * AdSense module constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,23 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
- * Internal dependencies
- */
-import CTA from '../../../../components/legacy-notifications/cta';
-
-export default function AdSenseLinkCTA() {
-	return (
-		<CTA
-			title={ __( 'Link Analytics and AdSense', 'google-site-kit' ) }
-			description={ __( 'Get reports for your top earning pages by linking your Analytics and AdSense accounts.', 'google-site-kit' ) }
-			ctaLink="https://support.google.com/adsense/answer/6084409"
-			ctaLabel={ __( 'Learn more', 'google-site-kit' ) }
-		/>
-	);
-}
+export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';

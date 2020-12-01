@@ -32,10 +32,10 @@ import { Component, render } from '@wordpress/element';
  * Internal dependencies
  */
 import './components/data';
-import './components/notifications';
+import './components/legacy-notifications';
 import Root from './components/root';
 import ModuleApp from './components/module-app';
-import Setup from './components/setup/setup-wrapper';
+import Setup from './components/setup/ModuleSetup';
 
 class GoogleSitekitModule extends Component {
 	constructor( props ) {

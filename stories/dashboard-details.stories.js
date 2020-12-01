@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import set from 'lodash/set';
 
 /**
  * WordPress dependencies
@@ -35,15 +36,12 @@ import DashboardDetailsApp from '../assets/js/components/dashboard-details/dashb
 
 storiesOf( 'Dashboard Details', module )
 	.add( 'Existing Entity', () => {
+		// Ensure feature flag for Header component exists.
+		set( global, 'featureFlags.storeErrorNotifications.enabled', false );
+
 		// Ensure widget API is disabled and don't display legacy widgets either.
 		// TODO: Expand this story to include new widgets once legacy widgets are no longer used.
-		global.featureFlags = {
-			widgets: {
-				pageDashboard: {
-					enabled: false,
-				},
-			},
-		};
+		set( global, 'featureFlags.widgets.pageDashboard.enabled', false );
 		removeAllFilters( 'googlesitekit.DashboardDetailsModule' );
 
 		const setupRegistry = ( registry ) => {
