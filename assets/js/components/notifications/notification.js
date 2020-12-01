@@ -132,6 +132,7 @@ class Notification extends Component {
 			description,
 			blockData,
 			winImage,
+			SmallImageSVG,
 			smallImage,
 			format,
 			learnMoreURL,
@@ -297,15 +298,13 @@ class Notification extends Component {
 							</div>
 						}
 
-						{ smallImage &&
+						{ ( smallImage || SmallImageSVG ) &&
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-1
 							">
-								{
-									typeof smallImage === 'string'
-										? <img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage } /> : smallImage
-								}
+								{ smallImage && <img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage } /> }
+								{ SmallImageSVG && <SmallImageSVG /> }
 							</div>
 						}
 
@@ -389,10 +388,8 @@ Notification.propTypes = {
 	learnMoreLabel: PropTypes.string,
 	blockData: PropTypes.array,
 	winImage: PropTypes.string,
-	smallImage: PropTypes.oneOfType( [
-		PropTypes.string,
-		PropTypes.node,
-	] ),
+	smallImage: PropTypes.string,
+	SmallImageSVG: PropTypes.elementType,
 	format: PropTypes.string,
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,

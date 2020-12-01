@@ -33,7 +33,7 @@ export default function UserInputSuccessNotification() {
 			id="user-input-success"
 			title={ __( 'Congrats! You set your site goals.', 'google-site-kit' ) }
 			description={ __( 'Now Site Kit will begin showing you suggestions how to add more metrics to your dashboard that are relevant specifically to you, based on the goals you shared.', 'google-site-kit' ) }
-			smallImage={ <UserInputSuccessImage /> }
+			SmallImageSVG={ UserInputSuccessImage }
 			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
 			format="small"
 		/>
