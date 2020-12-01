@@ -105,7 +105,7 @@ class Google_Proxy {
 	 */
 	public function fetch_site_fields( Credentials $credentials ) {
 		if ( ! $credentials->has() ) {
-			return null;
+			return new WP_Error( 'oauth_credentials_not_exist' );
 		}
 
 		$creds = $credentials->get();
@@ -119,11 +119,11 @@ class Google_Proxy {
 
 		$response = wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
 
-		if ( is_wp_error( $response['body'] ) ) {
-			return $response['body'];
-		}
-
 		$raw_body = wp_remote_retrieve_body( $response );
+
+		if ( is_wp_error( $raw_body ) ) {
+			return $raw_body;
+		}
 
 		$response_data = json_decode( $raw_body, true );
 
