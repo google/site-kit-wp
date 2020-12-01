@@ -2,6 +2,7 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import set from 'lodash/set';
 
 /**
  * Internal dependencies
@@ -19,6 +20,7 @@ storiesOf( 'Setup / Using GCP', module )
 		global._googlesitekitLegacyData.setup.isVerified = false;
 		global._googlesitekitLegacyData.setup.hasSearchConsoleProperty = false;
 		global._googlesitekitLegacyData.permissions.canSetup = true;
+		set( global, 'featureFlags.storeErrorNotifications.enabled', false );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_USER ).receiveGetAuthentication( {
@@ -38,6 +40,7 @@ storiesOf( 'Setup / Using GCP', module )
 storiesOf( 'Setup / Using Proxy', module )
 	.add( 'Disconnected - URL Mismatch', () => {
 		global._googlesitekitLegacyData.setup.isSiteKitConnected = true;
+		set( global, 'featureFlags.serviceSetupV2.enabled', false );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveGetConnection( {} );
