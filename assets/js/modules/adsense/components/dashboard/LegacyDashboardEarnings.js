@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
 import LegacyDashboardAdSenseTopEarningPagesSmall from './LegacyDashboardAdSenseTopEarningPagesSmall';
 import LegacyAdSenseDashboardMainSummary from './LegacyAdSenseDashboardMainSummary';
-import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
+import ModuleSettingsWarning from '../../../../components/legacy-notifications/module-settings-warning';
 
 class LegacyDashboardEarnings extends Component {
 	render() {

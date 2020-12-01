@@ -34,7 +34,7 @@ import API from 'googlesitekit-api';
 import { sanitizeHTML } from '../../util/sanitize';
 import { getExistingTag } from '../../util/tag';
 import Link from '../Link';
-import Warning from '../notifications/warning';
+import Warning from '../legacy-notifications/warning';
 import ProgressBar from '../ProgressBar';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';

@@ -49,7 +49,7 @@ import Button from '../../components/button';
 import data, { TYPE_MODULES } from '../../components/data';
 import SettingsOverlay from '../../components/settings/SettingsOverlay';
 import Spinner from '../Spinner';
-import GenericError from '../../components/notifications/generic-error';
+import GenericError from '../legacy-notifications/generic-error';
 import SetupModule from '../../components/setup-module';
 import Dialog from '../../components/dialog';
 import ModuleIcon from '../ModuleIcon';

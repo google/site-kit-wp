@@ -10,9 +10,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Notification from '../assets/js/components/notifications/notification';
 import ModulesList from '../assets/js/components/ModulesList';
 import { provideModules, WithTestRegistry } from '../tests/js/utils';
+import Notification from '../assets/js/components/legacy-notifications/notification';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
