@@ -20,7 +20,7 @@ storiesOf( 'Setup / Using GCP', module )
 		global._googlesitekitLegacyData.setup.isVerified = false;
 		global._googlesitekitLegacyData.setup.hasSearchConsoleProperty = false;
 		global._googlesitekitLegacyData.permissions.canSetup = true;
-		set( global, 'featureFlags.storeErrorNotifications.enabled', true );
+		set( global, 'featureFlags.storeErrorNotifications.enabled', false );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_USER ).receiveGetAuthentication( {

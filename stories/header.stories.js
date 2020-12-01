@@ -38,7 +38,7 @@ storiesOf( 'Global', module )
 		return storyFn( registry );
 	} )
 	.add( 'Plugin Header', ( registry ) => {
-		set( global, 'featureFlags.storeErrorNotifications.enabled', true );
+		set( global, 'featureFlags.storeErrorNotifications.enabled', false );
 
 		return (
 			<WithTestRegistry registry={ registry }>
@@ -47,7 +47,7 @@ storiesOf( 'Global', module )
 		);
 	} )
 	.add( 'Plugin Header with Date Selector', ( registry ) => {
-		set( global, 'featureFlags.storeErrorNotifications.enabled', true );
+		set( global, 'featureFlags.storeErrorNotifications.enabled', false );
 
 		return (
 			<WithTestRegistry registry={ registry }>
