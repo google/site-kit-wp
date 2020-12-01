@@ -100,7 +100,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Report audits.
 	 */
-	getAudits: createRegistrySelector( ( select ) => ( state, url, strategy ) => {
+	getAudits: createRegistrySelector( ( select ) => ( state, url, strategy, withStackPacks = false ) => {
 		const report = select( STORE_NAME ).getReport( url, strategy );
 		if ( report === undefined ) {
 			return undefined;
@@ -108,6 +108,19 @@ const baseSelectors = {
 
 		const { lighthouseResult } = report || {};
 		const { audits } = lighthouseResult || {};
+
+		if ( withStackPacks ) {
+			const filteredAudits = {};
+
+			Object.keys( audits ).forEach( ( auditID ) => {
+				const stackPacks = select( STORE_NAME ).getStackPackDescriptions( url, strategy, auditID );
+				if ( Array.isArray( stackPacks ) && stackPacks.length > 0 ) {
+					filteredAudits[ auditID ] = audits[ auditID ];
+				}
+			} );
+
+			return filteredAudits;
+		}
 
 		return audits;
 	} ),

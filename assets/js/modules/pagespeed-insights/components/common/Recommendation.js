@@ -24,10 +24,31 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
 import Accordion from '../../../../components/Accordion';
-import { sanitizeHTML } from '../../../../util';
+import { sanitizeHTML, markdownToHTML } from '../../../../util';
+const { useSelect } = Data;
 
-export default function Recommendation( { auditID, title, description } ) {
+export default function Recommendation( props ) {
+	const {
+		auditID,
+		title,
+		referenceURL,
+		strategy,
+	} = props;
+
+	const stackPack = useSelect( ( select ) => select( STORE_NAME ).getStackPackDescriptions( referenceURL, strategy, auditID ) );
+	if ( ! Array.isArray( stackPack ) || ! stackPack.length ) {
+		return null;
+	}
+
+	const content = markdownToHTML(
+		stackPack
+			.map( ( { description } ) => description )
+			.join( '\n' ),
+	);
+
 	const sanitizeArgs = {
 		ALLOWED_TAGS: [ 'a', 'p' ],
 		ALLOWED_ATTR: [ 'href', 'rel', 'target' ],
@@ -35,7 +56,7 @@ export default function Recommendation( { auditID, title, description } ) {
 
 	return (
 		<Accordion id={ auditID } title={ title }>
-			<div dangerouslySetInnerHTML={ sanitizeHTML( description, sanitizeArgs ) } />
+			<div dangerouslySetInnerHTML={ sanitizeHTML( content, sanitizeArgs ) } />
 		</Accordion>
 	);
 }
@@ -43,5 +64,6 @@ export default function Recommendation( { auditID, title, description } ) {
 Recommendation.propTypes = {
 	auditID: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
-	description: PropTypes.string.isRequired,
+	referenceURL: PropTypes.string.isRequired,
+	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] ).isRequired,
 };

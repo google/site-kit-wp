@@ -31,48 +31,52 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
-import { markdownToHTML } from '../../../../util/markdown';
 import Recommendation from './Recommendation';
 const { useSelect } = Data;
 
 export default function Recommendations( { referenceURL, strategy } ) {
-	const {
-		recommendations,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+	const { recommendations } = useSelect( ( select ) => {
+		const allAudits = select( STORE_NAME ).getAudits( referenceURL, strategy, true );
+		if ( ! allAudits || ! Object.keys( allAudits ).length ) {
+			return { recommendations: [] };
+		}
 
 		const audits = [];
-		const allAudits = store.getAudits( referenceURL, strategy );
-		if ( allAudits ) {
-			Object.keys( allAudits ).forEach( ( auditSlug ) => {
-				const audit = allAudits[ auditSlug ];
-				if ( ( audit.scoreDisplayMode === 'numeric' || audit.scoreDisplayMode === 'binary' ) && audit.score < .9 ) {
-					audits.push( {
-						id: audit.id,
-						title: audit.title,
-						description: markdownToHTML( audit.description ),
-					} );
-				}
+		Object.keys( allAudits ).forEach( ( auditSlug ) => {
+			const audit = allAudits[ auditSlug ];
+
+			if ( ( audit.scoreDisplayMode !== 'numeric' && audit.scoreDisplayMode !== 'binary' ) || audit.score >= .9 ) {
+				return;
+			}
+
+			audits.push( {
+				id: audit.id,
+				title: audit.title,
 			} );
-		}
+		} );
 
 		return {
 			recommendations: audits,
 		};
 	} );
 
+	if ( ! recommendations.length ) {
+		return null;
+	}
+
 	return (
 		<div className="googlesitekit-pagespeed--recommendations">
-			<h3 className="googlesitekit-pagespeed-recommendations__title">
+			<div className="googlesitekit-pagespeed-recommendations__title">
 				{ __( 'Recommendations on how to improve your site', 'google-site-kit' ) }
-			</h3>
+			</div>
 
-			{ recommendations.map( ( { id, title, description } ) => (
+			{ recommendations.map( ( { id, title } ) => (
 				<Recommendation
 					key={ id }
 					auditID={ id }
 					title={ title }
-					description={ description }
+					referenceURL={ referenceURL }
+					strategy={ strategy }
 				/>
 			) ) }
 		</div>

@@ -164,10 +164,42 @@
 
 	.googlesitekit-pagespeed--recommendations {
 		box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1);
-		padding: 18px $grid-gap-phone;
+		padding: $grid-gap-phone $grid-gap-phone 0;
+
+		.googlesitekit-pagespeed-recommendations__title {
+			color: $c-black;
+			font-size: 1rem;
+			letter-spacing: 0.1px;
+			line-height: 1.5rem;
+		}
+
+		.googlesitekit-accordion {
+			border-top-left-radius: 8px;
+			border-top-right-radius: 8px;
+
+			& + .googlesitekit-accordion {
+				border-radius: 0;
+			}
+
+			&:last-of-type {
+				border-bottom-left-radius: 8px;
+				border-bottom-right-radius: 8px;
+			}
+		}
+
+		.googlesitekit-pagespeed-recommendations__title,
+		.googlesitekit-accordion:last-child {
+			margin-bottom: $grid-gap-phone;
+		}
 
 		@media ( min-width: $bp-tablet ) {
-			padding: 18px $grid-gap-desktop;
+			padding: $grid-gap-desktop $grid-gap-desktop 0;
+
+			.googlesitekit-pagespeed-recommendations__title,
+			.googlesitekit-accordion:last-child {
+				margin-bottom: $grid-gap-desktop;
+			}
 		}
+
 	}
 }
