@@ -90,57 +90,47 @@ storiesOf( 'Settings', module )
 	.add( 'Connect More Services', () => {
 		global._googlesitekitLegacyData = settingsData;
 		global._googlesitekitLegacyData.canAdsRun = true;
+		global._googlesitekitLegacyData.modules.analytics.active = false;
 		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
-		global._googlesitekitLegacyData.modules.adsense.active = false;
+		global._googlesitekitLegacyData.modules.adsense.active = true;
+		global._googlesitekitLegacyData.modules.adsense.setupComplete = false;
+
 		const setupRegistry = async ( registry ) => {
 			provideModules( registry, [
 				{
 					slug: 'adsense',
 					active: true,
-					dependencies: [],
-					dependants: [],
+					connected: false,
 				},
 				{
 					slug: 'analytics',
 					active: false,
 					connected: false,
-					dependencies: [],
-					dependants: [ 'optimize' ],
 				},
 				{
 					slug: 'optimize',
 					active: false,
 					connected: false,
-					dependencies: [ 'analytics' ],
-					dependants: [],
 				},
 				{
 					slug: 'pagespeed-insights',
-					active: false,
-					connected: false,
-					dependencies: [],
-					dependants: [],
+					active: true,
+					connected: true,
 				},
 				{
 					slug: 'search-console',
-					active: false,
-					connected: false,
-					dependencies: [],
-					dependants: [],
+					active: true,
+					connected: true,
 				},
 				{
 					slug: 'site-verification',
-					active: false,
-					connected: false,
-					dependencies: [],
-					dependants: [],
+					active: true,
+					connected: true,
 				},
 				{
 					slug: 'tagmanager',
 					active: false,
 					connected: false,
-					dependencies: [],
-					dependants: [],
 				},
 			] );
 			registry.dispatch( CORE_MODULES ).registerModule( 'adsense' );
