@@ -25,14 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	activateOrDeactivateModule,
-	getReAuthURL,
-	showErrorNotification,
-} from '../../../../util';
-import CTA from '../../../../components/legacy-notifications/cta';
-import data from '../../../../components/data';
-import GenericError from '../../../../components/legacy-notifications/generic-error';
+import ActivateModuleCTA from '../../../../components/ActivateModuleCTA';
+import CompleteModuleActivationCTA from '../../../../components/CompleteModuleActivationCTA';
 import { STORE_NAME as MODULES_STORE } from '../../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME as USER_STORE, PERMISSION_MANAGE_OPTIONS } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
@@ -51,39 +45,32 @@ function DashboardPageSpeedCTA() {
 		return null;
 	}
 
-	const handleSetUpClick = async () => {
-		try {
-			await activateOrDeactivateModule( data, 'pagespeed-insights', true );
-			global.location = getReAuthURL( 'pagespeed-insights' );
-		} catch ( err ) {
-			showErrorNotification( GenericError, {
-				id: 'pagespeed-insights-setup-error',
-				title: __( 'Internal Server Error', 'google-site-kit' ),
-				description: err.message,
-				format: 'small',
-				type: 'win-error',
-			} );
-		}
-	};
+	const description = __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.', 'google-site-kit' );
 
 	return (
 		<div className="
 			mdc-layout-grid__cell
 			mdc-layout-grid__cell--span-12
 		">
-			<CTA
-				title={ ! connected && active
-					? __( 'Complete PageSpeed Insights activation.', 'google-site-kit' )
-					: __( 'Activate PageSpeed Insights.', 'google-site-kit' )
-				}
-				description={ __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.', 'google-site-kit' ) }
-				ctaLink={ '#' }
-				ctaLabel={ ! connected && active
-					? __( 'Complete activation', 'google-site-kit' )
-					: __( 'Activate PageSpeed Insights', 'google-site-kit' )
-				}
-				onClick={ handleSetUpClick }
-			/>
+			{
+				( ! connected && active )
+					? (
+						<CompleteModuleActivationCTA
+							title={ __( 'Complete PageSpeed Insights activation.', 'google-site-kit' ) }
+							description={ description }
+							slug="pagespeed-insights"
+							ctaLabel={ __( 'Complete activation', 'google-site-kit' ) }
+						/>
+					)
+					: (
+						<ActivateModuleCTA
+							title={ __( 'Activate PageSpeed Insights.', 'google-site-kit' ) }
+							description={ description }
+							slug="pagespeed-insights"
+							ctaLabel={ __( 'Activate PageSpeed Insights', 'google-site-kit' ) }
+						/>
+					)
+			}
 		</div>
 	);
 }

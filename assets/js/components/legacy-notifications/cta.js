@@ -23,65 +23,57 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Link from '../Link';
 
-class CTA extends Component {
-	render() {
-		const {
-			title,
-			description,
-			ctaLink,
-			ctaLabel,
-			error,
-			onClick,
-		} = this.props;
-
-		return (
-			<div
-				className={ classnames(
-					'googlesitekit-cta',
-					{ 'googlesitekit-cta--error': error }
-				) }
+const CTA = ( {
+	title,
+	description,
+	ctaLink,
+	ctaLabel,
+	error,
+	onClick,
+	'aria-label': ariaLabel,
+} ) => (
+	<div
+		className={ classnames(
+			'googlesitekit-cta',
+			{ 'googlesitekit-cta--error': error }
+		) }
+	>
+		{ title &&
+			<h3 className="googlesitekit-cta__title">
+				{ title }
+			</h3>
+		}
+		{ ( description && typeof description === 'string' ) && (
+			<p className="googlesitekit-cta__description">{ description }</p>
+		) }
+		{ ( description && typeof description !== 'string' ) && (
+			<div className="googlesitekit-cta__description">{ description }</div>
+		) }
+		{ ctaLabel &&
+			<Link
+				href={ ctaLink }
+				onClick={ onClick }
+				inverse={ ! error }
+				caps
+				arrow
+				aria-label={ ariaLabel }
 			>
-				{ title &&
-					<h3 className="googlesitekit-cta__title">
-						{ title }
-					</h3>
-				}
-				{ ( description && typeof description === 'string' ) && (
-					<p className="googlesitekit-cta__description">{ description }</p>
-				) }
-				{ ( description && typeof description !== 'string' ) && (
-					<div className="googlesitekit-cta__description">{ description }</div>
-				) }
-				{ ctaLabel &&
-					<Link
-						href={ ctaLink }
-						onClick={ onClick }
-						inverse={ ! error }
-						caps
-						arrow
-					>
-						{ ctaLabel }
-					</Link>
-				}
-			</div>
-		);
-	}
-}
+				{ ctaLabel }
+			</Link>
+		}
+	</div>
+);
 
 CTA.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
+	ariaLabel: PropTypes.string,
 	error: PropTypes.bool,
 	onClick: PropTypes.func,
 };

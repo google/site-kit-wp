@@ -33,6 +33,7 @@ domReady( () => {
 	Modules.registerModule(
 		'tagmanager',
 		{
+			name: 'Tag Manager',
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
 			setupComponent: SetupMain,

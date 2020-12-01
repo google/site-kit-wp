@@ -18,16 +18,10 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __, sprintf } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import { getReAuthURL, getModulesData } from '../../util';
-import CTA from './cta';
 import ctaWrapper from './cta-wrapper';
+import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 
 /**
  * Creates a CTA component when module needs to be configured. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
@@ -41,19 +35,7 @@ import ctaWrapper from './cta-wrapper';
  * @return {WPElement} Returns CTA component with configuration CTA.
  */
 const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
-	const { name } = getModulesData()[ module ];
-	const cta = <CTA
-
-		/* translators: %s: Module name */
-		title={ sprintf( __( '%s activation', 'google-site-kit' ), name ) }
-
-		/* translators: %s: Module name */
-		description={ sprintf( __( '%s module needs to be configured', 'google-site-kit' ), name ) }
-		ctaLabel={ __( 'Complete activation', 'google-site-kit' ) }
-		onClick={ () => {
-			global.location = getReAuthURL( module, true );
-		} }
-	/>;
+	const cta = <CompleteModuleActivationCTA slug={ module } />;
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
 };

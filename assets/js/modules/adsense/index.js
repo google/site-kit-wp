@@ -73,6 +73,7 @@ domReady( () => {
 	Modules.registerModule(
 		'adsense',
 		{
+			name: 'AdSense',
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
 			setupComponent: SetupMain,

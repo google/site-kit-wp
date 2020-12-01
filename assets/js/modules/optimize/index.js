@@ -33,6 +33,7 @@ domReady( () => {
 	Modules.registerModule(
 		'optimize',
 		{
+			name: 'Optimize',
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
 			setupComponent: SetupMain,

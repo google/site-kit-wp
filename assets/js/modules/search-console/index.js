@@ -42,6 +42,7 @@ domReady( () => {
 	Modules.registerModule(
 		'search-console',
 		{
+			name: 'Search Console',
 			settingsViewComponent: SettingsView,
 		}
 	);
