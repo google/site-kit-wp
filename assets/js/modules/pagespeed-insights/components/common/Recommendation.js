@@ -46,7 +46,7 @@ export default function Recommendation( props ) {
 	const content = markdownToHTML(
 		stackPack
 			.map( ( { description } ) => description )
-			.join( '\n' ),
+			.join( '\n\n' ),
 	);
 
 	const sanitizeArgs = {
