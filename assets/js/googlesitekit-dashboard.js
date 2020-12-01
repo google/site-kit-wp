@@ -28,7 +28,7 @@ import { render, Fragment } from '@wordpress/element';
 import { clearWebStorage } from './util';
 import Root from './components/root';
 import './modules';
-import Setup from './components/setup/setup-wrapper';
+import ModuleSetup from './components/setup/ModuleSetup';
 import DashboardApp from './components/dashboard/DashboardApp';
 import NotificationCounter from './components/legacy-notifications/notification-counter';
 import './components/legacy-notifications';
@@ -37,7 +37,7 @@ const GoogleSitekitDashboard = () => {
 	const { showModuleSetupWizard, moduleToSetup } = global._googlesitekitLegacyData.setup;
 
 	if ( showModuleSetupWizard ) {
-		return <Setup moduleSlug={ moduleToSetup } />;
+		return <ModuleSetup moduleSlug={ moduleToSetup } />;
 	}
 
 	return (

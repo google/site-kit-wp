@@ -7,13 +7,13 @@ import set from 'lodash/set';
 /**
  * Internal dependencies
  */
-import Setup from '../assets/js/components/setup';
-import SetupUsingProxy from '../assets/js/components/setup/setup-proxy';
+import SetupUsingGCP from '../assets/js/components/legacy-setup/SetupUsingGCP';
+import SetupUsingProxy from '../assets/js/components/setup/SetupUsingProxy';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
-storiesOf( 'Setup', module )
+storiesOf( 'Setup / Using GCP', module )
 	.add( 'Step one', () => {
 		global._googlesitekitLegacyData.setup.isSiteKitConnected = false;
 		global._googlesitekitLegacyData.setup.isAuthenticated = false;
@@ -32,7 +32,7 @@ storiesOf( 'Setup', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<Setup />
+				<SetupUsingGCP />
 			</WithTestRegistry>
 		);
 	} );
