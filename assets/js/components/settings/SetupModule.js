@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
@@ -125,3 +125,9 @@ export default function SetupModule( {
 		</div>
 	);
 }
+
+SetupModule.propTypes = {
+	slug: PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
+	description: PropTypes.string.isRequired,
+};
