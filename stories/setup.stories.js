@@ -9,9 +9,9 @@ import set from 'lodash/set';
  */
 import SetupUsingGCP from '../assets/js/components/legacy-setup/SetupUsingGCP';
 import SetupUsingProxy from '../assets/js/components/setup/SetupUsingProxy';
-import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
 import { provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
+import { enableFeature } from './utils/features';
 
 storiesOf( 'Setup / Using GCP', module )
 	.add( 'Step one', () => {
@@ -20,7 +20,7 @@ storiesOf( 'Setup / Using GCP', module )
 		global._googlesitekitLegacyData.setup.isVerified = false;
 		global._googlesitekitLegacyData.setup.hasSearchConsoleProperty = false;
 		global._googlesitekitLegacyData.permissions.canSetup = true;
-		set( global, 'featureFlags.storeErrorNotifications.enabled', false );
+		enableFeature( 'storeErrorNotifications' );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_USER ).receiveGetAuthentication( {
@@ -38,11 +38,6 @@ storiesOf( 'Setup / Using GCP', module )
 	} );
 
 storiesOf( 'Setup / Using Proxy', module )
-	.addDecorator( ( storyFn ) => {
-		set( global, 'featureFlags.userInput.enabled', false );
-		set( global, 'featureFlags.serviceSetupV2.enabled', false );
-		return storyFn();
-	} )
 	.add( 'Start', () => {
 		return (
 			<WithTestRegistry>
@@ -51,8 +46,8 @@ storiesOf( 'Setup / Using Proxy', module )
 		);
 	} )
 	.add( 'Start [User Input]', () => {
-		set( global, 'featureFlags.userInput.enabled', true );
-		set( global, 'featureFlags.serviceSetupV2.enabled', true );
+		enableFeature( 'userInput' );
+		enableFeature( 'serviceSetupV2' );
 
 		return (
 			<WithTestRegistry>
@@ -74,8 +69,8 @@ storiesOf( 'Setup / Using Proxy', module )
 		);
 	} )
 	.add( 'Disconnected - URL Mismatch [User Input]', () => {
-		set( global, 'featureFlags.userInput.enabled', true );
-		set( global, 'featureFlags.serviceSetupV2.enabled', true );
+		enableFeature( 'userInput' );
+		enableFeature( 'serviceSetupV2' );
 
 		const setupRegistry = ( registry ) => {
 			provideUserAuthentication( registry, {
