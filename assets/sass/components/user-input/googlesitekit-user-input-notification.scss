@@ -22,17 +22,25 @@
 
 		.googlesitekit-publisher-win__image-large {
 			margin: 0;
+			position: relative;
 
-			img {
-				display: block;
+			@media (min-width: $bp-xlarge) {
+				height: 100%;
+				width: 100%;
+			}
+
+			svg {
+				transition: transform ease-in-out $t-speed-1;
 
 				@media (min-width: $bp-xlarge) {
-					margin-bottom: -25%;
+					left: 0;
+					position: absolute;
+					top: 70px;
 					transform: scale(1.5);
 				}
 
 				@media (min-width: $bp-wpdb3) {
-					transform: scale(1);
+					transform: scale(1.7);
 				}
 			}
 		}
