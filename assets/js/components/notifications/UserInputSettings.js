@@ -53,7 +53,7 @@ export default function UserInputSettings() {
 			ctaLink={ ctaLink }
 			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			WinImageSVG={ <PersonSittingSVG width="100%" height="100%" /> }
+			WinImageSVG={ ( props ) => <PersonSittingSVG width="100%" height="100%" { ...props } /> }
 			isDismissable
 		/>
 	);

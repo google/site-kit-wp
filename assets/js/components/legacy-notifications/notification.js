@@ -358,7 +358,7 @@ class Notification extends Component {
 							">
 								<div className="googlesitekit-publisher-win__image-large">
 									{ winImage && <img alt="" src={ winImage } /> }
-									{ WinImageSVG && WinImageSVG }
+									{ WinImageSVG && <WinImageSVG /> }
 								</div>
 							</div>
 						}
