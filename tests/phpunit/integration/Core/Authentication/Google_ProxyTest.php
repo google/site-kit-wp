@@ -68,13 +68,14 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		// Force WP_Error response from as http requests are blocked.
-		$this->mock_http_request(
-			$google_proxy->url( 'http://example.com' ),
-			null
+		$mock_error = new WP_Error( 'test_error', 'test_error_message' );
+		$this->mock_http_failure(
+			$google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ),
+			$mock_error
 		);
 		$error_response_data = $google_proxy->fetch_site_fields( $credentials );
 		// Ensure WP_Error response is passed through.
-		$this->assertWPErrorWithMessage( 'User has blocked requests through HTTP.', $error_response_data );
+		$this->assertWPErrorWithMessage( 'test_error_message', $error_response_data );
 
 		// Mock reponse.
 		$mock_response = array(
@@ -333,7 +334,7 @@ class Google_ProxyTest extends TestCase {
 	 * given URL will yield a specific response.
 	 *
 	 * @param string $request_url   Request URL to modify response for.
-	 * @param (array|WP_Error)  $response_data Response data to return for the request. Will be JSON-encoded if it is an array.
+	 * @param (array)  $response_data Response data to return for the request. Will be JSON-encoded if it is an array.
 	 * @param int    $response_code Optional. Response status code to return. Default 200.
 	 */
 	private function mock_http_request( $request_url, $response_data, $response_code = 200 ) {
@@ -358,6 +359,28 @@ class Google_ProxyTest extends TestCase {
 					'cookies'       => array(),
 					'http_response' => null,
 				);
+			},
+			10,
+			3
+		);
+	}
+
+	/**
+	 * Adds a 'pre_http_request' filter that will ensure the request for the
+	 * given URL will return WP_Error.
+	 *
+	 * @param string $request_url   Request URL to modify response for.
+	 * @param (WP_Error)  $response_error Response WP_Error to return.
+	 */
+	private function mock_http_failure( $request_url, $response_error ) {
+		add_filter(
+			'pre_http_request',
+			function( $response, $parsed_args, $url ) use ( $request_url, $response_error ) {
+				if ( $url === $request_url ) {
+					return $response_error;
+				} else {
+					return $response;
+				}
 			},
 			10,
 			3

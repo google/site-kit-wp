@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
+use WP_Error;
 use Exception;
 
 /**
@@ -208,6 +209,10 @@ class Google_Proxy {
 				),
 			)
 		);
+
+		if ( wp_remote_retrieve_response_code( $response ) !== 200 ) {
+			return new WP_Error( 'non_200_response_code' );
+		}
 
 		if ( is_wp_error( $response ) ) {
 			throw new Exception( $response->get_error_code() );
