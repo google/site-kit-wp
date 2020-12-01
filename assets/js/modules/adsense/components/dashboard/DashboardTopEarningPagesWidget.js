@@ -50,8 +50,11 @@ function DashboardTopEarningPagesWidget() {
 		loading,
 	} = useSelect( ( select ) => {
 		const store = select( ANALYTICS_STORE );
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
+
 		const args = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate,
+			endDate,
 			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
 			metrics: [
 				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
@@ -70,7 +73,7 @@ function DashboardTopEarningPagesWidget() {
 			analyticsMainURL: store.getServiceURL(),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 		};
 	} );
 

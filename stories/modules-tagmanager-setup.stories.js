@@ -25,7 +25,7 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { WithTestRegistry, createTestRegistry, freezeFetch, provideUserAuthentication, provideModules, provideSiteInfo } from '../tests/js/utils';
-import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
+import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { SetupMain as TagManagerSetup } from '../assets/js/modules/tagmanager/components/setup';
@@ -39,7 +39,7 @@ import { parseLiveContainerVersionIDs } from '../assets/js/modules/tagmanager/da
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper moduleSlug="tagmanager" />
+			<ModuleSetup moduleSlug="tagmanager" />
 		</WithTestRegistry>
 	);
 }

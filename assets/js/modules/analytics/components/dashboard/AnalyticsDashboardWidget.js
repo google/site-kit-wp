@@ -36,15 +36,15 @@ import Header from '../../../../components/Header';
 import AnalyticsDashboardWidgetSiteStats from './AnalyticsDashboardWidgetSiteStats';
 import AnalyticsDashboardWidgetTopPagesTable from './AnalyticsDashboardWidgetTopPagesTable';
 import AnalyticsDashboardWidgetOverview from './AnalyticsDashboardWidgetOverview';
+import DateRangeSelector from '../../../../components/DateRangeSelector';
 import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 import Layout from '../../../../components/layout/layout';
 import PageHeader from '../../../../components/PageHeader';
-import PageHeaderDateRange from '../../../../components/PageHeaderDateRange';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
 import Alert from '../../../../components/alert';
 import ProgressBar from '../../../../components/ProgressBar';
-import getNoDataComponent from '../../../../components/notifications/nodata';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
+import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
 import HelpLink from '../../../../components/HelpLink';
 import { getCurrentDateRangeDayCount } from '../../../../util/date-range';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -146,7 +146,9 @@ export default function AnalyticsDashboardWidget() {
 
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				<DateRangeSelector />
+			</Header>
 			<Alert module="analytics" />
 			<div className="googlesitekit-module-page googlesitekit-module-page--analytics">
 				<div className="mdc-layout-grid">
@@ -170,9 +172,7 @@ export default function AnalyticsDashboardWidget() {
 									__( '%s is connected', 'google-site-kit' ),
 									_x( 'Analytics', 'Service name', 'google-site-kit' )
 								) }
-							>
-								<PageHeaderDateRange />
-							</PageHeader>
+							/>
 							{ loading && <ProgressBar /> }
 						</div>
 						{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

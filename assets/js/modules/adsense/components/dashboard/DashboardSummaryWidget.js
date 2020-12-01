@@ -57,8 +57,11 @@ function DashboardSummaryWidget() {
 			metrics,
 		};
 
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
+
 		const periodArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate,
+			endDate,
 			metrics,
 		};
 
@@ -72,9 +75,9 @@ function DashboardSummaryWidget() {
 			today: store.getReport( todayArgs ),
 			period: store.getReport( periodArgs ),
 			daily: store.getReport( dailyArgs ),
-			loading: store.isResolving( 'getReport', [ todayArgs ] ) ||
-				store.isResolving( 'getReport', [ periodArgs ] ) ||
-				store.isResolving( 'getReport', [ dailyArgs ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ todayArgs ] ) ||
+				! store.hasFinishedResolution( 'getReport', [ periodArgs ] ) ||
+				! store.hasFinishedResolution( 'getReport', [ dailyArgs ] ),
 			error: store.getErrorForSelector( 'getReport', [ todayArgs ] ) ||
 				store.getErrorForSelector( 'getReport', [ periodArgs ] ) ||
 				store.getErrorForSelector( 'getReport', [ dailyArgs ] ),

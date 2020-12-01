@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
+import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import { SetupMain as AnalyticsSetup } from '../assets/js/modules/analytics/components/setup/index';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 
@@ -38,7 +38,7 @@ import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytic
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper moduleSlug="analytics" />
+			<ModuleSetup moduleSlug="analytics" />
 		</WithTestRegistry>
 	);
 }
