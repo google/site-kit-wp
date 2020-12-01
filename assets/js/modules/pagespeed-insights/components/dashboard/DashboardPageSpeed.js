@@ -65,10 +65,10 @@ export default function DashboardPageSpeed() {
 		const store = select( STORE_NAME );
 
 		return {
-			isFetchingMobile: store.isFetchingGetReport( referenceURL, STRATEGY_MOBILE ),
+			isFetchingMobile: ! store.hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
 			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
 			errorMobile: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
-			isFetchingDesktop: store.isFetchingGetReport( referenceURL, STRATEGY_DESKTOP ),
+			isFetchingDesktop: ! store.hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
 			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
 			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
 		};

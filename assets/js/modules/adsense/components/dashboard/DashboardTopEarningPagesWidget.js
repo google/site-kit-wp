@@ -73,7 +73,7 @@ function DashboardTopEarningPagesWidget() {
 			analyticsMainURL: store.getServiceURL(),
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 		};
 	} );
 

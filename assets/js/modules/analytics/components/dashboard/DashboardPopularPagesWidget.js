@@ -72,7 +72,7 @@ function DashboardPopularPagesWidget() {
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			analyticsMainURL: store.getServiceURL( { path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }` } ),
 		};
 	} );
