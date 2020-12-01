@@ -26,18 +26,12 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { sprintf, __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import {
-	activateOrDeactivateModule,
-	getReAuthURL,
-	showErrorNotification,
-} from '../../util';
-import { refreshAuthentication } from '../../util/refresh-authentication';
-import data from '../data';
+import { showErrorNotification } from '../../util';
 import ModuleIcon from '../ModuleIcon';
 import Spinner from '../Spinner';
 import Link from '../Link';
@@ -46,7 +40,7 @@ import ModuleSettingsWarning from '../legacy-notifications/module-settings-warni
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Data from 'googlesitekit-data';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupModule( {
 	slug,
@@ -55,26 +49,25 @@ export default function SetupModule( {
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const activateOrDeactivate = async () => {
-		try {
-			setIsSaving( true );
-			await activateOrDeactivateModule( data, slug, true );
+	const { activateModule } = useDispatch( CORE_MODULES );
 
-			await refreshAuthentication();
+	const onSetup = useCallback( async () => {
+		setIsSaving( true );
+		const { error, response } = await activateModule( slug );
 
-			// Redirect to ReAuthentication URL.
-			global.location = getReAuthURL( slug, true );
-		} catch ( err ) {
+		if ( ! error ) {
+			global.location.assign( response.moduleReauthURL );
+		} else {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',
 				title: __( 'Internal Server Error', 'google-site-kit' ),
-				description: err.message,
+				description: error.message,
 				format: 'small',
 				type: 'win-error',
 			} );
 			setIsSaving( false );
 		}
-	};
+	} );
 
 	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug ) );
 
@@ -107,7 +100,7 @@ export default function SetupModule( {
 
 			<p className="googlesitekit-settings-connect-module__cta">
 				<Link
-					onClick={ activateOrDeactivate }
+					onClick={ onSetup }
 					href=""
 					inherit
 					disabled={ ! canActivateModule }
