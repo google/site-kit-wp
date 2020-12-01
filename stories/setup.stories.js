@@ -40,6 +40,7 @@ storiesOf( 'Setup / Using GCP', module )
 storiesOf( 'Setup / Using Proxy', module )
 	.add( 'Disconnected - URL Mismatch', () => {
 		global._googlesitekitLegacyData.setup.isSiteKitConnected = true;
+		set( global, 'featureFlags.serviceSetupV2.enabled', false );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveGetConnection( {} );
