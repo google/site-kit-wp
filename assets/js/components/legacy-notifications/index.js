@@ -30,7 +30,7 @@ import DashboardCoreSiteAlerts from './dashboard-core-site-alerts';
 import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
 import DashboardWinsAlerts from './dashboard-wins-alerts';
-import UserInputSettings from './UserInputSettings';
+import UserInputSettings from '../notifications/UserInputSettings';
 import UnsatisfiedScopesAlert from '../notifications/UnsatisfiedScopesAlert';
 
 const { setup } = global._googlesitekitLegacyData;
