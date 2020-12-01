@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import DashboardModuleHeader from '../assets/js/components/dashboard/dashboard-module-header';
-import CTA from '../assets/js/components/notifications/cta';
+import CTA from '../assets/js/components/legacy-notifications/cta';
 import { createAddToFilter } from '../assets/js/util/helpers';
 import Layout from '../assets/js/components/layout/layout';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
@@ -153,7 +153,7 @@ storiesOf( 'Dashboard', module )
 							">
 								<CTA
 									title={ __( 'Learn more about what visitors do on your site.', 'google-site-kit' ) }
-									description={ __( 'Connecting with Google Analytics to see unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }
+									description={ __( 'Connecting with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ) }
 									ctaLink="#"
 									ctaLabel={ __( 'Set up analytics', 'google-site-kit' ) }
 								/>

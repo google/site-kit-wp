@@ -32,7 +32,7 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import { clearWebStorage, getModulesData } from '../../util';
 import Layout from '../layout/layout';
-import Notification from '../notifications/notification';
+import Notification from '../legacy-notifications/notification';
 import SettingsModule from './settings-module';
 import SettingsOverlay from './SettingsOverlay';
 import { isPermissionScopeError } from '../../util/errors';
