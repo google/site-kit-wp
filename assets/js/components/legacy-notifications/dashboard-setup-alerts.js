@@ -30,7 +30,7 @@ import { getQueryParameter, getModulesData } from '../../util';
 import Notification from './notification';
 import ModulesList from '../ModulesList';
 import rocketImage from '../../../images/rocket.png';
-import UserInputSuccessNotification from './UserInputSuccessNotification';
+import UserInputSuccessNotification from '../notifications/UserInputSuccessNotification';
 
 class DashboardSetupAlerts extends Component {
 	render() {
