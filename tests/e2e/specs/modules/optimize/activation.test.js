@@ -92,7 +92,7 @@ describe( 'Optimize Activation', () => {
 		await expect( setupHandle ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Optimize/i } );
 		await expect( setupHandle ).toMatchElement( 'p', { text: /Please copy and paste your Optimize ID to complete your setup/i } );
 		// Not able to use negation here for some reason.
-		// await expect( setupHandle ).not.toMatchElement( 'p', { text: /You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below/i, visible: true } );
+		// await expect( setupHandle ).not.toMatchElement( 'p', { text: /You disabled analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below/i, visible: true } );
 		// await expect( setupHandle ).not.toMatchElement( 'p', { text: /Click here for how to implement Optimize tag in Google Analytics Code Snippet/i } );
 
 		await expect( setupHandle ).toFill( 'input', 'gtm' );
@@ -111,7 +111,7 @@ describe( 'Optimize Activation', () => {
 		const setupHandle = await page.$( '.googlesitekit-setup-module--optimize' );
 		await expect( setupHandle ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Optimize/i } );
 		await expect( setupHandle ).toMatchElement( 'p', { text: /Please copy and paste your Optimize ID to complete your setup/i } );
-		await expect( setupHandle ).toMatchElement( 'p', { text: /You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below/i } );
+		await expect( setupHandle ).toMatchElement( 'p', { text: /You disabled analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below/i } );
 		await expect( setupHandle ).toMatchElement( 'p', { text: /Click here for how to implement Optimize tag in Google Analytics Code Snippet/i } );
 
 		await expect( setupHandle ).toFill( 'input', 'gtm' );

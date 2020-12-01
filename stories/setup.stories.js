@@ -2,7 +2,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import set from 'lodash/set';
 
 /**
  * Internal dependencies
@@ -45,7 +44,26 @@ storiesOf( 'Setup / Using Proxy', module )
 			</WithTestRegistry>
 		);
 	} )
+	.add( 'Start – with error', () => {
+		global._googlesitekitLegacyData.setup.isSiteKitConnected = false;
+		return (
+			<WithTestRegistry>
+				<SetupUsingProxy />
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Start [User Input]', () => {
+		enableFeature( 'userInput' );
+		enableFeature( 'serviceSetupV2' );
+
+		return (
+			<WithTestRegistry>
+				<SetupUsingProxy />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Start – with error [User Input]', () => {
+		global._googlesitekitLegacyData.setup.isSiteKitConnected = false;
 		enableFeature( 'userInput' );
 		enableFeature( 'serviceSetupV2' );
 
