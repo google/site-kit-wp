@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
+import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import { SetupMain as AdSenseSetup } from '../assets/js/modules/adsense/components/setup/index';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
@@ -34,7 +34,7 @@ import { WithTestRegistry, createTestRegistry, provideModules } from '../tests/j
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper moduleSlug="adsense" />
+			<ModuleSetup moduleSlug="adsense" />
 		</WithTestRegistry>
 	);
 }

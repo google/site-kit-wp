@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import DashboardModuleHeader from '../assets/js/components/dashboard/dashboard-module-header';
-import CTA from '../assets/js/components/notifications/cta';
+import CTA from '../assets/js/components/legacy-notifications/cta';
 import { createAddToFilter } from '../assets/js/util/helpers';
 import Layout from '../assets/js/components/layout/layout';
 import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
