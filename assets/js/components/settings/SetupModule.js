@@ -52,14 +52,13 @@ export default function SetupModule( {
 	slug,
 	name,
 	description,
-	active,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const activateOrDeactivate = async () => {
 		try {
 			setIsSaving( true );
-			await activateOrDeactivateModule( data, slug, ! active );
+			await activateOrDeactivateModule( data, slug, true );
 
 			await refreshAuthentication();
 

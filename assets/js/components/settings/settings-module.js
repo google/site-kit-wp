@@ -479,8 +479,6 @@ class SettingsModule extends Component {
 							slug={ slug }
 							name={ name }
 							description={ description }
-							active={ active }
-							showLink
 						/>
 					</Fragment>
 				)
