@@ -43,6 +43,7 @@ import '../assets/sass/admin.scss';
 import './assets/sass/wp-admin.scss';
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 import { bootstrapFetchMocks } from './fetch-mocks';
+import { disableFeature } from '../stories/utils/features';
 
 // Setup.
 const wp = {};
@@ -101,6 +102,19 @@ global._googlesitekitEntityData = {
 };
 
 bootstrapFetchMocks();
+
+global.resetFeatures = () => {
+	disableFeature( 'widgets.dashboard' );
+	disableFeature( 'widgets.pageDashboard' );
+	disableFeature( 'userInput' );
+	disableFeature( 'storeErrorNotifications' );
+	disableFeature( 'serviceSetupV2' );
+};
+addDecorator( ( story ) => {
+	// Disable all features before each story.
+	global.resetFeatures();
+	return story();
+} );
 
 // Global Decorator.
 addDecorator( ( story ) => (
