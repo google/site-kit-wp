@@ -34,8 +34,8 @@ import {
 	showErrorNotification,
 } from '../util';
 import Data from 'googlesitekit-data';
-import CTA from './notifications/cta';
-import GenericError from './notifications/generic-error';
+import CTA from './legacy-notifications/cta';
+import GenericError from './legacy-notifications/generic-error';
 import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 

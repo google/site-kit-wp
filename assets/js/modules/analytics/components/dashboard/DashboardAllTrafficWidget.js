@@ -80,7 +80,7 @@ function DashboardAllTrafficWidget() {
 		}
 
 		return {
-			loading: store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			report: store.getReport( args ),
 			reportArgs: args,
