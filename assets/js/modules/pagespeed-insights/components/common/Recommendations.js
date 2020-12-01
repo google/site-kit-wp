@@ -35,10 +35,11 @@ import Recommendation from './Recommendation';
 const { useSelect } = Data;
 
 export default function Recommendations( { referenceURL, strategy } ) {
-	const { recommendations } = useSelect( ( select ) => {
+	const finishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ referenceURL, strategy ] ) );
+	const recommendations = useSelect( ( select ) => {
 		const allAudits = select( STORE_NAME ).getAudits( referenceURL, strategy, true );
 		if ( ! allAudits || ! Object.keys( allAudits ).length ) {
-			return { recommendations: [] };
+			return [];
 		}
 
 		const audits = [];
@@ -55,10 +56,8 @@ export default function Recommendations( { referenceURL, strategy } ) {
 			} );
 		} );
 
-		return {
-			recommendations: audits,
-		};
-	} );
+		return audits;
+	}, [ referenceURL, strategy, finishedResolution ] );
 
 	if ( ! recommendations.length ) {
 		return null;
