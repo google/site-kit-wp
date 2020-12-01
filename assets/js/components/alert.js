@@ -31,7 +31,7 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import data, { TYPE_MODULES } from './data';
-import Notification from './notifications/notification';
+import Notification from './legacy-notifications/notification';
 
 class Alert extends Component {
 	constructor( props ) {

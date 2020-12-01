@@ -43,8 +43,8 @@ import data from '../components/data';
 import ModuleIcon from './ModuleIcon';
 import Spinner from './Spinner';
 import Link from './Link';
-import ModuleSettingsWarning from '../components/notifications/module-settings-warning';
-import GenericError from '../components/notifications/generic-error';
+import ModuleSettingsWarning from './legacy-notifications/module-settings-warning';
+import GenericError from './legacy-notifications/generic-error';
 
 /**
  * A single module. Keeps track of its own active state and settings.
