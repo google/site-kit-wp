@@ -1,5 +1,5 @@
 /**
- * SetupWrapper component.
+ * ModuleSetup component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -40,7 +40,7 @@ import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/cons
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-export default function SetupWrapper( { moduleSlug } ) {
+export default function ModuleSetup( { moduleSlug } ) {
 	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
 	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
@@ -141,6 +141,6 @@ export default function SetupWrapper( { moduleSlug } ) {
 	);
 }
 
-SetupWrapper.propTypes = {
+ModuleSetup.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
 };

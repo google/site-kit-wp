@@ -31,7 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import CTA from '../components/notifications/cta';
+import CTA from './legacy-notifications/cta';
 
 const { useSelect } = Data;
 

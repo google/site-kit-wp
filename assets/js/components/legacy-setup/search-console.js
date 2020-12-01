@@ -31,11 +31,11 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { trackEvent } from '../../util';
-import data, { TYPE_MODULES } from '../../components/data';
+import data, { TYPE_MODULES } from '../data';
 import ProgressBar from '../ProgressBar';
 import HelpLink from '../HelpLink';
 import { Select, TextField, Input } from '../../material-components';
-import Button from '../../components/button';
+import Button from '../button';
 
 class SearchConsole extends Component {
 	constructor( props ) {

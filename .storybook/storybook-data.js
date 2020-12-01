@@ -493,8 +493,8 @@ module.exports = [
 		},
 	},
 	{
-		id: 'setup--step-one',
-		kind: 'Setup',
+		id: 'setup-using-gcp--step-one',
+		kind: 'Setup / Using GCP',
 		name: 'Step One',
 		story: 'Step One',
 		parameters: {
