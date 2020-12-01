@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { trackEvent } from '../../util';
 import { ActivationMain } from './activation-main';
-import NotificationCounter from '../notifications/notification-counter';
+import NotificationCounter from '../legacy-notifications/notification-counter';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER, PERMISSION_VIEW_DASHBOARD } from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;

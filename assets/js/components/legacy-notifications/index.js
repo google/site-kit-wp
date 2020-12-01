@@ -30,8 +30,8 @@ import DashboardCoreSiteAlerts from './dashboard-core-site-alerts';
 import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
 import DashboardWinsAlerts from './dashboard-wins-alerts';
-import DashboardAuthScopesAlert from './DashboardAuthScopesAlert';
 import UserInputSettings from './UserInputSettings';
+import UnsatisfiedScopesAlert from '../notifications/UnsatisfiedScopesAlert';
 
 const { setup } = global._googlesitekitLegacyData;
 const notification = getQueryParameter( 'notification' );
@@ -40,8 +40,8 @@ const addCoreSiteNotifications = createAddToFilter( <DashboardCoreSiteAlerts /> 
 const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
 const addWinsNotifications = createAddToFilter( <DashboardWinsAlerts /> );
-const addAuthNotification = createAddToFilter( <DashboardAuthScopesAlert /> );
 const addUserInputSettings = createAddToFilter( <UserInputSettings /> );
+const addAuthNotification = createAddToFilter( <UnsatisfiedScopesAlert /> );
 
 addFilter( 'googlesitekit.DashboardNotifications',
 	'googlesitekit.SetupNotification',

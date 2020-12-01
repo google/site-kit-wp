@@ -51,7 +51,7 @@ describe( 'UseSnippetInstructions', () => {
 		const { container } = render( <UseSnippetInstructions />, { registry } );
 
 		const selectedText = container.querySelector( 'p' );
-		expect( selectedText ).toHaveTextContent( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:' );
+		expect( selectedText ).toHaveTextContent( 'You disabled Analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below:' );
 	} );
 
 	it( 'should render with analytics message if analytics is inactive', async () => {
