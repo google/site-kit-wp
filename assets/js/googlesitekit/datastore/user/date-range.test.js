@@ -21,6 +21,7 @@
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
+import { getDateString } from './utils';
 
 describe( 'core/user date-range', () => {
 	let registry;
@@ -42,6 +43,21 @@ describe( 'core/user date-range', () => {
 
 				registry.dispatch( STORE_NAME ).setDateRange( someDateRange );
 				expect( registry.select( STORE_NAME ).getDateRange() ).toEqual( someDateRange );
+			} );
+		} );
+
+		describe( 'setReferenceDate', () => {
+			it( 'should require the date string param', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setReferenceDate();
+				} ).toThrow( 'Date string is required.' );
+			} );
+
+			it( 'should set the reference date', () => {
+				const someReferenceDate = '2020-09-12';
+
+				registry.dispatch( STORE_NAME ).setReferenceDate( someReferenceDate );
+				expect( registry.select( STORE_NAME ).getReferenceDate() ).toEqual( someReferenceDate );
 			} );
 		} );
 	} );
@@ -209,6 +225,23 @@ describe( 'core/user date-range', () => {
 				it.each( valuesToTest )( testName, ( dateRange, offsetDays, expected ) => {
 					createDateRangeTest( dateRange, expected, { offsetDays, compare: true, weekDayAlign: true } );
 				} );
+			} );
+		} );
+
+		describe( 'getReferenceDate', () => {
+			it( 'should return the reference date once set', () => {
+				const someReferenceDate = '2020-08-04';
+
+				registry.dispatch( STORE_NAME ).setReferenceDate( someReferenceDate );
+				expect( registry.select( STORE_NAME )
+					.getReferenceDate() )
+					.toEqual( someReferenceDate );
+			} );
+
+			it( 'should return current date when no reference date is set', () => {
+				expect( registry.select( STORE_NAME )
+					.getReferenceDate() )
+					.toEqual( getDateString( new Date() ) );
 			} );
 		} );
 	} );
