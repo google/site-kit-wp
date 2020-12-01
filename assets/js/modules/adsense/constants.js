@@ -1,5 +1,5 @@
 /**
- * `core/modules` data store: constants.
+ * AdSense module constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'core/modules';
-export const ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES = 'insufficient_module_dependencies';
+export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';

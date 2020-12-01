@@ -199,7 +199,7 @@ class AdSenseDashboardWidget extends Component {
 								'mdc-layout-grid__cell--span-12',
 								wrapperClass
 							) }>
-								<ModuleSettingsWarning slug="adsense" context="module-dashboard" />
+								<ModuleSettingsWarning slug="adsense" />
 							</div>
 							<div className={ classnames(
 								'mdc-layout-grid__cell',

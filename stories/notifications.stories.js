@@ -32,7 +32,9 @@ storiesOf( 'Global/Notifications', module )
 					format="large"
 					type="win-success"
 				>
-					<ModulesList />
+					<ModulesList
+						moduleSlugs={ [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ] }
+					/>
 				</Notification>
 			</WithTestRegistry>
 		);

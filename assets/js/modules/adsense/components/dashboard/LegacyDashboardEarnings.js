@@ -42,7 +42,7 @@ class LegacyDashboardEarnings extends Component {
 						title={ __( 'Earnings', 'google-site-kit' ) }
 						description={ __( 'How much you’re earning from your content through AdSense.', 'google-site-kit' ) }
 					/>
-					<ModuleSettingsWarning slug="adsense" context="module-sitekit-dashboard" />
+					<ModuleSettingsWarning slug="adsense" />
 				</div>
 				<LegacyAdSenseDashboardMainSummary />
 				<LegacyDashboardAdSenseTopEarningPagesSmall />
