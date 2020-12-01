@@ -119,11 +119,11 @@ class Google_Proxy {
 
 		$response = wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
 
-		$raw_body = wp_remote_retrieve_body( $response );
-
-		if ( is_wp_error( $raw_body ) ) {
-			return $raw_body;
+		if ( is_wp_error( $response ) ) {
+			return $response;
 		}
+
+		$raw_body = wp_remote_retrieve_body( $response );
 
 		$response_data = json_decode( $raw_body, true );
 
