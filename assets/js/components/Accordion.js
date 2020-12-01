@@ -27,8 +27,8 @@ import classnames from 'classnames';
  */
 import { useState, useCallback } from '@wordpress/element';
 
-export default function Accordion( { title, children } ) {
-	const [ isActive, setActive ] = useState( false );
+export default function Accordion( { title, children, initialOpen } ) {
+	const [ isActive, setActive ] = useState( !! initialOpen );
 	const toggleAccordion = useCallback( () => {
 		setActive( ! isActive );
 	}, [ isActive ] );
@@ -54,4 +54,5 @@ export default function Accordion( { title, children } ) {
 Accordion.propTypes = {
 	title: PropTypes.node.isRequired,
 	children: PropTypes.node.isRequired,
+	initialOpen: PropTypes.bool,
 };
