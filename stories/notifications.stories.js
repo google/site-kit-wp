@@ -10,7 +10,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { provideModuleRegistrations, WithTestRegistry } from '../tests/js/utils';
+import { provideModuleRegistrations, provideModules, WithTestRegistry } from '../tests/js/utils';
 import ModulesList from '../assets/js/components/ModulesList';
 import Notification from '../assets/js/components/legacy-notifications/notification';
 
@@ -20,6 +20,7 @@ storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
 		const setupRegistry = ( registry ) => {
 			provideModuleRegistrations( registry );
+			provideModules( registry );
 		};
 
 		return (
@@ -96,6 +97,7 @@ storiesOf( 'Global/Notifications', module )
 	.add( 'Traffic Increase Win', () => {
 		const setupRegistry = ( registry ) => {
 			provideModuleRegistrations( registry );
+			provideModules( registry );
 		};
 
 		return (

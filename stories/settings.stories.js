@@ -77,6 +77,7 @@ storiesOf( 'Settings', module )
 
 		const setupRegistry = ( registry ) => {
 			provideModuleRegistrations( registry );
+			provideModules( registry );
 		};
 
 		return (

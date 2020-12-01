@@ -25,12 +25,13 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import ModulesList from '../assets/js/components/ModulesList';
-import { provideModuleRegistrations, WithTestRegistry } from '../tests/js/utils';
+import { provideModuleRegistrations, provideModules, WithTestRegistry } from '../tests/js/utils';
 
 storiesOf( 'Global', module )
 	.add( 'Modules List', () => {
 		const setupRegistry = ( registry ) => {
 			provideModuleRegistrations( registry );
+			provideModules( registry );
 		};
 
 		return (

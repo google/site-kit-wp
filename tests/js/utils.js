@@ -206,10 +206,6 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
  * @param {Object[]} [extraData] List of module objects to be merged with defaults. Default empty array.
  */
 export const provideModuleRegistrations = ( registry, extraData = [] ) => {
-	const extraModules = extraData.reduce( ( acc, module ) => {
-		return { ...acc, [ module.slug ]: module };
-	}, {} );
-
 	const moduleIconMap = {
 		adsense: AdsenseIcon,
 		analytics: AnalyticsIcon,
@@ -219,24 +215,9 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 		tagmanager: TagManagerIcon,
 	};
 
-	const moduleSlugs = coreModulesFixture.map( ( { slug } ) => slug );
-
-	const modules = coreModulesFixture
-		.concat(
-			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) ),
-		);
-
-	modules.forEach( ( module ) => {
-		const icon = moduleIconMap[ module.slug ];
-		let moduleData = { ...module, icon };
-		if ( extraModules[ module.slug ] ) {
-			moduleData = { ...moduleData, ...extraModules[ module.slug ] };
-		}
-		delete moduleData.slug;
-		registry.dispatch( CORE_MODULES ).registerModule( module.slug, { ...moduleData } );
-	} );
-
-	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
+	for ( const slug in moduleIconMap ) {
+		registry.dispatch( CORE_MODULES ).registerModule( slug, { ...extraData[ slug ], icon: moduleIconMap[ slug ] } );
+	}
 };
 
 /**
