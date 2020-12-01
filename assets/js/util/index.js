@@ -135,7 +135,7 @@ export const prepareForReadableLargeNumber = ( number ) => {
  * @return {string} The formatted number.
  */
 export const readableLargeNumber = ( number, currencyCode = false ) => {
-	// Cast parseable values to numeric types.
+	// Cast parsable values to numeric types.
 	number = isFinite( number ) ? number : Number( number );
 
 	if ( ! isFinite( number ) ) {
