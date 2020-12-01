@@ -124,6 +124,10 @@ class Google_Proxy {
 			return $response;
 		}
 
+		if ( wp_remote_retrieve_response_code( $response ) !== 200 ) {
+			return new WP_Error( 'non_200_response_code' );
+		}
+
 		$raw_body = wp_remote_retrieve_body( $response );
 
 		$response_data = json_decode( $raw_body, true );
@@ -209,10 +213,6 @@ class Google_Proxy {
 				),
 			)
 		);
-
-		if ( wp_remote_retrieve_response_code( $response ) !== 200 ) {
-			return new WP_Error( 'non_200_response_code' );
-		}
 
 		if ( is_wp_error( $response ) ) {
 			throw new Exception( $response->get_error_code() );
