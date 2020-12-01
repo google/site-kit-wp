@@ -59,7 +59,7 @@ export default function Recommendations( { referenceURL, strategy } ) {
 		return audits;
 	}, [ referenceURL, strategy, finishedResolution ] );
 
-	if ( ! recommendations.length ) {
+	if ( ! recommendations?.length ) {
 		return null;
 	}
 
