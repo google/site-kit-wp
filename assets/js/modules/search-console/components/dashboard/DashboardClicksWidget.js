@@ -55,8 +55,9 @@ function DashboardClicksWidget() {
 		const dateRange = select( CORE_USER ).getDateRangeDates( { compare: true } );
 		const args = {
 			dimensions: 'date',
+			// Combine both date ranges into one single date range.
 			startDate: dateRange.compareStartDate,
-			endDate: dateRange.compareEndDate,
+			endDate: dateRange.endDate,
 		};
 		const serviceBaseURLArgs = {
 			resource_id: propertyID,
