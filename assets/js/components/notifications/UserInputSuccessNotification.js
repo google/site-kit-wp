@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Notification from '../notifications/notification';
+import Notification from '../legacy-notifications/notification';
 import UserInputSuccessImage from '../../../svg/congrats.svg';
 
 export default function UserInputSuccessNotification() {
