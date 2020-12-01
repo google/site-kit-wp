@@ -108,6 +108,9 @@ const baseSelectors = {
 
 		const { lighthouseResult } = report || {};
 		const { audits } = lighthouseResult || {};
+		if ( ! audits ) {
+			return {};
+		}
 
 		if ( withStackPacks ) {
 			const filteredAudits = {};
