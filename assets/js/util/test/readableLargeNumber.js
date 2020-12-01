@@ -87,7 +87,7 @@ describe( 'readableLargeNumber', () => {
 	} );
 
 	describe( 'Numbers between 1000 and 10,000 round normally with a single decimal unless the decimal is 0.', () => {
-		const numbersBetweet1000And10000 = [
+		const numbersBetween1000And10000 = [
 			[
 				1000,
 				'1K',
@@ -109,7 +109,7 @@ describe( 'readableLargeNumber', () => {
 				'9K',
 			],
 		];
-		it.each( numbersBetweet1000And10000 )( 'for %d should return %s', ( value, expected ) => {
+		it.each( numbersBetween1000And10000 )( 'for %d should return %s', ( value, expected ) => {
 			expect( readableLargeNumber( value ) ).toStrictEqual( expected );
 		} );
 	} );

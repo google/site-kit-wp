@@ -36,7 +36,7 @@ const isValidNumericID = function( input ) {
 };
 
 /**
- * Checks if the given account ID appears to be a valid Analyics account.
+ * Checks if the given account ID appears to be a valid Analytics account.
  *
  * @since 1.8.0
  *
