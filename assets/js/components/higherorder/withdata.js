@@ -33,9 +33,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getModulesData } from '../../util';
-import getNoDataComponent from '../notifications/nodata';
-import getDataErrorComponent from '../notifications/data-error';
-import getSetupIncompleteComponent from '../notifications/setup-incomplete';
+import getNoDataComponent from '../legacy-notifications/nodata';
+import getDataErrorComponent from '../legacy-notifications/data-error';
+import getSetupIncompleteComponent from '../legacy-notifications/setup-incomplete';
 import { TYPE_MODULES } from '../data/constants';
 
 /**

@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import SetupWrapper from '../assets/js/components/setup/setup-wrapper';
+import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import { SetupMain as OptimizeSetup } from '../assets/js/modules/optimize/components/setup/index';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
@@ -35,7 +35,7 @@ import { WithTestRegistry, createTestRegistry, provideModules } from '../tests/j
 function Setup( props ) {
 	return (
 		<WithTestRegistry { ...props }>
-			<SetupWrapper moduleSlug="optimize" />
+			<ModuleSetup moduleSlug="optimize" />
 		</WithTestRegistry>
 	);
 }

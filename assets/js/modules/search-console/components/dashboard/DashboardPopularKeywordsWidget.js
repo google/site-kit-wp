@@ -79,7 +79,7 @@ function DashboardPopularKeywordsWidget() {
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			baseServiceURL: store.getServiceURL( {
 				path: '/performance/search-analytics',
 				query: baseServiceURLArgs,

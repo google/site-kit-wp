@@ -30,14 +30,6 @@ import LegacyDashboardEarnings from './components/dashboard/LegacyDashboardEarni
 import { addFilter } from '@wordpress/hooks';
 const slug = 'adsense';
 
-addFilter( 'googlesitekit.SetupModuleShowLink',
-	'googlesitekit.adsenseSetupModuleShowLink', ( showLink, moduleSlug ) => {
-		if ( 'adsense' === moduleSlug && ! global._googlesitekitLegacyData.canAdsRun ) {
-			return false;
-		}
-		return showLink;
-	} );
-
 const modulesData = getModulesData();
 if ( modulesData.adsense.active ) {
 	const addAdSenseDashboardWidget = createAddToFilter( <AdSenseDashboardWidget /> );
