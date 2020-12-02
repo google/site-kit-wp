@@ -413,6 +413,9 @@ const baseResolvers = {
 
 			let errorMessage;
 
+			// Not all browsers support Intl.Listformat per
+			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat#Browser_compatibility
+			// We've seen that the built versions don't polyfill for the unsupported browsers (iOS/safari) so we provide a fallback.
 			if ( Intl.Listformat ) {
 				const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
 				errorMessage = sprintf( messageTemplate, formatter.format( inactiveModules ), module.name );
