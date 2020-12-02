@@ -369,8 +369,8 @@ class Google_ProxyTest extends TestCase {
 	 * Adds a 'pre_http_request' filter that will ensure the request for the
 	 * given URL will return WP_Error.
 	 *
-	 * @param string $request_url   Request URL to modify response for.
-	 * @param (WP_Error)  $response_error Response WP_Error to return.
+	 * @param string   $request_url    Request URL to modify response for.
+	 * @param WP_Error $response_error Response WP_Error to return.
 	 */
 	private function mock_http_failure( $request_url, $response_error ) {
 		add_filter(
