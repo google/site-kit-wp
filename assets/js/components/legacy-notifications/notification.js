@@ -35,8 +35,8 @@ import { sanitizeHTML } from '../../util/sanitize';
 import { setCache, getCache, deleteCache } from '../data/cache';
 import DataBlock from '../data-block';
 import Button from '../button';
-import Warning from '../notifications/warning';
-import Error from '../notifications/error';
+import Warning from './warning';
+import Error from './error';
 import Link from '../Link';
 import ModuleIcon from '../ModuleIcon';
 
@@ -132,6 +132,7 @@ class Notification extends Component {
 			description,
 			blockData,
 			winImage,
+			SmallImageSVG,
 			smallImage,
 			format,
 			learnMoreURL,
@@ -297,12 +298,13 @@ class Notification extends Component {
 							</div>
 						}
 
-						{ smallImage &&
+						{ ( smallImage || SmallImageSVG ) &&
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-1
 							">
-								<img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage } />
+								{ smallImage && <img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage } /> }
+								{ SmallImageSVG && <SmallImageSVG /> }
 							</div>
 						}
 
@@ -387,6 +389,7 @@ Notification.propTypes = {
 	blockData: PropTypes.array,
 	winImage: PropTypes.string,
 	smallImage: PropTypes.string,
+	SmallImageSVG: PropTypes.elementType,
 	format: PropTypes.string,
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,

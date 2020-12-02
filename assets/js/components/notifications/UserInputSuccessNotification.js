@@ -1,5 +1,5 @@
 /**
- * AuthError component.
+ * UserInputSuccessNotification component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -24,24 +24,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Notification from '../legacy-notifications/notification';
-const { useSelect } = Data;
+import UserInputSuccessImage from '../../../svg/congrats.svg';
 
-export default function AuthError() {
-	const error = useSelect( ( select ) => select( CORE_USER ).getAuthError() );
-	if ( ! error ) {
-		return null;
-	}
-
+export default function UserInputSuccessNotification() {
 	return (
 		<Notification
-			id="autherror"
-			title={ __( 'Site Kit can’t access necessary data', 'google-site-kit' ) }
-			description={ error.message }
-			ctaLink={ error.data.reconnectURL }
-			ctaLabel={ __( 'Redo the plugin setup', 'google-site-kit' ) }
+			id="user-input-success"
+			title={ __( 'Congrats! You set your site goals.', 'google-site-kit' ) }
+			description={ __( 'Now Site Kit will begin showing you suggestions how to add more metrics to your dashboard that are relevant specifically to you, based on the goals you shared.', 'google-site-kit' ) }
+			SmallImageSVG={ UserInputSuccessImage }
+			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
+			format="small"
 		/>
 	);
 }

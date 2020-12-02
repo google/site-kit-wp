@@ -21,12 +21,15 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import domReady from '@wordpress/dom-ready';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
+import Data from 'googlesitekit-data';
+const { select } = Data;
 import './datastore';
 import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
 import { fillFilterWithComponent } from '../../util';
@@ -36,12 +39,13 @@ import {
 	SettingsSetupIncomplete,
 	SettingsView,
 } from './components/settings';
-import { AdBlockerWarning } from './components/common';
 import {
 	DashboardZeroData,
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
+import { STORE_NAME } from './datastore/constants';
+import { ERROR_CODE_ADBLOCKER_ACTIVE } from './constants';
 
 addFilter(
 	'googlesitekit.ModuleSetupIncomplete',
@@ -60,18 +64,6 @@ addFilter(
 );
 
 addFilter(
-	'googlesitekit.ModuleSettingsWarning',
-	'googlesitekit.adsenseSettingsWarning',
-	fillFilterWithComponent( ( props ) => {
-		const { slug, context, OriginalComponent } = props;
-		if ( 'adsense' !== slug ) {
-			return <OriginalComponent { ...props } />;
-		}
-		return <AdBlockerWarning context={ context } />;
-	} )
-);
-
-addFilter(
 	'googlesitekit.AdSenseDashboardZeroData',
 	'googlesitekit.AdSenseDashboardZeroDataRefactored',
 	fillFilterWithComponent( DashboardZeroData )
@@ -84,6 +76,18 @@ domReady( () => {
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
 			setupComponent: SetupMain,
+			checkRequirements: () => {
+				const isAdBlockerActive = select( STORE_NAME ).isAdBlockerActive();
+				if ( ! isAdBlockerActive ) {
+					return;
+				}
+
+				throw {
+					code: ERROR_CODE_ADBLOCKER_ACTIVE,
+					message: __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' ),
+					data: null,
+				};
+			},
 		}
 	);
 

@@ -28,6 +28,9 @@ exports.featureFlags = {
 	userInput: {
 		enabled: 'development',
 	},
+	storeErrorNotifications: {
+		enabled: 'development',
+	},
 	serviceSetupV2: {
 		enabled: 'development',
 	},
