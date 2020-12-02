@@ -52,7 +52,7 @@ function DashboardClicksWidget() {
 		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
 		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
-		const dateRange = select( CORE_USER ).getDateRangeDates( { compare: true } );
+		const dateRange = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: 1 } );
 		const args = {
 			dimensions: 'date',
 			// Combine both date ranges into one single date range.
