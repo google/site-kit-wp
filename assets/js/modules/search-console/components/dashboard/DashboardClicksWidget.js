@@ -25,7 +25,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
@@ -52,12 +52,12 @@ function DashboardClicksWidget() {
 		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
 		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
-		const dateRange = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: 1 } );
+		const { compareStartDate, endDate } = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
 			dimensions: 'date',
 			// Combine both date ranges into one single date range.
-			startDate: dateRange.compareStartDate,
-			endDate: dateRange.endDate,
+			startDate: compareStartDate,
+			endDate,
 		};
 		const serviceBaseURLArgs = {
 			resource_id: propertyID,

@@ -17,3 +17,4 @@
  */
 
 export const STORE_NAME = 'modules/search-console';
+export const DATE_RANGE_OFFSET = 2;
