@@ -33,7 +33,7 @@ storiesOf( 'Global/Notifications', module )
 				<Notification
 					id="notification-id"
 					title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
-					winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png` }
+					winImage={ global._googlesitekitLegacyData.admin.assetsRoot + rocketImage }
 					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 					format="large"
 					type="win-success"
