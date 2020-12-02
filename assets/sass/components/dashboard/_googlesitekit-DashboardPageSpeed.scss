@@ -118,7 +118,8 @@
 		}
 	}
 
-	.googlesitekit-pagespeed-report__row {
+	.googlesitekit-pagespeed-report__row,
+	.googlesitekit-pagespeed-report__footer {
 		align-items: center;
 		display: flex;
 		justify-content: space-between;
@@ -134,13 +135,15 @@
 			letter-spacing: 0.2px;
 			line-height: 1.25rem;
 		}
+	}
+
+	.googlesitekit-pagespeed-report__row {
 
 		.googlesitekit-error-text p {
 			color: $c-error;
 		}
 
 		&--first {
-
 			padding: 12px $grid-gap-phone 8px $grid-gap-phone;
 
 			@media ( min-width: $bp-tablet ) {
@@ -153,7 +156,6 @@
 		}
 
 		&--last {
-
 			padding: 8px $grid-gap-phone 12px $grid-gap-phone;
 
 			@media ( min-width: $bp-tablet ) {
@@ -164,6 +166,8 @@
 
 	.googlesitekit-pagespeed--recommendations {
 		box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1);
+		display: flex;
+		flex-direction: column;
 		padding: $grid-gap-phone $grid-gap-phone 0;
 
 		.googlesitekit-pagespeed-recommendations__title {
@@ -176,6 +180,7 @@
 		.googlesitekit-accordion {
 			border-top-left-radius: 8px;
 			border-top-right-radius: 8px;
+			color: $c-black;
 
 			& + .googlesitekit-accordion {
 				border-radius: 0;
@@ -200,6 +205,9 @@
 				margin-bottom: $grid-gap-desktop;
 			}
 		}
+	}
 
+	.googlesitekit-pagespeed-report__footer {
+		padding-top: 0;
 	}
 }
