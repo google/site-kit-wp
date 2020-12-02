@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import set from 'lodash/set';
 
 /**
  * Internal dependencies
