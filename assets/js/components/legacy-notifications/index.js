@@ -51,7 +51,7 @@ if ( setup.needReauthenticate ) {
 		addAuthNotification, 1 );
 }
 
-if ( 'authentication_success' === notification || 'authentication_failure' === notification ) {
+if ( 'authentication_success' === notification || 'authentication_failure' === notification || 'user_input_success' === notification ) {
 	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.SetupNotification',
 		addSetupNotifications, 1 );
