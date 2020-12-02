@@ -28,6 +28,8 @@ import withData from './withdata';
 import { render, act } from '../../../../tests/js/test-utils';
 import dataAPI, { TYPE_MODULES } from '../data';
 import { getCacheKey } from '../data/cache';
+import { provideModules, provideUserAuthentication } from '../../../../tests/js/utils';
+import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../../googlesitekit/datastore/user/constants';
 
 const collectModuleData = dataAPI.collectModuleData.bind( dataAPI );
 
@@ -53,6 +55,12 @@ describe( 'withData', () => {
 
 	const createDataset = ( type, identifier, datapoint, data, _context = context ) => ( { type, identifier, datapoint, data, context: _context } );
 	const getCacheKeyForDataset = ( { type, identifier, datapoint, data } ) => getCacheKey( type, identifier, datapoint, data );
+	// Registry setup is only needed for integration with the new activate and complete module activation components.
+	const setupRegistry = ( registry ) => {
+		provideModules( registry, [ testModule ] );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_USER ).receiveCapabilities( { [ PERMISSION_MANAGE_OPTIONS ]: true } );
+	};
 
 	beforeEach( () => {
 		TestComponent = jest.fn(
@@ -131,7 +139,7 @@ describe( 'withData', () => {
 		const dataset = createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } );
 		const WrappedComponent = withData( TestComponent, [ dataset ] );
 
-		const { container, queryByTestID } = render( <WrappedComponent /> );
+		const { container, queryByTestID } = render( <WrappedComponent />, { setupRegistry } );
 
 		collectModuleData( context );
 
@@ -151,7 +159,7 @@ describe( 'withData', () => {
 		];
 		const WrappedComponent = withData( TestComponent, requests, loadingComponent );
 
-		const { container, queryByTestID } = render( <WrappedComponent /> );
+		const { container, queryByTestID } = render( <WrappedComponent />, { setupRegistry } );
 
 		// testModuleAlt's request will not be filtered out because its setup is complete so a request is expected.
 		const body = {
