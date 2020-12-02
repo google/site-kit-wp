@@ -52,10 +52,12 @@ function DashboardImpressionsWidget() {
 		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
 		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
+		const dateRange = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: 1 } );
 		const args = {
 			dimensions: 'date',
-			compareDateRanges: true,
-			dateRange: select( CORE_USER ).getDateRange(),
+			// Combine both date ranges into one single date range.
+			startDate: dateRange.compareStartDate,
+			endDate: dateRange.endDate,
 		};
 
 		const serviceBaseURLArgs = {
