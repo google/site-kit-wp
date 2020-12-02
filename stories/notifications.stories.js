@@ -224,6 +224,10 @@ storiesOf( 'Global/Notifications', module )
 		/>
 	) )
 	.add( 'User Input Settings', () => {
+		global._googlesitekitUserData = {
+			user: {},
+			userInputState: 'missing',
+		};
 		const setupRegistry = ( registry ) => {
 			provideSiteInfo( registry );
 		};
