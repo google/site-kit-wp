@@ -25,9 +25,11 @@ import { addAction, hasFilter, removeAllActions, removeAllFilters } from '@wordp
  * Internal dependencies
  */
 import withData from './withdata';
-import { render, act } from '../../../../tests/js/test-utils';
+import { createTestRegistry, unsubscribeFromAll, render, act } from '../../../../tests/js/test-utils';
 import dataAPI, { TYPE_MODULES } from '../data';
 import { getCacheKey } from '../data/cache';
+import { STORE_NAME } from '../../googlesitekit/modules/datastore/constants';
+import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 
 const collectModuleData = dataAPI.collectModuleData.bind( dataAPI );
 
@@ -50,6 +52,7 @@ describe( 'withData', () => {
 		active: true,
 		setupComplete: true,
 	};
+	let registry;
 
 	const createDataset = ( type, identifier, datapoint, data, _context = context ) => ( { type, identifier, datapoint, data, context: _context } );
 	const getCacheKeyForDataset = ( { type, identifier, datapoint, data } ) => getCacheKey( type, identifier, datapoint, data );
@@ -60,11 +63,18 @@ describe( 'withData', () => {
 		);
 		removeAllActions( 'googlesitekit.dataLoaded' );
 		removeAllFilters( `googlesitekit.module${ context }DataRequest` );
+
+		registry = createTestRegistry();
+		registry.dispatch( STORE_NAME ).receiveGetModules( withActive() );
+		registry.dispatch( STORE_NAME ).registerModule( testModule.slug, { ...testModule } );
+		registry.dispatch( STORE_NAME ).registerModule( testModuleAlt.slug, { ...testModuleAlt } );
 	} );
 
 	afterEach( () => {
 		delete global._googlesitekitLegacyData.modules[ testModule.slug ];
 		delete global._googlesitekitLegacyData.modules[ testModuleAlt.slug ];
+
+		unsubscribeFromAll( registry );
 	} );
 
 	it( 'supports datasets with single or multiple contexts', () => {
