@@ -29,7 +29,7 @@ import { createTestRegistry, unsubscribeFromAll, render, act } from '../../../..
 import dataAPI, { TYPE_MODULES } from '../data';
 import { getCacheKey } from '../data/cache';
 import { STORE_NAME } from '../../googlesitekit/modules/datastore/constants';
-import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
+import { withActive } from '../../googlesitekit/modules/datastore/__fixtures__';
 
 const collectModuleData = dataAPI.collectModuleData.bind( dataAPI );
 
