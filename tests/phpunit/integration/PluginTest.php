@@ -54,8 +54,6 @@ class PluginTest extends TestCase {
 
 		$plugin->register();
 
-		$this->assertInstanceOf( Feature_Flags::class, Feature_Flags::get_instance() );
-
 		$this->assertActionRendersGeneratorTag( 'wp_head' );
 		$this->assertActionRendersGeneratorTag( 'login_head' );
 
