@@ -10,6 +10,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import UserInputSuccessNotification from '../assets/js/components/notifications/UserInputSuccessNotification';
 import ModulesList from '../assets/js/components/ModulesList';
 import { provideModules, WithTestRegistry } from '../tests/js/utils';
 import Notification from '../assets/js/components/legacy-notifications/notification';
@@ -215,4 +216,7 @@ storiesOf( 'Global/Notifications', module )
 			}
 			type="win-stats"
 		/>
+	) )
+	.add( 'User Input Success Notification', () => (
+		<UserInputSuccessNotification />
 	) );
