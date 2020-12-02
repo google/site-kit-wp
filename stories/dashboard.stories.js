@@ -153,7 +153,7 @@ storiesOf( 'Dashboard', module )
 							">
 								<CTA
 									title={ __( 'Learn more about what visitors do on your site.', 'google-site-kit' ) }
-									description={ __( 'Connecting with Google Analytics to see unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }
+									description={ __( 'Connecting with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ) }
 									ctaLink="#"
 									ctaLabel={ __( 'Set up analytics', 'google-site-kit' ) }
 								/>
