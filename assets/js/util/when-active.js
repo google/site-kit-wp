@@ -39,30 +39,37 @@ const { useSelect } = Data;
  *
  * @since 1.16.0
  *
- * @param {Object}   options                     Options for enhancing function.
- * @param {string}   options.moduleName          Name of a module to check.
- * @param {Function} [options.fallbackComponent] Optional. Fallback component to render when the module is not active.
+ * @param {Object}                options                       Options for enhancing function.
+ * @param {string}                options.moduleName            Name of a module to check.
+ * @param {WPComponent|undefined} [options.FallbackComponent]   Optional. Fallback component to render when the module is not active.
+ * @param {WPComponent|undefined} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
  * @return {Function} Enhancing function.
  */
-export default function whenActive( { moduleName, fallbackComponent = null } ) {
+export default function whenActive( { moduleName, FallbackComponent = null, IncompleteComponent = null } ) {
 	return ( wrappedComponent ) => {
 		const whenActiveComponent = ( props ) => {
 			// The following eslint rule is disabled because it treats the following hook as such that doesn't adhere
 			// the "rules of hooks" which is incorrect because the following hook is a valid one.
 
 			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const isConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleName ) );
+			const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleName ) );
 
 			// Return null if the module is not loaded yet or doesn't exist.
-			if ( typeof isConnected === 'undefined' || isConnected === null ) {
+			if ( ! module || typeof module === 'undefined' || module === null ) {
 				return null;
 			}
 
 			// Return a fallback if the module isn't connected yet.
-			if ( ! isConnected ) {
-				return fallbackComponent ? createElement( fallbackComponent ) : fallbackComponent;
+			if ( module.active === false ) {
+				return FallbackComponent !== null ? FallbackComponent : null;
 			}
 
+			// Return a fallback if the module isn't connected yet.
+			if ( module.active === true && module.active === false ) {
+				return IncompleteComponent !== null ? IncompleteComponent : null;
+			}
+
+			// Return the active and connected component.
 			return createElement( wrappedComponent, props );
 		};
 
