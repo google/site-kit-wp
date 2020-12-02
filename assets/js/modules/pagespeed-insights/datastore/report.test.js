@@ -139,9 +139,11 @@ describe( 'modules/pagespeed-insights report', () => {
 			} );
 		} );
 
-		describe( 'getStackPackDescriptions', () => {
+		describe( 'getStackPackDescription', () => {
 			const strategy = 'desktop';
 			const url = 'http://example.com/';
+
+			const usesTextCompressionDescription = 'You can enable text compression in your web server configuration.';
 
 			const report = {
 				...fixtures.pagespeedDesktop,
@@ -154,7 +156,7 @@ describe( 'modules/pagespeed-insights report', () => {
 							title: 'WordPress',
 							descriptions: {
 								'unminified-css': 'A number of [WordPress plugins](https://wordpress.org/plugins/search/minify+css/) can speed up your site by concatenating, minifying, and compressing your styles. You may also want to use a build process to do this minification up-front if possible.',
-								'uses-text-compression': 'You can enable text compression in your web server configuration.',
+								'uses-text-compression': usesTextCompressionDescription,
 								'uses-webp-images': 'Consider using a [plugin](https://wordpress.org/plugins/search/convert+webp/) or service that will automatically convert your uploaded images to the optimal formats.',
 							},
 						},
@@ -163,7 +165,7 @@ describe( 'modules/pagespeed-insights report', () => {
 							iconDataURL: '',
 							title: 'AMP',
 							descriptions: {
-								'uses-text-compression': 'You can enable text compression in your web server configuration.',
+								'uses-text-compression': usesTextCompressionDescription,
 								'server-response-time': 'Themes, plugins, and server specifications all contribute to server response time. Consider finding a more optimized theme, carefully selecting an optimization plugin, and/or upgrading your server.',
 							},
 						},
@@ -176,18 +178,15 @@ describe( 'modules/pagespeed-insights report', () => {
 				registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, strategy ] );
 			} );
 
-			it( 'should return stack packs array with correct data for an available audit', () => {
-				const stackPacks = registry.select( STORE_NAME ).getStackPackDescriptions( url, strategy, 'uses-text-compression' );
-				expect( Array.isArray( stackPacks ) ).toBe( true );
-				expect( stackPacks.length ).toBe( 2 );
-				expect( stackPacks[ 0 ].id ).toBe( 'wordpress' );
-				expect( stackPacks[ 1 ].id ).toBe( 'amp' );
+			it( 'should return a stack pack with correct data for an available audit', () => {
+				const stackPack = registry.select( STORE_NAME ).getStackPackDescription( url, strategy, 'uses-text-compression', 'wordpress' );
+				expect( stackPack.id ).toBe( 'wordpress' );
+				expect( stackPack.description ).toBe( usesTextCompressionDescription );
 			} );
 
 			it( 'should return an empty array for non-existing audit', () => {
-				const stackPacks = registry.select( STORE_NAME ).getStackPackDescriptions( url, strategy, 'unused-css-rules' );
-				expect( Array.isArray( stackPacks ) ).toBe( true );
-				expect( stackPacks.length ).toBe( 0 );
+				const stackPack = registry.select( STORE_NAME ).getStackPackDescription( url, strategy, 'unused-css-rules', 'wordpress' );
+				expect( stackPack ).toBeNull();
 			} );
 		} );
 	} );
