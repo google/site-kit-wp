@@ -1,13 +1,15 @@
 const path = require( 'path' );
+const omitBy = require( 'lodash/omitBy' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const mainConfig = require( '../webpack.config' );
 const mapValues = require( 'lodash/mapValues' );
 
 module.exports = async ( { config } ) => {
+	const siteKitExternals = omitBy( mainConfig.siteKitExternals, ( value, key ) => key.startsWith( '@wordpress' ) );
 	// Site Kit loads its API packages as externals,
 	// so we need to convert those to aliases for Storybook to be able to resolve them.
 	const siteKitPackageAliases = mapValues(
-		mainConfig.siteKitExternals,
+		siteKitExternals,
 		( [ global, api ] ) => {
 			return path.resolve( `assets/js/${ global }-${ api }.js` );
 		}
