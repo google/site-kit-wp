@@ -25,7 +25,7 @@ import { addAction, hasFilter, removeAllActions, removeAllFilters } from '@wordp
  * Internal dependencies
  */
 import withData from './withdata';
-import { unsubscribeFromAll, render, act } from '../../../../tests/js/test-utils';
+import { render, act } from '../../../../tests/js/test-utils';
 import dataAPI, { TYPE_MODULES } from '../data';
 import { getCacheKey } from '../data/cache';
 
@@ -50,7 +50,6 @@ describe( 'withData', () => {
 		active: true,
 		setupComplete: true,
 	};
-	let registry;
 
 	const createDataset = ( type, identifier, datapoint, data, _context = context ) => ( { type, identifier, datapoint, data, context: _context } );
 	const getCacheKeyForDataset = ( { type, identifier, datapoint, data } ) => getCacheKey( type, identifier, datapoint, data );
@@ -66,8 +65,6 @@ describe( 'withData', () => {
 	afterEach( () => {
 		delete global._googlesitekitLegacyData.modules[ testModule.slug ];
 		delete global._googlesitekitLegacyData.modules[ testModuleAlt.slug ];
-
-		unsubscribeFromAll( registry );
 	} );
 
 	it( 'supports datasets with single or multiple contexts', () => {
