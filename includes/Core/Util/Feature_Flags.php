@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 use ArrayAccess;
 
 /**
- * Class handling plugin activation.
+ * Class for interacting with feature flag configuration.
  *
  * @since n.e.x.t
  * @access private
