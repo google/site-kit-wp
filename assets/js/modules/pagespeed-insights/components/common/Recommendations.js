@@ -37,7 +37,7 @@ const { useSelect } = Data;
 export default function Recommendations( { referenceURL, strategy } ) {
 	const finishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ referenceURL, strategy ] ) );
 	const recommendations = useSelect( ( select ) => {
-		const allAudits = select( STORE_NAME ).getAudits( referenceURL, strategy, true );
+		const allAudits = select( STORE_NAME ).getAuditsWithStackPack( referenceURL, strategy, 'wordpress' );
 		if ( ! allAudits || ! Object.keys( allAudits ).length ) {
 			return [];
 		}
@@ -45,7 +45,6 @@ export default function Recommendations( { referenceURL, strategy } ) {
 		const audits = [];
 		Object.keys( allAudits ).forEach( ( auditSlug ) => {
 			const audit = allAudits[ auditSlug ];
-
 			if ( ( audit.scoreDisplayMode !== 'numeric' && audit.scoreDisplayMode !== 'binary' ) || audit.score >= .9 ) {
 				return;
 			}

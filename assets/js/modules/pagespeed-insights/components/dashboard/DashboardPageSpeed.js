@@ -189,11 +189,10 @@ export default function DashboardPageSpeed() {
 			) }
 
 			<div className="googlesitekit-pagespeed-report__footer">
-				{ dataSrc === DATA_SRC_LAB && (
-					<Link onClick={ updateReport }>
-						{ __( 'Run test again', 'google-site-kit' ) }
-					</Link>
-				) }
+				{ /* We need to display this link with an empty label for the DATA_SRC_FIELD tab to prevent shifting ReportDetailsLink to the left. */ }
+				<Link onClick={ updateReport }>
+					{ dataSrc === DATA_SRC_LAB && __( 'Run test again', 'google-site-kit' ) }
+				</Link>
 				<ReportDetailsLink />
 			</div>
 		</Fragment>

@@ -100,7 +100,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Report audits.
 	 */
-	getAudits: createRegistrySelector( ( select ) => ( state, url, strategy, withStackPacks = false ) => {
+	getAudits: createRegistrySelector( ( select ) => ( state, url, strategy ) => {
 		const report = select( STORE_NAME ).getReport( url, strategy );
 		if ( report === undefined ) {
 			return undefined;
@@ -112,20 +112,24 @@ const baseSelectors = {
 			return {};
 		}
 
-		if ( withStackPacks ) {
-			const filteredAudits = {};
+		return audits;
+	} ),
 
-			Object.keys( audits ).forEach( ( auditID ) => {
-				const stackPacks = select( STORE_NAME ).getStackPackDescriptions( url, strategy, auditID );
-				if ( Array.isArray( stackPacks ) && stackPacks.length > 0 ) {
-					filteredAudits[ auditID ] = audits[ auditID ];
-				}
-			} );
-
-			return filteredAudits;
+	getAuditsWithStackPack: createRegistrySelector( ( select ) => ( state, url, strategy, stackPackID ) => {
+		const audits = select( STORE_NAME ).getAudits( url, strategy );
+		if ( ! audits ) {
+			return {};
 		}
 
-		return audits;
+		const filteredAudits = {};
+		Object.keys( audits ).forEach( ( auditID ) => {
+			const stackPack = select( STORE_NAME ).getStackPackDescription( url, strategy, auditID, stackPackID );
+			if ( stackPack ) {
+				filteredAudits[ auditID ] = audits[ auditID ];
+			}
+		} );
+
+		return filteredAudits;
 	} ),
 
 	/**
@@ -134,34 +138,31 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array.<Object>|undefined)} Stack pack descriptions for an audit.
+	 * @return {(Object|null|undefined)} Stack pack descriptions for an audit.
 	 */
-	getStackPackDescriptions: createRegistrySelector( ( select ) => ( state, url, strategy, auditID ) => {
+	getStackPackDescription: createRegistrySelector( ( select ) => ( state, url, strategy, auditID, stackPackID ) => {
 		const report = select( STORE_NAME ).getReport( url, strategy );
 		if ( report === undefined ) {
 			return undefined;
 		}
 
-		const descriptions = [];
-
 		const { lighthouseResult } = report || {};
 		const { stackPacks } = lighthouseResult || [];
 		if ( ! Array.isArray( stackPacks ) ) {
-			return descriptions;
+			return null;
 		}
 
-		stackPacks
-			.filter( ( stackPack ) => !! stackPack.descriptions[ auditID ] )
-			.forEach( ( stackPack ) => {
-				descriptions.push( {
-					id: stackPack.id,
-					icon: stackPack.iconDataURL,
-					title: stackPack.title,
-					description: stackPack.descriptions[ auditID ],
-				} );
-			} );
+		const stackPack = stackPacks.find( ( { id, descriptions } ) => id === stackPackID && !! descriptions[ auditID ] );
+		if ( ! stackPack ) {
+			return null;
+		}
 
-		return descriptions;
+		return {
+			id: stackPack.id,
+			icon: stackPack.iconDataURL,
+			title: stackPack.title,
+			description: stackPack.descriptions[ auditID ],
+		};
 	} ),
 };
 

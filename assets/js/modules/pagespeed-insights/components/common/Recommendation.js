@@ -38,17 +38,12 @@ export default function Recommendation( props ) {
 		strategy,
 	} = props;
 
-	const stackPack = useSelect( ( select ) => select( STORE_NAME ).getStackPackDescriptions( referenceURL, strategy, auditID ) );
-	if ( ! Array.isArray( stackPack ) || ! stackPack.length ) {
+	const stackPack = useSelect( ( select ) => select( STORE_NAME ).getStackPackDescription( referenceURL, strategy, auditID, 'wordpress' ) );
+	if ( ! stackPack ) {
 		return null;
 	}
 
-	const content = markdownToHTML(
-		stackPack
-			.map( ( { description } ) => description )
-			.join( '\n\n' ),
-	);
-
+	const content = markdownToHTML( stackPack.description );
 	const sanitizeArgs = {
 		ALLOWED_TAGS: [ 'a', 'p' ],
 		ALLOWED_ATTR: [ 'href', 'rel', 'target' ],
