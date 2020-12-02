@@ -420,7 +420,9 @@ const baseResolvers = {
 				const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
 				errorMessage = sprintf( messageTemplate, formatter.format( inactiveModules ), module.name );
 			} else {
-				errorMessage = sprintf( messageTemplate, inactiveModules.join( ', ' ), module.name );
+				/* translators: used between list items, there is a space after the comma. */
+				const listSeparator = __( ', ', 'google-site-kit' );
+				errorMessage = sprintf( messageTemplate, inactiveModules.join( listSeparator ), module.name );
 			}
 
 			yield baseActions.receiveCheckRequirementsError( slug, {
