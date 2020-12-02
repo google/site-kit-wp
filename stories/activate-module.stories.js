@@ -40,7 +40,7 @@ storiesOf( 'Global', module )
 			} );
 			dispatch( CORE_MODULES ).receiveGetModules( [
 				{
-					slug: 'tag-manager',
+					slug: 'tagmanager',
 					name: 'Tag Manager',
 				},
 			] );
@@ -48,7 +48,7 @@ storiesOf( 'Global', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<ActivateModuleCTA slug="tag-manager" />
+				<ActivateModuleCTA slug="tagmanager" />
 			</WithTestRegistry>
 		);
 	}, {

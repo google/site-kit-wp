@@ -38,7 +38,7 @@ const { useSelect } = Data;
 
 const CompleteModuleActivationCTA = ( { slug, title, description } ) => {
 	const module = useSelect( ( select ) => select( MODULES_STORE ).getModule( slug ) );
-	const adminReauthURL = useSelect( ( select ) => select( `modules/${ slug }` ).getAdminReauthURL() );
+	const adminReauthURL = useSelect( ( select ) => select( `modules/tagmanager` ).getAdminReauthURL() );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 	const { name } = module;
 
