@@ -145,7 +145,7 @@ describe( 'withData', () => {
 
 		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
 		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Test Module activation' );
-		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( 'Test Module module needs to be configured' );
+		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( 'Test Module module setup needs to be' );
 		expect( fetchMock ).not.toHaveFetched();
 	} );
 
@@ -175,7 +175,7 @@ describe( 'withData', () => {
 
 		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
 		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Test Module activation' );
-		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( 'Test Module module needs to be configured' );
+		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( 'Test Module module setup needs to be' );
 		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/data/ );
 	} );
 
