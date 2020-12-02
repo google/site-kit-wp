@@ -11,9 +11,9 @@
     "enabled": "development"
   },
   "storeErrorNotifications": {
-    "enabled": "development",
+    "enabled": "development"
   },
   "serviceSetupV2": {
-    "enabled": "development",
-  },
+    "enabled": "development"
+  }
 }
