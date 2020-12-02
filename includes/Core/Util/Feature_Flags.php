@@ -52,6 +52,8 @@ class Feature_Flags {
 			return false;
 		}
 
+		// In JS, the key always ends in `enabled`, but we add that here to eliminate
+		// semantic redundancy with the name of the method.
 		$feature_path  = explode( '.', "$feature.enabled" );
 		$feature_modes = array_reduce(
 			$feature_path,
