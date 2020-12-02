@@ -25,11 +25,9 @@ import { addAction, hasFilter, removeAllActions, removeAllFilters } from '@wordp
  * Internal dependencies
  */
 import withData from './withdata';
-import { createTestRegistry, unsubscribeFromAll, render, act } from '../../../../tests/js/test-utils';
+import { unsubscribeFromAll, render, act } from '../../../../tests/js/test-utils';
 import dataAPI, { TYPE_MODULES } from '../data';
 import { getCacheKey } from '../data/cache';
-import { STORE_NAME } from '../../googlesitekit/modules/datastore/constants';
-import { withActive } from '../../googlesitekit/modules/datastore/__fixtures__';
 
 const collectModuleData = dataAPI.collectModuleData.bind( dataAPI );
 
@@ -63,11 +61,6 @@ describe( 'withData', () => {
 		);
 		removeAllActions( 'googlesitekit.dataLoaded' );
 		removeAllFilters( `googlesitekit.module${ context }DataRequest` );
-
-		registry = createTestRegistry();
-		registry.dispatch( STORE_NAME ).receiveGetModules( withActive() );
-		registry.dispatch( STORE_NAME ).registerModule( testModule.slug, { ...testModule } );
-		registry.dispatch( STORE_NAME ).registerModule( testModuleAlt.slug, { ...testModuleAlt } );
 	} );
 
 	afterEach( () => {
