@@ -20,21 +20,8 @@ use ArrayAccess;
  * @ignore
  */
 class Feature_Flags {
-	/**
-	 * Main instance for static access.
-	 *
-	 * @since n.e.x.t
-	 * @var Feature_Flags
-	 */
-	protected static $instance;
 
-	/**
-	 * Feature flag definitions.
-	 *
-	 * @since n.e.x.t
-	 * @var array|ArrayAccess
-	 */
-	private $features;
+	const MODE_PRODUCTION = 'production';
 
 	/**
 	 * Feature flag mode.
@@ -42,31 +29,15 @@ class Feature_Flags {
 	 * @since n.e.x.t
 	 * @var string
 	 */
-	private $mode;
+	private static $mode = self::MODE_PRODUCTION;
 
 	/**
-	 * Gets the main feature flags instance.
+	 * Feature flag definitions.
 	 *
 	 * @since n.e.x.t
-	 * @internal
-	 *
-	 * @return Feature_Flags
+	 * @var array|ArrayAccess
 	 */
-	public static function get_instance() {
-		return static::$instance;
-	}
-
-	/**
-	 * Sets the main feature flags instance.
-	 *
-	 * @since n.e.x.t
-	 * @internal
-	 *
-	 * @param Feature_Flags $instance Feature_Flags instance to set as the main instance.
-	 */
-	public static function set_instance( Feature_Flags $instance ) {
-		static::$instance = $instance;
-	}
+	private static $features = array();
 
 	/**
 	 * Checks if the given feature is enabled in the current mode on the main instance.
@@ -77,35 +48,11 @@ class Feature_Flags {
 	 * @return bool
 	 */
 	public static function enabled( $feature ) {
-		return static::get_instance()->is_feature_enabled( $feature );
-	}
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array|ArrayAccess $features Feature flag definitions.
-	 * @param string            $mode     Feature flag mode. Default: "production".
-	 */
-	public function __construct( $features, $mode = 'production' ) {
-		$this->features = $features;
-		$this->mode     = $mode;
-	}
-
-	/**
-	 * Checks if the given feature is enabled in the current mode on the main instance.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $feature Feature key path to check.
-	 * @return bool
-	 */
-	public function is_feature_enabled( $feature ) {
-		if ( ! $feature || ! is_string( $feature ) ) {
+		if ( ! $feature || ! is_string( $feature ) || empty( static::$features ) ) {
 			return false;
 		}
-		$feature_path  = explode( '.', $feature );
+
+		$feature_path  = explode( '.', "$feature.enabled" );
 		$feature_modes = array_reduce(
 			$feature_path,
 			function ( $value, $key ) {
@@ -114,10 +61,36 @@ class Feature_Flags {
 				}
 				return null;
 			},
-			$this->features
+			static::$features
 		);
 
-		return in_array( $this->get_mode(), (array) $feature_modes, true );
+		return in_array( static::get_mode(), (array) $feature_modes, true );
+	}
+
+	/**
+	 * Sets the feature configuration.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array|ArrayAccess $features Feature configuration.
+	 */
+	public static function set_features( $features ) {
+		if ( is_array( $features ) || $features instanceof ArrayAccess ) {
+			static::$features = $features;
+		}
+	}
+
+	/**
+	 * Sets the feature flag mode.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $mode Feature flag mode.
+	 */
+	public static function set_mode( $mode ) {
+		if ( $mode && is_string( $mode ) ) {
+			static::$mode = $mode;
+		}
 	}
 
 	/**
@@ -127,7 +100,7 @@ class Feature_Flags {
 	 *
 	 * @return string Current mode.
 	 */
-	public function get_mode() {
+	private static function get_mode() {
 		/**
 		 * Filter the feature flag mode.
 		 *
@@ -135,6 +108,6 @@ class Feature_Flags {
 		 *
 		 * @param string $mode The current feature flag mode.
 		 */
-		return (string) apply_filters( 'googlesitekit_flag_mode', $this->mode ) ?: 'production';
+		return (string) apply_filters( 'googlesitekit_flag_mode', static::$mode ) ?: self::MODE_PRODUCTION;
 	}
 }

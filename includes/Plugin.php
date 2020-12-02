@@ -243,11 +243,9 @@ final class Plugin {
 		}
 
 		$config = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' );
-		Feature_Flags::set_instance(
-			new Feature_Flags(
-				new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' ),
-				$config['flagMode']
-			)
+		Feature_Flags::set_mode( $config['flagMode'] );
+		Feature_Flags::set_features(
+			new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' )
 		);
 
 		static::$instance = new static( $main_file );
