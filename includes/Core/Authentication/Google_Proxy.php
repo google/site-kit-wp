@@ -124,10 +124,6 @@ class Google_Proxy {
 			return $response;
 		}
 
-		if ( wp_remote_retrieve_response_code( $response ) !== 200 ) {
-			return new WP_Error( 'non_200_response_code' );
-		}
-
 		$raw_body = wp_remote_retrieve_body( $response );
 
 		$response_data = json_decode( $raw_body, true );

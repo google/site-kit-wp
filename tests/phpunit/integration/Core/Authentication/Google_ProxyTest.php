@@ -337,7 +337,7 @@ class Google_ProxyTest extends TestCase {
 	 * @param (array)  $response_data Response data to return for the request. Will be JSON-encoded if it is an array.
 	 * @param int    $response_code Optional. Response status code to return. Default 200.
 	 */
-	private function mock_http_request( $request_url, $response_data, $response_code = 200 ) {
+	private function mock_http_request( $request_url, array $response_data, $response_code = 200 ) {
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $args, $url ) use ( $request_url, $response_data, $response_code ) {
