@@ -16,19 +16,9 @@ use ReflectionMethod;
 
 class Feature_FlagsTest extends TestCase {
 
-	public function setUp() {
-		parent::setUp();
-		$this->reset_feature_flags();
-	}
-
 	public function tearDown() {
 		parent::tearDown();
-		$this->reset_feature_flags();
-	}
-
-	protected function reset_feature_flags() {
-		Feature_Flags::set_mode( Feature_Flags::MODE_PRODUCTION );
-		Feature_Flags::set_features( array() );
+		static::reset_feature_flags();
 	}
 
 	public function test_get_mode() {
