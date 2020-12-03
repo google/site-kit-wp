@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { get } from 'lodash';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Formats a number using the JS Internationalization Number Format API.
@@ -36,6 +37,37 @@ export const numberFormat = ( number, options = {} ) => {
 	const { locale = getLocale(), ...formatOptions } = options;
 
 	return new Intl.NumberFormat( locale, formatOptions ).format( number );
+};
+
+/**
+ * Flattens an array using the JS Internationalization List Format API with a fallback if it is unavailable.
+ *
+ * @since n.e.x.t
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat|`options` parameter} For all available options.
+ *
+ * @param {Array}  list             The list to flatten.
+ * @param {Object} [options]        Formatting options.
+ * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
+ * @param {string} [options.style]  Length of the formatted message. Defaults to long.
+ * @param {string} [options.type]   Type of list. Defaults to 'conjunction' (A, B, and C).
+ *                                  Also available 'disjunction' (A, B, or C)
+ *                                  Also available 'unit' (5 pounds, 12 ounces)
+ * @return {string} The flattened list.
+ */
+export const listFlatten = ( list, options = {} ) => {
+	const { locale = getLocale(), style = 'long', type = 'conjunction' } = options;
+
+	// Not all browsers support Intl.Listformat per
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat#Browser_compatibility
+	// We've seen that the built versions don't polyfill for the unsupported browsers (iOS/safari) so we provide a fallback.
+	if ( Intl.ListFormat ) {
+		const formatter = new Intl.ListFormat( locale, { style, type } );
+		return formatter.format( list );
+	}
+
+	/* translators: used between list items, there is a space after the comma. */
+	const listSeparator = __( ', ', 'google-site-kit' );
+	return list.join( listSeparator );
 };
 
 /**
