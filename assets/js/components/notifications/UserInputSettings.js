@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useInstanceId as useInstanceID } from '@wordpress/compose';
@@ -33,7 +38,7 @@ import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/cons
 import PersonSittingSVG from '../../../svg/person-sitting.svg';
 const { useSelect } = Data;
 
-export default function UserInputSettings() {
+export default function UserInputSettings( { onCTAClick } ) {
 	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 	const userInputState = useSelect( ( select ) => select( CORE_USER ).getUserInputState() );
@@ -52,9 +57,15 @@ export default function UserInputSettings() {
 			dismissExpires={ getTimeInSeconds( 'hour' ) * 3 }
 			ctaLink={ ctaLink }
 			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
+			onCTAClick={ onCTAClick }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			WinImageSVG={ ( props ) => <PersonSittingSVG width="100%" height="100%" { ...props } /> }
 			isDismissable
 		/>
 	);
 }
+
+UserInputSettings.propTypes = {
+	// Used to bypass link functionality within Storybook to avoid breakage.
+	onCTAClick: PropTypes.func,
+};

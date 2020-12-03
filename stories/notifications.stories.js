@@ -15,6 +15,7 @@ import UserInputSuccessNotification from '../assets/js/components/notifications/
 import ModulesList from '../assets/js/components/ModulesList';
 import Notification from '../assets/js/components/legacy-notifications/notification';
 import UserInputSettings from '../assets/js/components/notifications/UserInputSettings';
+import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import gWinImage from '../assets/images/g-win.png';
 import rocketImage from '../assets/images/rocket.png';
 import sunImage from '../assets/images/sun.png';
@@ -224,17 +225,14 @@ storiesOf( 'Global/Notifications', module )
 		/>
 	) )
 	.add( 'User Input Settings', () => {
-		global._googlesitekitUserData = {
-			user: {},
-			userInputState: 'missing',
-		};
 		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).receiveUserInputState( 'missing' );
 			provideSiteInfo( registry );
 		};
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<UserInputSettings />
+				<UserInputSettings onCTAClick={ ( e ) => e.preventDefault() } />
 			</WithTestRegistry>
 		);
 	} )
