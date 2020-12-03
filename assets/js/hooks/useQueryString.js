@@ -17,15 +17,24 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useState, useCallback } from '@wordpress/element';
-
-/*
  * External dependencies
  */
 import qs from 'query-string';
 
+/**
+ * WordPress dependencies
+ */
+import { useState, useCallback } from '@wordpress/element';
+
+/**
+ * Uses a location query param as a state.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} key          The query param key to be used.
+ * @param {string} initialValue The initial value for the query param to be set.
+ * @return {Array} The getter and setter for the query param state.
+ */
 function useQueryString( key, initialValue ) {
 	const [ value, setValue ] = useState( getQueryStringValue( key ) || initialValue );
 	const onSetValue = useCallback(
