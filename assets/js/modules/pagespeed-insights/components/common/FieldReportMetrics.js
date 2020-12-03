@@ -31,7 +31,6 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ReportMetric from './ReportMetric';
-import ReportDetailsLink from './ReportDetailsLink';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import ErrorText from '../../../../components/ErrorText';
 
@@ -118,9 +117,6 @@ export default function FieldReportMetrics( { data, error } ) {
 					/>
 				</tbody>
 			</table>
-			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--single-item googlesitekit-pagespeed-report__row--last">
-				<ReportDetailsLink />
-			</div>
 		</div>
 	);
 }
