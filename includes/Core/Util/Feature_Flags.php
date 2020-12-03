@@ -15,7 +15,7 @@ use ArrayAccess;
 /**
  * Class for interacting with feature flag configuration.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Feature_Flags {
 	/**
 	 * Feature flag mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 * @var string
 	 */
 	private static $mode = self::MODE_PRODUCTION;
@@ -34,7 +34,7 @@ class Feature_Flags {
 	/**
 	 * Feature flag definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 * @var array|ArrayAccess
 	 */
 	private static $features = array();
@@ -42,7 +42,7 @@ class Feature_Flags {
 	/**
 	 * Checks if the given feature is enabled in the current mode on the main instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param string $feature Feature key path to check.
 	 * @return bool
@@ -72,7 +72,7 @@ class Feature_Flags {
 	/**
 	 * Sets the feature configuration.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param array|ArrayAccess $features Feature configuration.
 	 */
@@ -85,7 +85,7 @@ class Feature_Flags {
 	/**
 	 * Sets the feature flag mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param string $mode Feature flag mode.
 	 */
@@ -98,7 +98,7 @@ class Feature_Flags {
 	/**
 	 * Gets the current feature flag mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @return string Current mode.
 	 */
@@ -106,7 +106,7 @@ class Feature_Flags {
 		/**
 		 * Filter the feature flag mode.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.22.0
 		 *
 		 * @param string $mode The current feature flag mode.
 		 */
