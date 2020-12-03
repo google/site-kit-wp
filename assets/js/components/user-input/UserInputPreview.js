@@ -43,7 +43,7 @@ import { getUserInputAnwsers } from './util/constants';
 import { addQueryArgs } from '@wordpress/url';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputPreview( { footer, back, goTo, redirectURL } ) {
+export default function UserInputPreview( { noFooter, back, goTo, redirectURL } ) {
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
@@ -126,7 +126,7 @@ export default function UserInputPreview( { footer, back, goTo, redirectURL } ) 
 
 							{ error && <ErrorNotice error={ error } /> }
 
-							{ footer && (
+							{ ! noFooter && (
 								<div className="googlesitekit-user-input__preview--footer">
 									<UserInputQuestionNotice />
 
@@ -145,7 +145,7 @@ export default function UserInputPreview( { footer, back, goTo, redirectURL } ) 
 }
 
 UserInputPreview.propTypes = {
-	footer: PropTypes.bool,
+	noFooter: PropTypes.bool,
 	back: PropTypes.func,
 	goTo: PropTypes.func.isRequired,
 	redirectURL: PropTypes.string,

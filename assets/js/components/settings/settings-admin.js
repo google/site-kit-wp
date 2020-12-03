@@ -51,11 +51,11 @@ const questions = [
 ];
 
 const SettingsAdmin = () => {
-	const [ isUserInputCompleted, userInputURL ] = useSelect( ( select ) => {
-		return [
-			select( CORE_USER ).getUserInputState() === 'completed',
-			select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ),
-		];
+	const { isUserInputCompleted, userInputURL } = useSelect( ( select ) => {
+		return {
+			isUserInputCompleted: select( CORE_USER ).getUserInputState() === 'completed',
+			userInputURL: select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ),
+		};
 	} );
 
 	const goTo = useCallback( ( num = 1 ) => {
@@ -63,7 +63,7 @@ const SettingsAdmin = () => {
 			question: questions[ num - 1 ],
 			redirect_url: global.location.href,
 		} ) );
-	}, [ ] );
+	}, [ userInputURL ] );
 
 	return (
 		<Fragment>
@@ -75,9 +75,9 @@ const SettingsAdmin = () => {
 					{
 						isUserInputCompleted ? (
 							<div className="googlesitekit-module-page googlesitekit-settings-user-input">
-								<UserInputPreview goTo={ goTo } />
+								<UserInputPreview noFooter goTo={ goTo } />
 							</div>
-						) : <UserInputSettings isDismissable={ false } /> }
+						) : <UserInputSettings isNotDismissable /> }
 				</Layout>
 			</div>
 			<div className="

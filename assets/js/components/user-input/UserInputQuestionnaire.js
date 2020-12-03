@@ -184,12 +184,12 @@ export default function UserInputQuestionnaire( { question } ) {
 			) }
 
 			{ activeSlug === 'preview' && (
-				<UserInputPreview footer back={ back } goTo={ goTo } redirectURL={ redirectURL } />
+				<UserInputPreview back={ back } goTo={ goTo } redirectURL={ redirectURL } />
 			) }
 		</Fragment>
 	);
 }
 
 UserInputQuestionnaire.propTypes = {
-	questions: PropTypes.string,
+	question: PropTypes.string,
 };
