@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import ProgressBar from '../ProgressBar';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
@@ -44,17 +45,12 @@ import {
 	getUserInputAnwsers,
 } from './util/constants';
 import useQueryString from '../../hooks/useQueryString';
+import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
 export default function UserInputQuestionnaire( { question } ) {
 	const [ activeSlug, setActiveSlug ] = useQueryString( 'question' );
 	const [ redirectURL ] = useQueryString( 'redirect_url' );
-
-	useEffect( () => {
-		if ( ! activeSlug || activeSlug === 'preview' ) {
-			setActiveSlug( question ?? USER_INPUT_QUESTION_ROLE );
-		}
-	}, [] );
-
 	const questions = [
 		USER_INPUT_QUESTION_ROLE,
 		USER_INPUT_QUESTION_POST_FREQUENCY,
@@ -63,15 +59,34 @@ export default function UserInputQuestionnaire( { question } ) {
 		USER_INPUT_QUESTION_SEARCH_TERMS,
 	];
 
+	const steps = [ ...questions, 'preview' ];
+	const activeSlugIndex = steps.indexOf( activeSlug );
+
+	const answeredUntilIndex = useSelect( ( select ) => {
+		const userInputSettings = select( CORE_USER ).getUserInputSettings();
+		for ( let i = 0; i < questions.length; i++ ) {
+			if ( userInputSettings[ questions[ i ] ].values.length === 0 ) {
+				return i;
+			}
+		}
+	} );
+
+	useEffect( () => {
+		if ( ! activeSlug ) {
+			setActiveSlug( question ?? USER_INPUT_QUESTION_ROLE );
+			return;
+		}
+		if ( activeSlugIndex > answeredUntilIndex ) {
+			setActiveSlug( steps[ answeredUntilIndex ] );
+		}
+	}, [ answeredUntilIndex ] );
+
 	const {
 		USER_INPUT_ANSWERS_GOALS,
 		USER_INPUT_ANSWERS_HELP_NEEDED,
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 		USER_INPUT_ANSWERS_ROLE,
 	} = getUserInputAnwsers();
-
-	const steps = [ ...questions, 'preview' ];
-	const activeSlugIndex = steps.indexOf( activeSlug );
 
 	const next = useCallback( () => {
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );

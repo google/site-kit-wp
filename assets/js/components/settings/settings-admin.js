@@ -72,12 +72,13 @@ const SettingsAdmin = () => {
 				mdc-layout-grid__cell--span-12
 			">
 				<Layout>
-					{
+					{ featureFlags.userInput.enabled && (
 						isUserInputCompleted ? (
 							<div className="googlesitekit-module-page googlesitekit-settings-user-input">
 								<UserInputPreview noFooter goTo={ goTo } />
 							</div>
-						) : <UserInputSettings isNotDismissable /> }
+						) : <UserInputSettings isNotDismissable />
+					) }
 				</Layout>
 			</div>
 			<div className="
