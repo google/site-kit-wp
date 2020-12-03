@@ -28,14 +28,17 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Layout from '../layout/layout';
+import { Cell } from '../../material-components';
 import OptIn from '../optin';
 import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
 import {
-	USER_INPUT_QUESTION_GOALS, USER_INPUT_QUESTION_HELP_NEEDED,
+	USER_INPUT_QUESTION_GOALS,
+	USER_INPUT_QUESTION_HELP_NEEDED,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
-	USER_INPUT_QUESTION_ROLE, USER_INPUT_QUESTION_SEARCH_TERMS,
+	USER_INPUT_QUESTION_ROLE,
+	USER_INPUT_QUESTION_SEARCH_TERMS,
 } from '../user-input/util/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { addQueryArgs } from '@wordpress/url';
@@ -67,20 +70,19 @@ const SettingsAdmin = () => {
 
 	return (
 		<Fragment>
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
-				<Layout>
-					{ featureFlags.userInput.enabled && (
-						isUserInputCompleted ? (
+			{ featureFlags.userInput.enabled && (
+				<Cell size={ 12 }>
+					<Layout>
+						{ isUserInputCompleted ? (
 							<div className="googlesitekit-module-page googlesitekit-settings-user-input">
 								<UserInputPreview noFooter goTo={ goTo } />
 							</div>
-						) : <UserInputSettings isNotDismissable />
-					) }
-				</Layout>
-			</div>
+						) : (
+							<UserInputSettings isNotDismissable />
+						) }
+					</Layout>
+				</Cell>
+			) }
 			<div className="
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12

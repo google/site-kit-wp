@@ -39,7 +39,7 @@ describe( 'useQueryString', () => {
 			search: '?page=demo',
 		};
 		global.history = {
-			pushState: historyPushMock,
+			replaceState: historyPushMock,
 		};
 	} );
 

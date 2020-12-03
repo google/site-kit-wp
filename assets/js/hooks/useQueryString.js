@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import qs from 'query-string';
-
-/**
  * WordPress dependencies
  */
 import { useState, useCallback } from '@wordpress/element';
@@ -50,15 +45,15 @@ function useQueryString( key, initialValue = null ) {
 
 const setQueryStringWithoutPageReload = ( qsValue ) => {
 	const newURL = `${ global.location.pathname }${ qsValue }`;
-	global.history.pushState( { path: newURL }, '', newURL );
+	global.history.replaceState( { path: newURL }, '', newURL );
 };
 
 const getQueryStringValue = (
 	key,
 	queryString = global.location.search
 ) => {
-	const values = qs.parse( queryString );
-	return values[ key ];
+	const urlParams = new URLSearchParams( queryString );
+	return urlParams.get( key );
 };
 
 const setQueryStringValue = (
@@ -66,12 +61,9 @@ const setQueryStringValue = (
 	value,
 	queryString = global.location.search
 ) => {
-	const values = qs.parse( queryString );
-	const newQsValue = qs.stringify( {
-		...values,
-		[ key ]: value,
-	} );
-	setQueryStringWithoutPageReload( `?${ newQsValue }` );
+	const urlParams = new URLSearchParams( queryString );
+	urlParams.set( key, value );
+	setQueryStringWithoutPageReload( `?${ urlParams.toString() }` );
 };
 
 export default useQueryString;

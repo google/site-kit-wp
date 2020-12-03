@@ -145,7 +145,6 @@
     "prop-types": "^15.7.2",
     "psl": "^1.8.0",
     "punycode": "^2.1.1",
-    "query-string": "^6.13.7",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "svgxuse": "^1.2.6",
