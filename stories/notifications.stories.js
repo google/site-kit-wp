@@ -232,7 +232,7 @@ storiesOf( 'Global/Notifications', module )
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<UserInputSettings onCTAClick={ ( e ) => e.preventDefault() } />
+				<UserInputSettings onCTAClick={ ( event ) => event.preventDefault() } />
 			</WithTestRegistry>
 		);
 	} )
