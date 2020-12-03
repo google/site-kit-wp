@@ -34,7 +34,7 @@ import API from 'googlesitekit-api';
 import { sanitizeHTML } from '../../util/sanitize';
 import { getExistingTag } from '../../util/tag';
 import Link from '../Link';
-import Warning from '../notifications/warning';
+import Warning from '../legacy-notifications/warning';
 import ProgressBar from '../ProgressBar';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
@@ -55,7 +55,7 @@ const checks = [
 			throw ERROR_INVALID_HOSTNAME;
 		}
 	},
-	// Generate and check for a Site Kit specific meta tag on the page to test for agressive caching.
+	// Generate and check for a Site Kit specific meta tag on the page to test for aggressive caching.
 	async () => {
 		const { token } = await API.set( 'core', 'site', 'setup-tag' );
 
@@ -241,9 +241,10 @@ export default class CompatibilityChecks extends Component {
 		if ( error ) {
 			CTAFeedback = <Fragment>
 				<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
-					<div className="mdc-layout-grid__inner">
+					<div className="googlesitekit-setup__warning">
 						<Warning />
-						<div className="googlesitekit-heading-4 mdc-layout-grid__cell--span-11">
+
+						<div className="googlesitekit-heading-4">
 							{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
 						</div>
 					</div>

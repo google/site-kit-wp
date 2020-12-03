@@ -29,6 +29,7 @@ import memize from 'memize';
 import { createRegistryControl, createRegistrySelector } from '@wordpress/data';
 
 const GET_REGISTRY = 'GET_REGISTRY';
+const AWAIT = 'AWAIT';
 
 /**
  * Collects and combines multiple objects of similar shape.
@@ -224,6 +225,23 @@ export const commonActions = {
 			type: GET_REGISTRY,
 		};
 	},
+
+	/**
+	 * Dispatches an action and calls a control to return the promise resolution.
+	 *
+	 * Useful for controls and resolvers that wish to call an asynchronous function or other promise.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Promise} value A promise to resolve.
+	 * @return {Object} Object with resolved promise.
+	 */
+	*await( value ) {
+		return {
+			payload: { value },
+			type: AWAIT,
+		};
+	},
 };
 
 /**
@@ -245,6 +263,17 @@ export const commonControls = {
 	 * @return {Object} FSA-compatible action.
 	 */
 	[ GET_REGISTRY ]: createRegistryControl( ( registry ) => () => registry ),
+
+	/**
+	 * Returns a resolved promise.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} payload         Object containing a promise.
+	 * @param {Object} payload.payload Object containing a promise.
+	 * @return {*} Resolved promise.
+	 */
+	[ AWAIT ]: ( { payload } ) => payload.value,
 };
 
 /**

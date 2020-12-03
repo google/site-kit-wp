@@ -1,5 +1,5 @@
 /**
- * Setup component.
+ * SetupUsingGCP component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -30,15 +30,15 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Button from '../components/Button';
-import Header from './Header';
-import Layout from '../components/layout/layout';
-import data, { TYPE_CORE } from '../components/data';
-import { trackEvent, clearWebStorage, getSiteKitAdminURL } from '../util';
-import STEPS from '../components/setup-wizard/wizard-steps';
-import WizardProgressStep from '../components/setup-wizard/wizard-progress-step';
+import Header from '../Header';
+import Button from '../Button';
+import Layout from '../layout/layout';
+import data, { TYPE_CORE } from '../data';
+import { trackEvent, clearWebStorage, getSiteKitAdminURL } from '../../util';
+import STEPS from './wizard-steps';
+import WizardProgressStep from './wizard-progress-step';
 
-class Setup extends Component {
+class SetupUsingGCP extends Component {
 	constructor( props ) {
 		super( props );
 
@@ -299,4 +299,4 @@ class Setup extends Component {
 	}
 }
 
-export default Setup;
+export default SetupUsingGCP;

@@ -28,9 +28,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Notification from '../assets/js/components/notifications/notification';
+import UserInputSuccessNotification from '../assets/js/components/notifications/UserInputSuccessNotification';
 import ModulesList from '../assets/js/components/ModulesList';
 import { provideModules, WithTestRegistry } from '../tests/js/utils';
+import Notification from '../assets/js/components/legacy-notifications/notification';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
@@ -50,7 +51,9 @@ storiesOf( 'Global/Notifications', module )
 					format="large"
 					type="win-success"
 				>
-					<ModulesList />
+					<ModulesList
+						moduleSlugs={ [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ] }
+					/>
 				</Notification>
 			</WithTestRegistry>
 		);
@@ -231,4 +234,7 @@ storiesOf( 'Global/Notifications', module )
 			}
 			type="win-stats"
 		/>
+	) )
+	.add( 'User Input Success Notification', () => (
+		<UserInputSuccessNotification />
 	) );

@@ -1,5 +1,5 @@
 /**
- * Feature flags configuration.
+ * ErrorNotifications component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,19 +16,22 @@
  * limitations under the License.
  */
 
-exports.featureFlags = {
-	widgets: {
-		dashboard: {
-			enabled: 'development',
-		},
-		pageDashboard: {
-			enabled: 'development',
-		},
-	},
-	userInput: {
-		enabled: 'development',
-	},
-	serviceSetupV2: {
-		enabled: 'development',
-	},
-};
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import AuthError from './AuthError';
+import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
+
+export default function ErrorNotifications() {
+	return (
+		<Fragment>
+			<AuthError />
+			<UnsatisfiedScopesAlert />
+		</Fragment>
+	);
+}
