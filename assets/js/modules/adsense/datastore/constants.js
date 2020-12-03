@@ -17,3 +17,6 @@
  */
 
 export const STORE_NAME = 'modules/adsense';
+
+// Date range offset days for AdSense report requests.
+export const DATE_RANGE_OFFSET = 1;
