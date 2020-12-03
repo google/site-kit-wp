@@ -27,7 +27,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { useEffect, useRef } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -48,13 +48,11 @@ const Dialog = ( {
 	dependentModules,
 	danger,
 } ) => {
-	const dialogRef = useRef( null );
-
-	useEffect( () => {
-		if ( dialogRef && dialogRef.current ) {
-			MDCDialog.attachTo( dialogRef.current );
+	const dialogRef = useCallback( ( el ) => {
+		if ( el !== null ) {
+			MDCDialog.attachTo( el );
 		}
-	} );
+	}, [] );
 
 	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const instanceID = useInstanceId( Dialog );

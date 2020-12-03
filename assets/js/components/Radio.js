@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,15 +41,16 @@ const Radio = ( {
 	disabled,
 	children,
 } ) => {
-	const formFieldRef = useRef( null );
-	const radioRef = useRef( null );
+	const formFieldRef = useCallback( ( el ) => {
+		if ( el !== null ) {
+			const formField = new MDCFormField( el );
+			const radioEl = el.querySelector( '.mdc-radio' );
 
-	useEffect( () => {
-		if ( ( formFieldRef && formFieldRef.current ) && ( radioRef && radioRef.current ) ) {
-			const formField = new MDCFormField( formFieldRef.current );
-			formField.input = new MDCRadio( radioRef.current );
+			if ( radioEl ) {
+				formField.input = new MDCRadio( radioEl );
+			}
 		}
-	} );
+	}, [] );
 
 	return (
 		<div className="mdc-form-field" ref={ formFieldRef }>
@@ -58,7 +59,6 @@ const Radio = ( {
 					'mdc-radio',
 					{ 'mdc-radio--disabled': disabled }
 				) }
-				ref={ radioRef }
 			>
 				<input
 					className="mdc-radio__native-control"

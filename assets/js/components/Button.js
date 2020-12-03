@@ -26,7 +26,7 @@ import useMergedRef from '@react-hook/merged-ref';
 /**
  * WordPress dependencies
  */
-import { forwardRef, useRef, useEffect } from '@wordpress/element';
+import { forwardRef, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -45,14 +45,12 @@ const Button = forwardRef( ( {
 	trailingIcon,
 	...extraProps
 }, ref ) => {
-	const buttonRef = useRef( null );
-	const mergedRefs = useMergedRef( ref, buttonRef );
-
-	useEffect( () => {
-		if ( buttonRef && buttonRef.current ) {
-			MDCRipple.attachTo( buttonRef.current );
+	const buttonRef = useCallback( ( el ) => {
+		if ( el !== null ) {
+			MDCRipple.attachTo( el );
 		}
-	} );
+	}, [] );
+	const mergedRefs = useMergedRef( ref, buttonRef );
 
 	// Use a button if disabled, even if a href is provided to ensure expected behavior.
 	const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';

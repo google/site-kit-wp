@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useRef, useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,15 +41,16 @@ const Checkbox = ( {
 	disabled,
 	children,
 } ) => {
-	const formFieldRef = useRef( null );
-	const checkboxRef = useRef( null );
+	const formFieldRef = useCallback( ( el ) => {
+		if ( el !== null ) {
+			const formField = new MDCFormField( el );
+			const checkboxEl = el.querySelector( '.mdc-checkbox' );
 
-	useEffect( () => {
-		if ( ( formFieldRef && formFieldRef.current ) && ( checkboxRef && checkboxRef.current ) ) {
-			const formField = new MDCFormField( formFieldRef.current );
-			formField.input = new MDCCheckbox( checkboxRef.current );
+			if ( checkboxEl ) {
+				formField.input = new MDCCheckbox( checkboxEl );
+			}
 		}
-	} );
+	}, [] );
 
 	return (
 		<div className="mdc-form-field" ref={ formFieldRef }>
@@ -58,7 +59,6 @@ const Checkbox = ( {
 					'mdc-checkbox',
 					{ 'mdc-checkbox--disabled': disabled }
 				) }
-				ref={ checkboxRef }
 			>
 				<input
 					className="mdc-checkbox__native-control"

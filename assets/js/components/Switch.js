@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -42,13 +42,11 @@ const Switch = ( {
 } ) => {
 	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const instanceID = useInstanceId( Switch );
-	const switchRef = useRef( null );
-
-	useEffect( () => {
-		if ( switchRef && switchRef.current ) {
-			MDCSwitch.attachTo( switchRef.current );
+	const switchRef = useCallback( ( el ) => {
+		if ( el !== null ) {
+			MDCSwitch.attachTo( el );
 		}
-	} );
+	}, [] );
 
 	const onKeyDown = useCallback( ( event ) => {
 		// If the Enter key is pressed.
