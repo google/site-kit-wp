@@ -19,20 +19,67 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Layout from '../layout/layout';
 import OptIn from '../optin';
 import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
+import UserInputPreview from '../user-input/UserInputPreview';
+import {
+	USER_INPUT_QUESTION_GOALS, USER_INPUT_QUESTION_HELP_NEEDED,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_QUESTION_ROLE, USER_INPUT_QUESTION_SEARCH_TERMS,
+} from '../user-input/util/constants';
+import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { addQueryArgs } from '@wordpress/url';
+const { useSelect } = Data;
+
+const questions = [
+	USER_INPUT_QUESTION_ROLE,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_QUESTION_GOALS,
+	USER_INPUT_QUESTION_HELP_NEEDED,
+	USER_INPUT_QUESTION_SEARCH_TERMS,
+];
 
 const SettingsAdmin = () => {
+	const [ isUserInputCompleted, userInputURL ] = useSelect( ( select ) => {
+		return [
+			select( CORE_USER ).getUserInputState() === 'completed',
+			select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ),
+		];
+	} );
+
+	const goTo = useCallback( ( num = 1 ) => {
+		global.location.assign( addQueryArgs( userInputURL, {
+			question: questions[ num - 1 ],
+			redirect_url: global.location.href,
+		} ) );
+	}, [ ] );
+
 	return (
 		<Fragment>
+			{
+				isUserInputCompleted && (
+					<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-12
+					">
+						<Layout>
+							<div className="googlesitekit-module-page googlesitekit-settings-user-input">
+								<UserInputPreview goTo={ goTo } />
+							</div>
+						</Layout>
+					</div>
+				)
+			}
 			<div className="
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12

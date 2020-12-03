@@ -43,7 +43,7 @@ import { getUserInputAnwsers } from './util/constants';
 import { addQueryArgs } from '@wordpress/url';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputPreview( { back, goTo } ) {
+export default function UserInputPreview( { footer, back, goTo, redirectURL } ) {
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
@@ -58,7 +58,12 @@ export default function UserInputPreview( { back, goTo } ) {
 		setIsNavigating( true );
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			global.location.assign( addQueryArgs( dashboardURL, { notification: 'user_input_success' } ) );
+			let [ sanitizedRedirectURL, hash ] = ( redirectURL ?? dashboardURL ).split( '#' );
+			sanitizedRedirectURL = addQueryArgs( sanitizedRedirectURL, { notification: 'user_input_success' } );
+			if ( hash ) {
+				sanitizedRedirectURL += `#${ hash }`;
+			}
+			global.location.assign( sanitizedRedirectURL );
 		} else {
 			setIsNavigating( false );
 		}
@@ -121,14 +126,16 @@ export default function UserInputPreview( { back, goTo } ) {
 
 							{ error && <ErrorNotice error={ error } /> }
 
-							<div className="googlesitekit-user-input__preview--footer">
-								<UserInputQuestionNotice />
+							{ footer && (
+								<div className="googlesitekit-user-input__preview--footer">
+									<UserInputQuestionNotice />
 
-								<div className="googlesitekit-user-input__buttons">
-									<Button text onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
-									<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
+									<div className="googlesitekit-user-input__buttons">
+										<Button text onClick={ back }>{ __( 'Back', 'google-site-kit' ) }</Button>
+										<Button onClick={ submitChanges }>{ __( 'Submit', 'google-site-kit' ) }</Button>
+									</div>
 								</div>
-							</div>
+							) }
 						</Fragment>
 					) }
 				</Cell>
@@ -138,6 +145,8 @@ export default function UserInputPreview( { back, goTo } ) {
 }
 
 UserInputPreview.propTypes = {
-	back: PropTypes.func.isRequired,
+	footer: PropTypes.bool,
+	back: PropTypes.func,
 	goTo: PropTypes.func.isRequired,
+	redirectURL: PropTypes.string,
 };

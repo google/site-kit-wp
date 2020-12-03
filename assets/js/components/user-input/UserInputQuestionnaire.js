@@ -17,9 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { useState, useCallback, Fragment } from '@wordpress/element';
+import { useCallback, Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,9 +43,17 @@ import {
 	USER_INPUT_QUESTION_SEARCH_TERMS,
 	getUserInputAnwsers,
 } from './util/constants';
+import useQueryString from '../../hooks/useQueryString';
 
-export default function UserInputQuestionnaire() {
-	const [ activeSlug, setActiveSlug ] = useState( USER_INPUT_QUESTION_ROLE );
+export default function UserInputQuestionnaire( { question } ) {
+	const [ activeSlug, setActiveSlug ] = useQueryString( 'question' );
+	const [ redirectURL ] = useQueryString( 'redirect_url' );
+
+	useEffect( () => {
+		if ( ! activeSlug ) {
+			setActiveSlug( question ?? USER_INPUT_QUESTION_ROLE );
+		}
+	}, [] );
 
 	const questions = [
 		USER_INPUT_QUESTION_ROLE,
@@ -171,8 +184,12 @@ export default function UserInputQuestionnaire() {
 			) }
 
 			{ activeSlug === 'preview' && (
-				<UserInputPreview back={ back } goTo={ goTo } />
+				<UserInputPreview footer back={ back } goTo={ goTo } redirectURL={ redirectURL } />
 			) }
 		</Fragment>
 	);
 }
+
+UserInputQuestionnaire.propTypes = {
+	questions: PropTypes.string,
+};
