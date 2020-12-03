@@ -21,6 +21,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
 use WP_REST_Server;
@@ -270,6 +271,7 @@ final class Authentication {
 				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
 
 				$this->handle_site_code( $code, $site_code );
+				$this->require_user_input();
 				$this->redirect_to_proxy( $code );
 			}
 		);
@@ -1074,6 +1076,28 @@ final class Authentication {
 	}
 
 	/**
+	 * Requires user input if it is not already completed.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function require_user_input() {
+		if ( ! Feature_Flags::enabled( 'userInput' ) ) {
+			return;
+		}
+
+		if ( User_Input_State::VALUE_COMPLETED !== $this->user_input_state->get() ) {
+			$this->user_input_state->set( User_Input_State::VALUE_REQUIRED );
+			// Set the `mode` query parameter in the proxy setup URL.
+			add_filter(
+				'googlesitekit_proxy_setup_url_params',
+				function ( $params ) {
+					return array_merge( $params, array( 'mode' => 'user_input' ) );
+				}
+			);
+		}
+	}
+
+	/**
 	 * Redirects back to the authentication service with any added parameters.
 	 *
 	 * @since 1.1.2
@@ -1152,7 +1176,7 @@ final class Authentication {
 			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
 		}
 
-		if ( $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH ) {
+		if ( $this->google_proxy->are_site_fields_synced( $this->credentials ) === false ) {
 			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
 		}
 	}

@@ -50,6 +50,7 @@ export * from './standalone';
 export * from './storage';
 export * from './i18n';
 export * from './helpers';
+export * from './markdown';
 
 /**
  * Removes a parameter from a URL string.
