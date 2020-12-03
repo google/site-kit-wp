@@ -114,6 +114,7 @@ export default function FieldReportMetrics( { data, error } ) {
 						description={ __( 'How stable the elements on the page are', 'google-site-kit' ) }
 						displayValue={ cls }
 						category={ cumulativeLayoutShift.category }
+						isLast
 					/>
 				</tbody>
 			</table>
