@@ -45,7 +45,7 @@ const resetFeatures = () => {
 };
 const resetGlobals = () => {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );
-	global._googlesitekitLegacyData.admin.assetsRoot = './assets/';
+	global._googlesitekitLegacyData.admin.assetsRoot = '';
 	global._googlesitekitLegacyData.isStorybook = true;
 	global._googlesitekitBaseData = {
 		homeURL: 'http://example.com/',
