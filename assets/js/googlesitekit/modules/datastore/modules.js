@@ -408,7 +408,6 @@ const baseResolvers = {
 		// If we have inactive dependencies, there's no need to check if we can
 		// activate the module until the dependencies have been activated.
 		if ( inactiveModules.length ) {
-
 			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
 			const messageTemplate = __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' );
 			const errorMessage = sprintf( messageTemplate, listFlatten( inactiveModules ), module.name );
