@@ -81,7 +81,7 @@ addDecorator( ( story ) => {
 
 // Global Decorator.
 addDecorator( ( story ) => (
-	<div className="googlesitekit-plugin-preview">
+	<div className="googlesitekit-plugin-preview js">
 		<div className="googlesitekit-plugin">{ story() }</div>
 	</div>
 ) );
