@@ -1078,7 +1078,7 @@ final class Authentication {
 	/**
 	 * Requires user input if it is not already completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 */
 	private function require_user_input() {
 		if ( ! Feature_Flags::enabled( 'userInput' ) ) {

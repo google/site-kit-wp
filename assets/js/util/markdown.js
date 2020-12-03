@@ -19,7 +19,7 @@
 /**
  * Replaces markdown links with its HTML equivalents.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  *
  * @param {string} text Markdown text.
  * @return {string} Text with HTML links.
@@ -34,7 +34,7 @@ function markdownLinks( text ) {
 /**
  * Adds paragraphs to the text.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  *
  * @param {string} text Markdown text.
  * @return {string} Text with HTML links.
@@ -46,7 +46,7 @@ function markdownParagraphs( text ) {
 /**
  * Replaces line breaks in the text.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  *
  * @param {string} text Markdown text.
  * @return {string} Text with HTML links.
@@ -58,7 +58,7 @@ function markdownBreaks( text ) {
 /**
  * Converts markdown to HTML.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  *
  * @param {string} text Markdown text.
  * @return {string} HTML version of the markdown text.

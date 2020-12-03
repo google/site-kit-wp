@@ -56,7 +56,7 @@ export function exampleTestFunction( props ) {
 /**
  * A function that returns a string, to test out ESLint.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  * @since 1.8.0 Added a feature.
  * @since 1.7.1 Originally introduced.
  * @private

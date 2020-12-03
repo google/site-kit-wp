@@ -99,7 +99,7 @@ class Google_Proxy {
 	/**
 	 * Fetch site fields
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
@@ -138,7 +138,7 @@ class Google_Proxy {
 	/**
 	 * Are site fields synced
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 *

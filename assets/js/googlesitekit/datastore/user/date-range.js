@@ -82,7 +82,7 @@ export const actions = {
 	 * This should only be used for testing, to enforce another reference date
 	 * than today.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 * @private
 	 *
 	 * @param {string} dateString Reference date string as YYYY-MM-DD.
@@ -178,7 +178,7 @@ export const selectors = {
 	/**
 	 * Returns the current reference date, typically today.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state The current data store's state.
 	 * @return {string} The current reference date as YYYY-MM-DD.

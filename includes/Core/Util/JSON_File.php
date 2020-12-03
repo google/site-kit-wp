@@ -17,7 +17,7 @@ use JsonSerializable;
 /**
  * Class for handling access to JSON files.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	/**
 	 * Path to JSON file.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 * @var string
 	 */
 	protected $file_path;
@@ -33,7 +33,7 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	/**
 	 * Decoded JSON data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 * @var mixed
 	 */
 	protected $data;
@@ -41,7 +41,7 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	/**
 	 * Whether or not the file has been read yet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 * @var boolean
 	 */
 	protected $hydrated;
@@ -49,7 +49,7 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param string $file_path Path to JSON file.
 	 */
@@ -60,7 +60,7 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	/**
 	 * Loads the file contents and hydrates data if it has not been called yet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 */
 	protected function hydrate() {
 		if ( $this->hydrated ) {
@@ -78,7 +78,7 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	/**
 	 * Checks if the key at the given offset exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param mixed $offset An offset to check for.
 	 * @return bool
@@ -92,7 +92,7 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	/**
 	 * Gets the value at the given offset.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param mixed $offset The offset to retrieve.
 	 * @return mixed|null
@@ -104,7 +104,7 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	/**
 	 * Sets the value at the given offset (not implemented).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param mixed $offset The offset to assign the value to.
 	 * @param mixed $value  The value to set.
@@ -116,7 +116,7 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	/**
 	 * Unsets the key at the given offset (not implemented).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param mixed $offset The offset to unset.
 	 */
@@ -127,7 +127,7 @@ class JSON_File implements ArrayAccess, JsonSerializable {
 	/**
 	 * Gets the decoded contents of the JSON file.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @return array|mixed
 	 */
