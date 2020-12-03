@@ -26,6 +26,7 @@ import { Component } from 'react';
  * Internal dependencies
  */
 import Widgets from 'googlesitekit-widgets';
+import { STORE_NAME as CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	WithTestRegistry,
@@ -48,6 +49,7 @@ const { components: { Widget } } = Widgets;
  * @param {Array}     args.data                         Widget data.
  * @param {Object}    args.options                      Arguments for report requests.
  * @param {Component} args.component                    Widget component.
+ * @param {string}    [args.referenceDate]              Reference date string to use, if not today.
  * @param {boolean}   [args.wrapWidget]                 Whether to wrap in default <Widget> component. Default true.
  * @param {Array}     [args.additionalVariants]         Optional. Additional story variants.
  * @param {Array}     [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants.
@@ -61,6 +63,7 @@ export function generateReportBasedWidgetStories( {
 	data,
 	options,
 	component: WidgetComponent,
+	referenceDate,
 	wrapWidget = true,
 	additionalVariants = {},
 	additionalVariantCallbacks = {},
@@ -82,6 +85,10 @@ export function generateReportBasedWidgetStories( {
 			provideSiteInfo( registry, {
 				currentEntityURL: options.url || null,
 			} );
+
+			if ( referenceDate ) {
+				registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
+			}
 
 			// Call the optional setup function.
 			setup( registry );
