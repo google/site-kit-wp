@@ -8,11 +8,12 @@ import { storiesOf } from '@storybook/react';
  */
 import UserInputApp from '../assets/js/components/user-input/UserInputApp';
 import { WithTestRegistry } from '../tests/js/utils';
+import { enableFeature } from './utils/features';
 
 storiesOf( 'User Input', module )
 	.add( 'UserInputApp', () => {
-		// Set the featureFlag.
-		global.featureFlags = { userInput: { enabled: true } };
+		enableFeature( 'userInput' );
+
 		return (
 			<WithTestRegistry>
 				<UserInputApp />

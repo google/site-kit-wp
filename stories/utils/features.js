@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights common components.
+ * Feature control utilities.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,10 +16,33 @@
  * limitations under the License.
  */
 
-export { default as FieldReportMetrics } from './FieldReportMetrics';
-export { default as LabReportMetrics } from './LabReportMetrics';
-export { default as MetricsLearnMoreLink } from './MetricsLearnMoreLink';
-export { default as Recommendation } from './Recommendation';
-export { default as Recommendations } from './Recommendations';
-export { default as ReportDetailsLink } from './ReportDetailsLink';
-export { default as ReportMetric } from './ReportMetric';
+/**
+ * External dependencies
+ */
+import set from 'lodash/set';
+
+function setFeatureActive( feature, active ) {
+	set( global, `featureFlags.${ feature }.enabled`, active );
+}
+
+/**
+ * Enables a feature.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} feature Feature to enable.
+ */
+export function enableFeature( feature ) {
+	setFeatureActive( feature, true );
+}
+
+/**
+ * Disables a feature.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} feature Feature to disable.
+ */
+export function disableFeature( feature ) {
+	setFeatureActive( feature, false );
+}
