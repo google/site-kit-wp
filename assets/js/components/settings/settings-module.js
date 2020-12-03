@@ -41,7 +41,7 @@ import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
-	getModulesData,
+	getModulesData, listFlatten,
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../Link';
@@ -209,8 +209,7 @@ class SettingsModule extends Component {
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
 
-		/* translators: used between list items, there is a space after the comma. */
-		const dependentModules = map( this.getDependentModules(), 'name' ).join( __( ', ', 'google-site-kit' ) );
+		const dependentModules = listFlatten( map( this.getDependentModules(), 'name' ) );
 
 		// Set button text based on state.
 		let buttonText = __( 'Close', 'google-site-kit' );

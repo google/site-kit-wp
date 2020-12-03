@@ -40,7 +40,7 @@ import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './const
 import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-import { getLocale } from '../../../util';
+import { listFlatten } from '../../../util';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -408,10 +408,10 @@ const baseResolvers = {
 		// If we have inactive dependencies, there's no need to check if we can
 		// activate the module until the dependencies have been activated.
 		if ( inactiveModules.length ) {
-			const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
 
 			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
-			const errorMessage = sprintf( __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' ), formatter.format( inactiveModules ), module.name );
+			const messageTemplate = __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' );
+			const errorMessage = sprintf( messageTemplate, listFlatten( inactiveModules ), module.name );
 
 			yield baseActions.receiveCheckRequirementsError( slug, {
 				code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
