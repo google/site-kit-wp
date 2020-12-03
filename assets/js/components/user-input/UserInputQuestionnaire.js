@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { useCallback, Fragment, useEffect } from '@wordpress/element';
@@ -48,9 +43,7 @@ import useQueryString from '../../hooks/useQueryString';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
-export default function UserInputQuestionnaire( { question } ) {
-	const [ activeSlug, setActiveSlug ] = useQueryString( 'question' );
-	const [ redirectURL ] = useQueryString( 'redirect_url' );
+export default function UserInputQuestionnaire() {
 	const questions = [
 		USER_INPUT_QUESTION_ROLE,
 		USER_INPUT_QUESTION_POST_FREQUENCY,
@@ -58,9 +51,16 @@ export default function UserInputQuestionnaire( { question } ) {
 		USER_INPUT_QUESTION_HELP_NEEDED,
 		USER_INPUT_QUESTION_SEARCH_TERMS,
 	];
-
 	const steps = [ ...questions, 'preview' ];
+
+	const [ activeSlug, setActiveSlug ] = useQueryString( 'question', steps[ 0 ] );
+	const [ redirectURL ] = useQueryString( 'redirect_url' );
+
 	const activeSlugIndex = steps.indexOf( activeSlug );
+
+	if ( activeSlugIndex === -1 ) {
+		setActiveSlug( steps[ 0 ] );
+	}
 
 	const answeredUntilIndex = useSelect( ( select ) => {
 		const userInputSettings = select( CORE_USER ).getUserInputSettings();
@@ -72,10 +72,6 @@ export default function UserInputQuestionnaire( { question } ) {
 	} );
 
 	useEffect( () => {
-		if ( ! activeSlug ) {
-			setActiveSlug( question ?? USER_INPUT_QUESTION_ROLE );
-			return;
-		}
 		if ( activeSlugIndex > answeredUntilIndex ) {
 			setActiveSlug( steps[ answeredUntilIndex ] );
 		}
@@ -204,7 +200,3 @@ export default function UserInputQuestionnaire( { question } ) {
 		</Fragment>
 	);
 }
-
-UserInputQuestionnaire.propTypes = {
-	question: PropTypes.string,
-};
