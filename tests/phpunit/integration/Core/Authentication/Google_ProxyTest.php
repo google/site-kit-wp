@@ -345,13 +345,9 @@ class Google_ProxyTest extends TestCase {
 					return $preempt;
 				}
 
-				if ( is_array( $response_data ) ) {
-					$response_data = json_encode( $response_data );
-				}
-
 				return array(
 					'headers'       => array(),
-					'body'          => $response_data,
+					'body'          => json_encode( $response_data ),
 					'response'      => array(
 						'code'    => $response_code,
 						'message' => get_status_header_desc( $response_code ),
