@@ -50,7 +50,7 @@ export default function UserInputQuestionnaire( { question } ) {
 	const [ redirectURL ] = useQueryString( 'redirect_url' );
 
 	useEffect( () => {
-		if ( ! activeSlug ) {
+		if ( ! activeSlug || activeSlug === 'preview' ) {
 			setActiveSlug( question ?? USER_INPUT_QUESTION_ROLE );
 		}
 	}, [] );

@@ -40,13 +40,8 @@ function useQueryString( key, initialValue ) {
 }
 
 const setQueryStringWithoutPageReload = ( qsValue ) => {
-	const newurl =
-        global.location.protocol +
-        '//' +
-        global.location.host +
-        global.location.pathname +
-        qsValue;
-	global.history.pushState( { path: newurl }, '', newurl );
+	const newURL = `${ global.location.pathname }${ qsValue }`;
+	global.history.pushState( { path: newURL }, '', newURL );
 };
 
 const getQueryStringValue = (

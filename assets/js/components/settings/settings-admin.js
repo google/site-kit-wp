@@ -39,6 +39,7 @@ import {
 } from '../user-input/util/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { addQueryArgs } from '@wordpress/url';
+import UserInputSettings from '../notifications/UserInputSettings';
 const { useSelect } = Data;
 
 const questions = [
@@ -66,20 +67,19 @@ const SettingsAdmin = () => {
 
 	return (
 		<Fragment>
-			{
-				isUserInputCompleted && (
-					<div className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-12
-					">
-						<Layout>
+			<div className="
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--span-12
+			">
+				<Layout>
+					{
+						isUserInputCompleted ? (
 							<div className="googlesitekit-module-page googlesitekit-settings-user-input">
 								<UserInputPreview goTo={ goTo } />
 							</div>
-						</Layout>
-					</div>
-				)
-			}
+						) : <UserInputSettings isDismissable={ false } /> }
+				</Layout>
+			</div>
 			<div className="
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12
