@@ -68,10 +68,10 @@ module.exports = iterateJsdoc( ( {
 
 		const [ versionString ] = tag.description.split( ' ', 1 );
 
-		if ( versionString !== 'n.e.x.t' && ! semverRegex().test( versionString ) ) {
+		if ( versionString !== '1.22.0' && ! semverRegex().test( versionString ) ) {
 			context.report( {
 				data: { name: jsdocNode.name },
-				message: 'The @since tag requires a valid semVer value or the "n.e.x.t" label.',
+				message: 'The @since tag requires a valid semVer value or the "1.22.0" label.',
 				node: jsdocNode,
 			} );
 

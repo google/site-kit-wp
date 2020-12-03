@@ -28,7 +28,7 @@ function setFeatureActive( feature, active ) {
 /**
  * Enables a feature.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  *
  * @param {string} feature Feature to enable.
  */
@@ -39,7 +39,7 @@ export function enableFeature( feature ) {
 /**
  * Disables a feature.
  *
- * @since n.e.x.t
+ * @since 1.22.0
  *
  * @param {string} feature Feature to disable.
  */
