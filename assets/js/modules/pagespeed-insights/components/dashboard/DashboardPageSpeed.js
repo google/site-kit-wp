@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 
@@ -188,11 +189,17 @@ export default function DashboardPageSpeed() {
 				<Recommendations referenceURL={ referenceURL } strategy={ strategy } />
 			) }
 
-			<div className="googlesitekit-pagespeed-report__footer">
-				{ /* We need to display this link with an empty label for the DATA_SRC_FIELD tab to prevent shifting ReportDetailsLink to the left. */ }
-				<Link onClick={ updateReport }>
-					{ ( dataSrc === DATA_SRC_LAB && __( 'Run test again', 'google-site-kit' ) ) || '' }
-				</Link>
+			<div
+				className={ classnames(
+					'googlesitekit-pagespeed-report__footer',
+					{ 'googlesitekit-pagespeed-report__footer--with-action': dataSrc === DATA_SRC_LAB },
+				) }
+			>
+				{ dataSrc === DATA_SRC_LAB && (
+					<Link onClick={ updateReport }>
+						{ __( 'Run test again', 'google-site-kit' ) }
+					</Link>
+				) }
 				<ReportDetailsLink />
 			</div>
 		</Fragment>

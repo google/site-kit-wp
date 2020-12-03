@@ -122,7 +122,6 @@
 	.googlesitekit-pagespeed-report__footer {
 		align-items: center;
 		display: flex;
-		justify-content: space-between;
 		padding: 18px $grid-gap-phone;
 
 		@media ( min-width: $bp-tablet ) {
@@ -138,6 +137,7 @@
 	}
 
 	.googlesitekit-pagespeed-report__row {
+		justify-content: space-between;
 
 		.googlesitekit-error-text p {
 			color: $c-error;
@@ -208,6 +208,11 @@
 	}
 
 	.googlesitekit-pagespeed-report__footer {
+		justify-content: flex-end;
 		padding-top: 0;
+
+		&--with-action {
+			justify-content: space-between;
+		}
 	}
 }
