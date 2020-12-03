@@ -153,13 +153,9 @@ export const selectors = {
 	getDateRangeDates( state, {
 		compare = false,
 		offsetDays = 0,
-		referenceDate,
+		referenceDate = state.referenceDate,
 		weekDayAlign = false,
 	} = {} ) {
-		if ( ! referenceDate ) {
-			referenceDate = state.referenceDate;
-		}
-
 		const dateRange = selectors.getDateRange( state );
 		const endDate = getPreviousDate( referenceDate, offsetDays );
 		const matches = dateRange.match( '-(.*)-' );
@@ -188,8 +184,7 @@ export const selectors = {
 	 * @return {string} The current reference date as YYYY-MM-DD.
 	 */
 	getReferenceDate( state ) {
-		const { referenceDate } = state;
-		return referenceDate;
+		return state.referenceDate;
 	},
 };
 

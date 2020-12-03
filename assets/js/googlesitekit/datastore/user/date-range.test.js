@@ -57,7 +57,7 @@ describe( 'core/user date-range', () => {
 				const someReferenceDate = '2020-09-12';
 
 				registry.dispatch( STORE_NAME ).setReferenceDate( someReferenceDate );
-				expect( registry.select( STORE_NAME ).getReferenceDate() ).toEqual( someReferenceDate );
+				expect( registry.stores[ STORE_NAME ].store.getState().referenceDate ).toEqual( someReferenceDate );
 			} );
 		} );
 	} );
@@ -68,14 +68,12 @@ describe( 'core/user date-range', () => {
 				const someDateRange = 'last-7-days';
 
 				registry.dispatch( STORE_NAME ).setDateRange( someDateRange );
-				expect( registry.select( STORE_NAME )
-					.getDateRange() )
+				expect( registry.select( STORE_NAME ).getDateRange() )
 					.toEqual( someDateRange );
 			} );
 
 			it( 'should return "last-28-days" when no date range is set', () => {
-				expect( registry.select( STORE_NAME )
-					.getDateRange() )
+				expect( registry.select( STORE_NAME ).getDateRange() )
 					.toEqual( 'last-28-days' );
 			} );
 		} );
@@ -86,8 +84,7 @@ describe( 'core/user date-range', () => {
 
 			const createDateRangeTest = ( dateRange, expected, additionalOptions = {} ) => {
 				registry.dispatch( STORE_NAME ).setDateRange( dateRange );
-				expect( registry.select( STORE_NAME )
-					.getDateRangeDates( { ...options, ...additionalOptions } ) )
+				expect( registry.select( STORE_NAME ).getDateRangeDates( { ...options, ...additionalOptions } ) )
 					.toEqual( expected );
 			};
 
@@ -233,14 +230,12 @@ describe( 'core/user date-range', () => {
 				const someReferenceDate = '2020-08-04';
 
 				registry.dispatch( STORE_NAME ).setReferenceDate( someReferenceDate );
-				expect( registry.select( STORE_NAME )
-					.getReferenceDate() )
+				expect( registry.select( STORE_NAME ).getReferenceDate() )
 					.toEqual( someReferenceDate );
 			} );
 
 			it( 'should return current date when no reference date is set', () => {
-				expect( registry.select( STORE_NAME )
-					.getReferenceDate() )
+				expect( registry.select( STORE_NAME ).getReferenceDate() )
 					.toEqual( getDateString( new Date() ) );
 			} );
 		} );
