@@ -115,6 +115,17 @@ const baseSelectors = {
 		return audits;
 	} ),
 
+	/**
+	 * Gets report audits for the given strategy and URL and stack pack.
+	 *
+	 * The selector essentially filters audits to include only those that have
+	 * a description available in the requested stack pack.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Report audits.
+	 */
 	getAuditsWithStackPack: createRegistrySelector( ( select ) => ( state, url, strategy, stackPackID ) => {
 		const audits = select( STORE_NAME ).getAudits( url, strategy );
 		if ( ! audits ) {
@@ -138,7 +149,10 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|null|undefined)} Stack pack descriptions for an audit.
+	 * @return {(Object|null|undefined)} Stack pack description object for an
+	 *                                   audit, null if the given stack pack is
+	 *                                   not available for the audit, undefined
+	 *                                   if not loaded yet.
 	 */
 	getStackPackDescription: createRegistrySelector( ( select ) => ( state, url, strategy, auditID, stackPackID ) => {
 		const report = select( STORE_NAME ).getReport( url, strategy );
