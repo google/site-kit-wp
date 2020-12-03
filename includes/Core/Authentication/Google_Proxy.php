@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
+use WP_Error;
 use Exception;
 
 /**
@@ -93,6 +94,72 @@ class Google_Proxy {
 			'return_uri'             => $this->context->admin_url( 'splash' ),
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
+	}
+
+	/**
+	 * Fetch site fields
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
+	 */
+	public function fetch_site_fields( Credentials $credentials ) {
+		if ( ! $credentials->has() ) {
+			return new WP_Error( 'oauth_credentials_not_exist' );
+		}
+
+		$creds = $credentials->get();
+
+		$request_args = array(
+			'body' => array(
+				'site_id'     => $creds['oauth2_client_id'],
+				'site_secret' => $creds['oauth2_client_secret'],
+			),
+		);
+
+		$response = wp_remote_post( $this->url( self::OAUTH2_SITE_URI ), $request_args );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$raw_body = wp_remote_retrieve_body( $response );
+
+		$response_data = json_decode( $raw_body, true );
+
+		if ( ! $response_data || isset( $response_data['error'] ) ) {
+			return new WP_Error( isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response' );
+		}
+
+		return $response_data;
+	}
+
+	/**
+	 * Are site fields synced
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 *
+	 * @return boolean|WP_Error Boolean do the site fields match or WP_Error on failure.
+	 */
+	public function are_site_fields_synced( Credentials $credentials ) {
+		$fetch_site_fields = $this->fetch_site_fields( $credentials );
+
+		if ( is_wp_error( $fetch_site_fields ) ) {
+			return $fetch_site_fields;
+		}
+
+		$get_site_fields = $this->get_site_fields();
+
+		foreach ( $get_site_fields as $key => $site_field ) {
+			if ( ! array_key_exists( $key, $fetch_site_fields ) || $fetch_site_fields[ $key ] !== $site_field ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -179,7 +246,6 @@ class Google_Proxy {
 			'body' => array_merge(
 				$this->get_site_fields(),
 				array(
-					'nonce'       => wp_create_nonce( self::ACTION_SETUP ),
 					'site_id'     => $creds['oauth2_client_id'],
 					'site_secret' => $creds['oauth2_client_secret'],
 				)
