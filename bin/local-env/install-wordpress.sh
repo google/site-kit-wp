@@ -89,6 +89,12 @@ if [ "$WP_VERSION" == "latest" ]; then
 	wp core update-db --quiet
 fi
 
+# Switch to `twentytwenty` theme for consistent results (particularly for AMP compatibility).
+# For older versions of WP, download and install it if it isn't present.
+# If `twentytwenty` is already the active theme, the script will continue
+# without attempting to install it as the activate command will exit with a `0` status code.
+wp theme activate twentytwenty || wp theme install --activate twentytwenty
+
 if [[ ! -z "$GUTENBERG_VERSION" ]]; then
 	# Potentially install Gutenberg
 	status_message "Installing Gutenberg version $GUTENBERG_VERSION..."
