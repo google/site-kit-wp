@@ -1,5 +1,5 @@
 /**
- * Feature flags configuration.
+ * Feature control utilities.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,22 +16,33 @@
  * limitations under the License.
  */
 
-exports.featureFlags = {
-	widgets: {
-		dashboard: {
-			enabled: 'development',
-		},
-		pageDashboard: {
-			enabled: 'development',
-		},
-	},
-	userInput: {
-		enabled: 'development',
-	},
-	storeErrorNotifications: {
-		enabled: 'development',
-	},
-	serviceSetupV2: {
-		enabled: 'development',
-	},
-};
+/**
+ * External dependencies
+ */
+import set from 'lodash/set';
+
+function setFeatureActive( feature, active ) {
+	set( global, `featureFlags.${ feature }.enabled`, active );
+}
+
+/**
+ * Enables a feature.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} feature Feature to enable.
+ */
+export function enableFeature( feature ) {
+	setFeatureActive( feature, true );
+}
+
+/**
+ * Disables a feature.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} feature Feature to disable.
+ */
+export function disableFeature( feature ) {
+	setFeatureActive( feature, false );
+}
