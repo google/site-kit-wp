@@ -1176,7 +1176,7 @@ final class Authentication {
 			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
 		}
 
-		if ( $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH ) {
+		if ( $this->google_proxy->are_site_fields_synced( $this->credentials ) === false ) {
 			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
 		}
 	}
