@@ -21,6 +21,7 @@
  */
 import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -41,7 +42,6 @@ import {
 	USER_INPUT_QUESTION_SEARCH_TERMS,
 } from '../user-input/util/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { addQueryArgs } from '@wordpress/url';
 import UserInputSettings from '../notifications/UserInputSettings';
 const { useSelect } = Data;
 
@@ -54,12 +54,10 @@ const questions = [
 ];
 
 const SettingsAdmin = () => {
-	const { isUserInputCompleted, userInputURL } = useSelect( ( select ) => {
-		return {
-			isUserInputCompleted: select( CORE_USER ).getUserInputState() === 'completed',
-			userInputURL: select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ),
-		};
-	} );
+	const { isUserInputCompleted, userInputURL } = useSelect( ( select ) => ( {
+		isUserInputCompleted: select( CORE_USER ).getUserInputState() === 'completed',
+		userInputURL: select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ),
+	} ) );
 
 	const goTo = useCallback( ( num = 1 ) => {
 		global.location.assign( addQueryArgs( userInputURL, {

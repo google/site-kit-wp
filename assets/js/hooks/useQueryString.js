@@ -31,39 +31,21 @@ import { useState, useCallback } from '@wordpress/element';
  * @return {Array} The getter and setter for the query param state.
  */
 function useQueryString( key, initialValue = null ) {
-	const [ value, setValue ] = useState( getQueryStringValue( key ) || initialValue );
+	const [ value, setValue ] = useState( new URLSearchParams( global.location.search ).get( key ) || initialValue );
 	const onSetValue = useCallback(
 		( newValue ) => {
 			setValue( newValue );
-			setQueryStringValue( key, newValue );
+
+			const urlParams = new URLSearchParams( global.location.search );
+			urlParams.set( key, value );
+
+			const newURL = `${ global.location.pathname }?${ urlParams.toString() }`;
+			global.history.replaceState( { path: newURL }, '', newURL );
 		},
 		[ key ]
 	);
 
 	return [ value, onSetValue ];
 }
-
-const setQueryStringWithoutPageReload = ( qsValue ) => {
-	const newURL = `${ global.location.pathname }${ qsValue }`;
-	global.history.replaceState( { path: newURL }, '', newURL );
-};
-
-const getQueryStringValue = (
-	key,
-	queryString = global.location.search
-) => {
-	const urlParams = new URLSearchParams( queryString );
-	return urlParams.get( key );
-};
-
-const setQueryStringValue = (
-	key,
-	value,
-	queryString = global.location.search
-) => {
-	const urlParams = new URLSearchParams( queryString );
-	urlParams.set( key, value );
-	setQueryStringWithoutPageReload( `?${ urlParams.toString() }` );
-};
 
 export default useQueryString;
