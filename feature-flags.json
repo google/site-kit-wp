@@ -5,6 +5,9 @@
     },
     "pageDashboard": {
       "enabled": "development"
+    },
+    "wpDashboard": {
+      "enabled": "development"
     }
   },
   "userInput": {

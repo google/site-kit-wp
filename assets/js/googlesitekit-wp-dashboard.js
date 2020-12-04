@@ -33,13 +33,13 @@ import { render } from '@wordpress/element';
  */
 import './components/data';
 import Root from './components/root';
-import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
+import WPDashboardApp from './components/wp-dashboard/wp-dashboard-app';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-wp-dashboard' );
 
 	if ( renderTarget ) {
-		render( <Root dataAPIContext="WPDashboard"><WPDashboardMain /></Root>, renderTarget );
+		render( <Root dataAPIContext="WPDashboard"><WPDashboardApp /></Root>, renderTarget );
 	}
 } );

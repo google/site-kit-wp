@@ -1,5 +1,5 @@
 /**
- * WPDashboardModule component.
+ * LegacyWPDashboardModule component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -25,10 +25,10 @@ import { Component } from '@wordpress/element';
 /**
  * A single module. Keeps track of its own active state and settings.
  */
-class WPDashboardModule extends Component {
+class LegacyWPDashboardModule extends Component {
 	render() {
 		return null;
 	}
 }
 
-export default withFilters( 'googlesitekit.WPDashboardModule' )( WPDashboardModule );
+export default withFilters( 'googlesitekit.WPDashboardModule' )( LegacyWPDashboardModule );

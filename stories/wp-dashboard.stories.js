@@ -13,7 +13,7 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
  */
 import GoogleLogoIcon from '../assets/svg/logo-g.svg';
 import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
-import WPDashboardMain from '../assets/js/components/wp-dashboard/wp-dashboard-main';
+import WPDashboardApp from '../assets/js/components/wp-dashboard/wp-dashboard-app';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
 import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/components/wp-dashboard/WPSearchConsoleDashboardWidget';
 import { createAddToFilter } from '../assets/js/util/helpers';
@@ -22,12 +22,14 @@ import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analyt
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
+import { enableFeature } from './utils/features';
 
 storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {
 		global._googlesitekitLegacyData = wpDashboardData;
 		global._googlesitekitLegacyData.admin.assetsRoot = '/assets/';
 		global._googlesitekitLegacyData.canAdsRun = true;
+		enableFeature( 'widgets.wpDashboard' );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -81,7 +83,7 @@ storiesOf( 'WordPress', module )
 						<div className="inside">
 							<div id="js-googlesitekit-wp-dashboard">
 								<WithTestRegistry callback={ setupRegistry }>
-									<WPDashboardMain />
+									<WPDashboardApp />
 								</WithTestRegistry>
 							</div>
 						</div>

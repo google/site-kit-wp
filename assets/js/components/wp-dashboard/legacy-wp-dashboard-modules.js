@@ -1,5 +1,5 @@
 /**
- * WPDashboardModules component.
+ * LegacyWPDashboardModules component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -32,10 +32,10 @@ import { __ } from '@wordpress/i18n';
  */
 import { getModulesData } from '../../util';
 import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
-import WPDashboardModule from './wp-dashboard-module';
-import WPDashboardHeader from './wp-dashboard-header';
+import LegacyWPDashboardModule from './legacy-wp-dashboard-module';
+import LegacyWPDashboardHeader from './legacy-wp-dashboard-header';
 
-class WPDashboardModules extends Component {
+class LegacyWPDashboardModules extends Component {
 	render() {
 		const modulesData = getModulesData();
 
@@ -45,7 +45,7 @@ class WPDashboardModules extends Component {
 					'googlesitekit-wp-dashboard-stats',
 					{ 'googlesitekit-wp-dashboard-stats--fourup': modulesData.analytics.active }
 				) }>
-					<WPDashboardHeader
+					<LegacyWPDashboardHeader
 						key={ 'googlesitekit-wp-dashboard-header' }
 					/>
 					{ // Show the Analytics CTA if analytics is not enabled.
@@ -59,7 +59,7 @@ class WPDashboardModules extends Component {
 						</div>
 					}
 				</div>
-				<WPDashboardModule
+				<LegacyWPDashboardModule
 					key={ 'googlesitekit-wp-dashboard-module' }
 				/>
 			</Fragment>
@@ -67,4 +67,4 @@ class WPDashboardModules extends Component {
 	}
 }
 
-export default WPDashboardModules;
+export default LegacyWPDashboardModules;
