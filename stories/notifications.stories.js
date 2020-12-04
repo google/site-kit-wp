@@ -10,9 +10,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Notification from '../assets/js/components/notifications/notification';
+import { provideSiteInfo, provideModules, WithTestRegistry } from '../tests/js/utils';
+import UserInputSuccessNotification from '../assets/js/components/notifications/UserInputSuccessNotification';
 import ModulesList from '../assets/js/components/ModulesList';
-import { provideModules, WithTestRegistry } from '../tests/js/utils';
+import Notification from '../assets/js/components/legacy-notifications/notification';
+import UserInputSettings from '../assets/js/components/notifications/UserInputSettings';
+import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import gWinImage from '../assets/images/g-win.png';
+import rocketImage from '../assets/images/rocket.png';
+import sunImage from '../assets/images/sun.png';
+import sunSmallImage from '../assets/images/sun-small.png';
+import thumbsUpImage from '../assets/images/thumbs-up.png';
 
 global._googlesitekitLegacyData.canAdsRun = true;
 
@@ -27,12 +35,14 @@ storiesOf( 'Global/Notifications', module )
 				<Notification
 					id="notification-id"
 					title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
-					winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png` }
+					winImage={ global._googlesitekitLegacyData.admin.assetsRoot + rocketImage }
 					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 					format="large"
 					type="win-success"
 				>
-					<ModulesList />
+					<ModulesList
+						moduleSlugs={ [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ] }
+					/>
 				</Notification>
 			</WithTestRegistry>
 		);
@@ -45,7 +55,7 @@ storiesOf( 'Global/Notifications', module )
 			learnMore={ __( 'Learn more', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="small"
-			smallImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/thumbs-up.png` }
+			smallImage={ thumbsUpImage }
 			type="win-success"
 		/>
 	) )
@@ -98,7 +108,7 @@ storiesOf( 'Global/Notifications', module )
 			description={ __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/sun.png` }
+			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + sunImage }
 			logo
 			module="analytics"
 			moduleName="Analytics"
@@ -127,7 +137,7 @@ storiesOf( 'Global/Notifications', module )
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
 			logo={ true }
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/sun-small.png` }
+			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + sunSmallImage }
 			blockData={
 				[
 					{
@@ -152,7 +162,7 @@ storiesOf( 'Global/Notifications', module )
 			description={ __( 'That’s out of this world. Here are the combined stats for your posts', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/rocket.png` }
+			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + rocketImage }
 			blockData={
 				[
 					{
@@ -182,7 +192,7 @@ storiesOf( 'Global/Notifications', module )
 			description={ __( 'Last month was great! Here are some high level stats', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
-			winImage={ `${ global._googlesitekitLegacyData.admin.assetsRoot }images/g-win.png` }
+			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + gWinImage }
 			blockData={
 				[
 					{
@@ -213,4 +223,19 @@ storiesOf( 'Global/Notifications', module )
 			}
 			type="win-stats"
 		/>
+	) )
+	.add( 'User Input Settings', () => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).receiveUserInputState( 'missing' );
+			provideSiteInfo( registry );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<UserInputSettings onCTAClick={ ( event ) => event.preventDefault() } />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'User Input Success Notification', () => (
+		<UserInputSuccessNotification />
 	) );

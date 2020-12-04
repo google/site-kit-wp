@@ -39,7 +39,7 @@ import Header from '../Header';
 import Button from '../button';
 import ResetButton from '../ResetButton';
 import Layout from '../layout/layout';
-import Notification from '../notifications/notification';
+import Notification from '../legacy-notifications/notification';
 import OptIn from '../optin';
 import CompatibilityChecks from './compatibility-checks';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -125,10 +125,10 @@ function SetupUsingProxy() {
 										<div className={ classnames(
 											'mdc-layout-grid__inner',
 											{
-												'googlesitekit-setup__content': featureFlags.userInput.enabled,
+												'googlesitekit-setup__content': featureFlags.serviceSetupV2.enabled,
 											}
 										) }>
-											{ featureFlags.userInput.enabled && (
+											{ featureFlags.serviceSetupV2.enabled && (
 												<div
 													className="
 															googlesitekit-setup__icon
@@ -146,8 +146,8 @@ function SetupUsingProxy() {
 													'mdc-layout-grid__cell',
 													'mdc-layout-grid__cell--span-12-tablet',
 													{
-														'mdc-layout-grid__cell--span-6-desktop': featureFlags.userInput.enabled,
-														'mdc-layout-grid__cell--span-12-desktop': ! featureFlags.userInput.enabled,
+														'mdc-layout-grid__cell--span-6-desktop': featureFlags.serviceSetupV2.enabled,
+														'mdc-layout-grid__cell--span-12-desktop': ! featureFlags.serviceSetupV2.enabled,
 													}
 												) }
 											>

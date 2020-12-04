@@ -27,7 +27,7 @@ import { compose } from '@wordpress/compose';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as ANALYTICS_STORE } from '../../../analytics/datastore/constants';
+import { STORE_NAME as ANALYTICS_STORE, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -49,9 +49,9 @@ function DashboardTopEarningPagesWidget() {
 		error,
 		loading,
 	} = useSelect( ( select ) => {
-		const store = select( ANALYTICS_STORE );
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
-
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
 		const args = {
 			startDate,
 			endDate,
@@ -69,11 +69,11 @@ function DashboardTopEarningPagesWidget() {
 		};
 
 		return {
-			isAdSenseLinked: store.getAdsenseLinked(),
-			analyticsMainURL: store.getServiceURL(),
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
+			isAdSenseLinked: select( ANALYTICS_STORE ).getAdsenseLinked(),
+			analyticsMainURL: select( ANALYTICS_STORE ).getServiceURL(),
+			data: select( ANALYTICS_STORE ).getReport( args ),
+			error: select( ANALYTICS_STORE ).getErrorForSelector( 'getReport', [ args ] ),
+			loading: ! select( ANALYTICS_STORE ).hasFinishedResolution( 'getReport', [ args ] ),
 		};
 	} );
 

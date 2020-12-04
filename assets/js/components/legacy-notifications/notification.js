@@ -35,8 +35,8 @@ import { sanitizeHTML } from '../../util/sanitize';
 import { setCache, getCache, deleteCache } from '../data/cache';
 import DataBlock from '../data-block';
 import Button from '../button';
-import Warning from '../notifications/warning';
-import Error from '../notifications/error';
+import Warning from './warning';
+import Error from './error';
 import Link from '../Link';
 import ModuleIcon from '../ModuleIcon';
 
@@ -128,10 +128,13 @@ class Notification extends Component {
 		const {
 			children,
 			id,
+			className,
 			title,
 			description,
 			blockData,
 			winImage,
+			WinImageSVG,
+			SmallImageSVG,
 			smallImage,
 			format,
 			learnMoreURL,
@@ -266,6 +269,7 @@ class Notification extends Component {
 			<section
 				ref={ this.cardRef }
 				className={ classnames(
+					className,
 					'googlesitekit-publisher-win',
 					{
 						[ `googlesitekit-publisher-win--${ format }` ]: format,
@@ -297,12 +301,13 @@ class Notification extends Component {
 							</div>
 						}
 
-						{ smallImage &&
+						{ ( smallImage || SmallImageSVG ) &&
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-1
 							">
-								<img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage } />
+								{ smallImage && <img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage } /> }
+								{ SmallImageSVG && <SmallImageSVG /> }
 							</div>
 						}
 
@@ -345,7 +350,7 @@ class Notification extends Component {
 
 						</div>
 
-						{ winImage &&
+						{ ( winImage || WinImageSVG ) &&
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--order-1-phone
@@ -354,7 +359,8 @@ class Notification extends Component {
 								mdc-layout-grid__cell--span-4-desktop
 							">
 								<div className="googlesitekit-publisher-win__image-large">
-									<img alt="" src={ winImage } />
+									{ winImage && <img alt="" src={ winImage } /> }
+									{ WinImageSVG && <WinImageSVG /> }
 								</div>
 							</div>
 						}
@@ -379,6 +385,7 @@ class Notification extends Component {
 
 Notification.propTypes = {
 	id: PropTypes.string.isRequired,
+	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
 	learnMoreURL: PropTypes.string,
@@ -386,7 +393,9 @@ Notification.propTypes = {
 	learnMoreLabel: PropTypes.string,
 	blockData: PropTypes.array,
 	winImage: PropTypes.string,
+	WinImageSVG: PropTypes.elementType,
 	smallImage: PropTypes.string,
+	SmallImageSVG: PropTypes.elementType,
 	format: PropTypes.string,
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
@@ -407,6 +416,7 @@ Notification.propTypes = {
 
 Notification.defaultProps = {
 	isDismissable: true,
+	className: '',
 	dismissExpires: 0,
 	showOnce: false,
 };
