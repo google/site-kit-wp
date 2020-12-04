@@ -220,7 +220,7 @@ const baseActions = {
 	 *
 	 * @since 1.13.0
 	 * @since 1.20.0  Introduced the ability to register settings and setup components.
-	 * @since n.e.x.t Introduced the ability to add a checkRequirements function.
+	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
@@ -277,7 +277,7 @@ const baseActions = {
 	/**
 	 * Receives the check requirements error map for specified modules modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 * @private
 	 *
 	 * @param {string} slug  Module slug.
@@ -296,7 +296,7 @@ const baseActions = {
 	/**
 	 * Receives the check requirements success for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 * @private
 	 *
 	 * @param {string} slug Success for a module slug.
@@ -408,10 +408,22 @@ const baseResolvers = {
 		// If we have inactive dependencies, there's no need to check if we can
 		// activate the module until the dependencies have been activated.
 		if ( inactiveModules.length ) {
-			const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
-
 			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
-			const errorMessage = sprintf( __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' ), formatter.format( inactiveModules ), module.name );
+			const messageTemplate = __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' );
+
+			let errorMessage;
+
+			// Not all browsers support Intl.Listformat per
+			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat#Browser_compatibility
+			// We've seen that the built versions don't polyfill for the unsupported browsers (iOS/safari) so we provide a fallback.
+			if ( Intl.Listformat ) {
+				const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
+				errorMessage = sprintf( messageTemplate, formatter.format( inactiveModules ), module.name );
+			} else {
+				/* translators: used between list items, there is a space after the comma. */
+				const listSeparator = __( ', ', 'google-site-kit' );
+				errorMessage = sprintf( messageTemplate, inactiveModules.join( listSeparator ), module.name );
+			}
 
 			yield baseActions.receiveCheckRequirementsError( slug, {
 				code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
@@ -702,7 +714,7 @@ const baseSelectors = {
 	 * Returns `false` if the module can not be activated.
 	 * Returns `undefined` if slug can not be found in state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
@@ -725,7 +737,7 @@ const baseSelectors = {
 	 * Returns `null` if the module can be activated and there is no error.
 	 * Returns `object` containing code, message and optional data property if there is an activation error for a slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.

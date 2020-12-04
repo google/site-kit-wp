@@ -19,7 +19,6 @@ global._googlesitekitLegacyData.canAdsRun = true;
 storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
 		const setupRegistry = ( registry ) => {
-			provideModuleRegistrations( registry );
 			provideModules( registry );
 		};
 

@@ -33,9 +33,13 @@ class OAuth_ClientTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
 	public function test_get_client() {
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$oauth_client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$client       = $oauth_client->get_client();
 
-		$this->assertInstanceOf( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', $client->get_client() );
+		$this->assertInstanceOf( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', $client );
+
+		$retry = $client->getConfig( 'retry' );
+		$this->assertEquals( $retry['retries'], 3 );
 	}
 
 	public function test_refresh_token() {
