@@ -37,7 +37,7 @@ function useQueryString( key, initialValue = null ) {
 			setValue( newValue );
 
 			const urlParams = new URLSearchParams( global.location.search );
-			urlParams.set( key, value );
+			urlParams.set( key, newValue );
 
 			const newURL = `${ global.location.pathname }?${ urlParams.toString() }`;
 			global.history.replaceState( { path: newURL }, '', newURL );
