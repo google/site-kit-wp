@@ -23,6 +23,11 @@ const { default: iterateJsdoc } = require( 'eslint-plugin-jsdoc/dist/iterateJsdo
 const semverCompare = require( 'semver-compare' );
 const semverRegex = require( 'semver-regex' );
 
+/**
+ * Internal dependencies
+ */
+const { NEXT_VERSION } = require( './constants' );
+
 module.exports = iterateJsdoc( ( {
 	context,
 	jsdoc,
@@ -68,10 +73,10 @@ module.exports = iterateJsdoc( ( {
 
 		const [ versionString ] = tag.description.split( ' ', 1 );
 
-		if ( versionString !== '1.22.0' && ! semverRegex().test( versionString ) ) {
+		if ( versionString !== NEXT_VERSION && ! semverRegex().test( versionString ) ) {
 			context.report( {
 				data: { name: jsdocNode.name },
-				message: 'The @since tag requires a valid semVer value or the "1.22.0" label.',
+				message: `The @since tag requires a valid semVer value or the "${ NEXT_VERSION }" label.`,
 				node: jsdocNode,
 			} );
 

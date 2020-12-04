@@ -25,6 +25,7 @@ import { RuleTester } from 'eslint';
  * Internal dependencies
  */
 import rule from './jsdoc-requires-since';
+import { NEXT_VERSION } from './constants';
 
 const ruleTester = new RuleTester( {
 	parserOptions: {
@@ -48,11 +49,11 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 			code: `
 /**
  * The first since tag does not require a description, but others do.
- * Also 1.22.0 is a valid version, which should always be last.
+ * Also ${ NEXT_VERSION } is a valid version, which should always be last.
  *
  * @since 1.7.1
  * @since 1.8.0 Added a feature.
- * @since 1.22.0 Added another feature.
+ * @since ${ NEXT_VERSION } Added another feature.
  */
       `,
 		},
@@ -81,11 +82,11 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * Since tags must be in the order of the version, with 1.22.0 last if present.
+ * Since tags must be in the order of the version, with ${ NEXT_VERSION } last if present.
  *
  * @since 1.7.1 Originally introduced.
  * @since 1.8.0 Added a feature.
- * @since 1.22.0 Added another feature.
+ * @since ${ NEXT_VERSION } Added another feature.
  */
       `,
 		},
