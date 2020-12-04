@@ -22,14 +22,14 @@ import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analyt
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
-import { enableFeature } from './utils/features';
+import { disableFeature } from './utils/features';
 
 storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {
 		global._googlesitekitLegacyData = wpDashboardData;
 		global._googlesitekitLegacyData.admin.assetsRoot = '/assets/';
 		global._googlesitekitLegacyData.canAdsRun = true;
-		enableFeature( 'widgets.wpDashboard' );
+		disableFeature( 'widgets.wpDashboard' );
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {

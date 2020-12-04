@@ -62,7 +62,7 @@ const WPDashboardUniqueVisitors = () => {
 	} );
 
 	if ( loading ) {
-		return <PreviewBlock width="100%" height="202px" />;
+		return <PreviewBlock width="48%" height="92px" />;
 	}
 
 	if ( error ) {
