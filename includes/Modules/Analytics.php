@@ -962,6 +962,33 @@ final class Analytics extends Module
 					}
 				}
 
+				$dimension_filters          = $data['dimensionFilters'];
+				$dimension_filter_instances = array();
+				if ( ! empty( $dimension_filters ) && ( is_string( $dimension_filters ) || is_array( $dimension_filters ) ) ) {
+					if ( is_string( $dimension_filters ) ) {
+						$dimension_filters = explode( ',', $dimension_filters );
+					} elseif ( is_array( $dimension_filters ) && ! wp_is_numeric_array( $dimension_filters ) ) { // If single object is passed.
+						$dimension_filters = array( $dimension_filters );
+					}
+
+					foreach ( $request_args['dimensions'] as $dimension ) {
+						$dimension_name = $dimension->getName();
+						if ( isset( $dimension_filters[ $dimension_name ] ) ) {
+							$dimension_value  = $dimension_filters[ $dimension_name ];
+							$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
+							$dimension_filter->setDimensionName( $dimension_name );
+							$dimension_filter->setOperator( 'EXACT' );
+							$dimension_filter->setExpressions( array( $dimension_value ) );
+							$dimension_filter->setCaseSensitive( false );
+							$dimension_filter_instances[] = $dimension_filter;
+						}
+					}
+
+					if ( ! empty( $dimension_filter_instances ) ) {
+						$request_args['dimension_filters'] = $dimension_filter_instances;
+					}
+				}
+
 				$request = $this->create_analytics_site_data_request( $request_args );
 
 				if ( is_wp_error( $request ) ) {
@@ -1351,11 +1378,12 @@ final class Analytics extends Module
 		$args = wp_parse_args(
 			$args,
 			array(
-				'dimensions' => array(),
-				'start_date' => '',
-				'end_date'   => '',
-				'page'       => '',
-				'row_limit'  => 100,
+				'dimensions'        => array(),
+				'dimension_filters' => array(),
+				'start_date'        => '',
+				'end_date'          => '',
+				'page'              => '',
+				'row_limit'         => 100,
 			)
 		);
 
