@@ -1362,15 +1362,17 @@ final class Analytics extends Module
 	 * Creates a new Analytics site request for the current site and given arguments.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Added $dimension_filters
 	 *
 	 * @param array $args {
 	 *     Optional. Additional arguments.
 	 *
-	 *     @type array  $dimensions List of request dimensions. Default empty array.
-	 *     @type string $start_date Start date in 'Y-m-d' format. Default empty string.
-	 *     @type string $end_date   End date in 'Y-m-d' format. Default empty string.
-	 *     @type string $page       Specific page URL to filter by. Default empty string.
-	 *     @type int    $row_limit  Limit of rows to return. Default 100.
+	 *     @type array  $dimensions        List of request dimensions. Default empty array.
+	 *     @type array  $dimension_filters List of dimension filters for the specified request dimensions. Default empty array.
+	 *     @type string $start_date        Start date in 'Y-m-d' format. Default empty string.
+	 *     @type string $end_date          End date in 'Y-m-d' format. Default empty string.
+	 *     @type string $page              Specific page URL to filter by. Default empty string.
+	 *     @type int    $row_limit         Limit of rows to return. Default 100.
 	 * }
 	 * @return Google_Service_AnalyticsReporting_ReportRequest|WP_Error Analytics site request instance.
 	 */
@@ -1396,6 +1398,15 @@ final class Analytics extends Module
 		$request->setIncludeEmptyRows( true );
 		$request->setViewId( $profile_id );
 
+		$dimension_filters_clauses = array();
+		if ( ! empty( $args['dimension_filters'] ) ) {
+			$dimension_filters        = $args['dimension_filters'];
+			$dimension_filters_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
+			$dimension_filters_clause->setFilters( array( $dimension_filters ) );
+			$dimension_filters_clause->setOperator( 'AND' );
+			$dimension_filters_clauses[] = $dimension_filters_clause;
+		}
+
 		if ( ! empty( $args['dimensions'] ) ) {
 			$request->setDimensions( (array) $args['dimensions'] );
 		}
@@ -1407,14 +1418,19 @@ final class Analytics extends Module
 			$request->setDateRanges( array( $date_range ) );
 		}
 
+		if ( ! empty( $args['dimension_filters'] ) ) {
+			$request->setDimensions( (array) $args['dimension_filters'] );
+		}
+
 		if ( ! empty( $args['page'] ) ) {
 			$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 			$dimension_filter->setDimensionName( 'ga:pagePath' );
 			$dimension_filter->setOperator( 'EXACT' );
 			$args['page'] = str_replace( trim( $this->context->get_reference_site_url(), '/' ), '', esc_url_raw( $args['page'] ) );
 			$dimension_filter->setExpressions( array( rawurldecode( $args['page'] ) ) );
-			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
-			$dimension_filter_clause->setFilters( array( $dimension_filter ) );
+			$dimension_filters_clauses[] = $dimension_filter;
+			$dimension_filter_clause     = new Google_Service_AnalyticsReporting_DimensionFilterClause();
+			$dimension_filter_clause->setFilters( $dimension_filters_clauses );
 			$request->setDimensionFilterClauses( array( $dimension_filter_clause ) );
 		}
 
