@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import { ENTER, ESCAPE, SPACE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -47,7 +48,7 @@ function DateRangeSelector() {
 			// Close the menu if the user presses the Escape key
 			// or if they click outside of the menu.
 			if (
-				( ( 'keyup' === event.type && 27 === event.keyCode ) || 'mouseup' === event.type ) &&
+				( ( 'keyup' === event.type && ESCAPE === event.keyCode ) || 'mouseup' === event.type ) &&
 				! menuButtonRef.current.buttonRef.current.contains( event.target ) &&
 				! menuRef.current.menuRef.current.contains( event.target )
 			) {
@@ -70,7 +71,7 @@ function DateRangeSelector() {
 
 	const handleMenuItemSelect = useCallback( ( index, event ) => {
 		if (
-			( 'keydown' === event.type && ( 13 === event.keyCode || 32 === event.keyCode ) ) || // Enter or Space is pressed.
+			( 'keydown' === event.type && ( ENTER === event.keyCode || SPACE === event.keyCode ) ) || // Enter or Space is pressed.
 			'click' === event.type // Mouse is clicked
 		) {
 			setDateRange( Object.values( ranges )[ index ].slug );
