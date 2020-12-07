@@ -51,7 +51,6 @@ abstract class Tag implements Tag_Interface {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_action( 'template_redirect', array( $this, 'render' ) );
 	}
 
 }

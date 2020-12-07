@@ -23,14 +23,15 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Blockable_Tags_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Modules\AdSense\AMP_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
+use Google\Site_Kit\Modules\AdSense\Web_Tag;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense_Account;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense_Alert;
@@ -47,19 +48,12 @@ use WP_Error;
 final class AdSense extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
 	use Module_With_Assets_Trait;
-	use Module_With_Blockable_Tags_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Screen_Trait;
 	use Module_With_Settings_Trait;
 
-	/**
-	 * Internal flag for whether the AdSense tag has been printed.
-	 *
-	 * @since 1.0.0
-	 * @var bool
-	 */
-	private $adsense_tag_printed = false;
+	const MODULE_SLUG = 'adsense';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -98,10 +92,6 @@ final class AdSense extends Module
 					return;
 				}
 
-				if ( $this->is_tag_blocked() ) {
-					return;
-				}
-
 				$use_snippet = $this->get_data( 'use-snippet' );
 				if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
 					return;
@@ -118,63 +108,12 @@ final class AdSense extends Module
 					return;
 				}
 
-				// At this point, we know the tag should be rendered, so let's take care of it
-				// for AMP and non-AMP.
-				if ( $this->context->is_amp() ) {
-					add_action( // For AMP Reader, and AMP Native and Transitional (if `wp_body_open` supported).
-						'wp_body_open',
-						function() use ( $client_id ) {
-							$this->print_amp_auto_ads( $client_id );
-						},
-						-9999
-					);
+				$tag = $this->context->is_amp()
+					? new AMP_Tag( self::MODULE_SLUG, $client_id )
+					: new Web_Tag( self::MODULE_SLUG, $client_id );
 
-					add_filter( // For AMP Reader, and AMP Native and Transitional (as fallback).
-						'the_content',
-						function( $content ) use ( $client_id ) {
-							// Only run for the primary application of the `the_content` filter.
-							if ( ! in_the_loop() ) {
-								return $content;
-							}
-							return $this->amp_content_add_auto_ads( $content, $client_id );
-						}
-					);
-
-					add_filter( // Load amp-auto-ads component for AMP Reader.
-						'amp_post_template_data',
-						function( $data ) {
-							return $this->amp_data_load_auto_ads_component( $data );
-						}
-					);
-
-					/**
-					 * Fires when the AdSense tag for AMP has been initialized.
-					 *
-					 * This means that the tag will be rendered in the current request.
-					 *
-					 * @since 1.14.0
-					 *
-					 * @param string $client_id AdSense client ID used in the tag.
-					 */
-					do_action( 'googlesitekit_adsense_init_tag_amp', $client_id );
-				} else {
-					add_action( // For non-AMP.
-						'wp_head',
-						function() use ( $client_id ) {
-							$this->output_adsense_script( $client_id );
-						}
-					);
-
-					/**
-					 * Fires when the AdSense tag has been initialized.
-					 *
-					 * This means that the tag will be rendered in the current request.
-					 *
-					 * @since 1.14.0
-					 *
-					 * @param string $client_id AdSense client ID used in the tag.
-					 */
-					do_action( 'googlesitekit_adsense_init_tag', $client_id );
+				if ( ! $tag->is_tag_blocked() ) {
+					$tag->register();
 				}
 			}
 		);
@@ -256,60 +195,6 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Outputs the AdSense script tag.
-	 *
-	 * @since 1.0.0
-	 * @since 1.14.0 The `$client_id` parameter was added.
-	 *
-	 * @param string $client_id AdSense client ID to use in the snippet.
-	 */
-	protected function output_adsense_script( $client_id ) {
-		if ( $this->adsense_tag_printed ) {
-			return;
-		}
-
-		$this->adsense_tag_printed = true;
-
-		// If we haven't completed the account connection yet, we still insert the AdSense tag
-		// because it is required for account verification.
-		printf(
-			'<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"%s></script>', // // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-			$this->get_tag_block_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		);
-		printf(
-			'<script>(adsbygoogle = window.adsbygoogle || []).push(%s);</script>',
-			wp_json_encode(
-				array(
-					'google_ad_client'      => $client_id,
-					'enable_page_level_ads' => true,
-					'tag_partner'           => 'site_kit',
-				)
-			)
-		);
-	}
-
-	/**
-	 * Outputs the <amp-auto-ads> tag.
-	 *
-	 * @since 1.14.0
-	 *
-	 * @param string $client_id AdSense client ID to use in the snippet.
-	 */
-	protected function print_amp_auto_ads( $client_id ) {
-		if ( $this->adsense_tag_printed ) {
-			return;
-		}
-
-		$this->adsense_tag_printed = true;
-
-		printf(
-			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads>',
-			esc_attr( $client_id ),
-			$this->get_tag_amp_block_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		);
-	}
-
-	/**
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.5.0
@@ -339,46 +224,6 @@ final class AdSense extends Module
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
-		);
-	}
-
-	/**
-	 * Adds AMP auto ads script if opted in.
-	 *
-	 * This only affects AMP Reader mode, the others are automatically covered.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $data AMP template data.
-	 * @return array Filtered $data.
-	 */
-	protected function amp_data_load_auto_ads_component( $data ) {
-		$data['amp_component_scripts']['amp-auto-ads'] = 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js';
-		return $data;
-	}
-
-	/**
-	 * Adds the AMP auto ads tag if opted in.
-	 *
-	 * @since 1.0.0
-	 * @since 1.14.0 The `$client_id` parameter was added.
-	 *
-	 * @param string $content   The page content.
-	 * @param string $client_id AdSense client ID to use in the snippet.
-	 * @return string Filtered $content.
-	 */
-	protected function amp_content_add_auto_ads( $content, $client_id ) {
-		if ( $this->adsense_tag_printed ) {
-			return $content;
-		}
-
-		$this->adsense_tag_printed = true;
-
-		return sprintf(
-			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads> %s',
-			esc_attr( $client_id ),
-			$this->get_tag_amp_block_on_consent_attribute(),
-			$content
 		);
 	}
 
@@ -909,7 +754,7 @@ final class AdSense extends Module
 		);
 
 		return array(
-			'slug'        => 'adsense',
+			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'AdSense', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
 			'cta'         => __( 'Monetize Your Site.', 'google-site-kit' ),

@@ -19,4 +19,12 @@ namespace Google\Site_Kit\Modules\Tag_Manager;
  */
 class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
 
+	/**
+	 * Renders tag output.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function render() {
+	}
+
 }
