@@ -21,6 +21,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Fragment, useState, useEffect, useCallback, createInterpolateElement } from '@wordpress/element';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -41,7 +42,7 @@ function ResetButton( { children } ) {
 
 	useEffect( () => {
 		const handleCloseModal = ( event ) => {
-			if ( 27 === event.keyCode ) {
+			if ( ESCAPE === event.keyCode ) {
 				// Only close the modal if the "Escape" key is pressed.
 				setDialogActive( false );
 			}

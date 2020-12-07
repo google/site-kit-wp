@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { ENTER, ESCAPE, SPACE } from '@wordpress/keycodes';
+
+/**
  * Internal dependencies
  */
 import { render, createTestRegistry, fireEvent, provideUserInfo, provideSiteInfo, act } from '../../../tests/js/test-utils';
@@ -80,7 +85,7 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should close the menu when escape is pressed', () => {
-			fireEvent.keyUp( document, { keyCode: 27 } );
+			fireEvent.keyUp( document, { keyCode: ESCAPE } );
 			expect( menu ).toHaveAttribute( 'aria-hidden', 'true' );
 		} );
 
@@ -94,7 +99,7 @@ describe( 'UserMenu', () => {
 			} );
 
 			it( 'should close the modal dialog after pressing escape key', () => {
-				fireEvent.keyUp( document, { keyCode: 27 } );
+				fireEvent.keyUp( document, { keyCode: ESCAPE } );
 				expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 			} );
 
@@ -125,12 +130,12 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should select a menu option on pressing space', () => {
-			fireEvent.keyDown( menu.children[ 0 ], { keyCode: 32 } );
+			fireEvent.keyDown( menu.children[ 0 ], { keyCode: SPACE } );
 			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeInTheDocument();
 		} );
 
 		it( 'should select a menu option on pressing enter', () => {
-			fireEvent.keyDown( menu.children[ 0 ], { keyCode: 13 } );
+			fireEvent.keyDown( menu.children[ 0 ], { keyCode: ENTER } );
 			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeInTheDocument();
 		} );
 	} );
