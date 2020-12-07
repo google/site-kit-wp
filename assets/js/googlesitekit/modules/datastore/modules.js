@@ -22,7 +22,9 @@
 import memize from 'memize';
 import defaults from 'lodash/defaults';
 import merge from 'lodash/merge';
+import isPlainObject from 'lodash/isPlainObject';
 import invariant from 'invariant';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * WordPress dependencies
@@ -34,10 +36,11 @@ import { WPComponent } from '@wordpress/element';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './constants';
 import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { getLocale } from '../../../util';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -45,6 +48,8 @@ const { createRegistrySelector, createRegistryControl } = Data;
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
 const SELECT_MODULE_REAUTH_URL = 'SELECT_MODULE_REAUTH_URL';
 const REGISTER_MODULE = 'REGISTER_MODULE';
+const RECEIVE_CHECK_REQUIREMENTS_ERROR = 'RECEIVE_CHECK_REQUIREMENTS_ERROR';
+const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 
 const moduleDefaults = {
 	slug: '',
@@ -131,6 +136,7 @@ const baseInitialState = {
 	// a module activation update, since the activation is technically complete
 	// before this data has been refreshed.
 	isAwaitingModulesRefresh: false,
+	checkRequirementsResults: {},
 };
 
 const baseActions = {
@@ -213,7 +219,8 @@ const baseActions = {
 	 * Registers a module.
 	 *
 	 * @since 1.13.0
-	 * @since 1.20.0 Introduced the ability to register settings and setup components.
+	 * @since 1.20.0  Introduced the ability to register settings and setup components.
+	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
@@ -225,9 +232,9 @@ const baseActions = {
 	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel. Default none.
 	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
-	 * @return {Object} Redux-style action.
+	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 */
-	registerModule( slug, {
+	*registerModule( slug, {
 		name,
 		description,
 		icon,
@@ -236,6 +243,7 @@ const baseActions = {
 		settingsEditComponent,
 		settingsViewComponent,
 		setupComponent,
+		checkRequirements = () => true,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
 
@@ -248,16 +256,62 @@ const baseActions = {
 			settingsEditComponent,
 			settingsViewComponent,
 			setupComponent,
+			checkRequirements,
 		};
 
-		return {
+		yield {
 			payload: {
 				settings,
 				slug,
 			},
 			type: REGISTER_MODULE,
 		};
+
+		const registry = yield Data.commonActions.getRegistry();
+
+		// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
+		yield registry.dispatch( STORE_NAME ).invalidateResolution( 'canActivateModule', [ slug ] );
+		yield registry.dispatch( STORE_NAME ).invalidateResolution( 'getCheckRequirementsError', [ slug ] );
 	},
+
+	/**
+	 * Receives the check requirements error map for specified modules modules.
+	 *
+	 * @since 1.22.0
+	 * @private
+	 *
+	 * @param {string} slug  Module slug.
+	 * @param {Object} error WordPress Error object containing code, message and data properties.
+	 * @return {Object} Action for RECEIVE_CHECK_REQUIREMENTS_ERROR.
+	 */
+	receiveCheckRequirementsError( slug, error ) {
+		invariant( slug, 'slug is required' );
+		invariant( isPlainObject( error ), 'error is required and must be an object' );
+		return {
+			payload: { slug, error },
+			type: RECEIVE_CHECK_REQUIREMENTS_ERROR,
+		};
+	},
+
+	/**
+	 * Receives the check requirements success for a module.
+	 *
+	 * @since 1.22.0
+	 * @private
+	 *
+	 * @param {string} slug Success for a module slug.
+	 * @return {Object} Action for RECEIVE_CHECK_REQUIREMENTS_SUCCESS.
+	 */
+	receiveCheckRequirementsSuccess( slug ) {
+		invariant( slug, 'slug is required' );
+		return {
+			payload: {
+				slug,
+			},
+			type: RECEIVE_CHECK_REQUIREMENTS_SUCCESS,
+		};
+	},
+
 };
 
 export const baseControls = {
@@ -293,6 +347,29 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case RECEIVE_CHECK_REQUIREMENTS_ERROR: {
+			const { slug, error } = payload;
+
+			return {
+				...state,
+				checkRequirementsResults: {
+					...state.checkRequirementsResults,
+					[ slug ]: error,
+				},
+			};
+		}
+
+		case RECEIVE_CHECK_REQUIREMENTS_SUCCESS: {
+			const { slug } = payload;
+			return {
+				...state,
+				checkRequirementsResults: {
+					...state.checkRequirementsResults,
+					[ slug ]: true,
+				},
+			};
+		}
+
 		default: {
 			return state;
 		}
@@ -309,7 +386,62 @@ const baseResolvers = {
 			yield fetchGetModulesStore.actions.fetchGetModules();
 		}
 	},
+
+	*canActivateModule( slug ) {
+		const registry = yield Data.commonActions.getRegistry();
+		yield Data.commonActions.await( registry.__experimentalResolveSelect( STORE_NAME ).getModules() );
+		const module = registry.select( STORE_NAME ).getModule( slug );
+
+		if ( ! module ) {
+			return;
+		}
+
+		const inactiveModules = [];
+
+		module.dependencies.forEach( ( dependencySlug ) => {
+			const dependedentModule = registry.select( STORE_NAME ).getModule( dependencySlug );
+			if ( ! dependedentModule?.active ) {
+				inactiveModules.push( dependedentModule.name );
+			}
+		} );
+
+		// If we have inactive dependencies, there's no need to check if we can
+		// activate the module until the dependencies have been activated.
+		if ( inactiveModules.length ) {
+			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
+			const messageTemplate = __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' );
+
+			let errorMessage;
+
+			// Not all browsers support Intl.Listformat per
+			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat#Browser_compatibility
+			// We've seen that the built versions don't polyfill for the unsupported browsers (iOS/safari) so we provide a fallback.
+			if ( Intl.Listformat ) {
+				const formatter = new Intl.ListFormat( getLocale(), { style: 'long', type: 'conjunction' } );
+				errorMessage = sprintf( messageTemplate, formatter.format( inactiveModules ), module.name );
+			} else {
+				/* translators: used between list items, there is a space after the comma. */
+				const listSeparator = __( ', ', 'google-site-kit' );
+				errorMessage = sprintf( messageTemplate, inactiveModules.join( listSeparator ), module.name );
+			}
+
+			yield baseActions.receiveCheckRequirementsError( slug, {
+				code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
+				message: errorMessage,
+				data: { inactiveModules },
+			} );
+		} else {
+			try {
+				yield Data.commonActions.await( module.checkRequirements() );
+				yield baseActions.receiveCheckRequirementsSuccess( slug );
+			} catch ( error ) {
+				yield baseActions.receiveCheckRequirementsError( slug, error );
+			}
+		}
+	},
 };
+// Use the canActivateModule resolver for getCheckRequirementsError
+baseResolvers.getCheckRequirementsError = baseResolvers.canActivateModule;
 
 const baseSelectors = {
 	/**
@@ -545,6 +677,48 @@ const baseSelectors = {
 		// update.
 		return state.isAwaitingModulesRefresh;
 	} ),
+
+	/**
+	 * Checks if we can activate a module with a given slug.
+	 *
+	 * Returns `true` if the module can be activated.
+	 * Returns `false` if the module can not be activated.
+	 * Returns `undefined` if slug can not be found in state.
+	 *
+	 * @since 1.22.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} Can activate module status; `undefined` if state is still loading or if no module with that slug exists.
+	 */
+	canActivateModule( state, slug ) {
+		invariant( slug, 'slug is required' );
+		const moduleRequirements = state.checkRequirementsResults[ slug ];
+
+		if ( moduleRequirements === undefined ) {
+			return undefined;
+		}
+
+		return moduleRequirements === true;
+	},
+
+	/**
+	 * Gets the module activation error for a given slug.
+	 *
+	 * Returns `null` if the module can be activated and there is no error.
+	 * Returns `object` containing code, message and optional data property if there is an activation error for a slug.
+	 *
+	 * @since 1.22.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(null|Object)} Activation error for a module slug; `null` if there is no error or an error object if we cannot activate a given module.
+	 */
+	getCheckRequirementsError( state, slug ) {
+		invariant( slug, 'slug is required.' );
+		const requirementsStatus = state.checkRequirementsResults[ slug ];
+		return requirementsStatus === true ? null : requirementsStatus;
+	},
 };
 
 const store = Data.combineStores(

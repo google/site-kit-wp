@@ -38,6 +38,7 @@ import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import applyEntityToReportPath from '../../util/applyEntityToReportPath';
+import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
 
@@ -86,7 +87,7 @@ function DashboardUniqueVisitorsWidget() {
 		};
 
 		return {
-			loading: store.isResolving( 'getReport', [ sparklineArgs ] ) || store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ sparklineArgs ] ) || ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
@@ -107,7 +108,7 @@ function DashboardUniqueVisitorsWidget() {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ( ! sparkData || ! sparkData.length ) && ( ! visitorsData || ! visitorsData.length ) ) {
+	if ( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 

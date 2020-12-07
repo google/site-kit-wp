@@ -29,11 +29,14 @@ import {
 	getDateString,
 	getPreviousWeekDate,
 	isValidDateRange,
+	isValidDateString,
 	INVALID_DATE_RANGE_ERROR,
+	INVALID_DATE_STRING_ERROR,
 } from './utils';
 
 export const initialState = {
 	dateRange: 'last-28-days',
+	referenceDate: getDateString( new Date() ),
 };
 
 /**
@@ -50,6 +53,7 @@ export const initialState = {
 
 // Actions
 const SET_DATE_RANGE = 'SET_DATE_RANGE';
+const SET_REFERENCE_DATE = 'SET_REFERENCE_DATE';
 
 export const actions = {
 	/**
@@ -71,6 +75,30 @@ export const actions = {
 			},
 		};
 	},
+
+	/**
+	 * Sets the current reference date.
+	 *
+	 * This should only be used for testing, to enforce another reference date
+	 * than today.
+	 *
+	 * @since 1.22.0
+	 * @private
+	 *
+	 * @param {string} dateString Reference date string as YYYY-MM-DD.
+	 * @return {Object} Redux-style action.
+	 */
+	setReferenceDate( dateString ) {
+		invariant( dateString, 'Date string is required.' );
+		invariant( isValidDateString( dateString ), INVALID_DATE_STRING_ERROR );
+
+		return {
+			type: SET_REFERENCE_DATE,
+			payload: {
+				dateString,
+			},
+		};
+	},
 };
 
 export const controls = {};
@@ -81,6 +109,11 @@ export function reducer( state, { type, payload } ) {
 			return {
 				...state,
 				dateRange: payload.slug,
+			};
+		case SET_REFERENCE_DATE:
+			return {
+				...state,
+				referenceDate: payload.dateString,
 			};
 		default: {
 			return state;
@@ -103,6 +136,7 @@ export const selectors = {
 		const { dateRange } = state;
 		return dateRange;
 	},
+
 	/**
 	 * Returns the current date range as a list of date strings.
 	 *
@@ -112,14 +146,14 @@ export const selectors = {
 	 * @param {Object}  [options]               Options parameter. Default is: {}.
 	 * @param {boolean} [options.compare]       Set to true if date ranges to compare should be included. Default is: false.
 	 * @param {number}  [options.offsetDays]    Number of days to offset. Default is: 0.
-	 * @param {string}  [options.referenceDate] Used for testing to set a static date. Default is: `new Date()` (today/now).
+	 * @param {string}  [options.referenceDate] Used for testing to set a static date. Default is the datastore's reference date.
 	 * @param {boolean} [options.weekDayAlign]  Set to true if the compared date range should be aligned for the weekdays. Default is: false.
 	 * @return {DateRangeReturnObj}             Object containing dates for date ranges.
 	 */
 	getDateRangeDates( state, {
 		compare = false,
 		offsetDays = 0,
-		referenceDate = getDateString( new Date() ),
+		referenceDate = state.referenceDate,
 		weekDayAlign = false,
 	} = {} ) {
 		const dateRange = selectors.getDateRange( state );
@@ -139,6 +173,18 @@ export const selectors = {
 		}
 
 		return dates;
+	},
+
+	/**
+	 * Returns the current reference date, typically today.
+	 *
+	 * @since 1.22.0
+	 *
+	 * @param {Object} state The current data store's state.
+	 * @return {string} The current reference date as YYYY-MM-DD.
+	 */
+	getReferenceDate( state ) {
+		return state.referenceDate;
 	},
 };
 

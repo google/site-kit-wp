@@ -31,7 +31,7 @@ import ReportZero from '../../../../components/ReportZero';
 import ReportError from '../../../../components/ReportError';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
-import { isDataZeroForReporting } from '../../util';
+import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -80,7 +80,7 @@ function DashboardAllTrafficWidget() {
 		}
 
 		return {
-			loading: store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			report: store.getReport( args ),
 			reportArgs: args,
@@ -98,7 +98,7 @@ function DashboardAllTrafficWidget() {
 		);
 	}
 
-	if ( ! loading && isDataZeroForReporting( report ) ) {
+	if ( isZeroReport( report ) ) {
 		return (
 			<div className="
 				mdc-layout-grid__cell

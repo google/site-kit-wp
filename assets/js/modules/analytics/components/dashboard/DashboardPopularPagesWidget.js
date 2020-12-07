@@ -33,6 +33,7 @@ import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
 import { getDataTableFromData } from '../../../../components/data-table';
 import { numberFormat } from '../../../../util';
+import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
@@ -71,7 +72,7 @@ function DashboardPopularPagesWidget() {
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			analyticsMainURL: store.getServiceURL( { path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }` } ),
 		};
 	} );
@@ -84,7 +85,7 @@ function DashboardPopularPagesWidget() {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! Array.isArray( data?.[ 0 ]?.data?.rows ) ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 

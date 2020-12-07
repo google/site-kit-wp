@@ -36,7 +36,9 @@ import { Cell, Grid, Row } from '../../material-components';
 export default function DashboardApp() {
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				<DateRangeSelector />
+			</Header>
 
 			<DashboardNotifications />
 
@@ -44,15 +46,11 @@ export default function DashboardApp() {
 				<div className="googlesitekit-dashboard">
 					<Grid>
 						<Row>
-							<Cell lgSize={ 10 } mdSize={ 6 } smSize={ 2 }>
+							<Cell size={ 12 }>
 								<PageHeader
 									className=" googlesitekit-heading-2 googlesitekit-dashboard__heading"
 									title={ __( 'Site Overview', 'google-site-kit' ) }
 								/>
-							</Cell>
-
-							<Cell lgSize={ 2 } mdSize={ 2 } smSize={ 2 } className="mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right">
-								<DateRangeSelector />
 							</Cell>
 
 							{ featureFlags.widgets.dashboard.enabled && (

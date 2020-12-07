@@ -21,6 +21,7 @@
  */
 import { Fragment, useState, useRef, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ESCAPE, ENTER, SPACE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -52,7 +53,7 @@ function UserMenu() {
 			// Close the menu if the user presses the Escape key
 			// or if they click outside of the menu.
 			if (
-				( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
+				( ( 'keyup' === e.type && ESCAPE === e.keyCode ) || 'mouseup' === e.type ) &&
 				! menuButtonRef.current.buttonRef.current.contains( e.target ) &&
 				! menuRef.current.menuRef.current.contains( e.target )
 			) {
@@ -62,7 +63,7 @@ function UserMenu() {
 
 		const handleDialogClose = ( e ) => {
 			// Close if Escape key is pressed.
-			if ( 27 === e.keyCode ) {
+			if ( ESCAPE === e.keyCode ) {
 				toggleDialog( false );
 				toggleMenu( false );
 			}
@@ -90,7 +91,7 @@ function UserMenu() {
 
 	const handleMenuItemSelect = useCallback( ( index, e ) => {
 		if (
-			( 'keydown' === e.type && ( 13 === e.keyCode || 32 === e.keyCode ) ) || // Enter or Space is pressed.
+			( 'keydown' === e.type && ( ENTER === e.keyCode || SPACE === e.keyCode ) ) || // Enter or Space is pressed.
 			'click' === e.type // Mouse is clicked
 		) {
 			switch ( index ) {
@@ -126,7 +127,7 @@ function UserMenu() {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-dropdown-menu mdc-menu-surface--anchor">
+			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor">
 				<Button
 					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown"

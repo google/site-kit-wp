@@ -21,6 +21,11 @@
 	@include googlesitekit-inner-padding;
 	padding-top: 10px;
 
+	.googlesitekit-opt-in {
+		margin-bottom: 8px;
+		margin-top: 8px;
+	}
+
 	.googlesitekit-setup__wrapper {
 
 		@include shadow;
@@ -50,12 +55,8 @@
 
 	.googlesitekit-setup__title {
 		display: inline-block;
-		font-family: $f-primary;
-		margin: 0 0 10px 0;
-	}
-
-	.googlesitekit-setup__description {
-		margin: 0;
+		font-family: $f-secondary;
+		margin: 0.67em 0;
 	}
 
 	.googlesitekit-setup__notice {
@@ -107,6 +108,12 @@
 	.googlesitekit-setup__footer {
 		border-top: 1px solid $c-border-light;
 	}
+
+	.googlesitekit-setup__splash {
+		border-bottom: 1px solid $c-border-light;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
 }
 
 .googlesitekit-setup-compat {
@@ -121,14 +128,21 @@
 	margin-right: 16px;
 }
 
-.googlesitekit-wizard {
+.googlesitekit-setup__warning {
+	align-items: center;
+	display: flex;
 
-	.googlesitekit-opt-in {
-		margin-bottom: 8px;
-		margin-top: 8px;
+	svg {
+		width: 34px;
+	}
+
+	div {
+		flex: 1;
+		margin: 0 0 0 $grid-gap-desktop;
 	}
 }
 
+// feature: user-input
 .googlesitekit-setup__content {
 	margin: 0 auto;
 	max-width: $max-width-setup-content;
@@ -137,6 +151,10 @@
 	@media (min-width: $bp-desktop) {
 		max-width: none;
 		padding: 0;
+	}
+
+	.googlesitekit-setup__description {
+		margin: 0;
 	}
 
 	.googlesitekit-opt-in {

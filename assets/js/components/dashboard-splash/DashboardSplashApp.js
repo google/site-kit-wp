@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import SetupUsingProxy from '../setup/setup-proxy';
+import SetupUsingProxy from '../setup/SetupUsingProxy';
 import LegacyDashboardSplashApp from './LegacyDashboardSplashApp';
 const { useSelect } = Data;
 

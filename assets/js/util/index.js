@@ -50,6 +50,7 @@ export * from './standalone';
 export * from './storage';
 export * from './i18n';
 export * from './helpers';
+export * from './markdown';
 
 /**
  * Removes a parameter from a URL string.
@@ -135,7 +136,7 @@ export const prepareForReadableLargeNumber = ( number ) => {
  * @return {string} The formatted number.
  */
 export const readableLargeNumber = ( number, currencyCode = false ) => {
-	// Cast parseable values to numeric types.
+	// Cast parsable values to numeric types.
 	number = isFinite( number ) ? number : Number( number );
 
 	if ( ! isFinite( number ) ) {

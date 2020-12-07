@@ -31,10 +31,11 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
-import CTA from '../../../../components/notifications/cta';
+import CTA from '../../../../components/legacy-notifications/cta';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
 import { readableLargeNumber, changeToPercent } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
+import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 
@@ -68,7 +69,7 @@ function DashboardGoalsWidget() {
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
-			loading: store.isResolving( 'getReport', [ args ] ) || store.isResolving( 'getGoals', [] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ) || ! store.hasFinishedResolution( 'getGoals', [] ),
 			serviceURL: store.getServiceURL( { path: `/report/conversions-goals-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` } ),
 			goals: store.getGoals(),
 		};
@@ -93,7 +94,7 @@ function DashboardGoalsWidget() {
 		);
 	}
 
-	if ( ! data || ! data.length ) {
+	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="analytics" />;
 	}
 
