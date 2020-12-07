@@ -155,36 +155,6 @@ storiesOf( 'Global/Notifications', module )
 			type="win-stats-increase"
 		/>
 	) )
-	.add( 'Publishing Win', () => (
-		<Notification
-			id="notification-id"
-			title={ __( 'Congrats on five published posts', 'google-site-kit' ) }
-			description={ __( 'That’s out of this world. Here are the combined stats for your posts', 'google-site-kit' ) }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			format="large"
-			winImage={ global._googlesitekitLegacyData.admin.assetsRoot + rocketImage }
-			blockData={
-				[
-					{
-						title: 'Total Views',
-						datapoint: 413,
-						datapointUnit: '',
-					},
-					{
-						title: 'Average Impressions',
-						datapoint: 735,
-						datapointUnit: '',
-					},
-					{
-						title: 'Average CTR',
-						datapoint: 12.9,
-						datapointUnit: '%',
-					},
-				]
-			}
-			type="win-stats"
-		/>
-	) )
 	.add( 'Total Stats', () => (
 		<Notification
 			id="notification-id"

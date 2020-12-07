@@ -343,19 +343,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'global-notifications--publishing-win',
-		kind: 'Global/Notifications',
-		name: 'Publishing Win',
-		story: 'Publishing Win',
-		parameters: {
-			fileName: './stories/notifications.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
 		id: 'global-notifications--total-stats',
 		kind: 'Global/Notifications',
 		name: 'Total Stats',
