@@ -34,13 +34,13 @@ import './components/data';
 import './components/legacy-notifications';
 import Root from './components/root';
 import ModuleApp from './components/module-app';
-import Setup from './components/setup/ModuleSetup';
+import ModuleSetup from './components/setup/ModuleSetup';
 
 function GoogleSitekitModule() {
 	const { moduleToSetup, showModuleSetupWizard } = global._googlesitekitLegacyData.setup;
 
 	if ( showModuleSetupWizard ) {
-		return <Setup moduleSlug={ moduleToSetup } />;
+		return <ModuleSetup moduleSlug={ moduleToSetup } />;
 	}
 
 	return <ModuleApp />;
