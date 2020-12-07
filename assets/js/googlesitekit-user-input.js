@@ -30,7 +30,7 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import './components/notifications';
+import './components/legacy-notifications';
 import Root from './components/root';
 import UserInputApp from './components/user-input/UserInputApp';
 

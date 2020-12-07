@@ -26,10 +26,10 @@ import { render, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { clearWebStorage } from './util';
-import './components/notifications';
+import './components/legacy-notifications';
 import Root from './components/root';
 import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
-import NotificationCounter from './components/notifications/notification-counter';
+import NotificationCounter from './components/legacy-notifications/notification-counter';
 
 const GoogleSitekitDashboardSplash = () => {
 	return (

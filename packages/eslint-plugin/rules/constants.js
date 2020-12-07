@@ -1,5 +1,5 @@
 /**
- * Feature flags configuration.
+ * ESLint rules constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,19 +16,9 @@
  * limitations under the License.
  */
 
-exports.featureFlags = {
-	widgets: {
-		dashboard: {
-			enabled: 'development',
-		},
-		pageDashboard: {
-			enabled: 'development',
-		},
-	},
-	userInput: {
-		enabled: 'development',
-	},
-	serviceSetupV2: {
-		enabled: 'development',
-	},
+// Concatenate this so that it's not replaced.
+const NEXT_VERSION = 'n.e.' + 'x.t';
+
+module.exports = {
+	NEXT_VERSION,
 };

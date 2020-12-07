@@ -17,10 +17,22 @@
  */
 
 .googlesitekit-accordion {
+	border: 1px solid $c-mercury;
+
+	.googlesitekit-accordion__header,
+	.googlesitekit-accordion__content {
+		padding: 14px 20px;
+	}
+
+	.googlesitekit-accordion__header,
+	.googlesitekit-accordion__content p {
+		font-size: 14px;
+		line-height: 20px;
+	}
 
 	.googlesitekit-accordion__header {
 		cursor: pointer;
-		padding: 0 ($grid-gap-phone * 2) 0 0;
+		padding-right: $grid-gap-phone * 2;
 		position: relative;
 		width: 100%;
 
@@ -46,8 +58,12 @@
 			width: 20px;
 		}
 
-		&.is-active::after {
-			transform: translateY(-50%) rotate(180deg);
+		&.is-active {
+			font-weight: 700;
+
+			&::after {
+				transform: translateY(-50%) rotate(180deg);
+			}
 		}
 	}
 
@@ -60,5 +76,13 @@
 				display: block;
 			}
 		}
+
+		p {
+			margin-top: 0;
+		}
 	}
+}
+
+.googlesitekit-accordion + .googlesitekit-accordion {
+	border-top-width: 0;
 }

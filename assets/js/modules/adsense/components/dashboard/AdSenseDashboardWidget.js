@@ -31,10 +31,10 @@ import AdSenseIcon from '../../../../../svg/adsense.svg';
 import AdSensePerformanceWidget from './AdSensePerformanceWidget';
 import Alert from '../../../../components/alert';
 import DashboardAdSenseTopPages from './DashboardAdSenseTopPages';
-import getNoDataComponent from '../../../../components/notifications/nodata';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
+import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
+import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
 import ProgressBar from '../../../../components/ProgressBar';
-import ModuleSettingsWarning from '../../../../components/notifications/module-settings-warning';
+import ModuleSettingsWarning from '../../../../components/legacy-notifications/module-settings-warning';
 import { getModulesData } from '../../../../util';
 import DateRangeSelector from '../../../../components/DateRangeSelector';
 import HelpLink from '../../../../components/HelpLink';
@@ -188,7 +188,7 @@ class AdSenseDashboardWidget extends Component {
 							) }
 
 							<Cell className={ wrapperClass } size={ 12 }>
-								<ModuleSettingsWarning slug="adsense" context="module-dashboard" />
+								<ModuleSettingsWarning slug="adsense" />
 							</Cell>
 
 							<Cell className={ wrapperClass } size={ 12 }>
