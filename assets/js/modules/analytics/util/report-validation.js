@@ -57,3 +57,36 @@ export function isValidDimensions( dimensions ) {
 		return dimension.hasOwnProperty( 'name' ) && typeof dimension.name === 'string';
 	} );
 }
+
+/**
+ * Verifies provided dimensionFilters to make sure they match allowed values. It can be a string,
+ * array of strings, an object with "name" field, array of such objects or an array of strings
+ * and objects.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string|string[]|Object|Object[]} dimensions       The dimensions to check.
+ * @param {Object}                          dimensionFilters The dimension filters to check.
+ * @return {boolean} TRUE if dimensions are valid, otherwise FALSE.
+ */
+export function isValidDimensionFilters( dimensions, dimensionFilters ) {
+	const validDimensions = [];
+
+	const parseDimension = ( dimension, dimensionsCollection ) => {
+		if ( typeof dimension === 'string' ) {
+			dimensionsCollection.push( dimension );
+		} else if ( typeof dimension === 'object' && dimension.hasOwnProperty( 'name' ) ) {
+			dimensionsCollection.push( dimension.name );
+		}
+	};
+
+	if ( Array.isArray( dimensions ) ) {
+		dimensions.forEach( ( singleDimension ) => parseDimension( singleDimension, validDimensions ) );
+	} else {
+		parseDimension( dimensions, validDimensions );
+	}
+
+	// Ensure every dimensionFilter key corresponds to a valid dimension and ensure every value is a string.
+	return Object.keys( dimensionFilters ).every( ( dimensionFilterKey ) => validDimensions.include( dimensionFilterKey ) ) &&
+		Object.values( dimensionFilters ).every( ( dimensionFilterValue ) => typeof dimensionFilterValue === 'string' && dimensionFilterValue.length );
+}
