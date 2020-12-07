@@ -128,10 +128,12 @@ class Notification extends Component {
 		const {
 			children,
 			id,
+			className,
 			title,
 			description,
 			blockData,
 			winImage,
+			WinImageSVG,
 			SmallImageSVG,
 			smallImage,
 			format,
@@ -267,6 +269,7 @@ class Notification extends Component {
 			<section
 				ref={ this.cardRef }
 				className={ classnames(
+					className,
 					'googlesitekit-publisher-win',
 					{
 						[ `googlesitekit-publisher-win--${ format }` ]: format,
@@ -347,7 +350,7 @@ class Notification extends Component {
 
 						</div>
 
-						{ winImage &&
+						{ ( winImage || WinImageSVG ) &&
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--order-1-phone
@@ -356,7 +359,8 @@ class Notification extends Component {
 								mdc-layout-grid__cell--span-4-desktop
 							">
 								<div className="googlesitekit-publisher-win__image-large">
-									<img alt="" src={ winImage } />
+									{ winImage && <img alt="" src={ winImage } /> }
+									{ WinImageSVG && <WinImageSVG /> }
 								</div>
 							</div>
 						}
@@ -381,6 +385,7 @@ class Notification extends Component {
 
 Notification.propTypes = {
 	id: PropTypes.string.isRequired,
+	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
 	learnMoreURL: PropTypes.string,
@@ -388,6 +393,7 @@ Notification.propTypes = {
 	learnMoreLabel: PropTypes.string,
 	blockData: PropTypes.array,
 	winImage: PropTypes.string,
+	WinImageSVG: PropTypes.elementType,
 	smallImage: PropTypes.string,
 	SmallImageSVG: PropTypes.elementType,
 	format: PropTypes.string,
@@ -410,6 +416,7 @@ Notification.propTypes = {
 
 Notification.defaultProps = {
 	isDismissable: true,
+	className: '',
 	dismissExpires: 0,
 	showOnce: false,
 };

@@ -45,7 +45,7 @@ const resetFeatures = () => {
 };
 const resetGlobals = () => {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );
-	global._googlesitekitLegacyData.admin.assetsRoot = './assets/';
+	global._googlesitekitLegacyData.admin.assetsRoot = '';
 	global._googlesitekitLegacyData.isStorybook = true;
 	global._googlesitekitBaseData = {
 		homeURL: 'http://example.com/',
@@ -81,7 +81,7 @@ addDecorator( ( story ) => {
 
 // Global Decorator.
 addDecorator( ( story ) => (
-	<div className="googlesitekit-plugin-preview">
+	<div className="googlesitekit-plugin-preview js">
 		<div className="googlesitekit-plugin">{ story() }</div>
 	</div>
 ) );

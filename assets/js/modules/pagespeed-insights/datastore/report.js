@@ -95,7 +95,7 @@ const baseSelectors = {
 	/**
 	 * Gets report audits for the given strategy and URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Report audits.
@@ -121,7 +121,7 @@ const baseSelectors = {
 	 * The selector essentially filters audits to include only those that have
 	 * a description available in the requested stack pack.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Report audits.
@@ -146,7 +146,7 @@ const baseSelectors = {
 	/**
 	 * Gets stack pack descriptions for a sepcific report audit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|null|undefined)} Stack pack description object for an
