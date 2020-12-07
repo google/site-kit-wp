@@ -114,16 +114,18 @@ async function makeRelease() {
 	await fse.ensureDir( pluginDir );
 
 	// Copy files to the release directory.
-	await Promise.all( [
+	const fileCopyPromises = [
 		cp( 'readme.txt' ),
 		cp( 'google-site-kit.php' ),
 		cp( 'uninstall.php' ),
 		cp( 'dist/assets' ),
 		cp( 'includes' ),
 		cp( 'third-party' ),
-	].concat(
-		'production' !== flagMode ? cp( 'dist/config.json' ) : []
-	) );
+	];
+	if ( 'production' !== flagMode ) {
+		fileCopyPromises.push( cp( 'dist/config.json' ) );
+	}
+	await Promise.all( fileCopyPromises );
 
 	// Archive the release directory.
 	const archive = archiver( 'zip', { zlib: { level: 9 } } );
