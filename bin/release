@@ -125,7 +125,7 @@ async function makeRelease() {
 		'production' !== flagMode ? cp( 'dist/config.json' ) : []
 	) );
 
-	// Archvie the release directory.
+	// Archive the release directory.
 	const archive = archiver( 'zip', { zlib: { level: 9 } } );
 	archive.pipe( fse.createWriteStream( filename ) );
 	archive.directory( pluginDir, 'google-site-kit' );
