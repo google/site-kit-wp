@@ -32,6 +32,11 @@ const getRepoInfo = require( 'git-repo-info' );
 const sanitizeFilename = require( 'sanitize-filename' );
 
 /**
+ * Internal dependencies
+ */
+const { flagMode } = require( '../dist/config.json' );
+
+/**
  * Retrieves the plugin version from the plugin's file header.
  *
  * @since 1.20.0
@@ -116,7 +121,9 @@ async function makeRelease() {
 		cp( 'dist/assets' ),
 		cp( 'includes' ),
 		cp( 'third-party' ),
-	] );
+	].concat(
+		'production' !== flagMode ? cp( 'dist/config.json' ) : []
+	) );
 
 	// Archvie the release directory.
 	const archive = archiver( 'zip', { zlib: { level: 9 } } );
