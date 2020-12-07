@@ -1,5 +1,5 @@
 /**
- * ESLint plugin config.
+ * ESLint rules constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,15 +16,9 @@
  * limitations under the License.
  */
 
+// Concatenate this so that it's not replaced.
+const NEXT_VERSION = 'n.e.' + 'x.t';
+
 module.exports = {
-	rules: {
-		'sitekit/camelcase-acronyms': [ 'error' ],
-		'sitekit/jsdoc-third-person': [ 'error' ],
-		'sitekit/jsdoc-fullstop': [ 'error' ],
-		'sitekit/jsdoc-newlines': [ 'error' ],
-		'sitekit/jsdoc-requires-since': [ 'error' ],
-		'sitekit/jsdoc-capitalization': [ 'error' ],
-		'sitekit/jsdoc-tag-grouping': [ 'error' ],
-		'sitekit/jsdoc-tag-order': [ 'error' ],
-	},
+	NEXT_VERSION,
 };

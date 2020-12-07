@@ -165,7 +165,7 @@ final class OAuth_Client {
 	 *
 	 * Copied from the default $retryMap within Google_Client/Task/Runner with the addition of lighthouseError.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 * @var array $retry_map Map of errors with retry counts.
 	 */
 	protected $retry_map = array(

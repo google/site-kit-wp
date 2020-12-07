@@ -145,33 +145,7 @@ describe( 'modules/pagespeed-insights report', () => {
 
 			const usesTextCompressionDescription = 'You can enable text compression in your web server configuration.';
 
-			const report = {
-				...fixtures.pagespeedDesktop,
-				lighthouseResult: {
-					...fixtures.pagespeedDesktop.lighthouseResult,
-					stackPacks: [
-						{
-							id: 'wordpress',
-							iconDataURL: '',
-							title: 'WordPress',
-							descriptions: {
-								'unminified-css': 'A number of [WordPress plugins](https://wordpress.org/plugins/search/minify+css/) can speed up your site by concatenating, minifying, and compressing your styles. You may also want to use a build process to do this minification up-front if possible.',
-								'uses-text-compression': usesTextCompressionDescription,
-								'uses-webp-images': 'Consider using a [plugin](https://wordpress.org/plugins/search/convert+webp/) or service that will automatically convert your uploaded images to the optimal formats.',
-							},
-						},
-						{
-							id: 'amp',
-							iconDataURL: '',
-							title: 'AMP',
-							descriptions: {
-								'uses-text-compression': usesTextCompressionDescription,
-								'server-response-time': 'Themes, plugins, and server specifications all contribute to server response time. Consider finding a more optimized theme, carefully selecting an optimization plugin, and/or upgrading your server.',
-							},
-						},
-					],
-				},
-			};
+			const report = fixtures.pagespeedDesktop;
 
 			beforeEach( () => {
 				registry.dispatch( STORE_NAME ).receiveGetReport( report, { url, strategy } );
@@ -185,7 +159,7 @@ describe( 'modules/pagespeed-insights report', () => {
 			} );
 
 			it( 'should return an empty array for non-existing audit', () => {
-				const stackPack = registry.select( STORE_NAME ).getStackPackDescription( url, strategy, 'unused-css-rules', 'wordpress' );
+				const stackPack = registry.select( STORE_NAME ).getStackPackDescription( url, strategy, 'dom-size', 'wordpress' );
 				expect( stackPack ).toBeNull();
 			} );
 		} );

@@ -27,7 +27,7 @@ import { disableFeature } from './utils/features';
 storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {
 		global._googlesitekitLegacyData = wpDashboardData;
-		global._googlesitekitLegacyData.admin.assetsRoot = '/assets/';
+		global._googlesitekitLegacyData.admin.assetsRoot = ''; // See .storybook/config.js
 		global._googlesitekitLegacyData.canAdsRun = true;
 		disableFeature( 'widgets.wpDashboard' );
 

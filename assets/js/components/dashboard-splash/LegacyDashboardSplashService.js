@@ -31,10 +31,17 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import Link from '../Link';
+import serviceImageAnalytics from '../../../images/service-analytics.jpg';
+import serviceImageSearchConsole from '../../../images/service-search_console.jpg';
+
+const serviceImages = {
+	analytics: serviceImageAnalytics,
+	search_console: serviceImageSearchConsole,
+};
 
 class LegacyDashboardSplashService extends Component {
 	render() {
-		const imagePath = global._googlesitekitLegacyData.admin.assetsRoot + 'images/';
+		const { assetsRoot } = global._googlesitekitLegacyData.admin;
 		const { image, title, content, link, linkText, opposite } = this.props;
 
 		return (
@@ -43,7 +50,7 @@ class LegacyDashboardSplashService extends Component {
 					'googlesitekit-splash-service',
 					{ 'googlesitekit-splash-service--opposite': opposite }
 				) }
-				style={ { backgroundImage: `url(${ imagePath }service-${ image }.jpg)` } }
+				style={ { backgroundImage: `url(${ assetsRoot + serviceImages[ image ] })` } }
 			>
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
