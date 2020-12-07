@@ -59,19 +59,18 @@ export function isValidDimensions( dimensions ) {
 }
 
 /**
- * Verifies provided dimensionFilters to make sure they match allowed values. It can be a string,
- * array of strings, an object with "name" field, array of such objects or an array of strings
- * and objects.
+ * Verifies provided dimensionFilters to make sure they match allowed values found in dimensions.
  *
  * @since n.e.x.t
  *
- * @param {string|string[]|Object|Object[]} dimensions       The dimensions to check.
  * @param {Object}                          dimensionFilters The dimension filters to check.
+ * @param {string|string[]|Object|Object[]} dimensions       The dimensions to check.
  * @return {boolean} TRUE if dimensions are valid, otherwise FALSE.
  */
-export function isValidDimensionFilters( dimensions, dimensionFilters ) {
+export function isValidDimensionFilters( dimensionFilters, dimensions ) {
 	const validDimensions = [];
 
+	// Grab the dimension from a single dimension string/object.
 	const parseDimension = ( dimension, dimensionsCollection ) => {
 		if ( typeof dimension === 'string' ) {
 			dimensionsCollection.push( dimension );
