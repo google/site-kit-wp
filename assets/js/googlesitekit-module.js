@@ -25,8 +25,7 @@ import './modules';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { applyFilters } from '@wordpress/hooks';
-import { Component, render } from '@wordpress/element';
+import { render } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,38 +34,16 @@ import './components/data';
 import './components/legacy-notifications';
 import Root from './components/root';
 import ModuleApp from './components/module-app';
-import Setup from './components/setup/ModuleSetup';
+import ModuleSetup from './components/setup/ModuleSetup';
 
-class GoogleSitekitModule extends Component {
-	constructor( props ) {
-		super( props );
+function GoogleSitekitModule() {
+	const { moduleToSetup, showModuleSetupWizard } = global._googlesitekitLegacyData.setup;
 
-		this.state = {
-			showModuleSetupWizard: global._googlesitekitLegacyData.setup.showModuleSetupWizard,
-		};
+	if ( showModuleSetupWizard ) {
+		return <ModuleSetup moduleSlug={ moduleToSetup } />;
 	}
 
-	render() {
-		const {
-			showModuleSetupWizard,
-		} = this.state;
-
-		const { moduleToSetup } = global._googlesitekitLegacyData.setup;
-		const { currentAdminPage } = global._googlesitekitLegacyData.admin;
-
-		/**
-		 * Filters whether to show the Module setup wizard when showModuleSetupWizard is true.
-		 *
-		 * Modules can opt out of the wizard setup flow by returning false.
-		 */
-		const moduleHasSetupWizard = applyFilters( 'googlesitekit.moduleHasSetupWizard', true, currentAdminPage );
-
-		if ( showModuleSetupWizard && moduleHasSetupWizard ) {
-			return <Setup moduleSlug={ moduleToSetup } />;
-		}
-
-		return <ModuleApp />;
-	}
+	return <ModuleApp />;
 }
 
 // Initialize the app once the DOM is ready.

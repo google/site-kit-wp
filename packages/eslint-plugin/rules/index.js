@@ -20,6 +20,7 @@ module.exports = {
 	'camelcase-acronyms': require( './camelcase-acronyms' ),
 	'jsdoc-capitalization': require( './jsdoc-capitalization' ),
 	'jsdoc-fullstop': require( './jsdoc-fullstop' ),
+	'jsdoc-newlines': require( './jsdoc-newlines' ),
 	'jsdoc-requires-since': require( './jsdoc-requires-since.js' ),
 	'jsdoc-tag-grouping': require( './jsdoc-tag-grouping' ),
 	'jsdoc-tag-order': require( './jsdoc-tag-order' ),

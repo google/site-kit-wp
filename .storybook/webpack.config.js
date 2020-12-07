@@ -27,6 +27,7 @@ const path = require( 'path' );
 const mapValues = require( 'lodash/mapValues' );
 const omitBy = require( 'lodash/omitBy' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
+const { ProvidePlugin } = require( 'webpack' );
 
 /**
  * Internal dependencies
@@ -56,6 +57,9 @@ module.exports = async ( { config } ) => {
 	config.plugins = [
 		...config.plugins,
 		new MiniCssExtractPlugin(),
+		new ProvidePlugin( {
+			React: 'react',
+		} ),
 	];
 
 	config.module.rules.push(
@@ -88,6 +92,7 @@ module.exports = async ( { config } ) => {
 
 	// exclude existing svg rule created by storybook before pushing custom rule
 	const fileLoaderRule = config.module.rules.find( ( rule ) => rule.test && rule.test.test( '.svg' ) );
+	fileLoaderRule.query.name = '[path][name].[ext]';
 	fileLoaderRule.exclude = /\.svg$/;
 
 	config.module.rules.push( mainConfig.svgRule );
