@@ -63,11 +63,14 @@ export function isValidDimensions( dimensions ) {
  *
  * @since n.e.x.t
  *
- * @param {Object}                          dimensionFilters The dimension filters to check.
- * @param {string|string[]|Object|Object[]} dimensions       The dimensions to check.
+ * @param {Object}                               dimensionFilters The dimension filters to check.
+ * @param {string|string[]|Object|Object[]|null} dimensions       The dimensions to check.
  * @return {boolean} TRUE if dimensions are valid, otherwise FALSE.
  */
 export function isValidDimensionFilters( dimensionFilters, dimensions ) {
+	if ( ! dimensions ) {
+		return false;
+	}
 	const validDimensions = [];
 
 	// Grab the dimension from a single dimension string/object.
