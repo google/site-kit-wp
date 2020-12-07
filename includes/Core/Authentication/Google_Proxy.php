@@ -31,7 +31,7 @@ class Google_Proxy {
 	const OAUTH2_DELETE_SITE_URI  = '/o/oauth2/delete-site/';
 	const SETUP_URI               = '/site-management/setup/';
 	const PERMISSIONS_URI         = '/site-management/permissions/';
-	const USER_INPUT_SETTINGS_URI = '/settings/';
+	const USER_INPUT_SETTINGS_URI = '/site-management/settings/';
 	const ACTION_SETUP            = 'googlesitekit_proxy_setup';
 	const ACTION_PERMISSIONS      = 'googlesitekit_proxy_permissions';
 

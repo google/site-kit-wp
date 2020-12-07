@@ -126,19 +126,27 @@ class User_Input_Settings {
 	 * @return array|WP_Error User input settings.
 	 */
 	private function sync_with_proxy( $settings = null ) {
-		$user_input_settings_url  = $this->authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
+		$user_input_settings_url = $this->authentication->get_google_proxy()->url( Google_Proxy::USER_INPUT_SETTINGS_URI );
+		$creds                   = $this->authentication->credentials()->get();
+
 		$user_input_settings_args = array(
 			'headers' => array(
 				'Authorization' => 'Bearer ' . $this->authentication->get_oauth_client()->get_access_token(),
+				'Content-Type'  => 'application/json',
+			),
+			'body'    => array(
+				'site_id'     => $creds['oauth2_client_id'],
+				'site_secret' => $creds['oauth2_client_secret'],
 			),
 		);
 
 		if ( ! empty( $settings ) ) {
-			$user_input_settings_args['headers']['Content-Type'] = 'application/json';
-			$user_input_settings_args['body']                    = wp_json_encode( $settings );
+			$user_input_settings_args['body']['settings']       = $settings;
+			$user_input_settings_args['body']['client_user_id'] = get_current_user_id();
 		}
 
-		$response = wp_remote_post( $user_input_settings_url, $user_input_settings_args );
+		$response = wp_remote_post( $user_input_settings_url, wp_json_encode( $user_input_settings_args ) );
+
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
