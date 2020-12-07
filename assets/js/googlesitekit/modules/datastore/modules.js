@@ -40,7 +40,7 @@ import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './const
 import { STORE_NAME as CORE_SITE } from '../../datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-import { listFlatten } from '../../../util';
+import { listFormat } from '../../../util';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -410,7 +410,7 @@ const baseResolvers = {
 		if ( inactiveModules.length ) {
 			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
 			const messageTemplate = __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' );
-			const errorMessage = sprintf( messageTemplate, listFlatten( inactiveModules ), module.name );
+			const errorMessage = sprintf( messageTemplate, listFormat( inactiveModules ), module.name );
 
 			yield baseActions.receiveCheckRequirementsError( slug, {
 				code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,

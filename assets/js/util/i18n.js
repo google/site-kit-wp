@@ -20,6 +20,10 @@
  * External dependencies
  */
 import { get } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,7 +44,7 @@ export const numberFormat = ( number, options = {} ) => {
 };
 
 /**
- * Flattens an array using the JS Internationalization List Format API with a fallback if it is unavailable.
+ * Flattens an array of strings into a string using the JS Internationalization List Format API.
  *
  * @since n.e.x.t
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat|`options` parameter} For all available options.
@@ -54,7 +58,7 @@ export const numberFormat = ( number, options = {} ) => {
  *                                  Also available 'unit' (5 pounds, 12 ounces)
  * @return {string} The flattened list.
  */
-export const listFlatten = ( list, options = {} ) => {
+export const listFormat = ( list, options = {} ) => {
 	const { locale = getLocale(), style = 'long', type = 'conjunction' } = options;
 
 	// Not all browsers support Intl.Listformat per

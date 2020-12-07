@@ -31,7 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Notification from '../legacy-notifications/notification';
-import { getModulesData, listFlatten } from '../../util';
+import { getModulesData, listFormat } from '../../util';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
@@ -91,7 +91,7 @@ export default function UnsatisfiedScopesAlert() {
 			message = sprintf(
 				/* translators: %s: List of product names */
 				__( 'Site Kit can’t access all relevant data because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup for: %s – make sure to approve all permissions at the authentication stage.', 'google-site-kit' ),
-				listFlatten( moduleNames )
+				listFormat( moduleNames )
 			);
 			break;
 		case MESSAGE_SINGULAR:

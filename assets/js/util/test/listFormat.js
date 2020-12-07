@@ -1,28 +1,28 @@
 /**
  * Internal dependencies
  */
-import { listFlatten } from '../';
+import { listFormat } from '../';
 
-describe( 'listFlatten', () => {
+describe( 'listFormat', () => {
 	it( 'flattens a list of strings correctly according to the locale provided', () => {
 		expect(
-			listFlatten( [ 'A', 'B' ] )
+			listFormat( [ 'A', 'B' ] )
 		).toStrictEqual( 'A and B' );
 
 		expect(
-			listFlatten( [ 'A', 'B', 'C' ], { locale: 'en-US', type: 'conjunction' } )
+			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', type: 'conjunction' } )
 		).toStrictEqual( 'A, B, and C' );
 
 		expect(
-			listFlatten( [ 'A', 'B', 'C' ], { locale: 'en-US', type: 'disjunction' } )
+			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', type: 'disjunction' } )
 		).toStrictEqual( 'A, B, or C' );
 
 		expect(
-			listFlatten( [ 'A', 'B', 'C' ], { locale: 'en-US', style: 'short' } )
+			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', style: 'short' } )
 		).toStrictEqual( 'A, B, & C' );
 
 		expect(
-			listFlatten( [ 'A', 'B', 'C' ], { locale: 'en-US', style: 'short', type: 'unit' } )
+			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', style: 'short', type: 'unit' } )
 		).toStrictEqual( 'A, B, C' );
 	} );
 
@@ -55,6 +55,6 @@ describe( 'listFlatten', () => {
 	];
 
 	it.each( siteKitLocales )( 'flattens lists correctly with locale variant %s', ( locale, value, expected ) => {
-		expect( listFlatten( value, { locale } ) ).toStrictEqual( expected );
+		expect( listFormat( value, { locale } ) ).toStrictEqual( expected );
 	} );
 } );
