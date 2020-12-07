@@ -1,7 +1,7 @@
 /**
  * WPDashboardImpressions component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -56,6 +57,12 @@ const WPDashboardImpressions = () => {
 		};
 	} );
 
+	useEffect( () => {
+		if ( error ) {
+			trackEvent( 'plugin_setup', 'search_console_error', error.message );
+		}
+	}, [ error ] );
+
 	if ( ! data || ! data.length ) {
 		return null;
 	}
@@ -72,7 +79,6 @@ const WPDashboardImpressions = () => {
 	}
 
 	if ( error ) {
-		trackEvent( 'plugin_setup', 'search_console_error', error.message );
 		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 

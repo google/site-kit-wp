@@ -1,7 +1,7 @@
 /**
  * WPDashboardUniqueVisitors component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,7 @@ import { parseTotalUsersData, userReportDataDefaults } from '../../modules/analy
 const { useSelect } = Data;
 
 const WPDashboardUniqueVisitors = () => {
-	const {
-		data,
-		loading,
-		error,
-	} = useSelect( ( select ) => {
+	const { data, loading, error } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
 		const commonArgs = {

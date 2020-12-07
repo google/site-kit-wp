@@ -1,7 +1,7 @@
 /**
  * WPDashboardApp component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ const WPDashboardApp = () => {
 	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
-	const wpDashboardEnabled = featureFlags.widgets.wpDashboard.enabled;
 
 	if ( ! dashboardURL ) {
 		return null;
@@ -55,18 +54,17 @@ const WPDashboardApp = () => {
 				</Link>
 			</div>
 			<div className="googlesitekit-wp-dashboard-stats googlesitekit-wp-dashboard-stats--fourup">
-				{ wpDashboardEnabled && (
+				{ featureFlags.widgets.wpDashboard.enabled && (
 					<Fragment>
 						<WPDashboardImpressions />
 						<WPDashboardClicks />
-						{ ( analyticsModuleActive && analyticsModuleConnected ) ? (
+						{ analyticsModuleActive && analyticsModuleConnected && (
 							<Fragment>
 								<WPDashboardUniqueVisitors />
 								<WPDashboardSessionDuration />
 							</Fragment>
-						) : (
-							<AnalyticsInactiveCTA />
 						) }
+						{ ( ! analyticsModuleActive || ! analyticsModuleConnected ) && <AnalyticsInactiveCTA /> }
 					</Fragment>
 				) }
 			</div>
