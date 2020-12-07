@@ -19,25 +19,12 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as MODULES_STORE } from '../../../../googlesitekit/modules/datastore/constants';
-import DashboardPageSpeedCTA from './DashboardPageSpeedCTA';
 import DashboardPageSpeed from './DashboardPageSpeed';
-const { useSelect } = Data;
+import whenActive from '../../../../util/when-active';
 const { Widget } = Widgets.components;
 
 function DashboardPageSpeedWidget() {
-	const pagespeedInsightsModule = useSelect( ( select ) => select( MODULES_STORE ).getModule( 'pagespeed-insights' ) );
-	if ( ! pagespeedInsightsModule ) {
-		return null;
-	}
-
-	const { active, connected } = pagespeedInsightsModule;
-	if ( ! active || ! connected ) {
-		return <DashboardPageSpeedCTA />;
-	}
-
 	// Pass class to omit regular widget padding and legacy widget class to use original styles.
 	return (
 		<Widget
@@ -50,4 +37,8 @@ function DashboardPageSpeedWidget() {
 	);
 }
 
-export default DashboardPageSpeedWidget;
+export default whenActive( {
+	moduleName: 'pagespeed-insights',
+	// FallbackComponent: () => <ActivateModuleCTA slug="pagespeed-insights" />, // TODO: waiting for #2299
+	// IncompleteComponent: () => <CompleteModuleActivationCTA slug="pagespeed-insights" />, // TODO: waiting for #2299
+} )( DashboardPageSpeedWidget );

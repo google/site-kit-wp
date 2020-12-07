@@ -161,5 +161,6 @@ function DashboardUniqueVisitorsWidget() {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	fallbackComponent: AnalyticsInactiveCTA,
+	FallbackComponent: () => <AnalyticsInactiveCTA />,
+	// IncompleteComponent: () => <CompleteModuleActivationCTA slug="analytics" />, // TODO: waiting for #2299
 } )( DashboardUniqueVisitorsWidget );
