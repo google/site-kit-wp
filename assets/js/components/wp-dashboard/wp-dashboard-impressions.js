@@ -40,14 +40,10 @@ const WPDashboardImpressions = () => {
 	const { data, error, loading } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const commonArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
-		};
-
 		const args = {
+			dateRange: select( CORE_USER ).getDateRange(),
 			dimensions: 'date',
 			compareDateRanges: true,
-			...commonArgs,
 		};
 
 		return {
@@ -63,17 +59,6 @@ const WPDashboardImpressions = () => {
 		}
 	}, [ error ] );
 
-	if ( ! data || ! data.length ) {
-		return null;
-	}
-
-	const processedData = extractSearchConsoleDashboardData( data );
-
-	const {
-		totalImpressions,
-		totalImpressionsChange,
-	} = processedData;
-
 	if ( loading ) {
 		return <PreviewBlock width="48%" height="92px" />;
 	}
@@ -85,6 +70,11 @@ const WPDashboardImpressions = () => {
 	if ( isZeroReport( data ) ) {
 		return <ReportZero moduleSlug="search-console" />;
 	}
+
+	const {
+		totalImpressions,
+		totalImpressionsChange,
+	} = extractSearchConsoleDashboardData( data );
 
 	return (
 		<DataBlock

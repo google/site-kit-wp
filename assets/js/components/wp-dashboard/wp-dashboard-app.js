@@ -42,7 +42,7 @@ const WPDashboardApp = () => {
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
 
-	if ( ! dashboardURL ) {
+	if ( dashboardURL === undefined ) {
 		return null;
 	}
 
@@ -53,21 +53,19 @@ const WPDashboardApp = () => {
 					{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
 				</Link>
 			</div>
-			<div className="googlesitekit-wp-dashboard-stats googlesitekit-wp-dashboard-stats--fourup">
-				{ featureFlags.widgets.wpDashboard.enabled && (
-					<Fragment>
-						<WPDashboardImpressions />
-						<WPDashboardClicks />
-						{ analyticsModuleActive && analyticsModuleConnected && (
-							<Fragment>
-								<WPDashboardUniqueVisitors />
-								<WPDashboardSessionDuration />
-							</Fragment>
-						) }
-						{ ( ! analyticsModuleActive || ! analyticsModuleConnected ) && <AnalyticsInactiveCTA /> }
-					</Fragment>
-				) }
-			</div>
+			{ featureFlags.widgets.wpDashboard.enabled && (
+				<div className="googlesitekit-wp-dashboard-stats googlesitekit-wp-dashboard-stats--fourup">
+					<WPDashboardImpressions />
+					<WPDashboardClicks />
+					{ analyticsModuleActive && analyticsModuleConnected && (
+						<Fragment>
+							<WPDashboardUniqueVisitors />
+							<WPDashboardSessionDuration />
+						</Fragment>
+					) }
+					{ ( ! analyticsModuleActive || ! analyticsModuleConnected ) && <AnalyticsInactiveCTA /> }
+				</div>
+			) }
 			<LegacyWPDashboardModules />
 		</div>
 	);

@@ -41,13 +41,9 @@ const WPDashboardUniqueVisitors = () => {
 	const { data, loading, error } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const commonArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
-		};
-
 		const args = {
+			dateRange: select( CORE_USER ).getDateRange(),
 			...userReportDataDefaults,
-			...commonArgs,
 		};
 
 		return {

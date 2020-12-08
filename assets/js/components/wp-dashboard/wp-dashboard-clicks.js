@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,14 +40,10 @@ const WPDashboardClicks = () => {
 	const { data, error, loading } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const commonArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
-		};
-
 		const args = {
+			dateRange: select( CORE_USER ).getDateRange(),
 			dimensions: 'date',
 			compareDateRanges: true,
-			...commonArgs,
 		};
 
 		return {
@@ -56,12 +53,17 @@ const WPDashboardClicks = () => {
 		};
 	} );
 
+	useEffect( () => {
+		if ( error ) {
+			trackEvent( 'plugin_setup', 'search_console_error', error.message );
+		}
+	}, [ error ] );
+
 	if ( loading ) {
 		return <PreviewBlock width="48%" height="92px" />;
 	}
 
 	if ( error ) {
-		trackEvent( 'plugin_setup', 'search_console_error', error.message );
 		return <ReportError moduleSlug="search-console" error={ error } />;
 	}
 
