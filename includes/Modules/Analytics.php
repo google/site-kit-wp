@@ -1419,7 +1419,10 @@ final class Analytics extends Module
 			$args['page'] = str_replace( trim( $this->context->get_reference_site_url(), '/' ), '', esc_url_raw( $args['page'] ) );
 			$dimension_filter->setExpressions( array( rawurldecode( $args['page'] ) ) );
 			$dimension_filters_clauses[] = $dimension_filter;
-			$dimension_filter_clause     = new Google_Service_AnalyticsReporting_DimensionFilterClause();
+		}
+
+		if ( ! empty( $dimension_filters_clauses ) ) {
+			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
 			$dimension_filter_clause->setFilters( $dimension_filters_clauses );
 			$request->setDimensionFilterClauses( array( $dimension_filter_clause ) );
 		}
