@@ -46,7 +46,7 @@ class AMP_Tag extends Base_AMP_Tag {
 		add_action( 'amp_post_template_footer', array( $this, 'render' ), 20 );
 
 		// Load amp-analytics component for AMP Reader.
-		add_filter( 'amp_post_template_data', array( $this, 'amp_data_load_analytics_component' ) );
+		$this->enqueue_amp_reader_component_script( 'amp-analytics', 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js' );
 
 		/**
 		 * Fires when the Tag Manager tag for AMP has been initialized.
@@ -87,28 +87,6 @@ class AMP_Tag extends Base_AMP_Tag {
 			wp_json_encode( $gtm_amp_opt )
 		);
 		printf( '%s<!-- End Google Tag Manager -->%s', "\n", "\n" );
-	}
-
-	/**
-	 * Loads AMP analytics script if opted in.
-	 *
-	 * This only affects AMP Reader mode, the others are automatically covered.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $data AMP template data.
-	 * @return array Filtered $data.
-	 */
-	public function amp_data_load_analytics_component( $data ) {
-		if ( ! isset( $data['amp_component_scripts'] ) || ! is_array( $data['amp_component_scripts'] ) ) {
-			$data['amp_component_scripts'] = array();
-		}
-
-		if ( ! isset( $data['amp_component_scripts']['amp-analytics'] ) ) {
-			$data['amp_component_scripts']['amp-analytics'] = 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js';
-		}
-
-		return $data;
 	}
 
 }

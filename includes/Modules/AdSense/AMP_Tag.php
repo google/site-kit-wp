@@ -39,8 +39,9 @@ class AMP_Tag extends Base_AMP_Tag {
 		add_action( 'wp_body_open', array( $this, 'render' ), -9999 );
 		// For AMP Reader, and AMP Native and Transitional (as fallback).
 		add_filter( 'the_content', array( $this, 'amp_content_add_auto_ads' ) );
+
 		// Load amp-auto-ads component for AMP Reader.
-		add_filter( 'amp_post_template_data', array( $this, 'amp_data_load_auto_ads_component' ) );
+		$this->enqueue_amp_reader_component_script( 'amp-auto-ads', 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js' );
 
 		/**
 		 * Fires when the AdSense tag for AMP has been initialized.
@@ -95,28 +96,6 @@ class AMP_Tag extends Base_AMP_Tag {
 			$this->get_tag_blocked_on_consent_attribute(),
 			$content
 		);
-	}
-
-	/**
-	 * Adds AMP auto ads script if opted in.
-	 *
-	 * This only affects AMP Reader mode, the others are automatically covered.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $data AMP template data.
-	 * @return array Filtered $data.
-	 */
-	public function amp_data_load_auto_ads_component( $data ) {
-		if ( ! isset( $data['amp_component_scripts'] ) || ! is_array( $data['amp_component_scripts'] ) ) {
-			$data['amp_component_scripts'] = array();
-		}
-
-		if ( ! isset( $data['amp_component_scripts']['amp-auto-ads'] ) ) {
-			$data['amp_component_scripts']['amp-auto-ads'] = 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js';
-		}
-
-		return $data;
 	}
 
 }

@@ -72,4 +72,31 @@ abstract class AMP_Tag extends Tag implements Blockable_Tag_Interface {
 		return '';
 	}
 
+	/**
+	 * Enqueues a component script for AMP Reader.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $handle Script handle.
+	 * @param string $src Script source URL.
+	 * @return callable Hook function.
+	 */
+	protected function enqueue_amp_reader_component_script( $handle, $src ) {
+		$component_script_hook = function( $data ) use ( $handle, $src ) {
+			if ( ! isset( $data['amp_component_scripts'] ) || ! is_array( $data['amp_component_scripts'] ) ) {
+				$data['amp_component_scripts'] = array();
+			}
+
+			if ( ! isset( $data['amp_component_scripts'][ $handle ] ) ) {
+				$data['amp_component_scripts'][ $handle ] = $src;
+			}
+
+			return $data;
+		};
+
+		add_filter( 'amp_post_template_data', $component_script_hook );
+
+		return $component_script_hook;
+	}
+
 }

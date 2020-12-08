@@ -67,7 +67,7 @@ class AMP_Tag extends Base_AMP_Tag {
 		add_action( 'web_stories_print_analytics', array( $this, 'render' ) );
 
 		// Load amp-analytics component for AMP Reader.
-		add_filter( 'amp_post_template_data', array( $this, 'amp_data_load_analytics_component' ) );
+		$this->enqueue_amp_reader_component_script( 'amp-analytics', 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js' );
 
 		/**
 		 * Fires when the Analytics tag for AMP has been initialized.
@@ -137,28 +137,6 @@ class AMP_Tag extends Base_AMP_Tag {
 			$this->get_tag_blocked_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			wp_json_encode( $gtag_amp_opt_filtered )
 		);
-	}
-
-	/**
-	 * Loads AMP analytics script if opted in.
-	 *
-	 * This only affects AMP Reader mode, the others are automatically covered.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $data AMP template data.
-	 * @return array Filtered $data.
-	 */
-	public function amp_data_load_analytics_component( $data ) {
-		if ( ! isset( $data['amp_component_scripts'] ) || ! is_array( $data['amp_component_scripts'] ) ) {
-			$data['amp_component_scripts'] = array();
-		}
-
-		if ( ! isset( $data['amp_component_scripts']['amp-analytics'] ) ) {
-			$data['amp_component_scripts']['amp-analytics'] = 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js';
-		}
-
-		return $data;
 	}
 
 }
