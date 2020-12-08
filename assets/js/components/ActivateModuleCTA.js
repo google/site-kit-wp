@@ -37,15 +37,13 @@ import CTA from './legacy-notifications/cta';
 import Data from 'googlesitekit-data';
 import GenericError from './legacy-notifications/generic-error';
 import { STORE_NAME as CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
-import { STORE_NAME as MODULES_STORE } from '../googlesitekit/modules/datastore/constants';
+import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 const ActivateModuleCTA = ( { slug, title, description } ) => {
-	const module = useSelect( ( select ) => select( MODULES_STORE ).getModule( slug ) );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
 	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
-	const { activateModule } = useDispatch( MODULES_STORE );
-	const { name } = module;
-
+	const { activateModule } = useDispatch( CORE_MODULES );
 	const onCTAClick = useCallback( async () => {
 		const { error, response } = await activateModule( slug );
 
@@ -62,9 +60,10 @@ const ActivateModuleCTA = ( { slug, title, description } ) => {
 		}
 	} );
 
-	if ( ! canManageOptions ) {
+	if ( ! module || ! canManageOptions ) {
 		return null;
 	}
+	const { name } = module;
 
 	const moduleTitle = title ||
 		sprintf(
