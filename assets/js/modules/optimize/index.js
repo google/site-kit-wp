@@ -33,9 +33,9 @@ domReady( () => {
 	Modules.registerModule(
 		'optimize',
 		{
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
-			setupComponent: SetupMain,
+			SettingsEditComponent: SettingsEdit,
+			SettingsViewComponent: SettingsView,
+			SetupComponent: SetupMain,
 		}
 	);
 } );

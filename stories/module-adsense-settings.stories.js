@@ -98,8 +98,8 @@ storiesOf( 'AdSense Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
 		registry.dispatch( CORE_MODULES ).registerModule( 'adsense', {
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
+			SettingsEditComponent: SettingsEdit,
+			SettingsViewComponent: SettingsView,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );

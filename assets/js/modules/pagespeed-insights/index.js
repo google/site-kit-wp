@@ -71,12 +71,12 @@ domReady( () => {
 	Modules.registerModule(
 		'pagespeed-insights',
 		{
-			settingsViewComponent: SettingsView,
+			SettingsViewComponent: SettingsView,
 		}
 	);
 
 	Widgets.registerWidget( 'pagespeedInsightsWebVitals', {
-		component: DashboardPageSpeedWidget,
+		Component: DashboardPageSpeedWidget,
 		width: Widgets.WIDGET_WIDTHS.FULL,
 		wrapWidget: false,
 	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );

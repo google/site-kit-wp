@@ -40,7 +40,7 @@ storiesOf( 'Search Console Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
 		registry.dispatch( CORE_MODULES ).registerModule( 'search-console', {
-			settingsViewComponent: SettingsView,
+			SettingsViewComponent: SettingsView,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		provideUserAuthentication( registry );

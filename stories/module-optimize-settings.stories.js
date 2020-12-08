@@ -47,8 +47,8 @@ storiesOf( 'Optimize Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
 		registry.dispatch( CORE_MODULES ).registerModule( 'optimize', {
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
+			SettingsEditComponent: SettingsEdit,
+			SettingsViewComponent: SettingsView,
 		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		provideModules( registry, [ {

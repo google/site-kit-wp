@@ -35,7 +35,7 @@ storiesOf( 'PageSpeed Insights Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
 		registry.dispatch( CORE_MODULES ).registerModule( 'pagespeed-insights', {
-			settingsViewComponent: SettingsView,
+			SettingsViewComponent: SettingsView,
 		} );
 		return storyFn( registry );
 	} )

@@ -50,7 +50,7 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 		setUp: ( registry ) => {
 			global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
 			registry.dispatch( CORE_MODULES ).registerModule( 'analytics', {
-				setupComponent: AnalyticsSetup,
+				SetupComponent: AnalyticsSetup,
 			} );
 		},
 	} );
@@ -66,7 +66,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			connected: true,
 		} ] );
 		registry.dispatch( CORE_MODULES ).registerModule( 'analytics', {
-			setupComponent: AnalyticsSetup,
+			SetupComponent: AnalyticsSetup,
 		} );
 
 		return storyFn( registry );

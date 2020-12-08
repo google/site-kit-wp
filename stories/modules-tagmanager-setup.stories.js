@@ -54,7 +54,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 			connected: true,
 		} ] );
 		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
-			setupComponent: TagManagerSetup,
+			SetupComponent: TagManagerSetup,
 		} );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -190,7 +190,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 			connected: true,
 		} ] );
 		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
-			setupComponent: TagManagerSetup,
+			SetupComponent: TagManagerSetup,
 		} );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
@@ -281,7 +281,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 			connected: true,
 		} ] );
 		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
-			setupComponent: TagManagerSetup,
+			SetupComponent: TagManagerSetup,
 		} );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );

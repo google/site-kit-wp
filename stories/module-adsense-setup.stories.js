@@ -69,7 +69,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			connected: true,
 		} ] );
 		registry.dispatch( CORE_MODULES ).registerModule( 'adsense', {
-			setupComponent: AdSenseSetup,
+			SetupComponent: AdSenseSetup,
 		} );
 
 		return storyFn( registry );

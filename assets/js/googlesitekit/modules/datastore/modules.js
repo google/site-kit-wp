@@ -63,9 +63,9 @@ const moduleDefaults = {
 	dependants: [],
 	order: 10,
 	icon: null,
-	settingsEditComponent: null,
-	settingsViewComponent: null,
-	setupComponent: null,
+	SettingsEditComponent: null,
+	SettingsViewComponent: null,
+	SetupComponent: null,
 };
 
 const normalizeModules = memize(
@@ -229,9 +229,9 @@ const baseActions = {
 	 * @param {string}      [settings.icon]                  Optional. Module icon. Default empty string.
 	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
-	 * @param {WPComponent} [settings.settingsEditComponent] Optional. React component to render the settings edit panel. Default none.
-	 * @param {WPComponent} [settings.settingsViewComponent] Optional. React component to render the settings view panel. Default none.
-	 * @param {WPComponent} [settings.setupComponent]        Optional. React component to render the setup panel. Default none.
+	 * @param {WPComponent} [settings.SettingsEditComponent] Optional. React component to render the settings edit panel. Default none.
+	 * @param {WPComponent} [settings.SettingsViewComponent] Optional. React component to render the settings view panel. Default none.
+	 * @param {WPComponent} [settings.SetupComponent]        Optional. React component to render the setup panel. Default none.
 	 * @param {Function}    [settings.checkRequirements]     Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 */
 	*registerModule( slug, {
@@ -240,9 +240,9 @@ const baseActions = {
 		icon,
 		order,
 		homepage,
-		settingsEditComponent,
-		settingsViewComponent,
-		setupComponent,
+		SettingsEditComponent,
+		SettingsViewComponent,
+		SetupComponent,
 		checkRequirements = () => true,
 	} = {} ) {
 		invariant( slug, 'module slug is required' );
@@ -253,9 +253,9 @@ const baseActions = {
 			icon,
 			order,
 			homepage,
-			settingsEditComponent,
-			settingsViewComponent,
-			setupComponent,
+			SettingsEditComponent,
+			SettingsViewComponent,
+			SetupComponent,
 			checkRequirements,
 		};
 

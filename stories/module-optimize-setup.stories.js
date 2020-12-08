@@ -57,7 +57,7 @@ storiesOf( 'Optimize Module/Setup', module )
 			},
 		] );
 		registry.dispatch( CORE_MODULES ).registerModule( 'optimize', {
-			setupComponent: OptimizeSetup,
+			SetupComponent: OptimizeSetup,
 		} );
 
 		return storyFn( registry );

@@ -56,9 +56,9 @@ const WidgetComponentEmpty = () => {
 };
 
 const createWidgets = ( registry, areaName, widgets ) => {
-	widgets.forEach( ( { component, slug, width } ) => {
+	widgets.forEach( ( { Component, slug, width } ) => {
 		registry.dispatch( STORE_NAME ).registerWidget( slug, {
-			component,
+			Component,
 			width,
 		} );
 		registry.dispatch( STORE_NAME ).assignWidget( slug, areaName );
@@ -81,9 +81,9 @@ describe( 'WidgetAreaRenderer', () => {
 
 	it( 'should return the same number of elements as widgets from a selector', async () => {
 		createWidgets( registry, areaName, [
-			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
-			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
-			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.FULL },
+			{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
+			{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
+			{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.FULL },
 		] );
 
 		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
@@ -97,9 +97,9 @@ describe( 'WidgetAreaRenderer', () => {
 
 	it( 'should treat widgets that render no content as zero-width (ignoring them)', async () => {
 		createWidgets( registry, areaName, [
-			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-			{ component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
-			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+			{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+			{ Component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
+			{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
 		] );
 
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
@@ -114,49 +114,49 @@ describe( 'WidgetAreaRenderer', () => {
 			[
 				'12, 3-6 -> 12, 4-8',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
 				],
 			],
 			[
 				'3, 12, 3-6, 6 -> 3, 12, 4-8, 6',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
-					{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.HALF },
-					{ component: WidgetComponent, slug: 'five', width: WIDGET_WIDTHS.HALF },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
+					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.HALF },
+					{ Component: WidgetComponent, slug: 'five', width: WIDGET_WIDTHS.HALF },
 				],
 			],
 			[
 				'3-3-3, 6 -> 4-4-4, 6',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.HALF },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.HALF },
 				],
 			],
 			[
 				'3-3-3, 12 -> 4-4-4, 12',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
 				],
 			],
 			[
 				'3-3-3, 12, 3-3-3 -> 4-4-4, 12, 4-4-4',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
-					{ component: WidgetComponent, slug: 'five', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'six', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'seven', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.FULL },
+					{ Component: WidgetComponent, slug: 'five', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'six', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'seven', width: WIDGET_WIDTHS.QUARTER },
 				],
 			],
 		]
@@ -174,23 +174,23 @@ describe( 'WidgetAreaRenderer', () => {
 			[
 				'3-3',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
 				],
 			],
 			[
 				'6',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.HALF },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.HALF },
 				],
 			],
 			[
 				'3, 12, 3-3',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
-					{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
+					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.QUARTER },
 				],
 			],
 		]
@@ -208,33 +208,33 @@ describe( 'WidgetAreaRenderer', () => {
 			[
 				'3-3-3-3',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'four', width: WIDGET_WIDTHS.QUARTER },
 				],
 			],
 			[
 				'6-6',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.HALF },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.HALF },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
 				],
 			],
 			[
 				'3-6-3',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
-					{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.HALF },
+					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.QUARTER },
 				],
 			],
 			[
 				'3-3-6',
 				[
-					{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
-					{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
+					{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.QUARTER },
+					{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.HALF },
 				],
 			],
 		]
@@ -249,9 +249,9 @@ describe( 'WidgetAreaRenderer', () => {
 
 	it( 'should output boxes style without extra grid markup', async () => {
 		createWidgets( registry, areaName, [
-			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
-			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
-			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.FULL },
+			{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
+			{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
+			{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.FULL },
 		] );
 
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } style={ WIDGET_AREA_STYLES.BOXES } />, { registry } );
@@ -264,9 +264,9 @@ describe( 'WidgetAreaRenderer', () => {
 		registry = createTestRegistryWithArea( areaName, WIDGET_AREA_STYLES.COMPOSITE );
 		registry.dispatch( CORE_SITE ).receiveGetConnection( { connected: true } );
 		createWidgets( registry, areaName, [
-			{ component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
-			{ component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
-			{ component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.FULL },
+			{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
+			{ Component: WidgetComponent, slug: 'two', width: WIDGET_WIDTHS.FULL },
+			{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.FULL },
 		] );
 
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
@@ -277,7 +277,7 @@ describe( 'WidgetAreaRenderer', () => {
 
 	it( 'should not render widget area with no active widgets', async () => {
 		createWidgets( registry, areaName, [
-			{ component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
+			{ Component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
 		] );
 
 		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
