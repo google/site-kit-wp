@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -48,7 +49,7 @@ function DateRangeSelector() {
 				// Close the menu if the user presses the Escape key
 				// or if they click outside of the menu.
 				if (
-					( ( 'keyup' === event.type && 27 === event.keyCode ) || 'mouseup' === event.type ) &&
+					( ( 'keyup' === event.type && ESCAPE === event.keyCode ) || 'mouseup' === event.type ) &&
 					! menuButtonRef.current.contains( event.target ) &&
 					! menuRef.current.contains( event.target )
 				) {

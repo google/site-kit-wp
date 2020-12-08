@@ -21,6 +21,7 @@
  */
 import { Fragment, useState, useRef, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -53,7 +54,7 @@ function UserMenu() {
 				// Close the menu if the user presses the Escape key
 				// or if they click outside of the menu.
 				if (
-					( ( 'keyup' === e.type && 27 === e.keyCode ) || 'mouseup' === e.type ) &&
+					( ( 'keyup' === e.type && ESCAPE === e.keyCode ) || 'mouseup' === e.type ) &&
 					! menuButtonRef.current.contains( e.target ) &&
 					! menuRef.current.contains( e.target )
 				) {
@@ -64,7 +65,7 @@ function UserMenu() {
 
 		const handleDialogClose = ( e ) => {
 			// Close if Escape key is pressed.
-			if ( 27 === e.keyCode ) {
+			if ( ESCAPE === e.keyCode ) {
 				toggleDialog( false );
 				toggleMenu( false );
 			}
