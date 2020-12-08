@@ -130,6 +130,7 @@ const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
+		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
@@ -311,32 +312,10 @@ const webpackConfig = ( env, argv ) => {
 			resolve,
 		},
 
-		// API modules
-		{
-			entry: {
-				i18n: '@wordpress/i18n',
-			},
-			output: {
-				devtoolNamespace: 'googlesitekit',
-				filename: 'googlesitekit-[name].js',
-				path: path.join( __dirname, 'dist/assets/js' ),
-				library: [ 'googlesitekit', '[name]' ],
-				libraryTarget: 'window',
-			},
-			optimization: {
-				concatenateModules: true,
-			},
-			plugins: [
-				new WebpackBar( {
-					name: 'API Modules',
-					color: 'green',
-				} ),
-			],
-		},
-
 		// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
 		{
 			entry: {
+				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				// Analytics advanced tracking script to be injected in the frontend.
 				'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
 			},
