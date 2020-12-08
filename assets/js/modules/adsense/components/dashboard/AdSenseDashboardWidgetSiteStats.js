@@ -153,6 +153,7 @@ export default function AdSenseDashboardWidgetSiteStats( props ) {
 		prevRangeData,
 		Object.values( metrics )[ selectedStats ],
 		selectedStats + 1,
+		currentRangeData.headers[ selectedStats + 1 ],
 	);
 
 	return (
