@@ -165,7 +165,7 @@ final class OAuth_Client {
 	 *
 	 * Copied from the default $retryMap within Google_Client/Task/Runner with the addition of lighthouseError.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 * @var array $retry_map Map of errors with retry counts.
 	 */
 	protected $retry_map = array(
@@ -255,7 +255,7 @@ final class OAuth_Client {
 		$client->setConfig( 'retry', array( 'retries' => 3 ) );
 
 		// Set a custom retryMap for the REST Runner.
-		$client->setConfig( 'retryMap', $this->retry_map );
+		$client->setConfig( 'retry_map', $this->retry_map );
 
 		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
 		// By default this header uses the generic Guzzle client's user-agent and includes

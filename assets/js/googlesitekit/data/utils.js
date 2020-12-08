@@ -231,7 +231,7 @@ export const commonActions = {
 	 *
 	 * Useful for controls and resolvers that wish to call an asynchronous function or other promise.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Promise} value A promise to resolve.
 	 * @return {Object} Object with resolved promise.
@@ -267,7 +267,7 @@ export const commonControls = {
 	/**
 	 * Returns a resolved promise.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.22.0
 	 *
 	 * @param {Object} payload         Object containing a promise.
 	 * @param {Object} payload.payload Object containing a promise.
