@@ -19,9 +19,14 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-settings-user-input {
+		padding-bottom: 0;
 
 		.googlesitekit-user-input__preview {
-			padding: 25px !important;
+			padding: $grid-gap-desktop;
+
+			@media (max-width: $bp-mobileOnly) {
+				padding: $grid-gap-phone;
+			}
 		}
 	}
 }

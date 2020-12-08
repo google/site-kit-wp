@@ -27,6 +27,14 @@ export const USER_INPUT_QUESTION_GOALS = 'goals';
 export const USER_INPUT_QUESTION_HELP_NEEDED = 'helpNeeded';
 export const USER_INPUT_QUESTION_SEARCH_TERMS = 'searchTerms';
 
+export const QUESTIONS = [
+	USER_INPUT_QUESTION_ROLE,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_QUESTION_GOALS,
+	USER_INPUT_QUESTION_HELP_NEEDED,
+	USER_INPUT_QUESTION_SEARCH_TERMS,
+];
+
 /**
  * Gets available answers for user input settings.
  *

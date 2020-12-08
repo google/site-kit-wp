@@ -32,6 +32,7 @@ import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputKeywords from './UserInputKeywords';
 import UserInputPreview from './UserInputPreview';
 import {
+	QUESTIONS,
 	USER_INPUT_QUESTION_ROLE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTION_GOALS,
@@ -39,19 +40,12 @@ import {
 	USER_INPUT_QUESTION_SEARCH_TERMS,
 	getUserInputAnwsers,
 } from './util/constants';
-import useQueryString from '../../hooks/useQueryString';
+import useQueryString from '../../hooks/useQueryArg';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 export default function UserInputQuestionnaire() {
-	const questions = [
-		USER_INPUT_QUESTION_ROLE,
-		USER_INPUT_QUESTION_POST_FREQUENCY,
-		USER_INPUT_QUESTION_GOALS,
-		USER_INPUT_QUESTION_HELP_NEEDED,
-		USER_INPUT_QUESTION_SEARCH_TERMS,
-	];
-	const steps = [ ...questions, 'preview' ];
+	const steps = [ ...QUESTIONS, 'preview' ];
 
 	const [ activeSlug, setActiveSlug ] = useQueryString( 'question', steps[ 0 ] );
 	const [ redirectURL ] = useQueryString( 'redirect_url' );
@@ -64,14 +58,13 @@ export default function UserInputQuestionnaire() {
 
 	const answeredUntilIndex = useSelect( ( select ) => {
 		const userInputSettings = select( CORE_USER ).getUserInputSettings();
-		for ( let i = 0; i < questions.length; i++ ) {
-			if ( userInputSettings[ questions[ i ] ].values.length === 0 ) {
-				return i;
-			}
-		}
+		return QUESTIONS.findIndex( ( question ) => userInputSettings[ question ].values.length === 0 );
 	} );
 
 	useEffect( () => {
+		if ( answeredUntilIndex === -1 ) {
+			return;
+		}
 		if ( activeSlugIndex > answeredUntilIndex ) {
 			setActiveSlug( steps[ answeredUntilIndex ] );
 		}
@@ -104,7 +97,7 @@ export default function UserInputQuestionnaire() {
 			<ProgressBar
 				height={ 0 }
 				indeterminate={ false }
-				progress={ ( activeSlugIndex + 1 ) / questions.length }
+				progress={ ( activeSlugIndex + 1 ) / QUESTIONS.length }
 			/>
 
 			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
@@ -195,7 +188,8 @@ export default function UserInputQuestionnaire() {
 			) }
 
 			{ activeSlug === 'preview' && (
-				<UserInputPreview back={ back } goTo={ goTo } redirectURL={ redirectURL } />
+				<UserInputPreview back={ back } goTo={ goTo }
+					redirectURL={ redirectURL } />
 			) }
 		</Fragment>
 	);

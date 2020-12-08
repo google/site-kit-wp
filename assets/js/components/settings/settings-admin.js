@@ -34,34 +34,18 @@ import OptIn from '../optin';
 import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
-import {
-	USER_INPUT_QUESTION_GOALS,
-	USER_INPUT_QUESTION_HELP_NEEDED,
-	USER_INPUT_QUESTION_POST_FREQUENCY,
-	USER_INPUT_QUESTION_ROLE,
-	USER_INPUT_QUESTION_SEARCH_TERMS,
-} from '../user-input/util/constants';
+import { QUESTIONS } from '../user-input/util/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import UserInputSettings from '../notifications/UserInputSettings';
 const { useSelect } = Data;
 
-const questions = [
-	USER_INPUT_QUESTION_ROLE,
-	USER_INPUT_QUESTION_POST_FREQUENCY,
-	USER_INPUT_QUESTION_GOALS,
-	USER_INPUT_QUESTION_HELP_NEEDED,
-	USER_INPUT_QUESTION_SEARCH_TERMS,
-];
-
 const SettingsAdmin = () => {
-	const { isUserInputCompleted, userInputURL } = useSelect( ( select ) => ( {
-		isUserInputCompleted: select( CORE_USER ).getUserInputState() === 'completed',
-		userInputURL: select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ),
-	} ) );
+	const isUserInputCompleted = useSelect( ( select ) => select( CORE_USER ).getUserInputState() === 'completed' );
+	const userInputURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 
 	const goTo = useCallback( ( num = 1 ) => {
 		global.location.assign( addQueryArgs( userInputURL, {
-			question: questions[ num - 1 ],
+			question: QUESTIONS[ num - 1 ],
 			redirect_url: global.location.href,
 		} ) );
 	}, [ userInputURL ] );
@@ -73,10 +57,10 @@ const SettingsAdmin = () => {
 					<Layout>
 						{ isUserInputCompleted ? (
 							<div className="googlesitekit-module-page googlesitekit-settings-user-input">
-								<UserInputPreview noFooter goTo={ goTo } />
+								<UserInputPreview goTo={ goTo } noFooter />
 							</div>
 						) : (
-							<UserInputSettings isNotDismissable />
+							<UserInputSettings isDimissable={ false } />
 						) }
 					</Layout>
 				</Cell>

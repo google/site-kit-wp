@@ -1,5 +1,5 @@
 /**
- * `useQueryString` hook.
+ * `useQueryArg` hook.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,26 +20,25 @@
  * WordPress dependencies
  */
 import { useState, useCallback } from '@wordpress/element';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * Uses a location query param as a state.
  *
  * @since n.e.x.t
  *
- * @param {string}        key          The query param key to be used.
- * @param {(string|null)} initialValue The initial value for the query param to be used.
+ * @param {string} key            The query param key to be used.
+ * @param {string} [initialValue] Optional. The initial value for the query param to be used. Default: `null`.
  * @return {Array} The getter and setter for the query param state.
  */
-function useQueryString( key, initialValue = null ) {
-	const [ value, setValue ] = useState( new URLSearchParams( global.location.search ).get( key ) || initialValue );
+function useQueryArg( key, initialValue ) {
+	const [ value, setValue ] = useState( getQueryArg( global.location.href, key ) || initialValue );
+
 	const onSetValue = useCallback(
 		( newValue ) => {
 			setValue( newValue );
 
-			const urlParams = new URLSearchParams( global.location.search );
-			urlParams.set( key, newValue );
-
-			const newURL = `${ global.location.pathname }?${ urlParams.toString() }`;
+			const newURL = addQueryArgs( global.location.href, { [ key ]: newValue } );
 			global.history.replaceState( { path: newURL }, '', newURL );
 		},
 		[ key ]
@@ -48,4 +47,4 @@ function useQueryString( key, initialValue = null ) {
 	return [ value, onSetValue ];
 }
 
-export default useQueryString;
+export default useQueryArg;

@@ -1,5 +1,5 @@
 /**
- * `useQueryString` hook tests.
+ * `useQueryArg` hook tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import { renderHook, actHook } from '../../../tests/js/test-utils';
-import useQueryString from './useQueryString';
+import useQueryArg from './useQueryArg';
 
-describe( 'useQueryString', () => {
+describe( 'useQueryArg', () => {
 	let oldLocation;
 	let oldHistory;
-	const historyPushMock = jest.fn();
+	const historyReplaceStateMock = jest.fn();
 
 	beforeAll( () => {
 		oldLocation = global.location;
@@ -33,14 +33,15 @@ describe( 'useQueryString', () => {
 		delete global.location;
 		delete global.history;
 		global.location = {
-			protocol: 'http:',
-			host: 'example.com',
-			pathname: 'path',
-			search: '?page=demo',
+			href: 'http://example.com/path?page=demo',
 		};
 		global.history = {
-			replaceState: historyPushMock,
+			replaceState: historyReplaceStateMock,
 		};
+	} );
+
+	afterEach( () => {
+		historyReplaceStateMock.mockClear();
 	} );
 
 	afterAll( () => {
@@ -49,20 +50,33 @@ describe( 'useQueryString', () => {
 	} );
 
 	it( 'should return initial query param by default', () => {
-		const { result: { current: [ query ] } } = renderHook( ( ) => useQueryString( 'page' ) );
+		const { result: { current: [ query ] } } = renderHook( ( ) => useQueryArg( 'page' ) );
 
 		expect( query ).toBe( 'demo' );
 	} );
 
 	it( 'should push a new state to history when setQuery is called', () => {
-		const { result: { current: [ , setQuery ] } } = renderHook( ( ) => useQueryString( 'page' ) );
+		const { result: { current: [ , setQuery ] } } = renderHook( ( ) => useQueryArg( 'page' ) );
 
 		actHook( () => {
 			setQuery( 'prod' );
 		} );
 
-		const updatedURL = 'path?page=prod';
-		expect( historyPushMock ).toHaveBeenCalledWith( {
+		const updatedURL = 'http://example.com/path?page=prod';
+		expect( historyReplaceStateMock ).toHaveBeenCalledWith( {
+			path: updatedURL,
+		}, '', updatedURL );
+	} );
+
+	it( 'should push a new state to history when setQuery is called with url encodable value', () => {
+		const { result: { current: [ , setQuery ] } } = renderHook( ( ) => useQueryArg( 'page' ) );
+
+		actHook( () => {
+			setQuery( 'p%$^rod' );
+		} );
+
+		const updatedURL = 'http://example.com/path?page=p%25%24%5Erod';
+		expect( historyReplaceStateMock ).toHaveBeenCalledWith( {
 			path: updatedURL,
 		}, '', updatedURL );
 	} );
