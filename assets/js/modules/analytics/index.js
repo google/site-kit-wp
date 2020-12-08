@@ -50,7 +50,7 @@ domReady( () => {
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
-			icon: AnalyticsIcon,
+			Icon: AnalyticsIcon,
 		}
 	);
 

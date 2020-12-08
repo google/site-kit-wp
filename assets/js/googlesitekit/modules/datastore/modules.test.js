@@ -276,7 +276,6 @@ describe( 'core/modules modules', () => {
 				order: 1,
 				description: 'A module for testing',
 				homepage: 'https://sitekit.withgoogle.com/',
-				icon: 'icon-name',
 			};
 
 			beforeEach( () => {

@@ -62,7 +62,7 @@ const moduleDefaults = {
 	dependencies: [],
 	dependants: [],
 	order: 10,
-	icon: null,
+	Icon: null,
 	SettingsEditComponent: null,
 	SettingsViewComponent: null,
 	SetupComponent: null,
@@ -219,14 +219,15 @@ const baseActions = {
 	 * Registers a module.
 	 *
 	 * @since 1.13.0
-	 * @since 1.20.0  Introduced the ability to register settings and setup components.
+	 * @since 1.20.0 Introduced the ability to register settings and setup components.
 	 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
+	 * @since n.e.x.t Introduced the ability to register an Icon component.
 	 *
 	 * @param {string}      slug                             Module slug.
 	 * @param {Object}      [settings]                       Optional. Module settings.
 	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
 	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
-	 * @param {WPComponent} [settings.icon]                  Optional. React component to render module icon. Default none.
+	 * @param {WPComponent} [settings.Icon]                  Optional. React component to render module icon. Default none.
 	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
 	 * @param {WPComponent} [settings.SettingsEditComponent] Optional. React component to render the settings edit panel. Default none.
@@ -237,7 +238,7 @@ const baseActions = {
 	*registerModule( slug, {
 		name,
 		description,
-		icon,
+		Icon,
 		order,
 		homepage,
 		SettingsEditComponent,
@@ -250,7 +251,7 @@ const baseActions = {
 		const settings = {
 			name,
 			description,
-			icon,
+			Icon,
 			order,
 			homepage,
 			SettingsEditComponent,
@@ -541,12 +542,12 @@ const baseSelectors = {
 
 		// A module with this slug couldn't be found or the icon is not found for the module; return `null` to signify the
 		// "module not found" or "icon not found" state
-		if ( module === null || module.icon === null ) {
+		if ( module === null || module.Icon === null ) {
 			return null;
 		}
 
 		// This module and the icon exists, so let's return it.
-		return module.icon;
+		return module.Icon;
 	} ),
 
 	/**

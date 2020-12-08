@@ -77,7 +77,7 @@ domReady( () => {
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
-			icon: AdSenseIcon,
+			Icon: AdSenseIcon,
 			checkRequirements: () => {
 				const isAdBlockerActive = select( STORE_NAME ).isAdBlockerActive();
 				if ( ! isAdBlockerActive ) {

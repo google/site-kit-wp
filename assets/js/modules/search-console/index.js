@@ -44,7 +44,7 @@ domReady( () => {
 		'search-console',
 		{
 			SettingsViewComponent: SettingsView,
-			icon: SearchConsoleIcon,
+			Icon: SearchConsoleIcon,
 		}
 	);
 

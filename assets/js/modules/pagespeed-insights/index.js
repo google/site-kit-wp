@@ -73,7 +73,7 @@ domReady( () => {
 		'pagespeed-insights',
 		{
 			SettingsViewComponent: SettingsView,
-			icon: PageSpeedInsightsIcon,
+			Icon: PageSpeedInsightsIcon,
 		}
 	);
 

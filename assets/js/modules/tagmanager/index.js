@@ -37,7 +37,7 @@ domReady( () => {
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
-			icon: TagManagerIcon,
+			Icon: TagManagerIcon,
 		}
 	);
 } );

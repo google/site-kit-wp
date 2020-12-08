@@ -270,7 +270,7 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 			SettingsEditComponent: AdSenseSettingsEdit,
 			SettingsViewComponent: AdSenseSettingsView,
 			SetupComponent: AdSenseSetupMain,
-			icon: AdSenseIcon,
+			Icon: AdSenseIcon,
 			checkRequirements: () => {
 				// TODO: Remove this duplicate-ish code and instead import from reusable AdSense utility function.
 				const isAdBlockerActive = registry.select( MODULES_ADSENSE ).isAdBlockerActive();
@@ -289,27 +289,27 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 			SettingsEditComponent: AnalyticsSettingsEdit,
 			SettingsViewComponent: AnalyticsSettingsView,
 			SetupComponent: AnalyticsSetupMain,
-			icon: AnalyticsIcon,
+			Icon: AnalyticsIcon,
 		},
 		optimize: {
 			SettingsEditComponent: OptimizeSettingsEdit,
 			SettingsViewComponent: OptimizeSettingsView,
 			SetupComponent: OptimizeSetupMain,
-			icon: OptimizeIcon,
+			Icon: OptimizeIcon,
 		},
 		'pagespeed-insights': {
 			SettingsViewComponent: PageSpeedInsightsSettingsView,
-			icon: PageSpeedInsightsIcon,
+			Icon: PageSpeedInsightsIcon,
 		},
 		'search-console': {
 			SettingsViewComponent: SearchConsoleSettingsView,
-			icon: SearchConsoleIcon,
+			Icon: SearchConsoleIcon,
 		},
 		tagmanager: {
 			SettingsEditComponent: TagManagerSettingsEdit,
 			SettingsViewComponent: TagManagerSettingsView,
 			SetupComponent: TagManagerSetupMain,
-			icon: TagManagerIcon,
+			Icon: TagManagerIcon,
 		},
 	};
 
