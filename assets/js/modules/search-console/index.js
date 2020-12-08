@@ -37,12 +37,14 @@ import {
 	AREA_PAGE_DASHBOARD_POPULARITY,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
+import SearchConsoleIcon from '../../../svg/search-console.svg';
 
 domReady( () => {
 	Modules.registerModule(
 		'search-console',
 		{
 			settingsViewComponent: SettingsView,
+			icon: SearchConsoleIcon,
 		}
 	);
 
