@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\AdSense;
 
+use Google\Site_Kit\Core\Tags\Web_Tag as Base_Web_Tag;
+
 /**
  * Class for Web tag.
  *
@@ -17,7 +19,7 @@ namespace Google\Site_Kit\Modules\AdSense;
  * @access private
  * @ignore
  */
-class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
+class Web_Tag extends Base_Web_Tag {
 
 	/**
 	 * Internal flag for whether the AdSense tag has been printed.
@@ -26,27 +28,6 @@ class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
 	 * @var bool
 	 */
 	private $adsense_tag_printed = false;
-
-	/**
-	 * AdSense client ID used in the tag.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	private $client_id;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $slug The module slug.
-	 * @param string $client_id The AdSense client ID.
-	 */
-	public function __construct( $slug, $client_id ) {
-		parent::__construct( $slug );
-		$this->client_id = $client_id;
-	}
 
 	/**
 	 * Registers tag hooks.
@@ -63,9 +44,9 @@ class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param string $client_id AdSense client ID used in the tag.
+		 * @param string $tag_id AdSense client ID used in the tag.
 		 */
-		do_action( 'googlesitekit_adsense_init_tag', $this->client_id );
+		do_action( 'googlesitekit_adsense_init_tag', $this->tag_id );
 	}
 
 	/**
@@ -84,13 +65,13 @@ class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
 		// because it is required for account verification.
 		printf(
 			'<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"%s></script>', // // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-			$this->get_tag_block_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 		printf(
 			'<script>(adsbygoogle = window.adsbygoogle || []).push(%s);</script>',
 			wp_json_encode(
 				array(
-					'google_ad_client'      => $this->client_id,
+					'google_ad_client'      => $this->tag_id,
 					'enable_page_level_ads' => true,
 					'tag_partner'           => 'site_kit',
 				)

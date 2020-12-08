@@ -34,7 +34,7 @@ abstract class AMP_Tag extends Tag implements Blockable_Tag_Interface {
 		 *
 		 * @param bool $blocked Whether or not the tag output is suppressed. Default: false.
 		 */
-		return (bool) apply_filters( "googlesitekit_{$this->slug}_tag_amp_blocked", false );
+		return (bool) apply_filters( "googlesitekit_{$this->module_slug}_tag_amp_blocked", false );
 	}
 
 	/**
@@ -60,7 +60,7 @@ abstract class AMP_Tag extends Tag implements Blockable_Tag_Interface {
 		 * @param bool|string $blocked Whether or not the tag requires user consent to load. Alternatively, this can also be one of
 		 *                             the special string values '_till_responded', '_till_accepted', or '_auto_reject'. Default: false.
 		 */
-		$block_on_consent = apply_filters( "googlesitekit_{$this->slug}_tag_amp_block_on_consent", false );
+		$block_on_consent = apply_filters( "googlesitekit_{$this->module_slug}_tag_amp_block_on_consent", false );
 		if ( in_array( $block_on_consent, $allowed_amp_block_on_consent_values, true ) ) {
 			return sprintf( ' data-block-on-consent="%s"', $block_on_consent );
 		}

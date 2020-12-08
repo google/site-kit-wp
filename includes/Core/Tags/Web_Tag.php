@@ -34,7 +34,7 @@ abstract class Web_Tag extends Tag implements Blockable_Tag_Interface {
 		 *
 		 * @param bool $blocked Whether or not the tag output is suppressed. Default: false.
 		 */
-		return (bool) apply_filters( "googlesitekit_{$this->slug}_tag_blocked", false );
+		return (bool) apply_filters( "googlesitekit_{$this->module_slug}_tag_blocked", false );
 	}
 
 	/**
@@ -52,7 +52,7 @@ abstract class Web_Tag extends Tag implements Blockable_Tag_Interface {
 		 *
 		 * @param bool $blocked Whether or not the tag requires user consent to load. Default: false.
 		 */
-		if ( apply_filters( "googlesitekit_{$this->slug}_tag_block_on_consent", false ) ) {
+		if ( apply_filters( "googlesitekit_{$this->module_slug}_tag_block_on_consent", false ) ) {
 			return ' type="text/plain" data-block-on-consent';
 		}
 

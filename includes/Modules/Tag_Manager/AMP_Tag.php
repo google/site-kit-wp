@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Tag_Manager;
 
+use Google\Site_Kit\Core\Tags\AMP_Tag as Base_AMP_Tag;
+
 /**
  * Class for AMP tag.
  *
@@ -17,7 +19,7 @@ namespace Google\Site_Kit\Modules\Tag_Manager;
  * @access private
  * @ignore
  */
-class AMP_Tag extends \Google\Site_Kit\Core\Tags\AMP_Tag {
+class AMP_Tag extends Base_AMP_Tag {
 
 	/**
 	 * Internal flag set after print_amp_gtm is invoked for the first time.
@@ -26,27 +28,6 @@ class AMP_Tag extends \Google\Site_Kit\Core\Tags\AMP_Tag {
 	 * @var bool
 	 */
 	private $did_amp_gtm = false;
-
-	/**
-	 * Tag Manager container ID used in the tag.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	private $container_id;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $slug The module slug.
-	 * @param string $container_id Tag Manager container ID used in the tag.
-	 */
-	public function __construct( $slug, $container_id ) {
-		parent::__construct( $slug );
-		$this->container_id = $container_id;
-	}
 
 	/**
 	 * Registers tag hooks.
@@ -74,9 +55,9 @@ class AMP_Tag extends \Google\Site_Kit\Core\Tags\AMP_Tag {
 		 *
 		 * @since 1.14.0
 		 *
-		 * @param string $container_id Tag Manager container ID used in the tag.
+		 * @param string $tag_id Tag Manager container ID used in the tag.
 		 */
-		do_action( 'googlesitekit_tagmanager_init_tag_amp', $this->container_id );
+		do_action( 'googlesitekit_tagmanager_init_tag_amp', $this->tag_id );
 	}
 
 	/**
@@ -101,8 +82,8 @@ class AMP_Tag extends \Google\Site_Kit\Core\Tags\AMP_Tag {
 		printf( '%s<!-- Google Tag Manager added by Site Kit -->%s', "\n", "\n" );
 		printf(
 			'<amp-analytics config="%s" data-credentials="include"%s><script type="application/json">%s</script></amp-analytics>',
-			esc_url( 'https://www.googletagmanager.com/amp.json?id=' . rawurlencode( $this->container_id ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			$this->get_tag_amp_block_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			esc_url( 'https://www.googletagmanager.com/amp.json?id=' . rawurlencode( $this->tag_id ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$this->get_tag_blocked_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			wp_json_encode( $gtm_amp_opt )
 		);
 		printf( '%s<!-- End Google Tag Manager -->%s', "\n", "\n" );

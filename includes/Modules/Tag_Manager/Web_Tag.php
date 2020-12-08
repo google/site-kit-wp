@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Tag_Manager;
 
+use Google\Site_Kit\Core\Tags\Web_Tag as Base_Web_Tag;
+
 /**
  * Class for Web tag.
  *
@@ -17,7 +19,7 @@ namespace Google\Site_Kit\Modules\Tag_Manager;
  * @access private
  * @ignore
  */
-class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
+class Web_Tag extends Base_Web_Tag {
 
 	/**
 	 * Internal flag set after print_gtm_no_js invoked for the first time.
@@ -26,27 +28,6 @@ class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
 	 * @var bool
 	 */
 	private $did_gtm_no_js = false;
-
-	/**
-	 * Tag Manager container ID used in the tag.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	private $container_id;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $slug The module slug.
-	 * @param string $container_id Tag Manager container ID used in the tag.
-	 */
-	public function __construct( $slug, $container_id ) {
-		parent::__construct( $slug );
-		$this->container_id = $container_id;
-	}
 
 	/**
 	 * Registers tag hooks.
@@ -68,9 +49,9 @@ class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param string $container_id Tag Manager container ID used in the tag.
+		 * @param string $tag_id Tag Manager container ID used in the tag.
 		 */
-		do_action( 'googlesitekit_tagmanager_init_tag', $this->container_id );
+		do_action( 'googlesitekit_tagmanager_init_tag', $this->tag_id );
 	}
 
 	/**
@@ -81,7 +62,7 @@ class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
 	public function render() {
 		?>
 <!-- Google Tag Manager added by Site Kit -->
-<script<?php echo $this->get_tag_block_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<script<?php echo $this->get_tag_blocked_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 ( function( w, d, s, l, i ) {
 	w[l] = w[l] || [];
 	w[l].push( {'gtm.start': new Date().getTime(), event: 'gtm.js'} );
@@ -90,7 +71,7 @@ class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
 	j.async = true;
 	j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
 	f.parentNode.insertBefore( j, f );
-} )( window, document, 'script', 'dataLayer', '<?php echo esc_js( $this->container_id ); ?>' );
+} )( window, document, 'script', 'dataLayer', '<?php echo esc_js( $this->tag_id ); ?>' );
 </script>
 <!-- End Google Tag Manager -->
 		<?php
@@ -110,11 +91,11 @@ class Web_Tag extends \Google\Site_Kit\Core\Tags\Web_Tag {
 		$this->did_gtm_no_js = true;
 
 		// Consent-based blocking requires JS to be enabled so we need to bail here if present.
-		if ( $this->get_tag_block_on_consent_attribute() ) {
+		if ( $this->get_tag_blocked_on_consent_attribute() ) {
 			return;
 		}
 
-		$iframe_src = 'https://www.googletagmanager.com/ns.html?id=' . rawurlencode( $this->container_id );
+		$iframe_src = 'https://www.googletagmanager.com/ns.html?id=' . rawurlencode( $this->tag_id );
 
 		?>
 		<!-- Google Tag Manager (noscript) added by Site Kit -->

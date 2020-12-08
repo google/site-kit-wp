@@ -20,7 +20,7 @@ namespace Google\Site_Kit\Core\Tags;
 abstract class Tag implements Tag_Interface {
 
 	/**
-	 * The module slug.
+	 * Module slug.
 	 *
 	 * @since n.e.x.t
 	 * @var string
@@ -28,14 +28,24 @@ abstract class Tag implements Tag_Interface {
 	protected $slug;
 
 	/**
+	 * Tag ID.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $tag_id;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $slug The module slug.
+	 * @param string $module_slug Module slug.
+	 * @param string $tag_id Tag ID.
 	 */
-	public function __construct( $slug ) {
-		$this->slug = $slug;
+	public function __construct( $module_slug, $tag_id ) {
+		$this->module_slug = $module_slug;
+		$this->tag_id      = $tag_id;
 	}
 
 	/**

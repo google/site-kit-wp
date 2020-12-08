@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\AdSense;
 
+use Google\Site_Kit\Core\Tags\AMP_Tag as Base_AMP_Tag;
+
 /**
  * Class for AMP tag.
  *
@@ -17,7 +19,7 @@ namespace Google\Site_Kit\Modules\AdSense;
  * @access private
  * @ignore
  */
-class AMP_Tag extends \Google\Site_Kit\Core\Tags\AMP_Tag {
+class AMP_Tag extends Base_AMP_Tag {
 
 	/**
 	 * Internal flag for whether the AdSense tag has been printed.
@@ -26,27 +28,6 @@ class AMP_Tag extends \Google\Site_Kit\Core\Tags\AMP_Tag {
 	 * @var bool
 	 */
 	private $adsense_tag_printed = false;
-
-	/**
-	 * AdSense client ID used in the tag.
-	 *
-	 * @since n.e.x.t
-	 * @var string
-	 */
-	private $client_id;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $slug The module slug.
-	 * @param string $client_id The AdSense client ID.
-	 */
-	public function __construct( $slug, $client_id ) {
-		parent::__construct( $slug );
-		$this->client_id = $client_id;
-	}
 
 	/**
 	 * Registers tag hooks.
@@ -68,9 +49,9 @@ class AMP_Tag extends \Google\Site_Kit\Core\Tags\AMP_Tag {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param string $client_id AdSense client ID used in the tag.
+		 * @param string $tag_id AdSense client ID used in the tag.
 		 */
-		do_action( 'googlesitekit_adsense_init_tag_amp', $this->client_id );
+		do_action( 'googlesitekit_adsense_init_tag_amp', $this->tag_id );
 	}
 
 	/**
@@ -87,7 +68,7 @@ class AMP_Tag extends \Google\Site_Kit\Core\Tags\AMP_Tag {
 
 		printf(
 			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads>',
-			esc_attr( $this->client_id ),
+			esc_attr( $this->tag_id ),
 			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 	}
@@ -110,7 +91,7 @@ class AMP_Tag extends \Google\Site_Kit\Core\Tags\AMP_Tag {
 
 		return sprintf(
 			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads> %s',
-			esc_attr( $this->client_id ),
+			esc_attr( $this->tag_id ),
 			$this->get_tag_blocked_on_consent_attribute(),
 			$content
 		);
@@ -131,7 +112,9 @@ class AMP_Tag extends \Google\Site_Kit\Core\Tags\AMP_Tag {
 			$data['amp_component_scripts'] = array();
 		}
 
-		$data['amp_component_scripts']['amp-auto-ads'] = 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js';
+		if ( ! isset( $data['amp_component_scripts']['amp-auto-ads'] ) ) {
+			$data['amp_component_scripts']['amp-auto-ads'] = 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js';
+		}
 
 		return $data;
 	}
