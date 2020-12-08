@@ -25,6 +25,11 @@ import classnames from 'classnames';
 export default function Cell( props ) {
 	const {
 		className,
+		alignTop,
+		alignMiddle,
+		alignBottom,
+		alignRight,
+		alignLeft,
 		smSize,
 		smStart,
 		mdSize,
@@ -33,21 +38,24 @@ export default function Cell( props ) {
 		lgStart,
 		size,
 		children,
+		...otherProps
 	} = props;
 
 	return (
-		<div className={ classnames(
+		<div { ...otherProps } className={ classnames(
 			className,
 			'mdc-layout-grid__cell',
 			{
+				'mdc-layout-grid__cell--align-top': alignTop,
+				'mdc-layout-grid__cell--align-middle': alignMiddle,
+				'mdc-layout-grid__cell--align-bottom': alignBottom,
+				'mdc-layout-grid__cell--align-right': alignRight,
+				'mdc-layout-grid__cell--align-left': alignLeft,
 				[ `mdc-layout-grid__cell--span-${ size }` ]: 12 >= size && size > 0,
-
 				[ `mdc-layout-grid__cell--span-${ lgSize }-desktop` ]: 12 >= lgSize && lgSize > 0,
 				[ `mdc-layout-grid__cell--start-${ lgStart }-desktop` ]: 12 >= lgStart && lgStart > 0,
-
 				[ `mdc-layout-grid__cell--span-${ mdSize }-tablet` ]: 8 >= mdSize && mdSize > 0,
 				[ `mdc-layout-grid__cell--start-${ mdStart }-tablet` ]: 8 >= mdStart && mdStart > 0,
-
 				[ `mdc-layout-grid__cell--span-${ smSize }-phone` ]: 4 >= smSize && smSize > 0,
 				[ `mdc-layout-grid__cell--start-${ smStart }-phone` ]: 4 >= smStart && smStart > 0,
 			},
@@ -65,6 +73,11 @@ Cell.propTypes = {
 	lgSize: PropTypes.number,
 	lgStart: PropTypes.number,
 	size: PropTypes.number,
+	alignTop: PropTypes.bool,
+	alignMiddle: PropTypes.bool,
+	alignBottom: PropTypes.bool,
+	alignRight: PropTypes.bool,
+	alignLeft: PropTypes.bool,
 	className: PropTypes.string,
 	children: PropTypes.node,
 };
