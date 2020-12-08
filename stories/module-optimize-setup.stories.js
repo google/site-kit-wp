@@ -25,12 +25,15 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
-import { SetupMain as OptimizeSetup } from '../assets/js/modules/optimize/components/setup/index';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
-import { WithTestRegistry, createTestRegistry, provideModules } from '../tests/js/utils';
+import {
+	WithTestRegistry,
+	createTestRegistry,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 
 function Setup( props ) {
 	return (
@@ -56,9 +59,7 @@ storiesOf( 'Optimize Module/Setup', module )
 				connected: true,
 			},
 		] );
-		registry.dispatch( CORE_MODULES ).registerModule( 'optimize', {
-			setupComponent: OptimizeSetup,
-		} );
+		provideModuleRegistrations( registry );
 
 		return storyFn( registry );
 	} )

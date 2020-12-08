@@ -44,6 +44,7 @@ import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
+import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from './constants';
 
@@ -73,9 +74,10 @@ domReady( () => {
 	Modules.registerModule(
 		'adsense',
 		{
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
-			setupComponent: SetupMain,
+			SettingsEditComponent: SettingsEdit,
+			SettingsViewComponent: SettingsView,
+			SetupComponent: SetupMain,
+			Icon: AdSenseIcon,
 			checkRequirements: () => {
 				const isAdBlockerActive = select( STORE_NAME ).isAdBlockerActive();
 				if ( ! isAdBlockerActive ) {
@@ -94,7 +96,7 @@ domReady( () => {
 	Widgets.registerWidget(
 		'adsenseSummary',
 		{
-			component: DashboardSummaryWidget,
+			Component: DashboardSummaryWidget,
 			width: Widgets.WIDGET_WIDTHS.HALF,
 			priority: 1,
 			wrapWidget: false,
@@ -107,7 +109,7 @@ domReady( () => {
 	Widgets.registerWidget(
 		'adsenseTopEarningPages',
 		{
-			component: DashboardTopEarningPagesWidget,
+			Component: DashboardTopEarningPagesWidget,
 			width: Widgets.WIDGET_WIDTHS.HALF,
 			priority: 2,
 			wrapWidget: false,

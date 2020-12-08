@@ -287,7 +287,7 @@ class SettingsModule extends Component {
 											googlesitekit-heading-4
 											googlesitekit-settings-module__title
 										">
-											<ModuleIcon slug={ slug } width={ 24 } height={ 26 } className="googlesitekit-settings-module__title-icon" />
+											<ModuleIcon slug={ slug } size={ 24 } className="googlesitekit-settings-module__title-icon" />
 											{ name }
 										</h3>
 									</div>
@@ -522,7 +522,7 @@ export default compose( [
 		const canSubmitChanges = select( CORE_MODULES ).canSubmitChanges( slug );
 
 		return {
-			hasSettings: !! module?.settingsEditComponent,
+			hasSettings: !! module?.SettingsEditComponent,
 			canSubmitChanges,
 		};
 	} ),
