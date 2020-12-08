@@ -41,6 +41,7 @@ import DashboardPopularPagesWidget from './components/dashboard/DashboardPopular
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
+import AnalyticsIcon from '../../../svg/analytics.svg';
 
 domReady( () => {
 	Modules.registerModule(
@@ -49,6 +50,7 @@ domReady( () => {
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
 			setupComponent: SetupMain,
+			icon: AnalyticsIcon,
 		}
 	);
 

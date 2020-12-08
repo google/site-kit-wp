@@ -44,6 +44,7 @@ import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
+import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from './constants';
 
@@ -76,6 +77,7 @@ domReady( () => {
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
 			setupComponent: SetupMain,
+			icon: AdSenseIcon,
 			checkRequirements: () => {
 				const isAdBlockerActive = select( STORE_NAME ).isAdBlockerActive();
 				if ( ! isAdBlockerActive ) {
