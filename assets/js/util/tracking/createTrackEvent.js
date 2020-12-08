@@ -54,6 +54,7 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 			dimension1: referenceSiteURL,
 			dimension2: isFirstAdmin ? 'true' : 'false',
 			dimension3: userIDHash,
+			dimension4: global.GOOGLESITEKIT_VERSION || '',
 		};
 
 		return new Promise( ( resolve ) => {
