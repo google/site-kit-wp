@@ -41,7 +41,7 @@ describe( 'Module Icon', () => {
 	} );
 
 	it( 'renders svg when the module has icon', () => {
-		registry.dispatch( CORE_MODULES ).registerModule( moduleName, { icon: AdsenseIcon } );
+		registry.dispatch( CORE_MODULES ).registerModule( moduleName, { Icon: AdsenseIcon } );
 		const { container } = render( <ModuleIcon slug={ moduleName } />, { registry } );
 
 		expect( container.querySelector( 'svg' ) ).toBeInTheDocument();

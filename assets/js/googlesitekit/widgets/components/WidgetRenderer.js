@@ -37,8 +37,7 @@ const WidgetRenderer = ( { slug, gridClassName } ) => {
 		return null;
 	}
 
-	// Capitalize the "component" variable, as it is required by JSX.
-	const { component: Component, wrapWidget } = widget;
+	const { Component, wrapWidget } = widget;
 
 	let widgetComponent = <Component />;
 

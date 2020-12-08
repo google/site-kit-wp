@@ -43,15 +43,15 @@ domReady( () => {
 	Modules.registerModule(
 		'search-console',
 		{
-			settingsViewComponent: SettingsView,
-			icon: SearchConsoleIcon,
+			SettingsViewComponent: SettingsView,
+			Icon: SearchConsoleIcon,
 		}
 	);
 
 	Widgets.registerWidget(
 		'searchConsoleImpressions',
 		{
-			component: DashboardImpressionsWidget,
+			Component: DashboardImpressionsWidget,
 			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: true,
@@ -64,7 +64,7 @@ domReady( () => {
 	Widgets.registerWidget(
 		'searchConsoleClicks',
 		{
-			component: DashboardClicksWidget,
+			Component: DashboardClicksWidget,
 			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 2,
 			wrapWidget: true,
@@ -77,7 +77,7 @@ domReady( () => {
 	Widgets.registerWidget(
 		'searchConsolePopularKeywords',
 		{
-			component: DashboardPopularKeywordsWidget,
+			Component: DashboardPopularKeywordsWidget,
 			width: [ Widgets.WIDGET_WIDTHS.HALF, Widgets.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,

@@ -55,7 +55,7 @@ generateReportBasedWidgetStories( {
 	group: 'Search Console Module/Components/Dashboard/Clicks Widget',
 	data: clicksAndImpressionsWidgetData,
 	options: dashboardClicksWidgetArgs,
-	component: DashboardClicksWidget,
+	Component: DashboardClicksWidget,
 	setup,
 } );
 
@@ -65,7 +65,7 @@ generateReportBasedWidgetStories( {
 	group: 'Search Console Module/Components/Page Dashboard/Clicks Widget',
 	data: clicksAndImpressionsWidgetData,
 	options: pageDashboardClicksWidgetArgs,
-	component: DashboardClicksWidget,
+	Component: DashboardClicksWidget,
 	setup,
 } );
 
@@ -75,7 +75,7 @@ generateReportBasedWidgetStories( {
 	group: 'Search Console Module/Components/Dashboard/Impressions Widget',
 	data: clicksAndImpressionsWidgetData,
 	options: dashboardImpressionsWidgetArgs,
-	component: DashboardImpressionsWidget,
+	Component: DashboardImpressionsWidget,
 	setup,
 } );
 
@@ -85,7 +85,7 @@ generateReportBasedWidgetStories( {
 	group: 'Search Console Module/Components/Page Dashboard/Impressions Widget',
 	data: clicksAndImpressionsWidgetData,
 	options: pageDashboardImpressionsArgs,
-	component: DashboardImpressionsWidget,
+	Component: DashboardImpressionsWidget,
 	setup,
 } );
 
@@ -95,7 +95,7 @@ generateReportBasedWidgetStories( {
 	group: 'Search Console Module/Components/Dashboard/Popular Keywords Widget',
 	data: dashboardPopularKeyWordsWidgetData,
 	options: dashboardPopularKeyWordsWidgetArgs,
-	component: DashboardPopularKeywordsWidget,
+	Component: DashboardPopularKeywordsWidget,
 	wrapWidget: false,
 	setup,
 } );
@@ -106,7 +106,7 @@ generateReportBasedWidgetStories( {
 	group: 'Search Console Module/Components/Page Dashboard/Popular Keywords Widget',
 	data: pageDashboardPopularKeyWordsWidgetData,
 	options: pageDashboardPopularKeyWordsWidgetArgs,
-	component: DashboardPopularKeywordsWidget,
+	Component: DashboardPopularKeywordsWidget,
 	wrapWidget: false,
 	setup,
 } );

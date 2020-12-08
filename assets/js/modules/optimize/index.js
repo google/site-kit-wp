@@ -34,10 +34,10 @@ domReady( () => {
 	Modules.registerModule(
 		'optimize',
 		{
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
-			setupComponent: SetupMain,
-			icon: OptimizeIcon,
+			SettingsEditComponent: SettingsEdit,
+			SettingsViewComponent: SettingsView,
+			SetupComponent: SetupMain,
+			Icon: OptimizeIcon,
 		}
 	);
 } );

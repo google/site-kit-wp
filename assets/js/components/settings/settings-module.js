@@ -522,7 +522,7 @@ export default compose( [
 		const canSubmitChanges = select( CORE_MODULES ).canSubmitChanges( slug );
 
 		return {
-			hasSettings: !! module?.settingsEditComponent,
+			hasSettings: !! module?.SettingsEditComponent,
 			canSubmitChanges,
 		};
 	} ),

@@ -58,21 +58,21 @@ describe( 'core/widgets Widgets', () => {
 				// Register all the widgets.
 				const slugOne = 'one';
 				const settingsOne = {
-					component: WidgetComponent,
+					Component: WidgetComponent,
 					priority: 5,
 				};
 				registry.dispatch( STORE_NAME ).registerWidget( slugOne, settingsOne );
 
 				const slugTwo = 'two';
 				const settingsTwo = {
-					component: WidgetComponent,
+					Component: WidgetComponent,
 					priority: 10,
 				};
 				registry.dispatch( STORE_NAME ).registerWidget( slugTwo, settingsTwo );
 
 				const slugThree = 'three';
 				const settingsThree = {
-					component: AnotherWidgetComponent,
+					Component: AnotherWidgetComponent,
 					priority: 500,
 				};
 				registry.dispatch( STORE_NAME ).registerWidget( slugThree, settingsThree );
@@ -126,7 +126,7 @@ describe( 'core/widgets Widgets', () => {
 
 		describe( 'registerWidget', () => {
 			const slug = 'widget-spinner';
-			const component = ( props ) => {
+			const WidgetComponent = ( props ) => {
 				return ( <div>Hello { props.children }!</div> );
 			};
 
@@ -138,19 +138,19 @@ describe( 'core/widgets Widgets', () => {
 
 			it( 'requires a valid width to be provided', () => {
 				expect(
-					() => registry.dispatch( STORE_NAME ).registerWidget( slug, { component, width: 'HUUGE' } )
+					() => registry.dispatch( STORE_NAME ).registerWidget( slug, { Component: WidgetComponent, width: 'HUUGE' } )
 				).toThrow( 'Widget width should be one of' );
 			} );
 
 			it( 'registers the component with the given settings and component', () => {
-				registry.dispatch( STORE_NAME ).registerWidget( slug, { component, priority: 11 } );
+				registry.dispatch( STORE_NAME ).registerWidget( slug, { Component: WidgetComponent, priority: 11 } );
 
-				expect( store.getState().widgets[ slug ].component ).toEqual( component );
+				expect( store.getState().widgets[ slug ].Component ).toEqual( WidgetComponent );
 				expect( store.getState().widgets[ slug ].priority ).toEqual( 11 );
 
 				// Ensure we can render a component with the widget's component, verifying it's still a
 				// usable React component.
-				const Component = store.getState().widgets[ slug ].component;
+				const { Component } = store.getState().widgets[ slug ];
 				const { container } = render( <Component>world</Component> );
 				expect( container.firstChild ).toMatchSnapshot();
 			} );
@@ -163,16 +163,16 @@ describe( 'core/widgets Widgets', () => {
 					return ( <div>Goodbye you!</div> );
 				};
 				registry.dispatch( STORE_NAME ).registerWidget( slug, {
-					component: WidgetOne,
+					Component: WidgetOne,
 				} );
 
 				registry.dispatch( STORE_NAME ).registerWidget( slug, {
-					component: WidgetOneRedone,
+					Component: WidgetOneRedone,
 				} );
 				expect( console ).toHaveWarnedWith( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
 
 				// Ensure original widget's component is registered.
-				expect( store.getState().widgets[ slug ].component ).toEqual( WidgetOne );
+				expect( store.getState().widgets[ slug ].Component ).toEqual( WidgetOne );
 			} );
 		} );
 	} );
@@ -202,7 +202,7 @@ describe( 'core/widgets Widgets', () => {
 				} );
 				registry.dispatch( STORE_NAME ).assignWidgetArea( 'dashboard-header', 'dashboard' );
 				registry.dispatch( STORE_NAME ).registerWidget( 'PageViews', {
-					component: PageViews,
+					Component: PageViews,
 				} );
 				registry.dispatch( STORE_NAME ).assignWidget( 'PageViews', 'dashboard-header' );
 
@@ -224,19 +224,19 @@ describe( 'core/widgets Widgets', () => {
 
 				// Register all the widgets.
 				registry.dispatch( STORE_NAME ).registerWidget( 'lowest', {
-					component: WidgetComponent,
+					Component: WidgetComponent,
 					priority: 5,
 				} );
 				registry.dispatch( STORE_NAME ).registerWidget( 'mediumOne', {
-					component: WidgetComponent,
+					Component: WidgetComponent,
 					priority: 10,
 				} );
 				registry.dispatch( STORE_NAME ).registerWidget( 'mediumTwo', {
-					component: WidgetComponent,
+					Component: WidgetComponent,
 					priority: 10,
 				} );
 				registry.dispatch( STORE_NAME ).registerWidget( 'highest', {
-					component: WidgetComponent,
+					Component: WidgetComponent,
 					priority: 500,
 				} );
 
@@ -271,7 +271,7 @@ describe( 'core/widgets Widgets', () => {
 				registry.dispatch( STORE_NAME ).assignWidgetArea( 'dashboard-header', 'dashboard' );
 				registry.dispatch( STORE_NAME ).assignWidget( 'PageViews', 'dashboard-header' );
 				registry.dispatch( STORE_NAME ).registerWidget( 'PageViews', {
-					component: PageViews,
+					Component: PageViews,
 				} );
 
 				const widgets = registry.select( STORE_NAME ).getWidgets( 'dashboard-header' );
@@ -283,7 +283,7 @@ describe( 'core/widgets Widgets', () => {
 		describe( 'isWidgetRegistered', () => {
 			it( 'returns true if the widget is registered', () => {
 				registry.dispatch( STORE_NAME ).registerWidget( 'TestWidget', {
-					component: () => {
+					Component: () => {
 						return ( <div>Hello test.</div> );
 					},
 				} );
@@ -299,7 +299,7 @@ describe( 'core/widgets Widgets', () => {
 		describe( 'getWidget', () => {
 			it( 'returns a widget if one exists', () => {
 				registry.dispatch( STORE_NAME ).registerWidget( 'TestWidget', {
-					component: () => {
+					Component: () => {
 						return ( <div>Hello test.</div> );
 					},
 				} );

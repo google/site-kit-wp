@@ -23,7 +23,7 @@ import WidgetRenderer from './WidgetRenderer';
 import { STORE_NAME } from '../datastore/constants';
 import { render } from '../../../../../tests/js/test-utils';
 
-const setupRegistry = ( { component = () => <div>Test</div>, wrapWidget = false } = {} ) => {
+const setupRegistry = ( { Component = () => <div>Test</div>, wrapWidget = false } = {} ) => {
 	return ( { dispatch } ) => {
 		dispatch( STORE_NAME ).registerWidgetArea( 'dashboard-header', {
 			title: 'Dashboard Header',
@@ -32,7 +32,7 @@ const setupRegistry = ( { component = () => <div>Test</div>, wrapWidget = false 
 		} );
 		dispatch( STORE_NAME ).assignWidgetArea( 'dashboard-header', 'dashboard' );
 		dispatch( STORE_NAME ).registerWidget( 'TestWidget', {
-			component,
+			Component,
 			wrapWidget,
 		} );
 		dispatch( STORE_NAME ).assignWidget( 'TestWidget', 'dashboard-header' );

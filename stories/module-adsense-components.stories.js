@@ -149,7 +149,7 @@ generateReportBasedWidgetStories( {
 			],
 		},
 	],
-	component: DashboardSummaryWidget,
+	Component: DashboardSummaryWidget,
 	wrapWidget: false,
 } );
 
@@ -387,7 +387,7 @@ generateReportBasedWidgetStories( {
 		},
 		limit: 10,
 	},
-	component: DashboardTopEarningPagesWidget,
+	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
 	additionalVariants: {
 		'AdSense Not Linked': {

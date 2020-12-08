@@ -10,7 +10,7 @@ exports[`core/widgets Widgets actions registerWidget registers the component wit
 
 exports[`core/widgets Widgets selectors getWidget returns a widget if one exists 1`] = `
 Object {
-  "component": [Function],
+  "Component": [Function],
   "priority": 10,
   "slug": "TestWidget",
   "width": "quarter",
