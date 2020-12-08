@@ -53,6 +53,9 @@ final class AdSense extends Module
 	use Module_With_Screen_Trait;
 	use Module_With_Settings_Trait;
 
+	/**
+	 * Module slug name.
+	 */
 	const MODULE_SLUG = 'adsense';
 
 	/**
