@@ -35,6 +35,7 @@ import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
 import DashboardPageSpeedCTA from './components/dashboard/DashboardPageSpeedCTA';
 import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
+import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
 
 const {
 	active,
@@ -72,6 +73,7 @@ domReady( () => {
 		'pagespeed-insights',
 		{
 			SettingsViewComponent: SettingsView,
+			icon: PageSpeedInsightsIcon,
 		}
 	);
 

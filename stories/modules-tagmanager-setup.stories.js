@@ -24,11 +24,18 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { WithTestRegistry, createTestRegistry, freezeFetch, provideUserAuthentication, provideModules, provideSiteInfo } from '../tests/js/utils';
+import {
+	WithTestRegistry,
+	createTestRegistry,
+	freezeFetch,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { SetupMain as TagManagerSetup } from '../assets/js/modules/tagmanager/components/setup';
 import { STORE_NAME as CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
 import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, FORM_SETUP } from '../assets/js/modules/tagmanager/datastore/constants';
 import { STORE_NAME as MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
@@ -53,9 +60,7 @@ storiesOf( 'Tag Manager Module/Setup', module )
 			active: true,
 			connected: true,
 		} ] );
-		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
-			SetupComponent: TagManagerSetup,
-		} );
+		provideModuleRegistrations( registry );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		provideUserAuthentication( registry );
@@ -189,9 +194,7 @@ storiesOf( 'Tag Manager Module/Setup/Primary AMP', module )
 			active: true,
 			connected: true,
 		} ] );
-		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
-			SetupComponent: TagManagerSetup,
-		} );
+		provideModuleRegistrations( registry );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
@@ -280,9 +283,7 @@ storiesOf( 'Tag Manager Module/Setup/Secondary AMP', module )
 			active: true,
 			connected: true,
 		} ] );
-		registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager', {
-			SetupComponent: TagManagerSetup,
-		} );
+		provideModuleRegistrations( registry );
 		registry.dispatch( STORE_NAME ).setSettings( {} );
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		provideSiteInfo( registry, { ampMode: AMP_MODE_SECONDARY } );

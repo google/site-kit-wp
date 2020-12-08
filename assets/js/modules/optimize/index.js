@@ -28,6 +28,7 @@ import Modules from 'googlesitekit-modules';
 import './datastore';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
+import OptimizeIcon from '../../../svg/optimize.svg';
 
 domReady( () => {
 	Modules.registerModule(
@@ -36,6 +37,7 @@ domReady( () => {
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,
+			icon: OptimizeIcon,
 		}
 	);
 } );

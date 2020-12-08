@@ -24,10 +24,13 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { SettingsView } from '../assets/js/modules/search-console/components/settings';
 import { STORE_NAME } from '../assets/js/modules/search-console/datastore/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { createTestRegistry, provideUserAuthentication } from '../tests/js/utils';
+import {
+	createTestRegistry,
+	provideUserAuthentication,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 
 const Settings = createLegacySettingsWrapper( 'search-console' );
@@ -39,11 +42,10 @@ const defaultSettings = {
 storiesOf( 'Search Console Module/Settings', module )
 	.addDecorator( ( storyFn ) => {
 		const registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).registerModule( 'search-console', {
-			SettingsViewComponent: SettingsView,
-		} );
 		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		provideUserAuthentication( registry );
+		provideModules( registry );
+		provideModuleRegistrations( registry );
 
 		return storyFn( registry );
 	} )

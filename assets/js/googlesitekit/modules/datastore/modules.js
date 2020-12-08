@@ -226,7 +226,7 @@ const baseActions = {
 	 * @param {Object}      [settings]                       Optional. Module settings.
 	 * @param {string}      [settings.name]                  Optional. Module name. Default is the slug.
 	 * @param {string}      [settings.description]           Optional. Module description. Default empty string.
-	 * @param {string}      [settings.icon]                  Optional. Module icon. Default empty string.
+	 * @param {WPComponent} [settings.icon]                  Optional. React component to render module icon. Default none.
 	 * @param {number}      [settings.order]                 Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}      [settings.homepage]              Optional. Module homepage URL. Default empty string.
 	 * @param {WPComponent} [settings.SettingsEditComponent] Optional. React component to render the settings edit panel. Default none.
@@ -333,7 +333,7 @@ const baseReducer = ( state, { type, payload } ) => {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
 
-			if ( state.clientDefinitions[ slug ] ) {
+			if ( !! state.clientDefinitions[ slug ] ) {
 				global.console.warn( `Could not register module with slug "${ slug }". Module "${ slug }" is already registered.` );
 				return state;
 			}
@@ -518,6 +518,35 @@ const baseSelectors = {
 
 		// This module exists, so let's return it.
 		return modules[ slug ];
+	} ),
+
+	/**
+	 * Gets a specific module icon by slug.
+	 *
+	 * Returns a specific module icon by its slug.
+	 * Returns `null` if state is still loading or if said module doesn't exist or doesn't have an icon.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(WPComponent|undefined|null)} A specific module's icon; `undefined` if state is still loading; `null` if said module doesn't exist or doesn't have an icon.
+	 */
+	getModuleIcon: createRegistrySelector( ( select ) => ( state, slug ) => {
+		const module = select( STORE_NAME ).getModule( slug );
+		// Return `undefined` if module with this slug isn't loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found or the icon is not found for the module; return `null` to signify the
+		// "module not found" or "icon not found" state
+		if ( module === null || module.icon === null ) {
+			return null;
+		}
+
+		// This module and the icon exists, so let's return it.
+		return module.icon;
 	} ),
 
 	/**

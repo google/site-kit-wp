@@ -25,14 +25,16 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
-import { SetupMain as AnalyticsSetup } from '../assets/js/modules/analytics/components/setup/index';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
-
 import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
-import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { WithTestRegistry, createTestRegistry, provideModules } from '../tests/js/utils';
+import {
+	WithTestRegistry,
+	createTestRegistry,
+	provideModules,
+	provideModuleRegistrations,
+} from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 
 function Setup( props ) {
@@ -49,9 +51,7 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 		Component: Setup,
 		setUp: ( registry ) => {
 			global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
-			registry.dispatch( CORE_MODULES ).registerModule( 'analytics', {
-				SetupComponent: AnalyticsSetup,
-			} );
+			provideModuleRegistrations( registry );
 		},
 	} );
 }
@@ -65,9 +65,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			active: true,
 			connected: true,
 		} ] );
-		registry.dispatch( CORE_MODULES ).registerModule( 'analytics', {
-			SetupComponent: AnalyticsSetup,
-		} );
+		provideModuleRegistrations( registry );
 
 		return storyFn( registry );
 	} )
