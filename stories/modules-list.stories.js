@@ -30,8 +30,8 @@ import { provideModuleRegistrations, provideModules, WithTestRegistry } from '..
 storiesOf( 'Global', module )
 	.add( 'Modules List', () => {
 		const setupRegistry = ( registry ) => {
-			provideModuleRegistrations( registry );
 			provideModules( registry );
+			provideModuleRegistrations( registry );
 		};
 
 		return (

@@ -76,8 +76,8 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
 
 		const setupRegistry = ( registry ) => {
-			provideModuleRegistrations( registry );
 			provideModules( registry );
+			provideModuleRegistrations( registry );
 		};
 
 		return (
@@ -101,7 +101,6 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.modules.adsense.setupComplete = false;
 
 		const setupRegistry = async ( registry ) => {
-			provideModuleRegistrations( registry );
 			provideModules( registry, [
 				{
 					slug: 'adsense',
@@ -139,6 +138,7 @@ storiesOf( 'Settings', module )
 					connected: false,
 				},
 			] );
+			provideModuleRegistrations( registry );
 			registry.select( CORE_MODULES ).getModule( 'adsense' );
 			await untilResolved( registry, CORE_MODULES ).getModules();
 		};

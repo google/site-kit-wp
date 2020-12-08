@@ -27,8 +27,8 @@ global._googlesitekitLegacyData.canAdsRun = true;
 storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => {
 		const setupRegistry = ( registry ) => {
-			provideModuleRegistrations( registry );
 			provideModules( registry );
+			provideModuleRegistrations( registry );
 		};
 
 		return (
@@ -104,8 +104,8 @@ storiesOf( 'Global/Notifications', module )
 	) )
 	.add( 'Traffic Increase Win', () => {
 		const setupRegistry = ( registry ) => {
-			provideModuleRegistrations( registry );
 			provideModules( registry );
+			provideModuleRegistrations( registry );
 		};
 
 		return (
