@@ -25,7 +25,7 @@ import useMergedRef from '@react-hook/merged-ref';
 /**
  * WordPress dependencies
  */
-import { forwardRef, useCallback, useEffect, useRef } from '@wordpress/element';
+import { forwardRef, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,7 +38,14 @@ const Menu = forwardRef( ( {
 	onSelected,
 	id,
 }, ref ) => {
-	const menuRef = useRef( null );
+	let menu = null;
+	let menuEl = null;
+	const menuRef = useCallback( ( el ) => {
+		if ( el ) {
+			menu = new MDCMenu( el );
+			menuEl = el;
+		}
+	} );
 	const mergedRefs = useMergedRef( ref, menuRef );
 	const handleMenuSelected = useCallback( ( event ) => {
 		const { detail: { index } } = event;
@@ -47,20 +54,23 @@ const Menu = forwardRef( ( {
 	} );
 
 	useEffect( () => {
-		if ( menuRef && menuRef.current ) {
-			const menu = new MDCMenu( menuRef.current );
+		if ( menu ) {
 			menu.open = menuOpen;
 			menu.setDefaultFocusState( 1 );
 		}
 	}, [ menuOpen ] );
 
 	useEffect( () => {
-		menuRef.current.addEventListener( 'MDCMenu:selected', handleMenuSelected );
+		if ( menuEl ) {
+			menuEl.addEventListener( 'MDCMenu:selected', handleMenuSelected );
+		}
 
 		return () => {
-			menuRef.current.removeEventListener( 'MDCMenu:selected', handleMenuSelected );
+			if ( menuEl ) {
+				menuEl.removeEventListener( 'MDCMenu:selected', handleMenuSelected );
+			}
 		};
-	} );
+	}, [ menuEl ] );
 
 	return (
 		<div
