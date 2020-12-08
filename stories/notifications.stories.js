@@ -16,6 +16,7 @@ import ModulesList from '../assets/js/components/ModulesList';
 import Notification from '../assets/js/components/legacy-notifications/notification';
 import UserInputSettings from '../assets/js/components/notifications/UserInputSettings';
 import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
+import { STORE_NAME as MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import gWinImage from '../assets/images/g-win.png';
 import rocketImage from '../assets/images/rocket.png';
 import sunImage from '../assets/images/sun.png';
@@ -29,6 +30,7 @@ storiesOf( 'Global/Notifications', module )
 		const setupRegistry = ( registry ) => {
 			provideModules( registry );
 			provideModuleRegistrations( registry );
+			registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( false );
 		};
 
 		return (
