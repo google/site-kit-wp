@@ -964,13 +964,7 @@ final class Analytics extends Module
 
 				$dimension_filters          = $data['dimensionFilters'];
 				$dimension_filter_instances = array();
-				if ( ! empty( $dimension_filters ) && ( is_string( $dimension_filters ) || is_array( $dimension_filters ) ) ) {
-					if ( is_string( $dimension_filters ) ) {
-						$dimension_filters = explode( ',', $dimension_filters );
-					} elseif ( is_array( $dimension_filters ) && ! wp_is_numeric_array( $dimension_filters ) ) { // If single object is passed.
-						$dimension_filters = array( $dimension_filters );
-					}
-
+				if ( ! empty( $dimension_filters ) && is_array( $dimension_filters ) ) {
 					foreach ( $request_args['dimensions'] as $dimension ) {
 						$dimension_name = $dimension->getName();
 						if ( isset( $dimension_filters[ $dimension_name ] ) ) {
