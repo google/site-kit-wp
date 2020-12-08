@@ -70,7 +70,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 		// Sign in with Google
 		await page.setRequestInterception( true );
 		useRequestInterception( handleRequest );
-		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
+		await expect( page ).toClick( '.googlesitekit-start-setup button', { text: /Sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
@@ -86,8 +86,8 @@ describe( 'Site Kit set up flow for the first time', () => {
 
 		// Ensure the user is on step one of the setup wizard.
 		await expect( page ).toMatchElement(
-			'.googlesitekit-wizard-progress-step__number-text--inprogress',
-			{ text: '1' }
+			'.googlesitekit-setup__title',
+			{ text: 'You revoked access to Site Kit for sitekit.10uplabs.com' }
 		);
 	} );
 } );

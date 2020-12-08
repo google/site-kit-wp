@@ -72,18 +72,10 @@ describe( 'the set up flow for the second administrator', () => {
 		} );
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
-		await expect( page ).toMatchElement( '.googlesitekit-wizard-step__title', { text: /Authenticate with Google/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup__title', { text: /Connect your Google account to Site Kit/i } );
 
 		await Promise.all( [
-			expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with google/i } ),
-			page.waitForNavigation(),
-		] );
-
-		await page.waitForSelector( '.googlesitekit-wizard-step button' );
-		await expect( page ).toMatchElement( '.googlesitekit-wizard-step__title', { text: /congratulations!/i } );
-
-		await Promise.all( [
-			expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /go to dashboard/i } ),
+			expect( page ).toClick( '.googlesitekit-start-setup button', { text: /Sign in with Google/i } ),
 			page.waitForNavigation(),
 		] );
 

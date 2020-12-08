@@ -78,10 +78,10 @@ describe( 'Plugin Activation Notice', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Start setup' } );
 
 				await page.click( '.googlesitekit-start-setup' );
-				await page.waitForSelector( '.googlesitekit-wizard-step__title' );
+				await page.waitForSelector( '.googlesitekit-setup__title' );
 
-				// Ensure we're on the first step.
-				await expect( page ).toMatchElement( '.googlesitekit-wizard-progress-step__number--inprogress', { text: '1' } );
+				// Ensure we're on the set up page.
+				await expect( page ).toMatchElement( '.googlesitekit-setup__title', { text: 'Set up Site Kit' } );
 
 				await deactivatePlugin( 'google-site-kit' );
 			} );
