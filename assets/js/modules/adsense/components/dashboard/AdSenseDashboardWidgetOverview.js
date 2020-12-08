@@ -35,8 +35,8 @@ import { STORE_NAME } from '../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
-import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
-import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
+import ReportError from '../../../../components/ReportError';
+import ReportZero from '../../../../components/ReportZero';
 import { readableLargeNumber, changeToPercent, numberFormat } from '../../../../util';
 import { isZeroReport } from '../../util';
 const { useSelect } = Data;
@@ -98,11 +98,11 @@ export default function AdSenseDashboardWidgetOverview( props ) {
 
 	if ( currentError || previousError ) {
 		const error = currentError || previousError;
-		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
+		return <ReportError moduleSlug="adsense" error={ error } />;
 	}
 
 	if ( isZeroReport( currentRangeData ) ) {
-		return getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true );
+		return <ReportZero moduleSlug="adsense" />;
 	}
 
 	const { totals, headers } = currentRangeData;

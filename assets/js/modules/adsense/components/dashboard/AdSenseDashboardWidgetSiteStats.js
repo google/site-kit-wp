@@ -22,18 +22,13 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { _x } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
-import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
-import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
+import ReportError from '../../../../components/ReportError';
+import ReportZero from '../../../../components/ReportZero';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import GoogleChart from '../../../../components/GoogleChart';
 import { getSiteStatsDataForGoogleChart, isZeroReport } from '../../util';
@@ -78,11 +73,11 @@ export default function AdSenseDashboardWidgetSiteStats( props ) {
 
 	if ( currentError || previousError ) {
 		const error = currentError || previousError;
-		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
+		return <ReportError moduleSlug="adsense" error={ error } />;
 	}
 
 	if ( isZeroReport( currentRangeData ) ) {
-		return getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true );
+		return <ReportZero moduleSlug="adsense" />;
 	}
 
 	const options = {
