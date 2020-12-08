@@ -1412,10 +1412,6 @@ final class Analytics extends Module
 			$request->setDateRanges( array( $date_range ) );
 		}
 
-		if ( ! empty( $args['dimension_filters'] ) ) {
-			$request->setDimensions( (array) $args['dimension_filters'] );
-		}
-
 		if ( ! empty( $args['page'] ) ) {
 			$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 			$dimension_filter->setDimensionName( 'ga:pagePath' );
