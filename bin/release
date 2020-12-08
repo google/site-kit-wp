@@ -32,6 +32,11 @@ const getRepoInfo = require( 'git-repo-info' );
 const sanitizeFilename = require( 'sanitize-filename' );
 
 /**
+ * Internal dependencies
+ */
+const { flagMode } = require( '../dist/config.json' );
+
+/**
  * Retrieves the plugin version from the plugin's file header.
  *
  * @since 1.20.0
@@ -109,16 +114,20 @@ async function makeRelease() {
 	await fse.ensureDir( pluginDir );
 
 	// Copy files to the release directory.
-	await Promise.all( [
+	const fileCopyPromises = [
 		cp( 'readme.txt' ),
 		cp( 'google-site-kit.php' ),
 		cp( 'uninstall.php' ),
 		cp( 'dist/assets' ),
 		cp( 'includes' ),
 		cp( 'third-party' ),
-	] );
+	];
+	if ( 'production' !== flagMode ) {
+		fileCopyPromises.push( cp( 'dist/config.json' ) );
+	}
+	await Promise.all( fileCopyPromises );
 
-	// Archvie the release directory.
+	// Archive the release directory.
 	const archive = archiver( 'zip', { zlib: { level: 9 } } );
 	archive.pipe( fse.createWriteStream( filename ) );
 	archive.directory( pluginDir, 'google-site-kit' );

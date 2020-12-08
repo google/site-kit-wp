@@ -30,6 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { compose } from '@wordpress/compose';
 import { applyFilters } from '@wordpress/hooks';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -145,7 +146,7 @@ class SettingsModule extends Component {
 	}
 
 	handleCloseModal( e ) {
-		if ( 27 === e.keyCode ) {
+		if ( ESCAPE === e.keyCode ) {
 			this.setState( {
 				dialogActive: false,
 			} );
