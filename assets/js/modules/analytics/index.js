@@ -42,6 +42,7 @@ import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 import AnalyticsIcon from '../../../svg/analytics.svg';
+import DashboardAllTrafficWidgetV2 from '../../components/dashboard/Version2/DashboardAllTrafficWidgetV2';
 
 domReady( () => {
 	Modules.registerModule(
@@ -58,6 +59,20 @@ domReady( () => {
 		'analyticsAllTraffic',
 		{
 			Component: DashboardAllTrafficWidget,
+			width: Widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			AREA_DASHBOARD_ALL_TRAFFIC,
+			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
+		],
+	);
+
+	Widgets.registerWidget(
+		'analyticsAllTrafficV2',
+		{
+			Component: DashboardAllTrafficWidgetV2,
 			width: Widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
