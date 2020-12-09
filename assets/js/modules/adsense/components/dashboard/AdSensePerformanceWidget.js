@@ -17,174 +17,73 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
-import { Component } from '@wordpress/element';
-import { isUndefined } from 'lodash';
+import { Fragment, useState, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import {
-	getTimeInSeconds,
-	readableLargeNumber,
-	changeToPercent,
-	numberFormat,
-} from '../../../../util';
-import { TYPE_MODULES } from '../../../../components/data';
-import DataBlock from '../../../../components/data-block.js';
-import PreviewBlock from '../../../../components/PreviewBlock';
-import { isDataZeroAdSense } from '../../util';
-import withData from '../../../../components/higherorder/withdata';
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import AdSenseDashboardWidgetOverview from './AdSenseDashboardWidgetOverview';
+import AdSenseDashboardWidgetSiteStats from './AdSenseDashboardWidgetSiteStats';
+const { useSelect } = Data;
 
-class AdSensePerformanceWidget extends Component {
-	constructor( props ) {
-		super( props );
+export default function AdSensePerformanceWidget( { handleDataSuccess, handleDataError } ) {
+	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
-		this.state = {
-			currentRangeData: false,
-			prevRangeData: false,
-		};
-	}
+	const {
+		startDate,
+		endDate,
+		compareStartDate,
+		compareEndDate,
+	} = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
 
-	// When additional data is returned, componentDidUpdate will fire.
-	componentDidUpdate() {
-		this.processCallbackData();
-	}
+	const handleStatSelection = useCallback( ( stat ) => {
+		setSelectedStats( stat );
+	}, [] );
 
-	componentDidMount() {
-		this.processCallbackData();
-	}
+	const metrics = {
+		EARNINGS: __( 'Earnings', 'google-site-kit' ),
+		PAGE_VIEWS_RPM: __( 'Page RPM', 'google-site-kit' ),
+		IMPRESSIONS: __( 'Impressions', 'google-site-kit' ),
+		PAGE_VIEWS_CTR: __( 'Page CTR', 'google-site-kit' ),
+	};
 
-	/**
-	 * Process callback data received from the API.
-	 */
-	processCallbackData() {
-		const {
-			data,
-			requestDataToState,
-		} = this.props;
+	return (
+		<Fragment>
+			<AdSenseDashboardWidgetOverview
+				startDate={ startDate }
+				endDate={ endDate }
+				compareStartDate={ compareStartDate }
+				compareEndDate={ compareEndDate }
+				metrics={ metrics }
+				selectedStats={ selectedStats }
+				handleStatSelection={ handleStatSelection }
+				handleDataSuccess={ handleDataSuccess }
+				handleDataError={ handleDataError }
+			/>
 
-		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
-			this.setState( requestDataToState );
-		}
-	}
-
-	render() {
-		const {
-			currentRangeData,
-			prevRangeData,
-		} = this.state;
-
-		const dataBlocks = currentRangeData.totals ? [
-			{
-				className: 'googlesitekit-data-block--page-rpm',
-				title: __( 'Earnings', 'google-site-kit' ),
-				datapoint: readableLargeNumber( currentRangeData.totals[ 0 ], currentRangeData.headers[ 0 ]?.currency ),
-				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 0 ], currentRangeData.totals[ 0 ] ) : 0,
-				changeDataUnit: '%',
-			},
-			{
-				className: 'googlesitekit-data-block--page-rpm',
-				title: __( 'Page RPM', 'google-site-kit' ),
-				datapoint: readableLargeNumber( currentRangeData.totals[ 1 ], currentRangeData.headers[ 1 ]?.currency ),
-				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 1 ], currentRangeData.totals[ 1 ] ) : 0,
-				changeDataUnit: '%',
-			},
-			{
-				className: 'googlesitekit-data-block--impression',
-				title: __( 'Impressions', 'google-site-kit' ),
-				datapoint: readableLargeNumber( currentRangeData.totals[ 2 ] ),
-				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 2 ], currentRangeData.totals[ 2 ] ) : 0,
-				changeDataUnit: '%',
-			},
-			{
-				className: 'googlesitekit-data-block--impression',
-				title: __( 'Page CTR', 'google-site-kit' ),
-				/* translators: %s: percentage value. */
-				datapoint: sprintf( _x( ' %1$s%%', 'AdSense performance Page CTA percentage', 'google-site-kit' ), numberFormat( currentRangeData.totals[ 3 ] * 100, { maximumFractionDigits: 2 } ) ),
-				change: ( ! isUndefined( prevRangeData.totals ) ) ? changeToPercent( prevRangeData.totals[ 3 ], currentRangeData.totals[ 3 ] ) : 0,
-				changeDataUnit: '%',
-			},
-		] : [];
-
-		return (
-			<section className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					{ dataBlocks.map( ( block, i ) => {
-						return (
-							<div key={ i } className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--align-top
-								mdc-layout-grid__cell--span-2-phone
-								mdc-layout-grid__cell--span-2-tablet
-								mdc-layout-grid__cell--span-3-desktop
-							">
-								<DataBlock
-									stat={ i }
-									className={ block.className }
-									title={ block.title }
-									datapoint={ block.datapoint }
-									change={ block.change }
-									changeDataUnit={ block.changeDataUnit }
-									context={ block.context }
-									selected={ block.selected }
-									handleStatSelection={ block.handleStatSelection }
-								/>
-							</div>
-						);
-					} ) }
-				</div>
-			</section>
-		);
-	}
+			<AdSenseDashboardWidgetSiteStats
+				startDate={ startDate }
+				endDate={ endDate }
+				compareStartDate={ compareStartDate }
+				compareEndDate={ compareEndDate }
+				metrics={ metrics }
+				selectedStats={ selectedStats }
+			/>
+		</Fragment>
+	);
 }
 
-export default withData(
-	AdSensePerformanceWidget,
-	[
-		{
-			type: TYPE_MODULES,
-			identifier: 'adsense',
-			datapoint: 'earnings',
-			data: {
-				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
-			},
-			priority: 1,
-			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ],
-			toState( state, { data } ) {
-				if ( ! state.currentRangeData ) {
-					return {
-						currentRangeData: data,
-					};
-				}
-			},
-		},
-		{
-			type: TYPE_MODULES,
-			identifier: 'adsense',
-			datapoint: 'earnings',
-			data: {
-				// This will be dynamically replaced with the previous date range based on the current date range.
-				dateRange: 'prev-date-range-placeholder',
-				metrics: [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS', 'PAGE_VIEWS_CTR' ],
-			},
-			priority: 1,
-			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ],
-			toState( state, { data } ) {
-				if ( ! state.prevRangeData ) {
-					return {
-						prevRangeData: data,
-					};
-				}
-			},
-		},
-	],
-	<PreviewBlock width="100%" height="250px" />,
-	{ createGrid: true },
-	isDataZeroAdSense
-);
-
+AdSensePerformanceWidget.propTpyes = {
+	handleDataError: PropTypes.func.isRequired,
+	handleDataSuccess: PropTypes.func.isRequired,
+};

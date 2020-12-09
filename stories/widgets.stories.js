@@ -83,7 +83,7 @@ function createWidgetArea( registry, areaName, widgets ) {
 		style: WIDGET_AREA_STYLES.BOXES,
 	} );
 
-	widgets.forEach( ( { component, slug, width }, i ) => {
+	widgets.forEach( ( { Component, slug, width }, i ) => {
 		const widgetSlug = slug || `${ areaName }-width${ i + 1 }`;
 		const componentFallback = () => (
 			<div>
@@ -92,7 +92,7 @@ function createWidgetArea( registry, areaName, widgets ) {
 		);
 
 		registry.dispatch( STORE_NAME ).registerWidget( widgetSlug, {
-			component: component || componentFallback,
+			Component: Component || componentFallback,
 			width,
 		} );
 

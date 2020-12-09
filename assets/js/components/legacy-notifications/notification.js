@@ -262,7 +262,7 @@ class Notification extends Component {
 		);
 
 		const logoSVG = module
-			? <ModuleIcon slug={ module } height={ 19 } width={ 19 } />
+			? <ModuleIcon slug={ module } size={ 19 } />
 			: <GoogleLogoIcon height="34" width="32" />;
 
 		return (
