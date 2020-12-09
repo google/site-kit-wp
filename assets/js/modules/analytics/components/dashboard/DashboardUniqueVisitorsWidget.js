@@ -33,7 +33,7 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import { changeToPercent, readableLargeNumber } from '../../../../util';
+import { changeToPercent } from '../../../../util';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
@@ -140,7 +140,7 @@ function DashboardUniqueVisitorsWidget() {
 		<DataBlock
 			className="overview-total-users"
 			title={ __( 'Unique Visitors', 'google-site-kit' ) }
-			datapoint={ readableLargeNumber( totalUsers ) }
+			datapoint={ totalUsers }
 			change={ totalUsersChange }
 			changeDataUnit="%"
 			source={ {

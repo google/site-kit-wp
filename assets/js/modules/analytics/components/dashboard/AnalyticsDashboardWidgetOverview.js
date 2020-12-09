@@ -33,7 +33,6 @@ import { Component } from '@wordpress/element';
 import {
 	getTimeInSeconds,
 	prepareSecondsForDisplay,
-	readableLargeNumber,
 	changeToPercent,
 } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
@@ -106,7 +105,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			{
 				className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
 				title: __( 'Users', 'google-site-kit' ),
-				datapoint: readableLargeNumber( totalUsers ),
+				datapoint: totalUsers,
 				change: totalUsersChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -116,7 +115,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			{
 				className: 'googlesitekit-data-block--sessions googlesitekit-data-block--button-2',
 				title: __( 'Sessions', 'google-site-kit' ),
-				datapoint: readableLargeNumber( totalSessions ),
+				datapoint: totalSessions,
 				change: totalSessionsChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -126,7 +125,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			{
 				className: 'googlesitekit-data-block--bounce googlesitekit-data-block--button-3',
 				title: __( 'Bounce Rate', 'google-site-kit' ),
-				datapoint: Number( averageBounceRate ).toFixed( 2 ),
+				datapoint: averageBounceRate,
 				change: averageBounceRateChange,
 				changeDataUnit: '%',
 				context: 'button',

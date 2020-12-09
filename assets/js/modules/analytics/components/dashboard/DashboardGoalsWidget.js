@@ -33,7 +33,7 @@ import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
 import CTA from '../../../../components/legacy-notifications/cta';
 import AnalyticsInactiveCTA from '../../../../components/AnalyticsInactiveCTA';
-import { readableLargeNumber, changeToPercent } from '../../../../util';
+import { changeToPercent } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import ReportError from '../../../../components/ReportError';
@@ -127,7 +127,7 @@ function DashboardGoalsWidget() {
 		<DataBlock
 			className="overview-goals-completed"
 			title={ __( 'Goals Completed', 'google-site-kit' ) }
-			datapoint={ readableLargeNumber( goalCompletions ) }
+			datapoint={ goalCompletions }
 			change={ goalCompletionsChange }
 			changeDataUnit="%"
 			source={ {

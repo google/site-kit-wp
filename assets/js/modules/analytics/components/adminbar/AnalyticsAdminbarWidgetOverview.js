@@ -27,7 +27,6 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import {
 	getTimeInSeconds,
-	readableLargeNumber,
 	changeToPercent,
 } from '../../../../util';
 import DataBlock from '../../../../components/data-block';
@@ -100,7 +99,7 @@ class AnalyticsAdminbarWidgetOverview extends Component {
 					<DataBlock
 						className="overview-total-users"
 						title={ __( 'Total Users', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( totalUsers ) }
+						datapoint={ totalUsers }
 						change={ totalUsersChange }
 						changeDataUnit="%"
 					/>
@@ -113,7 +112,7 @@ class AnalyticsAdminbarWidgetOverview extends Component {
 					<DataBlock
 						className="overview-total-sessions"
 						title={ __( 'Total Sessions', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( totalSessions ) }
+						datapoint={ totalSessions }
 						change={ totalSessionsChange }
 						changeDataUnit="%"
 					/>

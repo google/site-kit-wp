@@ -132,11 +132,11 @@ export const prepareForReadableLargeNumber = ( number ) => {
  *
  * @since 1.0.0
  *
- * @param {number}           number       The large number to format.
- * @param {(string|boolean)} currencyCode Optional currency code to format as amount.
+ * @param {number}           number The large number to format.
+ * @param {(string|boolean)} unit   Optional currency code to format as amount.
  * @return {string} The formatted number.
  */
-export const readableLargeNumber = ( number, currencyCode = false ) => {
+export const readableLargeNumber = ( number, unit = false ) => {
 	// Cast parsable values to numeric types.
 	number = isFinite( number ) ? number : Number( number );
 
@@ -146,8 +146,8 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 		number = 0;
 	}
 
-	if ( currencyCode ) {
-		return numberFormatWithUnit( number, currencyCode );
+	if ( unit ) {
+		return numberFormatWithUnit( number, unit );
 	}
 
 	const withSingleDecimal = {

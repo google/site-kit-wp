@@ -28,7 +28,6 @@ import { Component, Fragment } from '@wordpress/element';
 import {
 	getTimeInSeconds,
 	prepareSecondsForDisplay,
-	readableLargeNumber,
 	changeToPercent,
 } from '../../../../util';
 import {
@@ -106,7 +105,7 @@ class WPAnalyticsDashboardWidgetOverview extends Component {
 						<DataBlock
 							className="googlesitekit-wp-dashboard-stats__data-table overview-total-users"
 							title={ __( 'Total Unique Visitors', 'google-site-kit' ) }
-							datapoint={ readableLargeNumber( totalUsers ) }
+							datapoint={ totalUsers }
 							change={ totalUsersChange }
 							changeDataUnit="%"
 						/>

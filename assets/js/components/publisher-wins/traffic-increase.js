@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, readableLargeNumber, getModulesData, changeToPercent } from '../../util';
+import { getTimeInSeconds, getModulesData, changeToPercent } from '../../util';
 import { parseTotalUsersData } from '../../../js/modules/analytics/util';
 import sunImage from '../../../images/sun.png';
 
@@ -59,7 +59,7 @@ const trafficIncrease = ( reports, id ) => {
 			[
 				{
 					title: __( 'Site Visitors', 'google-site-kit' ),
-					datapoint: readableLargeNumber( totalUsers ),
+					datapoint: totalUsers,
 					datapointUnit: '',
 				},
 				{

@@ -124,7 +124,7 @@ function DashboardBounceRateWidget() {
 		<DataBlock
 			className="overview-bounce-rate"
 			title={ __( 'Bounce Rate', 'google-site-kit' ) }
-			datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
+			datapoint={ averageBounceRate }
 			datapointUnit="%"
 			change={ averageBounceRateChange }
 			changeDataUnit="%"

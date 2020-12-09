@@ -29,7 +29,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
-import { untrailingslashit, changeToPercent, readableLargeNumber } from '../../../../util';
+import { untrailingslashit, changeToPercent } from '../../../../util';
 import { trackEvent } from '../../../../util/tracking';
 import { isZeroReport } from '../../util';
 import whenActive from '../../../../util/when-active';
@@ -115,7 +115,7 @@ function DashboardClicksWidget() {
 			<DataBlock
 				className="overview-total-clicks"
 				title={ __( 'Clicks', 'google-site-kit' ) }
-				datapoint={ readableLargeNumber( totalClicks ) }
+				datapoint={ totalClicks }
 				change={ totalClicksChange }
 				changeDataUnit="%"
 				source={ {

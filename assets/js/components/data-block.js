@@ -34,6 +34,7 @@ import { sprintf } from '@wordpress/i18n';
 import ChangeArrow from './ChangeArrow';
 import { numberFormatWithUnit } from '../util/i18n';
 import SourceLink from './SourceLink';
+import { readableLargeNumber } from '../util';
 
 class DataBlock extends Component {
 	constructor( props ) {
@@ -96,6 +97,8 @@ class DataBlock extends Component {
 			}
 		}
 
+		const dataPointFormatted = Number( datapoint ) ? readableLargeNumber( datapoint, datapointUnit ) : datapoint;
+
 		return (
 			<div
 				className={ classnames(
@@ -119,7 +122,7 @@ class DataBlock extends Component {
 						{ title }
 					</h3>
 					<div className="googlesitekit-data-block__datapoint">
-						{ datapointUnit ? numberFormatWithUnit( datapoint, datapointUnit ) : datapoint }
+						{ dataPointFormatted }
 					</div>
 				</div>
 				{ sparklineComponent &&
