@@ -68,7 +68,7 @@ export function isValidDimensions( dimensions ) {
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
  */
 export function isValidDimensionFilters( dimensionFilters, dimensions ) {
-	if ( ! dimensions ) {
+	if ( ! isPlainObject( dimensions ) ) {
 		return false;
 	}
 	const validDimensions = [];
