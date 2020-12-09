@@ -34,7 +34,7 @@ import OptIn from '../optin';
 import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
-import { QUESTIONS } from '../user-input/util/constants';
+import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
 import { STORE_NAME as CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import UserInputSettings from '../notifications/UserInputSettings';
 const { useSelect } = Data;
@@ -45,7 +45,7 @@ const SettingsAdmin = () => {
 
 	const goTo = useCallback( ( num = 1 ) => {
 		global.location.assign( addQueryArgs( userInputURL, {
-			question: QUESTIONS[ num - 1 ],
+			question: USER_INPUT_QUESTIONS_LIST[ num - 1 ],
 			redirect_url: global.location.href,
 		} ) );
 	}, [ userInputURL ] );

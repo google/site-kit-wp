@@ -22,10 +22,10 @@
 		padding-bottom: 0;
 
 		.googlesitekit-user-input__preview {
-			padding: $grid-gap-desktop;
+			padding: $grid-gap-phone;
 
-			@media (max-width: $bp-mobileOnly) {
-				padding: $grid-gap-phone;
+			@media (min-width: $bp-mobileOnly) {
+				padding: $grid-gap-desktop;
 			}
 		}
 	}

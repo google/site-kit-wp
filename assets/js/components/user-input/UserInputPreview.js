@@ -40,7 +40,6 @@ import ErrorNotice from '../ErrorNotice';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { getUserInputAnwsers } from './util/constants';
-import { addQueryArgs } from '@wordpress/url';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputPreview( { noFooter, back, goTo, redirectURL } ) {
@@ -58,12 +57,11 @@ export default function UserInputPreview( { noFooter, back, goTo, redirectURL } 
 		setIsNavigating( true );
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			let [ sanitizedRedirectURL, hash ] = ( redirectURL ?? dashboardURL ).split( '#' );
-			sanitizedRedirectURL = addQueryArgs( sanitizedRedirectURL, { notification: 'user_input_success' } );
-			if ( hash ) {
-				sanitizedRedirectURL += `#${ hash }`;
-			}
-			global.location.assign( sanitizedRedirectURL );
+			const url = new URL( redirectURL || dashboardURL );
+			// Here we don't use `addQueryArgs` due to a bug with how it handles hashes
+			// See https://github.com/WordPress/gutenberg/issues/16655
+			url.searchParams.set( 'notification', 'user_input_success' );
+			global.location.assign( url.toString() );
 		} else {
 			setIsNavigating( false );
 		}

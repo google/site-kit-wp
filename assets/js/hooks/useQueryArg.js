@@ -28,7 +28,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  * @since n.e.x.t
  *
  * @param {string} key            The query param key to be used.
- * @param {string} [initialValue] Optional. The initial value for the query param to be used. Default: `null`.
+ * @param {string} [initialValue] Optional. The initial value for the query param to be used.
  * @return {Array} The getter and setter for the query param state.
  */
 function useQueryArg( key, initialValue ) {
@@ -39,7 +39,7 @@ function useQueryArg( key, initialValue ) {
 			setValue( newValue );
 
 			const newURL = addQueryArgs( global.location.href, { [ key ]: newValue } );
-			global.history.replaceState( { path: newURL }, '', newURL );
+			global.history.replaceState( null, '', newURL );
 		},
 		[ key ]
 	);
