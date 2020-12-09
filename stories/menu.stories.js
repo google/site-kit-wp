@@ -1,5 +1,5 @@
 /**
- * Button Component Stories.
+ * Menu Component Stories.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -24,50 +24,31 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Button from '../assets/js/components/Button';
+import Menu from '../assets/js/components/Menu';
 
 storiesOf( 'Global', module )
-	.add( 'Buttons', () => {
-		return (
+	.add( 'Menu', () => (
+		<div>
 			<div>
-				<p>
-					<Button>
-						Default Button
-					</Button>
-				</p>
-				<p>
-					<Button className="googlesitekit-button--hover">
-						VRT: Default Button Hover
-					</Button>
-				</p>
-				<p>
-					<Button
-						href="http://google.com"
-					>
-						Default Button Link
-					</Button>
-				</p>
-				<p>
-					<Button
-						href="http://google.com"
-						danger
-					>
-						Danger Button
-					</Button>
-				</p>
-				<p>
-					<Button
-						disabled
-					>
-						Disabled Button
-					</Button>
-				</p>
+				<p>Menu</p>
+				<Menu
+					menuOpen
+					menuItems={ [
+						'Item 1',
+						'Item 2',
+						'Item 3',
+						'Item 4',
+						'Item 5',
+					] }
+					onSelected={ ( index ) => {
+						global.console.log( index );
+					} }
+					id="googlesitekit-menu"
+				/>
 			</div>
-		);
-	}, {
+		</div>
+	), {
 		options: {
-			hoverSelector: '.googlesitekit-button--hover',
-			postInteractionWait: 3000, // Wait for shadows to animate.
 			onReadyScript: 'mouse.js',
 		},
 	} );
