@@ -20,17 +20,17 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
-import { ENTER, ESCAPE, SPACE } from '@wordpress/keycodes';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import DateRangeIcon from '../../svg/date-range.svg';
-import Menu from './menu';
+import Menu from './Menu';
 import { getAvailableDateRanges } from '../util/date-range';
 import { STORE_NAME as CORE_USER } from '../googlesitekit/datastore/user/constants';
-import Button from './button';
+import Button from './Button';
 
 const { useSelect, useDispatch } = Data;
 
@@ -45,14 +45,16 @@ function DateRangeSelector() {
 
 	useEffect( () => {
 		const handleMenuClose = ( event ) => {
-			// Close the menu if the user presses the Escape key
-			// or if they click outside of the menu.
-			if (
-				( ( 'keyup' === event.type && ESCAPE === event.keyCode ) || 'mouseup' === event.type ) &&
-				! menuButtonRef.current.buttonRef.current.contains( event.target ) &&
-				! menuRef.current.menuRef.current.contains( event.target )
-			) {
-				setMenuOpen( false );
+			if ( ( menuButtonRef && menuButtonRef.current ) && ( menuRef && menuRef.current ) ) {
+				// Close the menu if the user presses the Escape key
+				// or if they click outside of the menu.
+				if (
+					( ( 'keyup' === event.type && ESCAPE === event.keyCode ) || 'mouseup' === event.type ) &&
+					! menuButtonRef.current.contains( event.target ) &&
+					! menuRef.current.contains( event.target )
+				) {
+					setMenuOpen( false );
+				}
 			}
 		};
 
@@ -69,14 +71,9 @@ function DateRangeSelector() {
 		setMenuOpen( ! menuOpen );
 	}, [ menuOpen ] );
 
-	const handleMenuItemSelect = useCallback( ( index, event ) => {
-		if (
-			( 'keydown' === event.type && ( ENTER === event.keyCode || SPACE === event.keyCode ) ) || // Enter or Space is pressed.
-			'click' === event.type // Mouse is clicked
-		) {
-			setDateRange( Object.values( ranges )[ index ].slug );
-			setMenuOpen( false );
-		}
+	const handleMenuItemSelect = useCallback( ( index ) => {
+		setDateRange( Object.values( ranges )[ index ].slug );
+		setMenuOpen( false );
 	}, [ handleMenu ] );
 
 	const currentDateRangeLabel = ranges[ dateRange ]?.label;

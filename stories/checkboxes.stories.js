@@ -1,5 +1,5 @@
 /**
- * Radio Component Stories.
+ * Checkbox Component Stories.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -24,39 +24,54 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Radio from '../assets/js/components/Radio';
+import Checkbox from '../assets/js/components/Checkbox';
 
 storiesOf( 'Global', module )
-	.add( 'Radios', () => (
+	.add( 'Checkboxes', () => (
 		<div>
 			<div>
-				<Radio
-					id="radio-story"
-					name="radio-story"
-					value="story"
+				<Checkbox
+					id="googlesitekit-checkbox-1"
+					name="googlesitekit__checkbox"
+					onChange={ ( e ) => {
+						global.console.log( e.target.value );
+					} }
+					value="value-1"
 				>
-					Default
-				</Radio>
+					Default Checkbox
+				</Checkbox>
 			</div>
+
 			<div>
-				<Radio
-					id="radio-story"
-					name="radio-story"
-					value="story"
+				<Checkbox
 					checked
+					name="googlesitekit__checkbox"
+					id="googlesitekit-checkbox-2"
+					onChange={ ( e ) => {
+						global.console.log( e.target.value );
+					} }
+					value="value-2"
 				>
-					Checked
-				</Radio>
+					Checked Checkbox
+				</Checkbox>
 			</div>
+
 			<div>
-				<Radio
-					id="radio-story"
-					name="radio-story"
-					value="story"
+				<Checkbox
 					disabled
+					id="googlesitekit-checkbox-3"
+					name="googlesitekit__checkbox"
+					onChange={ ( e ) => {
+						global.console.log( e.target.value );
+					} }
+					value="value-3"
 				>
-					Disabled
-				</Radio>
+					Disabled Checkbox
+				</Checkbox>
 			</div>
 		</div>
-	) );
+	), {
+		options: {
+			onReadyScript: 'mouse.js',
+		},
+	} );

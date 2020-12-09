@@ -34,7 +34,7 @@ import { ENTER } from '@wordpress/keycodes';
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Input, TextField } from '../../material-components';
-import Button from '../button';
+import Button from '../Button';
 import { COMMA } from '../../util/key-codes';
 const { useSelect, useDispatch } = Data;
 

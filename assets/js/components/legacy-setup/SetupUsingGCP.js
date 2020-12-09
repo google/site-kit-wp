@@ -31,7 +31,7 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Header from '../Header';
-import Button from '../button';
+import Button from '../Button';
 import Layout from '../layout/layout';
 import data, { TYPE_CORE } from '../data';
 import { trackEvent, clearWebStorage, getSiteKitAdminURL } from '../../util';
