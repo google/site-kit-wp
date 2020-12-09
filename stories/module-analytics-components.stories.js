@@ -76,7 +76,7 @@ generateReportBasedWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/All Traffic Widget',
 	data: dashboardAllTrafficData,
 	options: dashboardAllTrafficArgs,
-	component: DashboardAllTrafficWidget,
+	Component: DashboardAllTrafficWidget,
 	wrapWidget: false,
 	setup,
 } );
@@ -87,7 +87,7 @@ generateReportBasedWidgetStories( {
 	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
 	data: pageDashboardAllTrafficData,
 	options: pageDashboardAllTrafficArgs,
-	component: DashboardAllTrafficWidget,
+	Component: DashboardAllTrafficWidget,
 	wrapWidget: false,
 	setup,
 } );
@@ -98,7 +98,7 @@ generateReportBasedWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/Bounce Rate Widget',
 	data: dashboardBounceRateWidgetData,
 	options: dashboardBounceRateWidgetArgs,
-	component: DashboardBounceRateWidget,
+	Component: DashboardBounceRateWidget,
 	setup,
 } );
 
@@ -108,7 +108,7 @@ generateReportBasedWidgetStories( {
 	group: 'Analytics Module/Components/Page Dashboard/Bounce Rate Widget',
 	data: pageDashboardBounceRateWidgetData,
 	options: pageDashboardBounceRateWidgetArgs,
-	component: DashboardBounceRateWidget,
+	Component: DashboardBounceRateWidget,
 	setup,
 } );
 
@@ -118,7 +118,7 @@ generateReportBasedWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/Goals Widget',
 	data: dashboardGoalsWidgetData,
 	options: dashboardGoalsWidgetArgs,
-	component: DashboardGoalsWidget,
+	Component: DashboardGoalsWidget,
 	additionalVariants: {
 		'No Goals': { data: dashboardGoalsWidgetData, options: dashboardGoalsWidgetArgs },
 	},
@@ -141,7 +141,7 @@ generateReportBasedWidgetStories( {
 		dashboardUniqueVisitorsVisitorArgs,
 		dashboardUniqueVisitorsSparkArgs,
 	],
-	component: DashboardUniqueVisitorsWidget,
+	Component: DashboardUniqueVisitorsWidget,
 	setup,
 } );
 
@@ -157,7 +157,7 @@ generateReportBasedWidgetStories( {
 		pageDashboardUniqueVisitorsVisitorArgs,
 		pageDashboardUniqueVisitorsSparkArgs,
 	],
-	component: DashboardUniqueVisitorsWidget,
+	Component: DashboardUniqueVisitorsWidget,
 	setup,
 } );
 
@@ -167,7 +167,7 @@ generateReportBasedWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/Popular Pages Widget',
 	data: dashboardPopularPagesData,
 	options: dashboardPopularPagesArgs,
-	component: DashboardPopularPagesWidget,
+	Component: DashboardPopularPagesWidget,
 	wrapWidget: false,
 	setup,
 } );

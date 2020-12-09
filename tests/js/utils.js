@@ -267,10 +267,10 @@ export const provideModules = ( registry, extraData = [] ) => {
 export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 	const moduleRegistrationData = {
 		adsense: {
-			settingsEditComponent: AdSenseSettingsEdit,
-			settingsViewComponent: AdSenseSettingsView,
-			setupComponent: AdSenseSetupMain,
-			icon: AdSenseIcon,
+			SettingsEditComponent: AdSenseSettingsEdit,
+			SettingsViewComponent: AdSenseSettingsView,
+			SetupComponent: AdSenseSetupMain,
+			Icon: AdSenseIcon,
 			checkRequirements: () => {
 				// TODO: Remove this duplicate-ish code and instead import from reusable AdSense utility function.
 				const isAdBlockerActive = registry.select( MODULES_ADSENSE ).isAdBlockerActive();
@@ -286,30 +286,30 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 			},
 		},
 		analytics: {
-			settingsEditComponent: AnalyticsSettingsEdit,
-			settingsViewComponent: AnalyticsSettingsView,
-			setupComponent: AnalyticsSetupMain,
-			icon: AnalyticsIcon,
+			SettingsEditComponent: AnalyticsSettingsEdit,
+			SettingsViewComponent: AnalyticsSettingsView,
+			SetupComponent: AnalyticsSetupMain,
+			Icon: AnalyticsIcon,
 		},
 		optimize: {
-			settingsEditComponent: OptimizeSettingsEdit,
-			settingsViewComponent: OptimizeSettingsView,
-			setupComponent: OptimizeSetupMain,
-			icon: OptimizeIcon,
+			SettingsEditComponent: OptimizeSettingsEdit,
+			SettingsViewComponent: OptimizeSettingsView,
+			SetupComponent: OptimizeSetupMain,
+			Icon: OptimizeIcon,
 		},
 		'pagespeed-insights': {
-			settingsViewComponent: PageSpeedInsightsSettingsView,
-			icon: PageSpeedInsightsIcon,
+			SettingsViewComponent: PageSpeedInsightsSettingsView,
+			Icon: PageSpeedInsightsIcon,
 		},
 		'search-console': {
-			settingsViewComponent: SearchConsoleSettingsView,
-			icon: SearchConsoleIcon,
+			SettingsViewComponent: SearchConsoleSettingsView,
+			Icon: SearchConsoleIcon,
 		},
 		tagmanager: {
-			settingsEditComponent: TagManagerSettingsEdit,
-			settingsViewComponent: TagManagerSettingsView,
-			setupComponent: TagManagerSetupMain,
-			icon: TagManagerIcon,
+			SettingsEditComponent: TagManagerSettingsEdit,
+			SettingsViewComponent: TagManagerSettingsView,
+			SetupComponent: TagManagerSetupMain,
+			Icon: TagManagerIcon,
 		},
 	};
 

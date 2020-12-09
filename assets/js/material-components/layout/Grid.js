@@ -22,9 +22,9 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-export default function Grid( { className, children } ) {
+export default function Grid( { className, children, ...otherProps } ) {
 	return (
-		<div className={ classnames( 'mdc-layout-grid', className ) }>
+		<div className={ classnames( 'mdc-layout-grid', className ) } { ...otherProps }>
 			{ children }
 		</div>
 	);
