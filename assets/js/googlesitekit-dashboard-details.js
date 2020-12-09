@@ -30,8 +30,7 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
-import { loadTranslations } from './util';
-import './components/notifications';
+import './components/legacy-notifications';
 import DashboardDetailsApp from './components/dashboard-details/dashboard-details-app';
 import Root from './components/root';
 
@@ -40,8 +39,6 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-details' );
 
 	if ( renderTarget ) {
-		loadTranslations();
-
 		render( <Root dataAPIContext="Dashboard"><DashboardDetailsApp /></Root>, renderTarget );
 	}
 } );

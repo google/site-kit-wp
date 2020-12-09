@@ -11,14 +11,37 @@
 namespace Google\Site_Kit\Tests;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Input;
+use Google\Site_Kit\Core\Util\JSON_File;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use PHPUnit_Framework_MockObject_MockObject;
 
 class TestCase extends \WP_UnitTestCase {
-
 	// Do not preserve global state since it doesn't support closures within globals.
 	protected $preserveGlobalState = false;
+
+	protected static $featureFlagsConfig;
+
+	public static function setUpBeforeClass() {
+		parent::setUpBeforeClass();
+
+		if ( ! self::$featureFlagsConfig ) {
+			self::$featureFlagsConfig = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' );
+		}
+
+		self::reset_feature_flags();
+	}
+
+	public static function tearDownAfterClass() {
+		parent::tearDownAfterClass();
+		self::reset_feature_flags();
+	}
+
+	protected static function reset_feature_flags() {
+		Feature_Flags::set_mode( Feature_Flags::MODE_PRODUCTION );
+		Feature_Flags::set_features( self::$featureFlagsConfig );
+	}
 
 	/**
 	 * Runs the routine before each test is executed.

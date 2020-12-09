@@ -22,8 +22,10 @@
 import * as fixtures from '../../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME } from '../../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY } from '../../assets/js/googlesitekit/datastore/site/constants';
-import { STORE_NAME as CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
-import { withActive } from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import {
+	provideModules,
+	provideModuleRegistrations,
+} from '../../tests/js/utils';
 import { createBuildAndReceivers } from '../../assets/js/modules/tagmanager/datastore/__factories__/utils';
 
 /**
@@ -80,7 +82,16 @@ export function generateGTMAnalyticsPropertyStory( {
 				},
 			];
 
-			registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
+			provideModules( registry, [ {
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			}, {
+				slug: 'tagmanager',
+				active: true,
+				connected: true,
+			} ] );
+			provideModuleRegistrations( registry );
 
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 				homeURL: 'https://example.com/',

@@ -9,7 +9,6 @@
  * See: https://github.com/GoogleChrome/puppeteer/issues/1229#issuecomment-380133332.
  * This is the workaround until Page.setBypassCSP lands: https://github.com/GoogleChrome/puppeteer/pull/2324.
  *
- *
  * Use this in an `onBefore` script:
  *
  * ```

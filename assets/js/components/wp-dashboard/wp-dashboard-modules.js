@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getModulesData } from '../../util';
-import AnalyticsInactiveCTA from '../analytics-inactive-cta';
+import AnalyticsInactiveCTA from '../AnalyticsInactiveCTA';
 import WPDashboardModule from './wp-dashboard-module';
 import WPDashboardHeader from './wp-dashboard-header';
 
@@ -52,8 +52,8 @@ class WPDashboardModules extends Component {
 						( ! modulesData.analytics.active ) &&
 						<div className="googlesitekit-wp-dashboard-stats__cta">
 							<AnalyticsInactiveCTA
-								title={ __( 'See unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }
-								ctaLabel={ __( 'Set up analytics', 'google-site-kit' ) }
+								title={ __( 'See unique visitors, goal completions, top pages and more.', 'google-site-kit' ) }
+								ctaLabel={ __( 'Set up Analytics', 'google-site-kit' ) }
 								description=""
 							/>
 						</div>

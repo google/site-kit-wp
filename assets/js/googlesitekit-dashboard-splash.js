@@ -25,11 +25,11 @@ import { render, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { clearWebStorage, loadTranslations } from './util';
-import './components/notifications';
+import { clearWebStorage } from './util';
+import './components/legacy-notifications';
 import Root from './components/root';
-import DashboardSplashApp from './components/dashboard-splash/dashboard-splash-app';
-import NotificationCounter from './components/notifications/notification-counter';
+import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
+import NotificationCounter from './components/legacy-notifications/notification-counter';
 
 const GoogleSitekitDashboardSplash = () => {
 	return (
@@ -49,8 +49,6 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-splash' );
 
 	if ( renderTarget ) {
-		loadTranslations();
-
 		render( <Root dataAPIContext="Splash"><GoogleSitekitDashboardSplash /></Root>, renderTarget );
 	}
 } );

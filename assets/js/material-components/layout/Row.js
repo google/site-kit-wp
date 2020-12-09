@@ -22,9 +22,9 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-export default function Row( { className, children } ) {
+export default function Row( { className, children, ...otherProps } ) {
 	return (
-		<div className={ classnames( 'mdc-layout-grid__inner', className ) }>
+		<div className={ classnames( 'mdc-layout-grid__inner', className ) } { ...otherProps }>
 			{ children }
 		</div>
 	);
@@ -32,10 +32,7 @@ export default function Row( { className, children } ) {
 
 Row.propTypes = {
 	className: PropTypes.string,
-	children: PropTypes.oneOfType( [
-		PropTypes.element,
-		PropTypes.arrayOf( PropTypes.element ),
-	] ).isRequired,
+	children: PropTypes.node,
 };
 
 Row.defaultProps = {

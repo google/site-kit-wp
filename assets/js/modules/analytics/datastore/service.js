@@ -17,6 +17,16 @@
  */
 
 /**
+ * Node dependencies
+ */
+import { join as joinPaths } from 'path';
+
+/**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
@@ -25,7 +35,9 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { reportArgsToURLSegment } from '../util/report-args';
 const { createRegistrySelector } = Data;
 
 export const selectors = {
@@ -55,6 +67,33 @@ export const selectors = {
 			return `${ baseURIWithQuery }#${ sanitizedPath }`;
 		}
 		return baseURIWithQuery;
+	} ),
+
+	/**
+	 * Gets a URL for a specific reporting view on the service.
+	 *
+	 * @since 1.22.0
+	 *
+	 * @param {Object} state        Data store's state.
+	 * @param {string} type         Report type.
+	 * @param {Object} [reportArgs] Report-specific arguments for targeting a specific sub-view.
+	 * @return {(string|undefined)} The service URL.
+	 */
+	getServiceReportURL: createRegistrySelector( ( select ) => ( state, type, reportArgs = {} ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
+		const profileID = select( STORE_NAME ).getProfileID();
+
+		invariant( type, 'type is required to get a service report URL.' );
+
+		if ( ! accountID || ! internalWebPropertyID || ! profileID ) {
+			return undefined;
+		}
+
+		const argsSegment = reportArgsToURLSegment( reportArgs );
+		const path = joinPaths( '/report', type, `a${ accountID }w${ internalWebPropertyID }p${ profileID }`, argsSegment, '/' );
+
+		return selectors.getServiceURL( state, { path } );
 	} ),
 };
 

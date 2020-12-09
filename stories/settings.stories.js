@@ -35,7 +35,8 @@ import SettingsModules from '../assets/js/components/settings/settings-modules';
 import Layout from '../assets/js/components/layout/layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
-import { WithTestRegistry } from '../tests/js/utils';
+import { provideModuleRegistrations, provideModules, provideSiteInfo, WithTestRegistry, untilResolved } from '../tests/js/utils';
+import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 
 /**
  * Add components to the settings page.
@@ -74,8 +75,13 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.modules.adsense.active = true;
 		global._googlesitekitLegacyData.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
 
+		const setupRegistry = ( registry ) => {
+			provideModules( registry );
+			provideModuleRegistrations( registry );
+		};
+
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry callback={ setupRegistry } >
 				<div className="mdc-layout-grid__inner">
 					<SettingsModules activeTab={ 0 } />
 				</div>
@@ -89,10 +95,55 @@ storiesOf( 'Settings', module )
 	.add( 'Connect More Services', () => {
 		global._googlesitekitLegacyData = settingsData;
 		global._googlesitekitLegacyData.canAdsRun = true;
+		global._googlesitekitLegacyData.modules.analytics.active = false;
 		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
-		global._googlesitekitLegacyData.modules.adsense.active = false;
+		global._googlesitekitLegacyData.modules.adsense.active = true;
+		global._googlesitekitLegacyData.modules.adsense.setupComplete = false;
+
+		const setupRegistry = async ( registry ) => {
+			provideModules( registry, [
+				{
+					slug: 'adsense',
+					active: true,
+					connected: false,
+				},
+				{
+					slug: 'analytics',
+					active: false,
+					connected: false,
+				},
+				{
+					slug: 'optimize',
+					active: false,
+					connected: false,
+				},
+				{
+					slug: 'pagespeed-insights',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'search-console',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'site-verification',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'tagmanager',
+					active: false,
+					connected: false,
+				},
+			] );
+			provideModuleRegistrations( registry );
+			registry.select( CORE_MODULES ).getModule( 'adsense' );
+			await untilResolved( registry, CORE_MODULES ).getModules();
+		};
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry callback={ setupRegistry }>
 				<SettingsModules activeTab={ 1 } />
 			</WithTestRegistry>
 		);
@@ -103,11 +154,17 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.admin.clientID = '123456789-xxx1234ffghrrro6hofusq2b8.apps..com';
 		global._googlesitekitLegacyData.admin.clientSecret = '••••••••••••••••••••••••••••';
 
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry );
+		};
+
 		return (
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					<SettingsAdmin />
+			<WithTestRegistry callback={ setupRegistry } >
+				<div className="mdc-layout-grid">
+					<div className="mdc-layout-grid__inner">
+						<SettingsAdmin />
+					</div>
 				</div>
-			</div>
+			</WithTestRegistry>
 		);
 	} );

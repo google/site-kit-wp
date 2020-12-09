@@ -34,7 +34,7 @@ import API from 'googlesitekit-api';
 import { sanitizeHTML } from '../../util/sanitize';
 import { getExistingTag } from '../../util/tag';
 import Link from '../Link';
-import Warning from '../notifications/warning';
+import Warning from '../legacy-notifications/warning';
 import ProgressBar from '../ProgressBar';
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
@@ -42,6 +42,7 @@ const ERROR_FETCH_FAIL = 'check_fetch_failed';
 const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
 const ERROR_GOOGLE_API_CONNECTION_FAIL = 'google_api_connection_fail';
 const ERROR_AMP_CDN_RESTRICTED = 'amp_cdn_restricted';
+const ERROR_WP_PRE_V5 = 'wp_pre_v5';
 
 export const AMP_PROJECT_TEST_URL = 'https://cdn.ampproject.org/v0.js';
 
@@ -54,7 +55,7 @@ const checks = [
 			throw ERROR_INVALID_HOSTNAME;
 		}
 	},
-	// Generate and check for a Site Kit specific meta tag on the page to test for agressive caching.
+	// Generate and check for a Site Kit specific meta tag on the page to test for aggressive caching.
 	async () => {
 		const { token } = await API.set( 'core', 'site', 'setup-tag' );
 
@@ -86,6 +87,14 @@ const checks = [
 
 		if ( ! response.ok ) {
 			throw ERROR_AMP_CDN_RESTRICTED;
+		}
+	},
+	// Check that the current version of WordPress is 5.0+.
+	async () => {
+		const { wpVersion } = global._googlesitekitBaseData || {};
+		// Throw only if we can get the current version, otherwise ignore it.
+		if ( wpVersion && wpVersion.major < 5 ) {
+			throw ERROR_WP_PRE_V5;
 		}
 	},
 ];
@@ -158,61 +167,67 @@ export default class CompatibilityChecks extends Component {
 		switch ( error ) {
 			case ERROR_INVALID_HOSTNAME:
 			case ERROR_FETCH_FAIL:
-				return <p>
-					{ ! installed && __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }
-					{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
-					{ ' ' }
-					<Link
-						{ ...this.helperCTA() }
-						inherit
-					/>
-				</p>;
+				return (
+					<p>
+						{ ! installed && __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }
+						{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
+						{ ' ' }
+						<Link
+							{ ...this.helperCTA() }
+							inherit
+						/>
+					</p>
+				);
 			case ERROR_TOKEN_MISMATCH:
-				return <p>
-					{ __( 'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.', 'google-site-kit' ) }
-				</p>;
+				return (
+					<p>
+						{ __( 'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.', 'google-site-kit' ) }
+					</p>
+				);
 			case ERROR_GOOGLE_API_CONNECTION_FAIL:
-				return <Fragment>
-					<p
-						dangerouslySetInnerHTML={ sanitizeHTML(
-							`
-							${ __( 'Looks like your site is having a technical issue with requesting data from Google services.', 'google-site-kit' ) }
-							<br/>
-							${ sprintf(
-								/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
-								__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
-								'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-								`<br/>${ error }` // eslint-disable-line indent
-							) /* eslint-disable-line indent */ }
-							`,
-							{
-								ALLOWED_TAGS: [ 'a', 'br' ],
-								ALLOWED_ATTR: [ 'href' ],
-							}
-						) }
-					/>
-				</Fragment>;
+				return (
+					<p dangerouslySetInnerHTML={ sanitizeHTML(
+						`
+						${ __( 'Looks like your site is having a technical issue with requesting data from Google services.', 'google-site-kit' ) }
+						<br/>
+						${ sprintf(
+							/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+							__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
+							'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
+							`<br/>${ error }` // eslint-disable-line indent
+						) /* eslint-disable-line indent */ }
+						`,
+						{
+							ALLOWED_TAGS: [ 'a', 'br' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
+					) } />
+				);
 			case ERROR_AMP_CDN_RESTRICTED:
-				return <Fragment>
-					<p
-						dangerouslySetInnerHTML={ sanitizeHTML(
-							`
-							${ __( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.', 'google-site-kit' ) }
-							<br/>
-							${ sprintf(
-								/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
-								__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
-								'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-								`<br/>${ error }` // eslint-disable-line indent
-							) /* eslint-disable-line indent */ }
-							`,
-							{
-								ALLOWED_TAGS: [ 'a', 'br' ],
-								ALLOWED_ATTR: [ 'href' ],
-							}
-						) }
-					/>
-				</Fragment>;
+				return (
+					<p dangerouslySetInnerHTML={ sanitizeHTML(
+						`
+						${ __( 'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.', 'google-site-kit' ) }
+						<br/>
+						${ sprintf(
+							/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+							__( 'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s', 'google-site-kit' ), // eslint-disable-line indent
+							'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
+							`<br/>${ error }` // eslint-disable-line indent
+						) /* eslint-disable-line indent */ }
+						`,
+						{
+							ALLOWED_TAGS: [ 'a', 'br' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
+					) } />
+				);
+			case ERROR_WP_PRE_V5:
+				return (
+					<p>
+						{ __( 'Looks like you’re using a version of WordPress that’s older than 5.0. You can still install and use Site Kit, but some of its features might not work (for example translations).', 'google-site-kit' ) }
+					</p>
+				);
 		}
 	}
 
@@ -226,9 +241,10 @@ export default class CompatibilityChecks extends Component {
 		if ( error ) {
 			CTAFeedback = <Fragment>
 				<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
-					<div className="mdc-layout-grid__inner">
+					<div className="googlesitekit-setup__warning">
 						<Warning />
-						<div className="googlesitekit-heading-4 mdc-layout-grid__cell--span-11">
+
+						<div className="googlesitekit-heading-4">
 							{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
 						</div>
 					</div>

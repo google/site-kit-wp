@@ -21,6 +21,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
 use WP_REST_Server;
@@ -246,22 +247,16 @@ final class Authentication {
 
 		add_action( 'init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
+		add_action( 'admin_init', $this->get_method_proxy( 'verify_user_input_settings' ) );
 		add_action(
 			'admin_init',
 			function() {
-				$this->verify_user_input_settings();
-			}
-		);
-		add_action(
-			'admin_init',
-			function() {
-
 				if (
 					'googlesitekit-dashboard' === $this->context->input()->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING )
 					&& User_Input_State::VALUE_REQUIRED === $this->user_input_state->get()
-					) {
-						wp_safe_redirect( $this->context->admin_url( 'user-input' ) );
-						exit;
+				) {
+					wp_safe_redirect( $this->context->admin_url( 'user-input' ) );
+					exit;
 				}
 			}
 		);
@@ -276,6 +271,7 @@ final class Authentication {
 				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
 
 				$this->handle_site_code( $code, $site_code );
+				$this->require_user_input();
 				$this->redirect_to_proxy( $code );
 			}
 		);
@@ -450,6 +446,17 @@ final class Authentication {
 	 */
 	public function get_google_proxy() {
 		return $this->google_proxy;
+	}
+
+	/**
+	 * Gets the User Input State instance.
+	 *
+	 * @since 1.21.0
+	 *
+	 * @return User_Input_State An instance of the User_Input_State class.
+	 */
+	public function get_user_input_state() {
+		return $this->user_input_state;
 	}
 
 	/**
@@ -667,6 +674,14 @@ final class Authentication {
 			$data['proxyPermissionsURL'] = esc_url_raw( $this->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
 		}
+
+		$version               = get_bloginfo( 'version' );
+		list( $major, $minor ) = explode( '.', $version );
+		$data['wpVersion']     = array(
+			'version' => $version,
+			'major'   => (int) $major,
+			'minor'   => (int) $minor,
+		);
 
 		return $data;
 	}
@@ -1061,6 +1076,28 @@ final class Authentication {
 	}
 
 	/**
+	 * Requires user input if it is not already completed.
+	 *
+	 * @since 1.22.0
+	 */
+	private function require_user_input() {
+		if ( ! Feature_Flags::enabled( 'userInput' ) ) {
+			return;
+		}
+
+		if ( User_Input_State::VALUE_COMPLETED !== $this->user_input_state->get() ) {
+			$this->user_input_state->set( User_Input_State::VALUE_REQUIRED );
+			// Set the `mode` query parameter in the proxy setup URL.
+			add_filter(
+				'googlesitekit_proxy_setup_url_params',
+				function ( $params ) {
+					return array_merge( $params, array( 'mode' => 'user_input' ) );
+				}
+			);
+		}
+	}
+
+	/**
 	 * Redirects back to the authentication service with any added parameters.
 	 *
 	 * @since 1.1.2
@@ -1139,7 +1176,7 @@ final class Authentication {
 			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
 		}
 
-		if ( $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH ) {
+		if ( $this->google_proxy->are_site_fields_synced( $this->credentials ) === false ) {
 			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
 		}
 	}
@@ -1202,7 +1239,6 @@ final class Authentication {
 		);
 	}
 
-
 	/**
 	 * Verifies the user input settings
 	 *
@@ -1210,21 +1246,16 @@ final class Authentication {
 	 */
 	private function verify_user_input_settings() {
 		if (
-			! empty( $this->user_input_state->get() )
-			|| ! $this->is_authenticated()
-			|| ! $this->credentials()->has()
-			|| ! $this->credentials->using_proxy()
+			empty( $this->user_input_state->get() )
+			&& $this->is_authenticated()
+			&& $this->credentials()->has()
+			&& $this->credentials->using_proxy()
 		) {
-			return;
-		}
-		$settings = $this->user_input_settings->get_settings();
-
-		$empty_settings = array_filter(
-			$settings,
-			function( $setting ) {
-				return empty( $setting['values'] );
+			$is_empty = $this->user_input_settings->are_settings_empty();
+			if ( ! is_null( $is_empty ) ) {
+				$this->user_input_state->set( $is_empty ? User_Input_State::VALUE_MISSING : User_Input_State::VALUE_COMPLETED );
 			}
-		);
-		$this->user_input_state->set( 0 === count( $empty_settings ) ? User_Input_State::VALUE_COMPLETED : User_Input_State::VALUE_MISSING );
+		}
 	}
+
 }

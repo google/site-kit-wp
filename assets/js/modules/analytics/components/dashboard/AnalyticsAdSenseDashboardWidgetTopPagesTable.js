@@ -28,35 +28,26 @@ import Data from 'googlesitekit-data';
 import { getTimeInSeconds, numberFormat } from '../../../../util';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
-import { getDataTableFromData, TableOverflowContainer } from '../../../../components/data-table';
+import { getDataTableFromData } from '../../../../components/data-table';
 import PreviewTable from '../../../../components/PreviewTable';
-import ctaWrapper from '../../../../components/notifications/cta-wrapper';
+import ctaWrapper from '../../../../components/legacy-notifications/cta-wrapper';
 import AdSenseLinkCTA from '../common/AdSenseLinkCTA';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
 import AnalyticsAdSenseDashboardWidgetLayout from './AnalyticsAdSenseDashboardWidgetLayout';
-
-const { useSelect } = Data;
+import TableOverflowContainer from '../../../../components/TableOverflowContainer';
+import Link from '../../../../components/Link';
+const { withSelect } = Data;
 
 const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
-
-	const adsenseDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=[]&_r.drilldown=analytics.pagePath:~2F` }
-	) );
 	// Do not return zero data callout here since it will already be
 	// present on the page from other sources.
 	if ( isDataZeroForReporting( data ) ) {
 		return null;
 	}
 
-	if ( ! data || ! data.length ) {
-		return null;
-	}
-
-	if ( ! Array.isArray( data[ 0 ].data.rows ) ) {
+	const { rows } = data?.[ 0 ]?.data || {};
+	if ( ! Array.isArray( rows ) ) {
 		return null;
 	}
 
@@ -80,7 +71,7 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		},
 	];
 
-	const dataMapped = data[ 0 ].data.rows.map( ( row ) => {
+	const dataMapped = rows.map( ( row ) => {
 		/**
 		 * The shape of the dimensions and metrics objects:
 		 *
@@ -101,15 +92,21 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		];
 	} );
 
-	const linksMapped = data[ 0 ].data.rows.map( ( row ) => {
-		const pagePath = row.dimensions[ 1 ].replace( /\//g, '~2F' );
-		return encodeURI( adsenseDeepLink + pagePath );
-	} );
-
 	const options = {
 		hideHeader: false,
 		chartsEnabled: false,
-		links: linksMapped,
+		links: rows.map( ( row ) => row.dimensions[ 1 ] || '/' ),
+		PrimaryLink: withSelect( ( select, { href = '/' } ) => {
+			const serviceURL = select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+				'explorer-table.plotKeys': '[]',
+				'_r.drilldown': `analytics.pagePath:${ href }`,
+			} );
+
+			return {
+				href: serviceURL,
+				external: true,
+			};
+		} )( Link ),
 	};
 
 	const dataTable = getDataTableFromData( dataMapped, headers, options );

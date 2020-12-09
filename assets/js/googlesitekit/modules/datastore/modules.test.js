@@ -28,7 +28,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './constants';
 import FIXTURES from './fixtures.json';
 
 describe( 'core/modules modules', () => {
@@ -276,7 +276,6 @@ describe( 'core/modules modules', () => {
 				order: 1,
 				description: 'A module for testing',
 				homepage: 'https://sitekit.withgoogle.com/',
-				icon: 'icon-name',
 			};
 
 			beforeEach( () => {
@@ -297,12 +296,6 @@ describe( 'core/modules modules', () => {
 				expect( modules[ moduleSlug ] ).toMatchObject( { active: false, connected: false } );
 			} );
 
-			it( 'requires the module slug to be provided', () => {
-				expect( () => {
-					registry.dispatch( STORE_NAME ).registerModule();
-				} ).toThrow( 'module slug is required' );
-			} );
-
 			it( 'does not allow the same module to be registered more than once on the client', () => {
 				registry.dispatch( STORE_NAME ).receiveGetModules( [] );
 
@@ -317,16 +310,16 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'accepts settings components for the module', () => {
-				const settingsViewComponent = () => 'view';
-				const settingsEditComponent = () => 'edit';
+				const SettingsViewComponent = () => 'view';
+				const SettingsEditComponent = () => 'edit';
 
 				registry.dispatch( STORE_NAME ).registerModule( moduleSlug, {
-					settingsViewComponent,
-					settingsEditComponent,
+					SettingsViewComponent,
+					SettingsEditComponent,
 				} );
 
-				expect( store.getState().clientDefinitions[ moduleSlug ].settingsViewComponent ).toEqual( settingsViewComponent );
-				expect( store.getState().clientDefinitions[ moduleSlug ].settingsEditComponent ).toEqual( settingsEditComponent );
+				expect( store.getState().clientDefinitions[ moduleSlug ].SettingsViewComponent ).toEqual( SettingsViewComponent );
+				expect( store.getState().clientDefinitions[ moduleSlug ].SettingsEditComponent ).toEqual( SettingsEditComponent );
 			} );
 		} );
 
@@ -355,9 +348,100 @@ describe( 'core/modules modules', () => {
 				expect( state.serverDefinitions ).toMatchObject( fixturesKeyValue );
 			} );
 		} );
+
+		describe( 'receiveCheckRequirementsError', () => {
+			it( 'requires the error and slug params', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveCheckRequirementsError();
+				} ).toThrow( 'slug is required' );
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveCheckRequirementsError( 'slug' );
+				} ).toThrow( 'error is required' );
+			} );
+
+			it( 'receives and sets the error', () => {
+				const slug = 'slug1';
+				const error = { code: 'error_code', message: 'Error Message', data: null };
+				const state = { ... store.getState().checkRequirementsResults };
+				registry.dispatch( STORE_NAME ).receiveCheckRequirementsError( slug, error );
+				expect( store.getState().checkRequirementsResults ).toMatchObject( { ...state, [ slug ]: error } );
+			} );
+		} );
+
+		describe( 'receiveCheckRequirementsSuccess', () => {
+			it( 'requires the slug param', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveCheckRequirementsSuccess();
+				} ).toThrow( 'slug is required' );
+			} );
+
+			it( 'receives and sets success', () => {
+				const slug = 'test-module';
+				const state = { ... store.getState().checkRequirementsResults };
+				registry.dispatch( STORE_NAME ).receiveCheckRequirementsSuccess( slug );
+				expect( store.getState().checkRequirementsResults ).toMatchObject( { ...state, [ slug ]: true } );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
+		// We need a module set where one dependency is active, and the other inactive.
+		const bootStrapActivateModulesTests = async () => {
+			const moduleFixtures =
+				[
+					{
+						slug: 'slug1',
+						active: true,
+						dependencies: [ ],
+						dependants: [
+							'slug1dependant',
+						],
+					},
+					{
+						slug: 'slug2',
+						active: false,
+						dependencies: [ ],
+						dependants: [
+							'slug2dependant',
+						],
+					},
+					{
+						slug: 'slug1dependant',
+						active: false,
+						dependencies: [
+							'slug1',
+						],
+						dependants: [ ],
+					},
+					{
+						slug: 'slug2dependant',
+						active: false,
+						dependencies: [
+							'slug2',
+						],
+						dependants: [ ],
+					},
+				];
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+				{ body: moduleFixtures, status: 200 }
+			);
+			const slug1 = 'slug1';
+			const slug2 = 'slug2';
+			const slug1Dependant = 'slug1dependant';
+			const slug2Dependant = 'slug2dependant';
+			registry.dispatch( STORE_NAME ).registerModule( slug1 );
+			registry.dispatch( STORE_NAME ).registerModule( slug2 );
+			registry.dispatch( STORE_NAME ).registerModule( slug1Dependant );
+			registry.dispatch( STORE_NAME ).registerModule( slug2Dependant );
+
+			registry.select( STORE_NAME ).getModule( slug1 );
+
+			// Wait for loading to complete.
+			await untilResolved( registry, STORE_NAME ).getModules();
+		};
+
 		describe( 'getModules', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
@@ -463,8 +547,8 @@ describe( 'core/modules modules', () => {
 
 				const module = registry.select( STORE_NAME ).getModule( 'test-module' );
 
-				expect( module.settingsViewComponent ).toEqual( null );
-				expect( module.settingsEditComponent ).toEqual( null );
+				expect( module.SettingsViewComponent ).toEqual( null );
+				expect( module.SettingsEditComponent ).toEqual( null );
 			} );
 		} );
 
@@ -540,6 +624,54 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( moduleLoaded ).toEqual( null );
+			} );
+		} );
+
+		describe( 'canActivateModule', () => {
+			it( 'checks that we can activate modules with an active dependency', async () => {
+				await bootStrapActivateModulesTests();
+				const slug = 'slug1dependant';
+				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
+				const canActivate = registry.select( STORE_NAME ).canActivateModule( slug );
+				expect( canActivate ).toEqual( true );
+			} );
+
+			it( 'checks that we cannot activate a module with an inactive dependency', async () => {
+				await bootStrapActivateModulesTests();
+				const slug = 'slug2dependant';
+				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
+				const canActivate = registry.select( STORE_NAME ).canActivateModule( slug );
+				expect( canActivate ).toEqual( false );
+			} );
+		} );
+
+		describe( 'getCheckRequirementsError', () => {
+			it( 'has no error message when we can activate a module', async () => {
+				await bootStrapActivateModulesTests();
+				const slug = 'slug1dependant';
+				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
+
+				const error = registry.select( STORE_NAME ).getCheckRequirementsError( slug );
+				expect( error ).toEqual( null );
+			} );
+
+			it( 'has an error when we can not activate a module', async () => {
+				await bootStrapActivateModulesTests();
+				const slug = 'slug2dependant';
+				registry.select( STORE_NAME ).canActivateModule( slug );
+				await untilResolved( registry, STORE_NAME ).canActivateModule( slug );
+
+				const error = registry.select( STORE_NAME ).getCheckRequirementsError( slug );
+				expect( error ).toEqual( {
+					code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
+					data: {
+						inactiveModules: [ 'slug2' ],
+					},
+					message: 'You need to set up slug2 to gain access to slug2dependant.',
+				} );
 			} );
 		} );
 

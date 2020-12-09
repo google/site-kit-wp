@@ -26,16 +26,18 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { reduceAdSenseData } from '../../util';
-import { readableLargeNumber, extractForSparkline, getSiteKitAdminURL } from '../../../../util';
+import { isZeroReport, reduceAdSenseData } from '../../util';
+import { readableLargeNumber, getSiteKitAdminURL } from '../../../../util';
+import extractForSparkline from '../../../../util/extract-for-sparkline';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/data-block';
 import Sparkline from '../../../../components/Sparkline';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import ReportError from '../../../../components/ReportError';
+import ReportZero from '../../../../components/ReportZero';
+
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -47,7 +49,6 @@ function DashboardSummaryWidget() {
 		period,
 		daily,
 	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
 		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
 
 		const todayArgs = {
@@ -55,8 +56,12 @@ function DashboardSummaryWidget() {
 			metrics,
 		};
 
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
 		const periodArgs = {
-			dateRange: select( CORE_USER ).getDateRange(),
+			startDate,
+			endDate,
 			metrics,
 		};
 
@@ -67,11 +72,15 @@ function DashboardSummaryWidget() {
 		};
 
 		return {
-			error: store.getErrorForSelector( 'getReport', [ todayArgs ] ) || store.getErrorForSelector( 'getReport', [ periodArgs ] ) || store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
-			loading: store.isResolving( 'getReport', [ todayArgs ] ) || store.isResolving( 'getReport', [ periodArgs ] ) || store.isResolving( 'getReport', [ dailyArgs ] ),
-			today: store.getReport( todayArgs ),
-			period: store.getReport( periodArgs ),
-			daily: store.getReport( dailyArgs ),
+			today: select( STORE_NAME ).getReport( todayArgs ),
+			period: select( STORE_NAME ).getReport( periodArgs ),
+			daily: select( STORE_NAME ).getReport( dailyArgs ),
+			loading: ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ todayArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ periodArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ dailyArgs ] ),
+			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ todayArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
 		};
 	} );
 
@@ -80,11 +89,11 @@ function DashboardSummaryWidget() {
 	}
 
 	if ( error ) {
-		return getDataErrorComponent( 'adsense', error.message, false, false, false, error );
+		return <ReportError moduleSlug="adsense" error={ error } />;
 	}
 
-	if ( ! today?.totals && ! period?.totals && ! daily?.totals ) {
-		return getNoDataComponent( __( 'AdSense', 'google-site-kit' ) );
+	if ( isZeroReport( today ) && isZeroReport( period ) && isZeroReport( daily ) ) {
+		return <ReportZero moduleSlug="adsense" />;
 	}
 
 	const processedData = reduceAdSenseData( daily.rows );

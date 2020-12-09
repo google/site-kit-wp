@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { _x } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -32,11 +27,11 @@ import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/use
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import PreviewTable from '../../../../components/PreviewTable';
-import getNoDataComponent from '../../../../components/notifications/nodata';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
+import ReportZero from '../../../../components/ReportZero';
+import ReportError from '../../../../components/ReportError';
 import AcquisitionPieChart from '../common/AcquisitionPieChart';
 import AcquisitionSources from '../common/AcquisitionSources';
-import { isDataZeroForReporting } from '../../util';
+import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 const { Widget } = Widgets.components;
 
@@ -85,7 +80,7 @@ function DashboardAllTrafficWidget() {
 		}
 
 		return {
-			loading: store.isResolving( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			report: store.getReport( args ),
 			reportArgs: args,
@@ -93,11 +88,25 @@ function DashboardAllTrafficWidget() {
 	} );
 
 	if ( ! loading && error ) {
-		return getDataErrorComponent( 'analytics', error.message, true, true, false, error );
+		return (
+			<div className="
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--span-12
+			">
+				<ReportError moduleSlug="analytics" error={ error } />
+			</div>
+		);
 	}
 
-	if ( ! loading && isDataZeroForReporting( report ) ) {
-		return getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, false );
+	if ( isZeroReport( report ) ) {
+		return (
+			<div className="
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--span-12
+			">
+				<ReportZero moduleSlug="analytics" />;
+			</div>
+		);
 	}
 
 	return (

@@ -29,15 +29,16 @@ const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
-const { ProvidePlugin } = require( 'webpack' );
+const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
 const FeatureFlagsPlugin = require( 'webpack-feature-flags-plugin' );
+const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const ImageminPlugin = require( 'imagemin-webpack' );
 
 /**
  * Internal dependencies
  */
-const flagsConfig = require( './webpack.feature-flags.config' );
+const featureFlags = require( './feature-flags.json' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -78,6 +79,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
+	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
 const externals = { ...siteKitExternals };
@@ -132,11 +134,17 @@ const resolve = {
 		'@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
 		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
 		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
+		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 		'react__non-shim': require.resolve( 'react' ),
 		react: path.resolve( 'assets/js/react-shim.js' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
+
+// Get the app version from the google-site-kit.php file - optional chaining operator not supported here
+const googleSiteKitFile = fs.readFileSync( path.resolve( __dirname, 'google-site-kit.php' ), 'utf8' );
+const googleSiteKitVersion = googleSiteKitFile.match( /(?<='GOOGLESITEKIT_VERSION',\s+')\d+.\d+.\d+(?=')/ig );
+const GOOGLESITEKIT_VERSION = googleSiteKitVersion ? googleSiteKitVersion[ 0 ] : '';
 
 const webpackConfig = ( env, argv ) => {
 	const {
@@ -238,24 +246,36 @@ const webpackConfig = ( env, argv ) => {
 					cwd: process.cwd(),
 				} ),
 				new FeatureFlagsPlugin(
-					flagsConfig,
+					{ featureFlags },
 					{
 						modes: [ 'development', 'production' ],
 						mode: flagMode, // Default: mode; override with --flag-mode={mode}
 					},
 				),
+				new CreateFileWebpack( {
+					path: './dist',
+					fileName: 'config.json',
+					content: JSON.stringify( { flagMode } ),
+				} ),
 				new ManifestPlugin( {
-					fileName: '../../../includes/Core/Assets/Manifest.php',
-					serialize( manifest ) {
-						const files = [];
-						Object.keys( manifest ).forEach( ( key ) => {
-							if ( key.match( /.js$/ ) ) {
-								files.push( `"${ key.replace( '.js', '' ) }" => "${ manifest[ key ] }",` );
-							}
-						} );
-
-						return manifestTemplate.replace( '{{assets}}', files.join( '\n\t\t' ) );
+					fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
+					filter( file ) {
+						return ( file.name || '' ).match( /\.js$/ );
 					},
+					serialize( manifest ) {
+						const maxLen = Math.max( ...Object.keys( manifest ).map( ( key ) => key.length ) );
+						const content = manifestTemplate.replace(
+							'{{assets}}',
+							Object.keys( manifest )
+								.map( ( key ) => `"${ key.replace( '.js', '' ) }"${ ''.padEnd( maxLen - key.length, ' ' ) } => "${ manifest[ key ] }",` )
+								.join( '\n\t\t' )
+						);
+
+						return content;
+					},
+				} ),
+				new DefinePlugin( {
+					'global.GOOGLESITEKIT_VERSION': JSON.stringify( GOOGLESITEKIT_VERSION ),
 				} ),
 			],
 			optimization: {
@@ -295,6 +315,7 @@ const webpackConfig = ( env, argv ) => {
 		// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
 		{
 			entry: {
+				'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 				// Analytics advanced tracking script to be injected in the frontend.
 				'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
 			},

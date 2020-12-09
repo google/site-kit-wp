@@ -32,9 +32,9 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Layout from '../../../../components/layout/layout';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
-import getNoDataComponent from '../../../../components/notifications/nodata';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
-import getSetupIncompleteComponent from '../../../../components/notifications/setup-incomplete';
+import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
+import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
+import getSetupIncompleteComponent from '../../../../components/legacy-notifications/setup-incomplete';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
 import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 import { getModulesData } from '../../../../util';
@@ -101,13 +101,7 @@ class LegacyAnalyticsAllTraffic extends Component {
 	}
 
 	render() {
-		const {
-			error,
-			receivingData,
-		} = this.state;
-
-		const dataError = ( error || ! receivingData );
-		const wrapperClass = dataError ? 'googlesitekit-nodata' : '';
+		const errorComponent = this.getErrorDataComponent();
 
 		return (
 			<Fragment>
@@ -115,15 +109,21 @@ class LegacyAnalyticsAllTraffic extends Component {
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
 				">
-					<DashboardModuleHeader description={ __( 'How people found your site.', 'google-site-kit' ) } title={ __( 'All Traffic', 'google-site-kit' ) } />
-
+					<DashboardModuleHeader
+						title={ __( 'All Traffic', 'google-site-kit' ) }
+						description={ __( 'How people found your site.', 'google-site-kit' ) }
+					/>
 				</div>
-				{ this.getErrorDataComponent() }
-				<div className={ classnames(
-					'mdc-layout-grid__cell',
-					'mdc-layout-grid__cell--span-12',
-					wrapperClass
-				) }>
+
+				{ errorComponent }
+
+				<div
+					className={ classnames(
+						'mdc-layout-grid__cell',
+						'mdc-layout-grid__cell--span-12',
+						{ 'googlesitekit-nodata': errorComponent }
+					) }
+				>
 					<Layout className="googlesitekit-dashboard-all-traffic">
 						<div className="mdc-layout-grid">
 							<div className="mdc-layout-grid__inner">

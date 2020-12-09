@@ -127,6 +127,20 @@ module.exports = [
 		},
 	},
 	{
+		id: 'global--plugin-header-with-date-selector',
+		kind: 'Global',
+		name: 'Plugin Header with Date Selector',
+		story: 'Plugin Header with Date Selector',
+		parameters: {
+			fileName: './stories/header-date-selector.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				delay: 3000,
+			},
+		},
+	},
+	{
 		id: 'global-layout--layout-with-header-footer-and-ctas',
 		kind: 'Global/Layout',
 		name: 'Layout with Header Footer and CTAs',
@@ -355,6 +369,19 @@ module.exports = [
 		},
 	},
 	{
+		id: 'global-notifications--user-input-success-notification',
+		kind: 'Global/Notifications',
+		name: 'User Input Success Notification',
+		story: 'User Input Success Notification',
+		parameters: {
+			fileName: './stories/notifications.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+			},
+		},
+	},
+	{
 		id: 'global--page-headers',
 		kind: 'Global',
 		name: 'Page Headers',
@@ -466,8 +493,8 @@ module.exports = [
 		},
 	},
 	{
-		id: 'setup--step-one',
-		kind: 'Setup',
+		id: 'setup-using-gcp--step-one',
+		kind: 'Setup / Using GCP',
 		name: 'Step One',
 		story: 'Step One',
 		parameters: {

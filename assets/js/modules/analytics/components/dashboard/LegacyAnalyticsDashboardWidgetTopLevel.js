@@ -33,9 +33,9 @@ import { Fragment, useState, useEffect } from '@wordpress/element';
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
-	extractForSparkline,
 	changeToPercent,
 } from '../../../../util';
+import extractForSparkline from '../../../../util/extract-for-sparkline';
 import {
 	calculateOverviewData,
 	extractAnalyticsDashboardSparklineData,
@@ -53,7 +53,7 @@ import DataBlock from '../../../../components/data-block';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 import Sparkline from '../../../../components/Sparkline';
-import CTA from '../../../../components/notifications/cta';
+import CTA from '../../../../components/legacy-notifications/cta';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME } from '../../datastore/constants';

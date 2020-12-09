@@ -39,7 +39,6 @@ class REST_RoutesTest extends TestCase {
 
 		// While most of these routes are added via filter, they should all be in this list.
 		$routes = array(
-			'/',
 			'/' . REST_Routes::REST_ROOT,
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/reset',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/disconnect',
@@ -61,6 +60,9 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/mark-notification',
 		);
 
-		$this->assertEqualSets( $routes, array_keys( $server->get_routes() ) );
+		// Filter out other endpoints (not registered in the plugin).
+		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
+
+		$this->assertEqualSets( $routes, $get_routes );
 	}
 }

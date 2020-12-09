@@ -19,17 +19,10 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import {
 	each,
-	debounce,
 } from 'lodash';
-
-/**
- * WordPress dependencies
- */
-import { Component, createRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -42,7 +35,13 @@ import { getSiteKitAdminURL } from '../util';
 export const getDataTableFromData = ( data, headers, options ) => {
 	const dataRows = [];
 
-	const { links, source, showURLs, useAdminURLs = false } = options;
+	const {
+		links,
+		source,
+		showURLs,
+		useAdminURLs = false,
+		PrimaryLink = Link,
+	} = options;
 
 	if ( options.cap ) {
 		data = data.slice( 0, options.cap );
@@ -71,14 +70,14 @@ export const getDataTableFromData = ( data, headers, options ) => {
 				>
 					{ row[ 0 ] === cell && link
 						? <div className="googlesitekit-table__body-item-content">
-							<Link
+							<PrimaryLink
 								className="googlesitekit-table__body-item-link"
 								href={ useAdminURLs ? getSiteKitAdminURL( 'googlesitekit-dashboard', { permaLink } ) : link }
 								external={ ! useAdminURLs }
 								inherit
 							>
 								{ cell }
-							</Link>
+							</PrimaryLink>
 
 							{ showURLs &&
 								<Link
@@ -158,66 +157,3 @@ export const getDataTableFromData = ( data, headers, options ) => {
 	);
 };
 
-export class TableOverflowContainer extends Component {
-	constructor() {
-		super();
-
-		this.state = {
-			isScrolling: false,
-		};
-
-		this.scrollRef = createRef();
-
-		this.updateFadeOnScroll = this.updateFadeOnScroll.bind( this );
-	}
-
-	componentDidMount() {
-		const self = this;
-
-		// Check for scrolling on load and resize.
-		self.updateFadeOnScroll();
-
-		this.resize = debounce( function() {
-			self.updateFadeOnScroll();
-		}, 100 );
-
-		global.addEventListener( 'resize', this.resize );
-	}
-
-	componentWillUnmount() {
-		global.removeEventListener( 'resize', this.resize );
-	}
-
-	updateFadeOnScroll() {
-		const { scrollLeft, scrollWidth, offsetWidth } = this.scrollRef.current;
-		const maxScroll = scrollWidth - offsetWidth;
-		const scrolling = scrollLeft < ( maxScroll - 16 ) && 0 < ( maxScroll - 16 ); // 16 = $grid-gap-phone
-
-		this.setState( {
-			isScrolling: scrolling,
-		} );
-	}
-
-	render() {
-		const { children } = this.props;
-		const { isScrolling } = this.state;
-
-		return (
-			<div
-				onScroll={ debounce( this.updateFadeOnScroll, 100 ) }
-				className={ classnames(
-					'googlesitekit-table-overflow',
-					{ 'googlesitekit-table-overflow--gradient': isScrolling }
-				) }
-			>
-				<div ref={ this.scrollRef } className="googlesitekit-table-overflow__container">
-					{ children }
-				</div>
-			</div>
-		);
-	}
-}
-
-TableOverflowContainer.propTypes = {
-	children: PropTypes.element,
-};

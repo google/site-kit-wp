@@ -38,6 +38,7 @@ import { prepareSecondsForDisplay } from '../../../util';
 export { calculateOverviewData };
 
 export { default as parsePropertyID } from './parse-property-id';
+export * from './is-zero-report';
 export * from './validation';
 
 /**
@@ -194,15 +195,15 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 			: 100; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 100
 
 		const dateRange = sprintf(
-			/* translators: %1$s: date for user stats, %2$s: previous date for user stats comparison */
-			_x( '%1$s vs %2$s', 'Date range for Analytics dashboard chart tooltip', 'google-site-kit' ),
+			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
+			_x( '%1$s vs %2$s', 'Date range for chart tooltip', 'google-site-kit' ),
 			row[ 0 ].toLocaleDateString( locale, localeDateOptions ),
 			previousMonthData[ i ][ 0 ].toLocaleDateString( locale, localeDateOptions ),
 		);
 
 		const statInfo = sprintf(
-			/* translators: %1$s: selected stat label, %2$s: numberic value of selected stat, %3$s: up or down arrow , %4$s: different change in percentage, %%: percent symbol */
-			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for Analytics dashboard chart tooltip', 'google-site-kit' ),
+			/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage, %%: percent symbol */
+			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for chart tooltip', 'google-site-kit' ),
 			dataLabels[ selectedStats ],
 			dataFormats[ selectedStats ]( row[ 1 ] ),
 			`<svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="${ classnames( 'googlesitekit-change-arrow', {

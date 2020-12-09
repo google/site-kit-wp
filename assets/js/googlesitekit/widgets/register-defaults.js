@@ -151,8 +151,8 @@ export function registerDefaults( widgetsAPI ) {
 		WIDGET_URL_SEARCH,
 		{
 			priority: 100,
-			width: WIDGET_WIDTHS.HALF,
-			component: URLSearchWidget,
+			width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ],
+			Component: URLSearchWidget,
 			wrapWidget: false,
 		},
 		[
