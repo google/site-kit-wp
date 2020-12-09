@@ -72,7 +72,7 @@ domReady( () => {
 	Modules.registerModule(
 		'pagespeed-insights',
 		{
-			settingsViewComponent: SettingsView,
+			SettingsViewComponent: SettingsView,
 			Icon: PageSpeedInsightsIcon,
 		}
 	);
