@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/button';
+import Button from '../../../../components/Button';
 import { STORE_NAME } from '../../datastore/constants';
 import { isValidOptimizeID } from '../../util';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
