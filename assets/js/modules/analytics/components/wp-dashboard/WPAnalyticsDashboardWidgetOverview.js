@@ -41,7 +41,7 @@ import {
 } from '../../util';
 import PreviewBlocks from '../../../../components/PreviewBlocks';
 import DataBlock from '../../../../components/data-block';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 import withData from '../../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../../components/data';
 

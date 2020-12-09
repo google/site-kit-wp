@@ -109,7 +109,7 @@ export const clearWebStorage = () => {
  * @param {string} name Query param to search for.
  * @return {string}	Matching query param from the current URL.
  */
-const fallbackGetQueryParamater = ( name ) => {
+const fallbackGetQueryParameter = ( name ) => {
 	const queries = location.search.substr( 1 ).split( '&' );
 	const queryDict = {};
 
@@ -138,7 +138,7 @@ export const getQueryParameter = ( name, _location = location ) => {
 	const url = new URL( _location.href );
 	if ( name ) {
 		if ( ! url.searchParams || ! url.searchParams.get ) {
-			return fallbackGetQueryParamater( name );
+			return fallbackGetQueryParameter( name );
 		}
 		return url.searchParams.get( name );
 	}

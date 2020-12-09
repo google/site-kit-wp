@@ -45,8 +45,7 @@
     "connected": true,
     "dependencies": [],
     "dependants": [
-      "optimize",
-      "tagmanager"
+      "optimize"
     ],
     "order": 10
   },
@@ -84,9 +83,7 @@
     "internal": false,
     "active": false,
     "connected": false,
-    "dependencies": [
-      "analytics"
-    ],
+    "dependencies": [],
     "dependants": [],
     "order": 10
   }

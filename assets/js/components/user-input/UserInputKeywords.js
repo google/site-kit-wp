@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ENTER } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -34,6 +35,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Input, TextField } from '../../material-components';
 import Button from '../button';
+import { COMMA } from '../../util/key-codes';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputKeywords( { slug, max } ) {
@@ -51,7 +53,7 @@ export default function UserInputKeywords( { slug, max } ) {
 	}, dependencies );
 
 	const onKeyDown = useCallback( ( { keyCode } ) => {
-		if ( keyCode === 13 || keyCode === 188 ) {
+		if ( keyCode === ENTER || keyCode === COMMA ) {
 			const value = keyword.trim();
 			if ( value ) {
 				setUserInputSetting( slug, [ ...values, value ] );

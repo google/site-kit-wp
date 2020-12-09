@@ -1,5 +1,5 @@
 /**
- * WizardStepVerification component.
+ * WizardStepSearchConsoleProperty component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -29,22 +29,26 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import SiteVerification from '../../components/setup/site-verification';
+import SearchConsole from './search-console';
 
-class WizardStepVerification extends Component {
+class WizardStepSearchConsoleProperty extends Component {
 	render() {
-		const { isVerified } = this.props;
-		const shouldSetup = ! isVerified;
+		const { isVerified, hasSearchConsoleProperty } = this.props;
+		const shouldSetup = isVerified && ! hasSearchConsoleProperty;
 
 		return (
-			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--three">
+			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--four">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 						<div className="
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--span-12
 						">
-							<SiteVerification shouldSetup={ shouldSetup } { ...this.props } />
+							{
+								shouldSetup
+									? <SearchConsole shouldSetup={ shouldSetup } { ...this.props } />
+									: SearchConsole.connected()
+							}
 						</div>
 					</div>
 				</div>
@@ -53,8 +57,8 @@ class WizardStepVerification extends Component {
 	}
 }
 
-WizardStepVerification.propTypes = {
-	siteVerificationSetup: PropTypes.func.isRequired,
+WizardStepSearchConsoleProperty.propTypes = {
+	searchConsoleSetup: PropTypes.func.isRequired,
 };
 
-export default WizardStepVerification;
+export default WizardStepSearchConsoleProperty;

@@ -28,7 +28,7 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import { trackEvent } from './util';
-import './components/notifications';
+import './components/legacy-notifications';
 import { ActivationApp } from './components/activation/activation-app';
 import Root from './components/root';
 

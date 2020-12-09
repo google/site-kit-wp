@@ -6,7 +6,6 @@ import { storiesOf } from '@storybook/react';
 /**
  * WordPress dependencies
  */
-import { doAction } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -15,7 +14,6 @@ import { __ } from '@wordpress/i18n';
 import Layout from '../assets/js/components/layout/layout';
 import AdSensePerformanceWidget from '../assets/js/modules/adsense/components/dashboard/AdSensePerformanceWidget';
 import DashboardZeroData from '../assets/js/modules/adsense/components/dashboard/DashboardZeroData';
-import { googlesitekit as adSensePerformanceModuleData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-adsense-googlesitekitPerformanceModule';
 import {
 	AccountSelect,
 	UseSnippetSwitch,
@@ -26,6 +24,7 @@ import {
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
+import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 
 function SetupWrap( { children } ) {
 	return (
@@ -161,25 +160,61 @@ storiesOf( 'AdSense Module', module )
 		);
 	} )
 	.add( 'Performance', () => {
-		global._googlesitekitLegacyData = adSensePerformanceModuleData;
+		const setupRegistry = ( { dispatch, select } ) => {
+			const {
+				startDate,
+				endDate,
+				compareStartDate,
+				compareEndDate,
+			} = select( CORE_USER ).getDateRangeDates( { compare: true } );
 
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Single'
-			);
-		}, 250 );
+			const currentStatsArgs = {
+				...fixtures.earnings.currentStatsArgs,
+				startDate,
+				endDate,
+			};
+
+			const prevStatsArgs = {
+				...fixtures.earnings.prevStatsArgs,
+				startDate: compareStartDate,
+				endDate: compareEndDate,
+			};
+
+			const currentSummaryArgs = {
+				...fixtures.earnings.currentSummaryArgs,
+				startDate,
+				endDate,
+			};
+
+			const prevSummaryArgs = {
+				...fixtures.earnings.prevSummaryArgs,
+				startDate: compareStartDate,
+				endDate: compareEndDate,
+			};
+
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.currentStatsData, { options: currentStatsArgs } );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ currentStatsArgs ] );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.prevStatsData, { options: prevStatsArgs } );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ prevStatsArgs ] );
+
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.currentSummaryData, { options: currentSummaryArgs } );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ currentSummaryArgs ] );
+			dispatch( STORE_NAME ).receiveGetReport( fixtures.earnings.prevSummaryData, { options: prevSummaryArgs } );
+			dispatch( STORE_NAME ).finishResolution( 'getReport', [ prevSummaryArgs ] );
+		};
 
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry callback={ setupRegistry }>
 				<Layout
 					header
 					title={ __( 'Performance over the last 28 days', 'google-site-kit' ) }
 					headerCTALabel={ __( 'See full stats in AdSense', 'google-site-kit' ) }
 					headerCTALink="#"
 				>
-					<AdSensePerformanceWidget />
+					<AdSensePerformanceWidget
+						handleDataError={ () => {} }
+						handleDataSuccess={ () => {} }
+					/>
 				</Layout>
 			</WithTestRegistry>
 		);

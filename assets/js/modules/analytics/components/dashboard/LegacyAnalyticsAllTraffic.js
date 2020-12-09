@@ -32,9 +32,9 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Layout from '../../../../components/layout/layout';
 import DashboardModuleHeader from '../../../../components/dashboard/dashboard-module-header';
-import getNoDataComponent from '../../../../components/notifications/nodata';
-import getDataErrorComponent from '../../../../components/notifications/data-error';
-import getSetupIncompleteComponent from '../../../../components/notifications/setup-incomplete';
+import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
+import getDataErrorComponent from '../../../../components/legacy-notifications/data-error';
+import getSetupIncompleteComponent from '../../../../components/legacy-notifications/setup-incomplete';
 import LegacyDashboardAcquisitionPieChart from './LegacyDashboardAcquisitionPieChart';
 import LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './LegacyAnalyticsAllTrafficDashboardWidgetTopAcquisitionSources';
 import { getModulesData } from '../../../../util';

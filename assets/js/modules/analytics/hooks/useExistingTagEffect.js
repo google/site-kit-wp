@@ -54,7 +54,7 @@ export default function useExistingTagEffect() {
 		};
 
 		if ( data.existingTag ) {
-			// Just check existing tag permissions, if it is available and ignore tag manager settigns.
+			// Just check existing tag permissions, if it is available and ignore tag manager settings.
 			const { permission = false, accountID = '' } = select( STORE_NAME ).getTagPermission( data.existingTag ) || {};
 			if ( permission ) {
 				data.existingTagPermission = permission;

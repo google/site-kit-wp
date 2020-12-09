@@ -200,7 +200,7 @@ final class Search_Console extends Module
 					list ( $start_date, $end_date ) = $this->parse_date_range(
 						$data['dateRange'] ?: 'last-28-days',
 						$data['compareDateRanges'] ? 2 : 1,
-						1
+						2 // Offset.
 					);
 				}
 

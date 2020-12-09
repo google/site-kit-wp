@@ -31,7 +31,7 @@ import { addAction, removeAction } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { getTotalNotifications, incrementCount, decrementCount } from '../notifications/util';
+import { getTotalNotifications, incrementCount, decrementCount } from './util';
 import VisuallyHidden from '../VisuallyHidden';
 
 class NotificationCounter extends Component {

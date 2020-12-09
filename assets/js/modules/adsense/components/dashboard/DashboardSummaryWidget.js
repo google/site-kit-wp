@@ -26,7 +26,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME } from '../../datastore/constants';
+import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { STORE_NAME as CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport, reduceAdSenseData } from '../../util';
 import { readableLargeNumber, getSiteKitAdminURL } from '../../../../util';
@@ -49,7 +49,6 @@ function DashboardSummaryWidget() {
 		period,
 		daily,
 	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
 		const metrics = [ 'EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ];
 
 		const todayArgs = {
@@ -57,8 +56,9 @@ function DashboardSummaryWidget() {
 			metrics,
 		};
 
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
-
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
 		const periodArgs = {
 			startDate,
 			endDate,
@@ -72,15 +72,15 @@ function DashboardSummaryWidget() {
 		};
 
 		return {
-			today: store.getReport( todayArgs ),
-			period: store.getReport( periodArgs ),
-			daily: store.getReport( dailyArgs ),
-			loading: store.isResolving( 'getReport', [ todayArgs ] ) ||
-				store.isResolving( 'getReport', [ periodArgs ] ) ||
-				store.isResolving( 'getReport', [ dailyArgs ] ),
-			error: store.getErrorForSelector( 'getReport', [ todayArgs ] ) ||
-				store.getErrorForSelector( 'getReport', [ periodArgs ] ) ||
-				store.getErrorForSelector( 'getReport', [ dailyArgs ] ),
+			today: select( STORE_NAME ).getReport( todayArgs ),
+			period: select( STORE_NAME ).getReport( periodArgs ),
+			daily: select( STORE_NAME ).getReport( dailyArgs ),
+			loading: ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ todayArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ periodArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ dailyArgs ] ),
+			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ todayArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
 		};
 	} );
 

@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Notification from '../notifications/notification';
+import Notification from '../legacy-notifications/notification';
 import { getModulesData } from '../../util';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
@@ -57,13 +57,13 @@ function mapScopesToModuleNames( scopes ) {
 	;
 }
 
-export default function DashboardAuthScopesAlert() {
+export default function UnsatisfiedScopesAlert() {
 	const unsatisfiedScopes = useSelect( ( select ) => select( CORE_USER ).getUnsatisfiedScopes() );
 	const connectURL = useSelect( ( select ) => select( CORE_USER ).getConnectURL( {
 		redirectURL: global.location.href,
 	} ) );
 
-	if ( unsatisfiedScopes === undefined || connectURL === undefined ) {
+	if ( unsatisfiedScopes === undefined || ! unsatisfiedScopes.length || connectURL === undefined ) {
 		return null;
 	}
 

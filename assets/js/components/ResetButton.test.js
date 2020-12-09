@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { ESCAPE } from '@wordpress/keycodes';
+
+/**
  * Internal dependencies
  */
 import { render, createTestRegistry, fireEvent, act, provideSiteInfo } from '../../../tests/js/test-utils';
@@ -85,7 +90,7 @@ describe( 'ResetButton', () => {
 		} );
 
 		it( 'should close the modal on pressing escape key', async () => {
-			fireEvent.keyUp( global, { keyCode: 27 } );
+			fireEvent.keyUp( global, { keyCode: ESCAPE } );
 			expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 		} );
 

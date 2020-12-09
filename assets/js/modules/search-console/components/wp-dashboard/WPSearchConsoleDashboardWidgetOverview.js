@@ -34,7 +34,7 @@ import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
 } from '../../util';
-import getNoDataComponent from '../../../../components/notifications/nodata';
+import getNoDataComponent from '../../../../components/legacy-notifications/nodata';
 
 class WPSearchConsoleDashboardWidgetOverview extends Component {
 	render() {

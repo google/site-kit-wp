@@ -107,7 +107,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 	invariant( datapoint, '`datapoint` argument for requests is required.' );
 
 	// Don't check for a `false`-y `useCache` value to ensure we don't fallback
-	// to the `usingCache()` behaviour when caching is manually disabled on a
+	// to the `usingCache()` behavior when caching is manually disabled on a
 	// per-request basis.
 	const useCacheForRequest = method === 'GET' && ( useCache !== undefined ? useCache : usingCache() );
 	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
