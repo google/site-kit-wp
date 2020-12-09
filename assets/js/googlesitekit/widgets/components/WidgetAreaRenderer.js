@@ -40,10 +40,10 @@ export default function WidgetAreaRenderer( { slug } ) {
 
 	const activeWidgets = widgets.filter( ( widget ) => {
 		const widgetExists = widgets.some( ( item ) => item.slug === widget.slug );
-		const isComponent = typeof widget.component === 'function';
-		const isActive = 	widget.component.prototype.render
-			? new widget.component( {} ).render()
-			: widget.component( {} );
+		const isComponent = typeof widget.Component === 'function';
+		const isActive = 	widget.Component.prototype.render
+			? new widget.Component( {} ).render()
+			: widget.Component( {} );
 
 		return widgetExists && isComponent && Boolean( isActive );
 	} );

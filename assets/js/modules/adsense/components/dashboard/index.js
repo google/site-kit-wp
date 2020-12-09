@@ -25,3 +25,5 @@ export { default as DashboardTopEarningPagesWidget } from './DashboardTopEarning
 export { default as LegacyAdSenseDashboardMainSummary } from './LegacyAdSenseDashboardMainSummary';
 export { default as LegacyDashboardAdSenseTopEarningPagesSmall } from './LegacyDashboardAdSenseTopEarningPagesSmall';
 export { default as LegacyDashboardEarnings } from './LegacyDashboardEarnings';
+export { default as AdSenseDashboardWidgetOverview } from './AdSenseDashboardWidgetOverview';
+export { default as AdSenseDashboardWidgetSiteStats } from './AdSenseDashboardWidgetSiteStats';

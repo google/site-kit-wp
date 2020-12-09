@@ -35,7 +35,7 @@ import SettingsModules from '../assets/js/components/settings/settings-modules';
 import Layout from '../assets/js/components/layout/layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
-import { provideSiteInfo, WithTestRegistry, provideModules, untilResolved } from '../tests/js/utils';
+import { provideModuleRegistrations, provideModules, provideSiteInfo, WithTestRegistry, untilResolved } from '../tests/js/utils';
 import { STORE_NAME as CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 
 /**
@@ -75,8 +75,13 @@ storiesOf( 'Settings', module )
 		global._googlesitekitLegacyData.modules.adsense.active = true;
 		global._googlesitekitLegacyData.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
 
+		const setupRegistry = ( registry ) => {
+			provideModules( registry );
+			provideModuleRegistrations( registry );
+		};
+
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry callback={ setupRegistry } >
 				<div className="mdc-layout-grid__inner">
 					<SettingsModules activeTab={ 0 } />
 				</div>
@@ -133,13 +138,7 @@ storiesOf( 'Settings', module )
 					connected: false,
 				},
 			] );
-			registry.dispatch( CORE_MODULES ).registerModule( 'adsense' );
-			registry.dispatch( CORE_MODULES ).registerModule( 'analytics' );
-			registry.dispatch( CORE_MODULES ).registerModule( 'optimize' );
-			registry.dispatch( CORE_MODULES ).registerModule( 'pagespeed-insights' );
-			registry.dispatch( CORE_MODULES ).registerModule( 'search-console' );
-			registry.dispatch( CORE_MODULES ).registerModule( 'site-verification' );
-			registry.dispatch( CORE_MODULES ).registerModule( 'tagmanager' );
+			provideModuleRegistrations( registry );
 			registry.select( CORE_MODULES ).getModule( 'adsense' );
 			await untilResolved( registry, CORE_MODULES ).getModules();
 		};
