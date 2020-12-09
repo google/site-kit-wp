@@ -35,6 +35,7 @@ import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
 import DashboardPageSpeedCTA from './components/dashboard/DashboardPageSpeedCTA';
 import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
+import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
 
 const {
 	active,
@@ -73,11 +74,12 @@ domReady( () => {
 		{
 			name: 'PageSpeed Insights',
 			settingsViewComponent: SettingsView,
+			Icon: PageSpeedInsightsIcon,
 		}
 	);
 
 	Widgets.registerWidget( 'pagespeedInsightsWebVitals', {
-		component: DashboardPageSpeedWidget,
+		Component: DashboardPageSpeedWidget,
 		width: Widgets.WIDGET_WIDTHS.FULL,
 		wrapWidget: false,
 	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );

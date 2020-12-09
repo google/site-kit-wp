@@ -28,15 +28,17 @@ import Modules from 'googlesitekit-modules';
 import './datastore';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
+import OptimizeIcon from '../../../svg/optimize.svg';
 
 domReady( () => {
 	Modules.registerModule(
 		'optimize',
 		{
 			name: 'Optimize',
-			settingsEditComponent: SettingsEdit,
-			settingsViewComponent: SettingsView,
-			setupComponent: SetupMain,
+			SettingsEditComponent: SettingsEdit,
+			SettingsViewComponent: SettingsView,
+			SetupComponent: SetupMain,
+			Icon: OptimizeIcon,
 		}
 	);
 } );

@@ -28,6 +28,7 @@ import Modules from 'googlesitekit-modules';
 import './datastore';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
+import TagManagerIcon from '../../../svg/tagmanager.svg';
 
 domReady( () => {
 	Modules.registerModule(
@@ -37,6 +38,7 @@ domReady( () => {
 			settingsEditComponent: SettingsEdit,
 			settingsViewComponent: SettingsView,
 			setupComponent: SetupMain,
+			Icon: TagManagerIcon,
 		}
 	);
 } );

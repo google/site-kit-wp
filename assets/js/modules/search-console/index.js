@@ -37,6 +37,7 @@ import {
 	AREA_PAGE_DASHBOARD_POPULARITY,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
+import SearchConsoleIcon from '../../../svg/search-console.svg';
 
 domReady( () => {
 	Modules.registerModule(
@@ -44,13 +45,14 @@ domReady( () => {
 		{
 			name: 'Search Console',
 			settingsViewComponent: SettingsView,
+			Icon: SearchConsoleIcon,
 		}
 	);
 
 	Widgets.registerWidget(
 		'searchConsoleImpressions',
 		{
-			component: DashboardImpressionsWidget,
+			Component: DashboardImpressionsWidget,
 			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: true,
@@ -63,7 +65,7 @@ domReady( () => {
 	Widgets.registerWidget(
 		'searchConsoleClicks',
 		{
-			component: DashboardClicksWidget,
+			Component: DashboardClicksWidget,
 			width: Widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 2,
 			wrapWidget: true,
@@ -76,7 +78,7 @@ domReady( () => {
 	Widgets.registerWidget(
 		'searchConsolePopularKeywords',
 		{
-			component: DashboardPopularKeywordsWidget,
+			Component: DashboardPopularKeywordsWidget,
 			width: [ Widgets.WIDGET_WIDTHS.HALF, Widgets.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
