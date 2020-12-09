@@ -25,7 +25,7 @@ import useMergedRef from '@react-hook/merged-ref';
 /**
  * WordPress dependencies
  */
-import { forwardRef, useCallback, useEffect } from '@wordpress/element';
+import { forwardRef, useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,39 +38,35 @@ const Menu = forwardRef( ( {
 	onSelected,
 	id,
 }, ref ) => {
-	let menu = null;
-	let menuEl = null;
-	const menuRef = useCallback( ( el ) => {
-		if ( el ) {
-			menu = new MDCMenu( el );
-			menuEl = el;
-		}
-	} );
+	const [ menu, setMenu ] = useState( null );
+	const menuRef = useRef( null );
 	const mergedRefs = useMergedRef( ref, menuRef );
 	const handleMenuSelected = useCallback( ( event ) => {
 		const { detail: { index } } = event;
 
 		onSelected( index, event );
-	} );
+	}, [ onSelected ] );
+
+	useEffect( () => {
+		if ( ! menuRef?.current ) {
+			return;
+		}
+
+		const menuComponent = new MDCMenu( menuRef.current );
+		menuComponent.listen( 'MDCMenu:selected', handleMenuSelected );
+		setMenu( menuComponent );
+
+		return () => {
+			menuComponent.unlisten( 'MDCMenu:selected', handleMenuSelected );
+		};
+	}, [] );
 
 	useEffect( () => {
 		if ( menu ) {
 			menu.open = menuOpen;
 			menu.setDefaultFocusState( 1 );
 		}
-	}, [ menuOpen ] );
-
-	useEffect( () => {
-		if ( menuEl ) {
-			menuEl.addEventListener( 'MDCMenu:selected', handleMenuSelected );
-		}
-
-		return () => {
-			if ( menuEl ) {
-				menuEl.removeEventListener( 'MDCMenu:selected', handleMenuSelected );
-			}
-		};
-	}, [ menuEl ] );
+	}, [ menu, menuOpen ] );
 
 	return (
 		<div

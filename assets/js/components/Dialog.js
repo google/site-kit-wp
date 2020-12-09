@@ -56,9 +56,7 @@ const Dialog = ( {
 
 	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const instanceID = useInstanceId( Dialog );
-	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const labelledByID = `googlesitekit-dialog-label-${ instanceID }`;
-	// eslint-disable-next-line sitekit/camelcase-acronyms
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
 	const hasProvides = !! ( provides && provides.length );
 

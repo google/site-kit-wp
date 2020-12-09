@@ -27,6 +27,7 @@ import classnames from 'classnames';
  */
 import { useInstanceId } from '@wordpress/compose';
 import { Fragment, useCallback } from '@wordpress/element';
+import { ENTER } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -49,8 +50,7 @@ const Switch = ( {
 	}, [] );
 
 	const onKeyDown = useCallback( ( event ) => {
-		// If the Enter key is pressed.
-		if ( typeof onClick === 'function' && event.keyCode === '13' ) {
+		if ( typeof onClick === 'function' && ENTER === event.keyCode ) {
 			onClick( event );
 		}
 	}, [ onClick ] );

@@ -50,7 +50,7 @@ function UserMenu() {
 
 	useEffect( () => {
 		const handleMenuClose = ( e ) => {
-			if ( ( menuButtonRef && menuButtonRef.current ) && ( menuRef && menuRef.current ) ) {
+			if ( menuButtonRef?.current && menuRef?.current ) {
 				// Close the menu if the user presses the Escape key
 				// or if they click outside of the menu.
 				if (
