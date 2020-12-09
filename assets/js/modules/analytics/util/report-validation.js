@@ -89,5 +89,7 @@ export function isValidDimensionFilters( dimensionFilters, dimensions ) {
 	}
 
 	// Ensure every dimensionFilter key corresponds to a valid dimension.
-	return Object.keys( dimensionFilters ).every( validDimensions.include, validDimensions );
+	return Object.keys( dimensionFilters ).every(
+		( dimension ) => validDimensions.includes( dimension )
+	);
 }
