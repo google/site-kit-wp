@@ -63,9 +63,7 @@ describe( 'useQueryArg', () => {
 		} );
 
 		const updatedURL = 'http://example.com/path?page=prod';
-		expect( historyReplaceStateMock ).toHaveBeenCalledWith( {
-			path: updatedURL,
-		}, '', updatedURL );
+		expect( historyReplaceStateMock ).toHaveBeenCalledWith( null, '', updatedURL );
 	} );
 
 	it( 'should push a new state to history when setQuery is called with url encodable value', () => {
@@ -76,8 +74,6 @@ describe( 'useQueryArg', () => {
 		} );
 
 		const updatedURL = 'http://example.com/path?page=p%25%24%5Erod';
-		expect( historyReplaceStateMock ).toHaveBeenCalledWith( {
-			path: updatedURL,
-		}, '', updatedURL );
+		expect( historyReplaceStateMock ).toHaveBeenCalledWith( null, '', updatedURL );
 	} );
 } );
