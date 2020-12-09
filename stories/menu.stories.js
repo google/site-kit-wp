@@ -1,5 +1,5 @@
 /**
- * Element Shim tests.
+ * Menu Component Stories.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,20 +17,38 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import * as wordpressElement from '@wordpress/element';
+import { storiesOf } from '@storybook/react';
 
 /**
  * Internal dependencies
  */
-import * as elementShim from './element-shim';
+import Menu from '../assets/js/components/Menu';
 
-describe( '@wordpress/element shim', () => {
-	it( 'mirrors all exports from the @wordpress/element package', () => {
-		const realExports = Object.keys( wordpressElement ).sort();
-		const shimExports = Object.keys( elementShim ).sort();
-
-		expect( shimExports ).toEqual( realExports );
+storiesOf( 'Global', module )
+	.add( 'Menu', () => (
+		<div>
+			<div>
+				<p>Menu</p>
+				<Menu
+					menuOpen
+					menuItems={ [
+						'Item 1',
+						'Item 2',
+						'Item 3',
+						'Item 4',
+						'Item 5',
+					] }
+					onSelected={ ( index ) => {
+						global.console.log( index );
+					} }
+					id="googlesitekit-menu"
+				/>
+			</div>
+		</div>
+	), {
+		options: {
+			onReadyScript: 'mouse.js',
+		},
 	} );
-} );

@@ -130,13 +130,7 @@ const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
-		'@wordpress/element__non-shim': require.resolve( '@wordpress/element' ),
-		'@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
-		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
-		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
-		'react__non-shim': require.resolve( 'react' ),
-		react: path.resolve( 'assets/js/react-shim.js' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
@@ -188,7 +182,7 @@ const webpackConfig = ( env, argv ) => {
 			output: {
 				filename: '[name].[contenthash].js',
 				path: path.join( __dirname, 'dist/assets/js' ),
-				chunkFilename: '[name]-[chunkhash].js',
+				chunkFilename: '[name].[chunkhash].js',
 				publicPath: '',
 				/*
 					If multiple webpack runtimes (from different compilations) are used on the
@@ -295,7 +289,14 @@ const webpackConfig = ( env, argv ) => {
 						extractComments: false,
 					} ),
 				],
-				runtimeChunk: false,
+				/*
+					The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
+					Without this, imported modules are initialized for each runtime chunk separately which
+					results in duplicate module initialization when a shared module is imported by separate entries
+					on the same page.
+					See: https://v4.webpack.js.org/configuration/optimization/#optimizationruntimechunk
+				*/
+				runtimeChunk: 'single',
 				splitChunks: {
 					cacheGroups: {
 						vendor: {

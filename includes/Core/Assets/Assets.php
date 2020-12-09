@@ -303,6 +303,7 @@ final class Assets {
 		$base_url = $this->context->url( 'dist/assets/' );
 
 		$dependencies = array(
+			'googlesitekit-runtime',
 			'googlesitekit-i18n',
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
@@ -380,6 +381,12 @@ final class Assets {
 							'rootURL'       => esc_url_raw( get_rest_url() ),
 						);
 					},
+				)
+			),
+			new Script(
+				'googlesitekit-runtime',
+				array(
+					'src' => $base_url . 'js/runtime.js',
 				)
 			),
 			new Script(

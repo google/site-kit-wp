@@ -30,6 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { compose } from '@wordpress/compose';
 import { applyFilters } from '@wordpress/hooks';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -45,13 +46,13 @@ import {
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../Link';
-import Button from '../../components/button';
+import Button from '../../components/Button';
 import data, { TYPE_MODULES } from '../../components/data';
 import SettingsOverlay from '../../components/settings/SettingsOverlay';
 import Spinner from '../Spinner';
 import GenericError from '../legacy-notifications/generic-error';
 import SetupModule from './SetupModule';
-import Dialog from '../../components/dialog';
+import Dialog from '../../components/Dialog';
 import ModuleIcon from '../ModuleIcon';
 import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
 import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -145,7 +146,7 @@ class SettingsModule extends Component {
 	}
 
 	handleCloseModal( e ) {
-		if ( 27 === e.keyCode ) {
+		if ( ESCAPE === e.keyCode ) {
 			this.setState( {
 				dialogActive: false,
 			} );
@@ -286,7 +287,7 @@ class SettingsModule extends Component {
 											googlesitekit-heading-4
 											googlesitekit-settings-module__title
 										">
-											<ModuleIcon slug={ slug } width={ 24 } height={ 26 } className="googlesitekit-settings-module__title-icon" />
+											<ModuleIcon slug={ slug } size={ 24 } className="googlesitekit-settings-module__title-icon" />
 											{ name }
 										</h3>
 									</div>
@@ -521,7 +522,7 @@ export default compose( [
 		const canSubmitChanges = select( CORE_MODULES ).canSubmitChanges( slug );
 
 		return {
-			hasSettings: !! module?.settingsEditComponent,
+			hasSettings: !! module?.SettingsEditComponent,
 			canSubmitChanges,
 		};
 	} ),
