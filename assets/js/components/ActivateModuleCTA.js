@@ -95,6 +95,8 @@ const ActivateModuleCTA = ( { slug, title, description } ) => {
 
 ActivateModuleCTA.propTypes = {
 	slug: PropTypes.string.isRequired,
+	title: PropTypes.string,
+	description: PropTypes.string,
 };
 
 export default ActivateModuleCTA;

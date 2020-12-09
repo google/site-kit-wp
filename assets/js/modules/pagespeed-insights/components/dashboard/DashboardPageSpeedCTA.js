@@ -56,18 +56,14 @@ function DashboardPageSpeedCTA() {
 				( ! connected && active )
 					? (
 						<CompleteModuleActivationCTA
-							title={ __( 'Complete PageSpeed Insights activation.', 'google-site-kit' ) }
-							description={ description }
 							slug="pagespeed-insights"
-							ctaLabel={ __( 'Complete activation', 'google-site-kit' ) }
+							description={ description }
 						/>
 					)
 					: (
 						<ActivateModuleCTA
-							title={ __( 'Activate PageSpeed Insights.', 'google-site-kit' ) }
-							description={ description }
 							slug="pagespeed-insights"
-							ctaLabel={ __( 'Activate PageSpeed Insights', 'google-site-kit' ) }
+							description={ description }
 						/>
 					)
 			}

@@ -73,7 +73,7 @@ CTA.propTypes = {
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
-	ariaLabel: PropTypes.string,
+	'aria-label': PropTypes.string,
 	error: PropTypes.bool,
 	onClick: PropTypes.func,
 };

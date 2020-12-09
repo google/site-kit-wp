@@ -30,11 +30,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ActivateModuleCTA from './ActivateModuleCTA';
+
 function AnalyticsInactiveCTA( props ) {
 	const {
 		title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
 		description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more.', 'google-site-kit' ),
-		ctaLabel = __( 'Set up Analytics', 'google-site-kit' ),
 	} = props;
 
 	return (
@@ -42,7 +42,6 @@ function AnalyticsInactiveCTA( props ) {
 			slug="analytics"
 			title={ title }
 			description={ description }
-			ctaLabel={ ctaLabel }
 		/>
 	);
 }
@@ -50,7 +49,6 @@ function AnalyticsInactiveCTA( props ) {
 AnalyticsInactiveCTA.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.string,
-	ctaLabel: PropTypes.string,
 };
 
 export default AnalyticsInactiveCTA;
