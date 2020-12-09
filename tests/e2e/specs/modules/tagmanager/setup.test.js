@@ -47,7 +47,7 @@ async function proceedToTagManagerSetup() {
 
 	await Promise.all( [
 		page.waitForSelector( '.googlesitekit-setup-module__action .mdc-button' ),
-		expect( page ).toClick( '.googlesitekit-cta-link', { text: /Set up Tag Manager/i } ),
+		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up tag manager/i } ),
 	] );
 }
 
