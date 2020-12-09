@@ -33,7 +33,7 @@ abstract class Tag implements Tag_Interface {
 	 * @since n.e.x.t
 	 * @var string
 	 */
-	private $tag_id;
+	protected $tag_id;
 
 	/**
 	 * Constructor.

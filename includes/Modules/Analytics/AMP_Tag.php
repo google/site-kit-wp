@@ -87,7 +87,7 @@ class AMP_Tag extends Base_AMP_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	protected function render() {
+	public function render() {
 		if ( $this->did_amp_gtag ) {
 			return;
 		}

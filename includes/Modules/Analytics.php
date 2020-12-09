@@ -137,7 +137,7 @@ final class Analytics extends Module
 				}
 
 				$tag = null;
-				if ( $is_amp ) {
+				if ( $this->context->is_amp() ) {
 					$tag = new AMP_Tag( self::MODULE_SLUG, $property_id );
 				} else {
 					$tag          = new Web_Tag( self::MODULE_SLUG, $property_id );
@@ -148,7 +148,8 @@ final class Analytics extends Module
 				}
 
 				if ( $tag && ! $tag->is_tag_blocked() ) {
-					$tag->set_home_domain( $this->get_home_domain() );
+					$home_domain = wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST );
+					$tag->set_home_domain( $home_domain );
 					$tag->register();
 				}
 			}
