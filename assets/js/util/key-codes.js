@@ -1,5 +1,5 @@
 /**
- * React Shim tests.
+ * Custom KeyCode Constants
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,25 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import reactDefault, * as react from 'react';
+const COMMA = 188;
 
-/**
- * Internal dependencies
- */
-import reactShimDefault, * as reactShim from './react-shim';
-
-describe( 'react shim', () => {
-	it( 'mirrors all exports from the react package', () => {
-		const realExports = Object.keys( react ).sort();
-		const shimExports = Object.keys( reactShim ).sort();
-
-		expect( shimExports ).toEqual( realExports );
-	} );
-
-	it( 'mirrors the default export', () => {
-		expect( reactDefault ).toEqual( reactShimDefault );
-	} );
-} );
+export { COMMA };

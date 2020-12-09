@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { storiesOf, Story } from '@storybook/react';
-import { Component } from 'react';
 
 /**
  * Internal dependencies
@@ -42,18 +41,18 @@ const { components: { Widget } } = Widgets;
  * @since 1.16.0
  * @private
  *
- * @param {Object}    args                              Widget arguments.
- * @param {Array}     args.moduleSlugs                  List of modules to activate.
- * @param {string}    args.datastore                    Module datastore name.
- * @param {string}    args.group                        Stories group name.
- * @param {Array}     args.data                         Widget data.
- * @param {Object}    args.options                      Arguments for report requests.
- * @param {Component} args.component                    Widget component.
- * @param {string}    [args.referenceDate]              Reference date string to use, if not today.
- * @param {boolean}   [args.wrapWidget]                 Whether to wrap in default <Widget> component. Default true.
- * @param {Array}     [args.additionalVariants]         Optional. Additional story variants.
- * @param {Array}     [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants.
- * @param {Function}  [args.setup]                      Optional. Setup function to be run for all Stories being generated.
+ * @param {Object}      args                              Widget arguments.
+ * @param {Array}       args.moduleSlugs                  List of modules to activate.
+ * @param {string}      args.datastore                    Module datastore name.
+ * @param {string}      args.group                        Stories group name.
+ * @param {Array}       args.data                         Widget data.
+ * @param {Object}      args.options                      Arguments for report requests.
+ * @param {WPComponent} args.Component                    Widget component.
+ * @param {string}      [args.referenceDate]              Reference date string to use, if not today.
+ * @param {boolean}     [args.wrapWidget]                 Whether to wrap in default <Widget> component. Default true.
+ * @param {Array}       [args.additionalVariants]         Optional. Additional story variants.
+ * @param {Array}       [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants.
+ * @param {Function}    [args.setup]                      Optional. Setup function to be run for all Stories being generated.
  * @return {Story} Generated story.
  */
 export function generateReportBasedWidgetStories( {
@@ -62,7 +61,7 @@ export function generateReportBasedWidgetStories( {
 	group,
 	data,
 	options,
-	component: WidgetComponent,
+	Component,
 	referenceDate,
 	wrapWidget = true,
 	additionalVariants = {},
@@ -211,11 +210,11 @@ export function generateReportBasedWidgetStories( {
 		} );
 		widget = (
 			<Widget slug={ slugs.join( ' ' ) }>
-				<WidgetComponent />
+				<Component />
 			</Widget>
 		);
 	} else {
-		widget = <WidgetComponent />;
+		widget = <Component />;
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {

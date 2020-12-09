@@ -105,6 +105,7 @@ describe( 'trackEvent', () => {
 			dimension1: 'https://www.example.com',
 			dimension2: 'true',
 			dimension3: config.userIDHash,
+			dimension4: global.GOOGLESITEKIT_VERSION || '',
 		} ) );
 		expect( pushArgs[ 0 ][ 2 ] ).toHaveProperty( 'event_callback' );
 	} );

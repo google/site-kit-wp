@@ -24,40 +24,32 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import AdSenseIcon from '../../svg/adsense.svg';
-import AnalyticsIcon from '../../svg/analytics.svg';
-import OptimizeIcon from '../../svg/optimize.svg';
-import PageSpeedInsightsIcon from '../../svg/pagespeed-insights.svg';
-import SearchConsoleIcon from '../../svg/search-console.svg';
-import TagManagerIcon from '../../svg/tagmanager.svg';
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 
-const moduleMap = {
-	adsense: AdSenseIcon,
-	analytics: AnalyticsIcon,
-	optimize: OptimizeIcon,
-	'pagespeed-insights': PageSpeedInsightsIcon,
-	'search-console': SearchConsoleIcon,
-	tagmanager: TagManagerIcon,
-};
+const { useSelect } = Data;
 
-export default function ModuleIcon( { slug, width = 33, height = 33, ...props } ) {
-	if ( ! moduleMap.hasOwnProperty( slug ) ) {
+export default function ModuleIcon( { slug, size, ...props } ) {
+	const ModuleIconComponent = useSelect( ( select ) => select( CORE_MODULES ).getModuleIcon( slug ) );
+
+	if ( ! ModuleIconComponent ) {
 		return null;
 	}
 
-	const ModuleIconComponent = moduleMap[ slug ];
-
 	return (
 		<ModuleIconComponent
-			width={ width }
-			height={ height }
+			width={ size }
+			height={ size }
 			{ ...props }
 		/>
 	);
 }
 
 ModuleIcon.propTypes = {
-	slug: PropTypes.string,
-	width: PropTypes.number,
-	height: PropTypes.number,
+	slug: PropTypes.string.isRequired,
+	size: PropTypes.number,
+};
+
+ModuleIcon.defaultProps = {
+	size: 33,
 };
