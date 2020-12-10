@@ -34,3 +34,8 @@ export { default as LegacyAnalyticsDashboardWidgetPopularPagesTable } from './Le
 export { default as LegacyAnalyticsDashboardWidgetTopAcquisitionSources } from './LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
 export { default as LegacyAnalyticsDashboardWidgetTopLevel } from './LegacyAnalyticsDashboardWidgetTopLevel';
 export { default as LegacyDashboardAcquisitionPieChart } from './LegacyDashboardAcquisitionPieChart';
+export { default as DashboardAllTrafficWidgetV2 } from './DashboardAllTrafficWidgetV2';
+export { default as DimensionTabs } from './DimensionTabs';
+export { default as TotalUserCount } from './TotalUserCount';
+export { default as UserCountGraph } from './UserCountGraph';
+export { default as UserDimensionsPieChart } from './UserDimensionsPieChart';
