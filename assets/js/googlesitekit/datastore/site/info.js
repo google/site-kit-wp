@@ -480,9 +480,19 @@ export const selectors = {
 	 * @param {string} [args.path]  Base URL to build complete URL.
 	 * @param {Object} [args.query] Object to append query to the URL.
 	 * @param {string} [args.hash]  Optional hash.
-	 * @return {string} The URL containing the user's locale.
+	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
-	getGoogleSupportURL: ( state, { path, query, hash } ) => {
+	getGoogleSupportURL: ( state, args ) => {
+		if ( ! args ) {
+			return null;
+		}
+
+		const { path, query, hash } = args;
+
+		if ( ! path ) {
+			return null;
+		}
+
 		const url = new URL( addQueryArgs( path, { ...query, hl: getLocale() } ) );
 		url.hash = hash || '';
 
