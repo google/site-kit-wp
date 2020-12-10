@@ -60,26 +60,9 @@ export default function AnalyticsDashboardWidget() {
 	const [ loading, setLoading ] = useState( true );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
-	const {
-		topContentServiceURL,
-		topAcquisitionServiceURL,
-		visitorsOverview,
-	} = useSelect( ( select ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		const profileID = select( STORE_NAME ).getProfileID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
-		return {
-			topContentServiceURL: select( STORE_NAME ).getServiceURL(
-				{ path: `/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
-			),
-			topAcquisitionServiceURL: select( STORE_NAME ).getServiceURL(
-				{ path: `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
-			),
-			visitorsOverview: select( STORE_NAME ).getServiceURL(
-				{ path: `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` }
-			),
-		};
-	} );
+	const topContentServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'content-pages' ) );
+	const topAcquisitionServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview' ) );
+	const visitorsOverview = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( 'visitors-overview' ) );
 
 	const handleStatSelection = ( stat ) => {
 		setSelectedStats( [ stat ] );

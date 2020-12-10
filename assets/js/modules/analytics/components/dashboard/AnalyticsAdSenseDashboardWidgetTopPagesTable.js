@@ -97,7 +97,7 @@ const AnalyticsAdSenseDashboardWidgetTopPagesTable = ( { data } ) => {
 		chartsEnabled: false,
 		links: rows.map( ( row ) => row.dimensions[ 1 ] || '/' ),
 		PrimaryLink: withSelect( ( select, { href = '/' } ) => {
-			const serviceURL = select( STORE_NAME ).getServiceReportURL( 'content-pages', {
+			const serviceURL = select( STORE_NAME ).getServiceReportURL( 'content-drilldown', {
 				'explorer-table.plotKeys': '[]',
 				'_r.drilldown': `analytics.pagePath:${ href }`,
 			} );

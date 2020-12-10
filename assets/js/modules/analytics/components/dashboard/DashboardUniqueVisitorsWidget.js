@@ -37,7 +37,6 @@ import { changeToPercent, readableLargeNumber } from '../../../../util';
 import ReportError from '../../../../components/ReportError';
 import ReportZero from '../../../../components/ReportZero';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
@@ -52,9 +51,6 @@ function DashboardUniqueVisitorsWidget() {
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
-		const accountID = store.getAccountID();
-		const profileID = store.getProfileID();
-		const internalWebPropertyID = store.getInternalWebPropertyID();
 		const commonArgs = {
 			dateRange: select( CORE_USER ).getDateRange(),
 		};
@@ -91,11 +87,9 @@ function DashboardUniqueVisitorsWidget() {
 			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
 			// Due to the nature of these queries, we need to run them separately.
 			sparkData: store.getReport( sparklineArgs ),
-			serviceURL: store.getServiceURL(
-				{
-					path: applyEntityToReportPath( url, `/report/visitors-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
-				}
-			),
+			serviceURL: store.getServiceReportURL( 'visitors-overview', {
+				'_r.drilldown': `analytics.pagePath:${ url }`,
+			} ),
 			visitorsData: store.getReport( args ),
 		};
 	} );

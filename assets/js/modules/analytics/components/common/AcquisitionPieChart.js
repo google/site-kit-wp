@@ -36,7 +36,6 @@ import Link from '../../../../components/Link';
 import { extractAnalyticsDataForTrafficChart } from '../../util';
 import { STORE_NAME } from '../../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
 const { useSelect } = Data;
 
@@ -67,14 +66,12 @@ const GOOGLE_CHART_PIE_SETTINGS = {
 };
 
 function AcquisitionPieChart( { data, args, source } ) {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{
-			path: applyEntityToReportPath( url, `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ),
-		} ) );
+	const sourceURI = useSelect( ( select ) => {
+		return select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
+			'_r.drilldown': `analytics.pagePath:${ url }`,
+		} );
+	} );
 
 	if ( ! data ) {
 		return null;

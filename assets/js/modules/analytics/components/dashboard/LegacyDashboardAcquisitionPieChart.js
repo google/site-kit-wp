@@ -40,19 +40,17 @@ import { TYPE_MODULES } from '../../../../components/data';
 import Link from '../../../../components/Link';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../../util';
-import applyEntityToReportPath from '../../util/applyEntityToReportPath';
 
 const { useSelect } = Data;
 
 const LegacyDashboardAcquisitionPieChart = ( { data, source } ) => {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
 	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
 
-	const sourceURI = useSelect( ( select ) => select( STORE_NAME ).getServiceURL(
-		{ path: applyEntityToReportPath( url, `/report/trafficsources-overview/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` ) }
-	) );
+	const sourceURI = useSelect(
+		( select ) => select( STORE_NAME ).getServiceReportURL( 'trafficsources-overview', {
+			'_r.drilldown': `analytics.pagePath:${ url }`,
+		} )
+	);
 
 	if ( ! data || data.error || ! data.length ) {
 		return null;
