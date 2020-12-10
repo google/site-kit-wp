@@ -42,7 +42,8 @@ import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
-	getModulesData, listFormat,
+	getModulesData,
+	listFormat,
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../Link';
