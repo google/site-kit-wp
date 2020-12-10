@@ -36,7 +36,7 @@ import {
 } from '../../util';
 import { TextField, Input } from '../../material-components';
 import data, { TYPE_MODULES } from '../data';
-import Button from '../button';
+import Button from '../Button';
 import ProgressBar from '../ProgressBar';
 import HelpLink from '../HelpLink';
 
