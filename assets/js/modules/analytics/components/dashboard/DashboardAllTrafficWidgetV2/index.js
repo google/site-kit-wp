@@ -26,15 +26,15 @@ import { _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
-import { STORE_NAME as MODULE_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../datastore/constants';
-import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import whenActive from '../../../../util/when-active';
+import { STORE_NAME as MODULE_ANALYTICS, FORM_ALL_TRAFFIC_WIDGET } from '../../../datastore/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import whenActive from '../../../../../util/when-active';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
-import SourceLink from '../../../../components/SourceLink';
-import { Grid, Row, Cell } from '../../../../material-components/layout';
+import SourceLink from '../../../../../components/SourceLink';
+import { Grid, Row, Cell } from '../../../../../material-components/layout';
 const { Widget } = Widgets.components;
 const { useSelect } = Data;
 
