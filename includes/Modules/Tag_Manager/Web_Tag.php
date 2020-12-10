@@ -25,20 +25,12 @@ class Web_Tag extends Base_Web_Tag {
 	use Method_Proxy_Trait;
 
 	/**
-	 * Internal flag set after print_gtm_no_js invoked for the first time.
-	 *
-	 * @since n.e.x.t
-	 * @var bool
-	 */
-	private $did_gtm_no_js = false;
-
-	/**
 	 * Registers tag hooks.
 	 *
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		$print_gtm_no_js = $this->get_method_proxy( 'print_gtm_no_js' );
+		$print_gtm_no_js = $this->get_method_proxy_once( 'print_gtm_no_js' );
 
 		add_action( 'wp_head', $this->get_method_proxy( 'print_gtm_js' ) );
 		// For non-AMP (if `wp_body_open` supported).
@@ -78,13 +70,6 @@ class Web_Tag extends Base_Web_Tag {
 	 * @since n.e.x.t
 	 */
 	private function print_gtm_no_js() {
-		// Bail if this has already been run.
-		if ( $this->did_gtm_no_js ) {
-			return;
-		}
-
-		$this->did_gtm_no_js = true;
-
 		// Consent-based blocking requires JS to be enabled so we need to bail here if present.
 		if ( $this->get_tag_blocked_on_consent_attribute() ) {
 			return;

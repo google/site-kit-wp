@@ -25,20 +25,12 @@ class Web_Tag extends Base_Web_Tag {
 	use Method_Proxy_Trait;
 
 	/**
-	 * Internal flag for whether the AdSense tag has been printed.
-	 *
-	 * @since n.e.x.t
-	 * @var bool
-	 */
-	private $adsense_tag_printed = false;
-
-	/**
 	 * Registers tag hooks.
 	 *
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_action( 'wp_head', $this->get_method_proxy( 'output_adsense_script' ) );
+		add_action( 'wp_head', $this->get_method_proxy_once( 'output_adsense_script' ) );
 		$this->do_init_tag_action();
 	}
 
@@ -48,12 +40,6 @@ class Web_Tag extends Base_Web_Tag {
 	 * @since n.e.x.t
 	 */
 	private function output_adsense_script() {
-		if ( $this->adsense_tag_printed ) {
-			return;
-		}
-
-		$this->adsense_tag_printed = true;
-
 		// If we haven't completed the account connection yet, we still insert the AdSense tag
 		// because it is required for account verification.
 		printf(

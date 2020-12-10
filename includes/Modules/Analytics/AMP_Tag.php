@@ -33,14 +33,6 @@ class AMP_Tag extends Base_AMP_Tag {
 	private $home_domain;
 
 	/**
-	 * Internal flag set after print_amp_gtag is invoked for the first time.
-	 *
-	 * @since n.e.x.t
-	 * @var bool
-	 */
-	private $did_amp_gtag = false;
-
-	/**
 	 * Sets the current home domain.
 	 *
 	 * @since n.e.x.t
@@ -57,7 +49,7 @@ class AMP_Tag extends Base_AMP_Tag {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		$print_amp_gtag = $this->get_method_proxy( 'print_amp_gtag' );
+		$print_amp_gtag = $this->get_method_proxy_once( 'print_amp_gtag' );
 
 		// Which actions are run depends on the version of the AMP Plugin
 		// (https://amp-wp.org/) available. Version >=1.3 exposes a
@@ -83,12 +75,6 @@ class AMP_Tag extends Base_AMP_Tag {
 	 * @since n.e.x.t
 	 */
 	private function print_amp_gtag() {
-		if ( $this->did_amp_gtag ) {
-			return;
-		}
-
-		$this->did_amp_gtag = true;
-
 		$gtag_amp_opt = array(
 			'optoutElementId' => '__gaOptOutExtension',
 			'vars'            => array(

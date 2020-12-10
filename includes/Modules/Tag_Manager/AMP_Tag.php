@@ -25,20 +25,12 @@ class AMP_Tag extends Base_AMP_Tag {
 	use Method_Proxy_Trait;
 
 	/**
-	 * Internal flag set after print_amp_gtm is invoked for the first time.
-	 *
-	 * @since n.e.x.t
-	 * @var bool
-	 */
-	private $did_amp_gtm = false;
-
-	/**
 	 * Registers tag hooks.
 	 *
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		$print_amp_gtm = $this->get_method_proxy( 'print_amp_gtm' );
+		$print_amp_gtm = $this->get_method_proxy_once( 'print_amp_gtm' );
 
 		// Which actions are run depends on the version of the AMP Plugin
 		// (https://amp-wp.org/) available. Version >=1.3 exposes a
@@ -62,12 +54,6 @@ class AMP_Tag extends Base_AMP_Tag {
 	 * @since n.e.x.t
 	 */
 	private function print_amp_gtm() {
-		if ( $this->did_amp_gtm ) {
-			return;
-		}
-
-		$this->did_amp_gtm = true;
-
 		// Add the optoutElementId for compatibility with our Analytics opt-out mechanism.
 		// This configuration object will be merged with the configuration object returned
 		// by the `config` attribute URL.
