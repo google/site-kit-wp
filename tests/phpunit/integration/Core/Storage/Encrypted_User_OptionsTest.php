@@ -62,7 +62,7 @@ class Encrypted_User_OptionsTest extends TestCase {
 		$this->assertEquals( 'completed', $encrypted_user_options->get( 'googlesitekit_user_input_state' ) );
 
 		update_user_option( $user_id, 'googlesitekit_user_input_state', base64_encode( 'invalid' ) );
-		$this->assertEquals( '', $encrypted_user_options->get( 'googlesitekit_user_input_state' ) );
+		$this->assertEquals( false, $encrypted_user_options->get( 'googlesitekit_user_input_state' ) );
 	}
 
 	public function test_delete() {
