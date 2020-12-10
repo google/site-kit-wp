@@ -1,5 +1,5 @@
 /**
- * DimensionTabs component, mainly used for screen-reader text.
+ * UserCountGraph component
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,8 +16,17 @@
  * limitations under the License.
  */
 
-function DimensionTabs() {
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+// eslint-disable-next-line no-unused-vars
+export default function UserCountGraph( { dimensionName, dimensionValue } ) {
 	return null;
 }
 
-export default DimensionTabs;
+UserCountGraph.propTypes = {
+	dimensionName: PropTypes.string,
+	dimensionValue: PropTypes.string,
+};

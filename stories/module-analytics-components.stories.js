@@ -50,7 +50,7 @@ import {
 	dashboardUniqueVisitorsSparkData,
 	dashboardUniqueVisitorsVisitorData,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
-import DashboardAllTrafficWidgetV2 from '../assets/js/components/dashboard/Version2/DashboardAllTrafficWidgetV2';
+import DashboardAllTrafficWidgetV2 from '../assets/js/modules/analytics/components/dashboard/Version2/DashboardAllTrafficWidgetV2';
 
 /**
  * Defines some additional setup for all stories.

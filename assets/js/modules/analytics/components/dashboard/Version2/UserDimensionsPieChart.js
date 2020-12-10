@@ -1,5 +1,5 @@
 /**
- * TotalUserCount component, mainly used for screen-reader text.
+ * UserDimensionsPieChart component
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,19 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-// eslint-disable-next-line no-unused-vars
-function TotalUserCount( { dimensionName, dimensionValue } ) {
+export default function UserDimensionsPieChart() {
 	return null;
 }
-
-TotalUserCount.propTypes = {
-	dimensionName: PropTypes.string,
-	dimensionValue: PropTypes.string,
-};
-
-export default TotalUserCount;

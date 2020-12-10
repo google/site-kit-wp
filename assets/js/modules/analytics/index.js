@@ -42,7 +42,7 @@ import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardUniqueVisitorsWidget from './components/dashboard/DashboardUniqueVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 import AnalyticsIcon from '../../../svg/analytics.svg';
-import DashboardAllTrafficWidgetV2 from '../../components/dashboard/Version2/DashboardAllTrafficWidgetV2';
+import DashboardAllTrafficWidgetV2 from './components/dashboard/Version2/DashboardAllTrafficWidgetV2';
 
 domReady( () => {
 	Modules.registerModule(
