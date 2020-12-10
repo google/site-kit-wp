@@ -17,6 +17,6 @@ interface Tag_Interface {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function render();
+	public function register();
 
 }

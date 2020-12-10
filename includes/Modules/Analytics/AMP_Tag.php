@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Core\Tags\AMP_Tag as Base_AMP_Tag;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class for AMP tag.
@@ -20,6 +21,8 @@ use Google\Site_Kit\Core\Tags\AMP_Tag as Base_AMP_Tag;
  * @ignore
  */
 class AMP_Tag extends Base_AMP_Tag {
+
+	use Method_Proxy_Trait;
 
 	/**
 	 * Home domain name.
@@ -54,32 +57,24 @@ class AMP_Tag extends Base_AMP_Tag {
 	 * @since n.e.x.t
 	 */
 	public function register() {
+		$print_amp_gtag = $this->get_method_proxy( 'print_amp_gtag' );
+
 		// Which actions are run depends on the version of the AMP Plugin
 		// (https://amp-wp.org/) available. Version >=1.3 exposes a
 		// new, `amp_print_analytics` action.
 		// For all AMP modes, AMP plugin version >=1.3.
-		add_action( 'amp_print_analytics', array( $this, 'render' ) );
+		add_action( 'amp_print_analytics', $print_amp_gtag );
 		// For AMP Standard and Transitional, AMP plugin version <1.3.
-		add_action( 'wp_footer', array( $this, 'render' ), 20 );
+		add_action( 'wp_footer', $print_amp_gtag, 20 );
 		// For AMP Reader, AMP plugin version <1.3.
-		add_action( 'amp_post_template_footer', array( $this, 'render' ), 20 );
+		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
 		// For Web Stories plugin.
-		add_action( 'web_stories_print_analytics', array( $this, 'render' ) );
+		add_action( 'web_stories_print_analytics', $print_amp_gtag );
 
 		// Load amp-analytics component for AMP Reader.
 		$this->enqueue_amp_reader_component_script( 'amp-analytics', 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js' );
 
-		/**
-		 * Fires when the Analytics tag for AMP has been initialized.
-		 *
-		 * This means that the tag will be rendered in the current request.
-		 * Site Kit uses `gtag.js` for its Analytics snippet.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param string $tag_id Analytics property ID used in the tag.
-		 */
-		do_action( 'googlesitekit_analytics_init_tag_amp', $this->tag_id );
+		$this->do_init_tag_action();
 	}
 
 	/**
@@ -87,7 +82,7 @@ class AMP_Tag extends Base_AMP_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function render() {
+	private function print_amp_gtag() {
 		if ( $this->did_amp_gtag ) {
 			return;
 		}

@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\AdSense;
 
 use Google\Site_Kit\Core\Tags\AMP_Tag as Base_AMP_Tag;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class for AMP tag.
@@ -20,6 +21,8 @@ use Google\Site_Kit\Core\Tags\AMP_Tag as Base_AMP_Tag;
  * @ignore
  */
 class AMP_Tag extends Base_AMP_Tag {
+
+	use Method_Proxy_Trait;
 
 	/**
 	 * Internal flag for whether the AdSense tag has been printed.
@@ -36,23 +39,14 @@ class AMP_Tag extends Base_AMP_Tag {
 	 */
 	public function register() {
 		// For AMP Reader, and AMP Native and Transitional (if `wp_body_open` supported).
-		add_action( 'wp_body_open', array( $this, 'render' ), -9999 );
+		add_action( 'wp_body_open', $this->get_method_proxy( 'print_amp_auto_ads' ), -9999 );
 		// For AMP Reader, and AMP Native and Transitional (as fallback).
-		add_filter( 'the_content', array( $this, 'amp_content_add_auto_ads' ) );
+		add_filter( 'the_content', $this->get_method_proxy( 'amp_content_add_auto_ads' ) );
 
 		// Load amp-auto-ads component for AMP Reader.
 		$this->enqueue_amp_reader_component_script( 'amp-auto-ads', 'https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js' );
 
-		/**
-		 * Fires when the AdSense tag for AMP has been initialized.
-		 *
-		 * This means that the tag will be rendered in the current request.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param string $tag_id AdSense client ID used in the tag.
-		 */
-		do_action( 'googlesitekit_adsense_init_tag_amp', $this->tag_id );
+		$this->do_init_tag_action();
 	}
 
 	/**
@@ -60,7 +54,7 @@ class AMP_Tag extends Base_AMP_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function render() {
+	private function print_amp_auto_ads() {
 		if ( $this->adsense_tag_printed ) {
 			return;
 		}
@@ -82,7 +76,7 @@ class AMP_Tag extends Base_AMP_Tag {
 	 * @param string $content The page content.
 	 * @return string Filtered $content.
 	 */
-	public function amp_content_add_auto_ads( $content ) {
+	private function amp_content_add_auto_ads( $content ) {
 		// Only run for the primary application of the `the_content` filter.
 		if ( $this->adsense_tag_printed || ! in_the_loop() ) {
 			return $content;

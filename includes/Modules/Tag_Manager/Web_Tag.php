@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Tag_Manager;
 
 use Google\Site_Kit\Core\Tags\Web_Tag as Base_Web_Tag;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class for Web tag.
@@ -20,6 +21,8 @@ use Google\Site_Kit\Core\Tags\Web_Tag as Base_Web_Tag;
  * @ignore
  */
 class Web_Tag extends Base_Web_Tag {
+
+	use Method_Proxy_Trait;
 
 	/**
 	 * Internal flag set after print_gtm_no_js invoked for the first time.
@@ -35,23 +38,15 @@ class Web_Tag extends Base_Web_Tag {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_action( 'wp_head', array( $this, 'render' ) );
+		$print_gtm_no_js = $this->get_method_proxy( 'print_gtm_no_js' );
 
+		add_action( 'wp_head', $this->get_method_proxy( 'print_gtm_js' ) );
 		// For non-AMP (if `wp_body_open` supported).
-		add_action( 'wp_body_open', array( $this, 'print_gtm_no_js' ), -9999 );
+		add_action( 'wp_body_open', $print_gtm_no_js, -9999 );
 		// For non-AMP (as fallback).
-		add_action( 'wp_footer', array( $this, 'print_gtm_no_js' ) );
+		add_action( 'wp_footer', $print_gtm_no_js );
 
-		/**
-		 * Fires when the Tag Manager tag has been initialized.
-		 *
-		 * This means that the tag will be rendered in the current request.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param string $tag_id Tag Manager container ID used in the tag.
-		 */
-		do_action( 'googlesitekit_tagmanager_init_tag', $this->tag_id );
+		$this->do_init_tag_action();
 	}
 
 	/**
@@ -59,7 +54,7 @@ class Web_Tag extends Base_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function render() {
+	private function print_gtm_js() {
 		?>
 <!-- Google Tag Manager added by Site Kit -->
 <script<?php echo $this->get_tag_blocked_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
@@ -82,7 +77,7 @@ class Web_Tag extends Base_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function print_gtm_no_js() {
+	private function print_gtm_no_js() {
 		// Bail if this has already been run.
 		if ( $this->did_gtm_no_js ) {
 			return;

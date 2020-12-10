@@ -49,18 +49,10 @@ abstract class Tag implements Tag_Interface {
 	}
 
 	/**
-	 * Renders tag output.
-	 *
-	 * @since n.e.x.t
-	 */
-	abstract public function render();
-
-	/**
 	 * Registers tag hooks.
 	 *
 	 * @since n.e.x.t
 	 */
-	public function register() {
-	}
+	abstract public function register();
 
 }

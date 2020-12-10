@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\AdSense;
 
 use Google\Site_Kit\Core\Tags\Web_Tag as Base_Web_Tag;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class for Web tag.
@@ -20,6 +21,8 @@ use Google\Site_Kit\Core\Tags\Web_Tag as Base_Web_Tag;
  * @ignore
  */
 class Web_Tag extends Base_Web_Tag {
+
+	use Method_Proxy_Trait;
 
 	/**
 	 * Internal flag for whether the AdSense tag has been printed.
@@ -35,18 +38,8 @@ class Web_Tag extends Base_Web_Tag {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_action( 'wp_head', array( $this, 'render' ) );
-
-		/**
-		 * Fires when the AdSense tag has been initialized.
-		 *
-		 * This means that the tag will be rendered in the current request.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param string $tag_id AdSense client ID used in the tag.
-		 */
-		do_action( 'googlesitekit_adsense_init_tag', $this->tag_id );
+		add_action( 'wp_head', $this->get_method_proxy( 'output_adsense_script' ) );
+		$this->do_init_tag_action();
 	}
 
 	/**
@@ -54,7 +47,7 @@ class Web_Tag extends Base_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function render() {
+	private function output_adsense_script() {
 		if ( $this->adsense_tag_printed ) {
 			return;
 		}
@@ -67,6 +60,7 @@ class Web_Tag extends Base_Web_Tag {
 			'<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"%s></script>', // // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
+
 		printf(
 			'<script>(adsbygoogle = window.adsbygoogle || []).push(%s);</script>',
 			wp_json_encode(

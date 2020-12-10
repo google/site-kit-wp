@@ -59,4 +59,20 @@ abstract class Web_Tag extends Tag implements Blockable_Tag_Interface {
 		return '';
 	}
 
+	/**
+	 * Fires the "googlesitekit_{module_slug}_init_tag" action to let 3rd party plugins to perform required setup.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function do_init_tag_action() {
+		/**
+		 * Fires when the tag has been initialized which means that the tag will be rendered in the current request.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param string $tag_id Tag ID.
+		 */
+		do_action( "googlesitekit_{$this->module_slug}_init_tag", $this->tag_id );
+	}
+
 }

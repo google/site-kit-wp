@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Tag_Manager;
 
 use Google\Site_Kit\Core\Tags\AMP_Tag as Base_AMP_Tag;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class for AMP tag.
@@ -20,6 +21,8 @@ use Google\Site_Kit\Core\Tags\AMP_Tag as Base_AMP_Tag;
  * @ignore
  */
 class AMP_Tag extends Base_AMP_Tag {
+
+	use Method_Proxy_Trait;
 
 	/**
 	 * Internal flag set after print_amp_gtm is invoked for the first time.
@@ -35,37 +38,30 @@ class AMP_Tag extends Base_AMP_Tag {
 	 * @since n.e.x.t
 	 */
 	public function register() {
+		$print_amp_gtm = $this->get_method_proxy( 'print_amp_gtm' );
+
 		// Which actions are run depends on the version of the AMP Plugin
 		// (https://amp-wp.org/) available. Version >=1.3 exposes a
 		// new, `amp_print_analytics` action.
 		// For all AMP modes, AMP plugin version >=1.3.
-		add_action( 'amp_print_analytics', array( $this, 'render' ) );
+		add_action( 'amp_print_analytics', $print_amp_gtm );
 		// For AMP Standard and Transitional, AMP plugin version <1.3.
-		add_action( 'wp_footer', array( $this, 'render' ), 20 );
+		add_action( 'wp_footer', $print_amp_gtm, 20 );
 		// For AMP Reader, AMP plugin version <1.3.
-		add_action( 'amp_post_template_footer', array( $this, 'render' ), 20 );
+		add_action( 'amp_post_template_footer', $print_amp_gtm, 20 );
 
 		// Load amp-analytics component for AMP Reader.
 		$this->enqueue_amp_reader_component_script( 'amp-analytics', 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js' );
 
-		/**
-		 * Fires when the Tag Manager tag for AMP has been initialized.
-		 *
-		 * This means that the tag will be rendered in the current request.
-		 *
-		 * @since 1.14.0
-		 *
-		 * @param string $tag_id Tag Manager container ID used in the tag.
-		 */
-		do_action( 'googlesitekit_tagmanager_init_tag_amp', $this->tag_id );
+		$this->do_init_tag_action();
 	}
 
 	/**
-	 * Renders tag output.
+	 * Outputs Tag Manager <amp-analytics> tag.
 	 *
 	 * @since n.e.x.t
 	 */
-	public function render() {
+	private function print_amp_gtm() {
 		if ( $this->did_amp_gtm ) {
 			return;
 		}
