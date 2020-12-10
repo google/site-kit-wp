@@ -27,7 +27,9 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Guards\TruthyValue as TruthyValueGuard;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Tags\Guards\TagVerify as TagVerifyGuard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\AdSense\AMP_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
@@ -90,32 +92,22 @@ final class AdSense extends Module
 		add_action(
 			'template_redirect',
 			function() {
-				// Bail early if we are checking for the tag presence from the back end.
-				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-					return;
-				}
-
-				$use_snippet = $this->get_data( 'use-snippet' );
-				if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-					return;
-				}
-
-				$client_id = $this->get_data( 'client-id' );
-				if ( is_wp_error( $client_id ) || ! $client_id ) {
-					return;
-				}
-
 				// Web Stories support neither <amp-auto-ads> nor the script.
 				// TODO: 'amp_story' support can be phased out in the long term.
 				if ( is_singular( array( 'web-story', 'amp_story' ) ) ) {
 					return;
 				}
 
-				$tag = $this->context->is_amp()
+				$client_id = $this->get_data( 'client-id' );
+				$tag       = $this->context->is_amp()
 					? new AMP_Tag( self::MODULE_SLUG, $client_id )
 					: new Web_Tag( self::MODULE_SLUG, $client_id );
 
 				if ( ! $tag->is_tag_blocked() ) {
+					$tag->use_guard( new TagVerifyGuard( $this->context ) );
+					$tag->use_guard( new TruthyValueGuard( $client_id ) );
+					$tag->use_guard( new TruthyValueGuard( $this->get_data( 'use-snippet' ) ) );
+
 					$tag->register();
 				}
 			}

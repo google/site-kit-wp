@@ -26,7 +26,9 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Guards\TruthyValue as TruthyValueGuard;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Tags\Guards\TagVerify as TagVerifyGuard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Tag_Manager\AMP_Tag;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
@@ -91,30 +93,27 @@ final class Tag_Manager extends Module
 		add_action(
 			'template_redirect',
 			function() {
-				// Bail early if we are checking for the tag presence from the back end.
-				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-					return;
-				}
-
-				$settings = $this->get_settings()->get();
-				if ( ! $settings['useSnippet'] ) {
-					return;
-				}
-
-				$is_amp        = $this->context->is_amp();
-				$usage_context = $is_amp ? self::USAGE_CONTEXT_AMP : self::USAGE_CONTEXT_WEB;
-
-				// Container needs to be checked based on whether AMP or non-AMP.
-				$container_id = $this->get_data( 'container-id', array( 'usageContext' => $usage_context ) );
-				if ( is_wp_error( $container_id ) || ! $container_id ) {
-					return;
-				}
+				$is_amp       = $this->context->is_amp();
+				$container_id = $this->get_data(
+					'container-id',
+					array(
+						'usageContext' => $is_amp
+							? self::USAGE_CONTEXT_AMP
+							: self::USAGE_CONTEXT_WEB,
+					)
+				);
 
 				$tag = $is_amp
 					? new AMP_Tag( self::MODULE_SLUG, $container_id )
 					: new Web_Tag( self::MODULE_SLUG, $container_id );
 
 				if ( ! $tag->is_tag_blocked() ) {
+					$settings = $this->get_settings()->get();
+
+					$tag->use_guard( new TagVerifyGuard( $this->context ) );
+					$tag->use_guard( new TruthyValueGuard( $container_id ) );
+					$tag->use_guard( new TruthyValueGuard( $settings['useSnippet'] ) );
+
 					$tag->register();
 				}
 			}

@@ -10,6 +10,13 @@
 
 namespace Google\Site_Kit\Core\Tags;
 
+/**
+ * Interface for a blockable tag.
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
+ */
 interface Blockable_Tag_Interface {
 
 	/**

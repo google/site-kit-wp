@@ -29,8 +29,10 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Guards\TruthyValue as TruthyValueGuard;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Tags\Guards\TagVerify as TagVerifyGuard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
 use Google\Site_Kit\Modules\Analytics\AMP_Tag;
@@ -121,22 +123,9 @@ final class Analytics extends Module
 		add_action(
 			'template_redirect',
 			function() {
-				// Bail early if we are checking for the tag presence from the back end.
-				if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-					return;
-				}
-
-				$use_snippet = $this->get_data( 'use-snippet' );
-				if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-					return;
-				}
-
+				$tag         = null;
 				$property_id = $this->get_data( 'property-id' );
-				if ( is_wp_error( $property_id ) || ! $property_id ) {
-					return;
-				}
 
-				$tag = null;
 				if ( $this->context->is_amp() ) {
 					$tag = new AMP_Tag( self::MODULE_SLUG, $property_id );
 				} else {
@@ -148,7 +137,15 @@ final class Analytics extends Module
 				}
 
 				if ( $tag && ! $tag->is_tag_blocked() ) {
-					$home_domain = wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST );
+					$tag->use_guard( new TagVerifyGuard( $this->context ) );
+					$tag->use_guard( new TruthyValueGuard( $property_id ) );
+					$tag->use_guard( new TruthyValueGuard( $this->get_data( 'use-snippet' ) ) );
+
+					$home_domain = wp_parse_url(
+						$this->context->get_canonical_home_url(),
+						PHP_URL_HOST
+					);
+
 					$tag->set_home_domain( $home_domain );
 					$tag->register();
 				}

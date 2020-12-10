@@ -29,7 +29,7 @@ class Web_Tag extends Base_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function register() {
+	protected function register_hooks() {
 		$print_gtm_no_js = $this->get_method_proxy_once( 'print_gtm_no_js' );
 
 		add_action( 'wp_head', $this->get_method_proxy( 'print_gtm_js' ) );

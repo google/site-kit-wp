@@ -10,10 +10,17 @@
 
 namespace Google\Site_Kit\Core\Tags;
 
+/**
+ * Interface for a tag.
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
+ */
 interface Tag_Interface {
 
 	/**
-	 * Renders tag output.
+	 * Registers tag hooks.
 	 *
 	 * @since n.e.x.t
 	 */

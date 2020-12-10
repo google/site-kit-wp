@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Tags;
 
+use Google\Site_Kit\Core\Guards\Guard_Interface;
+
 /**
  * Base class for tags.
  *
@@ -36,6 +38,14 @@ abstract class Tag implements Tag_Interface {
 	protected $tag_id;
 
 	/**
+	 * Guards array.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	protected $guards = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -49,10 +59,39 @@ abstract class Tag implements Tag_Interface {
 	}
 
 	/**
+	 * Adds a new guard to the guards list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Guard_Interface $guard A guard instance to add to the guards list.
+	 */
+	public function use_guard( Guard_Interface $guard ) {
+		$this->guards[] = $guard;
+	}
+
+	/**
+	 * Registers tag if it can be activated.
+	 *
+	 * @since n.e.x.t
+	 */
+	final public function register() {
+		foreach ( $this->guards as $guard ) {
+			if ( $guard instanceof Guard_Interface ) {
+				$can_activate = $guard->can_activate();
+				if ( is_wp_error( $can_activate ) || ! $can_activate ) {
+					return;
+				}
+			}
+		}
+
+		$this->register_hooks();
+	}
+
+	/**
 	 * Registers tag hooks.
 	 *
 	 * @since n.e.x.t
 	 */
-	abstract public function register();
+	abstract protected function register_hooks();
 
 }

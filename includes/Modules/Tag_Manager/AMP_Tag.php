@@ -29,7 +29,7 @@ class AMP_Tag extends Base_AMP_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function register() {
+	protected function register_hooks() {
 		$print_amp_gtm = $this->get_method_proxy_once( 'print_amp_gtm' );
 
 		// Which actions are run depends on the version of the AMP Plugin

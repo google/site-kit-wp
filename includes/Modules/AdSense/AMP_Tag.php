@@ -37,7 +37,7 @@ class AMP_Tag extends Base_AMP_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function register() {
+	protected function register_hooks() {
 		// For AMP Reader, and AMP Native and Transitional (if `wp_body_open` supported).
 		add_action( 'wp_body_open', $this->get_method_proxy( 'print_amp_auto_ads' ), -9999 );
 		// For AMP Reader, and AMP Native and Transitional (as fallback).

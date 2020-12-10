@@ -86,7 +86,7 @@ class Web_Tag extends Base_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function register() {
+	protected function register_hooks() {
 		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_js' ) );
 		$this->do_init_tag_action();
 	}

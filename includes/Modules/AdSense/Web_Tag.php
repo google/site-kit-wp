@@ -29,7 +29,7 @@ class Web_Tag extends Base_Web_Tag {
 	 *
 	 * @since n.e.x.t
 	 */
-	public function register() {
+	protected function register_hooks() {
 		add_action( 'wp_head', $this->get_method_proxy_once( 'output_adsense_script' ) );
 		$this->do_init_tag_action();
 	}
