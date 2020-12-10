@@ -17,11 +17,6 @@
  */
 
 /**
- * Node dependencies
- */
-import { join as joinPaths } from 'path';
-
-/**
  * External dependencies
  */
 import invariant from 'invariant';
@@ -38,6 +33,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { reportArgsToURLSegment } from '../util/report-args';
+import { escapeURI } from '../../../util/escape-uri';
 const { createRegistrySelector } = Data;
 
 export const selectors = {
@@ -91,7 +87,12 @@ export const selectors = {
 		}
 
 		const argsSegment = reportArgsToURLSegment( reportArgs );
-		const path = joinPaths( '/report', type, `a${ accountID }w${ internalWebPropertyID }p${ profileID }`, argsSegment, '/' );
+		let path = escapeURI`/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }`;
+
+		if ( argsSegment ) {
+			path += escapeURI`/${ argsSegment }`;
+		}
+		path += '/';
 
 		return selectors.getServiceURL( state, { path } );
 	} ),
