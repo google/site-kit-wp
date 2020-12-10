@@ -42,6 +42,20 @@ export default function UseSnippetInstructions() {
 	const gtmActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
 	const gtmUseSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
 	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
+	const supportURLAutoInsert = useSelect(
+		( select ) => select( CORE_SITE ).getGoogleSupportURL(
+			{
+				path: 'https://support.google.com/optimize/answer/6314801',
+			}
+		)
+	);
+	const supportURLDisabledAutoInsert = useSelect(
+		( select ) => select( CORE_SITE ).getGoogleSupportURL(
+			{
+				path: 'https://support.google.com/optimize/answer/6262084',
+			}
+		)
+	);
 
 	if ( ! analyticsActive ) {
 		return (
@@ -78,7 +92,7 @@ export default function UseSnippetInstructions() {
 						sprintf(
 							/* translators: %s: external URL with instructions */
 							__( '<a href="%s">Click here</a> for how to implement Optimize tag through your Tag Manager', 'google-site-kit' ),
-							__( 'https://support.google.com/optimize/answer/6314801', 'google-site-kit' )
+							supportURLAutoInsert,
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
@@ -104,7 +118,7 @@ export default function UseSnippetInstructions() {
 						sprintf(
 							/* translators: %s: external URL with instructions */
 							__( '<a href="%s">Click here</a> for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ),
-							__( 'https://support.google.com/optimize/answer/6262084', 'google-site-kit' )
+							supportURLDisabledAutoInsert,
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],

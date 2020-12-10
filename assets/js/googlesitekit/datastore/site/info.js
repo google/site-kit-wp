@@ -32,6 +32,7 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
+import { getLocale } from '../../../util/i18n';
 
 const { createRegistrySelector } = Data;
 
@@ -469,6 +470,24 @@ export const selectors = {
 		return queryArg ? queryArg : false;
 	},
 
+	/**
+	 * Gets external help links which includes the user's locale.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state        Data store's state.
+	 * @param {Object} [args]       Optional arguments for the resulting URL.
+	 * @param {string} [args.path]  Base URL to build complete URL.
+	 * @param {Object} [args.query] Object to append query to the URL.
+	 * @param {string} [args.hash]  Optional hash.
+	 * @return {string} The URL containing the user's locale.
+	 */
+	getGoogleSupportURL: ( state, { path, query, hash } ) => {
+		const url = new URL( addQueryArgs( path, { ...query, hl: getLocale() } ) );
+		url.hash = hash || '';
+
+		return url.toString();
+	},
 };
 
 export default {

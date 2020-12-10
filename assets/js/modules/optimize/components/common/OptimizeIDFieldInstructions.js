@@ -24,15 +24,27 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { STORE_NAME as CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 
+const { useSelect } = Data;
+
 export default function OptimizeIDFieldInstructions() {
+	const supportURL = useSelect(
+		( select ) => select( CORE_SITE ).getGoogleSupportURL(
+			{
+				path: 'https://support.google.com/optimize/answer/6211921',
+			}
+		)
+	);
+
 	return (
 		<p>
 			{ __( 'Please copy and paste your Optimize ID to complete your setup.', 'google-site-kit' ) }
 			{ ' ' }
 			<Link
-				href="https://support.google.com/optimize/answer/6211921"
+				href={ supportURL }
 				external
 				inherit
 			>
