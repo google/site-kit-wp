@@ -53,15 +53,15 @@ function DashboardPageSpeedCTA() {
 			mdc-layout-grid__cell--span-12
 		">
 			{
-				( ! connected && active )
+				( ! active )
 					? (
-						<CompleteModuleActivationCTA
+						<ActivateModuleCTA
 							slug="pagespeed-insights"
 							description={ description }
 						/>
 					)
 					: (
-						<ActivateModuleCTA
+						<CompleteModuleActivationCTA
 							slug="pagespeed-insights"
 							description={ description }
 						/>
